@@ -316,12 +316,14 @@ type (
 	SubmitReturnData struct {
 		// 订单号，多个订单号，用","分割
 		OrderNo string
-		// 合并支付
-		MergePay bool
 		// 交易号
 		TradeNo string
 		// 交易金额
 		TradeAmount int64
+		// 合并支付
+		MergePay bool
+		// 支付单号
+		PaymentOrderNo string
 	}
 
 	// Order 订单

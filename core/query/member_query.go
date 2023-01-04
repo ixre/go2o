@@ -53,9 +53,15 @@ func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
+func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, valueFilter int32, begin, end int,
 	where, orderBy string) (num int, rows []*proto.SMemberAccountLog) {
 	d := m.Connector
+	if valueFilter == 1 {
+		where += ` AND change_value > 0 `
+	}
+	if valueFilter == 2 {
+		where += ` AND change_value < 0 `
+	}
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -74,19 +80,26 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 			rows = append(rows, &e)
 		}
 	}, memberId, begin, end-begin)
-	if err!= nil {
-        log.Println(err)
-    }
+	if err != nil {
+		log.Println(err)
+	}
 
 	return num, rows
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64,
-	sortBy string) (num int, rows []*proto.SMemberAccountLog) {
+func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, valueFilter int32,
+	begin, over int64, sortBy string) (num int, rows []*proto.SMemberAccountLog) {
 	d := m.Connector
-	d.ExecScalar(`SELECT COUNT(1) FROM mm_integral_log 
-			WHERE member_id= $1`, &num, memberId)
+	where := ""
+	if valueFilter == 1 {
+		where += ` AND change_value > 0 `
+	}
+	if valueFilter == 2 {
+		where += ` AND change_value < 0 `
+	}
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_integral_log 
+			WHERE member_id= $1 %s`, where), &num, memberId)
 	if num > 0 {
 		orderBy := ""
 		if sortBy != "" {
@@ -94,12 +107,12 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64,
 		}
 		sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,
 		balance,audit_state,create_time FROM mm_integral_log 
-			WHERE member_id= $1 %s LIMIT $3 OFFSET $2`, orderBy)
+			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`, where, orderBy)
 		err := d.Query(sqlLine, func(_rows *sql.Rows) {
 			for _rows.Next() {
 				e := proto.SMemberAccountLog{}
 				_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
-					&e.Value,  &e.Balance,
+					&e.Value, &e.Balance,
 					&e.AuditState, &e.CreateTime)
 				rows = append(rows, &e)
 			}
@@ -112,9 +125,15 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId, begin, over int64,
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
+func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, begin, end int,
 	where, orderBy string) (num int, rows []*proto.SMemberAccountLog) {
 	d := m.Connector
+	if valueFilter == 1 {
+		where += ` AND change_value > 0 `
+	}
+	if valueFilter == 2 {
+		where += ` AND change_value < 0 `
+	}
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
 	}
@@ -123,13 +142,13 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 	ON mm_account.wallet_code=wal_wallet.hash_code
 	WHERE mm_account.member_id=$1 limit 1`, &walletId, memberId)
 
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM wal_wallet_log WHERE wallet_id =$1 %s`, where), &num, walletId)
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM wal_wallet_log WHERE wallet_id = $1 %s`, where), &num, walletId)
 
 	//rows = make([]*proto.SMemberAccountLog,0)
 
 	if num > 0 {
-		sqlLine := fmt.Sprintf(`SELECT id,kind,title,outer_no,value,procedure_fee,
-			balance,review_state,create_time FROM wal_wallet_log 
+		sqlLine := fmt.Sprintf(`SELECT id,kind,title,outer_no,change_value,procedure_fee,
+			balance,audit_state,create_time FROM wal_wallet_log 
 			WHERE wallet_id = $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)
 		d.Query(sqlLine, func(_rows *sql.Rows) {

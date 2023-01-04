@@ -9,7 +9,7 @@
 package item
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
@@ -32,6 +32,20 @@ const (
 	ShelvesOn int32 = 2
 	// 已拒绝上架 (不允许上架)
 	ShelvesIncorrect int32 = 3
+)
+
+// 商品标志
+const (
+	// 新品
+	FlagNewGoods = 1
+	// 热销商品
+	FlagHotSale = 2
+	// 推荐商品
+	FlagRecommend = 4
+	// 赠品
+	FlagGift = 8
+	// 分销商品
+	FlagAffilite = 16
 )
 
 var (
@@ -58,191 +72,6 @@ var (
 )
 
 type (
-	// IItemRepo 商品仓储
-	IItemRepo interface {
-		// SkuService 获取SKU服务
-		SkuService() ISkuService
-		// SnapshotService 获取快照服务
-		SnapshotService() ISnapshotService
-
-		// CreateItem 创建商品
-		CreateItem(v *GoodsItem) IGoodsItem
-
-		// GetItem 获取商品
-		GetItem(itemId int64) IGoodsItem
-
-		// GetValueGoods 获取商品
-		GetValueGoods(itemId, skuId int64) *GoodsItem
-
-		// GetItemImages  获取商品图片
-		GetItemImages(itemId int64) []*Image
-		// SaveItemImage 保存商品图片
-		SaveItemImage(v *Image) (int, error)
-		// DeleteItemImage 删除商品图片
-		DeleteItemImage(id int64) error
-		// 根据SKU-ID获取商品,SKU-ID为商品ID
-		//todo: 循环引有,故为interface{}
-		GetItemBySkuId(skuId int64) interface{}
-
-		// GetValueGoodsById 获取商品
-		GetValueGoodsById(goodsId int64) *GoodsItem
-
-		// GetValueGoodsBySku 根据产品编号和SKU获取商品
-		GetValueGoodsBySku(productId, skuId int64) *GoodsItem
-
-		// SaveValueGoods 保存商品
-		SaveValueGoods(*GoodsItem) (int64, error)
-
-		// GetOnShelvesGoods 获取在货架上的商品
-		GetOnShelvesGoods(mchId int64, start, end int,
-			sortBy string) []*valueobject.Goods
-
-		// GetPagedOnShelvesGoods 获取在货架上的商品
-		GetPagedOnShelvesGoods(mchId int64, catIds []int, start, end int,
-			where, orderBy string) (total int, goods []*valueobject.Goods)
-
-		// GetGoodsByIds 根据编号获取商品
-		GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error)
-
-		// GetGoodSMemberLevelPrice 获取会员价
-		GetGoodSMemberLevelPrice(goodsId int64) []*MemberPrice
-
-		// SaveGoodSMemberLevelPrice 保存会员价
-		SaveGoodSMemberLevelPrice(*MemberPrice) (int32, error)
-
-		// RemoveGoodSMemberLevelPrice 移除会员价
-		RemoveGoodSMemberLevelPrice(id int) error
-
-		// SaveSnapshot 保存快照
-		SaveSnapshot(*Snapshot) (int64, error)
-
-		// GetSnapshots 根据指定商品快照
-		GetSnapshots(skuIdArr []int64) []Snapshot
-
-		// GetLatestSnapshot 获取最新的商品快照
-		GetLatestSnapshot(itemId int64) *Snapshot
-
-		// GetSalesSnapshot 获取指定的商品快照
-		GetSalesSnapshot(id int64) *TradeSnapshot
-
-		// GetSaleSnapshotByKey 根据Key获取商品快照
-		GetSaleSnapshotByKey(key string) *TradeSnapshot
-
-		// GetLatestSalesSnapshot 获取最新的商品销售快照
-		GetLatestSalesSnapshot(itemId int64, skuId int64) *TradeSnapshot
-
-		// SaveSalesSnapshot 保存商品销售快照
-		SaveSalesSnapshot(*TradeSnapshot) (int64, error)
-
-		// GetItemSku Get ItemSku
-		GetItemSku(primary interface{}) *Sku
-		// SelectItemSku Select ItemSku
-		SelectItemSku(where string, v ...interface{}) []*Sku
-		// SaveItemSku Save ItemSku
-		SaveItemSku(v *Sku) (int, error)
-		// DeleteItemSku Delete ItemSku
-		DeleteItemSku(primary interface{}) error
-		// BatchDeleteItemSku Batch Delete ItemSku
-		BatchDeleteItemSku(where string, v ...interface{}) (int64, error)
-	}
-
-	// GoodsItem 商品,临时改方便辨别
-	GoodsItem struct {
-		// 商品编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
-		// 产品编号
-		ProductId int64 `db:"product_id"`
-		// 促销标志
-		PromFlag int32 `db:"prom_flag"`
-		// 分类编号
-		CategoryId int32 `db:"cat_id"`
-		// 供货商编号
-		VendorId int64 `db:"vendor_id"`
-		// 品牌编号(冗余)
-		BrandId int32 `db:"brand_id"`
-		// 店铺编号
-		ShopId int64 `db:"shop_id"`
-		// 店铺分类编号
-		ShopCatId int32 `db:"shop_cat_id"`
-		// 快递模板编号
-		ExpressTid int32 `db:"express_tid"`
-		// 商品标题
-		Title string `db:"title"`
-		// 短标题
-		ShortTitle string `db:"short_title"`
-		// 供货商编码
-		Code string `db:"code"`
-		// 主图
-		Image string `db:"image"`
-		// 是否为赠品
-		IsPresent int32 `db:"is_present"`
-		// 销售价格区间
-		PriceRange string `db:"price_range"`
-		// 总库存
-		StockNum int32 `db:"stock_num"`
-		// 销售数量
-		SaleNum int32 `db:"sale_num"`
-		// SKU数量
-		SkuNum int32 `db:"sku_num"`
-		// 默认SKU编号
-		SkuId int64 `db:"sku_id"`
-		// 成本价
-		Cost int64 `db:"cost"`
-		// 销售价
-		Price int64 `db:"price"`
-		// 零售价
-		RetailPrice int64 `db:"retail_price"`
-		// 重量:克(g)
-		Weight int32 `db:"weight"`
-		// 体积:毫升(ml)
-		Bulk int32 `db:"bulk"`
-		// 是否上架
-		ShelveState int32 `db:"shelve_state"`
-		// 审核状态
-		ReviewState int32 `db:"review_state"`
-		// 审核备注
-		ReviewRemark string `db:"review_remark"`
-		// 排序序号
-		SortNum int32 `db:"sort_num"`
-		// 创建时间
-		CreateTime int64 `db:"create_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-		// 促销价
-		PromPrice int64 `db:"-"`
-		// 规格项
-		SkuArray []*Sku `db:"-"`
-		// 图片
-		Images []string `db:"-"`
-	}
-
-	// Image 产品图片
-	Image struct {
-		// 图片编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
-		// 商品编号
-		ItemId int64 `db:"item_id"`
-		// 图片地址
-		ImageUrl string `db:"image_url"`
-		// 排列序号
-		SortNum int `db:"sort_num"`
-		// 创建时间
-		CreateTime int64 `db:"create_time"`
-	}
-
-	// MemberPrice 会员价
-	MemberPrice struct {
-		Id      int   `db:"id" pk:"yes" auto:"yes"`
-		GoodsId int64 `db:"goods_id"`
-		Level   int   `db:"level"`
-		Price   int64 `db:"price"`
-		// 限购数量
-		MaxQuota int `db:"max_quota"`
-		Enabled  int `db:"enabled"`
-	}
-)
-
-type (
 	// IGoodsItem 商品
 	IGoodsItem interface {
 		// GetAggregateRootId 获取聚合根编号
@@ -253,6 +82,8 @@ type (
 		GetPackedValue() *valueobject.Goods
 		// SetValue 设置值
 		SetValue(*GoodsItem) error
+		// GrantFlag 标志赋值, 如果flag小于零, 则异或运算(去除)
+		GrantFlag(flag int) error
 		// SetSku 设置SKU
 		SetSku(arr []*Sku) error
 		// Save 保存
@@ -428,5 +259,190 @@ type (
 		RequireAmount int32 `db:"require_amount"`
 		// 折扣率
 		DiscountRate float64 `db:"discount_rate"`
+	}
+)
+
+type (
+	// IItemRepo 商品仓储
+	IItemRepo interface {
+		// SkuService 获取SKU服务
+		SkuService() ISkuService
+		// SnapshotService 获取快照服务
+		SnapshotService() ISnapshotService
+
+		// CreateItem 创建商品
+		CreateItem(v *GoodsItem) IGoodsItem
+
+		// GetItem 获取商品
+		GetItem(itemId int64) IGoodsItem
+
+		// GetValueGoods 获取商品
+		GetValueGoods(itemId, skuId int64) *GoodsItem
+
+		// GetItemImages  获取商品图片
+		GetItemImages(itemId int64) []*Image
+		// SaveItemImage 保存商品图片
+		SaveItemImage(v *Image) (int, error)
+		// DeleteItemImage 删除商品图片
+		DeleteItemImage(id int64) error
+		// 根据SKU-ID获取商品,SKU-ID为商品ID
+		//todo: 循环引有,故为interface{}
+		GetItemBySkuId(skuId int64) interface{}
+
+		// GetValueGoodsById 获取商品
+		GetValueGoodsById(goodsId int64) *GoodsItem
+
+		// GetValueGoodsBySku 根据产品编号和SKU获取商品
+		GetValueGoodsBySku(productId, skuId int64) *GoodsItem
+
+		// SaveValueGoods 保存商品
+		SaveValueGoods(*GoodsItem) (int64, error)
+
+		// GetOnShelvesGoods 获取在货架上的商品
+		GetOnShelvesGoods(mchId int64, start, end int,
+			sortBy string) []*valueobject.Goods
+
+		// GetPagedOnShelvesGoods 获取在货架上的商品
+		GetPagedOnShelvesGoods(mchId int64, catIds []int, start, end int,
+			where, orderBy string) (total int, goods []*valueobject.Goods)
+
+		// GetGoodsByIds 根据编号获取商品
+		GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error)
+
+		// GetGoodSMemberLevelPrice 获取会员价
+		GetGoodSMemberLevelPrice(goodsId int64) []*MemberPrice
+
+		// SaveGoodSMemberLevelPrice 保存会员价
+		SaveGoodSMemberLevelPrice(*MemberPrice) (int32, error)
+
+		// RemoveGoodSMemberLevelPrice 移除会员价
+		RemoveGoodSMemberLevelPrice(id int) error
+
+		// SaveSnapshot 保存快照
+		SaveSnapshot(*Snapshot) (int64, error)
+
+		// GetSnapshots 根据指定商品快照
+		GetSnapshots(skuIdArr []int64) []Snapshot
+
+		// GetLatestSnapshot 获取最新的商品快照
+		GetLatestSnapshot(itemId int64) *Snapshot
+
+		// GetSalesSnapshot 获取指定的商品快照
+		GetSalesSnapshot(id int64) *TradeSnapshot
+
+		// GetSaleSnapshotByKey 根据Key获取商品快照
+		GetSaleSnapshotByKey(key string) *TradeSnapshot
+
+		// GetLatestSalesSnapshot 获取最新的商品销售快照
+		GetLatestSalesSnapshot(itemId int64, skuId int64) *TradeSnapshot
+
+		// SaveSalesSnapshot 保存商品销售快照
+		SaveSalesSnapshot(*TradeSnapshot) (int64, error)
+
+		// GetItemSku Get ItemSku
+		GetItemSku(primary interface{}) *Sku
+		// SelectItemSku Select ItemSku
+		SelectItemSku(where string, v ...interface{}) []*Sku
+		// SaveItemSku Save ItemSku
+		SaveItemSku(v *Sku) (int, error)
+		// DeleteItemSku Delete ItemSku
+		DeleteItemSku(primary interface{}) error
+		// BatchDeleteItemSku Batch Delete ItemSku
+		BatchDeleteItemSku(where string, v ...interface{}) (int64, error)
+	}
+
+	// GoodsItem 商品,临时改方便辨别
+	GoodsItem struct {
+		// 商品编号
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		// 产品编号
+		ProductId int64 `db:"product_id"`
+		// 商品标志
+		ItemFlag int `db:"item_flag"`
+		// 分类编号
+		CategoryId int32 `db:"cat_id"`
+		// 供货商编号
+		VendorId int64 `db:"vendor_id"`
+		// 品牌编号(冗余)
+		BrandId int32 `db:"brand_id"`
+		// 店铺编号
+		ShopId int64 `db:"shop_id"`
+		// 店铺分类编号
+		ShopCatId int32 `db:"shop_cat_id"`
+		// 快递模板编号
+		ExpressTid int32 `db:"express_tid"`
+		// 商品标题
+		Title string `db:"title"`
+		// 短标题
+		ShortTitle string `db:"short_title"`
+		// 供货商编码
+		Code string `db:"code"`
+		// 主图
+		Image string `db:"image"`
+		// 是否为赠品
+		IsPresent int32 `db:"is_present"`
+		// 销售价格区间
+		PriceRange string `db:"price_range"`
+		// 总库存
+		StockNum int32 `db:"stock_num"`
+		// 销售数量
+		SaleNum int32 `db:"sale_num"`
+		// SKU数量
+		SkuNum int32 `db:"sku_num"`
+		// 默认SKU编号
+		SkuId int64 `db:"sku_id"`
+		// 成本价
+		Cost int64 `db:"cost"`
+		// 销售价
+		Price int64 `db:"price"`
+		// 零售价
+		RetailPrice int64 `db:"retail_price"`
+		// 重量:克(g)
+		Weight int32 `db:"weight"`
+		// 体积:毫升(ml)
+		Bulk int32 `db:"bulk"`
+		// 是否上架
+		ShelveState int32 `db:"shelve_state"`
+		// 审核状态
+		AuditState int32 `db:"audit_state"`
+		// 审核备注
+		AuditRemark string `db:"audit_remark"`
+		// 排序序号
+		SortNum int32 `db:"sort_num"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
+		// 促销价
+		PromPrice int64 `db:"-"`
+		// 规格项
+		SkuArray []*Sku `db:"-"`
+		// 图片
+		Images []string `db:"-"`
+	}
+
+	// Image 产品图片
+	Image struct {
+		// 图片编号
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		// 商品编号
+		ItemId int64 `db:"item_id"`
+		// 图片地址
+		ImageUrl string `db:"image_url"`
+		// 排列序号
+		SortNum int `db:"sort_num"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
+	}
+
+	// MemberPrice 会员价
+	MemberPrice struct {
+		Id      int   `db:"id" pk:"yes" auto:"yes"`
+		GoodsId int64 `db:"goods_id"`
+		Level   int   `db:"level"`
+		Price   int64 `db:"price"`
+		// 限购数量
+		MaxQuota int `db:"max_quota"`
+		Enabled  int `db:"enabled"`
 	}
 )

@@ -99,12 +99,12 @@ message ChangeMemberBindRequest{
   /** 商户编号 */
   int64 merchantId = 1;
   /** 会员用户名 */
-  string userName = 2;
+  string username = 2;
 }
 
 message MchUserPwdRequest {
-  string user = 1;
-  string pwd = 2;
+  string username = 1;
+  string password = 2;
 }
 // 用户登录响应
 message MchLoginResponse{
@@ -154,9 +154,9 @@ message SMchSignUp {
   // 会员编号
   int64 memberId = 3;
   // 用户名
-  string user = 4;
+  string username = 4;
   // 密码
-  string pwd = 5;
+  string password = 5;
   // 盐
   string salt = 6;
   // 商户名称号

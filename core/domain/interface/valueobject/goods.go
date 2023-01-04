@@ -42,8 +42,8 @@ type Goods struct {
 	SkuId     int64 `db:"sku_id"`
 	IsPresent int32 `db:"is_present"`
 
-	// 促销标志
-	PromotionFlag int32 `db:"prom_flag"`
+	// 商品标志
+	ItemFlag int `db:"prom_flag"`
 
 	// 库存
 	StockNum int32 `db:"stock_num"`

@@ -21,6 +21,7 @@ import (
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
@@ -70,9 +71,21 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SItemD
 		ret.AttrArray = parser.AttrArrayDto(item.Product().Attr())
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
+		ret.FlagData = s.getFlagData(item.GetValue().ItemFlag)
 		return ret, nil
 	}
 	return nil, nil
+}
+
+// 获取商品的标志数据
+func (s *itemService) getFlagData(flag int) *proto.SItemFlagData {
+	return &proto.SItemFlagData{
+		IsNewGoods:  domain.TestFlag(flag, item.FlagNewGoods),
+		IsHotSale:   domain.TestFlag(flag, item.FlagHotSale),
+		IsRecommend: domain.TestFlag(flag, item.FlagRecommend),
+		IsGift:      domain.TestFlag(flag, item.FlagGift),
+		IsAffilite:  domain.TestFlag(flag, item.FlagAffilite),
+	}
 }
 
 // SaveItem 保存商品
@@ -107,26 +120,49 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SaveItemRequest) (*pr
 			ErrMsg:  err.Error(),
 		}, nil
 	}
+	if err == nil && r.FlagData != nil {
+		s.saveItemFlag(gi, r)
+	}
 	return &proto.SaveItemResponse{
 		ErrCode: 0,
 		ItemId:  it.Id,
 	}, nil
 }
 
+// 保存商品标志
+func (*itemService) saveItemFlag(gi item.IGoodsItem, r *proto.SaveItemRequest) {
+	f := func(flag int, b bool) {
+		if b {
+			gi.GrantFlag(flag)
+		} else {
+			gi.GrantFlag(-flag)
+		}
+	}
+	f(item.FlagNewGoods, r.FlagData.IsNewGoods)
+	f(item.FlagHotSale, r.FlagData.IsHotSale)
+	f(item.FlagRecommend, r.FlagData.IsRecommend)
+	f(item.FlagGift, r.FlagData.IsGift)
+	f(item.FlagAffilite, r.FlagData.IsAffilite)
+	gi.Save()
+}
+
 // 附加商品的信息
-func (s *itemService) attachUnifiedItem(item item.IGoodsItem) *proto.SUnifiedViewItem {
+func (s *itemService) attachUnifiedItem(item item.IGoodsItem, extra bool) *proto.SUnifiedViewItem {
 	ret := parser.ItemDtoV2(item.GetValue())
 	skuService := s.itemRepo.SkuService()
 	skuArr := item.SkuArray()
 	ret.SkuArray = parser.SkuArrayDto(skuArr)
 	ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
 	specArr := item.SpecArray()
-	ret.ViewData = &proto.SItemViewData{
-		Details: "",  //todo:??
-		Thumbs:  nil, //todo:??
-		Images:  nil, //todo:??
-		SkuHtml: skuService.GetSpecHtml(specArr),
-		SkuJson: string(skuService.GetItemSkuJson(skuArr)),
+	ret.FlagData = s.getFlagData(item.GetValue().ItemFlag)
+	if extra {
+		ret.ViewData = &proto.SItemViewData{
+			Details: "",  //todo:??
+			Thumbs:  nil, //todo:??
+			Images:  nil, //todo:??
+			SkuHtml: skuService.GetSpecHtml(specArr),
+			SkuJson: string(skuService.GetItemSkuJson(skuArr)),
+		}
 	}
 	return ret
 }
@@ -136,7 +172,7 @@ func (s *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest)
 	v := s.itemRepo.GetValueGoodsBySku(r.ProductId, r.SkuId)
 	if v != nil {
 		item := s.itemRepo.CreateItem(v)
-		return s.attachUnifiedItem(item), nil
+		return s.attachUnifiedItem(item, r.Extra), nil
 	}
 	return nil, nil
 }
@@ -267,73 +303,6 @@ func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
 		arr[i] = dto
 	}
 	return total, arr
-}
-
-// 获取上架商品数据（分页）
-func (s *itemService) SearchOnShelvesItem(itemType int32, word string, start,
-	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
-
-	switch itemType {
-	case item.ItemNormal:
-		return s.searchOnShelveItem(word, start, end, where, sortBy)
-	case item.ItemWholesale:
-		return s.searchOnShelveItemForWholesale(word, start, end, where, sortBy)
-	}
-	return 0, []*proto.SOldItem{}
-}
-
-func (s itemService) searchOnShelveItem(word string, start,
-	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
-	total, list := s.itemQuery.SearchOnShelvesItem(word,
-		start, end, where, sortBy)
-	arr := make([]*proto.SOldItem, len(list))
-	for i, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ItemDto(v)
-	}
-	return total, arr
-}
-
-func (s itemService) searchOnShelveItemForWholesale(word string, start,
-	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
-	total, list := s.itemQuery.SearchOnShelvesItemForWholesale(word,
-		start, end, where, sortBy)
-	arr := make([]*proto.SOldItem, len(list))
-	for i, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
-		dto := parser.ItemDto(v)
-		s.attachWholesaleItemData(dto)
-		arr[i] = dto
-
-	}
-	return total, arr
-}
-
-// 附加批发商品的信息
-func (s *itemService) attachWholesaleItemData(dto *proto.SOldItem) {
-	dto.Data = make(map[string]string)
-	vendor := s.mchRepo.GetMerchant(int(dto.VendorId))
-	if vendor != nil {
-		vv := vendor.GetValue()
-		pStr := s.valueRepo.GetAreaName(int32(vv.Province))
-		cStr := s.valueRepo.GetAreaName(int32(vv.City))
-		dto.Data["VendorName"] = vv.CompanyName
-		dto.Data["ShipArea"] = pStr + cStr
-		// 认证信息
-		ei := vendor.ProfileManager().GetEnterpriseInfo()
-		if ei != nil && ei.Reviewed == enum.ReviewPass {
-			dto.Data["Authorized"] = "true"
-		} else {
-			dto.Data["Authorized"] = "false"
-		}
-		// 品牌
-		b := s.promRepo.BrandService().Get(dto.BrandId)
-		if b != nil {
-			dto.Data["BrandName"] = b.Name
-			dto.Data["BrandImage"] = b.Image
-			dto.Data["BrandId"] = strconv.Itoa(int(b.ID))
-		}
-	}
 }
 
 // 附加批发商品的信息
@@ -659,24 +628,24 @@ func (s *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
 
 func (s *itemService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 	return &proto.SGoods{
-		ItemId:        v.ItemId,
-		ProductId:     v.ProductId,
-		VendorId:      int64(v.VendorId),
-		ShopId:        int64(v.ShopId),
-		CategoryId:    v.CategoryId,
-		Title:         v.Title,
-		ShortTitle:    v.ShortTitle,
-		GoodsNo:       v.GoodsNo,
-		Image:         v.Image,
-		RetailPrice:   v.RetailPrice,
-		Price:         v.Price,
-		PromPrice:     v.PromPrice,
-		PriceRange:    v.PriceRange,
-		GoodsId:       v.GoodsId,
-		SkuId:         v.SkuId,
-		IsPresent:     v.IsPresent == 1,
-		PromotionFlag: v.PromotionFlag,
-		StockNum:      v.StockNum,
-		SaleNum:       v.SaleNum,
+		ItemId:      v.ItemId,
+		ProductId:   v.ProductId,
+		VendorId:    int64(v.VendorId),
+		ShopId:      int64(v.ShopId),
+		CategoryId:  v.CategoryId,
+		Title:       v.Title,
+		ShortTitle:  v.ShortTitle,
+		GoodsNo:     v.GoodsNo,
+		Image:       v.Image,
+		RetailPrice: v.RetailPrice,
+		Price:       v.Price,
+		PromPrice:   v.PromPrice,
+		PriceRange:  v.PriceRange,
+		GoodsId:     v.GoodsId,
+		SkuId:       v.SkuId,
+		IsPresent:   v.IsPresent == 1,
+		ItemFlag:    int32(v.ItemFlag),
+		StockNum:    v.StockNum,
+		SaleNum:     v.SaleNum,
 	}
 }

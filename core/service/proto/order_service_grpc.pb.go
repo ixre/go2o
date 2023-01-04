@@ -23,17 +23,21 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OrderServiceClient interface {
 	// 提交订单
-	SubmitOrderV1(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*StringMap, error)
+	SubmitOrder(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*OrderSubmitResponse, error)
 	// 预生成订单
 	PrepareOrder(ctx context.Context, in *PrepareOrderRequest, opts ...grpc.CallOption) (*PrepareOrderResponse, error)
-	// 提交普通订单
-	SubmitNormalOrder_(ctx context.Context, in *SubmitNormalOrderV2Request, opts ...grpc.CallOption) (*NormalOrderSubmitResponse, error)
 	// 获取订单信息
 	GetParentOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*SParentOrder, error)
 	// 获取子订单,orderId
 	GetOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*SSingleOrder, error)
-	// 提交交易订单
-	SubmitTradeOrder(ctx context.Context, in *TradeOrderSubmitRequest, opts ...grpc.CallOption) (*Result, error)
+	// 获取订单和商品项信息
+	// rpc GetOrderAndItems (GetOrderItemsRequest) returns (SSingleOrder) {
+	// }
+	// 根据订单号获取子订单,orderNo
+	// rpc GetSubOrderByNo (String) returns (SSingleOrder) {}
+	// 获取订单商品项,subOrderId
+	// rpc GetSubOrderItems (Int64) returns (ComplexItemsResponse) {
+	// }~
 	// 交易单现金支付,orderId
 	TradeOrderCashPay(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
 	// 上传交易单发票
@@ -56,6 +60,8 @@ type OrderServiceClient interface {
 	Forbid(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*Result, error)
 	// 获取订单日志
 	LogBytes(ctx context.Context, in *OrderNo, opts ...grpc.CallOption) (*String, error)
+	// * 获取订单返利列表
+	QueryRebateListList(ctx context.Context, in *QueryRebateListRequest, opts ...grpc.CallOption) (*QueryRebateListResponse, error)
 }
 
 type orderServiceClient struct {
@@ -66,9 +72,9 @@ func NewOrderServiceClient(cc grpc.ClientConnInterface) OrderServiceClient {
 	return &orderServiceClient{cc}
 }
 
-func (c *orderServiceClient) SubmitOrderV1(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*StringMap, error) {
-	out := new(StringMap)
-	err := c.cc.Invoke(ctx, "/OrderService/SubmitOrderV1", in, out, opts...)
+func (c *orderServiceClient) SubmitOrder(ctx context.Context, in *SubmitOrderRequest, opts ...grpc.CallOption) (*OrderSubmitResponse, error) {
+	out := new(OrderSubmitResponse)
+	err := c.cc.Invoke(ctx, "/OrderService/SubmitOrder", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,15 +84,6 @@ func (c *orderServiceClient) SubmitOrderV1(ctx context.Context, in *SubmitOrderR
 func (c *orderServiceClient) PrepareOrder(ctx context.Context, in *PrepareOrderRequest, opts ...grpc.CallOption) (*PrepareOrderResponse, error) {
 	out := new(PrepareOrderResponse)
 	err := c.cc.Invoke(ctx, "/OrderService/PrepareOrder", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *orderServiceClient) SubmitNormalOrder_(ctx context.Context, in *SubmitNormalOrderV2Request, opts ...grpc.CallOption) (*NormalOrderSubmitResponse, error) {
-	out := new(NormalOrderSubmitResponse)
-	err := c.cc.Invoke(ctx, "/OrderService/SubmitNormalOrder_", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -105,15 +102,6 @@ func (c *orderServiceClient) GetParentOrder(ctx context.Context, in *OrderNoV2, 
 func (c *orderServiceClient) GetOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*SSingleOrder, error) {
 	out := new(SSingleOrder)
 	err := c.cc.Invoke(ctx, "/OrderService/GetOrder", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *orderServiceClient) SubmitTradeOrder(ctx context.Context, in *TradeOrderSubmitRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, "/OrderService/SubmitTradeOrder", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -219,22 +207,35 @@ func (c *orderServiceClient) LogBytes(ctx context.Context, in *OrderNo, opts ...
 	return out, nil
 }
 
+func (c *orderServiceClient) QueryRebateListList(ctx context.Context, in *QueryRebateListRequest, opts ...grpc.CallOption) (*QueryRebateListResponse, error) {
+	out := new(QueryRebateListResponse)
+	err := c.cc.Invoke(ctx, "/OrderService/QueryRebateListList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OrderServiceServer is the server API for OrderService service.
 // All implementations must embed UnimplementedOrderServiceServer
 // for forward compatibility
 type OrderServiceServer interface {
 	// 提交订单
-	SubmitOrderV1(context.Context, *SubmitOrderRequest) (*StringMap, error)
+	SubmitOrder(context.Context, *SubmitOrderRequest) (*OrderSubmitResponse, error)
 	// 预生成订单
 	PrepareOrder(context.Context, *PrepareOrderRequest) (*PrepareOrderResponse, error)
-	// 提交普通订单
-	SubmitNormalOrder_(context.Context, *SubmitNormalOrderV2Request) (*NormalOrderSubmitResponse, error)
 	// 获取订单信息
 	GetParentOrder(context.Context, *OrderNoV2) (*SParentOrder, error)
 	// 获取子订单,orderId
 	GetOrder(context.Context, *OrderNoV2) (*SSingleOrder, error)
-	// 提交交易订单
-	SubmitTradeOrder(context.Context, *TradeOrderSubmitRequest) (*Result, error)
+	// 获取订单和商品项信息
+	// rpc GetOrderAndItems (GetOrderItemsRequest) returns (SSingleOrder) {
+	// }
+	// 根据订单号获取子订单,orderNo
+	// rpc GetSubOrderByNo (String) returns (SSingleOrder) {}
+	// 获取订单商品项,subOrderId
+	// rpc GetSubOrderItems (Int64) returns (ComplexItemsResponse) {
+	// }~
 	// 交易单现金支付,orderId
 	TradeOrderCashPay(context.Context, *Int64) (*Result, error)
 	// 上传交易单发票
@@ -257,6 +258,8 @@ type OrderServiceServer interface {
 	Forbid(context.Context, *OrderNo) (*Result, error)
 	// 获取订单日志
 	LogBytes(context.Context, *OrderNo) (*String, error)
+	// * 获取订单返利列表
+	QueryRebateListList(context.Context, *QueryRebateListRequest) (*QueryRebateListResponse, error)
 	mustEmbedUnimplementedOrderServiceServer()
 }
 
@@ -264,23 +267,17 @@ type OrderServiceServer interface {
 type UnimplementedOrderServiceServer struct {
 }
 
-func (UnimplementedOrderServiceServer) SubmitOrderV1(context.Context, *SubmitOrderRequest) (*StringMap, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitOrderV1 not implemented")
+func (UnimplementedOrderServiceServer) SubmitOrder(context.Context, *SubmitOrderRequest) (*OrderSubmitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitOrder not implemented")
 }
 func (UnimplementedOrderServiceServer) PrepareOrder(context.Context, *PrepareOrderRequest) (*PrepareOrderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PrepareOrder not implemented")
-}
-func (UnimplementedOrderServiceServer) SubmitNormalOrder_(context.Context, *SubmitNormalOrderV2Request) (*NormalOrderSubmitResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitNormalOrder_ not implemented")
 }
 func (UnimplementedOrderServiceServer) GetParentOrder(context.Context, *OrderNoV2) (*SParentOrder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetParentOrder not implemented")
 }
 func (UnimplementedOrderServiceServer) GetOrder(context.Context, *OrderNoV2) (*SSingleOrder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOrder not implemented")
-}
-func (UnimplementedOrderServiceServer) SubmitTradeOrder(context.Context, *TradeOrderSubmitRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitTradeOrder not implemented")
 }
 func (UnimplementedOrderServiceServer) TradeOrderCashPay(context.Context, *Int64) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TradeOrderCashPay not implemented")
@@ -315,6 +312,9 @@ func (UnimplementedOrderServiceServer) Forbid(context.Context, *OrderNo) (*Resul
 func (UnimplementedOrderServiceServer) LogBytes(context.Context, *OrderNo) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LogBytes not implemented")
 }
+func (UnimplementedOrderServiceServer) QueryRebateListList(context.Context, *QueryRebateListRequest) (*QueryRebateListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryRebateListList not implemented")
+}
 func (UnimplementedOrderServiceServer) mustEmbedUnimplementedOrderServiceServer() {}
 
 // UnsafeOrderServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -328,20 +328,20 @@ func RegisterOrderServiceServer(s grpc.ServiceRegistrar, srv OrderServiceServer)
 	s.RegisterService(&OrderService_ServiceDesc, srv)
 }
 
-func _OrderService_SubmitOrderV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _OrderService_SubmitOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubmitOrderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(OrderServiceServer).SubmitOrderV1(ctx, in)
+		return srv.(OrderServiceServer).SubmitOrder(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/OrderService/SubmitOrderV1",
+		FullMethod: "/OrderService/SubmitOrder",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OrderServiceServer).SubmitOrderV1(ctx, req.(*SubmitOrderRequest))
+		return srv.(OrderServiceServer).SubmitOrder(ctx, req.(*SubmitOrderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -360,24 +360,6 @@ func _OrderService_PrepareOrder_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrderServiceServer).PrepareOrder(ctx, req.(*PrepareOrderRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _OrderService_SubmitNormalOrder__Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubmitNormalOrderV2Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OrderServiceServer).SubmitNormalOrder_(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/OrderService/SubmitNormalOrder_",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OrderServiceServer).SubmitNormalOrder_(ctx, req.(*SubmitNormalOrderV2Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -414,24 +396,6 @@ func _OrderService_GetOrder_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrderServiceServer).GetOrder(ctx, req.(*OrderNoV2))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _OrderService_SubmitTradeOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TradeOrderSubmitRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OrderServiceServer).SubmitTradeOrder(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/OrderService/SubmitTradeOrder",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OrderServiceServer).SubmitTradeOrder(ctx, req.(*TradeOrderSubmitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -634,6 +598,24 @@ func _OrderService_LogBytes_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderService_QueryRebateListList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryRebateListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).QueryRebateListList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/OrderService/QueryRebateListList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).QueryRebateListList(ctx, req.(*QueryRebateListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OrderService_ServiceDesc is the grpc.ServiceDesc for OrderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -642,16 +624,12 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*OrderServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SubmitOrderV1",
-			Handler:    _OrderService_SubmitOrderV1_Handler,
+			MethodName: "SubmitOrder",
+			Handler:    _OrderService_SubmitOrder_Handler,
 		},
 		{
 			MethodName: "PrepareOrder",
 			Handler:    _OrderService_PrepareOrder_Handler,
-		},
-		{
-			MethodName: "SubmitNormalOrder_",
-			Handler:    _OrderService_SubmitNormalOrder__Handler,
 		},
 		{
 			MethodName: "GetParentOrder",
@@ -660,10 +638,6 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetOrder",
 			Handler:    _OrderService_GetOrder_Handler,
-		},
-		{
-			MethodName: "SubmitTradeOrder",
-			Handler:    _OrderService_SubmitTradeOrder_Handler,
 		},
 		{
 			MethodName: "TradeOrderCashPay",
@@ -708,6 +682,10 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LogBytes",
 			Handler:    _OrderService_LogBytes_Handler,
+		},
+		{
+			MethodName: "QueryRebateListList",
+			Handler:    _OrderService_QueryRebateListList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

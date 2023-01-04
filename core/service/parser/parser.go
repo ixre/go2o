@@ -19,49 +19,6 @@ import (
 	"github.com/ixre/gof/types"
 )
 
-func ItemDto(src *item.GoodsItem) *proto.SOldItem {
-	it := &proto.SOldItem{
-		ItemId:       src.Id,
-		ProductId:    src.ProductId,
-		PromFlag:     src.PromFlag,
-		CatId:        src.CategoryId,
-		VendorId:     src.VendorId,
-		BrandId:      src.BrandId,
-		ShopId:       src.ShopId,
-		ShopCatId:    src.ShopCatId,
-		ExpressTid:   src.ExpressTid,
-		Title:        src.Title,
-		ShortTitle:   src.ShortTitle,
-		Code:         src.Code,
-		Image:        src.Image,
-		IsPresent:    src.IsPresent,
-		PriceRange:   src.PriceRange,
-		StockNum:     src.StockNum,
-		SaleNum:      src.SaleNum,
-		SkuNum:       src.SkuNum,
-		SkuId:        src.SkuId,
-		Cost:         src.Cost,
-		Price:        src.Price,
-		RetailPrice:  src.RetailPrice,
-		Weight:       src.Weight,
-		Bulk:         src.Bulk,
-		ShelveState:  src.ShelveState,
-		ReviewState:  src.ReviewState,
-		ReviewRemark: src.ReviewRemark,
-		SortNum:      src.SortNum,
-		CreateTime:   src.CreateTime,
-		UpdateTime:   src.UpdateTime,
-		PromPrice:    src.PromPrice,
-	}
-	if src.SkuArray != nil {
-		it.SkuArray = make([]*proto.SSku, len(src.SkuArray))
-		for i, v := range src.SkuArray {
-			it.SkuArray[i] = SkuDto(v)
-		}
-	}
-	return it
-}
-
 func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 	it := &proto.SUnifiedViewItem{
 		ItemId:    src.Id,
@@ -89,8 +46,8 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		//RetailPrice:  float64(src.RetailPrice),
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
-		ShelveState: src.ShelveState,
-		ReviewState: src.ReviewState,
+		ShelveState: src.AuditState,
+		AuditState: src.AuditState,
 		//ReviewRemark: src.ReviewRemark,
 		//SortNum:      src.SortNum,
 		//CreateTime:   src.CreateTime,
@@ -108,9 +65,9 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 
 func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 	it := &proto.SItemDataResponse{
-		ItemId:    src.Id,
-		ProductId: src.ProductId,
-		//PromFlag:     src.PromFlag,
+		ItemId:     src.Id,
+		ProductId:  src.ProductId,
+		ItemFlag:   int32(src.ItemFlag),
 		CategoryId: int64(src.CategoryId),
 		SkuId:      src.SkuId,
 		VendorId:   src.VendorId,
@@ -130,9 +87,9 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		RetailPrice: src.RetailPrice,
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
-		ShelveState:  src.ShelveState,
-		ReviewState:  src.ReviewState,
-		ReviewRemark: src.ReviewRemark,
+		ShelveState: src.ShelveState,
+		AuditState:  src.AuditState,
+		AuditRemark: src.AuditRemark,
 		//CreateTime:   src.CreateTime,
 	}
 	if src.SkuArray != nil {
@@ -144,7 +101,7 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 	return it
 }
 
-func AttrArrayDto(src []*product.AttrValue)[]*proto.SAttr{
+func AttrArrayDto(src []*product.AttrValue) []*proto.SAttr {
 	var dst = make([]*proto.SAttr, len(src))
 	for i, v := range src {
 		dst[i] = &proto.SAttr{
@@ -154,7 +111,7 @@ func AttrArrayDto(src []*product.AttrValue)[]*proto.SAttr{
 			AttrWord: v.AttrWord,
 		}
 	}
-	return dst	
+	return dst
 }
 
 func SkuArrayDto(src []*item.Sku) []*proto.SSku {
@@ -225,38 +182,6 @@ func Sku(src *proto.SSku) *item.Sku {
 		Stock:       src.Stock,
 		SaleNum:     src.SaleNum,
 	}
-}
-
-func ParseTradeOrder(src *proto.SSingleOrder) *order.TradeOrderValue {
-	o := &order.TradeOrderValue{
-		//OrderNo:   src.OrderNo,
-		BuyerId:        int(src.BuyerId),
-		MerchantId:     int(src.SellerId),
-		StoreId:        int(src.ShopId),
-		Subject:        src.Subject,
-		ItemAmount:     int(src.ItemAmount),
-		DiscountAmount: int(src.DiscountAmount),
-		//ExpressFee:     int(src.ExpressFee),
-		//PackageFee:     int(src.PackageFee),
-		//FinalAmount:    int(src.FinalAmount),
-
-		// Consignee: &order.ComplexConsignee{
-		// 	ConsigneeName:   src.Consignee.ConsigneeName,
-		// 	ConsigneePhone:  src.Consignee.ConsigneePhone,
-		// 	ShippingAddress: src.Consignee.ShippingAddress,
-		// },
-		// //BuyerComment: src.BuyerComment,
-		// CreateTime: src.SubmitTime,
-		// State:      src.State,
-		// //Items:        make([]*order.ComplexItem, len(src.Items)),
-		// Data: src.Data,
-	}
-	// if src.Items != nil {
-	// 	for i, v := range src.Items {
-	// 		o.Items[i] = OrderItem(v)
-	// 	}
-	// }
-	return o
 }
 
 func OrderItem(src *proto.SOrderItem) *order.ComplexItem {

@@ -2,9 +2,10 @@ package handler
 
 import (
 	"context"
+	"log"
+
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/repos/clickhouse"
-	"log"
 )
 
 type EventHandler struct {
@@ -40,9 +41,9 @@ func (h EventHandler) HandleWalletLogWriteEvent(data interface{}) {
 		l.AccountNo,
 		l.AccountName,
 		l.BankName,
-		int32(l.ReviewState),
-		l.ReviewRemark,
-		l.ReviewTime,
+		int32(l.AuditState),
+		l.AuditRemark,
+		l.AuditTime,
 		l.Remark,
 		l.UpdateTime,
 		l.WalletId,

@@ -243,7 +243,7 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 		v.Avatar = format.GetResUrl(v.Avatar)
 		rsp.Value[i] = &proto.MemberListSingle{
 			MemberId:      int64(v.MemberId),
-			User:          v.Usr,
+			Username:          v.Usr,
 			Nickname:      v.Name,
 			Portrait:      v.Avatar,
 			Level:         v.Level,
@@ -264,7 +264,7 @@ func (q *queryService) SearchMembers(_ context.Context, r *proto.MemberSearchReq
 	for i, v := range list {
 		ret.Value[i] = &proto.MemberListSingle{
 			MemberId: int64(v.Id),
-			User:     v.User,
+			Username:     v.User,
 			Nickname: v.Name,
 			Portrait: v.Avatar,
 		}
@@ -321,16 +321,16 @@ func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.Paging
 	switch member.AccountType(r.AccountType) {
 	case member.AccountIntegral:
 		total, rows = q.memberQuery.PagedIntegralAccountLog(
-			r.MemberId, r.Params.Begin,
+			r.MemberId, r.ValueFilter, r.Params.Begin,
 			r.Params.End, r.Params.SortBy)
 	case member.AccountBalance:
 		total, rows = q.memberQuery.PagedBalanceAccountLog(
-			r.MemberId, int(r.Params.Begin),
+			r.MemberId, r.ValueFilter, int(r.Params.Begin),
 			int(r.Params.End), r.Params.Where,
 			r.Params.SortBy)
 	case member.AccountWallet:
 		total, rows = q.memberQuery.PagedWalletAccountLog(
-			r.MemberId, int(r.Params.Begin),
+			r.MemberId, r.ValueFilter, int(r.Params.Begin),
 			int(r.Params.End), r.Params.Where,
 			r.Params.Where)
 	}

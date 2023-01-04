@@ -51,15 +51,17 @@ const (
 	// FlagActive 已激活(1)
 	FlagActive = 1 << iota
 	// FlagLocked 已锁定的(2)
-	FlagLocked
+	FlagLocked = 2
 	// FlagTrusted 已认证的(4)
-	FlagTrusted
-	// FlagNoTradePasswd 交易密码未设置(8)
-	FlagNoTradePasswd = 64
+	FlagTrusted = 4
 	// FlagSeller 商户(64)
-	FlagSeller = 128
+	FlagSeller = 64
+	// FlagNoTradePasswd 交易密码未设置(64)
+	FlagNoTradePasswd = 128
+	// FlagStopRebate 禁用返利权限的(8)
+	FlagRebateDisabled = 256
 	// FlagProfileCompleted 已完善的资料(16)
-	FlagProfileCompleted = 256
+	FlagProfileCompleted = 512
 )
 
 type (
@@ -137,7 +139,7 @@ type (
 		// ChangePhone 更改手机号码,不验证手机格式
 		ChangePhone(string) error
 		//　ChangeNickname 修改昵称
-		ChangeNickname(nickname string,limitTime bool)error
+		ChangeNickname(nickname string, limitTime bool) error
 		// ChangeHeadPortrait 设置头像
 		ChangeHeadPortrait(string) error
 		// ProfileCompleted 资料是否完善
@@ -206,8 +208,6 @@ type (
 		Level int
 		// 等级名称
 		LevelName string
-		// 邀请码
-		InviteCode string
 		// 实名认证状态
 		TrustAuthState int
 		// 交易密码是否已设置
@@ -224,27 +224,25 @@ type (
 		// 编号
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 用户编码
-		Code string `db:"code"`
+		UserCode string `db:"user_code"`
 		// 昵称
-		Nickname string `db:"nick_name"`
+		Nickname string `db:"nickname"`
 		// 真实姓名
 		RealName string `db:"real_name"`
 		// 用户名
-		User string `db:"user"`
+		Username string `db:"username"`
 		// 加密盐
 		Salt string `db:"salt"`
 		// 密码
-		Pwd string `db:"pwd"`
+		Password string `db:"password"`
 		// 头像
-		Avatar string `db:"avatar"`
+		Avatar string `db:"portrait"`
 		// 交易密码
 		TradePassword string `db:"trade_pwd"`
 		// 经验值
 		Exp int `db:"exp"`
 		// 等级
 		Level int `db:"level"`
-		// 邀请码
-		InviteCode string `db:"invite_code"`
 		// 高级用户类型
 		PremiumUser int `db:"premium_user"`
 		// 高级用户过期时间
@@ -264,7 +262,7 @@ type (
 		// 校验码过期时间
 		CheckExpires int64 `db:"check_expires"`
 		// 会员标志
-		Flag int `db:"flag"`
+		UserFlag int `db:"user_flag"`
 		// 状态
 		State int `db:"state"`
 		// 登录时间

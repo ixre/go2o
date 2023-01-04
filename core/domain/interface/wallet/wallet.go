@@ -308,7 +308,7 @@ type (
 		// 外部订单号
 		OuterNo string `db:"outer_no"`
 		// 变动金额
-		Value int64 `db:"value"`
+		ChangeValue int64 `db:"change_value"`
 		// 余额
 		Balance int64 `db:"balance"`
 		// 交易手续费
@@ -324,11 +324,11 @@ type (
 		// 提现银行名称
 		BankName string `db:"bank_name"`
 		// 审核状态
-		ReviewState int `db:"review_state"`
+		AuditState int `db:"audit_state"`
 		// 审核备注
-		ReviewRemark string `db:"review_remark"`
+		AuditRemark string `db:"audit_remark"`
 		// 审核时间
-		ReviewTime int64 `db:"review_time"`
+		AuditTime int64 `db:"audit_time"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间

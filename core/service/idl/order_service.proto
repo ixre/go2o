@@ -9,14 +9,11 @@ option java_package = "com.github.go2o.rpc";
 // 订单服务
 service OrderService {
     // 提交订单
-    rpc SubmitOrderV1 (SubmitOrderRequest) returns (StringMap) {
+    rpc SubmitOrder (SubmitOrderRequest) returns (OrderSubmitResponse) {
     }
 
     // 预生成订单
     rpc PrepareOrder (PrepareOrderRequest) returns (PrepareOrderResponse) {
-    }
-    // 提交普通订单
-    rpc SubmitNormalOrder_ (SubmitNormalOrderV2Request) returns (NormalOrderSubmitResponse) {
     }
     //
     // 获取订单信息
@@ -33,11 +30,7 @@ service OrderService {
     // rpc GetSubOrderByNo (String) returns (SSingleOrder) {}
     // 获取订单商品项,subOrderId
     // rpc GetSubOrderItems (Int64) returns (ComplexItemsResponse) {
-    // }
-
-    // 提交交易订单
-    rpc SubmitTradeOrder (TradeOrderSubmitRequest) returns (Result) {
-    }
+    // }~ 
     // 交易单现金支付,orderId
     rpc TradeOrderCashPay (Int64) returns (Result) {
     }

@@ -43,3 +43,42 @@ COMMENT ON COLUMN order_rebate_item.item_name IS '商品名称';
 COMMENT ON COLUMN order_rebate_item.item_image IS '商品图片';
 COMMENT ON COLUMN order_rebate_item.item_amount IS '商品金额';
 COMMENT ON COLUMN order_rebate_item.rebate_amount IS '返利金额';
+
+/* 2023-01-03 19:01 */
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME value TO change_value;
+
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME review_state TO audit_state;
+
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME review_remark TO audit_remark;
+
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME review_time TO audit_time;
+
+ALTER TABLE IF EXISTS public.item_info
+    RENAME prom_flag TO item_flag;
+
+ALTER TABLE IF EXISTS public.item_info
+    RENAME review_state TO audit_state;
+ALTER TABLE IF EXISTS public.item_info
+    RENAME review_remark TO audit_remark;
+
+ALTER TABLE IF EXISTS public.mm_member
+   DROP invite_code;
+
+ALTER TABLE IF EXISTS public.mm_member
+    RENAME "user" TO username;
+
+ALTER TABLE IF EXISTS public.mm_member
+    RENAME pwd TO password;
+ALTER TABLE IF EXISTS public.mm_member
+    RENAME avatar TO portrait;
+ALTER TABLE IF EXISTS public.mm_member
+    RENAME code TO user_code;
+ALTER TABLE IF EXISTS public.mm_member
+    RENAME flag TO user_flag;
+ALTER TABLE IF EXISTS public.mm_member
+    RENAME nick_name TO nickname;
+

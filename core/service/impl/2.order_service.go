@@ -13,7 +13,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"strconv"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
@@ -23,7 +22,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
-	orderImpl "github.com/ixre/go2o/core/domain/order"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
@@ -93,9 +91,10 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 }
 
 // SubmitOrderV1 提交订单
-func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrderRequest) (*proto.StringMap, error) {
+func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRequest) (*proto.OrderSubmitResponse, error) {
+	iData := parser.NewPostedData(r.Data, r)
+	/* 批发订单
 	c := s.cartRepo.GetMyCart(r.BuyerId, cart.KWholesale)
-	iData := orderImpl.NewPostedData(r.Data)
 	rd, err := s.repo.Manager().SubmitWholesaleOrder(c, iData)
 	if err != nil {
 		return &proto.StringMap{Value: map[string]string{
@@ -103,6 +102,53 @@ func (s *orderServiceImpl) SubmitOrderV1(_ context.Context, r *proto.SubmitOrder
 		}}, nil
 	}
 	return &proto.StringMap{Value: rd}, nil
+	*/
+	/*　交易类订单
+	if r.Order.ShopId <= 0 {
+		mch := s.mchRepo.GetMerchant(int(r.Order.SellerId))
+		if mch != nil {
+			sp := mch.ShopManager().GetOnlineShop()
+			if sp != nil {
+				r.Order.ShopId = int64(sp.GetDomainId())
+			} else {
+				r.Order.ShopId = 1
+			}
+		}
+	}
+	io, err := s.manager.SubmitTradeOrder(parser.ParseTradeOrder(r.Order), r.Rate)
+	rs := s.result(err)
+	rs.Data = map[string]string{
+		"OrderId": strconv.Itoa(int(io.GetAggregateRootId())),
+	}
+	if err == nil {
+		// 返回支付单号
+		rs.Data["OrderNo"] = io.OrderNo()
+		rs.Data["PaymentOrderNo"] = io.GetPaymentOrder().TradeNo()
+	}
+	return rs, nil
+	*/
+	_, rd, err := s.manager.SubmitOrder(order.SubmitOrderData{
+		Type:            order.OrderType(r.OrderType),
+		BuyerId:         r.BuyerId,
+		AddressId:       r.AddressId,
+		Subject:         r.Subject,
+		CouponCode:      r.CouponCode,
+		BalanceDiscount: r.BalanceDiscount,
+		AffliteCode:     r.AffliteCode,
+		PostedData:      iData,
+	})
+	ret := &proto.OrderSubmitResponse{}
+	if err != nil {
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	} else {
+		ret.OrderNo = rd.OrderNo
+		ret.MergePay = rd.MergePay
+		ret.TradeNo = rd.TradeNo
+		ret.TradeAmount = rd.TradeAmount
+		ret.PaymentOrderNo = rd.PaymentOrderNo
+	}
+	return ret, nil
 }
 
 // PrepareOrder 预生成订单
@@ -212,23 +258,6 @@ func (s *orderServiceImpl) PrepareOrderWithCoupon_(_ context.Context, r *proto.P
 	return &proto.StringMap{Value: data}, err
 }
 
-func (s *orderServiceImpl) SubmitNormalOrder_(_ context.Context, r *proto.SubmitNormalOrderV2Request) (*proto.NormalOrderSubmitResponse, error) {
-	c := s.getShoppingCart(r.BuyerId, r.CartCode)
-	_, rd, err := s.manager.SubmitOrder(c,
-		r.AddressId, r.CouponCode, r.BalanceDiscount)
-	ret := &proto.NormalOrderSubmitResponse{}
-	if err != nil {
-		ret.ErrCode = 1
-		ret.ErrMsg = err.Error()
-	} else {
-		ret.OrderNo = rd.OrderNo
-		ret.MergePay = rd.MergePay
-		ret.TradeNo = rd.TradeNo
-		ret.TradeAmount = rd.TradeAmount
-	}
-	return ret, nil
-}
-
 // GetParentOrder 根据编号获取订单
 func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV2) (*proto.SParentOrder, error) {
 	io := s.manager.GetOrderByNo(req.Value)
@@ -258,32 +287,6 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, orderNo *proto.OrderNoV2)
 		}
 		return nil, nil
 	*/
-}
-
-// SubmitTradeOrder 提交订单
-func (s *orderServiceImpl) SubmitTradeOrder(_ context.Context, r *proto.TradeOrderSubmitRequest) (*proto.Result, error) {
-	if r.Order.ShopId <= 0 {
-		mch := s.mchRepo.GetMerchant(int(r.Order.SellerId))
-		if mch != nil {
-			sp := mch.ShopManager().GetOnlineShop()
-			if sp != nil {
-				r.Order.ShopId = int64(sp.GetDomainId())
-			} else {
-				r.Order.ShopId = 1
-			}
-		}
-	}
-	io, err := s.manager.SubmitTradeOrder(parser.ParseTradeOrder(r.Order), r.Rate)
-	rs := s.result(err)
-	rs.Data = map[string]string{
-		"OrderId": strconv.Itoa(int(io.GetAggregateRootId())),
-	}
-	if err == nil {
-		// 返回支付单号
-		rs.Data["OrderNo"] = io.OrderNo()
-		rs.Data["PaymentOrderNo"] = io.GetPaymentOrder().TradeNo()
-	}
-	return rs, nil
 }
 
 // TradeOrderCashPay 交易单现金支付
@@ -346,7 +349,7 @@ func (s *orderServiceImpl) BuyerReceived(_ context.Context, r *proto.OrderNo) (*
 }
 
 // Forbid implements 删除订单
-func (s *orderServiceImpl) Forbid(_ context.Context,r *proto.OrderNo) (*proto.Result, error) {
+func (s *orderServiceImpl) Forbid(_ context.Context, r *proto.OrderNo) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
 	err := c.Forbid()
 	return s.error(err), nil

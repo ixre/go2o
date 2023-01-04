@@ -61,6 +61,8 @@ type OrderRepImpl struct {
 	_shopRepo     shop.IShopRepo
 }
 
+var orderRepoMapped = false
+
 func NewOrderRepo(sto storage.Interface, o orm.Orm,
 	mchRepo merchant.IMerchantRepo, payRepo payment.IPaymentRepo,
 	proRepo product.IProductRepo, cartRepo cart.ICartRepo, goodsRepo item.IItemRepo,
@@ -68,6 +70,10 @@ func NewOrderRepo(sto storage.Interface, o orm.Orm,
 	deliverRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo,
 	shipRepo shipment.IShipmentRepo, shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrderRepo {
+	if !orderRepoMapped {
+		_ = o.Mapping(order.AffliteRebate{}, "order_rebate_list")
+		orderRepoMapped = true
+	}
 	return &OrderRepImpl{
 		Storage:       sto,
 		Connector:     o.Connector(),
@@ -469,6 +475,15 @@ func (o *OrderRepImpl) SaveTradeOrder(v *order.TradeOrder) (int, error) {
 	id, err := orm.Save(o._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OrderTradeOrder")
+	}
+	return id, err
+}
+
+// SaveRebateList implements order.IOrderRepo
+func (o *OrderRepImpl) SaveOrderRebate(v *order.AffliteRebate) (int, error) {
+	id, err := orm.Save(o._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:RebateList")
 	}
 	return id, err
 }

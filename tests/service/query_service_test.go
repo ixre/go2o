@@ -14,6 +14,7 @@ func TestPagingMemberAccountLog(t *testing.T) {
 	s := impl.QueryService
 	ret, _ := s.PagingMemberAccountLog(context.TODO(), &proto.PagingAccountLogRequest{
 		MemberId:    702,
+		ValueFilter: 2,
 		AccountType: int32(member.AccountWallet),
 		Params: &proto.SPagingParams{
 			Begin: 0,

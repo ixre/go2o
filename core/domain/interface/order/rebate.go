@@ -1,6 +1,6 @@
 package order
 
-var (
+type (
 	// RebateItem 订单返利详情
 	RebateItem struct {
 		// 编号
@@ -19,8 +19,8 @@ var (
 		RebateAmount int64 `db:"rebate_amount" json:"rebateAmount"`
 	}
 
-	// RebateList 订单返利
-	RebateList struct {
+	// AffliteRebate 订单返利
+	AffliteRebate struct {
 		// 编号
 		Id int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 返利方案Id

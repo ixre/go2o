@@ -120,10 +120,6 @@ func (i *invitationManager) GetInvitationMembers(begin, end int) (
 		i.member.GetAggregateRootId(), begin, end)
 }
 
-// 获取我的邀请码
-func (i *invitationManager) MyCode() string {
-	return i.member.GetValue().InviteCode
-}
 
 // 获取邀请会员下级邀请数量
 func (i *invitationManager) GetSubInvitationNum(memberIdArr []int32) map[int32]int {

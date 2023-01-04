@@ -11,11 +11,16 @@ package item
 import (
 	"errors"
 	"fmt"
+	"math"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -23,9 +28,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var _ item.IGoodsItem = new(itemImpl)
@@ -51,6 +53,31 @@ type itemImpl struct {
 	awaitSaveImages []*item.Image
 }
 
+//todo:??? 去掉依赖promotion.IPromotionRepo
+
+func NewItem(
+	itemRepo product.IProductRepo, catRepo product.ICategoryRepo,
+	pro product.IProduct, value *item.GoodsItem, registryRepo registry.IRegistryRepo,
+	goodsRepo item.IItemRepo, proMRepo promodel.IProductModelRepo,
+	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
+	shopRepo shop.IShopRepo,
+	promRepo promotion.IPromotionRepo) item.IGoodsItem {
+	v := &itemImpl{
+		pro:          pro,
+		value:        value,
+		catRepo:      catRepo,
+		productRepo:  itemRepo,
+		repo:         goodsRepo,
+		proMRepo:     proMRepo,
+		itemWsRepo:   itemWsRepo,
+		promRepo:     promRepo,
+		registryRepo: registryRepo,
+		shopRepo:     shopRepo,
+		expressRepo:  expressRepo,
+	}
+	return v.init()
+}
+
 func (i *itemImpl) Images() []string {
 	if i.images == nil {
 		arr := i.repo.GetItemImages(i.GetAggregateRootId())
@@ -60,6 +87,25 @@ func (i *itemImpl) Images() []string {
 		}
 	}
 	return i.images
+}
+
+// GrantFlag 添加商品标志
+func (i *itemImpl) GrantFlag(flag int) error {
+	f := int(math.Abs(float64(flag)))
+	if f&(f-1) != 0 {
+		return errors.New("not right flag value")
+	}
+	if flag > 0 { // 添加标志
+		if i.value.ItemFlag&f != f {
+			i.value.ItemFlag |= flag
+		}
+	} else { // 去除标志
+		if i.value.ItemFlag&f == f {
+			i.value.ItemFlag ^= f
+		}
+	}
+	_, err := i.Save()
+	return err
 }
 
 func (i *itemImpl) SetImages(images []string) error {
@@ -110,31 +156,6 @@ func (i *itemImpl) SetImages(images []string) error {
 	return nil
 }
 
-//todo:??? 去掉依赖promotion.IPromotionRepo
-
-func NewItem(
-	itemRepo product.IProductRepo, catRepo product.ICategoryRepo,
-	pro product.IProduct, value *item.GoodsItem, registryRepo registry.IRegistryRepo,
-	goodsRepo item.IItemRepo, proMRepo promodel.IProductModelRepo,
-	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
-	shopRepo shop.IShopRepo,
-	promRepo promotion.IPromotionRepo) item.IGoodsItem {
-	v := &itemImpl{
-		pro:          pro,
-		value:        value,
-		catRepo:      catRepo,
-		productRepo:  itemRepo,
-		repo:         goodsRepo,
-		proMRepo:     proMRepo,
-		itemWsRepo:   itemWsRepo,
-		promRepo:     promRepo,
-		registryRepo: registryRepo,
-		shopRepo:     shopRepo,
-		expressRepo:  expressRepo,
-	}
-	return v.init()
-}
-
 func (i *itemImpl) init() item.IGoodsItem {
 	if i.pro != nil {
 		i.value.PromPrice = i.value.Price
@@ -183,21 +204,21 @@ func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 	//item := i.GetItem().Value()
 	gv := i.GetValue()
 	goods := &valueobject.Goods{
-		ProductId:     gv.ProductId,
-		CategoryId:    gv.CategoryId,
-		Title:         gv.Title,
-		GoodsNo:       gv.Code,
-		Image:         gv.Image,
-		RetailPrice:   gv.RetailPrice,
-		Price:         gv.Price,
-		PriceRange:    gv.PriceRange,
-		PromPrice:     gv.Price,
-		GoodsId:       i.GetAggregateRootId(),
-		SkuId:         gv.SkuId,
-		IsPresent:     gv.IsPresent,
-		PromotionFlag: gv.PromFlag,
-		StockNum:      gv.StockNum,
-		SaleNum:       gv.SaleNum,
+		ProductId:   gv.ProductId,
+		CategoryId:  gv.CategoryId,
+		Title:       gv.Title,
+		GoodsNo:     gv.Code,
+		Image:       gv.Image,
+		RetailPrice: gv.RetailPrice,
+		Price:       gv.Price,
+		PriceRange:  gv.PriceRange,
+		PromPrice:   gv.Price,
+		GoodsId:     i.GetAggregateRootId(),
+		SkuId:       gv.SkuId,
+		IsPresent:   gv.IsPresent,
+		ItemFlag:    gv.ItemFlag,
+		StockNum:    gv.StockNum,
+		SaleNum:     gv.SaleNum,
 	}
 	return goods
 }
@@ -229,10 +250,10 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.ShopCatId = v.ShopCatId
 		i.value.IsPresent = v.IsPresent
 		i.value.ProductId = v.ProductId
-		i.value.PromFlag = v.PromFlag
 		i.value.ShopCatId = v.ShopCatId
 		i.value.ExpressTid = v.ExpressTid
 		i.value.Title = v.Title
+		i.value.ItemFlag = v.ItemFlag
 		i.value.ShortTitle = v.ShortTitle
 		i.value.Code = v.Code
 		i.value.SaleNum = v.SaleNum
@@ -353,7 +374,7 @@ func (i *itemImpl) GetSku(skuId int64) *item.Sku {
 // ========== [/ SKU处理结束 ] ===========//
 
 // 从产品中拷贝信息
-//todo: 如后期弄成公共产品，则应保持产品与商品的数据独立。
+// todo: 如后期弄成公共产品，则应保持产品与商品的数据独立。
 func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 	pro := i.productRepo.GetProductValue(v.ProductId)
 	if pro == nil {
@@ -377,7 +398,7 @@ func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 
 // 重置审核状态
 func (i *itemImpl) resetReview() {
-	i.value.ReviewState = enum.ReviewAwaiting
+	i.value.AuditState = enum.ReviewAwaiting
 }
 
 // 检查商品数据是否正确
@@ -575,10 +596,10 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 		return product.ErrNilRejectRemark
 	}
 	i.value.ShelveState = state
-	if i.value.ReviewState != enum.ReviewPass {
-		i.value.ReviewState = enum.ReviewAwaiting
+	if i.value.AuditState != enum.ReviewPass {
+		i.value.AuditState = enum.ReviewAwaiting
 	}
-	i.value.ReviewRemark = remark
+	i.value.AuditRemark = remark
 	_, err := i.Save()
 	return err
 }
@@ -586,7 +607,7 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 // 标记为违规
 func (i *itemImpl) Incorrect(remark string) error {
 	i.value.ShelveState = item.ShelvesIncorrect
-	i.value.ReviewRemark = remark
+	i.value.AuditRemark = remark
 	_, err := i.Save()
 	return err
 }
@@ -594,16 +615,16 @@ func (i *itemImpl) Incorrect(remark string) error {
 // 审核
 func (i *itemImpl) Review(pass bool, remark string) error {
 	if pass {
-		i.value.ReviewState = enum.ReviewPass
+		i.value.AuditState = enum.ReviewPass
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return item.ErrEmptyReviewRemark
 		}
 		i.value.ShelveState = item.ShelvesDown
-		i.value.ReviewState = enum.ReviewReject
+		i.value.AuditState = enum.ReviewReject
 	}
-	i.value.ReviewRemark = remark
+	i.value.AuditRemark = remark
 	_, err := i.Save()
 	return err
 }

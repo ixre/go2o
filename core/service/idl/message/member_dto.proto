@@ -14,10 +14,12 @@ enum EMemberFlag {
   LOCKED = 2;
   // 已认证的
   TRUSTED = 4;
+  // 商户
+  SELLER = 64;
   /** 未设置交易密码 */
-  NO_TRADE_PASSWD = 64;
-  /** 商户 */
-  FlagSeller = 128;
+  NO_TRADE_PASSWD = 128;
+  // 有返利权限的
+  REBATE_DISABLED = 256;
 }
 
 message RegisterMemberRequest {
@@ -33,13 +35,12 @@ message RegisterMemberRequest {
   string email = 5;
   // 用户标志
   int32 flag = 6;
-  // 邀请码
-  string inviteCode = 7;
+  // 邀请人代码
+  string inviterCode = 7;
   // 注册IP
   string regIp = 8;
   // 注册来源
   string regFrom = 9;
-  //map<string, string> extend = 10;
 }
 
 // 登录请求
@@ -69,8 +70,8 @@ message LoginResponse{
 message GrantAccessTokenRequest{
   // 会员编号
   int64 memberId = 1;
-  // 有效时间(单位:s)
-  int64 expire = 2;
+  // 令牌过期时间(单位:s)
+  int64 expiresTime = 2;
 }
 
 // 发放访问令牌响应
@@ -79,8 +80,6 @@ message GrantAccessTokenResponse{
   string error = 1;
   // 访问令牌
   string accessToken = 2;
-  // 令牌过期时间
-  int64 expiresTime = 3;
 }
 
 // 检查令牌请求
@@ -199,7 +198,8 @@ message ChangePhoneRequest {
 message ChangeUserRequest {
   // 会员编号
   int64 memberId = 1;
-  string user = 2;
+  // 用户名
+  string username = 2;
 }
 
 // 更改昵称请求
@@ -397,24 +397,22 @@ message ChangePortraitRequest {
 message SMember {
   /** 编号  */
   sint64 id = 1;
-  /** 用户名 */
-  string user = 2;
-  /** 密码 */
-  string password = 3;
+  /** 会员编码/邀请码  */
+  string userCode = 2;
   /** 会员标志 */
-  sint32 flag = 4;
+  sint32 flag = 3;
+  /** 用户名 */
+  string username = 4;
   /** 经验值 */
   sint64 exp = 5;
   /** 等级  */
   sint32 level = 6;
-  /** 会员编码  */
-  string userCode = 7;
   /** 会员头像 */
-  string portrait = 8;
-  /** 邀请码 */
-  string inviteCode = 9;
+  string portrait = 7;
+  /** 昵称 */
+  string nickname = 8;
   /** 注册IP */
-  string regIp = 10;
+  string regIp = 9;
   /** 注册来源 */
   string regFrom = 11;
   /** 状态 */
@@ -423,18 +421,16 @@ message SMember {
   string phone = 13;
   /** 电子邮箱 */
   string email = 14;
-  /** 昵称 */
-  string nickname = 15;
   /** 真实姓名 */
-  string realName = 16;
+  string realName = 15;
   /** 高级用户级别 */
-  sint32 premiumUser = 17;
+  sint32 premiumUser = 16;
   /** 高级用户过期时间 */
-  sint64 premiumExpires = 18;
+  sint64 premiumExpires = 17;
   /** 注册时间 */
-  int64 regTime = 19;
+  int64 regTime = 18;
   /** 最后登录时间 */
-  int64 lastLoginTime = 20;
+  int64 lastLoginTime = 19;
 }
 
 /** 资料 */
@@ -512,7 +508,7 @@ message SComplexMember {
   sint32 exp = 4;
   sint32 level = 5;
   string levelName = 6;
-  string inviteCode = 7;
+  string userCode = 7;
   sint32 trustAuthState = 8;
   sint32 premiumUser = 9;
   sint32 flag = 10;
@@ -837,7 +833,7 @@ message SInvitationMember {
   // 会员编号
   int64 memberId = 1;
   // 用户名
-  string user = 2;
+  string username = 2;
   // 等级
   int32 level = 3;
   // 头像

@@ -29,6 +29,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("通行证域名协议", DomainPassportProto, "http", "http或https")
 	mergeAdd("API前缀", DomainPrefixApi, "api.", "")
 	mergeAdd("HAPI前缀", DomainPrefixHApi, "hapi.", "")
+	mergeAdd("文件服务器前缀",DomainFileServerPrefix,"/files/","")
 	mergeAdd("静态服务器前缀", DomainPrefixStatic, "static.", "")
 	mergeAdd("图片服务器前缀", DomainPrefixImage, "img.", "")
 	mergeAdd("批发中心移动端", DomainPrefixMobileWholesale, "mwhs.", "")
@@ -119,6 +120,11 @@ func MergeRegistries() []*Registry {
 	mergeAdd("会员批发消费1元产生的积分比例", IntegralRateByWholesaleOrder, "0.00", "")
 	mergeAdd("兑换1元所需要的积分(0不兑换)", IntegralExchangeQuantity, "1000", "")
 	mergeAdd("抵扣1元所需要的积分(0不抵扣)", IntegralDiscountQuantity, "1000", "")
+
+	// 订单
+	mergeAdd("是否启用订单返利", OrderEnableAffliteRebate, "0", "")
+	mergeAdd("全局订单返利比例", OrderGlobalAffliteRebateRate, "0", "")
+
 	// 商户订单
 	mergeAdd("是否必须认证后才可上传商品", MchMustBeTrust, "true", "")
 	mergeAdd("商户订单结算模式", MchOrderSettleMode, "1", "1:按供货价,2:按销售额,3:按单")
