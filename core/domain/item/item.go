@@ -11,6 +11,11 @@ package item
 import (
 	"errors"
 	"fmt"
+	"math"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/domain/interface/item"
@@ -23,9 +28,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var _ item.IGoodsItem = new(itemImpl)
@@ -51,6 +53,33 @@ type itemImpl struct {
 	awaitSaveImages []*item.Image
 }
 
+
+
+//todo:??? 去掉依赖promotion.IPromotionRepo
+
+func NewItem(
+	itemRepo product.IProductRepo, catRepo product.ICategoryRepo,
+	pro product.IProduct, value *item.GoodsItem, registryRepo registry.IRegistryRepo,
+	goodsRepo item.IItemRepo, proMRepo promodel.IProductModelRepo,
+	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
+	shopRepo shop.IShopRepo,
+	promRepo promotion.IPromotionRepo) item.IGoodsItem {
+	v := &itemImpl{
+		pro:          pro,
+		value:        value,
+		catRepo:      catRepo,
+		productRepo:  itemRepo,
+		repo:         goodsRepo,
+		proMRepo:     proMRepo,
+		itemWsRepo:   itemWsRepo,
+		promRepo:     promRepo,
+		registryRepo: registryRepo,
+		shopRepo:     shopRepo,
+		expressRepo:  expressRepo,
+	}
+	return v.init()
+}
+
 func (i *itemImpl) Images() []string {
 	if i.images == nil {
 		arr := i.repo.GetItemImages(i.GetAggregateRootId())
@@ -60,6 +89,26 @@ func (i *itemImpl) Images() []string {
 		}
 	}
 	return i.images
+}
+
+// GrantFlag implements item.IGoodsItem
+func (i *itemImpl) GrantFlag(flag int) error {
+	f := int(math.Abs(float64(flag)))
+	if f&(f-1) != 0 {
+		return errors.New("not right flag value")
+	}
+	own := i.value.ItemFlag & f == f
+	if flag > 0 { // 添加标志
+		if !own {
+		i.value.ItemFlag |= flag
+		}
+	} else { // 去除标志
+		if own {
+		i.value.ItemFlag ^= f
+		}
+	}
+	_, err := m.Save()
+	return err
 }
 
 func (i *itemImpl) SetImages(images []string) error {
@@ -108,31 +157,6 @@ func (i *itemImpl) SetImages(images []string) error {
 	// 清除图片数据
 	i.images = nil
 	return nil
-}
-
-//todo:??? 去掉依赖promotion.IPromotionRepo
-
-func NewItem(
-	itemRepo product.IProductRepo, catRepo product.ICategoryRepo,
-	pro product.IProduct, value *item.GoodsItem, registryRepo registry.IRegistryRepo,
-	goodsRepo item.IItemRepo, proMRepo promodel.IProductModelRepo,
-	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
-	shopRepo shop.IShopRepo,
-	promRepo promotion.IPromotionRepo) item.IGoodsItem {
-	v := &itemImpl{
-		pro:          pro,
-		value:        value,
-		catRepo:      catRepo,
-		productRepo:  itemRepo,
-		repo:         goodsRepo,
-		proMRepo:     proMRepo,
-		itemWsRepo:   itemWsRepo,
-		promRepo:     promRepo,
-		registryRepo: registryRepo,
-		shopRepo:     shopRepo,
-		expressRepo:  expressRepo,
-	}
-	return v.init()
 }
 
 func (i *itemImpl) init() item.IGoodsItem {

@@ -349,7 +349,7 @@ type (
 		// 产品编号
 		ProductId int64 `db:"product_id"`
 		// 商品标志
-		ItemFlag int32 `db:"item_flag"`
+		ItemFlag int `db:"item_flag"`
 		// 分类编号
 		CategoryId int32 `db:"cat_id"`
 		// 供货商编号
