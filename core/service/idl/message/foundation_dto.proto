@@ -48,8 +48,8 @@ message GetAreaNamesRequest {
 }
 
 message UserPwd {
-    string user = 1;
-    string pwd = 2;
+    string username = 1;
+    string password = 2;
 }
 
 // 单点登录应用

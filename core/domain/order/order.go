@@ -147,7 +147,7 @@ func (o *baseOrderImpl) Submit() error {
 		o.baseValue.Status = order.StatAwaitingPayment
 	}
 	m := o.Buyer().GetValue()
-	o.baseValue.BuyerUser = m.User
+	o.baseValue.BuyerUser = m.Username
 	o.baseValue.CreateTime = time.Now().Unix()
 	return o.saveOrder()
 }
@@ -294,7 +294,7 @@ func FactoryOrder(v *order.Order, manager order.IOrderManager,
 		return newWholesaleOrder(b, repo, itemRepo,
 			expressRepo, payRepo, shipRepo, mchRepo, shopRepo, valRepo, registryRepo)
 	case order.TTrade:
-		return newTradeOrder(b, payRepo, mchRepo, shopRepo,valRepo, registryRepo)
+		return newTradeOrder(b, payRepo, mchRepo, shopRepo, valRepo, registryRepo)
 	}
 	return nil
 }

@@ -126,7 +126,7 @@ func (s *memberService) GetMember(_ context.Context, id *proto.MemberIdRequest) 
 	if iv != nil {
 		v := iv.GetValue()
 		if len(v.TradePassword) == 0 {
-			v.Flag |= member.FlagNoTradePasswd
+			v.UserFlag |= member.FlagNoTradePasswd
 		}
 		return s.parseMemberDto(&v), nil
 	}
@@ -184,7 +184,7 @@ func (s *memberService) GetToken(_ context.Context, r *proto.GetTokenRequest) (*
 	if r.Reset_ || (pubToken == "" && r.MemberId > 0) {
 		m := s.getMemberValue(r.MemberId)
 		if m != nil {
-			return &proto.String{Value: md.ResetToken(r.MemberId, m.Pwd)}, nil
+			return &proto.String{Value: md.ResetToken(r.MemberId, m.Password)}, nil
 		}
 	}
 	return &proto.String{Value: pubToken}, nil
@@ -407,7 +407,7 @@ func (s *memberService) ChangeUser(_ context.Context, r *proto.ChangeUserRequest
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		if err = m.ChangeUser(r.User); err == nil {
+		if err = m.ChangeUser(r.Username); err == nil {
 			return s.success(nil), nil
 		}
 	}
@@ -492,9 +492,9 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	}
 	salt := util.RandString(6)
 	v := &member.Member{
-		User:     r.Username,
+		Username: r.Username,
 		Salt:     salt,
-		Pwd:      domain.Sha1Pwd(r.Password, salt),
+		Password: domain.Sha1Pwd(r.Password, salt),
 		Nickname: r.Nickname,
 		RealName: "",
 		Avatar:   "", //todo: default avatar
@@ -502,10 +502,10 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		Email:    r.Email,
 		RegFrom:  r.RegFrom,
 		RegIp:    r.RegIp,
-		Flag:     int(r.Flag),
+		UserFlag: int(r.Flag),
 	}
 	// 验证邀请码
-	inviterId, err := s.repo.GetManager().CheckInviteRegister(r.InviteCode)
+	inviterId, err := s.repo.GetManager().CheckInviteRegister(r.InviterCode)
 	if err != nil {
 		return &proto.RegisterResponse{
 			ErrCode: 2,
@@ -685,10 +685,10 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 	}
 	im := s.repo.GetMember(memberId)
 	val := im.GetValue()
-	if val.Pwd != domain.Sha1Pwd(pwd, val.Salt) {
+	if val.Password != domain.Sha1Pwd(pwd, val.Salt) {
 		return nil, 1, de.ErrCredential
 	}
-	if val.Flag&member.FlagLocked == member.FlagLocked {
+	if val.UserFlag&member.FlagLocked == member.FlagLocked {
 		return nil, 3, member.ErrMemberLocked
 	}
 	if update {
@@ -709,24 +709,24 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 		return ret, nil
 	} else {
 		ret.MemberId = v.Id
-		ret.UserCode = v.Code
+		ret.UserCode = v.UserCode
 	}
 	return ret, nil
 }
 
 // GrantAccessToken 发放访问令牌
 func (s *memberService) GrantAccessToken(_ context.Context, request *proto.GrantAccessTokenRequest) (*proto.GrantAccessTokenResponse, error) {
-	if request.Expire <= 0 {
+	now := time.Now().Unix()
+	if request.ExpiresTime <= now {
 		return &proto.GrantAccessTokenResponse{Error: "令牌有效时间错误"}, nil
 	}
 	im := s.repo.GetMember(request.MemberId)
 	if im == nil {
 		return &proto.GrantAccessTokenResponse{Error: member.ErrNoSuchMember.Error()}, nil
 	}
-	expiresTime := time.Now().Unix() + request.Expire
 	// 创建token并返回
 	claims := api.CreateClaims(strconv.Itoa(int(request.MemberId)), "go2o",
-		"go2o-api-jwt", expiresTime).(jwt.MapClaims)
+		"go2o-api-jwt", request.ExpiresTime).(jwt.MapClaims)
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
 		log.Println("[ go2o][ error]: grant access token error ", err.Error())
@@ -739,7 +739,6 @@ func (s *memberService) GrantAccessToken(_ context.Context, request *proto.Grant
 	}
 	return &proto.GrantAccessTokenResponse{
 		AccessToken: token,
-		ExpiresTime: expiresTime,
 	}, nil
 }
 
@@ -803,8 +802,8 @@ func (s *memberService) renewAccessToken(request *proto.CheckAccessTokenRequest,
 		}
 	}
 	ret, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
-		MemberId: aud,
-		Expire:   request.RenewExpiresTime,
+		MemberId:    aud,
+		ExpiresTime: request.RenewExpiresTime,
 	})
 	if len(ret.Error) > 0 {
 		return &proto.CheckAccessTokenResponse{
@@ -1209,12 +1208,12 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 		num := iv.GetSubInvitationNum(arr)
 		for i := 0; i < l; i++ {
 			rows[i].InvitationNum = num[rows[i].MemberId]
-			rows[i].Avatar = format.GetResUrl(rows[i].Avatar)
+			rows[i].Portrait = format.GetResUrl(rows[i].Portrait)
 			ret.Data = append(ret.Data, &proto.SInvitationMember{
 				MemberId: int64(rows[i].MemberId),
-				User:     rows[i].User,
+				Username: rows[i].Username,
 				Level:    rows[i].Level,
-				Portrait: rows[i].Avatar,
+				Portrait: rows[i].Portrait,
 				Nickname: rows[i].Nickname,
 				Phone:    rows[i].Phone,
 				RegTime:  rows[i].RegTime,
@@ -1581,8 +1580,8 @@ func (s *memberService) parseLevelDto(src *member.Level) *proto.SMemberLevel {
 func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 	return &proto.SMember{
 		Id:             src.Id,
-		User:           src.User,
-		UserCode:       src.Code,
+		Username:       src.Username,
+		UserCode:       src.UserCode,
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
@@ -1590,7 +1589,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegIp:          src.RegIp,
 		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
-		Flag:           int32(src.Flag),
+		Flag:           int32(src.UserFlag),
 		Portrait:       src.Avatar,
 		Phone:          src.Phone,
 		Email:          src.Email,

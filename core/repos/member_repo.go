@@ -179,7 +179,7 @@ func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
 // 根据用户名获取会员
 func (m *MemberRepoImpl) GetMemberByUser(user string) *member.Member {
 	e := &member.Member{}
-	err := m.o.GetBy(e, "\"user\" = $1", user)
+	err := m.o.GetBy(e, "username = $1", user)
 	if err == nil {
 		return e
 	}
@@ -200,7 +200,7 @@ func (m *MemberRepoImpl) getId(field string, value string) int64 {
 
 // 根据编码获取会员
 func (m *MemberRepoImpl) GetMemberIdByCode(code string) int64 {
-	return m.getId("code", code)
+	return m.getId("user_code", code)
 }
 
 // 根据手机号码获取会员
@@ -216,11 +216,6 @@ func (m *MemberRepoImpl) GetMemberValueByPhone(phone string) *member.Member {
 // 根据手机号获取会员编号
 func (m *MemberRepoImpl) GetMemberIdByPhone(phone string) int64 {
 	return int64(m.getId("phone", phone))
-}
-
-// 根据邀请码获取会员编号
-func (m *MemberRepoImpl) GetMemberIdByInviteCode(code string) int64 {
-	return int64(m.getId("invite_code", code))
 }
 
 // 根据邮箱地址获取会员编号
@@ -334,7 +329,7 @@ func (m *MemberRepoImpl) DeleteMember(id int64) error {
 }
 
 func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
-	return m.getId("\"user\"", user)
+	return m.getId("username", user)
 }
 
 // 创建会员
@@ -546,7 +541,7 @@ func (m *MemberRepoImpl) GetLevelValueByExp(mchId int64, exp int64) int {
 // 用户名是否存在
 func (m *MemberRepoImpl) CheckUserExist(user string, memberId int64) bool {
 	var c int
-	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE user= $1 AND id <> $2 LIMIT 1",
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE username= $1 AND id <> $2 LIMIT 1",
 		&c, user, memberId)
 	return c != 0
 }
@@ -562,7 +557,7 @@ func (m *MemberRepoImpl) CheckPhoneBind(phone string, memberId int64) bool {
 // 手机号码是否使用
 func (m *MemberRepoImpl) CheckNicknameIsUse(phone string, memberId int64) bool {
 	var c int
-	m.Connector.ExecScalar("SELECT COUNT(1) FROM mm_member WHERE nick_name= $1 AND id <> $2",
+	m.Connector.ExecScalar("SELECT COUNT(1) FROM mm_member WHERE nickname= $1 AND id <> $2",
 		&c, phone, memberId)
 	return c != 0
 }
@@ -633,14 +628,14 @@ func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) 
 	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_member WHERE id IN
 	 (SELECT member_id FROM mm_relation WHERE inviter_id= $1)`, &total, memberId)
 	if total > 0 {
-		m.Connector.Query(`SELECT id,mm_member.user,level,avatar,real_name,phone,reg_time FROM mm_member 
+		m.Connector.Query(`SELECT id,username,level,portrait,real_name,phone,reg_time FROM mm_member 
 				WHERE id IN (SELECT member_id FROM
              mm_relation WHERE inviter_id= $1)
              ORDER BY level DESC,id LIMIT $3 OFFSET $2`,
 			func(rs *sql.Rows) {
 				for rs.Next() {
 					e := &dto.InvitationMember{}
-					rs.Scan(&e.MemberId, &e.User, &e.Level, &e.Avatar, &e.Nickname, &e.Phone, &e.RegTime)
+					rs.Scan(&e.MemberId, &e.Username, &e.Level, &e.Portrait, &e.Nickname, &e.Phone, &e.RegTime)
 					arr = append(arr, e)
 				}
 			}, memberId, begin, end-begin)
@@ -656,7 +651,7 @@ func (m *MemberRepoImpl) GetSubInvitationNum(memberId int64, memberIdArr []int32
 	memberIds := format.I32ArrStrJoin(memberIdArr)
 	var d = make(map[int32]int)
 	err := m.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
-		"(SELECT COUNT(1) FROM mm_relation r2 WHERE r2.inviter_id=r1.member_id)"+
+		"(SELECT COUNT(1) FROM mm_relation r2 WHERE r2.inviter_id = r1.member_id)"+
 		"as num FROM mm_relation r1 WHERE r1.member_id IN(%s)", memberIds),
 		func(rows *sql.Rows) {
 			var id int32
@@ -674,7 +669,7 @@ func (m *MemberRepoImpl) GetSubInvitationNum(memberId int64, memberIdArr []int32
 func (m *MemberRepoImpl) GetInvitationMeMember(memberId int64) *member.Member {
 	var d = new(member.Member)
 	err := m.o.GetByQuery(d,
-		"SELECT * FROM mm_member WHERE id =(SELECT inviter_id FROM mm_relation  WHERE id= $1)",
+		"SELECT * FROM mm_member WHERE id = (SELECT inviter_id FROM mm_relation  WHERE id= $1)",
 		memberId)
 
 	if err != nil {

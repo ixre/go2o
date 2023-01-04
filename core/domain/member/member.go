@@ -53,7 +53,7 @@ type memberImpl struct {
 }
 
 func (m *memberImpl) ContainFlag(f int) bool {
-	return m.value.Flag&f == f
+	return m.value.UserFlag&f == f
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member,
@@ -92,7 +92,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 		TrustAuthState:      tr.ReviewState,
 		TradePasswordHasSet: mv.TradePassword != "",
 		PremiumUser:         mv.PremiumUser,
-		Flag:                mv.Flag,
+		Flag:                mv.UserFlag,
 		UpdateTime:          mv.UpdateTime,
 	}
 	return s
@@ -328,12 +328,12 @@ func (m *memberImpl) GrantFlag(flag int) error {
 		return errors.New("disallow grant system flag, flag must large than or equals 128")
 	}
 	if flag > 0 { // 添加标志
-		if m.value.Flag&f != f {
-			m.value.Flag |= flag
+		if m.value.UserFlag&f != f {
+			m.value.UserFlag |= flag
 		}
 	} else { // 去除标志
-		if m.value.Flag&f == f {
-			m.value.Flag ^= f
+		if m.value.UserFlag&f == f {
+			m.value.UserFlag ^= f
 		}
 	}
 	_, err := m.Save()
@@ -345,7 +345,7 @@ func (m *memberImpl) TestFlag(flag int) bool {
 	if f&(f-1) != 0 {
 		return false
 	}
-	return m.value.Flag&f == f
+	return m.value.UserFlag&f == f
 }
 
 // ReviewLevelUp 审核升级请求
@@ -422,12 +422,12 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 
 // 更换用户名
 func (m *memberImpl) ChangeUser(user string) error {
-	if user == m.value.User {
+	if user == m.value.Username {
 		return member.ErrSameUser
 	}
-	err := m.checkUser(m.value.User)
+	err := m.checkUser(m.value.Username)
 	if err == nil {
-		m.value.User = user
+		m.value.Username = user
 		_, err = m.Save()
 	}
 	return err
@@ -460,7 +460,7 @@ func (m *memberImpl) Active() error {
 	if m.ContainFlag(member.FlagLocked) {
 		return member.ErrMemberLocked
 	}
-	m.value.Flag |= member.FlagActive
+	m.value.UserFlag |= member.FlagActive
 	_, err := m.Save()
 	return err
 }
@@ -470,7 +470,7 @@ func (m *memberImpl) Lock(minutes int, remark string) error {
 	if m.ContainFlag(member.FlagLocked) {
 		return nil
 	}
-	m.value.Flag |= member.FlagLocked
+	m.value.UserFlag |= member.FlagLocked
 	_, err := m.Save()
 	if err == nil {
 		now := time.Now().Unix()
@@ -508,7 +508,7 @@ func (m *memberImpl) Unlock() error {
 	if !m.ContainFlag(member.FlagLocked) {
 		return nil
 	}
-	m.value.Flag ^= member.FlagLocked
+	m.value.UserFlag ^= member.FlagLocked
 	_, err := m.Save()
 	if err == nil {
 		err = m.repo.DeleteLockInfos(m.GetAggregateRootId())
@@ -531,13 +531,13 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 		}
 		// 添加未设置交易密码的标志
 		if len(v.TradePassword) == 0 {
-			v.Flag |= member.FlagNoTradePasswd
+			v.UserFlag |= member.FlagNoTradePasswd
 		}
 		// 设置VIP用户信息
 		v.PremiumUser = member.PremiumNormal
 		v.PremiumExpires = 0
 		// 创建一个用户编码/邀请码
-		v.Code = m.generateMemberCode()
+		v.UserCode = m.generateMemberCode()
 		id, err1 := m.repo.SaveMember(v)
 		if err1 == nil {
 			m.value.Id = id
@@ -589,15 +589,15 @@ func (m *memberImpl) prepare() (err error) {
 	phoneAsUser := m.registryRepo.Get(registry.MemberRegisterPhoneAsUser).BoolValue()
 	mustBindPhone := m.registryRepo.Get(registry.MemberRegisterMustBindPhone).BoolValue()
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
-	m.value.User = strings.TrimSpace(m.value.User)
-	if m.value.User != "" || !phoneAsUser {
-		if err = m.checkUser(m.value.User); err != nil {
+	m.value.Username = strings.TrimSpace(m.value.Username)
+	if m.value.Username != "" || !phoneAsUser {
+		if err = m.checkUser(m.value.Username); err != nil {
 			return err
 		}
 	}
 	// 验证密码
-	m.value.Pwd = strings.TrimSpace(m.value.Pwd)
-	if len(m.value.Pwd) < 6 {
+	m.value.Password = strings.TrimSpace(m.value.Password)
+	if len(m.value.Password) < 6 {
 		return de.ErrPwdLength
 	}
 	// 验证手机
@@ -620,10 +620,10 @@ func (m *memberImpl) prepare() (err error) {
 		if m.repo.CheckUserExist(m.value.Phone, 0) {
 			return member.ErrPhoneHasBind
 		}
-		m.value.User = m.value.Phone
+		m.value.Username = m.value.Phone
 	}
 	// 用户名全小写
-	m.value.User = strings.ToLower(m.value.User)
+	m.value.Username = strings.ToLower(m.value.Username)
 
 	// 验证IM
 	//pro.Im = strings.TrimSpace(pro.Im)
@@ -635,7 +635,7 @@ func (m *memberImpl) prepare() (err error) {
 	m.value.RealName = strings.TrimSpace(m.value.RealName)
 	//如果未设置昵称,则默认为用户名
 	if len(m.value.Nickname) == 0 {
-		m.value.Nickname = "User" + m.value.User
+		m.value.Nickname = "User" + m.value.Username
 	}
 	m.value.Avatar = strings.TrimSpace(m.value.Avatar)
 	if len(m.value.Avatar) == 0 {

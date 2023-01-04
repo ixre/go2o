@@ -153,9 +153,9 @@ type (
 		// 会员编号
 		MemberId int64 `db:"member_id"`
 		// 用户名
-		User string `db:"user"`
+		Username string `db:"user"`
 		// 密码
-		Pwd string `db:"pwd"`
+		Password string `db:"pwd"`
 		// 盐
 		Salt string `db:"salt"`
 		// 商户名称号

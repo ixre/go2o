@@ -74,7 +74,7 @@ func (a *accountImpl) initWallet() {
 	//　创建新的钱包
 	a.wallet = a.walletRepo.CreateWallet(
 		a.member.GetAggregateRootId(),
-		a.member.value.User,
+		a.member.value.Username,
 		1, "MemberWallet", flag)
 	if _, err := a.wallet.Save(); err != nil {
 		log.Println("[ go2o][ member]: create wallet failed,error", err.Error())
@@ -1079,7 +1079,7 @@ func (a *accountImpl) getMemberName(m member.IMember) string {
 		tr.ReviewState == int(enum.ReviewPass) {
 		return tr.RealName
 	} else {
-		return m.GetValue().User
+		return m.GetValue().Username
 	}
 }
 

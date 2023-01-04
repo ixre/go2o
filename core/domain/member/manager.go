@@ -97,22 +97,22 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	mustBindPhone := m.registryRepo.Get(registry.MemberRegisterMustBindPhone).BoolValue()
 	needIm := m.registryRepo.Get(registry.MemberRegisterNeedIm).BoolValue()
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
-	v.User = strings.TrimSpace(v.User)
-	if v.User != "" || !phoneAsUser {
-		if len(v.User) < 6 {
+	v.Username = strings.TrimSpace(v.Username)
+	if v.Username != "" || !phoneAsUser {
+		if len(v.Username) < 6 {
 			return 0, member.ErrUserLength
 		}
-		if !userRegex.MatchString(v.User) {
+		if !userRegex.MatchString(v.Username) {
 			return 0, member.ErrUserValidErr
 		}
-		if m.rep.CheckUserExist(v.User, 0) {
+		if m.rep.CheckUserExist(v.Username, 0) {
 			return 0, member.ErrUserExist
 		}
 	}
 
 	// 验证密码
-	v.Pwd = strings.TrimSpace(v.Pwd)
-	if len(v.Pwd) < 6 {
+	v.Password = strings.TrimSpace(v.Password)
+	if len(v.Password) < 6 {
 		return 0, de.ErrPwdLength
 	}
 
@@ -137,7 +137,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 		if m.rep.CheckUserExist(pro.Phone, 0) {
 			return 0, member.ErrPhoneHasBind
 		}
-		v.User = pro.Phone
+		v.Username = pro.Phone
 	}
 
 	// 验证IM
@@ -151,7 +151,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	pro.Avatar = strings.TrimSpace(pro.Avatar)
 	if len(pro.Name) == 0 {
 		//如果未设置昵称,则默认为用户名
-		pro.Name = v.User
+		pro.Name = v.Username
 	}
 	if len(pro.Avatar) == 0 {
 		pro.Avatar = "init/avatar.gif"

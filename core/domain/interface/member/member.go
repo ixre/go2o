@@ -224,19 +224,19 @@ type (
 		// 编号
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 用户编码
-		Code string `db:"code"`
+		UserCode string `db:"user_code"`
 		// 昵称
-		Nickname string `db:"nick_name"`
+		Nickname string `db:"nickname"`
 		// 真实姓名
 		RealName string `db:"real_name"`
 		// 用户名
-		User string `db:"user"`
+		Username string `db:"username"`
 		// 加密盐
 		Salt string `db:"salt"`
 		// 密码
-		Pwd string `db:"pwd"`
+		Password string `db:"password"`
 		// 头像
-		Avatar string `db:"avatar"`
+		Avatar string `db:"portrait"`
 		// 交易密码
 		TradePassword string `db:"trade_pwd"`
 		// 经验值
@@ -262,7 +262,7 @@ type (
 		// 校验码过期时间
 		CheckExpires int64 `db:"check_expires"`
 		// 会员标志
-		Flag int `db:"flag"`
+		UserFlag int `db:"user_flag"`
 		// 状态
 		State int `db:"state"`
 		// 登录时间
