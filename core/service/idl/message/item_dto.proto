@@ -248,6 +248,8 @@ message SUnifiedViewItem {
   int32 stockNum = 18;
   // 已售件数
   int32 saleNum = 19;
+  // 是否分销
+  bool isAffilite = 28;
 
   //todo: 对比SGoods多出的字段
   sint64 brandId = 20;
@@ -258,8 +260,9 @@ message SUnifiedViewItem {
   sint64 updateTime = 25;
   repeated SSku skuArray = 26;
   repeated SLevelPrice levelPrices = 27;
-  SItemViewData viewData = 28;
-  map<string, string> data = 29;
+  
+  SItemViewData viewData = 30;
+  map<string, string> data = 31;
 }
 
 
