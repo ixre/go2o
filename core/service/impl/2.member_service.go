@@ -352,7 +352,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		MemberId:    r.MemberId,
 		OuterNo:     v.OuterNo,
 		Kind:        int32(v.Kind),
-		Title:       v.Title,
+		Title:       v.Subject,
 		Amount:      float64(v.ChangeValue),
 		TradeFee:    float64(v.ProcedureFee),
 		ReviewState: int32(v.AuditState),

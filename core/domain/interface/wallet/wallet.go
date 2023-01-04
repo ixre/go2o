@@ -302,7 +302,7 @@ type (
 		// 业务类型
 		Kind int `db:"kind"`
 		// 标题
-		Title string `db:"title"`
+		Subject string `db:"subject"`
 		// 外部通道
 		OuterChan string `db:"outer_chan"`
 		// 外部订单号
