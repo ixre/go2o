@@ -200,7 +200,7 @@ func (p *productService) SaveProduct(_ context.Context, r *proto.SProduct) (*pro
 			return ret, nil
 		}
 		// 修改货品时，不会修改详情
-		v.Description = pro.GetValue().Description
+		//v.Description = pro.GetValue().Description
 	} else {
 		pro = p.productRepo.CreateProduct(v)
 	}

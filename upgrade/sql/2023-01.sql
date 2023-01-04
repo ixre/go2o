@@ -56,3 +56,6 @@ ALTER TABLE IF EXISTS public.wal_wallet_log
 
 ALTER TABLE IF EXISTS public.wal_wallet_log
     RENAME review_time TO audit_time;
+
+ALTER TABLE IF EXISTS public.item_info
+    RENAME prom_flag TO item_flag;

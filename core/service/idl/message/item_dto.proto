@@ -248,6 +248,8 @@ message SUnifiedViewItem {
   int32 stockNum = 18;
   // 已售件数
   int32 saleNum = 19;
+  // 是否分销
+  bool isAffilite = 28;
 
   //todo: 对比SGoods多出的字段
   sint64 brandId = 20;
@@ -258,8 +260,9 @@ message SUnifiedViewItem {
   sint64 updateTime = 25;
   repeated SSku skuArray = 26;
   repeated SLevelPrice levelPrices = 27;
-  SItemViewData viewData = 28;
-  map<string, string> data = 29;
+  
+  SItemViewData viewData = 30;
+  map<string, string> data = 31;
 }
 
 
@@ -286,43 +289,6 @@ message SaveItemResponse {
   int64 itemId = 3;
 }
 
-
-// 完整的商品信息
-message SOldItem {
-  sint64 itemId = 1;
-  sint64 productId = 2;
-  sint32 promFlag = 3;
-  sint32 catId = 4;
-  sint64 vendorId = 5;
-  sint32 brandId = 6;
-  sint64 shopId = 7;
-  sint32 ShopCatId = 8;
-  sint32 expressTid = 9;
-  string title = 10;
-  string shortTitle = 11;
-  string code = 12;
-  string image = 13;
-  sint32 isPresent = 14;
-  string priceRange = 15;
-  sint32 stockNum = 16;
-  sint32 saleNum = 17;
-  sint32 skuNum = 18;
-  sint64 skuId = 19;
-  int64 cost = 20;
-  int64 price = 21;
-  int64 retailPrice = 22;
-  sint32 weight = 23;
-  sint32 bulk = 24;
-  sint32 shelveState = 25;
-  sint32 reviewState = 26;
-  string reviewRemark = 27;
-  sint32 sortNum = 28;
-  sint64 createTime = 29;
-  sint64 updateTime = 30;
-  int64 promPrice = 31;
-  repeated SSku skuArray = 32;
-  map<string, string> data = 33;
-}
 
 message ItemLabelListResponse {
   repeated SItemLabel value = 1;

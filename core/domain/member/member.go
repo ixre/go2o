@@ -15,7 +15,6 @@ import (
 	"errors"
 	"math"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -328,17 +327,14 @@ func (m *memberImpl) GrantFlag(flag int) error {
 	if f < 128 {
 		return errors.New("disallow grant system flag, flag must large than or equals 128")
 	}
-	own := m.value.Flag&f == f
 	if flag > 0 { // 添加标志
-		if own {
-			return errors.New("member has granted flag:" + strconv.Itoa(flag))
+		if m.value.Flag&f != f {
+			m.value.Flag |= flag
 		}
-		m.value.Flag |= flag
 	} else { // 去除标志
-		if !own {
-			return errors.New("member not grant flag:" + strconv.Itoa(flag))
+		if m.value.Flag&f == f {
+			m.value.Flag ^= f
 		}
-		m.value.Flag ^= f
 	}
 	_, err := m.Save()
 	return err

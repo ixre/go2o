@@ -269,45 +269,6 @@ func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
 	return total, arr
 }
 
-// 获取上架商品数据（分页）
-func (s *itemService) SearchOnShelvesItem(itemType int32, word string, start,
-	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
-
-	switch itemType {
-	case item.ItemNormal:
-		return s.searchOnShelveItem(word, start, end, where, sortBy)
-	case item.ItemWholesale:
-		return s.searchOnShelveItemForWholesale(word, start, end, where, sortBy)
-	}
-	return 0, []*proto.SOldItem{}
-}
-
-func (s itemService) searchOnShelveItem(word string, start,
-	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
-	total, list := s.itemQuery.SearchOnShelvesItem(word,
-		start, end, where, sortBy)
-	arr := make([]*proto.SOldItem, len(list))
-	for i, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ItemDto(v)
-	}
-	return total, arr
-}
-
-func (s itemService) searchOnShelveItemForWholesale(word string, start,
-	end int32, where, sortBy string) (int32, []*proto.SOldItem) {
-	total, list := s.itemQuery.SearchOnShelvesItemForWholesale(word,
-		start, end, where, sortBy)
-	arr := make([]*proto.SOldItem, len(list))
-	for i, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
-		dto := parser.ItemDto(v)
-		s.attachWholesaleItemData(dto)
-		arr[i] = dto
-
-	}
-	return total, arr
-}
 
 // 附加批发商品的信息
 func (s *itemService) attachWholesaleItemData(dto *proto.SOldItem) {
