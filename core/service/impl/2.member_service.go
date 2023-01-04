@@ -718,7 +718,9 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 func (s *memberService) GrantAccessToken(_ context.Context, request *proto.GrantAccessTokenRequest) (*proto.GrantAccessTokenResponse, error) {
 	now := time.Now().Unix()
 	if request.ExpiresTime <= now {
-		return &proto.GrantAccessTokenResponse{Error: "令牌有效时间错误"}, nil
+		return &proto.GrantAccessTokenResponse{
+			Error: fmt.Sprintf("令牌有效时间已过有效期: value=%d", request.ExpiresTime),
+		}, nil
 	}
 	im := s.repo.GetMember(request.MemberId)
 	if im == nil {
