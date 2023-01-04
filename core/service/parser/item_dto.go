@@ -129,7 +129,6 @@ func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
 	dst := &item.GoodsItem{
 		Id:         src.ItemId,
 		ProductId:  src.ProductId,
-		PromFlag:   -1, //todo:??
 		CategoryId: int32(src.CategoryId),
 		VendorId:   src.VendorId,
 		BrandId:    int32(src.BrandId),

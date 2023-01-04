@@ -65,8 +65,8 @@ message SGoods {
   int64 goodsId = 14;
   int64 skuId = 15;
   bool isPresent = 16;
-  // 促销标志
-  int32 promotionFlag = 17;
+  // 商品标志
+  int32 itemFlag = 17;
   // 库存
   int32 stockNum = 18;
   // 已售件数
@@ -230,36 +230,36 @@ message SUnifiedViewItem {
   // 图片
   string image = 9;
   // 图片
-  repeated string images = 30;
+  repeated string images = 10;
   // 定价
-  int64 retailPrice = 10;
+  int64 retailPrice = 11;
   // 销售价
-  int64 price = 11;
+  int64 price = 12;
   // 促销价
-  int64 promPrice = 12;
+  int64 promPrice = 13;
   // 价格区间
-  string priceRange = 13;
-  int64 goodsId = 14;
-  int64 skuId = 15;
-  bool isPresent = 16;
+  string priceRange = 14;
+  int64 goodsId = 15;
+  int64 skuId = 16;
+  bool isPresent = 17;
   // 促销标志
-  int32 promotionFlag = 17;
+  int32 promotionFlag = 18;
   // 库存
-  int32 stockNum = 18;
+  int32 stockNum = 19;
   // 已售件数
-  int32 saleNum = 19;
+  int32 saleNum = 20;
   // 是否分销
-  bool isAffilite = 28;
+  bool isAffilite = 21;
 
   //todo: 对比SGoods多出的字段
-  sint64 brandId = 20;
-  string code = 21;
-  int64 expressTid = 22;
-  sint32 shelveState = 23;
-  sint32 reviewState = 24;
-  sint64 updateTime = 25;
-  repeated SSku skuArray = 26;
-  repeated SLevelPrice levelPrices = 27;
+  sint64 brandId = 22;
+  string code = 23;
+  int64 expressTid = 24;
+  sint32 shelveState = 25;
+  sint32 reviewState = 26;
+  sint64 updateTime = 27;
+  repeated SSku skuArray = 28;
+  repeated SLevelPrice levelPrices = 29;
   
   SItemViewData viewData = 30;
   map<string, string> data = 31;

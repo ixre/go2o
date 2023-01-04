@@ -204,21 +204,21 @@ func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 	//item := i.GetItem().Value()
 	gv := i.GetValue()
 	goods := &valueobject.Goods{
-		ProductId:     gv.ProductId,
-		CategoryId:    gv.CategoryId,
-		Title:         gv.Title,
-		GoodsNo:       gv.Code,
-		Image:         gv.Image,
-		RetailPrice:   gv.RetailPrice,
-		Price:         gv.Price,
-		PriceRange:    gv.PriceRange,
-		PromPrice:     gv.Price,
-		GoodsId:       i.GetAggregateRootId(),
-		SkuId:         gv.SkuId,
-		IsPresent:     gv.IsPresent,
-		PromotionFlag: gv.PromFlag,
-		StockNum:      gv.StockNum,
-		SaleNum:       gv.SaleNum,
+		ProductId:   gv.ProductId,
+		CategoryId:  gv.CategoryId,
+		Title:       gv.Title,
+		GoodsNo:     gv.Code,
+		Image:       gv.Image,
+		RetailPrice: gv.RetailPrice,
+		Price:       gv.Price,
+		PriceRange:  gv.PriceRange,
+		PromPrice:   gv.Price,
+		GoodsId:     i.GetAggregateRootId(),
+		SkuId:       gv.SkuId,
+		IsPresent:   gv.IsPresent,
+		ItemFlag:    gv.ItemFlag,
+		StockNum:    gv.StockNum,
+		SaleNum:     gv.SaleNum,
 	}
 	return goods
 }
@@ -250,7 +250,6 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.ShopCatId = v.ShopCatId
 		i.value.IsPresent = v.IsPresent
 		i.value.ProductId = v.ProductId
-		i.value.PromFlag = v.PromFlag
 		i.value.ShopCatId = v.ShopCatId
 		i.value.ExpressTid = v.ExpressTid
 		i.value.Title = v.Title
@@ -374,7 +373,7 @@ func (i *itemImpl) GetSku(skuId int64) *item.Sku {
 // ========== [/ SKU处理结束 ] ===========//
 
 // 从产品中拷贝信息
-//todo: 如后期弄成公共产品，则应保持产品与商品的数据独立。
+// todo: 如后期弄成公共产品，则应保持产品与商品的数据独立。
 func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 	pro := i.productRepo.GetProductValue(v.ProductId)
 	if pro == nil {

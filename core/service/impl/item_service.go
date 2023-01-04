@@ -269,34 +269,6 @@ func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
 	return total, arr
 }
 
-
-// 附加批发商品的信息
-func (s *itemService) attachWholesaleItemData(dto *proto.SOldItem) {
-	dto.Data = make(map[string]string)
-	vendor := s.mchRepo.GetMerchant(int(dto.VendorId))
-	if vendor != nil {
-		vv := vendor.GetValue()
-		pStr := s.valueRepo.GetAreaName(int32(vv.Province))
-		cStr := s.valueRepo.GetAreaName(int32(vv.City))
-		dto.Data["VendorName"] = vv.CompanyName
-		dto.Data["ShipArea"] = pStr + cStr
-		// 认证信息
-		ei := vendor.ProfileManager().GetEnterpriseInfo()
-		if ei != nil && ei.Reviewed == enum.ReviewPass {
-			dto.Data["Authorized"] = "true"
-		} else {
-			dto.Data["Authorized"] = "false"
-		}
-		// 品牌
-		b := s.promRepo.BrandService().Get(dto.BrandId)
-		if b != nil {
-			dto.Data["BrandName"] = b.Name
-			dto.Data["BrandImage"] = b.Image
-			dto.Data["BrandId"] = strconv.Itoa(int(b.ID))
-		}
-	}
-}
-
 // 附加批发商品的信息
 func (s *itemService) attachWholesaleItemDataV2(dto *proto.SUnifiedViewItem) {
 	dto.Data = make(map[string]string)
@@ -620,24 +592,24 @@ func (s *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
 
 func (s *itemService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 	return &proto.SGoods{
-		ItemId:        v.ItemId,
-		ProductId:     v.ProductId,
-		VendorId:      int64(v.VendorId),
-		ShopId:        int64(v.ShopId),
-		CategoryId:    v.CategoryId,
-		Title:         v.Title,
-		ShortTitle:    v.ShortTitle,
-		GoodsNo:       v.GoodsNo,
-		Image:         v.Image,
-		RetailPrice:   v.RetailPrice,
-		Price:         v.Price,
-		PromPrice:     v.PromPrice,
-		PriceRange:    v.PriceRange,
-		GoodsId:       v.GoodsId,
-		SkuId:         v.SkuId,
-		IsPresent:     v.IsPresent == 1,
-		PromotionFlag: v.PromotionFlag,
-		StockNum:      v.StockNum,
-		SaleNum:       v.SaleNum,
+		ItemId:      v.ItemId,
+		ProductId:   v.ProductId,
+		VendorId:    int64(v.VendorId),
+		ShopId:      int64(v.ShopId),
+		CategoryId:  v.CategoryId,
+		Title:       v.Title,
+		ShortTitle:  v.ShortTitle,
+		GoodsNo:     v.GoodsNo,
+		Image:       v.Image,
+		RetailPrice: v.RetailPrice,
+		Price:       v.Price,
+		PromPrice:   v.PromPrice,
+		PriceRange:  v.PriceRange,
+		GoodsId:     v.GoodsId,
+		SkuId:       v.SkuId,
+		IsPresent:   v.IsPresent == 1,
+		ItemFlag:    int32(v.ItemFlag),
+		StockNum:    v.StockNum,
+		SaleNum:     v.SaleNum,
 	}
 }
