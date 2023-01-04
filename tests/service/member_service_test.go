@@ -87,3 +87,18 @@ func TestChangeHeadPortrait(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestChangeMemberLevel(t *testing.T){
+	r, _ := impl.MemberService.ChangeLevel(context.TODO(),
+		&proto.ChangeLevelRequest{
+			MemberId:       702,
+			Level:          0,
+			LevelCode:      "agent1",
+			Review:         false,
+			PaymentOrderId: 0,
+		})
+	if r.ErrCode > 0 {
+		t.Log(r.ErrMsg)
+		t.FailNow()
+	}	
+}

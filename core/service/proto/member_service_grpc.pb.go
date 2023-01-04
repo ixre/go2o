@@ -99,7 +99,7 @@ type MemberServiceClient interface {
 	// * 获取会员等级信息
 	MemberLevelInfo(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*SMemberLevelInfo, error)
 	// 更改会员等级
-	UpdateLevel(ctx context.Context, in *UpdateLevelRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangeLevel(ctx context.Context, in *ChangeLevelRequest, opts ...grpc.CallOption) (*Result, error)
 	// 审核升级申请
 	ReviewLevelUpRequest(ctx context.Context, in *LevelUpReviewRequest, opts ...grpc.CallOption) (*Result, error)
 	// 确认升级申请
@@ -107,7 +107,7 @@ type MemberServiceClient interface {
 	// 更改手机号码，不验证手机格式
 	ChangePhone(ctx context.Context, in *ChangePhoneRequest, opts ...grpc.CallOption) (*Result, error)
 	// 更改用户名
-	ChangeUser(ctx context.Context, in *ChangeUserRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangeUsername(ctx context.Context, in *ChangeUserRequest, opts ...grpc.CallOption) (*Result, error)
 	// 更改昵称
 	ChangeNickname(ctx context.Context, in *ChangeNicknameRequest, opts ...grpc.CallOption) (*Result, error)
 	// 上传会员头像
@@ -495,9 +495,9 @@ func (c *memberServiceClient) MemberLevelInfo(ctx context.Context, in *MemberIdR
 	return out, nil
 }
 
-func (c *memberServiceClient) UpdateLevel(ctx context.Context, in *UpdateLevelRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *memberServiceClient) ChangeLevel(ctx context.Context, in *ChangeLevelRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/MemberService/UpdateLevel", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/MemberService/ChangeLevel", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -531,9 +531,9 @@ func (c *memberServiceClient) ChangePhone(ctx context.Context, in *ChangePhoneRe
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangeUser(ctx context.Context, in *ChangeUserRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *memberServiceClient) ChangeUsername(ctx context.Context, in *ChangeUserRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/MemberService/ChangeUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/MemberService/ChangeUsername", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -981,7 +981,7 @@ type MemberServiceServer interface {
 	// * 获取会员等级信息
 	MemberLevelInfo(context.Context, *MemberIdRequest) (*SMemberLevelInfo, error)
 	// 更改会员等级
-	UpdateLevel(context.Context, *UpdateLevelRequest) (*Result, error)
+	ChangeLevel(context.Context, *ChangeLevelRequest) (*Result, error)
 	// 审核升级申请
 	ReviewLevelUpRequest(context.Context, *LevelUpReviewRequest) (*Result, error)
 	// 确认升级申请
@@ -989,7 +989,7 @@ type MemberServiceServer interface {
 	// 更改手机号码，不验证手机格式
 	ChangePhone(context.Context, *ChangePhoneRequest) (*Result, error)
 	// 更改用户名
-	ChangeUser(context.Context, *ChangeUserRequest) (*Result, error)
+	ChangeUsername(context.Context, *ChangeUserRequest) (*Result, error)
 	// 更改昵称
 	ChangeNickname(context.Context, *ChangeNicknameRequest) (*Result, error)
 	// 上传会员头像
@@ -1176,8 +1176,8 @@ func (UnimplementedMemberServiceServer) CheckProfileComplete(context.Context, *M
 func (UnimplementedMemberServiceServer) MemberLevelInfo(context.Context, *MemberIdRequest) (*SMemberLevelInfo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MemberLevelInfo not implemented")
 }
-func (UnimplementedMemberServiceServer) UpdateLevel(context.Context, *UpdateLevelRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateLevel not implemented")
+func (UnimplementedMemberServiceServer) ChangeLevel(context.Context, *ChangeLevelRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeLevel not implemented")
 }
 func (UnimplementedMemberServiceServer) ReviewLevelUpRequest(context.Context, *LevelUpReviewRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewLevelUpRequest not implemented")
@@ -1188,8 +1188,8 @@ func (UnimplementedMemberServiceServer) ConfirmLevelUpRequest(context.Context, *
 func (UnimplementedMemberServiceServer) ChangePhone(context.Context, *ChangePhoneRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangePhone not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangeUser(context.Context, *ChangeUserRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ChangeUser not implemented")
+func (UnimplementedMemberServiceServer) ChangeUsername(context.Context, *ChangeUserRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeUsername not implemented")
 }
 func (UnimplementedMemberServiceServer) ChangeNickname(context.Context, *ChangeNicknameRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeNickname not implemented")
@@ -1918,20 +1918,20 @@ func _MemberService_MemberLevelInfo_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_UpdateLevel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateLevelRequest)
+func _MemberService_ChangeLevel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeLevelRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).UpdateLevel(ctx, in)
+		return srv.(MemberServiceServer).ChangeLevel(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MemberService/UpdateLevel",
+		FullMethod: "/MemberService/ChangeLevel",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).UpdateLevel(ctx, req.(*UpdateLevelRequest))
+		return srv.(MemberServiceServer).ChangeLevel(ctx, req.(*ChangeLevelRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1990,20 +1990,20 @@ func _MemberService_ChangePhone_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_ChangeUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MemberService_ChangeUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ChangeUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).ChangeUser(ctx, in)
+		return srv.(MemberServiceServer).ChangeUsername(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MemberService/ChangeUser",
+		FullMethod: "/MemberService/ChangeUsername",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).ChangeUser(ctx, req.(*ChangeUserRequest))
+		return srv.(MemberServiceServer).ChangeUsername(ctx, req.(*ChangeUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2868,8 +2868,8 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemberService_MemberLevelInfo_Handler,
 		},
 		{
-			MethodName: "UpdateLevel",
-			Handler:    _MemberService_UpdateLevel_Handler,
+			MethodName: "ChangeLevel",
+			Handler:    _MemberService_ChangeLevel_Handler,
 		},
 		{
 			MethodName: "ReviewLevelUpRequest",
@@ -2884,8 +2884,8 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemberService_ChangePhone_Handler,
 		},
 		{
-			MethodName: "ChangeUser",
-			Handler:    _MemberService_ChangeUser_Handler,
+			MethodName: "ChangeUsername",
+			Handler:    _MemberService_ChangeUsername_Handler,
 		},
 		{
 			MethodName: "ChangeNickname",

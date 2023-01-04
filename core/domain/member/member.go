@@ -421,7 +421,7 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 }
 
 // 更换用户名
-func (m *memberImpl) ChangeUser(user string) error {
+func (m *memberImpl) ChangeUsername(user string) error {
 	if user == m.value.Username {
 		return member.ErrSameUser
 	}
