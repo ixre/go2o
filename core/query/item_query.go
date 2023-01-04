@@ -167,7 +167,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 	var list []*item.GoodsItem
 
 	if total > 0 {
-		sql = fmt.Sprintf(`SELECT item_info.id,item_info.product_id,item_info.prom_flag,
+		sql = fmt.Sprintf(`SELECT item_info.id,item_info.product_id,item_info.item_flag,
 		item_info.cat_id,item_info.vendor_id,item_info.brand_id,item_info.shop_id,
 		item_info.shop_cat_id,item_info.express_tid,item_info.title,
 		item_info.short_title,item_info.code,item_info.image,
