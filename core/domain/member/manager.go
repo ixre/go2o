@@ -226,12 +226,12 @@ func (m *memberManagerImpl) SaveBuyerGroup(v *member.BuyerGroup) (int32, error) 
 
 // 等级服务实现
 type levelManagerImpl struct {
-	rep member.IMemberRepo
+	repo member.IMemberRepo
 }
 
 func newLevelManager(rep member.IMemberRepo) member.ILevelManager {
 	impl := &levelManagerImpl{
-		rep: rep,
+		repo: rep,
 	}
 	return impl.init()
 }
@@ -291,7 +291,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 
 // 获取等级设置
 func (l *levelManagerImpl) GetLevelSet() []*member.Level {
-	return l.rep.GetMemberLevels_New()
+	return l.repo.GetMemberLevels_New()
 }
 
 // 获取等级
@@ -346,10 +346,10 @@ func (l *levelManagerImpl) DeleteLevel(id int) error {
 	if lv != nil {
 		// 获取等级对应的会员数, 如果 > 0不允许删除
 		// todo: 也可以更新到下一个等级
-		if n := l.rep.GetMemberNumByLevel_New(id); n > 0 {
+		if n := l.repo.GetMemberNumByLevel_New(id); n > 0 {
 			return member.ErrLevelUsed
 		}
-		return l.rep.DeleteMemberLevel_New(id)
+		return l.repo.DeleteMemberLevel_New(id)
 	}
 	return nil
 }
@@ -362,7 +362,7 @@ func (l *levelManagerImpl) SaveLevel(v *member.Level) (int, error) {
 	}
 	err := l.checkLevelExp(v)
 	if err == nil {
-		return l.rep.SaveMemberLevel_New(v)
+		return l.repo.SaveMemberLevel_New(v)
 	}
 	return v.ID, err
 }
