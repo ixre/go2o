@@ -21,6 +21,7 @@ import (
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
@@ -70,9 +71,21 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SItemD
 		ret.AttrArray = parser.AttrArrayDto(item.Product().Attr())
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
+		ret.FlagData = s.getFlagData(item.GetValue().ItemFlag)
 		return ret, nil
 	}
 	return nil, nil
+}
+
+// 获取商品的标志数据
+func (s *itemService) getFlagData(flag int) *proto.SItemFlagData {
+	return &proto.SItemFlagData{
+		IsNewGoods:  domain.TestFlag(flag, item.FlagNewGoods),
+		IsHotSale:   domain.TestFlag(flag, item.FlagHotSale),
+		IsRecommend: domain.TestFlag(flag, item.FlagRecommend),
+		IsGift:      domain.TestFlag(flag, item.FlagGift),
+		IsAffilite:  domain.TestFlag(flag, item.FlagAffilite),
+	}
 }
 
 // SaveItem 保存商品
@@ -107,26 +120,49 @@ func (s *itemService) SaveItem(_ context.Context, r *proto.SaveItemRequest) (*pr
 			ErrMsg:  err.Error(),
 		}, nil
 	}
+	if err == nil && r.FlagData != nil {
+		s.saveItemFlag(gi, r)
+	}
 	return &proto.SaveItemResponse{
 		ErrCode: 0,
 		ItemId:  it.Id,
 	}, nil
 }
 
+// 保存商品标志
+func (*itemService) saveItemFlag(gi item.IGoodsItem, r *proto.SaveItemRequest) {
+	f := func(flag int, b bool) {
+		if b {
+			gi.GrantFlag(flag)
+		} else {
+			gi.GrantFlag(-flag)
+		}
+	}
+	f(item.FlagNewGoods, r.FlagData.IsNewGoods)
+	f(item.FlagHotSale, r.FlagData.IsHotSale)
+	f(item.FlagRecommend, r.FlagData.IsRecommend)
+	f(item.FlagGift, r.FlagData.IsGift)
+	f(item.FlagAffilite, r.FlagData.IsAffilite)
+	gi.Save()
+}
+
 // 附加商品的信息
-func (s *itemService) attachUnifiedItem(item item.IGoodsItem) *proto.SUnifiedViewItem {
+func (s *itemService) attachUnifiedItem(item item.IGoodsItem, extra bool) *proto.SUnifiedViewItem {
 	ret := parser.ItemDtoV2(item.GetValue())
 	skuService := s.itemRepo.SkuService()
 	skuArr := item.SkuArray()
 	ret.SkuArray = parser.SkuArrayDto(skuArr)
 	ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
 	specArr := item.SpecArray()
-	ret.ViewData = &proto.SItemViewData{
-		Details: "",  //todo:??
-		Thumbs:  nil, //todo:??
-		Images:  nil, //todo:??
-		SkuHtml: skuService.GetSpecHtml(specArr),
-		SkuJson: string(skuService.GetItemSkuJson(skuArr)),
+	ret.FlagData = s.getFlagData(item.GetValue().ItemFlag)
+	if extra {
+		ret.ViewData = &proto.SItemViewData{
+			Details: "",  //todo:??
+			Thumbs:  nil, //todo:??
+			Images:  nil, //todo:??
+			SkuHtml: skuService.GetSpecHtml(specArr),
+			SkuJson: string(skuService.GetItemSkuJson(skuArr)),
+		}
 	}
 	return ret
 }
@@ -136,7 +172,7 @@ func (s *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest)
 	v := s.itemRepo.GetValueGoodsBySku(r.ProductId, r.SkuId)
 	if v != nil {
 		item := s.itemRepo.CreateItem(v)
-		return s.attachUnifiedItem(item), nil
+		return s.attachUnifiedItem(item, r.Extra), nil
 	}
 	return nil, nil
 }

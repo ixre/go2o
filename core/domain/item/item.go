@@ -253,6 +253,7 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.ShopCatId = v.ShopCatId
 		i.value.ExpressTid = v.ExpressTid
 		i.value.Title = v.Title
+		i.value.ItemFlag = v.ItemFlag
 		i.value.ShortTitle = v.ShortTitle
 		i.value.Code = v.Code
 		i.value.SaleNum = v.SaleNum
@@ -397,7 +398,7 @@ func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 
 // 重置审核状态
 func (i *itemImpl) resetReview() {
-	i.value.ReviewState = enum.ReviewAwaiting
+	i.value.AuditState = enum.ReviewAwaiting
 }
 
 // 检查商品数据是否正确
@@ -595,10 +596,10 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 		return product.ErrNilRejectRemark
 	}
 	i.value.ShelveState = state
-	if i.value.ReviewState != enum.ReviewPass {
-		i.value.ReviewState = enum.ReviewAwaiting
+	if i.value.AuditState != enum.ReviewPass {
+		i.value.AuditState = enum.ReviewAwaiting
 	}
-	i.value.ReviewRemark = remark
+	i.value.AuditRemark = remark
 	_, err := i.Save()
 	return err
 }
@@ -606,7 +607,7 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 // 标记为违规
 func (i *itemImpl) Incorrect(remark string) error {
 	i.value.ShelveState = item.ShelvesIncorrect
-	i.value.ReviewRemark = remark
+	i.value.AuditRemark = remark
 	_, err := i.Save()
 	return err
 }
@@ -614,16 +615,16 @@ func (i *itemImpl) Incorrect(remark string) error {
 // 审核
 func (i *itemImpl) Review(pass bool, remark string) error {
 	if pass {
-		i.value.ReviewState = enum.ReviewPass
+		i.value.AuditState = enum.ReviewPass
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return item.ErrEmptyReviewRemark
 		}
 		i.value.ShelveState = item.ShelvesDown
-		i.value.ReviewState = enum.ReviewReject
+		i.value.AuditState = enum.ReviewReject
 	}
-	i.value.ReviewRemark = remark
+	i.value.AuditRemark = remark
 	_, err := i.Save()
 	return err
 }
