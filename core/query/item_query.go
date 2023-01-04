@@ -11,13 +11,14 @@ package query
 import (
 	"bytes"
 	"fmt"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"strings"
 )
 
 type ItemQuery struct {
@@ -46,14 +47,14 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 	}
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.review_state= $1
+		 WHERE item_info.audit_state= $1
 		 AND item_info.shelve_state= $2 %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn)
 	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.review_state= $1
+		 WHERE item_info.audit_state= $1
 		 AND item_info.shelve_state= $2 %s
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
@@ -119,14 +120,14 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE  item_info.review_state= $1
+		 WHERE  item_info.audit_state= $1
 		 AND item_info.shelve_state= $2 %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn)
 	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.review_state= $1
+		 WHERE item_info.audit_state= $1
 		 AND item_info.shelve_state= $2 %s
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
@@ -136,7 +137,7 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 	return total, list
 }
 
-//根据关键词搜索上架的商品
+// 根据关键词搜索上架的商品
 func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32,
 	where, orderBy string) (int32, []*item.GoodsItem) {
 	var sql string
@@ -173,7 +174,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		item_info.is_present,ws_item.price_range,item_info.stock_num,
 		item_info.sale_num,item_info.sku_num,item_info.sku_id,item_info.cost,
 		ws_item.price,item_info.retail_price,item_info.weight,item_info.bulk,
-		item_info.shelve_state,item_info.review_state,item_info.review_remark,
+		item_info.shelve_state,item_info.audit_state,item_info.review_remark,
 		item_info.sort_num,item_info.create_time,item_info.update_time
 		 FROM ws_item INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN product ON product.id = item_info.product_id
@@ -187,7 +188,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 	return total, list
 }
 
-//根据分类获取上架的商品
+// 根据分类获取上架的商品
 func (i ItemQuery) GetOnShelvesItem(catIdArr []int, begin, end int,
 	where string) []*item.GoodsItem {
 	var list []*item.GoodsItem
@@ -195,7 +196,7 @@ func (i ItemQuery) GetOnShelvesItem(catIdArr []int, begin, end int,
 		catIdStr := format.IntArrStrJoin(catIdArr)
 		sql := fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.cat_id IN(%s) AND item_info.review_state= $1
+		 WHERE item_info.cat_id IN(%s) AND item_info.audit_state= $1
 		 AND item_info.shelve_state= $2 %s
 		 ORDER BY item_info.update_time DESC LIMIT $4 OFFSET $3`, catIdStr, where)
 		i.o.SelectByQuery(&list, sql,
@@ -231,11 +232,11 @@ func (i ItemQuery) GetRandomItem(catIdArr []int, begin, end int, where string) [
 	var list []*item.GoodsItem
 	sql := fmt.Sprintf(`SELECT * FROM item_info
     JOIN (SELECT ROUND(RAND() * (
-      SELECT MAX(id)-? FROM item_info WHERE  item_info.review_state= $1
+      SELECT MAX(id)-? FROM item_info WHERE  item_info.audit_state= $1
          AND item_info.shelve_state= ? %s
          )) AS id) AS r2
 		 WHERE item_info.Id > r2.id
-		  AND item_info.review_state= ?
+		  AND item_info.audit_state= ?
 		 AND item_info.shelve_state= ? %s LIMIT ? OFFSET $3`,
 		search, search)
 	i.o.SelectByQuery(&list, sql,
@@ -244,7 +245,7 @@ func (i ItemQuery) GetRandomItem(catIdArr []int, begin, end int, where string) [
 	return list
 }
 
-//根据关键词搜索上架的商品
+// 根据关键词搜索上架的商品
 func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int64, start, end int,
 	keyword, where, orderBy string) (int, []*valueobject.Goods) {
 	var sql string
