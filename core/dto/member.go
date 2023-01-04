@@ -22,11 +22,11 @@ type (
 		// 会员编号
 		MemberId int32
 		// 用户名
-		User string
+		Username string
 		// 等级
 		Level int32
 		// 头像
-		Avatar string
+		Portrait string
 		// 昵称
 		Nickname string
 		// 电话

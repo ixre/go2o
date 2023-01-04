@@ -249,7 +249,7 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 			if p.ProfileCompleted() {
 				// 标记会员已完善资料
 				if !p.member.ContainFlag(member.FlagProfileCompleted) {
-					p.member.value.Flag |= member.FlagProfileCompleted
+					p.member.value.UserFlag |= member.FlagProfileCompleted
 					if err == nil {
 						p.member.Save()
 					}
@@ -368,7 +368,7 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 			//todo:?? data
 			var data = map[string]string{
 				"Name":       p.profile.Name,
-				"InviteCode": p.member.GetValue().Code,
+				"InviteCode": p.member.GetValue().UserCode,
 			}
 			return msg.Send(data)
 		}
@@ -385,11 +385,11 @@ func (p *profileManagerImpl) ModifyPassword(newPassword, oldPwd string) error {
 		if newPassword == oldPwd {
 			return domain.ErrPwdCannotSame
 		}
-		if oldPwd != p.member.value.Pwd {
+		if oldPwd != p.member.value.Password {
 			return domain.ErrPwdOldPwdNotRight
 		}
 	}
-	p.member.value.Pwd = newPassword
+	p.member.value.Password = newPassword
 	_, err := p.member.Save()
 	return err
 }
@@ -408,7 +408,7 @@ func (p *profileManagerImpl) ModifyTradePassword(newPassword, oldPwd string) err
 	}
 	p.member.value.TradePassword = newPassword
 	if p.member.ContainFlag(member.FlagNoTradePasswd) {
-		p.member.value.Flag ^= member.FlagNoTradePasswd
+		p.member.value.UserFlag ^= member.FlagNoTradePasswd
 	}
 	_, err := p.member.Save()
 	return err
@@ -663,7 +663,7 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p.GetTrustedInfo()
 	if pass {
 		p.trustedInfo.ReviewState = int(enum.ReviewPass)
-		p.member.value.Flag |= member.FlagTrusted
+		p.member.value.UserFlag |= member.FlagTrusted
 		p.member.value.RealName = p.trustedInfo.RealName
 	} else {
 		remark = strings.TrimSpace(remark)
@@ -672,7 +672,7 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 		}
 		p.trustedInfo.ReviewState = int(enum.ReviewReject)
 		if p.member.ContainFlag(member.FlagTrusted) {
-			p.member.value.Flag ^= member.FlagTrusted
+			p.member.value.UserFlag ^= member.FlagTrusted
 		}
 	}
 	unix := time.Now().Unix()

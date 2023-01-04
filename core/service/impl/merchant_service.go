@@ -55,7 +55,7 @@ func (m *merchantService) ChangeMemberBind(_ context2.Context, r *proto.ChangeMe
 	if im == nil {
 		return m.error(merchant.ErrNoSuchMerchant), nil
 	}
-	mem := m._memberRepo.GetMemberByUser(r.UserName)
+	mem := m._memberRepo.GetMemberByUser(r.Username)
 	if mem == nil {
 		return m.error(member.ErrNoSuchMember), nil
 	}
@@ -519,9 +519,9 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 	if val == nil {
 		return 0, member.ErrNoSuchMember
 	}
-	if val.Pwd != pwd {
+	if val.Password != pwd {
 		//todo: 兼容旧密码
-		if val.Pwd != domain.Sha1(pwd) {
+		if val.Password != domain.Sha1(pwd) {
 			return 0, de.ErrCredential
 		}
 	}
@@ -565,8 +565,8 @@ func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMercha
 
 // CheckLogin 验证用户密码,并返回编号。可传入商户或会员的账号密码
 func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwdRequest) (*proto.MchLoginResponse, error) {
-	user := strings.ToLower(strings.TrimSpace(u.User))
-	pwd := strings.TrimSpace(u.Pwd)
+	user := strings.ToLower(strings.TrimSpace(u.Username))
+	pwd := strings.TrimSpace(u.Password)
 	mch, code, err := m.testLogin(user, pwd)
 	if err != nil {
 		return &proto.MchLoginResponse{
@@ -906,8 +906,8 @@ func (m *merchantService) parseMchSignUp(v *proto.SMchSignUp) *merchant.MchSignU
 		Id:           int32(v.Id),
 		SignNo:       v.SignNo,
 		MemberId:     v.MemberId,
-		User:         v.User,
-		Pwd:          v.Pwd,
+		Username:     v.Username,
+		Password:     v.Password,
 		Salt:         v.Salt,
 		MchName:      v.MchName,
 		Province:     v.Province,
@@ -934,8 +934,8 @@ func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSi
 		Id:           int64(v.Id),
 		SignNo:       v.SignNo,
 		MemberId:     v.MemberId,
-		User:         v.User,
-		Pwd:          v.Pwd,
+		Username:         v.Username,
+		Password:          v.Password,
 		Salt:         v.Salt,
 		MchName:      v.MchName,
 		Province:     v.Province,

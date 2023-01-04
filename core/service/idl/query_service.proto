@@ -157,7 +157,7 @@ message MemberListSingle {
     // 会员编号
     int64 memberId = 1;
     // 用户名
-    string user =  2;
+    string username =  2;
     // 昵称
     string nickname = 3;
     // 头像

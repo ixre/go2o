@@ -34,7 +34,7 @@ func (h EventHandler) HandleWalletLogWriteEvent(data interface{}) {
 		update_time = $12 WHERE 
 		wallet_id = $13 AND id= $14
 	`,
-		l.Title,
+		l.Subject,
 		l.OuterNo,
 		int64(l.OperatorUid),
 		l.OperatorName,

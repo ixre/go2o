@@ -798,7 +798,7 @@ func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder) {
 		v := &order.AffliteRebate{
 			PlanId:        0,
 			TraderId:      o._affliteMember.GetAggregateRootId(),
-			AffiliateCode: o._affliteMember.GetValue().Code,
+			AffiliateCode: o._affliteMember.GetValue().UserCode,
 			OrderNo:       ov.OrderNo,
 			OrderSubject:  ov.Subject,
 			OrderAmount:   ov.FinalAmount,

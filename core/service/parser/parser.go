@@ -19,7 +19,6 @@ import (
 	"github.com/ixre/gof/types"
 )
 
-
 func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 	it := &proto.SUnifiedViewItem{
 		ItemId:    src.Id,
@@ -47,8 +46,8 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		//RetailPrice:  float64(src.RetailPrice),
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
-		ShelveState: src.ShelveState,
-		ReviewState: src.ReviewState,
+		ShelveState: src.AuditState,
+		AuditState: src.AuditState,
 		//ReviewRemark: src.ReviewRemark,
 		//SortNum:      src.SortNum,
 		//CreateTime:   src.CreateTime,
@@ -66,9 +65,9 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 
 func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 	it := &proto.SItemDataResponse{
-		ItemId:    src.Id,
-		ProductId: src.ProductId,
-		//PromFlag:     src.PromFlag,
+		ItemId:     src.Id,
+		ProductId:  src.ProductId,
+		ItemFlag:   int32(src.ItemFlag),
 		CategoryId: int64(src.CategoryId),
 		SkuId:      src.SkuId,
 		VendorId:   src.VendorId,
@@ -88,9 +87,9 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		RetailPrice: src.RetailPrice,
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
-		ShelveState:  src.ShelveState,
-		ReviewState:  src.ReviewState,
-		ReviewRemark: src.ReviewRemark,
+		ShelveState: src.ShelveState,
+		AuditState:  src.AuditState,
+		AuditRemark: src.AuditRemark,
 		//CreateTime:   src.CreateTime,
 	}
 	if src.SkuArray != nil {
@@ -102,7 +101,7 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 	return it
 }
 
-func AttrArrayDto(src []*product.AttrValue)[]*proto.SAttr{
+func AttrArrayDto(src []*product.AttrValue) []*proto.SAttr {
 	var dst = make([]*proto.SAttr, len(src))
 	for i, v := range src {
 		dst[i] = &proto.SAttr{
@@ -112,7 +111,7 @@ func AttrArrayDto(src []*product.AttrValue)[]*proto.SAttr{
 			AttrWord: v.AttrWord,
 		}
 	}
-	return dst	
+	return dst
 }
 
 func SkuArrayDto(src []*item.Sku) []*proto.SSku {
