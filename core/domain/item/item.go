@@ -20,7 +20,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -52,8 +52,6 @@ type itemImpl struct {
 	shopRepo        shop.IShopRepo
 	awaitSaveImages []*item.Image
 }
-
-
 
 //todo:??? 去掉依赖promotion.IPromotionRepo
 
@@ -91,23 +89,22 @@ func (i *itemImpl) Images() []string {
 	return i.images
 }
 
-// GrantFlag implements item.IGoodsItem
+// GrantFlag 添加商品标志
 func (i *itemImpl) GrantFlag(flag int) error {
 	f := int(math.Abs(float64(flag)))
 	if f&(f-1) != 0 {
 		return errors.New("not right flag value")
 	}
-	own := i.value.ItemFlag & f == f
 	if flag > 0 { // 添加标志
-		if !own {
-		i.value.ItemFlag |= flag
+		if i.value.ItemFlag&f != f {
+			i.value.ItemFlag |= flag
 		}
 	} else { // 去除标志
-		if own {
-		i.value.ItemFlag ^= f
+		if i.value.ItemFlag&f == f {
+			i.value.ItemFlag ^= f
 		}
 	}
-	_, err := m.Save()
+	_, err := i.Save()
 	return err
 }
 

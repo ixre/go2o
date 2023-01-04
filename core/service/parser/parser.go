@@ -19,48 +19,6 @@ import (
 	"github.com/ixre/gof/types"
 )
 
-func ItemDto(src *item.GoodsItem) *proto.SOldItem {
-	it := &proto.SOldItem{
-		ItemId:       src.Id,
-		ProductId:    src.ProductId,
-		PromFlag:     src.PromFlag,
-		CatId:        src.CategoryId,
-		VendorId:     src.VendorId,
-		BrandId:      src.BrandId,
-		ShopId:       src.ShopId,
-		ShopCatId:    src.ShopCatId,
-		ExpressTid:   src.ExpressTid,
-		Title:        src.Title,
-		ShortTitle:   src.ShortTitle,
-		Code:         src.Code,
-		Image:        src.Image,
-		IsPresent:    src.IsPresent,
-		PriceRange:   src.PriceRange,
-		StockNum:     src.StockNum,
-		SaleNum:      src.SaleNum,
-		SkuNum:       src.SkuNum,
-		SkuId:        src.SkuId,
-		Cost:         src.Cost,
-		Price:        src.Price,
-		RetailPrice:  src.RetailPrice,
-		Weight:       src.Weight,
-		Bulk:         src.Bulk,
-		ShelveState:  src.ShelveState,
-		ReviewState:  src.ReviewState,
-		ReviewRemark: src.ReviewRemark,
-		SortNum:      src.SortNum,
-		CreateTime:   src.CreateTime,
-		UpdateTime:   src.UpdateTime,
-		PromPrice:    src.PromPrice,
-	}
-	if src.SkuArray != nil {
-		it.SkuArray = make([]*proto.SSku, len(src.SkuArray))
-		for i, v := range src.SkuArray {
-			it.SkuArray[i] = SkuDto(v)
-		}
-	}
-	return it
-}
 
 func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 	it := &proto.SUnifiedViewItem{
