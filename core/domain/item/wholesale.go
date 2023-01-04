@@ -41,7 +41,7 @@ func (w *wholesaleItemImpl) init() item.IWholesaleItem {
 			Price:       iv.Price,
 			PriceRange:  iv.PriceRange,
 			ShelveState: item.ShelvesInWarehouse,
-			ReviewState: iv.ReviewState,
+			ReviewState: iv.AuditState,
 		}
 		w.repo.SaveWsItem(v, true)
 	}

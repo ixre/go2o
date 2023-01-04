@@ -67,7 +67,7 @@ func (s *snapshotServiceImpl) GenerateSnapshot(it *item.GoodsItem) (int64, error
 	// 检查快照
 	err := s.checkSnapshot(ls, it)
 	// 审核通过后更新快照
-	if err == nil && it.ReviewState == enum.ReviewPass {
+	if err == nil && it.AuditState == enum.ReviewPass {
 		return s.updateSnapshot(ls, it)
 	}
 	return 0, err

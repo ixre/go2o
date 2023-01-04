@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
@@ -65,8 +66,8 @@ message SGoods {
   int64 goodsId = 14;
   int64 skuId = 15;
   bool isPresent = 16;
-  // 促销标志
-  int32 promotionFlag = 17;
+  // 商品标志
+  int32 itemFlag = 17;
   // 库存
   int32 stockNum = 18;
   // 已售件数
@@ -89,6 +90,7 @@ message SAttr {
   // 属性文本
   string attrWord = 4;
 }
+
 
 /** SKU */
 message SSku {
@@ -135,8 +137,6 @@ message SaveItemRequest {
   int64 goodsId = 15;
   int64 skuId = 16;
   bool isPresent = 17;
-  // 促销标志
-  int32 promotionFlag = 18;
   // 库存
   int32 stockNum = 19;
   // 已售件数
@@ -147,6 +147,8 @@ message SaveItemRequest {
   string code = 22;
   int64 expressTid = 23;
   repeated SSku skuArray = 24;
+  // 促销标志
+  SItemFlagData flagData = 18;
   repeated SLevelPrice levelPrices = 25;
 }
 
@@ -186,7 +188,7 @@ message SItemDataResponse {
   // 是否为赠品
   bool isPresent = 17;
   // 促销标志
-  int32 promotionFlag = 18;
+  int32 itemFlag = 18;
   // 库存
   int32 stockNum = 19;
   // 已售件数
@@ -194,9 +196,9 @@ message SItemDataResponse {
   // 上架状态
   int32 shelveState = 21;
   // 审核状态
-  int32 reviewState = 22;
+  int32 auditState = 22;
   // 审核意见
-  string reviewRemark = 23;
+  string auditRemark = 23;
 
   //todo: 对比SGoods多出的字段
   // 品牌编号
@@ -209,11 +211,25 @@ message SItemDataResponse {
   repeated SAttr attrArray = 27;
   // Sku数据
   repeated SSku skuArray = 28;
+  // 商品标志数据
+  SItemFlagData flagData = 29;
   // 会员价
-  repeated SLevelPrice levelPrices = 29;
+  repeated SLevelPrice levelPrices = 30;
 }
 
-
+// 商品标志
+message SItemFlagData{
+  // 新品
+	bool isNewGoods = 1;
+	// 热销商品
+	bool isHotSale = 2;
+	// 推荐商品
+	bool isRecommend = 4;
+	// 赠品
+	bool isGift = 8;
+  // 是否分销
+  bool isAffilite = 16;
+}
 
 // 统一的商品显示对象
 message SUnifiedViewItem {
@@ -230,36 +246,35 @@ message SUnifiedViewItem {
   // 图片
   string image = 9;
   // 图片
-  repeated string images = 30;
+  repeated string images = 10;
   // 定价
-  int64 retailPrice = 10;
+  int64 retailPrice = 11;
   // 销售价
-  int64 price = 11;
+  int64 price = 12;
   // 促销价
-  int64 promPrice = 12;
+  int64 promPrice = 13;
   // 价格区间
-  string priceRange = 13;
-  int64 goodsId = 14;
-  int64 skuId = 15;
-  bool isPresent = 16;
-  // 促销标志
-  int32 promotionFlag = 17;
+  string priceRange = 14;
+  int64 goodsId = 15;
+  int64 skuId = 16;
+  bool isPresent = 17;
+  // 商品标志
+  int32 itemFlag = 18;
   // 库存
-  int32 stockNum = 18;
+  int32 stockNum = 19;
   // 已售件数
-  int32 saleNum = 19;
-  // 是否分销
-  bool isAffilite = 28;
-
+  int32 saleNum = 20;
+  // 标志数据
+  SItemFlagData flagData = 21;
   //todo: 对比SGoods多出的字段
-  sint64 brandId = 20;
-  string code = 21;
-  int64 expressTid = 22;
-  sint32 shelveState = 23;
-  sint32 reviewState = 24;
-  sint64 updateTime = 25;
-  repeated SSku skuArray = 26;
-  repeated SLevelPrice levelPrices = 27;
+  sint64 brandId = 22;
+  string code = 23;
+  int64 expressTid = 24;
+  sint32 shelveState = 25;
+  sint32 auditState = 26;
+  sint64 updateTime = 27;
+  repeated SSku skuArray = 28;
+  repeated SLevelPrice levelPrices = 29;
   
   SItemViewData viewData = 30;
   map<string, string> data = 31;
@@ -436,9 +451,14 @@ message SLevelPrice {
   bool enabled = 5;
 }
 
+// 获取Sku商品信息
 message ItemBySkuRequest {
+  // 商品编号
   int64 productId = 1;
+  // Sku编号
   int64 skuId = 2;
+  // 是否返回额外的信息
+  bool extra = 3;
 }
 
 message ItemIllegalRequest {

@@ -101,7 +101,7 @@ var (
 		//域名
 		Host: "",
 		//前台Logo
-		Logo: "assets/init/no_pic.png",
+		Logo: "static/init/nopic.png",
 		//首页标题
 		ShopTitle: "",
 		// ShopNotice

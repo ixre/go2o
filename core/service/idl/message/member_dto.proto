@@ -35,13 +35,12 @@ message RegisterMemberRequest {
   string email = 5;
   // 用户标志
   int32 flag = 6;
-  // 邀请用户代码
-  string inviteCode = 7;
+  // 邀请人代码
+  string inviterCode = 7;
   // 注册IP
   string regIp = 8;
   // 注册来源
   string regFrom = 9;
-  //map<string, string> extend = 10;
 }
 
 // 登录请求
@@ -71,8 +70,8 @@ message LoginResponse{
 message GrantAccessTokenRequest{
   // 会员编号
   int64 memberId = 1;
-  // 有效时间(单位:s)
-  int64 expire = 2;
+  // 令牌过期时间(单位:s)
+  int64 expiresTime = 2;
 }
 
 // 发放访问令牌响应
@@ -81,8 +80,6 @@ message GrantAccessTokenResponse{
   string error = 1;
   // 访问令牌
   string accessToken = 2;
-  // 令牌过期时间
-  int64 expiresTime = 3;
 }
 
 // 检查令牌请求
@@ -182,12 +179,18 @@ message ReceiptsCodeSaveRequest {
 }
 
 
-message UpdateLevelRequest {
+// 更改会员等级请求
+message ChangeLevelRequest {
   // 会员编号
   int64 memberId = 1;
+  // 等级ID
   sint32 level = 2;
-  bool review = 3;
-  sint64 paymentOrderId = 4;
+  // 等级代码,如果设置该属性,则level应传值为0
+  string levelCode = 3;
+  // 是否需要审核
+  bool review = 4;
+  // 付费升级支付单号
+  int64 paymentOrderId = 5;
 }
 
 // 修改手机号请求
@@ -201,7 +204,8 @@ message ChangePhoneRequest {
 message ChangeUserRequest {
   // 会员编号
   int64 memberId = 1;
-  string user = 2;
+  // 用户名
+  string username = 2;
 }
 
 // 更改昵称请求
@@ -404,7 +408,7 @@ message SMember {
   /** 会员标志 */
   sint32 flag = 3;
   /** 用户名 */
-  string user = 4;
+  string username = 4;
   /** 经验值 */
   sint64 exp = 5;
   /** 等级  */
@@ -835,7 +839,7 @@ message SInvitationMember {
   // 会员编号
   int64 memberId = 1;
   // 用户名
-  string user = 2;
+  string username = 2;
   // 等级
   int32 level = 3;
   // 头像

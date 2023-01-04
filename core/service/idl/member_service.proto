@@ -122,7 +122,7 @@ service MemberService {
     rpc MemberLevelInfo (MemberIdRequest) returns (SMemberLevelInfo) {
     }
     // 更改会员等级
-    rpc UpdateLevel (UpdateLevelRequest) returns (Result) {
+    rpc ChangeLevel (ChangeLevelRequest) returns (Result) {
     }
     // 审核升级申请
     rpc ReviewLevelUpRequest (LevelUpReviewRequest) returns (Result) {
@@ -134,7 +134,7 @@ service MemberService {
     rpc ChangePhone (ChangePhoneRequest) returns (Result) {
     }
     /* 更改用户名 */
-    rpc ChangeUser (ChangeUserRequest) returns (Result) {
+    rpc ChangeUsername (ChangeUserRequest) returns (Result) {
     }
     // 更改昵称
     rpc ChangeNickname(ChangeNicknameRequest) returns (Result) {}

@@ -21,4 +21,6 @@ const (
 	MemberRequestWithdrawal = "go2o-member-request-withdrawal"
 	// MemberWithdrawalAudited 用户提现申请已通过
 	MemberWithdrawalAudited = "go2o-member-withdrawal-audited"
+	// SystemSendSmsTopic 发送短信
+	SystemSendSmsTopic = "go2o-system-send-sms-topic"
 )

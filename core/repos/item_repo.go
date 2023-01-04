@@ -11,11 +11,13 @@ package repos
 import (
 	"database/sql"
 	"fmt"
+	"log"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
@@ -23,7 +25,6 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"log"
 )
 
 var _ item.IItemRepo = new(itemRepoImpl)
@@ -210,19 +211,19 @@ func (i *itemRepoImpl) GetPagedOnShelvesGoods(shopId int64, catIds []int,
 	var list = make([]*valueobject.Goods, 0)
 	//err := i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
 	//  INNER JOIN product_category cat ON item_info.cat_id=cat.id
-	//	 WHERE ($1 <=0 OR item_info.shop_id = $2) AND item_info.review_state= $3
+	//	 WHERE ($1 <=0 OR item_info.shop_id = $2) AND item_info.audit_state= $3
 	//	  AND item_info.shelve_state= $4  %s %s`,
 	//	catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
 	//
 	//if total > 0 {
 	//s = fmt.Sprintf(`SELECT item_info.* FROM item_info INNER JOIN product_category cat
 	//	 ON item_info.cat_id=cat.id
-	//	 WHERE ($1 <=0 OR item_info.shop_id = $2) %s AND item_info.review_state= $3 AND item_info.shelve_state= $4
+	//	 WHERE ($1 <=0 OR item_info.shop_id = $2) %s AND item_info.audit_state= $3 AND item_info.shelve_state= $4
 	//	  %s ORDER BY %s item_info.sort_num DESC,item_info.update_time DESC LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
 
 	s = fmt.Sprintf(`SELECT item_info.* FROM item_info INNER JOIN product_category cat
 		 ON item_info.cat_id=cat.id
-		 WHERE ($1 <= 0 OR item_info.shop_id = $2) %s AND item_info.review_state= $3 AND item_info.shelve_state= $4
+		 WHERE ($1 <= 0 OR item_info.shop_id = $2) %s AND item_info.audit_state= $3 AND item_info.shelve_state= $4
 		  %s ORDER BY %s LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
 	err := i.o.SelectByQuery(&list, s, shopId, shopId,
 		enum.ReviewPass, item.ShelvesOn, start, end-start)

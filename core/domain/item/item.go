@@ -204,21 +204,21 @@ func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 	//item := i.GetItem().Value()
 	gv := i.GetValue()
 	goods := &valueobject.Goods{
-		ProductId:     gv.ProductId,
-		CategoryId:    gv.CategoryId,
-		Title:         gv.Title,
-		GoodsNo:       gv.Code,
-		Image:         gv.Image,
-		RetailPrice:   gv.RetailPrice,
-		Price:         gv.Price,
-		PriceRange:    gv.PriceRange,
-		PromPrice:     gv.Price,
-		GoodsId:       i.GetAggregateRootId(),
-		SkuId:         gv.SkuId,
-		IsPresent:     gv.IsPresent,
-		PromotionFlag: gv.PromFlag,
-		StockNum:      gv.StockNum,
-		SaleNum:       gv.SaleNum,
+		ProductId:   gv.ProductId,
+		CategoryId:  gv.CategoryId,
+		Title:       gv.Title,
+		GoodsNo:     gv.Code,
+		Image:       gv.Image,
+		RetailPrice: gv.RetailPrice,
+		Price:       gv.Price,
+		PriceRange:  gv.PriceRange,
+		PromPrice:   gv.Price,
+		GoodsId:     i.GetAggregateRootId(),
+		SkuId:       gv.SkuId,
+		IsPresent:   gv.IsPresent,
+		ItemFlag:    gv.ItemFlag,
+		StockNum:    gv.StockNum,
+		SaleNum:     gv.SaleNum,
 	}
 	return goods
 }
@@ -250,10 +250,10 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.ShopCatId = v.ShopCatId
 		i.value.IsPresent = v.IsPresent
 		i.value.ProductId = v.ProductId
-		i.value.PromFlag = v.PromFlag
 		i.value.ShopCatId = v.ShopCatId
 		i.value.ExpressTid = v.ExpressTid
 		i.value.Title = v.Title
+		i.value.ItemFlag = v.ItemFlag
 		i.value.ShortTitle = v.ShortTitle
 		i.value.Code = v.Code
 		i.value.SaleNum = v.SaleNum
@@ -374,7 +374,7 @@ func (i *itemImpl) GetSku(skuId int64) *item.Sku {
 // ========== [/ SKU处理结束 ] ===========//
 
 // 从产品中拷贝信息
-//todo: 如后期弄成公共产品，则应保持产品与商品的数据独立。
+// todo: 如后期弄成公共产品，则应保持产品与商品的数据独立。
 func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 	pro := i.productRepo.GetProductValue(v.ProductId)
 	if pro == nil {
@@ -398,7 +398,7 @@ func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 
 // 重置审核状态
 func (i *itemImpl) resetReview() {
-	i.value.ReviewState = enum.ReviewAwaiting
+	i.value.AuditState = enum.ReviewAwaiting
 }
 
 // 检查商品数据是否正确
@@ -596,10 +596,10 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 		return product.ErrNilRejectRemark
 	}
 	i.value.ShelveState = state
-	if i.value.ReviewState != enum.ReviewPass {
-		i.value.ReviewState = enum.ReviewAwaiting
+	if i.value.AuditState != enum.ReviewPass {
+		i.value.AuditState = enum.ReviewAwaiting
 	}
-	i.value.ReviewRemark = remark
+	i.value.AuditRemark = remark
 	_, err := i.Save()
 	return err
 }
@@ -607,7 +607,7 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 // 标记为违规
 func (i *itemImpl) Incorrect(remark string) error {
 	i.value.ShelveState = item.ShelvesIncorrect
-	i.value.ReviewRemark = remark
+	i.value.AuditRemark = remark
 	_, err := i.Save()
 	return err
 }
@@ -615,16 +615,16 @@ func (i *itemImpl) Incorrect(remark string) error {
 // 审核
 func (i *itemImpl) Review(pass bool, remark string) error {
 	if pass {
-		i.value.ReviewState = enum.ReviewPass
+		i.value.AuditState = enum.ReviewPass
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return item.ErrEmptyReviewRemark
 		}
 		i.value.ShelveState = item.ShelvesDown
-		i.value.ReviewState = enum.ReviewReject
+		i.value.AuditState = enum.ReviewReject
 	}
-	i.value.ReviewRemark = remark
+	i.value.AuditRemark = remark
 	_, err := i.Save()
 	return err
 }

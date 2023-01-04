@@ -82,7 +82,7 @@ func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 		PriceRange:  src.PriceRange,
 		StockNum:    src.StockNum,
 		ShelveState: item.ShelvesOn,
-		ReviewState: 0,
+		AuditState: 0,
 		UpdateTime:  0,
 	}
 }
@@ -129,7 +129,6 @@ func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
 	dst := &item.GoodsItem{
 		Id:         src.ItemId,
 		ProductId:  src.ProductId,
-		PromFlag:   -1, //todo:??
 		CategoryId: int32(src.CategoryId),
 		VendorId:   src.VendorId,
 		BrandId:    int32(src.BrandId),

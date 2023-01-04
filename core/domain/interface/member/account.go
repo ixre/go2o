@@ -274,7 +274,7 @@ type (
 		// 金额
 		Amount int64 `db:"amount"`
 		// 手续费
-		ProcedureFee int64 `db:"csn_fee"`
+		ProcedureFee int64 `db:"procedure_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态

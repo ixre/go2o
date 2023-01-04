@@ -34,9 +34,18 @@ const (
 	ShelvesIncorrect int32 = 3
 )
 
+// 商品标志
 const (
+	// 新品
+	FlagNewGoods = 1
+	// 热销商品
+	FlagHotSale = 2
+	// 推荐商品
+	FlagRecommend = 4
+	// 赠品
+	FlagGift = 8
 	// 分销商品
-	FlagAffilite = 64
+	FlagAffilite = 16
 )
 
 var (
@@ -395,9 +404,9 @@ type (
 		// 是否上架
 		ShelveState int32 `db:"shelve_state"`
 		// 审核状态
-		ReviewState int32 `db:"review_state"`
+		AuditState int32 `db:"audit_state"`
 		// 审核备注
-		ReviewRemark string `db:"review_remark"`
+		AuditRemark string `db:"audit_remark"`
 		// 排序序号
 		SortNum int32 `db:"sort_num"`
 		// 创建时间

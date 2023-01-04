@@ -170,7 +170,7 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, operator
 		WalletId:     w.GetAggregateRootId(),
 		WalletUser:   w._value.UserName,
 		Kind:         kind,
-		Title:        strings.TrimSpace(title),
+		Subject:      strings.TrimSpace(title),
 		OuterChan:    "",
 		OuterNo:      "",
 		ChangeValue:  int64(value),
@@ -193,8 +193,8 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 	if l.ChangeValue == 0 {
 		return errors.New("incorrect value")
 	}
-	l.Title = strings.TrimSpace(l.Title)
-	if l.Title == "" {
+	l.Subject = strings.TrimSpace(l.Subject)
+	if l.Subject == "" {
 		return errors.New("wallet log title can't empty")
 	}
 	isUpdate := l.Id > 0
@@ -211,7 +211,7 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 		"amount":        l.ChangeValue,
 		"procedure_fee": l.ProcedureFee,
 		"balance":       l.Balance,
-		"title":         l.Title,
+		"title":         l.Subject,
 		"outer_no":      l.OuterNo,
 	})
 	msq.Push(msq.WalletLogTopic, string(bytes))

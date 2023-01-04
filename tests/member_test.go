@@ -1,11 +1,12 @@
 package tests
 
 import (
+	"testing"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/tests/ti"
-	"testing"
-	"time"
 )
 
 func TestCreateNewMember(t *testing.T) {
@@ -19,12 +20,12 @@ func TestCreateNewMember(t *testing.T) {
 		t.FailNow()
 	}
 	v := &member.Member{
-		User:   phone,
-		Pwd:    domain.Md5("123456"),
-		Avatar: "",
-		Phone:  phone,
-		Email:  "",
-		Flag:   0,
+		Username: phone,
+		Password: domain.Md5("123456"),
+		Avatar:   "",
+		Phone:    phone,
+		Email:    "",
+		UserFlag: 0,
 	}
 	m := repo.CreateMember(v) //创建会员
 	id, err := m.Save()
@@ -93,7 +94,7 @@ func TestModifyPassword(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	if o := m.GetValue().Pwd; o != NewPassword {
+	if o := m.GetValue().Password; o != NewPassword {
 		t.Logf("登陆密码不正确")
 		t.FailNow()
 	}

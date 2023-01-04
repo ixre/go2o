@@ -126,7 +126,7 @@ func (s *memberService) GetMember(_ context.Context, id *proto.MemberIdRequest) 
 	if iv != nil {
 		v := iv.GetValue()
 		if len(v.TradePassword) == 0 {
-			v.Flag |= member.FlagNoTradePasswd
+			v.UserFlag |= member.FlagNoTradePasswd
 		}
 		return s.parseMemberDto(&v), nil
 	}
@@ -184,7 +184,7 @@ func (s *memberService) GetToken(_ context.Context, r *proto.GetTokenRequest) (*
 	if r.Reset_ || (pubToken == "" && r.MemberId > 0) {
 		m := s.getMemberValue(r.MemberId)
 		if m != nil {
-			return &proto.String{Value: md.ResetToken(r.MemberId, m.Pwd)}, nil
+			return &proto.String{Value: md.ResetToken(r.MemberId, m.Password)}, nil
 		}
 	}
 	return &proto.String{Value: pubToken}, nil
@@ -305,7 +305,7 @@ func (s *memberService) GetMemberLevel(_ context.Context, i *proto.Int32) (*prot
 // SaveMemberLevel 保存会员等级信息
 func (s *memberService) SaveMemberLevel(_ context.Context, level *proto.SMemberLevel) (*proto.Result, error) {
 	lv := &member.Level{
-		ID:            int(level.Id),
+		Id:            int(level.Id),
 		Name:          level.Name,
 		RequireExp:    int(level.RequireExp),
 		ProgramSignal: level.ProgramSignal,
@@ -352,7 +352,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		MemberId:    r.MemberId,
 		OuterNo:     v.OuterNo,
 		Kind:        int32(v.Kind),
-		Title:       v.Title,
+		Title:       v.Subject,
 		Amount:      float64(v.ChangeValue),
 		TradeFee:    float64(v.ProcedureFee),
 		ReviewState: int32(v.AuditState),
@@ -400,14 +400,14 @@ func (s *memberService) CompareCode(_ context.Context, r *proto.CompareCodeReque
 	return s.success(nil), nil
 }
 
-// ChangeUser 更改会员用户名
-func (s *memberService) ChangeUser(_ context.Context, r *proto.ChangeUserRequest) (*proto.Result, error) {
+// ChangeUsername 更改会员用户名
+func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUserRequest) (*proto.Result, error) {
 	var err error
 	m := s.repo.GetMember(int64(r.MemberId))
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		if err = m.ChangeUser(r.User); err == nil {
+		if err = m.ChangeUsername(r.Username); err == nil {
 			return s.success(nil), nil
 		}
 	}
@@ -425,11 +425,11 @@ func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.MemberIdReq
 		lv := im.GetLevel()
 		level.LevelName = lv.Name
 		level.ProgramSignal = lv.ProgramSignal
-		nextLv := s.repo.GetManager().LevelManager().GetNextLevelById(lv.ID)
+		nextLv := s.repo.GetManager().LevelManager().GetNextLevelById(lv.Id)
 		if nextLv == nil {
 			level.NextLevel = -1
 		} else {
-			level.NextLevel = int32(nextLv.ID)
+			level.NextLevel = int32(nextLv.Id)
 			level.NextLevelName = nextLv.Name
 			level.NextProgramSignal = nextLv.ProgramSignal
 			level.RequireExp = int32(nextLv.RequireExp - v.Exp)
@@ -438,8 +438,18 @@ func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.MemberIdReq
 	return level, nil
 }
 
-// UpdateLevel 更改会员等级
-func (s *memberService) UpdateLevel(_ context.Context, r *proto.UpdateLevelRequest) (*proto.Result, error) {
+// ChangeLevel 更改会员等级
+func (s *memberService) ChangeLevel(_ context.Context, r *proto.ChangeLevelRequest) (*proto.Result, error) {
+	if len(r.LevelCode) > 0 {
+		if r.Level != 0 {
+			return s.error(errors.New("levelCode和level不能同时设置")), nil
+		}
+		lv := s.repo.GetManager().LevelManager().GetLevelByProgramSign(r.LevelCode)
+		if lv == nil {
+			return s.error(fmt.Errorf("no such level, code=%s", r.LevelCode)), nil
+		}
+		r.Level = int32(lv.Id)
+	}
 	m := s.repo.GetMember(r.MemberId)
 	var err error
 	if m == nil {
@@ -492,9 +502,9 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	}
 	salt := util.RandString(6)
 	v := &member.Member{
-		User:     r.Username,
+		Username: r.Username,
 		Salt:     salt,
-		Pwd:      domain.Sha1Pwd(r.Password, salt),
+		Password: domain.Sha1Pwd(r.Password, salt),
 		Nickname: r.Nickname,
 		RealName: "",
 		Avatar:   "", //todo: default avatar
@@ -502,10 +512,10 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		Email:    r.Email,
 		RegFrom:  r.RegFrom,
 		RegIp:    r.RegIp,
-		Flag:     int(r.Flag),
+		UserFlag: int(r.Flag),
 	}
 	// 验证邀请码
-	inviterId, err := s.repo.GetManager().CheckInviteRegister(r.InviteCode)
+	inviterId, err := s.repo.GetManager().CheckInviteRegister(r.InviterCode)
 	if err != nil {
 		return &proto.RegisterResponse{
 			ErrCode: 2,
@@ -685,10 +695,10 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 	}
 	im := s.repo.GetMember(memberId)
 	val := im.GetValue()
-	if val.Pwd != domain.Sha1Pwd(pwd, val.Salt) {
+	if val.Password != domain.Sha1Pwd(pwd, val.Salt) {
 		return nil, 1, de.ErrCredential
 	}
-	if val.Flag&member.FlagLocked == member.FlagLocked {
+	if val.UserFlag&member.FlagLocked == member.FlagLocked {
 		return nil, 3, member.ErrMemberLocked
 	}
 	if update {
@@ -709,24 +719,26 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 		return ret, nil
 	} else {
 		ret.MemberId = v.Id
-		ret.UserCode = v.Code
+		ret.UserCode = v.UserCode
 	}
 	return ret, nil
 }
 
 // GrantAccessToken 发放访问令牌
 func (s *memberService) GrantAccessToken(_ context.Context, request *proto.GrantAccessTokenRequest) (*proto.GrantAccessTokenResponse, error) {
-	if request.Expire <= 0 {
-		return &proto.GrantAccessTokenResponse{Error: "令牌有效时间错误"}, nil
+	now := time.Now().Unix()
+	if request.ExpiresTime <= now {
+		return &proto.GrantAccessTokenResponse{
+			Error: fmt.Sprintf("令牌有效时间已过有效期: value=%d", request.ExpiresTime),
+		}, nil
 	}
 	im := s.repo.GetMember(request.MemberId)
 	if im == nil {
 		return &proto.GrantAccessTokenResponse{Error: member.ErrNoSuchMember.Error()}, nil
 	}
-	expiresTime := time.Now().Unix() + request.Expire
 	// 创建token并返回
 	claims := api.CreateClaims(strconv.Itoa(int(request.MemberId)), "go2o",
-		"go2o-api-jwt", expiresTime).(jwt.MapClaims)
+		"go2o-api-jwt", request.ExpiresTime).(jwt.MapClaims)
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
 		log.Println("[ go2o][ error]: grant access token error ", err.Error())
@@ -739,12 +751,11 @@ func (s *memberService) GrantAccessToken(_ context.Context, request *proto.Grant
 	}
 	return &proto.GrantAccessTokenResponse{
 		AccessToken: token,
-		ExpiresTime: expiresTime,
 	}, nil
 }
 
 // CheckAccessToken 检查令牌是否有效
-func (s *memberService) CheckAccessToken(c context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
+func (s *memberService) CheckAccessToken(_ context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
 	if len(request.AccessToken) == 0 {
 		return &proto.CheckAccessTokenResponse{Error: "令牌不能为空"}, nil
 	}
@@ -803,8 +814,8 @@ func (s *memberService) renewAccessToken(request *proto.CheckAccessTokenRequest,
 		}
 	}
 	ret, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
-		MemberId: aud,
-		Expire:   request.RenewExpiresTime,
+		MemberId:    aud,
+		ExpiresTime: request.RenewExpiresTime,
 	})
 	if len(ret.Error) > 0 {
 		return &proto.CheckAccessTokenResponse{
@@ -1209,12 +1220,12 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 		num := iv.GetSubInvitationNum(arr)
 		for i := 0; i < l; i++ {
 			rows[i].InvitationNum = num[rows[i].MemberId]
-			rows[i].Avatar = format.GetResUrl(rows[i].Avatar)
+			rows[i].Portrait = format.GetResUrl(rows[i].Portrait)
 			ret.Data = append(ret.Data, &proto.SInvitationMember{
 				MemberId: int64(rows[i].MemberId),
-				User:     rows[i].User,
+				Username: rows[i].Username,
 				Level:    rows[i].Level,
-				Portrait: rows[i].Avatar,
+				Portrait: rows[i].Portrait,
 				Nickname: rows[i].Nickname,
 				Phone:    rows[i].Phone,
 				RegTime:  rows[i].RegTime,
@@ -1569,7 +1580,7 @@ func (s *memberService) changePhone(memberId int64, phone string) error {
 
 func (s *memberService) parseLevelDto(src *member.Level) *proto.SMemberLevel {
 	return &proto.SMemberLevel{
-		Id:            int32(src.ID),
+		Id:            int32(src.Id),
 		Name:          src.Name,
 		RequireExp:    int32(src.RequireExp),
 		ProgramSignal: src.ProgramSignal,
@@ -1581,8 +1592,8 @@ func (s *memberService) parseLevelDto(src *member.Level) *proto.SMemberLevel {
 func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 	return &proto.SMember{
 		Id:             src.Id,
-		User:           src.User,
-		UserCode:       src.Code,
+		Username:       src.Username,
+		UserCode:       src.UserCode,
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
@@ -1590,7 +1601,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegIp:          src.RegIp,
 		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
-		Flag:           int32(src.Flag),
+		Flag:           int32(src.UserFlag),
 		Portrait:       src.Avatar,
 		Phone:          src.Phone,
 		Email:          src.Email,

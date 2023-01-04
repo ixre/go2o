@@ -18,8 +18,8 @@ func TestGrantMemberAccessToken(t *testing.T) {
 	var memberId int64 = 1
 	s := impl.MemberService
 	token, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
-		MemberId: memberId,
-		Expire:   720,
+		MemberId:    memberId,
+		ExpiresTime: time.Now().Unix() + 720,
 	})
 	if len(token.Error) > 0 {
 		t.Error(token.Error)
@@ -50,7 +50,6 @@ func TestCheckMemberAccessToken(t *testing.T) {
 	t.Log(typeconv.MustJson(ret))
 	t.Log("会员Id", ret.MemberId)
 }
-
 
 // 测试检查交易密码
 func TestCheckTradePassword(t *testing.T) {
@@ -87,4 +86,19 @@ func TestChangeHeadPortrait(t *testing.T) {
 		t.Log(r.ErrMsg)
 		t.FailNow()
 	}
+}
+
+func TestChangeMemberLevel(t *testing.T){
+	r, _ := impl.MemberService.ChangeLevel(context.TODO(),
+		&proto.ChangeLevelRequest{
+			MemberId:       702,
+			Level:          0,
+			LevelCode:      "agent1",
+			Review:         false,
+			PaymentOrderId: 0,
+		})
+	if r.ErrCode > 0 {
+		t.Log(r.ErrMsg)
+		t.FailNow()
+	}	
 }

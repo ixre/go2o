@@ -8,7 +8,7 @@
  */
 package valueobject
 
-// g.id,g.product_id,g.sku_id,g.is_present,g.prom_flag,g.stock_num,g.sale_num,
+// g.id,g.product_id,g.sku_id,g.is_present,g.p_flag,g.stock_num,g.sale_num,
 //i.cat_id,i.name as name,i.code,i.img,i.price,i.sale_price
 
 // 完整的商品信息
@@ -42,8 +42,8 @@ type Goods struct {
 	SkuId     int64 `db:"sku_id"`
 	IsPresent int32 `db:"is_present"`
 
-	// 促销标志
-	PromotionFlag int32 `db:"prom_flag"`
+	// 商品标志
+	ItemFlag int `db:"item_flag"`
 
 	// 库存
 	StockNum int32 `db:"stock_num"`
