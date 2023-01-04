@@ -745,7 +745,7 @@ func (s *memberService) GrantAccessToken(_ context.Context, request *proto.Grant
 }
 
 // CheckAccessToken 检查令牌是否有效
-func (s *memberService) CheckAccessToken(c context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
+func (s *memberService) CheckAccessToken(_ context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
 	if len(request.AccessToken) == 0 {
 		return &proto.CheckAccessTokenResponse{Error: "令牌不能为空"}, nil
 	}
