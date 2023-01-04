@@ -46,7 +46,8 @@ type itemService struct {
 }
 
 func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
-	goodsRepo item.IItemRepo, goodsQuery *query.ItemQuery,
+	goodsRepo item.IItemRepo,
+	goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProductModelRepo,
 	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo) *itemService {
 	return &itemService{
