@@ -27,3 +27,10 @@ func TestPagingShopGoodsRequest(t *testing.T) {
 		t.Log(len(goods.Data), typeconv.MustJson(goods.Data))
 	}
 }
+
+func TestGetItem(t *testing.T) {
+	goods, _ := impl.ItemService.GetItem(context.TODO(), &proto.Int64{
+		Value: 1,
+	})
+	t.Log(typeconv.MustJson(goods))
+}

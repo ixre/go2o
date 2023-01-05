@@ -41,5 +41,5 @@ func GrantFlag(field, flag int) (int, error) {
 // TestFlag 测试是否包含标志
 func TestFlag(field, flag int) bool {
 	f := int(math.Abs(float64(flag)))
-	return field& f != f
+	return field&f == f
 }
