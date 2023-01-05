@@ -36,16 +36,22 @@ const (
 
 // 商品标志
 const (
+	// 自营商品
+	FlagSelfSales = 1
 	// 新品
-	FlagNewGoods = 1
+	FlagNewGoods = 2
 	// 热销商品
-	FlagHotSale = 2
+	FlagHotSale = 4
 	// 推荐商品
-	FlagRecommend = 4
+	FlagRecommend = 8
 	// 赠品
-	FlagGift = 8
+	FlagGift = 16
 	// 分销商品
-	FlagAffilite = 16
+	FlagAffilite = 32
+	// 免邮
+	FlagFreeDelivery = 64
+	// 平台配送
+	FlagSelfDelivery = 128
 )
 
 var (
@@ -301,11 +307,7 @@ type (
 		// GetOnShelvesGoods 获取在货架上的商品
 		GetOnShelvesGoods(mchId int64, start, end int,
 			sortBy string) []*valueobject.Goods
-
-		// GetPagedOnShelvesGoods 获取在货架上的商品
-		GetPagedOnShelvesGoods(mchId int64, catIds []int, start, end int,
-			where, orderBy string) (total int, goods []*valueobject.Goods)
-
+	
 		// GetGoodsByIds 根据编号获取商品
 		GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error)
 
@@ -379,8 +381,6 @@ type (
 		Code string `db:"code"`
 		// 主图
 		Image string `db:"image"`
-		// 是否为赠品
-		IsPresent int32 `db:"is_present"`
 		// 销售价格区间
 		PriceRange string `db:"price_range"`
 		// 总库存

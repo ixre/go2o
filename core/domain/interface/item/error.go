@@ -16,9 +16,6 @@ var (
 	ErrNoSuchSku = domain.NewError(
 		"err_item_no_such_item_sku", "商品SKU不存在")
 
-	ErrNotBindShop = domain.NewError(
-		"err_item_not_bind_shop", "请选择商品上架的店铺")
-
 	ErrIncorrectShopOfItem = domain.NewError(
 		"err_item_not_bind_shop", "商品绑定的店铺非法")
 

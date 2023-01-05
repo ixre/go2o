@@ -11,6 +11,7 @@ package query
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
@@ -171,7 +172,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		item_info.cat_id,item_info.vendor_id,item_info.brand_id,item_info.shop_id,
 		item_info.shop_cat_id,item_info.express_tid,item_info.title,
 		item_info.short_title,item_info.code,item_info.image,
-		item_info.is_present,ws_item.price_range,item_info.stock_num,
+		ws_item.price_range,item_info.stock_num,
 		item_info.sale_num,item_info.sku_num,item_info.sku_id,item_info.cost,
 		ws_item.price,item_info.retail_price,item_info.weight,item_info.bulk,
 		item_info.shelve_state,item_info.audit_state,item_info.review_remark,
@@ -279,4 +280,31 @@ func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int64, start, end int,
 	}
 
 	return total, e
+}
+
+// GetPagedOnShelvesGoods 获取已上架的商品
+func (i ItemQuery) GetPagedOnShelvesGoods(shopId int64,
+	catIds []int, flag int, start, end int,
+	where, orderBy string) (int, []*valueobject.Goods) {
+	total := 0
+	if len(catIds) > 0 {
+		where += fmt.Sprintf(" AND cat.id IN (%s)",
+			format.IntArrStrJoin(catIds))
+	}
+	if flag > 0 {
+		where += fmt.Sprintf(" AND (item_info.item_flag & %d = %d)", flag, flag)
+	}
+	var list = make([]*valueobject.Goods, 0)
+	s := fmt.Sprintf(`SELECT item_info.* FROM item_info INNER JOIN product_category cat
+		 ON item_info.cat_id=cat.id
+		 WHERE ($1 <= 0 OR item_info.shop_id = $2) AND item_info.audit_state= $3 AND item_info.shelve_state= $4
+		  %s ORDER BY %s LIMIT $6 OFFSET $5`, where, orderBy)
+	err := i.o.SelectByQuery(&list, s, shopId, shopId,
+		enum.ReviewPass, item.ShelvesOn, start, end-start)
+
+	log.Print(s)
+	if err != nil {
+		log.Println("[ Go2o][ Repo][ Error]:", err.Error(), s)
+	}
+	return total, list
 }

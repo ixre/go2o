@@ -2,9 +2,10 @@ package domain
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/tests/ti"
-	"testing"
 )
 
 // 检查商品库存
@@ -173,4 +174,30 @@ func TestSaveItemImages(t *testing.T) {
 		t.Error(err)
 		t.Failed()
 	}
+}
+
+func TestSaveItemFreeDeliveryFlag(t *testing.T) {
+	var itemId int64 = 1
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	iv := it.GetValue()
+	iv.ExpressTid = 0
+	err := it.SetValue(iv)
+	if err == nil {
+		_, err = it.Save()
+	}
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestCheckContainerItemFlag(t *testing.T) {
+	t.Log(-1&item.FlagNewGoods == item.FlagNewGoods)
+}
+
+func TestAuditItem(t *testing.T) {
+	var itemId int64 = 1
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	it.Review(true, "")
 }
