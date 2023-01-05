@@ -8,7 +8,7 @@
  */
 package valueobject
 
-// g.id,g.product_id,g.sku_id,g.is_present,g.p_flag,g.stock_num,g.sale_num,
+// g.id,g.product_id,g.sku_id,,g.p_flag,g.stock_num,g.sale_num,
 //i.cat_id,i.name as name,i.code,i.img,i.price,i.sale_price
 
 // 完整的商品信息

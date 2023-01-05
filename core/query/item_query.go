@@ -172,7 +172,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		item_info.cat_id,item_info.vendor_id,item_info.brand_id,item_info.shop_id,
 		item_info.shop_cat_id,item_info.express_tid,item_info.title,
 		item_info.short_title,item_info.code,item_info.image,
-		item_info.is_present,ws_item.price_range,item_info.stock_num,
+		ws_item.price_range,item_info.stock_num,
 		item_info.sale_num,item_info.sku_num,item_info.sku_id,item_info.cost,
 		ws_item.price,item_info.retail_price,item_info.weight,item_info.bulk,
 		item_info.shelve_state,item_info.audit_state,item_info.review_remark,
