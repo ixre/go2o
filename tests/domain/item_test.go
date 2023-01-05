@@ -190,3 +190,14 @@ func TestSaveItemFreeDeliveryFlag(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestCheckContainerItemFlag(t *testing.T) {
+	t.Log(-1&item.FlagNewGoods == item.FlagNewGoods)
+}
+
+func TestAuditItem(t *testing.T) {
+	var itemId int64 = 1
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	it.Review(true, "")
+}

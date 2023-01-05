@@ -88,3 +88,5 @@ ALTER TABLE IF EXISTS public.wal_wallet_log
     RENAME "title" TO subject;
  -- 删除店铺表
 DROP TABLE IF EXISTS public.mch_shop;
+-- 重置商品标志
+update public.item_info set item_flag = 0 WHERE item_flag < 0;

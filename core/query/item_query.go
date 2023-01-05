@@ -301,8 +301,10 @@ func (i ItemQuery) GetPagedOnShelvesGoods(shopId int64,
 		  %s ORDER BY %s LIMIT $6 OFFSET $5`, where, orderBy)
 	err := i.o.SelectByQuery(&list, s, shopId, shopId,
 		enum.ReviewPass, item.ShelvesOn, start, end-start)
+
+	log.Print(s)
 	if err != nil {
-		log.Println("[ Go2o][ Repo][ Error]:", err.Error())
+		log.Println("[ Go2o][ Repo][ Error]:", err.Error(), s)
 	}
 	return total, list
 }
