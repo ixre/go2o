@@ -229,7 +229,7 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 	if err == nil {
 		// 检测店铺
 		if v.ShopId <= 0 {
-			return item.ErrNotBindShop
+			return item.ErrIncorrectShopOfItem
 		}
 		isp := i.shopRepo.GetShop(v.ShopId)
 		if isp == nil {

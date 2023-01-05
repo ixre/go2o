@@ -82,7 +82,7 @@ func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 		PriceRange:  src.PriceRange,
 		StockNum:    src.StockNum,
 		ShelveState: item.ShelvesOn,
-		AuditState: 0,
+		AuditState:  0,
 		UpdateTime:  0,
 	}
 }
@@ -132,6 +132,7 @@ func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
 		CategoryId: int32(src.CategoryId),
 		VendorId:   src.VendorId,
 		BrandId:    int32(src.BrandId),
+		ShopId:     src.ShopId,
 		ShopCatId:  0,                     //todo:??
 		ExpressTid: int32(src.ExpressTid), //src.,
 		Title:      src.Title,
@@ -139,15 +140,13 @@ func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
 		Code:       src.Code,
 		Image:      image,
 		Images:     src.Images,
-		IsPresent:  0, //todo:???
 		PriceRange: src.PriceRange,
 		StockNum:   src.StockNum,
 		SaleNum:    0,
 		SkuId:      src.SkuId,
 		Cost:       src.Cost,
 		Price:      src.Price,
-		//RetailPrice: src.Price,
-		SkuArray: make([]*item.Sku, len(src.SkuArray)),
+		SkuArray:   make([]*item.Sku, len(src.SkuArray)),
 	}
 	for i, v := range src.SkuArray {
 		dst.SkuArray[i] = Sku(v)
