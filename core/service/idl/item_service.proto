@@ -47,12 +47,10 @@ service ItemService {
     // 获取商品详细数据
     rpc GetItemDetailData (ItemDetailRequest) returns (String) {
     }
-    // 根据销售标签获取指定数目的商品
-    rpc GetValueGoodsBySaleLabel (GetItemsByLabelRequest) returns (PagingShopGoodsResponse) {
-    }
-    // 获取店铺分页上架的商品
-    rpc GetShopPagedOnShelvesGoods (PagingShopGoodsRequest) returns (PagingShopGoodsResponse) {
-    }
+    // // 根据销售标签获取指定数目的商品
+    // rpc GetValueGoodsBySaleLabel (GetItemsByLabelRequest) returns (PagingShopGoodsResponse) {
+    // }
+  
     // 获取上架商品数据（分页）
     rpc GetPagedOnShelvesItem (PagingGoodsRequest) returns (PagingGoodsResponse) {
     }
@@ -101,11 +99,6 @@ message PagingGoodsRequest {
     SPagingParams params = 5;
 }
 
-message PagingShopGoodsRequest {
-    int64 shopId = 1;
-    int64 categoryId = 2;
-    SPagingParams params = 3;
-}
 
 message SaleLabelItemsRequest_ {
     int64 shopId = 1;

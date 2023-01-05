@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
@@ -55,4 +56,40 @@ func TestPagingBalanceLog(t *testing.T) {
 			Params:      params,
 		})
 	t.Log(typeconv.MustJson(r))
+}
+
+func TestQueryPagingFlagGoods(t *testing.T) {
+	params := &proto.SPagingParams{
+		Parameters: nil,
+		SortBy:     "",
+		Begin:      0,
+		End:        10,
+	}
+	r, _ := impl.QueryService.PagedOnShelvesGoods(context.TODO(),
+		&proto.PagingShopGoodsRequest{
+			ShopId:     0,
+			CategoryId: 0,
+			Flag:       item.FlagNewGoods,
+			Params:     params,
+		})
+	t.Log(typeconv.MustJson(r))
+}
+
+func TestPagingShopGoodsRequest(t *testing.T) {
+	goods, err := impl.QueryService.PagedOnShelvesGoods(context.TODO(), &proto.PagingShopGoodsRequest{
+		ShopId:     0,
+		CategoryId: 2185,
+		Params: &proto.SPagingParams{
+			Begin:  0,
+			End:    20,
+			Where:  "",
+			SortBy: "item_info.sale_num DESC",
+		},
+	})
+
+	if err != nil {
+		t.Error(err)
+	} else {
+		t.Log(len(goods.Data), typeconv.MustJson(goods.Data))
+	}
 }

@@ -202,7 +202,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	CommonDao = impl.NewCommDao(orm, sto, adRepo, catRepo)
 	portalDao := impl.NewPortalDao(orm)
 	PortalService = NewPortalService(orm, CommonDao, portalDao)
-	QueryService = NewQueryService(orm, sto)
+	QueryService = NewQueryService(orm, sto,catRepo)
 	AppService = NewAppService(sto, orm)
 	RbacService = NewRbacService(sto, orm, registryRepo)
 	CodeService = NewCodeService(sto, orm)

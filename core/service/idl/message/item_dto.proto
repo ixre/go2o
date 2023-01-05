@@ -22,11 +22,6 @@ message GetItemsByLabelRequest {
   int64 end = 4;
 }
 
-message PagingShopGoodsResponse {
-  int64 total = 1;
-  repeated SGoods data = 2;
-}
-
 message PagingGoodsResponse {
   int64 total = 1;
   repeated SUnifiedViewItem data = 2;

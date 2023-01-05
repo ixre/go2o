@@ -44,10 +44,6 @@ type ItemServiceClient interface {
 	SetShelveState(ctx context.Context, in *ShelveStateRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取商品详细数据
 	GetItemDetailData(ctx context.Context, in *ItemDetailRequest, opts ...grpc.CallOption) (*String, error)
-	// 根据销售标签获取指定数目的商品
-	GetValueGoodsBySaleLabel(ctx context.Context, in *GetItemsByLabelRequest, opts ...grpc.CallOption) (*PagingShopGoodsResponse, error)
-	// 获取店铺分页上架的商品
-	GetShopPagedOnShelvesGoods(ctx context.Context, in *PagingShopGoodsRequest, opts ...grpc.CallOption) (*PagingShopGoodsResponse, error)
 	// 获取上架商品数据（分页）
 	GetPagedOnShelvesItem(ctx context.Context, in *PagingGoodsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error)
 	// 获取上架商品数据
@@ -179,24 +175,6 @@ func (c *itemServiceClient) GetItemDetailData(ctx context.Context, in *ItemDetai
 	return out, nil
 }
 
-func (c *itemServiceClient) GetValueGoodsBySaleLabel(ctx context.Context, in *GetItemsByLabelRequest, opts ...grpc.CallOption) (*PagingShopGoodsResponse, error) {
-	out := new(PagingShopGoodsResponse)
-	err := c.cc.Invoke(ctx, "/ItemService/GetValueGoodsBySaleLabel", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *itemServiceClient) GetShopPagedOnShelvesGoods(ctx context.Context, in *PagingShopGoodsRequest, opts ...grpc.CallOption) (*PagingShopGoodsResponse, error) {
-	out := new(PagingShopGoodsResponse)
-	err := c.cc.Invoke(ctx, "/ItemService/GetShopPagedOnShelvesGoods", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *itemServiceClient) GetPagedOnShelvesItem(ctx context.Context, in *PagingGoodsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error) {
 	out := new(PagingGoodsResponse)
 	err := c.cc.Invoke(ctx, "/ItemService/GetPagedOnShelvesItem", in, out, opts...)
@@ -322,10 +300,6 @@ type ItemServiceServer interface {
 	SetShelveState(context.Context, *ShelveStateRequest) (*Result, error)
 	// 获取商品详细数据
 	GetItemDetailData(context.Context, *ItemDetailRequest) (*String, error)
-	// 根据销售标签获取指定数目的商品
-	GetValueGoodsBySaleLabel(context.Context, *GetItemsByLabelRequest) (*PagingShopGoodsResponse, error)
-	// 获取店铺分页上架的商品
-	GetShopPagedOnShelvesGoods(context.Context, *PagingShopGoodsRequest) (*PagingShopGoodsResponse, error)
 	// 获取上架商品数据（分页）
 	GetPagedOnShelvesItem(context.Context, *PagingGoodsRequest) (*PagingGoodsResponse, error)
 	// 获取上架商品数据
@@ -387,12 +361,6 @@ func (UnimplementedItemServiceServer) SetShelveState(context.Context, *ShelveSta
 }
 func (UnimplementedItemServiceServer) GetItemDetailData(context.Context, *ItemDetailRequest) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetItemDetailData not implemented")
-}
-func (UnimplementedItemServiceServer) GetValueGoodsBySaleLabel(context.Context, *GetItemsByLabelRequest) (*PagingShopGoodsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetValueGoodsBySaleLabel not implemented")
-}
-func (UnimplementedItemServiceServer) GetShopPagedOnShelvesGoods(context.Context, *PagingShopGoodsRequest) (*PagingShopGoodsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetShopPagedOnShelvesGoods not implemented")
 }
 func (UnimplementedItemServiceServer) GetPagedOnShelvesItem(context.Context, *PagingGoodsRequest) (*PagingGoodsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPagedOnShelvesItem not implemented")
@@ -634,42 +602,6 @@ func _ItemService_GetItemDetailData_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ItemServiceServer).GetItemDetailData(ctx, req.(*ItemDetailRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ItemService_GetValueGoodsBySaleLabel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetItemsByLabelRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ItemServiceServer).GetValueGoodsBySaleLabel(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ItemService/GetValueGoodsBySaleLabel",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetValueGoodsBySaleLabel(ctx, req.(*GetItemsByLabelRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ItemService_GetShopPagedOnShelvesGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PagingShopGoodsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ItemServiceServer).GetShopPagedOnShelvesGoods(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ItemService/GetShopPagedOnShelvesGoods",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetShopPagedOnShelvesGoods(ctx, req.(*PagingShopGoodsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -922,14 +854,6 @@ var ItemService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetItemDetailData",
 			Handler:    _ItemService_GetItemDetailData_Handler,
-		},
-		{
-			MethodName: "GetValueGoodsBySaleLabel",
-			Handler:    _ItemService_GetValueGoodsBySaleLabel_Handler,
-		},
-		{
-			MethodName: "GetShopPagedOnShelvesGoods",
-			Handler:    _ItemService_GetShopPagedOnShelvesGoods_Handler,
 		},
 		{
 			MethodName: "GetPagedOnShelvesItem",

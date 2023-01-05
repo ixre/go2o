@@ -307,11 +307,7 @@ type (
 		// GetOnShelvesGoods 获取在货架上的商品
 		GetOnShelvesGoods(mchId int64, start, end int,
 			sortBy string) []*valueobject.Goods
-
-		// GetPagedOnShelvesGoods 获取在货架上的商品
-		GetPagedOnShelvesGoods(mchId int64, catIds []int, start, end int,
-			where, orderBy string) (total int, goods []*valueobject.Goods)
-
+	
 		// GetGoodsByIds 根据编号获取商品
 		GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error)
 

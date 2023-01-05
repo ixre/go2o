@@ -2,9 +2,12 @@ package impl
 
 import (
 	"context"
+	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
@@ -30,8 +33,24 @@ type queryService struct {
 	shopQuery       *query.ShopQuery
 	orderQuery      *query.OrderQuery
 	memberQuery     *query.MemberQuery
+	itemQuery       *query.ItemQuery
 	statisticsQuery *query.StatisticsQuery
+	catRepo product.ICategoryRepo
 	proto.UnimplementedQueryServiceServer
+}
+
+
+func NewQueryService(o orm.Orm, s storage.Interface,
+	catRepo product.ICategoryRepo) *queryService {
+	shopQuery := query.NewShopQuery(o, s)
+	return &queryService{
+		shopQuery:       shopQuery,
+		itemQuery:       query.NewItemQuery(o),
+		memberQuery:     query.NewMemberQuery(o),
+		orderQuery:      query.NewOrderQuery(o),
+		catRepo :catRepo,
+		statisticsQuery: query.NewStatisticsQuery(o, s),
+	}
 }
 
 // SummaryStatistics implements proto.QueryServiceServer
@@ -61,15 +80,6 @@ func (q *queryService) MemberStatistics(_ context.Context, req *proto.MemberStat
 	}, nil
 }
 
-func NewQueryService(o orm.Orm, s storage.Interface) *queryService {
-	shopQuery := query.NewShopQuery(o, s)
-	return &queryService{
-		shopQuery:       shopQuery,
-		memberQuery:     query.NewMemberQuery(o),
-		orderQuery:      query.NewOrderQuery(o),
-		statisticsQuery: query.NewStatisticsQuery(o, s),
-	}
-}
 
 // PagingShops 获取分页店铺数据
 func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRequest) (*proto.QueryPagingShopsResponse, error) {
@@ -243,7 +253,7 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 		v.Avatar = format.GetResUrl(v.Avatar)
 		rsp.Value[i] = &proto.MemberListSingle{
 			MemberId:      int64(v.MemberId),
-			Username:          v.Usr,
+			Username:      v.Usr,
 			Nickname:      v.Name,
 			Portrait:      v.Avatar,
 			Level:         v.Level,
@@ -264,7 +274,7 @@ func (q *queryService) SearchMembers(_ context.Context, r *proto.MemberSearchReq
 	for i, v := range list {
 		ret.Value[i] = &proto.MemberListSingle{
 			MemberId: int64(v.Id),
-			Username:     v.User,
+			Username: v.User,
 			Nickname: v.Name,
 			Portrait: v.Avatar,
 		}
@@ -339,4 +349,64 @@ func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.Paging
 		Data:  rows,
 	}
 	return rs, nil
+}
+
+// PagedOnShelvesGoods 获取分页上架的商品
+func (q *queryService) PagedOnShelvesGoods(_ context.Context, r *proto.PagingShopGoodsRequest) (*proto.PagingShopGoodsResponse, error) {
+	ret := &proto.PagingShopGoodsResponse{
+		Total: 0,
+		Data:  make([]*proto.SGoods, 0),
+	}
+	var list []*valueobject.Goods
+	var total int
+	var ids []int
+	if r.CategoryId > 0 {
+		cat := q.catRepo.GlobCatService().GetCategory(int(r.CategoryId))
+		if cat == nil {
+			return ret, nil
+		}
+		ids = cat.GetChildes()
+		ids = append(ids, int(r.CategoryId))
+
+	}
+	if len(strings.TrimSpace(r.Params.SortBy)) == 0 {
+		r.Params.SortBy = "item_info.sort_num DESC,item_info.update_time DESC"
+	}
+	total, list = q.itemQuery.GetPagedOnShelvesGoods(
+		r.ShopId, ids,int(r.Flag),
+		int(r.Params.Begin),
+		int(r.Params.End),
+		r.Params.Where,
+		r.Params.SortBy)
+	ret.Total = int64(total)
+	for _, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		ret.Data = append(ret.Data, q.parseGoods(v))
+	}
+	return ret, nil
+}
+
+
+func (q *queryService) parseGoods(v *valueobject.Goods) *proto.SGoods {
+	return &proto.SGoods{
+		ItemId:      v.ItemId,
+		ProductId:   v.ProductId,
+		VendorId:    int64(v.VendorId),
+		ShopId:      int64(v.ShopId),
+		CategoryId:  v.CategoryId,
+		Title:       v.Title,
+		ShortTitle:  v.ShortTitle,
+		GoodsNo:     v.GoodsNo,
+		Image:       v.Image,
+		RetailPrice: v.RetailPrice,
+		Price:       v.Price,
+		PromPrice:   v.PromPrice,
+		PriceRange:  v.PriceRange,
+		GoodsId:     v.GoodsId,
+		SkuId:       v.SkuId,
+		IsPresent:   v.IsPresent == 1,
+		ItemFlag:    int32(v.ItemFlag),
+		StockNum:    v.StockNum,
+		SaleNum:     v.SaleNum,
+	}
 }
