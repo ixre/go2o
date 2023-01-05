@@ -54,3 +54,33 @@ func TestGetCategoryBrands(t *testing.T) {
 	bytes, _ := json.Marshal(list.Brands)
 	t.Log(string(bytes))
 }
+
+
+func TestUpdateProductDescription(t *testing.T){
+	prod, err := impl.ProductService.GetProduct(context.TODO(), &proto.ProductId{
+		Value: 1,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	prod.Description = "111"+prod.Description
+	ret,_ := impl.ProductService.SaveProduct(context.TODO(),&proto.SaveProductRequest{
+		Id:                prod.Id,
+		CategoryId:        prod.CategoryId,
+		Name:              prod.Name,
+		VendorId:          prod.VendorId,
+		BrandId:           prod.BrandId,
+		Code:              prod.Code,
+		Image:             prod.Image,
+		Description:       prod.Description,
+		Remark:            prod.Remark,
+		State:             prod.State,
+		SortNum:           prod.SortNum,
+		Attrs:             prod.Attrs,
+		UpdateDescription: true,
+	})
+	if ret.ErrCode > 0{
+		t.Error(ret.ErrMsg)
+		t.FailNow()
+	}
+}

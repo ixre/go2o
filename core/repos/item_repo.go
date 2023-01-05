@@ -197,43 +197,6 @@ func (i *itemRepoImpl) SaveValueGoods(v *item.GoodsItem) (int64, error) {
 	return orm.I64(orm.Save(i.o, v, int(v.Id)))
 }
 
-// GetPagedOnShelvesGoods 获取已上架的商品
-func (i *itemRepoImpl) GetPagedOnShelvesGoods(shopId int64, catIds []int,
-	start, end int, where, orderBy string) (int, []*valueobject.Goods) {
-	var s string
-	total := 0
-	catIdStr := ""
-	if catIds != nil && len(catIds) > 0 {
-		catIdStr = fmt.Sprintf(" AND cat.id IN (%s)",
-			format.IntArrStrJoin(catIds))
-	}
-
-	var list = make([]*valueobject.Goods, 0)
-	//err := i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
-	//  INNER JOIN product_category cat ON item_info.cat_id=cat.id
-	//	 WHERE ($1 <=0 OR item_info.shop_id = $2) AND item_info.audit_state= $3
-	//	  AND item_info.shelve_state= $4  %s %s`,
-	//	catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
-	//
-	//if total > 0 {
-	//s = fmt.Sprintf(`SELECT item_info.* FROM item_info INNER JOIN product_category cat
-	//	 ON item_info.cat_id=cat.id
-	//	 WHERE ($1 <=0 OR item_info.shop_id = $2) %s AND item_info.audit_state= $3 AND item_info.shelve_state= $4
-	//	  %s ORDER BY %s item_info.sort_num DESC,item_info.update_time DESC LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
-
-	s = fmt.Sprintf(`SELECT item_info.* FROM item_info INNER JOIN product_category cat
-		 ON item_info.cat_id=cat.id
-		 WHERE ($1 <= 0 OR item_info.shop_id = $2) %s AND item_info.audit_state= $3 AND item_info.shelve_state= $4
-		  %s ORDER BY %s LIMIT $6 OFFSET $5`, catIdStr, where, orderBy)
-	err := i.o.SelectByQuery(&list, s, shopId, shopId,
-		enum.ReviewPass, item.ShelvesOn, start, end-start)
-	//}
-	if err != nil {
-		log.Println("[ Go2o][ Repo][ Error]:", err.Error())
-	}
-	return total, list
-}
-
 // GetOnShelvesGoods 获取指定数量已上架的商品
 func (i *itemRepoImpl) GetOnShelvesGoods(mchId int64, start, end int, sortBy string) []*valueobject.Goods {
 	var e []*valueobject.Goods

@@ -199,8 +199,6 @@ func (p *productService) SaveProduct(_ context.Context, r *proto.SaveProductRequ
 			ret.ErrMsg = product.ErrNoSuchProduct.Error()
 			return ret, nil
 		}
-		// 修改货品时，不会修改详情
-		//v.Description = pro.GetValue().Description
 	} else {
 		pro = p.productRepo.CreateProduct(v)
 	}
@@ -624,16 +622,17 @@ func (p *productService) parseProductDto(v product.Product) *proto.SProduct {
 
 func (p *productService) parseProduct(v *proto.SaveProductRequest) *product.Product {
 	ret := &product.Product{
-		Id:       v.Id,
-		CatId:    int32(v.CategoryId),
-		Name:     v.Name,
-		VendorId: v.VendorId,
-		BrandId:  int32(v.BrandId),
-		Code:     v.Code,
-		Image:    v.Image,
-		Remark:   v.Remark,
-		State:    v.State,
-		SortNum:  v.SortNum,
+		Id:          v.Id,
+		CatId:       int32(v.CategoryId),
+		Name:        v.Name,
+		VendorId:    v.VendorId,
+		BrandId:     int32(v.BrandId),
+		Code:        v.Code,
+		Image:       v.Image,
+		Remark:      v.Remark,
+		State:       v.State,
+		SortNum:     v.SortNum,
+		Description: v.Description,
 	}
 	if v.Attrs != nil {
 		ret.Attrs = make([]*product.AttrValue, len(v.Attrs))

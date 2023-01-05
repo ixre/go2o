@@ -63,8 +63,8 @@ func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 }
 
 // GetItem 获取商品
-func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SItemDataResponse, error) {
-	item := s.itemRepo.GetItem(id.Value)
+func (s *itemService) GetItem(_ context.Context, req *proto.GetItemRequest) (*proto.SItemDataResponse, error) {
+	item := s.itemRepo.GetItem(req.ItemId)
 	if item != nil {
 		ret := parser.ItemDataDto(item.GetValue())
 		skuArr := item.SkuArray()
@@ -81,11 +81,14 @@ func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SItemD
 // 获取商品的标志数据
 func (s *itemService) getFlagData(flag int) *proto.SItemFlagData {
 	return &proto.SItemFlagData{
-		IsNewGoods:  domain.TestFlag(flag, item.FlagNewGoods),
-		IsHotSale:   domain.TestFlag(flag, item.FlagHotSale),
-		IsRecommend: domain.TestFlag(flag, item.FlagRecommend),
-		IsGift:      domain.TestFlag(flag, item.FlagGift),
-		IsAffilite:  domain.TestFlag(flag, item.FlagAffilite),
+		IsNewGoods:     domain.TestFlag(flag, item.FlagNewGoods),
+		IsHotSale:      domain.TestFlag(flag, item.FlagHotSale),
+		IsRecommend:    domain.TestFlag(flag, item.FlagRecommend),
+		IsGift:         domain.TestFlag(flag, item.FlagGift),
+		IsAffilite:     domain.TestFlag(flag, item.FlagAffilite),
+		IsSelfSales:    domain.TestFlag(flag, item.FlagSelfSales),
+		IsFreeDelivery: domain.TestFlag(flag, item.FlagFreeDelivery),
+		IsSelfDelivery: domain.TestFlag(flag, item.FlagSelfDelivery),
 	}
 }
 
@@ -144,6 +147,7 @@ func (*itemService) saveItemFlag(gi item.IGoodsItem, r *proto.SaveItemRequest) {
 	f(item.FlagRecommend, r.FlagData.IsRecommend)
 	f(item.FlagGift, r.FlagData.IsGift)
 	f(item.FlagAffilite, r.FlagData.IsAffilite)
+	f(item.FlagSelfDelivery, r.FlagData.IsSelfDelivery)
 	gi.Save()
 }
 
@@ -375,41 +379,6 @@ func (s *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*pr
 	}, nil
 }
 
-// GetShopPagedOnShelvesGoods 获取分页上架的商品
-func (s *itemService) GetShopPagedOnShelvesGoods(_ context.Context, r *proto.PagingShopGoodsRequest) (*proto.PagingShopGoodsResponse, error) {
-	ret := &proto.PagingShopGoodsResponse{
-		Total: 0,
-		Data:  make([]*proto.SGoods, 0),
-	}
-	var list []*valueobject.Goods
-	var total int
-	var ids []int
-	if r.CategoryId > 0 {
-		cat := s.cateRepo.GlobCatService().GetCategory(int(r.CategoryId))
-		if cat == nil {
-			return ret, nil
-		}
-		ids = cat.GetChildes()
-		ids = append(ids, int(r.CategoryId))
-
-	}
-	if len(strings.TrimSpace(r.Params.SortBy)) == 0 {
-		r.Params.SortBy = "item_info.sort_num DESC,item_info.update_time DESC"
-	}
-	total, list = s.itemRepo.GetPagedOnShelvesGoods(
-		r.ShopId, ids,
-		int(r.Params.Begin),
-		int(r.Params.End),
-		r.Params.Where,
-		r.Params.SortBy)
-	ret.Total = int64(total)
-	for _, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
-		ret.Data = append(ret.Data, s.parseGoods(v))
-	}
-	return ret, nil
-}
-
 func (s *itemService) GetAllSaleLabels(_ context.Context, _ *proto.Empty) (*proto.ItemLabelListResponse, error) {
 	tags := s.labelRepo.LabelService().GetAllSaleLabels()
 	ret := &proto.ItemLabelListResponse{
@@ -459,38 +428,38 @@ func (s *itemService) DeleteSaleLabel(_ context.Context, i *proto.Int64) (*proto
 	return s.error(err), nil
 }
 
-// 根据销售标签获取指定数目的商品
-func (s *itemService) GetValueGoodsBySaleLabel(_ context.Context, r *proto.GetItemsByLabelRequest) (*proto.PagingShopGoodsResponse, error) {
-	tag := s.labelRepo.LabelService().GetSaleLabelByCode(r.Label)
-	ret := &proto.PagingShopGoodsResponse{
-		Data: make([]*proto.SGoods, 0),
-	}
-	if tag != nil {
-		list := tag.GetValueGoods(r.SortBy, int(r.Begin), int(r.End))
-		for _, v := range list {
-			v.Image = format.GetGoodsImageUrl(v.Image)
-			ret.Data = append(ret.Data, s.parseGoods(v))
-		}
-	}
-	return ret, nil
-}
+// // 根据销售标签获取指定数目的商品
+// func (s *itemService) GetValueGoodsBySaleLabel(_ context.Context, r *proto.GetItemsByLabelRequest) (*proto.PagingShopGoodsResponse, error) {
+// 	tag := s.labelRepo.LabelService().GetSaleLabelByCode(r.Label)
+// 	ret := &proto.PagingShopGoodsResponse{
+// 		Data: make([]*proto.SGoods, 0),
+// 	}
+// 	if tag != nil {
+// 		list := tag.GetValueGoods(r.SortBy, int(r.Begin), int(r.End))
+// 		for _, v := range list {
+// 			v.Image = format.GetGoodsImageUrl(v.Image)
+// 			ret.Data = append(ret.Data, s.parseGoods(v))
+// 		}
+// 	}
+// 	return ret, nil
+// }
 
-// 根据分页销售标签获取指定数目的商品
-func (s *itemService) GetPagedValueGoodsBySaleLabel_(_ context.Context, r *proto.SaleLabelItemsRequest_) (*proto.PagingGoodsResponse, error) {
-	tag := s.labelRepo.LabelService().CreateSaleLabel(&item.Label{
-		Id: r.LabelId,
-	})
-	total, list := tag.GetPagedValueGoods(r.Params.SortBy, int(r.Params.Begin), int(r.Params.End))
-	arr := make([]*proto.SUnifiedViewItem, len(list))
-	for i, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ParseGoodsDto_(v)
-	}
-	return &proto.PagingGoodsResponse{
-		Total: int64(total),
-		Data:  arr,
-	}, nil
-}
+// // 根据分页销售标签获取指定数目的商品
+// func (s *itemService) GetPagedValueGoodsBySaleLabel_(_ context.Context, r *proto.SaleLabelItemsRequest_) (*proto.PagingGoodsResponse, error) {
+// 	tag := s.labelRepo.LabelService().CreateSaleLabel(&item.Label{
+// 		Id: r.LabelId,
+// 	})
+// 	total, list := tag.GetPagedValueGoods(r.Params.SortBy, int(r.Params.Begin), int(r.Params.End))
+// 	arr := make([]*proto.SUnifiedViewItem, len(list))
+// 	for i, v := range list {
+// 		v.Image = format.GetGoodsImageUrl(v.Image)
+// 		arr[i] = parser.ParseGoodsDto_(v)
+// 	}
+// 	return &proto.PagingGoodsResponse{
+// 		Total: int64(total),
+// 		Data:  arr,
+// 	}, nil
+// }
 
 // 保存商品的会员价
 func (s *itemService) SaveLevelPrices(_ context.Context, r *proto.SaveLevelPriceRequest) (*proto.Result, error) {
@@ -624,29 +593,5 @@ func (s *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
 		Bulk:        sku.Bulk,
 		Stock:       sku.Stock,
 		SaleNum:     sku.SaleNum,
-	}
-}
-
-func (s *itemService) parseGoods(v *valueobject.Goods) *proto.SGoods {
-	return &proto.SGoods{
-		ItemId:      v.ItemId,
-		ProductId:   v.ProductId,
-		VendorId:    int64(v.VendorId),
-		ShopId:      int64(v.ShopId),
-		CategoryId:  v.CategoryId,
-		Title:       v.Title,
-		ShortTitle:  v.ShortTitle,
-		GoodsNo:     v.GoodsNo,
-		Image:       v.Image,
-		RetailPrice: v.RetailPrice,
-		Price:       v.Price,
-		PromPrice:   v.PromPrice,
-		PriceRange:  v.PriceRange,
-		GoodsId:     v.GoodsId,
-		SkuId:       v.SkuId,
-		IsPresent:   v.IsPresent == 1,
-		ItemFlag:    int32(v.ItemFlag),
-		StockNum:    v.StockNum,
-		SaleNum:     v.SaleNum,
 	}
 }

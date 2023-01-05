@@ -130,7 +130,6 @@ func OrmMapping(orm orm.Orm) {
 	orm.Mapping(merchant.Merchant{}, "mch_merchant")
 	orm.Mapping(merchant.EnterpriseInfo{}, "mch_enterprise_info")
 	orm.Mapping(merchant.ApiInfo{}, "mch_api_info")
-	orm.Mapping(shop.Shop{}, "mch_shop")
 	orm.Mapping(shop.OnlineShop{}, "mch_online_shop")
 	orm.Mapping(shop.OfflineShop{}, "mch_offline_shop")
 	orm.Mapping(merchant.SaleConf{}, "mch_sale_conf")

@@ -55,8 +55,6 @@ type (
 		Code string `db:"code"`
 		// 商品图片
 		Image string `db:"image"`
-		// 是否为赠品
-		IsPresent int32 `db:"is_present"`
 		// 价格区间
 		PriceRange string `db:"price_range"`
 		// 默认SKU

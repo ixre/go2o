@@ -11,16 +11,17 @@ package shop
 
 import (
 	"errors"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/gof/util"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var (
@@ -73,7 +74,14 @@ func (s *onlineShopImpl) Type() int32 {
 }
 
 func (s *onlineShopImpl) GetValue() shop.Shop {
-	panic("implement me")
+	return shop.Shop{
+		Id:       s._shopVal.Id,
+		VendorId: s._shopVal.Id,
+		ShopType: shop.TypeOfflineShop,
+		Name:     s._shopVal.ShopName,
+		Flag:     int32(s._shopVal.Flag),
+		State:    int32(s._shopVal.State),
+	}
 }
 
 func (s *onlineShopImpl) SetValue(*shop.Shop) error {
@@ -145,9 +153,9 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 	}
 	// 判断自营
 	if mv.SelfSales == 1 {
-		dst.Flag |= shop.FlagSelfSale
-	} else if dst.Flag&shop.FlagSelfSale == shop.FlagSelfSale {
-		dst.Flag ^= shop.FlagSelfSale
+		dst.Flag |= shop.FlagSelfSales
+	} else if dst.Flag&shop.FlagSelfSales == shop.FlagSelfSales {
+		dst.Flag ^= shop.FlagSelfSales
 	}
 	dst.Host = v.Host
 	dst.Telephone = v.Telephone

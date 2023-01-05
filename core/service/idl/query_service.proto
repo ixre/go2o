@@ -1,8 +1,9 @@
 syntax = "proto3";
 
 import "global.proto";
-import "message/order_dto.proto";
 import "message/query_dto.proto";
+import "message/order_dto.proto";
+import "message/item_dto.proto";
 
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
@@ -39,6 +40,9 @@ service QueryService {
     // 获取指定账户的流水记录
     rpc PagingMemberAccountLog (PagingAccountLogRequest) returns (MemberAccountPagingLogResponse) {
     } 
+      // 获取店铺分页上架的商品
+    rpc PagedOnShelvesGoods (PagingShopGoodsRequest) returns (PagingShopGoodsResponse) {
+    }
 }
 
 message FavoriteQueryRequest {
@@ -227,5 +231,24 @@ message PagingAccountLogRequest {
     int32 valueFilter = 3;
     // 分页参数
     SPagingParams params = 4;
+  }
+  
+
+// 分页店铺商品请求
+message PagingShopGoodsRequest {
+    // 店铺编号
+    int64 shopId = 1;
+    // 分类编号
+    int64 categoryId = 2;
+    // 商品标签
+    int32 flag = 3;
+    // 分页参数
+    SPagingParams params = 4;
+}
+
+
+message PagingShopGoodsResponse {
+    int64 total = 1;
+    repeated SGoods data = 2;
   }
   

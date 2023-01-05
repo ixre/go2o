@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"errors"
+
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/api"
@@ -56,7 +57,7 @@ func (g goodsApi) newGoods(ctx api.Context) interface{} {
 	}
 	trans, cli, _ := service.ItemServiceClient()
 	defer trans.Close()
-	ret, _ := cli.GetShopPagedOnShelvesGoods(context.TODO(),
+	ret, _ := cli.PagedOnShelvesGoods(context.TODO(),
 		&proto.PagingShopGoodsRequest{
 			ShopId:     int64(shopId),
 			CategoryId: -1,
@@ -90,7 +91,7 @@ func (g goodsApi) hotSalesGoods(ctx api.Context) interface{} {
 	}
 	trans, cli, _ := service.ItemServiceClient()
 	defer trans.Close()
-	ret, _ := cli.GetShopPagedOnShelvesGoods(context.TODO(),
+	ret, _ := cli.PagedOnShelvesGoods(context.TODO(),
 		&proto.PagingShopGoodsRequest{
 			ShopId:     int64(shopId),
 			CategoryId: -1,
@@ -177,10 +178,10 @@ func (g goodsApi) Favorite(ctx api.Context) interface{} {
 //			p, size, begin := j.getMultiParams(t)
 //			switch p {
 //			case "new-goods":
-//				_, result[p] = ss.GetShopPagedOnShelvesGoods(mchId,
+//				_, result[p] = ss.PagedOnShelvesGoods(mchId,
 //					-1, begin, begin+size, "it.id DESC")
 //			case "hot-sales":
-//				_, result[p] = ss.GetShopPagedOnShelvesGoods(mchId,
+//				_, result[p] = ss.PagedOnShelvesGoods(mchId,
 //					-1, begin, begin+size, "item_info.sale_num DESC")
 //			}
 //		}

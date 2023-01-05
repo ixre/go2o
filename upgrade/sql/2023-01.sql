@@ -86,3 +86,14 @@ update mm_member set portrait = portrait = 'static/init/avatar.png' where portra
 
 ALTER TABLE IF EXISTS public.wal_wallet_log
     RENAME "title" TO subject;
+ -- 删除店铺表
+DROP TABLE IF EXISTS public.mch_shop;
+-- 重置商品标志
+update public.item_info set item_flag = 0 WHERE item_flag < 0;
+
+-- 以下VPP需要更新 --
+-- 去掉赠品字段改用flag
+ALTER TABLE IF EXISTS public.item_info
+   DROP is_present;
+   ALTER TABLE IF EXISTS public.item_snapshot
+   DROP is_present;
