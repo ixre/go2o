@@ -66,7 +66,6 @@ message SGoods {
   string priceRange = 13;
   int64 goodsId = 14;
   int64 skuId = 15;
-  bool isPresent = 16;
   // 商品标志
   int32 itemFlag = 17;
   // 库存
@@ -137,7 +136,6 @@ message SaveItemRequest {
   string priceRange = 14;
   int64 goodsId = 15;
   int64 skuId = 16;
-  bool isPresent = 17;
   // 库存
   int32 stockNum = 19;
   // 已售件数
@@ -186,8 +184,6 @@ message SItemDataResponse {
   int64 goodsId = 15;
   // SkuId
   int64 skuId = 16;
-  // 是否为赠品
-  bool isPresent = 17;
   // 促销标志
   int32 itemFlag = 18;
   // 库存
@@ -285,7 +281,6 @@ message SUnifiedViewItem {
   string priceRange = 14;
   int64 goodsId = 15;
   int64 skuId = 16;
-  bool isPresent = 17;
   // 商品标志
   int32 itemFlag = 18;
   // 库存
@@ -390,8 +385,6 @@ message ItemSnapshotResponse {
   string productCode = 13;
   // 商品图片
   repeated string images = 14;
-  // 是否为赠品
-  bool isPresent = 15;
   // 价格区间
   string priceRange = 16;
   // 默认SKU

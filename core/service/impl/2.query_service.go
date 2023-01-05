@@ -404,7 +404,6 @@ func (q *queryService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 		PriceRange:  v.PriceRange,
 		GoodsId:     v.GoodsId,
 		SkuId:       v.SkuId,
-		IsPresent:   v.IsPresent == 1,
 		ItemFlag:    int32(v.ItemFlag),
 		StockNum:    v.StockNum,
 		SaleNum:     v.SaleNum,

@@ -381,8 +381,6 @@ type (
 		Code string `db:"code"`
 		// 主图
 		Image string `db:"image"`
-		// 是否为赠品
-		IsPresent int32 `db:"is_present"`
 		// 销售价格区间
 		PriceRange string `db:"price_range"`
 		// 总库存

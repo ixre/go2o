@@ -40,7 +40,6 @@ type Goods struct {
 
 	GoodsId   int64 `db:"item_info.id"`
 	SkuId     int64 `db:"sku_id"`
-	IsPresent int32 `db:"is_present"`
 
 	// 商品标志
 	ItemFlag int `db:"item_flag"`

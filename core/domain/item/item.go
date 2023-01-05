@@ -215,7 +215,6 @@ func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 		PromPrice:   gv.Price,
 		GoodsId:     i.GetAggregateRootId(),
 		SkuId:       gv.SkuId,
-		IsPresent:   gv.IsPresent,
 		ItemFlag:    gv.ItemFlag,
 		StockNum:    gv.StockNum,
 		SaleNum:     gv.SaleNum,
@@ -256,9 +255,7 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 				return err
 			}
 		}
-		i.value.IsPresent = v.IsPresent
 		i.value.ShopCatId = v.ShopCatId
-		i.value.IsPresent = v.IsPresent
 		i.value.ProductId = v.ProductId
 		i.value.ShopCatId = v.ShopCatId
 		i.value.ExpressTid = v.ExpressTid

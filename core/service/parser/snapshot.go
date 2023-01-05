@@ -29,7 +29,6 @@ func ParseItemSnapshotDto(src *item.Snapshot) *proto.ItemSnapshotResponse {
 		ShortTitle:  src.ShortTitle,
 		ProductCode: src.Code,
 		Images:      []string{src.Image},
-		IsPresent:   src.IsPresent == 1,
 		PriceRange:  src.PriceRange,
 		SkuId:       src.SkuId,
 		StockNum:    0,
