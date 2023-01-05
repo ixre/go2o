@@ -68,7 +68,7 @@ service ProductService {
     rpc GetProduct (ProductId) returns (SProduct) {
     }
     // 保存产品
-    rpc SaveProduct (SProduct) returns (SaveProductResponse) {
+    rpc SaveProduct (SaveProductRequest) returns (SaveProductResponse) {
     }
 
     // 删除产品
@@ -374,6 +374,40 @@ message SProduct {
     int64 createTime = 13;
     // 更新时间
     int64 updateTime = 14;
+}
+
+// 更新产品请求
+message SaveProductRequest {
+    // 编号
+    int64 id = 1;
+    // 分类
+    int64 categoryId = 2;
+    // 名称
+    string name = 3;
+    //供应商编号(暂时同mch_id)
+    int64 vendorId = 4;
+    // 品牌编号
+    int64 brandId = 5;
+    // 商家编码
+    string code = 6;
+    // 图片
+    string image = 7;
+    // 描述
+    string description = 8;
+    // 备注
+    string remark = 9;
+    // 状态
+    int32 state = 10;
+    // 排序编号
+    int32 sortNum = 11;
+    // 产品属性
+    repeated SProductAttrValue attrs = 12;
+    // 创建时间
+    int64 createTime = 13;
+    // 更新时间
+    int64 updateTime = 14;
+    // 是否更新详情
+    bool updateDescription = 15;
 }
 
 message ProductInfoRequest {

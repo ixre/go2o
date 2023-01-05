@@ -188,7 +188,7 @@ func (p *productService) GetProduct(_ context.Context, id *proto.ProductId) (*pr
 }
 
 // SaveProduct 保存产品
-func (p *productService) SaveProduct(_ context.Context, r *proto.SProduct) (*proto.SaveProductResponse, error) {
+func (p *productService) SaveProduct(_ context.Context, r *proto.SaveProductRequest) (*proto.SaveProductResponse, error) {
 	var pro product.IProduct
 	v := p.parseProduct(r)
 	ret := &proto.SaveProductResponse{}
@@ -210,6 +210,9 @@ func (p *productService) SaveProduct(_ context.Context, r *proto.SProduct) (*pro
 		// 保存属性
 		if v.Attrs != nil {
 			err = pro.SetAttr(v.Attrs)
+		}
+		if r.UpdateDescription {
+			err = pro.SetDescribe(v.Description)
 		}
 		if err == nil {
 			v.Id, err = pro.Save()
@@ -619,19 +622,18 @@ func (p *productService) parseProductDto(v product.Product) *proto.SProduct {
 	}
 }
 
-func (p *productService) parseProduct(v *proto.SProduct) *product.Product {
+func (p *productService) parseProduct(v *proto.SaveProductRequest) *product.Product {
 	ret := &product.Product{
-		Id:          v.Id,
-		CatId:       int32(v.CategoryId),
-		Name:        v.Name,
-		VendorId:    v.VendorId,
-		BrandId:     int32(v.BrandId),
-		Code:        v.Code,
-		Image:       v.Image,
-		Description: v.Description,
-		Remark:      v.Remark,
-		State:       v.State,
-		SortNum:     v.SortNum,
+		Id:       v.Id,
+		CatId:    int32(v.CategoryId),
+		Name:     v.Name,
+		VendorId: v.VendorId,
+		BrandId:  int32(v.BrandId),
+		Code:     v.Code,
+		Image:    v.Image,
+		Remark:   v.Remark,
+		State:    v.State,
+		SortNum:  v.SortNum,
 	}
 	if v.Attrs != nil {
 		ret.Attrs = make([]*product.AttrValue, len(v.Attrs))
