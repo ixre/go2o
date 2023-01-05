@@ -29,8 +29,8 @@ func TestPagingShopGoodsRequest(t *testing.T) {
 }
 
 func TestGetItem(t *testing.T) {
-	goods, _ := impl.ItemService.GetItem(context.TODO(), &proto.Int64{
-		Value: 1,
+	goods, _ := impl.ItemService.GetItem(context.TODO(), &proto.GetItemRequest{
+		ItemId: 1,
 	})
 	t.Log(typeconv.MustJson(goods))
 }

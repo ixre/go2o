@@ -86,3 +86,5 @@ update mm_member set portrait = portrait = 'static/init/avatar.png' where portra
 
 ALTER TABLE IF EXISTS public.wal_wallet_log
     RENAME "title" TO subject;
+ -- 删除店铺表
+DROP TABLE IF EXISTS public.mch_shop;

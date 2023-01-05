@@ -36,16 +36,22 @@ const (
 
 // 商品标志
 const (
+	// 自营商品
+	FlagSelfSales = 1
 	// 新品
-	FlagNewGoods = 1
+	FlagNewGoods = 2
 	// 热销商品
-	FlagHotSale = 2
+	FlagHotSale = 4
 	// 推荐商品
-	FlagRecommend = 4
+	FlagRecommend = 8
 	// 赠品
-	FlagGift = 8
+	FlagGift = 16
 	// 分销商品
-	FlagAffilite = 16
+	FlagAffilite = 32
+	// 免邮
+	FlagFreeDelivery = 64
+	// 平台配送
+	FlagSelfDelivery = 128
 )
 
 var (

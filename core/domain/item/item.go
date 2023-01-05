@@ -24,8 +24,8 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
 )
@@ -109,7 +109,7 @@ func (i *itemImpl) GrantFlag(flag int) error {
 }
 
 func (i *itemImpl) SetImages(images []string) error {
-	if images == nil || len(images) == 0 {
+	if len(images) == 0 {
 		return errors.New("images not set")
 	}
 	// 构造新数组并合并旧有数据
@@ -227,6 +227,16 @@ func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 	err := i.checkItemValue(v)
 	if err == nil {
+		// 检测店铺
+		if v.ShopId <= 0 {
+			return item.ErrNotBindShop
+		}
+		isp := i.shopRepo.GetShop(v.ShopId)
+		if isp == nil {
+			return shop.ErrNoSuchShop
+		}
+		i.value.ShopId = v.ShopId
+		i.value.VendorId = isp.GetValue().VendorId
 		// 创建商品时，设为已下架
 		if i.GetAggregateRootId() <= 0 {
 			i.value.ShelveState = item.ShelvesDown
@@ -281,8 +291,27 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		if i.value.Image != v.Image || i.value.Title != v.Title {
 			i.resetReview()
 		}
+		// 更新包邮标志
+		i.autoSetFlagValues(isp)
 	}
 	return err
+}
+
+// 自动设置一些标志值
+func (i *itemImpl) autoSetFlagValues(isp shop.IShop) {
+	// 更新包邮标志
+	if i.value.ExpressTid <= 0 {
+		i.GrantFlag(item.FlagFreeDelivery)
+	} else {
+		i.GrantFlag(-item.FlagFreeDelivery)
+	}
+	// 更新自营标志
+	iol := isp.(shop.IOnlineShop)
+	if iol != nil && domain.TestFlag(iol.GetShopValue().Flag, shop.FlagSelfSales) {
+		i.GrantFlag(item.FlagSelfSales)
+	} else {
+		i.GrantFlag(-item.FlagSelfSales)
+	}
 }
 
 // SetSku 设置SKU
@@ -408,18 +437,6 @@ func (i *itemImpl) checkItemValue(v *item.GoodsItem) error {
 	if v.Image == "" || v.Image == defaultImage {
 		return product.ErrNotUploadImage
 	}
-	// 检测店铺, 并赋值
-	if i.GetAggregateRootId() <= 0 {
-		if v.VendorId <= 0 {
-			return item.ErrNotBindShop
-		}
-		isp := i.shopRepo.GetOnlineShopOfMerchant(int(v.VendorId))
-		if isp == nil {
-			return shop.ErrNoSuchShop
-		}
-		i.value.ShopId = isp.Id
-	}
-
 	// 检测运费模板
 	if v.ExpressTid > 0 {
 		ve := i.expressRepo.GetUserExpress(int(v.VendorId))
@@ -430,8 +447,6 @@ func (i *itemImpl) checkItemValue(v *item.GoodsItem) error {
 		if !tpl.Enabled() {
 			return express.ErrTemplateNotEnabled
 		}
-	} else {
-		return shipment.ErrNotSetExpressTemplate
 	}
 	// 检测价格
 	return i.checkPrice(v)
@@ -446,17 +461,17 @@ func (i *itemImpl) checkPrice(v *item.GoodsItem) error {
 	minRate := i.registryRepo.Get(registry.GoodsMinProfitRate).FloatValue()
 	// 如果未设定最低利润率，则可以与供货价一致
 	if minRate != 0 && float64(rate) < minRate {
-		return errors.New(fmt.Sprintf(item.ErrGoodsMinProfitRate.Error(),
-			strconv.Itoa(int(minRate*100))+"%"))
+		return fmt.Errorf(item.ErrGoodsMinProfitRate.Error(),
+			strconv.Itoa(int(minRate*100))+"%")
 	}
 	return nil
 }
 
 // Save 保存
 func (i *itemImpl) Save() (_ int64, err error) {
-	ss := i.repo.SkuService()
 	// 保存SKU
 	if i.value.SkuArray != nil {
+		ss := i.repo.SkuService()
 		err = ss.UpgradeBySku(i.value, i.value.SkuArray)
 		if err == nil {
 			// 创建商品

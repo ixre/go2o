@@ -10,13 +10,14 @@ package shop
 
 import (
 	"fmt"
-	"github.com/ixre/go2o/core/infrastructure/domain"
 	"strconv"
+
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 const (
-	// FlagSelfSale 自营
-	FlagSelfSale = 1 << iota
+	// FlagSelfSales 自营
+	FlagSelfSales = 1 << iota
 )
 
 var (
@@ -182,21 +183,23 @@ type (
 	// Shop 商店
 	Shop struct {
 		//商店编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int64
 		//运营商编号
-		VendorId int64 `db:"vendor_id"`
+		VendorId int64
 		//商店类型
-		ShopType int32 `db:"shop_type"`
+		ShopType int32
 		//商店名称
-		Name string `db:"name"`
+		Name string
+		// 标志
+		Flag int32
 		//商店状态
-		State int32 `db:"state"`
+		State int32
 		//营业状态
-		OpeningState int32 `db:"opening_state"`
+		OpeningState int32
 		//排序
-		SortNum int32 `db:"sort_num"`
+		SortNum int32
 		//创建时间
-		CreateTime int64 `db:"create_time"`
+		CreateTime int64
 	}
 
 	// ComplexShop 商店数据传输对象
@@ -263,7 +266,7 @@ type (
 	}
 )
 
-//位置(经度+"/"+纬度)
+// 位置(经度+"/"+纬度)
 func (o OfflineShop) Location() string {
 	return fmt.Sprintf("%f/%f", o.Lng, o.Lat)
 }

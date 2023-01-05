@@ -223,6 +223,27 @@ message SItemDataResponse {
   repeated SLevelPrice levelPrices = 30;
 }
 
+// 商品标志枚举
+enum EItemFlag{
+  _EItemFlag = 0;
+  	// 自营商品
+	FlagSelfSales = 1;
+	// 新品
+	FlagNewGoods = 2;
+	// 热销商品
+	FlagHotSale = 4;
+	// 推荐商品
+	FlagRecommend = 8;
+	// 赠品
+	FlagGift = 16;
+	// 分销商品
+	FlagAffilite = 32;
+	// 免邮
+	FlagFreeDelivery = 64;
+	// 平台配送
+	FlagSelfDelivery = 128;
+}
+
 // 商品标志
 message SItemFlagData{
   // 新品
@@ -230,11 +251,17 @@ message SItemFlagData{
 	// 热销商品
 	bool isHotSale = 2;
 	// 推荐商品
-	bool isRecommend = 4;
+	bool isRecommend = 3;
 	// 赠品
-	bool isGift = 8;
+	bool isGift = 4;
   // 是否分销
-  bool isAffilite = 16;
+  bool isAffilite = 5;
+  // 自营商品
+	bool isSelfSales = 6;
+	// 免邮
+	bool isFreeDelivery = 7;
+	// 平台配送
+	bool isSelfDelivery = 8;
 }
 
 // 统一的商品显示对象

@@ -86,6 +86,9 @@ func (s *itemService) getFlagData(flag int) *proto.SItemFlagData {
 		IsRecommend: domain.TestFlag(flag, item.FlagRecommend),
 		IsGift:      domain.TestFlag(flag, item.FlagGift),
 		IsAffilite:  domain.TestFlag(flag, item.FlagAffilite),
+		IsSelfSales: domain.TestFlag(flag, item.FlagSelfSales),
+		IsFreeDelivery: domain.TestFlag(flag, item.FlagFreeDelivery),
+		IsSelfDelivery: domain.TestFlag(flag, item.FlagSelfDelivery),
 	}
 }
 
@@ -144,6 +147,7 @@ func (*itemService) saveItemFlag(gi item.IGoodsItem, r *proto.SaveItemRequest) {
 	f(item.FlagRecommend, r.FlagData.IsRecommend)
 	f(item.FlagGift, r.FlagData.IsGift)
 	f(item.FlagAffilite, r.FlagData.IsAffilite)
+	f(item.FlagSelfDelivery,r.FlagData.IsSelfDelivery)
 	gi.Save()
 }
 
