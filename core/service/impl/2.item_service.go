@@ -63,8 +63,8 @@ func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 }
 
 // GetItem 获取商品
-func (s *itemService) GetItem(_ context.Context, id *proto.Int64) (*proto.SItemDataResponse, error) {
-	item := s.itemRepo.GetItem(id.Value)
+func (s *itemService) GetItem(_ context.Context, req *proto.GetItemRequest) (*proto.SItemDataResponse, error) {
+	item := s.itemRepo.GetItem(req.ItemId)
 	if item != nil {
 		ret := parser.ItemDataDto(item.GetValue())
 		skuArr := item.SkuArray()

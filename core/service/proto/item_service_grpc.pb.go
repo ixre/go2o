@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ItemServiceClient interface {
 	// 获取商品的数据
-	GetItem(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SItemDataResponse, error)
+	GetItem(ctx context.Context, in *GetItemRequest, opts ...grpc.CallOption) (*SItemDataResponse, error)
 	// 保存商品的数据
 	SaveItem(ctx context.Context, in *SaveItemRequest, opts ...grpc.CallOption) (*SaveItemResponse, error)
 	// 根据SKU获取商品
@@ -80,7 +80,7 @@ func NewItemServiceClient(cc grpc.ClientConnInterface) ItemServiceClient {
 	return &itemServiceClient{cc}
 }
 
-func (c *itemServiceClient) GetItem(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SItemDataResponse, error) {
+func (c *itemServiceClient) GetItem(ctx context.Context, in *GetItemRequest, opts ...grpc.CallOption) (*SItemDataResponse, error) {
 	out := new(SItemDataResponse)
 	err := c.cc.Invoke(ctx, "/ItemService/GetItem", in, out, opts...)
 	if err != nil {
@@ -301,7 +301,7 @@ func (c *itemServiceClient) GetPagedValueGoodsBySaleLabel_(ctx context.Context, 
 // for forward compatibility
 type ItemServiceServer interface {
 	// 获取商品的数据
-	GetItem(context.Context, *Int64) (*SItemDataResponse, error)
+	GetItem(context.Context, *GetItemRequest) (*SItemDataResponse, error)
 	// 保存商品的数据
 	SaveItem(context.Context, *SaveItemRequest) (*SaveItemResponse, error)
 	// 根据SKU获取商品
@@ -355,7 +355,7 @@ type ItemServiceServer interface {
 type UnimplementedItemServiceServer struct {
 }
 
-func (UnimplementedItemServiceServer) GetItem(context.Context, *Int64) (*SItemDataResponse, error) {
+func (UnimplementedItemServiceServer) GetItem(context.Context, *GetItemRequest) (*SItemDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetItem not implemented")
 }
 func (UnimplementedItemServiceServer) SaveItem(context.Context, *SaveItemRequest) (*SaveItemResponse, error) {
@@ -441,7 +441,7 @@ func RegisterItemServiceServer(s grpc.ServiceRegistrar, srv ItemServiceServer) {
 }
 
 func _ItemService_GetItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Int64)
+	in := new(GetItemRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -453,7 +453,7 @@ func _ItemService_GetItem_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/ItemService/GetItem",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetItem(ctx, req.(*Int64))
+		return srv.(ItemServiceServer).GetItem(ctx, req.(*GetItemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

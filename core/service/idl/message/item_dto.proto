@@ -32,6 +32,12 @@ message PagingGoodsResponse {
   repeated SUnifiedViewItem data = 2;
 }
 
+// 保存商品请求
+message GetItemRequest {
+  // 商品编号
+  int64 itemId = 1;
+}
+
 // 获取商品请求
 message GetItemsRequest {
   int64 categoryId = 1;
