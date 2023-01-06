@@ -1,13 +1,4 @@
 /** 添加数据库字典 */
-ALTER TABLE "public".sys_member_flag 
-  ALTER COLUMN flag_name SET DATA TYPE varchar(20);
-COMMENT ON TABLE "public".sys_member_flag IS '会员标志名称';
-COMMENT ON COLUMN "public".sys_member_flag.flag_name IS '标志名称';
-COMMENT ON COLUMN "public".sys_member_flag.flag_value IS '标志值';
-COMMENT ON COLUMN "public".sys_member_flag.editable IS '是否能编辑【0：否，1：是】';
-COMMENT ON COLUMN "public".sys_member_flag.is_show IS '是否展示【0：否，1：是】';
-COMMENT ON COLUMN "public".sys_member_flag.update_time IS '更新时间';
-
 ALTER TABLE "public".registry 
   alter column group_name set default ''::character varying;
 COMMENT ON TABLE "public".registry IS '注册表';
@@ -70,6 +61,45 @@ COMMENT ON COLUMN "public".mm_bank_card.network IS '网点';
 COMMENT ON COLUMN "public".mm_bank_card.auth_code IS '快捷支付授权码';
 COMMENT ON COLUMN "public".mm_bank_card.state IS '状态';
 COMMENT ON COLUMN "public".mm_bank_card.create_time IS '添加时间';
+
+/** 2022-12 */
+-- Table: public.sys_member_flag
+
+-- DROP TABLE IF EXISTS public.sys_member_flag;
+
+CREATE TABLE IF NOT EXISTS public.sys_member_flag
+(
+    id bigint NOT NULL,
+    flag_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    flag_value integer NOT NULL,
+    update_time bigint NOT NULL,
+    editable integer NOT NULL,
+    is_show integer NOT NULL,
+    CONSTRAINT sys_member_flag_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.sys_member_flag
+    OWNER to postgres;
+
+COMMENT ON TABLE public.sys_member_flag
+    IS '会员标志名称';
+
+COMMENT ON COLUMN public.sys_member_flag.flag_name
+    IS '标志名称';
+
+COMMENT ON COLUMN public.sys_member_flag.flag_value
+    IS '标志值';
+
+COMMENT ON COLUMN public.sys_member_flag.update_time
+    IS '更新时间';
+
+COMMENT ON COLUMN public.sys_member_flag.editable
+    IS '是否能编辑【0：否，1：是】';
+
+COMMENT ON COLUMN public.sys_member_flag.is_show
+    IS '是否展示【0：否，1：是】';
 
 ALTER TABLE "public".mm_member 
   alter column code set default ''::character varying;
