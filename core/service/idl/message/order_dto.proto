@@ -291,7 +291,7 @@ message OrderSubmitResponse {
     // 交易金额
     int64 tradeAmount = 6;
     // 支付单号
-    string PaymentOrderNo = 7;
+    string paymentOrderNo = 7;
 }
 
 // 获取订单请求
