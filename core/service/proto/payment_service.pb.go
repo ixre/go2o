@@ -848,7 +848,7 @@ type SPaymentOrder struct {
 	SubOrder bool `protobuf:"varint,6,opt,name=subOrder,proto3" json:"subOrder"`
 	// * 支付单的类型，如购物或其他
 	OrderType int32 `protobuf:"zigzag32,7,opt,name=orderType,proto3" json:"orderType"`
-	// * 外部订单号
+	// * 关联订单号
 	OutOrderNo string `protobuf:"bytes,8,opt,name=outOrderNo,proto3" json:"outOrderNo"`
 	// * 买家编号
 	BuyerId int64 `protobuf:"varint,9,opt,name=buyerId,proto3" json:"buyerId"`

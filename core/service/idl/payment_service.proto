@@ -193,7 +193,7 @@ message SPaymentOrder {
     bool subOrder = 6;
     /** 支付单的类型，如购物或其他 */
     sint32 orderType = 7;
-    /** 外部订单号 */
+    /** 关联订单号 */
     string outOrderNo = 8;
     /** 买家编号 */
     int64 buyerId = 9;
