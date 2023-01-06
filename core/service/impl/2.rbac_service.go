@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/dao/model"
