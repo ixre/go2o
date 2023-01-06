@@ -6,12 +6,11 @@ replace github.com/ixre/gof => ../github.com/ixre/gof
 
 require (
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gomodule/redigo v1.8.9
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.13.5
+	github.com/ixre/gof v1.13.6
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/nats-io/nats-server/v2 v2.9.8 // indirect
@@ -31,6 +30,7 @@ require (
 	golang.org/x/net v0.5.0
 	golang.org/x/text v0.6.0
 )
+
 
 require (
 	github.com/ClickHouse/ch-go v0.51.0 // indirect
