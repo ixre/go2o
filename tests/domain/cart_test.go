@@ -13,8 +13,8 @@ import (
 func TestNormalCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KNormal)
-	_ = joinItemsToCart(c, 47)
-	_ = joinItemsToCart(c, 51)
+	_ = joinItemsToCart(c, 1)
+	//_ = joinItemsToCart(c, 51)
 	if c.Kind() == cart.KNormal {
 		rc := c.(cart.INormalCart)
 		t.Log("购物车如下:")
