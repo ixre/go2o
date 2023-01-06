@@ -282,11 +282,12 @@ func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
-	err := c.Put(r.ItemId, r.SkuId, r.Quantity, r.CheckOnly)
+	it := r.Item
+	err := c.Put(it.ItemId, it.SkuId, it.Quantity, it.CheckOnly)
 	if err == nil {
 		if _, err = c.Save(); err == nil {
 			rc := c.(cart.INormalCart)
-			item := rc.GetItem(r.ItemId, r.SkuId)
+			item := rc.GetItem(it.ItemId, it.SkuId)
 			return &proto.CartItemResponse{
 				Item: parser.ParseCartItem(item),
 			}, nil
@@ -317,12 +318,13 @@ func (s *cartServiceImpl) ReduceCartItem(_ context.Context, r *proto.CartItemReq
 	if c == nil {
 		err = cart.ErrNoSuchCart
 	} else {
-		err = c.Remove(r.ItemId, r.SkuId, r.Quantity)
+		it := r.Item
+		err = c.Remove(it.ItemId, it.SkuId, it.Quantity)
 		if err == nil {
 			_, err = c.Save()
 			if err == nil {
 				rc := c.(cart.INormalCart)
-				item := rc.GetItem(r.ItemId, r.SkuId)
+				item := rc.GetItem(it.ItemId, it.SkuId)
 				return &proto.CartItemResponse{
 					Item: parser.ParseCartItem(item),
 				}, nil

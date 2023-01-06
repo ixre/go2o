@@ -32,14 +32,20 @@ service CartService {
 message CartItemRequest {
     // 买家编号
     ShoppingCartId id = 1;
-    //商品编号
-    sint64 itemId = 2;
-    //SKU编号
-    sint64 skuId = 3;
-    // 数量
-    int32 quantity = 4;
-    // 是否只勾选当前商品(直接购买)
-    bool checkOnly = 5;
+    // 商品项
+    RCartItem item = 2;
+}
+
+// 商品项请求参数
+message RCartItem{
+  //商品编号
+  sint64 itemId = 2;
+  //SKU编号
+  sint64 skuId = 3;
+  // 数量
+  int32 quantity = 4;
+  // 是否只勾选当前商品(直接购买)
+  bool checkOnly = 5;
 }
 
 message CheckCartRequest {
@@ -62,5 +68,5 @@ message CartUpdateRequest{
     // 购物车编号
     ShoppingCartId cartId = 1; 
     // Sku列表
-    repeated SCartItem items = 2;
+    repeated RCartItem items = 2;
 }
