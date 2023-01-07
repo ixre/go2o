@@ -35,7 +35,6 @@ import (
 	"github.com/ixre/go2o/core/variable"
 	api "github.com/ixre/gof/jwt-api"
 	"github.com/ixre/gof/math"
-	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
@@ -52,7 +51,6 @@ type memberService struct {
 	orderQuery   *query.OrderQuery
 	valRepo      valueobject.IValueRepo
 	serviceUtil
-	sto storage.Interface
 	proto.UnimplementedMemberServiceServer
 }
 
@@ -130,7 +128,7 @@ func (s *memberService) GetMember(_ context.Context, id *proto.MemberIdRequest) 
 		}
 		return s.parseMemberDto(&v), nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchMember
 }
 
 // GetProfile 获取资料
@@ -140,7 +138,7 @@ func (s *memberService) GetProfile(_ context.Context, id *proto.MemberIdRequest)
 		v := m.Profile().GetProfile()
 		return s.parseMemberProfile(&v), nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchMember
 }
 
 // SaveProfile 保存资料
@@ -299,7 +297,7 @@ func (s *memberService) GetMemberLevel(_ context.Context, i *proto.Int32) (*prot
 	if lv != nil {
 		return s.parseLevelDto(lv), nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchLevelUpLog
 }
 
 // SaveMemberLevel 保存会员等级信息
@@ -326,7 +324,7 @@ func (s *memberService) GetLevelBySign(_ context.Context, sign *proto.String) (*
 	if lv != nil {
 		return s.parseLevelDto(lv), nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchLevel
 }
 
 // DeleteMemberLevel 删除会员等级
@@ -867,7 +865,7 @@ func (s *memberService) GetAccount(_ context.Context, id *proto.MemberIdRequest)
 	if acc != nil {
 		return s.parseAccountDto(acc.GetValue()), nil
 	}
-	return nil, nil
+	return nil,  member.ErrNoSuchMember
 }
 
 // 获取上级邀请人会员编号数组
@@ -1139,7 +1137,7 @@ func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest
 			v.Province, v.City, v.District)
 		return d, nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchAddress
 }
 
 // SaveAddress 保存配送地址
@@ -1261,7 +1259,7 @@ func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*
 		x := m.Complex()
 		return s.parseComplexMemberDto(x), nil
 	}
-	return nil, nil
+	return nil,   member.ErrNoSuchMember
 }
 
 func (s *memberService) Freeze(_ context2.Context, r *proto.AccountFreezeRequest) (*proto.AccountFreezeResponse, error) {

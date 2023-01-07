@@ -17,6 +17,8 @@ var (
 		"err_product_no_such_product", "产品不存在")
 	ErrNoSuchAttr = domain.NewError(
 		"err_product_no_such_attr", "产品属性不存在")
+	ErrNoSuchBrand = domain.NewError(
+		"err_product_no_such_brand", "品牌不存在")
 	ErrNoBrand = domain.NewError(
 		"err_product_no_brand", "未设置商品品牌")
 

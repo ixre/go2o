@@ -549,7 +549,7 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 	}
 	l := w.getLog(takeId)
 	if l == nil {
-		return wallet.ErrNoSuchTakeOutLog
+		return wallet.ErrNoSuchAccountLog
 	}
 	if l.AuditState != wallet.ReviewAwaiting {
 		return wallet.ErrWithdrawState
@@ -575,7 +575,7 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 func (w *WalletImpl) FinishWithdrawal(takeId int64, outerNo string) error {
 	l := w.getLog(takeId)
 	if l == nil {
-		return wallet.ErrNoSuchTakeOutLog
+		return wallet.ErrNoSuchAccountLog
 	}
 	if l.AuditState != wallet.ReviewPass {
 		return wallet.ErrWithdrawState

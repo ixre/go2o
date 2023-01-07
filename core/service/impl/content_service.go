@@ -11,6 +11,8 @@ package impl
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ixre/go2o/core/domain/interface/content"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
@@ -47,7 +49,7 @@ func (c *contentService) GetPage(_ context.Context, id *proto.IdOrName) (*proto.
 	if ia != nil {
 		return c.parsePageDto(ia.GetValue()), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such page: %v", id.Name)
 }
 
 // 保存页面
@@ -100,7 +102,7 @@ func (c *contentService) GetArticleCategory(_ context.Context, name *proto.IdOrN
 	if ic != nil {
 		return c.parseArticleCategoryDto(ic.GetValue()), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such category")
 }
 
 // 保存文章栏目
@@ -137,7 +139,7 @@ func (c *contentService) GetArticle(_ context.Context, id *proto.IdOrName) (*pro
 		v := ia.GetValue()
 		return c.parseArticleDto(&v), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such article")
 }
 
 // DeleteArticle 删除文章

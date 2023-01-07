@@ -42,7 +42,7 @@ func (e *expressService) GetExpressProvider(_ context.Context, name *proto.IdOrN
 	if v != nil {
 		return e.parseProviderDto(v), nil
 	}
-	return nil, nil
+	return nil,express.ErrNotSupportProvider
 }
 
 // 保存快递公司
@@ -101,7 +101,7 @@ func (e *expressService) GetTemplate(_ context.Context, id *proto.ExpressTemplat
 		v := t.Value()
 		return e.parseExpressTemplateDto(&v), nil
 	}
-	return nil, nil
+	return nil, express.ErrNoSuchTemplate
 }
 
 // 获取所有的快递模板

@@ -10,6 +10,8 @@
 package impl
 
 import (
+	"fmt"
+
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	promImpl "github.com/ixre/go2o/core/domain/promotion"
@@ -31,7 +33,7 @@ func (p *promotionService) GetPromotion(id int32) (*promotion.PromotionInfo, int
 	if prom != nil {
 		return prom.GetValue(), prom.GetRelationValue()
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such promotion")
 }
 
 // 保存促销

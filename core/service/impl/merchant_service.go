@@ -11,6 +11,7 @@ package impl
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	de "github.com/ixre/go2o/core/domain/interface/domain"
@@ -101,7 +102,7 @@ func (m *merchantService) GetSignUp(_ context.Context, id *proto.Int64) (*proto.
 	if v != nil {
 		return m.parseMchSIgnUpDto(v), nil
 	}
-	return nil, nil
+	return nil, merchant.ErrNoSuchMerchant
 }
 
 // ReviewSignUp 审核商户申请信息
@@ -134,7 +135,7 @@ func (m *merchantService) GetEnterpriseInfo(_ context.Context, id *proto.Merchan
 			return m.parseEnterpriseInfoDto(v), nil
 		}
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such merchant info")
 }
 
 // SaveEnterpriseInfo 保存企业信息
@@ -169,7 +170,7 @@ func (m *merchantService) GetAccount(_ context.Context, id *proto.MerchantId) (*
 	if v != nil {
 		return m.parseAccountDto(v), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such merchant account")
 }
 
 // SetEnabled 设置商户启用或停用
@@ -218,7 +219,7 @@ func (m *merchantService) GetSaleConf(_ context.Context, id *proto.MerchantId) (
 		conf := mch.ConfManager().GetSaleConf()
 		return m.parseSaleConfDto(conf), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such sale conf")
 }
 
 // GetShopId 获取商户的店铺编号
@@ -256,7 +257,7 @@ func (m *merchantService) GetApiInfo(_ context.Context, id *proto.MerchantId) (*
 		v := mch.ApiManager().GetApiInfo()
 		return m.parseApiDto(v), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such api info")
 }
 
 // 启用/停用接口权限
@@ -365,7 +366,7 @@ func (m *merchantService) GetMchBuyerGroup_(_ context.Context, id *proto.Merchan
 		v := mch.ConfManager().GetGroupByGroupId(int32(id.GroupId))
 		return m.parseGroupDto(v), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such buyer group")
 }
 
 // 保存
@@ -491,7 +492,7 @@ func (m *merchantService) GetTradeConf(_ context.Context, r *proto.TradeConfRequ
 			return m.parseTradeConfDto(v), nil
 		}
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such trade conf")
 }
 
 func (m *merchantService) SaveTradeConf(_ context.Context, r *proto.TradeConfSaveRequest) (rsp *proto.Result, err error) {
@@ -587,7 +588,7 @@ func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*prot
 		c := mch.Complex()
 		return m.parseMerchantDto(c), nil
 	}
-	return nil, nil
+	return nil, merchant.ErrNoSuchMerchant
 }
 
 func (m *merchantService) SaveMerchant(_ context.Context, r *proto.SaveMerchantRequest) (*proto.Result, error) {

@@ -10,6 +10,8 @@ package impl
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ixre/go2o/core/domain/interface/delivery"
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/domain/interface/shipment"
@@ -120,7 +122,7 @@ func (s *shipmentServiceImpl) ShipOrderLogisticTrack(ctx context.Context, rq *pr
 			return r, err
 		}
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such ship order")
 }
 
 func (s *shipmentServiceImpl) parseCoverArea(r *proto.SCoverageValue) *delivery.CoverageValue {
