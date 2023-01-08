@@ -31,6 +31,7 @@ require (
 	golang.org/x/text v0.6.0
 )
 
+require github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 
 require (
 	github.com/ClickHouse/ch-go v0.51.0 // indirect
@@ -64,6 +65,6 @@ require (
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/time v0.2.0 // indirect
-	google.golang.org/genproto v0.0.0-20230104163317-caabf589fcbf // indirect
+	google.golang.org/genproto v0.0.0-20230106154932-a12b697841d9 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
