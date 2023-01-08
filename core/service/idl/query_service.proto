@@ -43,6 +43,9 @@ service QueryService {
       // 获取店铺分页上架的商品
     rpc PagedOnShelvesGoods (PagingShopGoodsRequest) returns (PagingShopGoodsResponse) {
     }
+
+    // 查询商品销售记录
+    rpc QueryItemSalesHistory(QueryItemSalesHistoryRequest) returns (QueryItemSalesHistoryResponse){}
 }
 
 message FavoriteQueryRequest {
@@ -252,3 +255,32 @@ message PagingShopGoodsResponse {
     repeated SGoods data = 2;
   }
   
+// 查询商品销售记录请求
+message QueryItemSalesHistoryRequest{
+    // 商品编号
+    int64 itemId = 1;
+    // 数量
+    int32 size = 2;
+    // 是否随机查询
+    bool random = 3;
+    // 隐藏买家姓名
+    bool maskBuyer = 4;
+}
+
+// 商品销售记录
+message SItemSalesHistory{
+    // 买家用户代码
+    string buyerUserCode = 1;
+    // 买家昵称
+    string buyerName = 2;
+    // 购买时间
+    int64 buyTime = 3;
+    // 是否已经支付
+    bool isFinishPayment = 4;
+}
+
+// 商品销售记录查询响应
+message QueryItemSalesHistoryResponse{
+    // 销售记录
+    repeated SItemSalesHistory value = 1;
+}
