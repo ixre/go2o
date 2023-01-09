@@ -376,8 +376,8 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	return errors.New("no such email template")
 }
 
-// ModifyPassword 修改密码,旧密码可为空
-func (p *profileManagerImpl) ModifyPassword(newPassword, oldPwd string) error {
+// ChangePassword 修改密码,旧密码可为空
+func (p *profileManagerImpl) ChangePassword(newPassword, oldPwd string) error {
 	if b, err := dm.ChkPwdRight(newPassword); !b {
 		return err
 	}
@@ -394,8 +394,8 @@ func (p *profileManagerImpl) ModifyPassword(newPassword, oldPwd string) error {
 	return err
 }
 
-// ModifyTradePassword 修改交易密码，旧密码可为空
-func (p *profileManagerImpl) ModifyTradePassword(newPassword, oldPwd string) error {
+// ChangeTradePassword 修改交易密码，旧密码可为空
+func (p *profileManagerImpl) ChangeTradePassword(newPassword, oldPwd string) error {
 	if newPassword == oldPwd {
 		return domain.ErrPwdCannotSame
 	}

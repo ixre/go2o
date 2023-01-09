@@ -84,12 +84,12 @@ func TestGetMember(t *testing.T) {
 	t.Logf("%#v", m.GetValue())
 }
 
-func TestModifyPassword(t *testing.T) {
+func TestChangePassword(t *testing.T) {
 	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(2)
 	NewPassword := domain.MemberSha1Pwd(domain.Md5("13268240456"),
 		m.GetValue().Salt)
-	err := m.Profile().ModifyPassword(NewPassword, "")
+	err := m.Profile().ChangePassword(NewPassword, "")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

@@ -146,10 +146,10 @@ type (
 		ProfileCompleted() bool
 		// CheckProfileComplete 检查资料是否完善
 		CheckProfileComplete() error
-		// ModifyPassword 修改密码,旧密码可为空; 传入原始密码。密码均为密文
-		ModifyPassword(newPwd, oldPwd string) error
-		// ModifyTradePassword 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
-		ModifyTradePassword(newPassword, oldPwd string) error
+		// ChangePassword 修改密码,旧密码可为空; 传入原始密码。密码均为密文
+		ChangePassword(newPwd, oldPwd string) error
+		// ChangeTradePassword 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
+		ChangeTradePassword(newPassword, oldPwd string) error
 		// GetBankCards 获取提现银行信息
 		GetBankCards() []BankCard
 		// GetBankCard 获取绑定的银行卡

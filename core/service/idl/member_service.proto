@@ -134,7 +134,7 @@ service MemberService {
     rpc ChangePhone (ChangePhoneRequest) returns (Result) {
     }
     /* 更改用户名 */
-    rpc ChangeUsername (ChangeUserRequest) returns (Result) {
+    rpc ChangeUsername (ChangeUsernameRequest) returns (Result) {
     }
     // 更改昵称
     rpc ChangeNickname(ChangeNicknameRequest) returns (Result) {}
@@ -143,10 +143,10 @@ service MemberService {
     rpc ChangeHeadPortrait (ChangePortraitRequest) returns (Result) {
     }
     /** 更改密码 */
-    rpc ModifyPassword (ModifyPasswordRequest) returns (Result) {
+    rpc ChangePassword (ChangePasswordRequest) returns (Result) {
     }
     /** 更改交易密码 */
-    rpc ModifyTradePassword (ModifyPasswordRequest) returns (Result) {
+    rpc ChangeTradePassword (ChangePasswordRequest) returns (Result) {
     }
     // 检查资料是否完善
     rpc CheckProfileCompleted (Int64) returns (Bool) {

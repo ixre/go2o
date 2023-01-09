@@ -24,7 +24,7 @@ func TestModifyMemberPwd(t *testing.T) {
 	md5 := crypto.Md5([]byte("1234567"))
 	pwd := domain.Sha1Pwd(md5, m.GetValue().Salt)
 	// 7c4a8d09ca3762af61e59520943dc26494f8941b
-	err := m.Profile().ModifyPassword(pwd, "")
+	err := m.Profile().ChangePassword(pwd, "")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

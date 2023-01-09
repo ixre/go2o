@@ -232,8 +232,8 @@ func (m *merchantService) GetShopId(_ context.Context, id *proto.MerchantId) (*p
 	return &proto.Int64{}, nil
 }
 
-// ModifyPassword 修改密码
-func (m *merchantService) ModifyPassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
+// ChangePassword 修改密码
+func (m *merchantService) ChangePassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
 	if mch == nil {
@@ -244,7 +244,7 @@ func (m *merchantService) ModifyPassword(_ context.Context, r *proto.ModifyMerch
 		} else if len(r.Password) != 32 {
 			err = de.ErrNotMD5Format
 		} else {
-			err = mch.ProfileManager().ModifyPassword(r.Password, r.Origin)
+			err = mch.ProfileManager().ChangePassword(r.Password, r.Origin)
 		}
 	}
 	return m.error(err), nil
@@ -935,8 +935,8 @@ func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSi
 		Id:           int64(v.Id),
 		SignNo:       v.SignNo,
 		MemberId:     v.MemberId,
-		Username:         v.Username,
-		Password:          v.Password,
+		Username:     v.Username,
+		Password:     v.Password,
 		Salt:         v.Salt,
 		MchName:      v.MchName,
 		Province:     v.Province,

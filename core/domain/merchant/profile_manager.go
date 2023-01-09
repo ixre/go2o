@@ -10,6 +10,9 @@ package merchant
 
 import (
 	"errors"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -18,8 +21,6 @@ import (
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
-	"strings"
-	"time"
 )
 
 var _ merchant.IProfileManager = new(profileManagerImpl)
@@ -126,8 +127,8 @@ func (p *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) err
 	return err
 }
 
-// ModifyPassword 修改密码
-func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
+// ChangePassword 修改密码
+func (p *profileManagerImpl) ChangePassword(newPwd, oldPwd string) error {
 	if len(newPwd) != 32 {
 		return errors.New("密码必须32位Md5")
 	}

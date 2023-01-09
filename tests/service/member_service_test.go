@@ -55,8 +55,8 @@ func TestCheckMemberAccessToken(t *testing.T) {
 func TestCheckTradePassword(t *testing.T) {
 	memberId := 1
 	pwd := domain.Md5("123456")
-	r2, _ := impl.MemberService.ModifyTradePassword(context.TODO(),
-		&proto.ModifyPasswordRequest{
+	r2, _ := impl.MemberService.ChangeTradePassword(context.TODO(),
+		&proto.ChangePasswordRequest{
 			MemberId:    int64(memberId),
 			NewPassword: pwd,
 		})
@@ -88,7 +88,7 @@ func TestChangeHeadPortrait(t *testing.T) {
 	}
 }
 
-func TestChangeMemberLevel(t *testing.T){
+func TestChangeMemberLevel(t *testing.T) {
 	r, _ := impl.MemberService.ChangeLevel(context.TODO(),
 		&proto.ChangeLevelRequest{
 			MemberId:       702,
@@ -100,5 +100,33 @@ func TestChangeMemberLevel(t *testing.T){
 	if r.ErrCode > 0 {
 		t.Log(r.ErrMsg)
 		t.FailNow()
-	}	
+	}
+}
+func TestChangeUsername(t *testing.T) {
+	ret, _ := impl.MemberService.ChangeUsername(context.TODO(), &proto.ChangeUsernameRequest{
+		MemberId: 702,
+		Username: "18924140900",
+	})
+	if ret.ErrCode > 0 {
+		t.Log(ret.ErrMsg)
+	}
+
+}
+func TestChangePasswordAndCheckLogin(t *testing.T) {
+	pwd := domain.Md5("1234567")
+	r, _ := impl.MemberService.ChangePassword(context.TODO(),
+		&proto.ChangePasswordRequest{
+			MemberId:    712,
+			NewPassword: pwd,
+		})
+	if r.ErrCode > 0 {
+		t.Error(r.ErrMsg)
+	}
+	ret, _ := impl.MemberService.CheckLogin(context.TODO(), &proto.LoginRequest{
+		Username: "18924140903",
+		Password: pwd,
+	})
+	if ret.ErrCode > 0 {
+		t.Error(ret.ErrMsg)
+	}
 }

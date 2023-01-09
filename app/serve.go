@@ -14,7 +14,7 @@ import (
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/gof"
-	"go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 var (
@@ -30,7 +30,6 @@ var (
 	help        bool
 	showVersion bool
 	newApp      *core.AppImpl
-	appFlag     = FlagWebApp
 )
 
 func getNatsAddress() string {
@@ -69,17 +68,17 @@ func Run(ch chan bool, after func(*clientv3.Config)) {
 		return
 	}
 	if showVersion {
-		fmt.Printf(fmt.Sprintf("go2o version v%s \n", core.Version))
+		fmt.Printf("go2o version v%s \n", core.Version)
 		return
 	}
 	if len(host) == 0 {
 		host = os.Getenv("GO2O_SERVER_HOST")
 	}
 	//confFile = "./app_dev.conf"
-	if runDaemon {
-		appFlag = appFlag | FlagDaemon
-	}
-	appFlag = appFlag | FlagRpcServe
+	// if runDaemon {
+	// 	appFlag = appFlag | FlagDaemon
+	// }
+	// appFlag = appFlag | FlagRpcServe
 	// setting log flags
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
