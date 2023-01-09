@@ -91,6 +91,10 @@ DROP TABLE IF EXISTS public.mch_shop;
 -- 重置商品标志
 update public.item_info set item_flag = 0 WHERE item_flag < 0;
 
+update item_info set item_flag  = 199 
+WHERE id IN (select id from item_info 
+			 where item_flag = 0  order by id desc limit 30)
+
 -- 以下VPP需要更新 --
 -- 去掉赠品字段改用flag
 ALTER TABLE IF EXISTS public.item_info

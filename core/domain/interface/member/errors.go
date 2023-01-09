@@ -160,7 +160,8 @@ var (
 
 	ErrUserValidErr = domain.NewError(
 		"err_user_valid_err", "用户名为6位以上字符和数字的组合")
-
+	ErrInvalidUsername = domain.NewError(
+		"err_member_invalid_username", "用户名不正确")
 	ErrSameUser = domain.NewError(
 		"err_same_user", "用户名与原来相同")
 

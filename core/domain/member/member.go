@@ -422,10 +422,14 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 
 // 更换用户名
 func (m *memberImpl) ChangeUsername(user string) error {
+	user = strings.TrimSpace(user)
+	if len(user) == 0 {
+		return member.ErrInvalidUsername
+	}
 	if user == m.value.Username {
 		return member.ErrSameUser
 	}
-	err := m.checkUser(m.value.Username)
+	err := m.checkUser(user)
 	if err == nil {
 		m.value.Username = user
 		_, err = m.Save()
@@ -588,9 +592,20 @@ func (m *memberImpl) memberInit() error {
 func (m *memberImpl) prepare() (err error) {
 	phoneAsUser := m.registryRepo.Get(registry.MemberRegisterPhoneAsUser).BoolValue()
 	mustBindPhone := m.registryRepo.Get(registry.MemberRegisterMustBindPhone).BoolValue()
+	// 用户名全小写
+	m.value.Username = strings.ToLower(m.value.Username)
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
-	m.value.Username = strings.TrimSpace(m.value.Username)
-	if m.value.Username != "" || !phoneAsUser {
+	// 使用手机号作为用户名
+	if phoneAsUser {
+		if m.repo.CheckUserExist(m.value.Phone, 0) {
+			return member.ErrPhoneHasBind
+		}
+		m.value.Username = m.value.Phone
+	}
+	if len(m.value.Username) == 0 {
+		return member.ErrInvalidUsername
+	}
+	if m.value.Username != "" {
 		if err = m.checkUser(m.value.Username); err != nil {
 			return err
 		}
@@ -598,7 +613,7 @@ func (m *memberImpl) prepare() (err error) {
 	// 验证密码
 	m.value.Password = strings.TrimSpace(m.value.Password)
 	if len(m.value.Password) < 6 {
-		return de.ErrPwdLength
+		return de.ErrPwdStrongLength
 	}
 	// 验证手机
 	m.value.Phone = strings.TrimSpace(m.value.Phone)
@@ -615,15 +630,6 @@ func (m *memberImpl) prepare() (err error) {
 			return member.ErrPhoneHasBind
 		}
 	}
-	// 使用手机号作为用户名
-	if phoneAsUser {
-		if m.repo.CheckUserExist(m.value.Phone, 0) {
-			return member.ErrPhoneHasBind
-		}
-		m.value.Username = m.value.Phone
-	}
-	// 用户名全小写
-	m.value.Username = strings.ToLower(m.value.Username)
 
 	// 验证IM
 	//pro.Im = strings.TrimSpace(pro.Im)

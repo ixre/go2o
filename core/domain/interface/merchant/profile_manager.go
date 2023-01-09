@@ -63,6 +63,6 @@ type (
 		ReviewEnterpriseInfo(reviewed bool, message string) error
 
 		// 修改密码
-		ModifyPassword(newPassword, oldPwd string) error
+		ChangePassword(newPassword, oldPwd string) error
 	}
 )

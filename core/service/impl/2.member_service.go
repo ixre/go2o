@@ -399,7 +399,7 @@ func (s *memberService) CompareCode(_ context.Context, r *proto.CompareCodeReque
 }
 
 // ChangeUsername 更改会员用户名
-func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUserRequest) (*proto.Result, error) {
+func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUsernameRequest) (*proto.Result, error) {
 	var err error
 	m := s.repo.GetMember(int64(r.MemberId))
 	if m == nil {
@@ -627,8 +627,8 @@ func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.Member
 	return s.result(err), nil
 }
 
-// ModifyPassword 更改密码
-func (s *memberService) ModifyPassword(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
+// ChangePassword 更改密码
+func (s *memberService) ChangePassword(_ context.Context, r *proto.ChangePasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
@@ -646,15 +646,16 @@ func (s *memberService) ModifyPassword(_ context.Context, r *proto.ModifyPasswor
 	} else {
 		old = domain.MemberSha1Pwd(old, v.Salt)
 	}
-	err := m.Profile().ModifyPassword(pwd, old)
+	log.Println("--password", pwd, v.Password, v.Salt, typeconv.MustJson(v))
+	err := m.Profile().ChangePassword(pwd, old)
 	if err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
 }
 
-// ModifyTradePassword 更改交易密码
-func (s *memberService) ModifyTradePassword(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
+// ChangeTradePassword 更改交易密码
+func (s *memberService) ChangeTradePassword(_ context.Context, r *proto.ChangePasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
@@ -671,7 +672,7 @@ func (s *memberService) ModifyTradePassword(_ context.Context, r *proto.ModifyPa
 	} else {
 		old = domain.TradePassword(old, v.Salt)
 	}
-	err := m.Profile().ModifyTradePassword(pwd, old)
+	err := m.Profile().ChangeTradePassword(pwd, old)
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -693,7 +694,10 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 	}
 	im := s.repo.GetMember(memberId)
 	val := im.GetValue()
-	if val.Password != domain.Sha1Pwd(pwd, val.Salt) {
+
+	if s := domain.Sha1Pwd(pwd, val.Salt); s != val.Password {
+		log.Println("--password-compare", s, val.Password, val.Salt, typeconv.MustJson(val))
+
 		return nil, 1, de.ErrCredential
 	}
 	if val.UserFlag&member.FlagLocked == member.FlagLocked {
@@ -865,7 +869,7 @@ func (s *memberService) GetAccount(_ context.Context, id *proto.MemberIdRequest)
 	if acc != nil {
 		return s.parseAccountDto(acc.GetValue()), nil
 	}
-	return nil,  member.ErrNoSuchMember
+	return nil, member.ErrNoSuchMember
 }
 
 // 获取上级邀请人会员编号数组
@@ -1259,7 +1263,7 @@ func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*
 		x := m.Complex()
 		return s.parseComplexMemberDto(x), nil
 	}
-	return nil,   member.ErrNoSuchMember
+	return nil, member.ErrNoSuchMember
 }
 
 func (s *memberService) Freeze(_ context2.Context, r *proto.AccountFreezeRequest) (*proto.AccountFreezeResponse, error) {
