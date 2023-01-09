@@ -353,6 +353,7 @@ func (t *orderManagerImpl) NotifyOrderTradeSuccess(orderNo string, subOrder bool
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
+	// 主动调用订单支付完成
 	switch o.Type() {
 	case order.TRetail:
 		io := o.(order.INormalOrder)
