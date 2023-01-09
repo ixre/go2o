@@ -240,9 +240,9 @@ enum EItemFlag{
 // 商品标志
 message SItemFlagData{
   // 新品
-	bool isNewGoods = 1;
+	bool isNewOnShelve = 1;
 	// 热销商品
-	bool isHotSale = 2;
+	bool isHotSales = 2;
 	// 推荐商品
 	bool isRecommend = 3;
   // 是否允许兑换
