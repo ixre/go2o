@@ -417,11 +417,11 @@ func (q *queryService) QueryItemSalesHistory(_ context.Context,req *proto.QueryI
 	}
 	for _,v := range list{
 		dst := &proto.SItemSalesHistory{
-			BuyerUserCode:   s.BuyerUserCode,
-			BuyerName:       s.BuyerName,
-			BuyerPortrait: s.BuyerPortrait,
-			BuyTime:         s.BuyTime,
-			IsFinishPayment: s.OrderState > order.StatAwaitingPayment,
+			BuyerUserCode:   v.BuyerUserCode,
+			BuyerName:       v.BuyerName,
+			BuyerPortrait: v.BuyerPortrait,
+			BuyTime:         v.BuyTime,
+			IsFinishPayment: v.OrderState > order.StatAwaitingPayment,
 		}
 		if req.MaskBuyer{
 			dst.BuyerName = format.MaskNickname(dst.BuyerName)
@@ -431,6 +431,3 @@ func (q *queryService) QueryItemSalesHistory(_ context.Context,req *proto.QueryI
 	return ret, nil
 }
 
-func (q *queryService) parseSaleHistory(s *dto.ItemSalesHistoryDto)*proto.SItemSalesHistory{
-	ret := 
-}

@@ -230,9 +230,9 @@ enum EItemFlag{
 	// 分销商品
 	Affilite = 32;
 	// 新品
-	NewGoods = 64;
+	NewOnShelve = 64;
 	// 热销商品
-	HotSale = 128;
+	HotSales = 128;
 	// 平台配送
 	SelfDelivery = 256;
 }
