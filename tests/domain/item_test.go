@@ -192,7 +192,7 @@ func TestSaveItemFreeDeliveryFlag(t *testing.T) {
 }
 
 func TestCheckContainerItemFlag(t *testing.T) {
-	t.Log(-1&item.FlagNewGoods == item.FlagNewGoods)
+	t.Log(-1&item.FlagNewOnShelve == item.FlagNewOnShelve)
 }
 
 func TestAuditItem(t *testing.T) {

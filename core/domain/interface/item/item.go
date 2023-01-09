@@ -49,9 +49,9 @@ const (
 	// 分销商品
 	FlagAffilite = 32
 	// 新品
-	FlagNewGoods = 64
+	FlagNewOnShelve = 64
 	// 热销商品
-	FlagHotSale = 128
+	FlagHotSales = 128
 	// 平台配送
 	FlagSelfDelivery = 256
 )

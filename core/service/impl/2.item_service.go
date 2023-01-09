@@ -81,10 +81,10 @@ func (s *itemService) GetItem(_ context.Context, req *proto.GetItemRequest) (*pr
 // 获取商品的标志数据
 func (s *itemService) getFlagData(flag int) *proto.SItemFlagData {
 	return &proto.SItemFlagData{
-		IsNewGoods:     domain.TestFlag(flag, item.FlagNewGoods),
-		IsHotSale:      domain.TestFlag(flag, item.FlagHotSale),
+		IsNewOnShelve:  domain.TestFlag(flag, item.FlagNewOnShelve),
+		IsHotSales:     domain.TestFlag(flag, item.FlagHotSales),
 		IsRecommend:    domain.TestFlag(flag, item.FlagRecommend),
-		IsExchange: domain.TestFlag(flag,item.FlagExchange),
+		IsExchange:     domain.TestFlag(flag, item.FlagExchange),
 		IsGift:         domain.TestFlag(flag, item.FlagGift),
 		IsAffilite:     domain.TestFlag(flag, item.FlagAffilite),
 		IsSelfSales:    domain.TestFlag(flag, item.FlagSelfSales),
@@ -143,10 +143,10 @@ func (*itemService) saveItemFlag(gi item.IGoodsItem, r *proto.SaveItemRequest) {
 			gi.GrantFlag(-flag)
 		}
 	}
-	f(item.FlagNewGoods, r.FlagData.IsNewGoods)
-	f(item.FlagHotSale, r.FlagData.IsHotSale)
+	f(item.FlagNewOnShelve, r.FlagData.IsNewOnShelve)
+	f(item.FlagHotSales, r.FlagData.IsHotSales)
 	f(item.FlagRecommend, r.FlagData.IsRecommend)
-	f(item.FlagExchange,r.FlagData.IsExchange)
+	f(item.FlagExchange, r.FlagData.IsExchange)
 	f(item.FlagGift, r.FlagData.IsGift)
 	f(item.FlagAffilite, r.FlagData.IsAffilite)
 	f(item.FlagSelfDelivery, r.FlagData.IsSelfDelivery)
@@ -181,7 +181,7 @@ func (s *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest)
 		item := s.itemRepo.CreateItem(v)
 		return s.attachUnifiedItem(item, r.Extra), nil
 	}
-	return nil,item.ErrNoSuchSku
+	return nil, item.ErrNoSuchSku
 }
 
 // GetItemAndSnapshot 获取商品用于销售的快照和信息
@@ -402,7 +402,7 @@ func (s *itemService) GetSaleLabel(_ context.Context, id *proto.IdOrName) (*prot
 	if tag != nil {
 		return parser.ParseSaleLabelDto(tag.GetValue()), nil
 	}
-	return nil,errors.New("no such sale label")
+	return nil, errors.New("no such sale label")
 }
 
 // SaveSaleLabel 保存销售标签

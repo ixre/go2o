@@ -69,7 +69,7 @@ func TestQueryPagingFlagGoods(t *testing.T) {
 		&proto.PagingShopGoodsRequest{
 			ShopId:     0,
 			CategoryId: 0,
-			Flag:       item.FlagNewGoods,
+			Flag:       item.FlagNewOnShelve,
 			Params:     params,
 		})
 	t.Log(typeconv.MustJson(r))
