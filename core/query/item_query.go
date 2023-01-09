@@ -10,6 +10,7 @@ package query
 
 import (
 	"bytes"
+	"database/sql"
 	"fmt"
 	"log"
 	"strings"
@@ -17,7 +18,9 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )
@@ -305,4 +308,21 @@ func (i ItemQuery) GetPagedOnShelvesGoods(shopId int64,
 		log.Println("[ Go2o][ Repo][ Error]:", err.Error(), s)
 	}
 	return total, list
+}
+
+// QueryItemSalesHistory 查询商品销售记录
+func (i *ItemQuery) QueryItemSalesHistory(itemId int64,size int,random bool)(rows []*dto.ItemSalesHistoryDto){
+	s := fmt.Sprintf(`SELECT m.user_code,m.nickname,ord.create_time,
+		ord.status FROM sale_sub_item it 
+		INNER JOIN sale_normal_order ord ON ord.id = it.order_id
+		INNER JOIN mm_member m ON m.member_id = ord.buyer_id
+		WHERE it.item_id = $1 LIMIT $2 `)
+	i.Query(s, func(_rows *sql.Rows) {
+		for _rows.Next() {
+			e := dto.ItemSalesHistoryDto{}
+			_rows.Scan(&e.BuyerUserCode, &e.BuyerName, &e.BuyTime, &e.OrderState)
+			rows = append(rows, &e)
+		}
+	}, itemId, size)
+	return rows
 }
