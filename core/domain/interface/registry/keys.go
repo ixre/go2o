@@ -200,6 +200,8 @@ var (
 	OrderEnableAffliteRebate = KeyFormat("OrderEnableAffliteRebate")
 	// 全局订单返利比例
 	OrderGlobalAffliteRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
+	// 推送分销事件
+	OrderPushAffiliteEvent = KeyFormat("OrderPushAffiliteEvent")
 	//  /* 商户订单 */
 	// MchOrderSettleMode 商户订单结算模式
 	MchOrderSettleMode = KeyFormat("MchOrderSettleMode")
