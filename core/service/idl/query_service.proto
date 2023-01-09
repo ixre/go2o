@@ -273,10 +273,12 @@ message SItemSalesHistory{
     string buyerUserCode = 1;
     // 买家昵称
     string buyerName = 2;
+    // 买家头像
+    string buyerPortrait = 3;
     // 购买时间
-    int64 buyTime = 3;
+    int64 buyTime = 4;
     // 是否已经支付
-    bool isFinishPayment = 4;
+    bool isFinishPayment = 5;
 }
 
 // 商品销售记录查询响应

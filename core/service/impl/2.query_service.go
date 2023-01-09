@@ -419,6 +419,7 @@ func (q *queryService) QueryItemSalesHistory(_ context.Context,req *proto.QueryI
 		dst := &proto.SItemSalesHistory{
 			BuyerUserCode:   s.BuyerUserCode,
 			BuyerName:       s.BuyerName,
+			BuyerPortrait: s.BuyerPortrait,
 			BuyTime:         s.BuyTime,
 			IsFinishPayment: s.OrderState > order.StatAwaitingPayment,
 		}
