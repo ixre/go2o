@@ -275,8 +275,8 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	// 使用返利用户代码
 	no := o.(order.INormalOrder)
 	if no != nil {
-		if len(data.AffliteCode) > 0 {
-			_ = no.ApplyTraderCode(data.AffliteCode)
+		if len(data.AffiliteCode) > 0 {
+			_ = no.ApplyTraderCode(data.AffiliteCode)
 		}
 	}
 	// 提交订单

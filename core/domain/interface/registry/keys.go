@@ -197,9 +197,9 @@ var (
 
 	/** 订单 */
 	// 是否启用订单返利
-	OrderEnableAffliteRebate = KeyFormat("OrderEnableAffliteRebate")
+	OrderEnableAffiliteRebate = KeyFormat("OrderEnableAffiliteRebate")
 	// 全局订单返利比例
-	OrderGlobalAffliteRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
+	OrderGlobalAffiliteRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
 	// 推送分销事件
 	OrderPushAffiliteEvent = KeyFormat("OrderPushAffiliteEvent")
 	//  /* 商户订单 */

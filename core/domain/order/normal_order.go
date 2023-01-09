@@ -67,7 +67,7 @@ type normalOrderImpl struct {
 	_list           []order.ISubOrder
 	_payOrder       payment.IPaymentOrder
 	// 返利推荐人
-	_affliteMember member.IMember
+	_AffiliteMember member.IMember
 }
 
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
@@ -117,7 +117,7 @@ func (o *normalOrderImpl) ApplyTraderCode(code string) error {
 	if im == nil || im.ContainFlag(member.FlagRebateDisabled) {
 		return nil
 	}
-	o._affliteMember = im
+	o._AffiliteMember = im
 	return nil
 }
 
@@ -773,20 +773,20 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	v.FinalAmount = v.ItemAmount - v.DiscountAmount +
 		v.PackageFee + v.ExpressFee
 	so := o.repo.CreateNormalSubOrder(v)
-	o.createAffliteRebateOrder(so)
+	o.createAffiliteRebateOrder(so)
 	return so
 }
 
 // 创建返利订单
-func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder) {
-	if o._affliteMember != nil {
+func (o *normalOrderImpl) createAffiliteRebateOrder(so order.ISubOrder) {
+	if o._AffiliteMember != nil {
 		// 未开启返利
-		rv, _ := o.registryRepo.GetValue(registry.OrderEnableAffliteRebate)
+		rv, _ := o.registryRepo.GetValue(registry.OrderEnableAffiliteRebate)
 		if v, _ := strconv.ParseBool(rv); !v {
 			return
 		}
 		// 获取返利比例
-		rv, err := o.registryRepo.GetValue(registry.OrderGlobalAffliteRebateRate)
+		rv, err := o.registryRepo.GetValue(registry.OrderGlobalAffiliteRebateRate)
 		if err != nil {
 			log.Println("[ warning]: affilite rebate rate error", err.Error())
 			return
@@ -797,10 +797,10 @@ func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder) {
 		}
 		ov := so.GetValue()
 		unix := time.Now().Unix()
-		v := &order.AffliteRebate{
+		v := &order.AffiliteRebate{
 			PlanId:        0,
-			TraderId:      o._affliteMember.GetAggregateRootId(),
-			AffiliateCode: o._affliteMember.GetValue().UserCode,
+			TraderId:      o._AffiliteMember.GetAggregateRootId(),
+			AffiliateCode: o._AffiliteMember.GetValue().UserCode,
 			OrderNo:       ov.OrderNo,
 			OrderSubject:  ov.Subject,
 			OrderAmount:   ov.FinalAmount,

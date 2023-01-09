@@ -238,7 +238,7 @@ message SubmitOrderRequest {
     // 优惠券
     string couponCode = 5;
     // 推广返利用户代码
-    string affliteCode = 6;
+    string AffiliteCode = 6;
     // 是否使用余额抵扣
     bool balanceDiscount = 7;
     // 其他数据
@@ -273,7 +273,7 @@ message SubmitNormalOrderV2Request {
     // 是否使用余额抵扣
     bool balanceDiscount = 6;
     // 推广返利用户代码
-    string affliteCode = 7;
+    string AffiliteCode = 7;
 }
 
 // 订单提交返回数据

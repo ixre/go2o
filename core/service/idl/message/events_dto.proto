@@ -4,25 +4,39 @@ option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 
-message EVOrderAffiliteItem{
-// 商品编号
-int64 ItemId = 1;
-// 商品SKU编号
-int64 SkuId = 3;
-// 数量
-Quantity int32 `db:"quantity"`
-// 退回数量(退货)
-ReturnQuantity int32 `db:"return_quantity"`
-// 金额
-Amount int64 `db:"amount"`
-// 最终金额, 可能会有优惠均摊抵扣的金额
-FinalAmount int64 `db:"final_amount"`
+
+// 商品分销设置
+message EVItemAffiliteConfig{
+	// 分销比例
+	double rate = 2;
+	// 分销金额
+	int64 amount = 3;
+	// 是否按比例分销
+	bool isByRate = 4;
 }
+
+// 订单分销商品
+message EVOrderAffiliteItem{
+	// 商品编号
+	int64 itemId = 1;
+	// 商品SKU编号
+	int64 skuId = 2;
+	// 数量
+	int32 quantity =3;
+	// 金额
+	int64 amount = 4;
+	// 最终金额, 可能会有优惠均摊抵扣的金额
+	int64 finalAmount = 5;
+	// 分销参数
+	repeated EVItemAffiliteConfig Params = 6;
+}
+
+// 分销订单
 message EVOrderAffiliteRebateOrder{
     	// 订单号
 	string orderNo = 1;
 	// 订单金额
 	int64 orderAmount = 2;
 	// 分销商品
-	repeated EVOrderAffiliteItem affiliteItems = 3
+	repeated EVOrderAffiliteItem affiliteItems = 3;
 }
