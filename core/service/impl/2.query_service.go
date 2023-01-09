@@ -423,7 +423,7 @@ func (q *queryService) QueryItemSalesHistory(_ context.Context,req *proto.QueryI
 			IsFinishPayment: s.OrderState > order.StatAwaitingPayment,
 		}
 		if req.MaskBuyer{
-			dst.BuyerName = 
+			dst.BuyerName = format.MaskNickname(dst.BuyerName)
 		}
 		ret.Value = append(ret.Value,dst)
 	}
