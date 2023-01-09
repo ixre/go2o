@@ -60,7 +60,7 @@ func (p *productService) GetProductModel(_ context.Context, id *proto.ProductMod
 		}
 		return ret, nil
 	}
-	return nil, nil
+	return nil,product.ErrNoSuchProduct 
 }
 
 func (p *productService) appendAttrItems(attr *proto.SProductAttr, items []*promodel.AttrItem) *proto.SProductAttr {
@@ -99,7 +99,7 @@ func (p *productService) GetAttr(_ context.Context, id *proto.ProductAttrId) (*p
 		attr = p.appendAttrItems(attr, v.Items)
 		return attr, nil
 	}
-	return nil, nil
+	return nil, product.ErrNoSuchAttr 
 }
 
 // GetAttrItem 获取属性项
@@ -108,7 +108,7 @@ func (p *productService) GetAttrItem(_ context.Context, id *proto.ProductAttrIte
 	if it != nil {
 		return p.parseProductAttrItemDto(it), nil
 	}
-	return nil, nil
+	return nil,  product.ErrNoSuchAttr
 }
 
 // GetBrands 获取所有产品品牌
@@ -184,7 +184,7 @@ func (p *productService) GetProduct(_ context.Context, id *proto.ProductId) (*pr
 		}
 		return ret, nil
 	}
-	return nil, nil
+	return nil,  product.ErrNoSuchProduct
 }
 
 // SaveProduct 保存产品
@@ -283,7 +283,7 @@ func (p *productService) GetBrand(_ context.Context, id *proto.Int64) (*proto.SP
 	if brand != nil {
 		return p.parseBrandDto(brand), nil
 	}
-	return nil, nil
+	return nil,product.ErrNoSuchBrand 
 }
 
 // SaveBrand Save 产品品牌

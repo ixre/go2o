@@ -11,6 +11,8 @@ package impl
 import (
 	"context"
 	"errors"
+	"fmt"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/personfinance"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -44,7 +46,7 @@ func (p *personFinanceService) GetRiseInfo(_ context.Context, id *proto.PersonId
 			return p.parseRiseInfoDto(v), nil
 		}
 	}
-	return nil, nil
+	return nil,fmt.Errorf("no such rise info") 
 }
 
 // 转入(业务放在service,是为person_finance解耦)

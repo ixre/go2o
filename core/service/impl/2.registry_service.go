@@ -11,6 +11,7 @@ package impl
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -92,7 +93,7 @@ func (s *registryService) GetRegistry(_ context.Context, key *proto.String) (*pr
 	if it != nil {
 		return s.parseRegistryDto(it.Value()), nil
 	}
-	return nil, nil
+	return nil,fmt.Errorf("no such registry: %v", key.Value)
 }
 
 // FindRegistries 按键前缀获取键数据

@@ -271,22 +271,13 @@ func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV
 // GetOrder 获取订单和商品项信息
 func (s *orderServiceImpl) GetOrder(_ context.Context, orderNo *proto.OrderNoV2) (*proto.SSingleOrder, error) {
 	if len(orderNo.Value) == 0 {
-		return nil, errors.New("order no")
+		return nil,  order.ErrNoSuchOrder
 	}
 	c := s.manager.Unified(orderNo.Value, true).Complex()
 	if c != nil {
 		return parser.OrderDto(c), nil
 	}
-	return nil, nil
-
-	/*
-		orderId := _s.repo.GetOrderId(id.Value, true)
-		o := _s.repo.GetSubOrder(orderId)
-		if o != nil {
-			return parser.SubOrderDto(o), nil
-		}
-		return nil, nil
-	*/
+	return nil, order.ErrNoSuchOrder
 }
 
 // TradeOrderCashPay 交易单现金支付

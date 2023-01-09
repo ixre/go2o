@@ -10,13 +10,15 @@ package impl
  */
 import (
 	"context"
+	"errors"
+	"strconv"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/service/proto"
 	context2 "golang.org/x/net/context"
-	"strconv"
 )
 
 var _ proto.PaymentServiceServer = new(paymentService)
@@ -45,7 +47,7 @@ func (p *paymentService) GetPaymentOrderById(_ context.Context, id *proto.Int32)
 		v := po.Get()
 		return p.parsePaymentOrderDto(&v), nil
 	}
-	return nil, nil
+	return nil,  payment.ErrNoSuchPaymentOrder
 }
 
 // GetPaymentOrderId 根据交易号获取支付单编号
@@ -67,7 +69,7 @@ func (p *paymentService) GetPaymentOrder(_ context.Context, paymentNo *proto.Str
 		}
 		return sp, nil
 	}
-	return nil, nil
+	return nil, payment.ErrNoSuchPaymentOrder
 }
 
 // SubmitPaymentOrder 创建支付单
@@ -284,7 +286,7 @@ func (p *paymentService) GatewayV2(_ context2.Context, r *proto.PayGatewayV2Requ
 
 // MixedPayment 混合支付
 func (p *paymentService) MixedPayment(_ context.Context, _ *proto.MixedPaymentRequest) (*proto.Result, error) {
-	return nil, nil
+	return nil,errors.New("not support MixedPayment")
 }
 
 func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Order {

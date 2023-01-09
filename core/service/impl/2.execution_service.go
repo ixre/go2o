@@ -38,7 +38,7 @@ func (j *executionServiceImpl) GetJob(_ context.Context, request *proto.GetJobRe
 	ij := j.repo.GetJobByName(request.JobName)
 	if ij == nil {
 		if !request.Create {
-			return nil, nil
+			return nil, errors.New("no such job: ")
 		}
 		ij = j.repo.CreateJob(&job.ExecData{
 			JobName:       request.JobName,

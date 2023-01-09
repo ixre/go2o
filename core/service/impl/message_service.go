@@ -10,6 +10,8 @@ package impl
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ixre/go2o/core/domain/interface/mss"
 	"github.com/ixre/go2o/core/domain/interface/mss/notify"
 	"github.com/ixre/go2o/core/dto"
@@ -84,7 +86,7 @@ func (m *messageService) GetMailTemplate(_ context.Context, id *proto.Int64) (*p
 	if v != nil {
 		return m.parseMailTemplateDto(v), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such mail template")
 }
 
 // 保存邮件模板

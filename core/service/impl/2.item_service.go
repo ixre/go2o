@@ -64,18 +64,18 @@ func NewSaleService(sto storage.Interface, cateRepo product.ICategoryRepo,
 
 // GetItem 获取商品
 func (s *itemService) GetItem(_ context.Context, req *proto.GetItemRequest) (*proto.SItemDataResponse, error) {
-	item := s.itemRepo.GetItem(req.ItemId)
-	if item != nil {
-		ret := parser.ItemDataDto(item.GetValue())
-		skuArr := item.SkuArray()
-		ret.Images = item.Images()
-		ret.AttrArray = parser.AttrArrayDto(item.Product().Attr())
+	it := s.itemRepo.GetItem(req.ItemId)
+	if it != nil {
+		ret := parser.ItemDataDto(it.GetValue())
+		skuArr := it.SkuArray()
+		ret.Images = it.Images()
+		ret.AttrArray = parser.AttrArrayDto(it.Product().Attr())
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
-		ret.LevelPrices = parser.PriceArrayDto(item.GetLevelPrices())
-		ret.FlagData = s.getFlagData(item.GetValue().ItemFlag)
+		ret.LevelPrices = parser.PriceArrayDto(it.GetLevelPrices())
+		ret.FlagData = s.getFlagData(it.GetValue().ItemFlag)
 		return ret, nil
 	}
-	return nil, nil
+	return nil, item.ErrNoSuchItem
 }
 
 // 获取商品的标志数据
@@ -84,6 +84,7 @@ func (s *itemService) getFlagData(flag int) *proto.SItemFlagData {
 		IsNewGoods:     domain.TestFlag(flag, item.FlagNewGoods),
 		IsHotSale:      domain.TestFlag(flag, item.FlagHotSale),
 		IsRecommend:    domain.TestFlag(flag, item.FlagRecommend),
+		IsExchange: domain.TestFlag(flag,item.FlagExchange),
 		IsGift:         domain.TestFlag(flag, item.FlagGift),
 		IsAffilite:     domain.TestFlag(flag, item.FlagAffilite),
 		IsSelfSales:    domain.TestFlag(flag, item.FlagSelfSales),
@@ -145,6 +146,7 @@ func (*itemService) saveItemFlag(gi item.IGoodsItem, r *proto.SaveItemRequest) {
 	f(item.FlagNewGoods, r.FlagData.IsNewGoods)
 	f(item.FlagHotSale, r.FlagData.IsHotSale)
 	f(item.FlagRecommend, r.FlagData.IsRecommend)
+	f(item.FlagExchange,r.FlagData.IsExchange)
 	f(item.FlagGift, r.FlagData.IsGift)
 	f(item.FlagAffilite, r.FlagData.IsAffilite)
 	f(item.FlagSelfDelivery, r.FlagData.IsSelfDelivery)
@@ -179,31 +181,31 @@ func (s *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest)
 		item := s.itemRepo.CreateItem(v)
 		return s.attachUnifiedItem(item, r.Extra), nil
 	}
-	return nil, nil
+	return nil,item.ErrNoSuchSku
 }
 
 // GetItemAndSnapshot 获取商品用于销售的快照和信息
 func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndSnapshotRequest) (*proto.ItemSnapshotResponse, error) {
-	item := s.itemRepo.GetItem(r.GetItemId())
-	if item != nil {
+	it := s.itemRepo.GetItem(r.GetItemId())
+	if it != nil {
 		skuService := s.itemRepo.SkuService()
-		sn := item.Snapshot()
+		sn := it.Snapshot()
 		// 基础数据及其销售数量
 		ret := parser.ParseItemSnapshotDto(sn)
-		ret.SaleNum = item.GetValue().SaleNum
-		ret.StockNum = item.GetValue().StockNum
+		ret.SaleNum = it.GetValue().SaleNum
+		ret.StockNum = it.GetValue().StockNum
 		// 图片
-		ret.Images = item.Images()
+		ret.Images = it.Images()
 		if len(ret.Images) == 0 && len(sn.Image) > 0 {
 			ret.Images = []string{sn.Image}
 		}
 		// 获取SKU和详情等
-		skuArr := item.SkuArray()
-		specArr := item.SpecArray()
+		skuArr := it.SkuArray()
+		specArr := it.SpecArray()
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		ret.SpecOptions = parser.SpecOptionsDto(specArr)
 		// 产品详情
-		prod := item.Product()
+		prod := it.Product()
 		ret.Description = prod.GetValue().Description
 		// 返回SKU的HTML选择器
 		if r.ReturnSkuHtml {
@@ -214,7 +216,7 @@ func (s *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndS
 		}
 		return ret, nil
 	}
-	return nil, nil
+	return nil, item.ErrNoSuchItem
 }
 
 // 获取商品交易快照
@@ -223,19 +225,19 @@ func (s *itemService) GetTradeSnapshot(_ context.Context, id *proto.Int64) (*pro
 	if sn != nil {
 		return parser.ParseTradeSnapshot(sn), nil
 	}
-	return nil, nil
+	return nil, item.ErrNoSuchSnapshot
 }
 
 // 获取SKU
 func (s *itemService) GetSku(_ context.Context, request *proto.SkuId) (*proto.SSku, error) {
-	item := s.itemRepo.GetItem(request.ItemId)
-	if item != nil {
-		sku := item.GetSku(request.SkuId)
+	it := s.itemRepo.GetItem(request.ItemId)
+	if it != nil {
+		sku := it.GetSku(request.SkuId)
 		if sku != nil {
 			return s.parseSkuDto(sku), nil
 		}
 	}
-	return nil, nil
+	return nil, item.ErrNoSuchItem
 }
 
 // 获取商品详细数据
@@ -400,7 +402,7 @@ func (s *itemService) GetSaleLabel(_ context.Context, id *proto.IdOrName) (*prot
 	if tag != nil {
 		return parser.ParseSaleLabelDto(tag.GetValue()), nil
 	}
-	return nil, nil
+	return nil,errors.New("no such sale label")
 }
 
 // SaveSaleLabel 保存销售标签

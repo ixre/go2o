@@ -62,7 +62,8 @@ var (
 		"err_member_level_up_confirm", "会员升级已经确认")
 	ErrLevelUpLaterConfirm = domain.NewError(
 		"err_member_level_up_later_confirm", "请稍后二分钟后确认")
-
+	ErrNoSuchLevel = domain.NewError(
+		"err_member_no_such_level", "等级不存在")
 	ErrNoSuchLevelUpLog = domain.NewError(
 		"err_member_no_such_level_up_log", "不存在升级信息")
 

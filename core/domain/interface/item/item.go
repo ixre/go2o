@@ -38,20 +38,22 @@ const (
 const (
 	// 自营商品
 	FlagSelfSales = 1
-	// 新品
-	FlagNewGoods = 2
-	// 热销商品
-	FlagHotSale = 4
+	// 免邮
+	FlagFreeDelivery = 2
 	// 推荐商品
-	FlagRecommend = 8
+	FlagRecommend = 4
+	// 积分兑换商品
+	FlagExchange = 8
 	// 赠品
 	FlagGift = 16
 	// 分销商品
 	FlagAffilite = 32
-	// 免邮
-	FlagFreeDelivery = 64
+	// 新品
+	FlagNewGoods = 64
+	// 热销商品
+	FlagHotSale = 128
 	// 平台配送
-	FlagSelfDelivery = 128
+	FlagSelfDelivery = 256
 )
 
 var (
@@ -307,7 +309,7 @@ type (
 		// GetOnShelvesGoods 获取在货架上的商品
 		GetOnShelvesGoods(mchId int64, start, end int,
 			sortBy string) []*valueobject.Goods
-	
+
 		// GetGoodsByIds 根据编号获取商品
 		GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error)
 
