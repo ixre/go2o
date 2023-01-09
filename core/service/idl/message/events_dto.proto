@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option go_package = "./;proto";
+option java_package = "com.github.go2o.rpc";
+
+
+message EVOrderAffiliteItem{
+// 商品编号
+int64 ItemId = 1;
+// 商品SKU编号
+int64 SkuId = 3;
+// 数量
+Quantity int32 `db:"quantity"`
+// 退回数量(退货)
+ReturnQuantity int32 `db:"return_quantity"`
+// 金额
+Amount int64 `db:"amount"`
+// 最终金额, 可能会有优惠均摊抵扣的金额
+FinalAmount int64 `db:"final_amount"`
+}
+message EVOrderAffiliteRebateOrder{
+    	// 订单号
+	string orderNo = 1;
+	// 订单金额
+	int64 orderAmount = 2;
+	// 分销商品
+	repeated EVOrderAffiliteItem affiliteItems = 3
+}
