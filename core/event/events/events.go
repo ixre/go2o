@@ -25,6 +25,7 @@ type OrderAffiliateRebateEvent struct {
 	AffiliateItems []*order.SubOrderItem
 }
 
+// 发送短信事件
 type SendSmsEvent struct {
 	// 短信服务商
 	Provider string

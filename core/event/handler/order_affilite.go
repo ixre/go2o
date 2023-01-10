@@ -48,16 +48,3 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 
 	//todo: 处理分销后将事件推送至外部系统
 }
-
-func (e EventHandler) HandleSendSmsEvent(data interface{}) {
-	v := data.(*events.SendSmsEvent)
-	ev := &proto.EVSendSmsEventData{
-		Provider:   v.Provider,
-		Phone:      v.Phone,
-		Template:   v.Template,
-		TemplateId: v.TemplateId,
-		Data:       v.Data,
-	}
-	bytes, _ := json.Marshal(ev)
-	msq.Push(msq.SystemSendSmsTopic, string(bytes))
-}

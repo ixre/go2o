@@ -15,13 +15,13 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/mss/notify"
 	"github.com/ixre/go2o/core/infrastructure/tool/sms/aliyu"
 	"github.com/ixre/go2o/core/infrastructure/tool/sms/cl253"
+	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/simplifiedchinese"
@@ -57,7 +57,7 @@ type SmsApi struct {
 // 发送短信
 func SendSms(provider string, api *SmsApi, phoneNum string, content string,
 	params []string) error {
-	if api.Signature != "" && strings.Index(content, api.Signature) == -1 {
+	if api.Signature != "" && !strings.Contains(content, api.Signature) {
 		content = api.Signature + content
 	}
 	c := compileArray(content, params)
@@ -76,27 +76,6 @@ func SendSms(provider string, api *SmsApi, phoneNum string, content string,
 	}
 	return errors.New("未知的短信接口服务商:" + provider)
 }
-
-// // 解析模板中的参数
-// func compile(tpl string, param map[string]interface{}) string {
-// 	var str string
-// 	for k, v := range param {
-// 		switch v.(type) {
-// 		case string:
-// 			str = v.(string)
-// 		case int, int32, int64:
-// 			str = strconv.Itoa(v.(int))
-// 		case float32, float64:
-// 			str = format.FormatFloat(v.(float32))
-// 		case bool:
-// 			str = strconv.FormatBool(v.(bool))
-// 		default:
-// 			str = "unknown"
-// 		}
-// 		tpl = strings.Replace(tpl, "{"+k+"}", str, -1)
-// 	}
-// 	return tpl
-// }
 
 // 解析模板中的参数
 func compileArray(tpl string, param []string) string {
@@ -125,16 +104,16 @@ func CheckSmsApiPerm(provider string, s *notify.SmsApiPerm) error {
 		if s.ApiUrl == "" {
 			return errors.New("HTTP短信接口必须提供API URL")
 		}
-		if strings.Index(s.Params, "{key}") == -1 {
+		if !strings.Contains(s.Params, "{key}") {
 			return errors.New("API Params缺少\"{key}\"字段")
 		}
-		if strings.Index(s.Params, "{secret}") == -1 {
+		if !strings.Contains(s.Params, "{secret}") {
 			return errors.New("API Params缺少\"{secret}\"字段")
 		}
-		if strings.Index(s.Params, "{phone}") == -1 {
+		if !strings.Contains(s.Params, "{phone}") {
 			return errors.New("API Params缺少\"{phone}\"字段")
 		}
-		if strings.Index(s.Params, "{content}") == -1 {
+		if !strings.Contains(s.Params, "{content}") {
 			return errors.New("API Params缺少\"{content}\"字段")
 		}
 		if s.SuccessChar == "" {
@@ -159,16 +138,19 @@ func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, data []string, te
 		content = url.QueryEscape(content)
 	}
 	// 请求参数
-	params := url.Values{
-		"key":        {api.Key},
-		"secret":     {api.Secret},
-		"phone":      {phone},
-		"content":    {content},
-		"templateId": {templateId},
-		"stamp":      {fmt.Sprintf("%s%d", util.RandString(3), time.Now().Unix())},
+	params := map[string]string{
+		"key":          api.Key,
+		"secret":       api.Secret,
+		"phone":        phone,
+		"content":      content,
+		"templateId":   templateId,
+		"templateData": strings.Join(data, ","),
+		"stamp":        fmt.Sprintf("%s%d", util.RandString(3), time.Now().Unix()),
 	}
+	body := resolveApiParams(api.Params, params)
+
 	// 创建请求
-	req, err := createHttpRequest(api, params.Encode())
+	req, err := createHttpRequest(api, body)
 	if err != nil {
 		return err
 	}
@@ -184,19 +166,29 @@ func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, data []string, te
 	if err == nil {
 		defer rsp.Body.Close()
 		if rsp.StatusCode != http.StatusOK {
-			err = errors.New("error : " + strconv.Itoa(rsp.StatusCode))
+			return fmt.Errorf("error : %d", rsp.StatusCode)
 		}
 		//log.Println("[ Go2o][ Sms]:", body)
 		var data []byte
 		data, err = io.ReadAll(rsp.Body)
 		if err == nil {
 			result := string(data)
-			if strings.Index(result, api.SuccessChar) == -1 {
-				err = errors.New("send fail : " + result + " message body:" + content)
+			if !strings.Contains(result, api.SuccessChar) {
+				return errors.New("send fail : " + result + " message body:" + content)
 			}
 		}
 	}
 	return err
+}
+
+// 解析HTTP短信中的请求参数
+func resolveApiParams(params string, data map[string]string) string {
+	for k, v := range data {
+		str, _ := typeconv.String(v)
+		params = strings.Replace(params, "{"+k+"}",
+			str, -1)
+	}
+	return params
 }
 
 // 创建HTTP短信发送请求
@@ -208,10 +200,10 @@ func createHttpRequest(api *SmsApi, body string) (*http.Request, error) {
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	} else {
 		url := api.ApiUrl
-		if strings.Index(api.ApiUrl, "?") == -1 {
-			url += "?"
-		} else {
+		if strings.Contains(api.ApiUrl, "?") {
 			url += "&"
+		} else {
+			url += "?"
 		}
 		req, err = http.NewRequest(api.Method, url+body, nil)
 	}
