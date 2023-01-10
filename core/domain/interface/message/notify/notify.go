@@ -107,11 +107,11 @@ type (
 		// 保存通知项设置
 		SaveNotifyItem(item *NotifyItem) error
 		// 保存短信API
-		SaveSmsApiPerm(provider string, s *SmsApiPerm) error
+		SaveSmsApiPerm(s *SmsApiPerm) error
 		// 获取短信API信息
-		GetSmsApiPerm(provider string) *SmsApiPerm
+		GetSmsApiPerm(provider int) *SmsApiPerm
 		// 发送手机短信
-		SendPhoneMessage(phone string, msg PhoneMessage, data []string,templateId string) error
+		SendPhoneMessage(phone string, msg PhoneMessage, data []string, templateId string) error
 		// 发送邮件
 		SendEmail(to string, msg *MailMessage, data []string) error
 	}

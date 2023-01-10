@@ -26,12 +26,12 @@ type FoundationServiceClient interface {
 	CheckSensitive(ctx context.Context, in *String, opts ...grpc.CallOption) (*Bool, error)
 	// * 替换敏感词
 	ReplaceSensitive(ctx context.Context, in *ReplaceSensitiveRequest, opts ...grpc.CallOption) (*String, error)
+	// * 获取短信API凭据, provider 短信服务商, 默认:http
+	GetSmsSetting(ctx context.Context, in *GetSmsSettingRequest, opts ...grpc.CallOption) (*SSmsProviderSetting, error)
+	// * 保存短信API凭据,@provider 短信服务商, 默认:http
+	SaveSmsSetting(ctx context.Context, in *SSmsProviderSetting, opts ...grpc.CallOption) (*Result, error)
 	// * 清除缓存
 	CleanCache(ctx context.Context, in *CleanCacheRequest, opts ...grpc.CallOption) (*CleanCacheResponse, error)
-	// * 获取短信API凭据, provider 短信服务商, 默认:http
-	GetSmsApi(ctx context.Context, in *String, opts ...grpc.CallOption) (*SSmsApi, error)
-	// * 保存短信API凭据,@provider 短信服务商, 默认:http
-	SaveSmsApi(ctx context.Context, in *SmsApiSaveRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks
 	SaveBoardHook(ctx context.Context, in *BoardHookSaveRequest, opts ...grpc.CallOption) (*Result, error)
 	// 格式化资源地址并返回
@@ -105,27 +105,27 @@ func (c *foundationServiceClient) ReplaceSensitive(ctx context.Context, in *Repl
 	return out, nil
 }
 
+func (c *foundationServiceClient) GetSmsSetting(ctx context.Context, in *GetSmsSettingRequest, opts ...grpc.CallOption) (*SSmsProviderSetting, error) {
+	out := new(SSmsProviderSetting)
+	err := c.cc.Invoke(ctx, "/FoundationService/GetSmsSetting", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundationServiceClient) SaveSmsSetting(ctx context.Context, in *SSmsProviderSetting, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/FoundationService/SaveSmsSetting", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *foundationServiceClient) CleanCache(ctx context.Context, in *CleanCacheRequest, opts ...grpc.CallOption) (*CleanCacheResponse, error) {
 	out := new(CleanCacheResponse)
 	err := c.cc.Invoke(ctx, "/FoundationService/CleanCache", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *foundationServiceClient) GetSmsApi(ctx context.Context, in *String, opts ...grpc.CallOption) (*SSmsApi, error) {
-	out := new(SSmsApi)
-	err := c.cc.Invoke(ctx, "/FoundationService/GetSmsApi", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *foundationServiceClient) SaveSmsApi(ctx context.Context, in *SmsApiSaveRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, "/FoundationService/SaveSmsApi", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -302,12 +302,12 @@ type FoundationServiceServer interface {
 	CheckSensitive(context.Context, *String) (*Bool, error)
 	// * 替换敏感词
 	ReplaceSensitive(context.Context, *ReplaceSensitiveRequest) (*String, error)
+	// * 获取短信API凭据, provider 短信服务商, 默认:http
+	GetSmsSetting(context.Context, *GetSmsSettingRequest) (*SSmsProviderSetting, error)
+	// * 保存短信API凭据,@provider 短信服务商, 默认:http
+	SaveSmsSetting(context.Context, *SSmsProviderSetting) (*Result, error)
 	// * 清除缓存
 	CleanCache(context.Context, *CleanCacheRequest) (*CleanCacheResponse, error)
-	// * 获取短信API凭据, provider 短信服务商, 默认:http
-	GetSmsApi(context.Context, *String) (*SSmsApi, error)
-	// * 保存短信API凭据,@provider 短信服务商, 默认:http
-	SaveSmsApi(context.Context, *SmsApiSaveRequest) (*Result, error)
 	// * 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks
 	SaveBoardHook(context.Context, *BoardHookSaveRequest) (*Result, error)
 	// 格式化资源地址并返回
@@ -366,14 +366,14 @@ func (UnimplementedFoundationServiceServer) CheckSensitive(context.Context, *Str
 func (UnimplementedFoundationServiceServer) ReplaceSensitive(context.Context, *ReplaceSensitiveRequest) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReplaceSensitive not implemented")
 }
+func (UnimplementedFoundationServiceServer) GetSmsSetting(context.Context, *GetSmsSettingRequest) (*SSmsProviderSetting, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSmsSetting not implemented")
+}
+func (UnimplementedFoundationServiceServer) SaveSmsSetting(context.Context, *SSmsProviderSetting) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveSmsSetting not implemented")
+}
 func (UnimplementedFoundationServiceServer) CleanCache(context.Context, *CleanCacheRequest) (*CleanCacheResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CleanCache not implemented")
-}
-func (UnimplementedFoundationServiceServer) GetSmsApi(context.Context, *String) (*SSmsApi, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSmsApi not implemented")
-}
-func (UnimplementedFoundationServiceServer) SaveSmsApi(context.Context, *SmsApiSaveRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveSmsApi not implemented")
 }
 func (UnimplementedFoundationServiceServer) SaveBoardHook(context.Context, *BoardHookSaveRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveBoardHook not implemented")
@@ -478,6 +478,42 @@ func _FoundationService_ReplaceSensitive_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FoundationService_GetSmsSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSmsSettingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).GetSmsSetting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FoundationService/GetSmsSetting",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).GetSmsSetting(ctx, req.(*GetSmsSettingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundationService_SaveSmsSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SSmsProviderSetting)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).SaveSmsSetting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/FoundationService/SaveSmsSetting",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).SaveSmsSetting(ctx, req.(*SSmsProviderSetting))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FoundationService_CleanCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CleanCacheRequest)
 	if err := dec(in); err != nil {
@@ -492,42 +528,6 @@ func _FoundationService_CleanCache_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FoundationServiceServer).CleanCache(ctx, req.(*CleanCacheRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FoundationService_GetSmsApi_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(String)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FoundationServiceServer).GetSmsApi(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/FoundationService/GetSmsApi",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FoundationServiceServer).GetSmsApi(ctx, req.(*String))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FoundationService_SaveSmsApi_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SmsApiSaveRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FoundationServiceServer).SaveSmsApi(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/FoundationService/SaveSmsApi",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FoundationServiceServer).SaveSmsApi(ctx, req.(*SmsApiSaveRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -872,16 +872,16 @@ var FoundationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _FoundationService_ReplaceSensitive_Handler,
 		},
 		{
+			MethodName: "GetSmsSetting",
+			Handler:    _FoundationService_GetSmsSetting_Handler,
+		},
+		{
+			MethodName: "SaveSmsSetting",
+			Handler:    _FoundationService_SaveSmsSetting_Handler,
+		},
+		{
 			MethodName: "CleanCache",
 			Handler:    _FoundationService_CleanCache_Handler,
-		},
-		{
-			MethodName: "GetSmsApi",
-			Handler:    _FoundationService_GetSmsApi_Handler,
-		},
-		{
-			MethodName: "SaveSmsApi",
-			Handler:    _FoundationService_SaveSmsApi_Handler,
 		},
 		{
 			MethodName: "SaveBoardHook",

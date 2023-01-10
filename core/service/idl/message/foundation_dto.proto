@@ -15,9 +15,54 @@ message CleanCacheResponse{
     int32 count = 1;
 }
 
-message SmsApiSaveRequest {
-    string provider = 1;
-    SSmsApi api = 2;
+// 短信提供商
+enum ESmsProvider{
+    _ESmsProvider = 0;
+    // 通用HTTP接口
+    HTTP = 1;
+    // 腾讯云短信
+    TECENT_CLOUD = 2;
+    // 阿里云短信
+    ALIYUN = 3;
+    // 创蓝短信
+    CHUANGLAN = 4;
+}
+
+// 短信接口参数设置
+message SSmsProviderSetting {
+    // 短信提供商,1:通用HTTP接口,2:腾讯云短信,3:阿里云短信,4:创蓝短信
+    ESmsProvider provider = 1;
+    // 接口KEY
+    string key = 2;
+    // 接口密钥
+    string secret = 3;
+    // 默认模板编号
+    string templateId = 4;
+    // 是否启用
+    bool enabled = 5;
+	/** 签名 */
+	string signature = 6;
+    // Http接口
+    SSmsExtraSetting httpExtra = 7;
+}
+
+/** 短信接口额外信息配置 */
+message SSmsExtraSetting {
+    /** 接口地址 */
+    string apiUrl = 1;
+    /** 请求数据,如: phone={phone}&content={content}*/
+    string params = 2;
+    /** 请求方式, GET或POST */
+    string method = 3;
+    /** 编码 */
+    string charset = 4;
+    /** 发送成功，包含的字符，用于检测是否发送成功 */
+    string successChars = 5;
+}
+// 获取短信设置请求
+message GetSmsSettingRequest{
+    // 短信提供商,1:通用HTTP接口,2:腾讯云短信,3:阿里云短信,4:创蓝短信
+    ESmsProvider provider = 1; 
 }
 
 //  登录结果
@@ -74,25 +119,7 @@ message SArea {
     string name = 3;
 }
 
-/** 短信接口信息 */
-message SSmsApi {
-    /** 接口地址 */
-    string apiUrl = 1;
-    /** 接口KEY */
-    string key = 2;
-    /** 接口密钥 */
-    string secret = 3;
-    /** 请求数据,如: phone={phone}&content={content}*/
-    string params = 4;
-    /** 请求方式, GET或POST */
-    string method = 5;
-    /** 编码 */
-    string charset = 6;
-    /** 签名 */
-    string signature = 7;
-    /** 发送成功，包含的字符，用于检测是否发送成功 */
-    string successChar = 8;
-}
+
 
 // 移动应用配置
 message SMobileAppConfig {

@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 	"golang.org/x/text/encoding"
@@ -18,17 +19,20 @@ import (
 )
 
 // 通过HTTP-API发送短信, 短信模板参数在data里指定
-func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, data []string, templateId string) error {
+func sendPhoneMsgByHttpApi(api *notify.SmsApiPerm, phone, content string, data []string, templateId string) error {
+	if api.Extra == nil {
+		api.Extra = &notify.SmsExtraSetting{}
+	}
 	//如果指定了编码，则先编码内容
-	if api.Charset != "" {
-		dst, err := EncodingTransform([]byte(content), api.Charset)
+	if api.Extra.Charset != "" {
+		dst, err := EncodingTransform([]byte(content), api.Extra.Charset)
 		if err != nil {
 			return err
 		}
 		content = string(dst)
 	}
 	// 如果GET发送,需要编码
-	if api.Method == "GET" {
+	if api.Extra.Method == "GET" {
 		content = url.QueryEscape(content)
 	}
 	// 请求参数
@@ -41,7 +45,7 @@ func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, data []string, te
 		"templateData": strings.Join(data, ","),
 		"stamp":        fmt.Sprintf("%s%d", util.RandString(3), time.Now().Unix()),
 	}
-	body := resolveApiRequestParams(api.Params, params)
+	body := resolveApiRequestParams(api.Extra.Params, params)
 
 	// 创建请求
 	req, err := createHttpRequest(api, body)
@@ -50,7 +54,7 @@ func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, data []string, te
 	}
 	cli := &http.Client{}
 	// 忽略证书
-	if req.TLS != nil || (len(api.ApiUrl) >= 8 && api.ApiUrl[:8] == "https://") {
+	if req.TLS != nil || strings.HasPrefix(api.Extra.ApiUrl, "https://") {
 		cli.Transport = &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
@@ -67,7 +71,7 @@ func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, data []string, te
 		data, err = io.ReadAll(rsp.Body)
 		if err == nil {
 			result := string(data)
-			if !strings.Contains(result, api.SuccessChar) {
+			if !strings.Contains(result, api.Extra.SuccessChars) {
 				return errors.New("send fail : " + result + " message body:" + content)
 			}
 		}
@@ -86,20 +90,20 @@ func resolveApiRequestParams(params string, data map[string]string) string {
 }
 
 // 创建HTTP短信发送请求
-func createHttpRequest(api *SmsApi, body string) (*http.Request, error) {
+func createHttpRequest(api *notify.SmsApiPerm, body string) (*http.Request, error) {
 	var req *http.Request
 	var err error
-	if api.Method == "POST" {
-		req, err = http.NewRequest(api.Method, api.ApiUrl, strings.NewReader(body))
+	if api.Extra.Method == "POST" {
+		req, err = http.NewRequest(api.Extra.Method, api.Extra.ApiUrl, strings.NewReader(body))
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	} else {
-		url := api.ApiUrl
-		if strings.Contains(api.ApiUrl, "?") {
+		url := api.Extra.ApiUrl
+		if strings.Contains(api.Extra.ApiUrl, "?") {
 			url += "&"
 		} else {
 			url += "?"
 		}
-		req, err = http.NewRequest(api.Method, url+body, nil)
+		req, err = http.NewRequest(api.Extra.Method, url+body, nil)
 	}
 	return req, err
 }

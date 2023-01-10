@@ -72,50 +72,50 @@ func (s *foundationService) CleanCache(_ context.Context, request *proto.CleanCa
 }
 
 // 保存短信API凭据
-func (s *foundationService) SaveSmsApi(_ context.Context, r *proto.SmsApiSaveRequest) (*proto.Result, error) {
+func (s *foundationService) SaveSmsSetting(_ context.Context, r *proto.SSmsProviderSetting) (*proto.Result, error) {
 	manager := s.notifyRepo.Manager()
-	a := r.Api
-	perm := &notify.SmsApiPerm{
-		Key:         a.Key,
-		Secret:      a.Secret,
-		ApiUrl:      a.ApiUrl,
-		Params:      a.Params,
-		Method:      a.Method,
-		Charset:     a.Charset,
-		Signature:   a.Signature,
-		SuccessChar: a.SuccessChar,
+	if r.HttpExtra == nil {
+		r.HttpExtra = &proto.SSmsExtraSetting{}
 	}
-	if err := manager.SaveSmsApiPerm(r.Provider, perm); err != nil {
+	perm := &notify.SmsApiPerm{
+		Provider:   int(r.Provider),
+		Key:        r.Key,
+		Secret:     r.Secret,
+		Signature:  r.Signature,
+		TemplateId: r.TemplateId,
+		Extra: &notify.SmsExtraSetting{
+			ApiUrl:  r.HttpExtra.ApiUrl,
+			Params:  r.HttpExtra.Params,
+			Method:  r.HttpExtra.Method,
+			Charset: r.HttpExtra.Charset,
+			SuccessChars: r.HttpExtra.SuccessChars,
+		},
+	}
+	if err := manager.SaveSmsApiPerm(perm); err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
 }
 
 // 获取短信API凭据, @provider 短信服务商, 默认:http
-func (s *foundationService) GetSmsApi(_ context.Context, provider *proto.String) (*proto.SSmsApi, error) {
+func (s *foundationService) GetSmsSetting(_ context.Context, req *proto.GetSmsSettingRequest) (*proto.SSmsProviderSetting, error) {
 	manager := s.notifyRepo.Manager()
-	perm := manager.GetSmsApiPerm(provider.Value)
-	if perm != nil {
-		return &proto.SSmsApi{
-			ApiUrl:      perm.ApiUrl,
-			Key:         perm.Key,
-			Secret:      perm.Secret,
-			Params:      perm.Params,
-			Method:      perm.Method,
-			Charset:     perm.Charset,
-			Signature:   perm.Signature,
-			SuccessChar: perm.SuccessChar,
-		}, nil
+	perm := manager.GetSmsApiPerm(int(req.Provider))
+	if perm == nil {
+		return nil, notify.ErrNoSuchSmsProvider
 	}
-	return &proto.SSmsApi{
-		ApiUrl:      "",
-		Key:         "",
-		Secret:      "",
-		Params:      "",
-		Method:      "",
-		Charset:     "",
-		Signature:   "",
-		SuccessChar: "",
+	return &proto.SSmsProviderSetting{
+		Provider:  proto.ESmsProvider(perm.Provider),
+		Key:       perm.Key,
+		Secret:    perm.Secret,
+		Signature: perm.Signature,
+		HttpExtra: &proto.SSmsExtraSetting{
+			ApiUrl:       perm.Extra.ApiUrl,
+			Params:       perm.Extra.Params,
+			Method:       perm.Extra.Method,
+			Charset:      perm.Extra.Charset,
+			SuccessChars: perm.Extra.SuccessChars,
+		},
 	}, nil
 }
 

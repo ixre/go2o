@@ -9,24 +9,36 @@ package notify
  * history :
  */
 
-// 短信接口
+// 短信接口参数设置
 type SmsApiPerm struct {
-	//接口地址
-	ApiUrl string
-	//接口编号
+	// 短信提供商,1:通用HTTP接口,2:腾讯云短信,3:阿里云短信,4:创蓝短信
+	Provider int
+	// 接口KEY
 	Key string
-	//接口密钥
+	// 接口密钥
 	Secret string
-	// 请求数据,如: phone={phone}&content={content}
-	Params string
-	// 请求方式, GET或POST
-	Method string
-	//发送内容的编码
-	Charset string
-	// 签名
+	/** 签名 */
 	Signature string
-	//发送成功，包含的字符，用于检测是否发送成功
-	SuccessChar string
+	// 默认模板编号
+	TemplateId string
+	// 是否启用
+	Enabled bool
+	// Http接口
+	Extra *SmsExtraSetting
+}
+
+/** 短信接口额外信息配置 */
+type SmsExtraSetting struct {
+	/** 接口地址 */
+	ApiUrl string
+	/** 请求数据,如: phone={phone}&content={content}*/
+	Params string
+	/** 请求方式, GET或POST */
+	Method string
+	/** 编码 */
+	Charset string
+	/** 发送成功，包含的字符，用于检测是否发送成功 */
+	SuccessChars string
 }
 
 // 短信接口设置

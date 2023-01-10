@@ -60,14 +60,14 @@ func (n *notifyManagerImpl) SaveNotifyItem(item *notify.NotifyItem) error {
 }
 
 // 保存短信API
-func (n *notifyManagerImpl) SaveSmsApiPerm(provider string, v *notify.SmsApiPerm) error {
-	err := sms.CheckSmsApiPerm(provider, v)
+func (n *notifyManagerImpl) SaveSmsApiPerm(v *notify.SmsApiPerm) error {
+	err := sms.CheckSmsApiPerm(v)
 	if err == nil {
 		data, err := json.Marshal(v)
 		if err != nil {
 			return err
 		}
-		key := "sms_api_" + provider
+		key := fmt.Sprintf("sms_api_" ,v.Provider)
 		if ir := n.registryRepo.Get(key); ir != nil {
 			err = ir.Update(string(data))
 			if err == nil {
@@ -82,7 +82,7 @@ func (n *notifyManagerImpl) SaveSmsApiPerm(provider string, v *notify.SmsApiPerm
 			DefaultValue: string(data2),
 			Options:      "",
 			Flag:         registry.FlagUserDefine,
-			Description:  fmt.Sprintf("SMS-API(%s)", provider),
+			Description:  fmt.Sprintf("SMS-API(%s)", v.Provider),
 		})
 		return ir.Save()
 	}
@@ -90,8 +90,8 @@ func (n *notifyManagerImpl) SaveSmsApiPerm(provider string, v *notify.SmsApiPerm
 }
 
 // 获取短信API信息
-func (n *notifyManagerImpl) GetSmsApiPerm(provider string) *notify.SmsApiPerm {
-	key := "sms_api_" + provider
+func (n *notifyManagerImpl) GetSmsApiPerm(provider int) *notify.SmsApiPerm {
+	key := fmt.Sprintf("sms_api_%d", provider)
 	ir := n.registryRepo.Get(key)
 	if ir != nil {
 		perm := &notify.SmsApiPerm{}
@@ -107,38 +107,28 @@ func (n *notifyManagerImpl) GetSmsApiPerm(provider string) *notify.SmsApiPerm {
 // 发送手机短信
 func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessage,
 	data []string, templateId string) error {
-	provider, _ := n.registryRepo.GetValue(registry.SmsDefaultProvider)
-	if provider == "" {
-		return notify.ErrNotSettingSmsProvider
-	}
 	pushEvent := n.registryRepo.Get(registry.SmsPushSendEvent).BoolValue()
-	api := n.GetSmsApiPerm(provider)
-	if api == nil {
-		return notify.ErrNoSuchSmsProvider
-	}
-	a := &sms.SmsApi{
-		ApiUrl:      api.ApiUrl,
-		Key:         api.Key,
-		Secret:      api.Secret,
-		Params:      api.Params,
-		Method:      api.Method,
-		Charset:     api.Charset,
-		SuccessChar: api.SuccessChar,
-		Signature:   api.Signature,
+	provider := n.registryRepo.Get(registry.SmsDefaultProvider).IntValue()
+	if provider <= 0 {
+		return notify.ErrNotSettingSmsProvider
 	}
 	// 通过外部系统发送短信
 	if pushEvent {
 		eventbus.Publish(&events.SendSmsEvent{
 			Provider:   provider,
 			Phone:      phone,
-			ApiConf:    a,
 			Template:   string(msg),
 			TemplateId: templateId,
 			Data:       data,
 		})
 		return nil
 	}
-	return sms.SendSms(provider, a, phone, string(msg), data)
+	setting := n.GetSmsApiPerm(provider)
+	if setting == nil {
+		return notify.ErrNotSettingSmsProvider
+	}
+	setting.Provider = provider
+	return sms.SendSms(setting, phone, string(msg), data)
 }
 
 // 发送邮件
