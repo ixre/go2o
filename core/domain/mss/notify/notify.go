@@ -10,6 +10,7 @@ package notify
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/ixre/go2o/core/domain/interface/mss/notify"
@@ -105,11 +106,12 @@ func (n *notifyManagerImpl) GetSmsApiPerm(provider string) *notify.SmsApiPerm {
 
 // 发送手机短信
 func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessage,
-	data map[string]interface{}) error {
-	provider := n.registryRepo.Get(registry.SmsDefaultProvider).StringValue()
+	data []string, templateId string) error {
+	provider, _ := n.registryRepo.GetValue(registry.SmsDefaultProvider)
 	if provider == "" {
 		return notify.ErrNotSettingSmsProvider
 	}
+	pushEvent := n.registryRepo.Get(registry.SmsPushSendEvent).BoolValue()
 	api := n.GetSmsApiPerm(provider)
 	if api == nil {
 		return notify.ErrNoSuchSmsProvider
@@ -124,19 +126,23 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessa
 		SuccessChar: api.SuccessChar,
 		Signature:   api.Signature,
 	}
-	eventbus.Publish(&events.SendSmsEvent{
-		Provider: provider,
-		Phone:    phone,
-		Sene:     "",
-		ApiConf:  a,
-		Content:  string(msg),
-		Data:     data,
-	})
+	// 通过外部系统发送短信
+	if pushEvent {
+		eventbus.Publish(&events.SendSmsEvent{
+			Provider:   provider,
+			Phone:      phone,
+			ApiConf:    a,
+			Template:   string(msg),
+			TemplateId: templateId,
+			Data:       data,
+		})
+		return nil
+	}
 	return sms.SendSms(provider, a, phone, string(msg), data)
 }
 
 // 发送邮件
 func (n *notifyManagerImpl) SendEmail(to string,
-	msg *notify.MailMessage, data map[string]interface{}) error {
-	return nil
+	msg *notify.MailMessage, data []string) error {
+	return errors.New("not implement message via mail")
 }

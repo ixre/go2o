@@ -33,10 +33,14 @@ message HyperPaymentRequest {
     string remark = 2;
 }
 
+// 完成交易请求
 message FinishPaymentRequest {
-    string tradeNo = 1;
+    // 支付单号
+    string paymentOrderNo = 1;
+    // 支付方名称
     string spName = 2;
-    string outerNo = 3;
+    // 支付方交易流水号
+    string spTradeNo = 3;
 }
 
 // 支付服务

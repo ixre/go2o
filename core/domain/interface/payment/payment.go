@@ -161,7 +161,7 @@ type (
 		// GetPaymentOrderById 根据编号获取支付单
 		GetPaymentOrderById(id int) IPaymentOrder
 		// GetPaymentOrder 根据支付单号获取支付单
-		GetPaymentOrder(tradeNo string) IPaymentOrder
+		GetPaymentOrder(paymenOrderNo string) IPaymentOrder
 		// GetPaymentBySalesOrderId 根据订单号获取支付单
 		GetPaymentBySalesOrderId(orderId int64) IPaymentOrder
 		// GetPaymentOrderByOrderNo 根据支付单号获取支付单

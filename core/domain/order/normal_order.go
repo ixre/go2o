@@ -30,9 +30,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
-	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/types/typeconv"
 )
 
@@ -943,29 +941,7 @@ func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
 	}
 	o.baseValue.IsPaid = 1
 	o.baseOrderImpl.saveOrder()
-	o.publishAffiliateEvent(o.GetSubOrders())
 	return nil
-}
-
-func (o *normalOrderImpl) publishAffiliateEvent(subOrders []order.ISubOrder) {
-	// 获取启用分销的商品
-	affiliateItems := make([]*order.SubOrderItem, 0)
-	for _, so := range subOrders {
-		for _, it := range so.Items() {
-			i := o.itemRepo.GetItem(it.ItemId)
-			if i != nil && domain.TestFlag(i.GetValue().ItemFlag, item.FlagAffiliate) {
-				affiliateItems = append(affiliateItems, it)
-			}
-		}
-	}
-	// 发送分销事件
-	if len(affiliateItems) > 0 {
-		eventbus.Publish(&events.OrderAffiliateRebateEvent{
-			OrderNo:        o.OrderNo(),
-			OrderAmount:    o.baseValue.FinalAmount,
-			AffiliateItems: affiliateItems,
-		})
-	}
 }
 
 // 扣减商品库存

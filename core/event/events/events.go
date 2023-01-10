@@ -15,17 +15,28 @@ type WalletLogClickhouseUpdateEvent struct {
 type OrderAffiliateRebateEvent struct {
 	// 订单号
 	OrderNo string
+	// 子订单
+	SubOrder bool
+	// 买家编号
+	BuyerId int64
 	// 订单金额
 	OrderAmount int64
 	// 分销商品
 	AffiliateItems []*order.SubOrderItem
 }
 
+// 发送短信事件
 type SendSmsEvent struct {
+	// 短信服务商
 	Provider string
-	Phone    string
-	Content  string
-	Sene  string 
-	Data     map[string]interface{}
-	ApiConf  *sms.SmsApi
+	// 手机号
+	Phone string
+	// 短信内容
+	Template string
+	// 短信模板
+	TemplateId string
+	// 数据
+	Data []string
+	// 接口地址
+	ApiConf *sms.SmsApi
 }

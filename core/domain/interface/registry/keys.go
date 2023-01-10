@@ -82,6 +82,8 @@ var (
 	// 超级管理员登录密钥
 	SysSuperLoginToken = KeyFormat("sys_super_login_token")
 	/** 短信 */
+	// 推送短信发送事件,如果开启,则短信通过系统外部发送
+	SmsPushSendEvent = KeyFormat("SmsPushSendEvent")
 	// 默认短信服务商
 	SmsDefaultProvider = KeyFormat("SmsDefaultProvider")
 	// 用户注册短信模板ID
@@ -90,8 +92,6 @@ var (
 	SmsMemberCheckTemplateId = KeyFormat("SmsMemberCheckTemplateId")
 	// 短信接收间隔
 	SmsSendDuration = KeyFormat("SmsSendDuration")
-	// 推送短信发送事件
-	SmsPushSendEvent = KeyFormat("SmsPushSendEvent")
 
 	/** 账户 */
 	// 余额账户

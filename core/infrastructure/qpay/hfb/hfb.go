@@ -322,14 +322,14 @@ func (h *hfbImpl) QueryPaymentStatus(orderNo string, options map[string]string) 
 		h.version, h.agentId, orderNo, billTime, returnMode, h.queryMd5Key)
 	sign := crypto.Md5([]byte(query))
 	mp := url.Values{
-		"agent_id":        []string{h.agentId},
-		"agent_bill_id":   []string{orderNo},
-		"agent_bill_time": []string{billTime},
-		"key":             []string{h.queryMd5Key},
-		"return_mode":     []string{returnMode},
-		"version":         []string{h.version},
-		"remark":          []string{"query"},
-		"sign":            []string{sign},
+		"agent_id":        {h.agentId},
+		"agent_bill_id":   {orderNo},
+		"agent_bill_time": {billTime},
+		"key":             {h.queryMd5Key},
+		"return_mode":     {returnMode},
+		"version":         {h.version},
+		"remark":          {"query"},
+		"sign":            {sign},
 	}
 	body, err := h.request(paymentQueryURL, mp, false)
 	if err != nil {
@@ -377,15 +377,15 @@ func (h *hfbImpl) BatchTransfer(batchTradeNo string, list []*qpay.CardTransferRe
 	}
 	detailData, totalFee := h.batchDetailData(batchTradeNo, list)
 	values := url.Values{
-		"agent_id":    []string{h.agentId},
-		"batch_amt":   []string{types.Money(totalFee)},
-		"batch_no":    []string{batchTradeNo},
-		"batch_num":   []string{strconv.Itoa(len(list))},
-		"detail_data": []string{detailData},
-		"ext_param1":  []string{url.QueryEscape(nonce)},
-		"key":         []string{h.md5Key},
-		"notify_url":  []string{notifyUrl},
-		"version":     []string{h.batchTransferVersion},
+		"agent_id":    {h.agentId},
+		"batch_amt":   {types.Money(totalFee)},
+		"batch_no":    {batchTradeNo},
+		"batch_num":   {strconv.Itoa(len(list))},
+		"detail_data": {detailData},
+		"ext_param1":  {url.QueryEscape(nonce)},
+		"key":         {h.md5Key},
+		"notify_url":  {notifyUrl},
+		"version":     {h.batchTransferVersion},
 	}
 	sign := h.signParams(values)
 	values["sign"] = []string{sign}
@@ -453,10 +453,10 @@ func (h *hfbImpl) batchDetailData(batchTradeNo string, list []*qpay.CardTransfer
 // 查询银行卡信息
 func (h *hfbImpl) QueryCardBin(bankCardNo string) *qpay.CardBinQueryResult {
 	mp := url.Values{
-		"agent_id":     []string{h.agentId},
-		"bank_card_no": []string{bankCardNo},
-		"key":          []string{h.md5Key},
-		"version":      []string{h.cardBinVersion},
+		"agent_id":     {h.agentId},
+		"bank_card_no": {bankCardNo},
+		"key":          {h.md5Key},
+		"version":      {h.cardBinVersion},
 	}
 	sign := h.signParams(mp)
 	mp["sign"] = []string{sign}

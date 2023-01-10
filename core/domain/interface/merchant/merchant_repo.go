@@ -36,16 +36,14 @@ type IMerchantRepo interface {
 
 	// 获取账户
 	GetAccount(mchId int) *Account
+	// 保存会员账户
+	SaveAccount(a *Account) (int, error)
 
 	// 获取销售配置
 	GetMerchantSaleConf(mchId int64) *SaleConf
 
 	// 保存销售配置
 	SaveMerchantSaleConf(v *SaleConf) error
-
-	// 保存商户账户信息
-	UpdateAccount(v *Account) error
-
 	// 保存API信息
 	SaveApiInfo(d *ApiInfo) error
 

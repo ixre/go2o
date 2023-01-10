@@ -21,7 +21,9 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	if pushValue == 0 {
 
 	}
-	ev := &proto.EVOrderAffiliateRebateOrder{
+	ev := &proto.EVOrderAffiliateEventData{
+		BuyerId:        v.BuyerId,
+		SubOrder:       true,
 		OrderNo:        v.OrderNo,
 		OrderAmount:    v.OrderAmount,
 		AffiliateItems: []*proto.EVOrderAffiliateItem{},

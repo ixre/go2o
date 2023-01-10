@@ -223,11 +223,11 @@ func (b *Bank4E) b4eApi(realName, idCard, phone, bankAccount string) error {
 	}
 	cli := http.Client{}
 	data := url.Values{
-		"appkey":        []string{b.appKey},
-		"accountNo":     []string{bankAccount},
-		"name":          []string{realName},
-		"idCardCode":    []string{idCard},
-		"bankPreMobile": []string{phone},
+		"appkey":        {b.appKey},
+		"accountNo":     {bankAccount},
+		"name":          {realName},
+		"idCardCode":    {idCard},
+		"bankPreMobile": {phone},
 	}
 	rsp, err := cli.PostForm(apiServer, data)
 	if err == nil {

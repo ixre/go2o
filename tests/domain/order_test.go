@@ -58,7 +58,7 @@ func logState(t *testing.T, err error, o order.IOrder) {
 }
 
 func TestOrderSetup(t *testing.T) {
-	orderNo := "1220606007633559"
+	orderNo := "1230109000140875"
 	orderRepo := ti.Factory.GetOrderRepo()
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
@@ -67,13 +67,6 @@ func TestOrderSetup(t *testing.T) {
 	t.Log("-[ 订单状态为:" + order.OrderStatus(o.GetValue().Status).String())
 
 	err := o.PaymentFinishByOnlineTrade()
-	if err != nil {
-		t.Log(err)
-	} else {
-		t.Log(order.OrderStatus(o.GetValue().Status).String())
-	}
-
-	err = o.Confirm()
 	if err != nil {
 		t.Log(err)
 	} else {
@@ -89,15 +82,16 @@ func TestOrderSetup(t *testing.T) {
 
 	err = o.Ship(1, "100000")
 	if err != nil {
-		t.Log(err)
+		t.Error(err)
+		t.FailNow()
 	} else {
 		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
 
-	return
 	err = o.BuyerReceived()
 	if err != nil {
-		t.Log(err)
+		t.Error(err)
+		t.FailNow()
 	} else {
 		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
