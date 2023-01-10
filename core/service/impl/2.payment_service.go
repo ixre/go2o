@@ -47,7 +47,7 @@ func (p *paymentService) GetPaymentOrderById(_ context.Context, id *proto.Int32)
 		v := po.Get()
 		return p.parsePaymentOrderDto(&v), nil
 	}
-	return nil,  payment.ErrNoSuchPaymentOrder
+	return nil, payment.ErrNoSuchPaymentOrder
 }
 
 // GetPaymentOrderId 根据交易号获取支付单编号
@@ -164,11 +164,11 @@ func (p *paymentService) HybridPayment(_ context.Context, r *proto.HyperPaymentR
 
 // FinishPayment 完成支付单支付，并传入支付方式及外部订单号
 func (p *paymentService) FinishPayment(_ context.Context, r *proto.FinishPaymentRequest) (rs *proto.Result, err error) {
-	o := p.repo.GetPaymentOrder(r.TradeNo)
+	o := p.repo.GetPaymentOrder(r.PaymentOrderNo)
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
-		err = o.PaymentFinish(r.SpName, r.OuterNo)
+		err = o.PaymentFinish(r.SpName, r.SpTradeNo)
 	}
 	return p.result(err), nil
 }
@@ -286,7 +286,7 @@ func (p *paymentService) GatewayV2(_ context2.Context, r *proto.PayGatewayV2Requ
 
 // MixedPayment 混合支付
 func (p *paymentService) MixedPayment(_ context.Context, _ *proto.MixedPaymentRequest) (*proto.Result, error) {
-	return nil,errors.New("not support MixedPayment")
+	return nil, errors.New("not support MixedPayment")
 }
 
 func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Order {
