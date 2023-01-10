@@ -120,6 +120,9 @@ func (r *registryRepo) Get(key string) registry.IRegistry {
 	r.lock.RLock()
 	v := r.data[key]
 	r.lock.RUnlock()
+	if v == nil{
+		return r.Create(&registry.Registry{})
+	}
 	return v
 }
 

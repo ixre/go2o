@@ -108,10 +108,11 @@ func (n *notifyManagerImpl) GetSmsApiPerm(provider string) *notify.SmsApiPerm {
 // 发送手机短信
 func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessage,
 	data []string) error {
-	provider := n.registryRepo.Get(registry.SmsDefaultProvider).StringValue()
+	provider, _ := n.registryRepo.GetValue(registry.SmsDefaultProvider)
 	if provider == "" {
 		return notify.ErrNotSettingSmsProvider
 	}
+	pushEvent := n.registryRepo.Get(registry.SmsPushSendEvent).BoolValue()
 	api := n.GetSmsApiPerm(provider)
 	if api == nil {
 		return notify.ErrNoSuchSmsProvider
@@ -126,14 +127,18 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessa
 		SuccessChar: api.SuccessChar,
 		Signature:   api.Signature,
 	}
-	eventbus.Publish(&events.SendSmsEvent{
-		Provider: provider,
-		Phone:    phone,
-		Scene:    mss.UserScene,
-		ApiConf:  a,
-		Template: string(msg),
-		Data:     data,
-	})
+	// 通过外部系统发送短信
+	if pushEvent {
+		eventbus.Publish(&events.SendSmsEvent{
+			Provider: provider,
+			Phone:    phone,
+			Scene:    mss.UserScene,
+			ApiConf:  a,
+			Template: string(msg),
+			Data:     data,
+		})
+		return nil
+	}
 	return sms.SendSms(provider, a, phone, string(msg), data)
 }
 
