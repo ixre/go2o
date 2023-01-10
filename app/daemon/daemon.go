@@ -21,7 +21,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/app/daemon/job"
 	"github.com/ixre/go2o/core"
-	"github.com/ixre/go2o/core/domain/interface/mss"
+	"github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/infrastructure/locker"
 	"github.com/ixre/go2o/core/repos/clickhouse"

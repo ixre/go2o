@@ -12,8 +12,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ixre/go2o/core/domain/interface/mss"
-	"github.com/ixre/go2o/core/domain/interface/mss/notify"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"

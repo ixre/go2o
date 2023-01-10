@@ -11,7 +11,7 @@ package daemon
 import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/core"
-	"github.com/ixre/go2o/core/domain/interface/mss"
+	"github.com/ixre/go2o/core/domain/interface/message"
 	mssIns "github.com/ixre/go2o/core/infrastructure/mss"
 	"github.com/ixre/go2o/core/variable"
 	"strconv"

@@ -10,10 +10,11 @@ package mss
 
 import (
 	"encoding/json"
-	"github.com/ixre/go2o/core/domain/interface/mss"
-	"github.com/ixre/go2o/core/domain/interface/mss/notify"
-	"github.com/ixre/go2o/core/domain/tmp"
 	"time"
+
+	mss "github.com/ixre/go2o/core/domain/interface/message"
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
+	"github.com/ixre/go2o/core/domain/tmp"
 )
 
 var _ mss.IUserMessageManager = new(userMessageManagerImpl)
