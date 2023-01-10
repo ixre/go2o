@@ -103,4 +103,4 @@ ALTER TABLE IF EXISTS public.item_info
    DROP is_present;
 
 /* 2023-01-10 */
-update registry set key='sms_api_1' where key='sms_api_http';
+update registry set key='sms_api_2' where key='sms_api_http';

@@ -18,10 +18,10 @@ message CleanCacheResponse{
 // 短信提供商
 enum ESmsProvider{
     _ESmsProvider = 0;
-    // 通用HTTP接口
-    HTTP = 1;
     // 自定义短信发送,推送到消息队列由外部系统处理
-    CUSTOM = 2;
+    CUSTOM = 1;
+    // 通用HTTP接口
+    HTTP = 2;
     // 腾讯云短信
     TECENT_CLOUD = 3;
     // 阿里云短信

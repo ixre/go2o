@@ -13,10 +13,10 @@ const (
 )
 
 const (
-	// HTTP短信
-	HTTP SmsProvider = 1
 	// 自定义短信发送,推送到消息队列由外部系统处理
-	CUSTOM SmsProvider = 2
+	CUSTOM SmsProvider = 1
+	// HTTP短信
+	HTTP SmsProvider = 2
 	// 通用HTTP接口
 	TECENT_CLOUD SmsProvider = 3
 	// 阿里云短信

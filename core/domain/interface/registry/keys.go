@@ -82,9 +82,7 @@ var (
 	// 超级管理员登录密钥
 	SysSuperLoginToken = KeyFormat("sys_super_login_token")
 	/** 短信 */
-	// 推送短信发送事件,如果开启,则短信通过系统外部发送
-	SmsPushSendEvent = KeyFormat("SmsPushSendEvent")
-	// 默认短信服务商
+	// 默认短信服务商,当值为1时,将推送短信发送请求到外部系统
 	SmsDefaultProvider = KeyFormat("SmsDefaultProvider")
 	// 用户注册短信模板ID
 	SmsRegisterTemplateId = KeyFormat("SmsRegisterTemplateId")
