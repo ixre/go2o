@@ -21,8 +21,6 @@ type SmsApiPerm struct {
 	Signature string
 	// 默认模板编号
 	TemplateId string
-	// 是否启用
-	Enabled bool
 	// Http接口
 	Extra *SmsExtraSetting
 }

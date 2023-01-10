@@ -20,12 +20,14 @@ enum ESmsProvider{
     _ESmsProvider = 0;
     // 通用HTTP接口
     HTTP = 1;
+    // 自定义短信发送,推送到消息队列由外部系统处理
+    CUSTOM = 2;
     // 腾讯云短信
-    TECENT_CLOUD = 2;
+    TECENT_CLOUD = 3;
     // 阿里云短信
-    ALIYUN = 3;
+    ALIYUN = 4;
     // 创蓝短信
-    CHUANGLAN = 4;
+    CHUANGLAN = 5;
 }
 
 // 短信接口参数设置

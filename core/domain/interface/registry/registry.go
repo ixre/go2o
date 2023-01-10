@@ -176,6 +176,9 @@ func (r *registryImpl) Update(value string) error {
 
 func (r *registryImpl) Save() error {
 	r.value.Key = KeyFormat(r.value.Key)
+	if len(r.value.Key) == 0 {
+		return errors.New("key length is zero")
+	}
 	if len(r.value.Key) > 45 {
 		return errors.New("key length out of 40")
 	}

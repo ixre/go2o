@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
@@ -61,13 +62,16 @@ func (n *notifyManagerImpl) SaveNotifyItem(item *notify.NotifyItem) error {
 
 // 保存短信API
 func (n *notifyManagerImpl) SaveSmsApiPerm(v *notify.SmsApiPerm) error {
+	if v.Provider == int(mss.CUSTOM) {
+		return errors.New("can't setting for custom sms")
+	}
 	err := sms.CheckSmsApiPerm(v)
 	if err == nil {
 		data, err := json.Marshal(v)
 		if err != nil {
 			return err
 		}
-		key := fmt.Sprintf("sms_api_" ,v.Provider)
+		key := fmt.Sprintf("sms_api_%d", v.Provider)
 		if ir := n.registryRepo.Get(key); ir != nil {
 			err = ir.Update(string(data))
 			if err == nil {
@@ -81,8 +85,8 @@ func (n *notifyManagerImpl) SaveSmsApiPerm(v *notify.SmsApiPerm) error {
 			Value:        string(data),
 			DefaultValue: string(data2),
 			Options:      "",
-			Flag:         registry.FlagUserDefine,
-			Description:  fmt.Sprintf("SMS-API(%s)", v.Provider),
+			//Flag:         registry.FlagUserDefine,
+			Description: fmt.Sprintf("SMS-API-%d", v.Provider),
 		})
 		return ir.Save()
 	}
@@ -107,13 +111,12 @@ func (n *notifyManagerImpl) GetSmsApiPerm(provider int) *notify.SmsApiPerm {
 // 发送手机短信
 func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessage,
 	data []string, templateId string) error {
-	pushEvent := n.registryRepo.Get(registry.SmsPushSendEvent).BoolValue()
 	provider := n.registryRepo.Get(registry.SmsDefaultProvider).IntValue()
 	if provider <= 0 {
 		return notify.ErrNotSettingSmsProvider
 	}
 	// 通过外部系统发送短信
-	if pushEvent {
+	if provider == int(mss.CUSTOM) {
 		eventbus.Publish(&events.SendSmsEvent{
 			Provider:   provider,
 			Phone:      phone,
