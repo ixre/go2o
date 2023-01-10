@@ -90,6 +90,8 @@ var (
 	SmsMemberCheckTemplateId = KeyFormat("SmsMemberCheckTemplateId")
 	// 短信接收间隔
 	SmsSendDuration = KeyFormat("SmsSendDuration")
+	// 推送短信发送事件
+	SmsPushSendEvent = KeyFormat("SmsPushSendEvent")
 
 	/** 账户 */
 	// 余额账户

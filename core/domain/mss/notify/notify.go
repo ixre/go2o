@@ -11,10 +11,13 @@ package notify
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ixre/go2o/core/domain/interface/mss/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/tool/sms"
+	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/log"
 )
 
@@ -121,6 +124,14 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessa
 		SuccessChar: api.SuccessChar,
 		Signature:   api.Signature,
 	}
+	eventbus.Publish(&events.SendSmsEvent{
+		Provider: provider,
+		Phone:    phone,
+		Sene:     "",
+		ApiConf:  a,
+		Content:  string(msg),
+		Data:     data,
+	})
 	return sms.SendSms(provider, a, phone, string(msg), data)
 }
 
