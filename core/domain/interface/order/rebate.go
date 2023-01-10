@@ -19,8 +19,8 @@ type (
 		RebateAmount int64 `db:"rebate_amount" json:"rebateAmount"`
 	}
 
-	// AffiliteRebate 订单返利
-	AffiliteRebate struct {
+	// AffiliateRebate 订单返利
+	AffiliateRebate struct {
 		// 编号
 		Id int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 返利方案Id

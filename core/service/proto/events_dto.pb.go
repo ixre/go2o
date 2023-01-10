@@ -21,7 +21,7 @@ const (
 )
 
 // 商品分销设置
-type EVItemAffiliteConfig struct {
+type EVItemAffiliateConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -34,8 +34,8 @@ type EVItemAffiliteConfig struct {
 	IsByRate bool `protobuf:"varint,4,opt,name=isByRate,proto3" json:"isByRate"`
 }
 
-func (x *EVItemAffiliteConfig) Reset() {
-	*x = EVItemAffiliteConfig{}
+func (x *EVItemAffiliateConfig) Reset() {
+	*x = EVItemAffiliateConfig{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_message_events_dto_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -43,13 +43,13 @@ func (x *EVItemAffiliteConfig) Reset() {
 	}
 }
 
-func (x *EVItemAffiliteConfig) String() string {
+func (x *EVItemAffiliateConfig) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EVItemAffiliteConfig) ProtoMessage() {}
+func (*EVItemAffiliateConfig) ProtoMessage() {}
 
-func (x *EVItemAffiliteConfig) ProtoReflect() protoreflect.Message {
+func (x *EVItemAffiliateConfig) ProtoReflect() protoreflect.Message {
 	mi := &file_message_events_dto_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -61,26 +61,26 @@ func (x *EVItemAffiliteConfig) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use EVItemAffiliteConfig.ProtoReflect.Descriptor instead.
-func (*EVItemAffiliteConfig) Descriptor() ([]byte, []int) {
+// Deprecated: Use EVItemAffiliateConfig.ProtoReflect.Descriptor instead.
+func (*EVItemAffiliateConfig) Descriptor() ([]byte, []int) {
 	return file_message_events_dto_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *EVItemAffiliteConfig) GetRate() float64 {
+func (x *EVItemAffiliateConfig) GetRate() float64 {
 	if x != nil {
 		return x.Rate
 	}
 	return 0
 }
 
-func (x *EVItemAffiliteConfig) GetAmount() int64 {
+func (x *EVItemAffiliateConfig) GetAmount() int64 {
 	if x != nil {
 		return x.Amount
 	}
 	return 0
 }
 
-func (x *EVItemAffiliteConfig) GetIsByRate() bool {
+func (x *EVItemAffiliateConfig) GetIsByRate() bool {
 	if x != nil {
 		return x.IsByRate
 	}
@@ -88,7 +88,7 @@ func (x *EVItemAffiliteConfig) GetIsByRate() bool {
 }
 
 // 订单分销商品
-type EVOrderAffiliteItem struct {
+type EVOrderAffiliateItem struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -104,11 +104,11 @@ type EVOrderAffiliteItem struct {
 	// 最终金额, 可能会有优惠均摊抵扣的金额
 	FinalAmount int64 `protobuf:"varint,5,opt,name=finalAmount,proto3" json:"finalAmount"`
 	// 分销参数
-	Params []*EVItemAffiliteConfig `protobuf:"bytes,6,rep,name=Params,proto3" json:"Params"`
+	Params []*EVItemAffiliateConfig `protobuf:"bytes,6,rep,name=Params,proto3" json:"Params"`
 }
 
-func (x *EVOrderAffiliteItem) Reset() {
-	*x = EVOrderAffiliteItem{}
+func (x *EVOrderAffiliateItem) Reset() {
+	*x = EVOrderAffiliateItem{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_message_events_dto_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -116,13 +116,13 @@ func (x *EVOrderAffiliteItem) Reset() {
 	}
 }
 
-func (x *EVOrderAffiliteItem) String() string {
+func (x *EVOrderAffiliateItem) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EVOrderAffiliteItem) ProtoMessage() {}
+func (*EVOrderAffiliateItem) ProtoMessage() {}
 
-func (x *EVOrderAffiliteItem) ProtoReflect() protoreflect.Message {
+func (x *EVOrderAffiliateItem) ProtoReflect() protoreflect.Message {
 	mi := &file_message_events_dto_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -134,47 +134,47 @@ func (x *EVOrderAffiliteItem) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use EVOrderAffiliteItem.ProtoReflect.Descriptor instead.
-func (*EVOrderAffiliteItem) Descriptor() ([]byte, []int) {
+// Deprecated: Use EVOrderAffiliateItem.ProtoReflect.Descriptor instead.
+func (*EVOrderAffiliateItem) Descriptor() ([]byte, []int) {
 	return file_message_events_dto_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *EVOrderAffiliteItem) GetItemId() int64 {
+func (x *EVOrderAffiliateItem) GetItemId() int64 {
 	if x != nil {
 		return x.ItemId
 	}
 	return 0
 }
 
-func (x *EVOrderAffiliteItem) GetSkuId() int64 {
+func (x *EVOrderAffiliateItem) GetSkuId() int64 {
 	if x != nil {
 		return x.SkuId
 	}
 	return 0
 }
 
-func (x *EVOrderAffiliteItem) GetQuantity() int32 {
+func (x *EVOrderAffiliateItem) GetQuantity() int32 {
 	if x != nil {
 		return x.Quantity
 	}
 	return 0
 }
 
-func (x *EVOrderAffiliteItem) GetAmount() int64 {
+func (x *EVOrderAffiliateItem) GetAmount() int64 {
 	if x != nil {
 		return x.Amount
 	}
 	return 0
 }
 
-func (x *EVOrderAffiliteItem) GetFinalAmount() int64 {
+func (x *EVOrderAffiliateItem) GetFinalAmount() int64 {
 	if x != nil {
 		return x.FinalAmount
 	}
 	return 0
 }
 
-func (x *EVOrderAffiliteItem) GetParams() []*EVItemAffiliteConfig {
+func (x *EVOrderAffiliateItem) GetParams() []*EVItemAffiliateConfig {
 	if x != nil {
 		return x.Params
 	}
@@ -182,7 +182,7 @@ func (x *EVOrderAffiliteItem) GetParams() []*EVItemAffiliteConfig {
 }
 
 // 分销订单
-type EVOrderAffiliteRebateOrder struct {
+type EVOrderAffiliateRebateOrder struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -192,11 +192,11 @@ type EVOrderAffiliteRebateOrder struct {
 	// 订单金额
 	OrderAmount int64 `protobuf:"varint,2,opt,name=orderAmount,proto3" json:"orderAmount"`
 	// 分销商品
-	AffiliteItems []*EVOrderAffiliteItem `protobuf:"bytes,3,rep,name=affiliteItems,proto3" json:"affiliteItems"`
+	AffiliateItems []*EVOrderAffiliateItem `protobuf:"bytes,3,rep,name=affiliateItems,proto3" json:"affiliateItems"`
 }
 
-func (x *EVOrderAffiliteRebateOrder) Reset() {
-	*x = EVOrderAffiliteRebateOrder{}
+func (x *EVOrderAffiliateRebateOrder) Reset() {
+	*x = EVOrderAffiliateRebateOrder{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_message_events_dto_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -204,13 +204,13 @@ func (x *EVOrderAffiliteRebateOrder) Reset() {
 	}
 }
 
-func (x *EVOrderAffiliteRebateOrder) String() string {
+func (x *EVOrderAffiliateRebateOrder) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EVOrderAffiliteRebateOrder) ProtoMessage() {}
+func (*EVOrderAffiliateRebateOrder) ProtoMessage() {}
 
-func (x *EVOrderAffiliteRebateOrder) ProtoReflect() protoreflect.Message {
+func (x *EVOrderAffiliateRebateOrder) ProtoReflect() protoreflect.Message {
 	mi := &file_message_events_dto_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -222,28 +222,28 @@ func (x *EVOrderAffiliteRebateOrder) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use EVOrderAffiliteRebateOrder.ProtoReflect.Descriptor instead.
-func (*EVOrderAffiliteRebateOrder) Descriptor() ([]byte, []int) {
+// Deprecated: Use EVOrderAffiliateRebateOrder.ProtoReflect.Descriptor instead.
+func (*EVOrderAffiliateRebateOrder) Descriptor() ([]byte, []int) {
 	return file_message_events_dto_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *EVOrderAffiliteRebateOrder) GetOrderNo() string {
+func (x *EVOrderAffiliateRebateOrder) GetOrderNo() string {
 	if x != nil {
 		return x.OrderNo
 	}
 	return ""
 }
 
-func (x *EVOrderAffiliteRebateOrder) GetOrderAmount() int64 {
+func (x *EVOrderAffiliateRebateOrder) GetOrderAmount() int64 {
 	if x != nil {
 		return x.OrderAmount
 	}
 	return 0
 }
 
-func (x *EVOrderAffiliteRebateOrder) GetAffiliteItems() []*EVOrderAffiliteItem {
+func (x *EVOrderAffiliateRebateOrder) GetAffiliateItems() []*EVOrderAffiliateItem {
 	if x != nil {
-		return x.AffiliteItems
+		return x.AffiliateItems
 	}
 	return nil
 }
@@ -300,13 +300,13 @@ func file_message_events_dto_proto_rawDescGZIP() []byte {
 
 var file_message_events_dto_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_message_events_dto_proto_goTypes = []interface{}{
-	(*EVItemAffiliteConfig)(nil),       // 0: EVItemAffiliteConfig
-	(*EVOrderAffiliteItem)(nil),        // 1: EVOrderAffiliteItem
-	(*EVOrderAffiliteRebateOrder)(nil), // 2: EVOrderAffiliteRebateOrder
+	(*EVItemAffiliateConfig)(nil),       // 0: EVItemAffiliateConfig
+	(*EVOrderAffiliateItem)(nil),        // 1: EVOrderAffiliateItem
+	(*EVOrderAffiliateRebateOrder)(nil), // 2: EVOrderAffiliateRebateOrder
 }
 var file_message_events_dto_proto_depIdxs = []int32{
-	0, // 0: EVOrderAffiliteItem.Params:type_name -> EVItemAffiliteConfig
-	1, // 1: EVOrderAffiliteRebateOrder.affiliteItems:type_name -> EVOrderAffiliteItem
+	0, // 0: EVOrderAffiliateItem.Params:type_name -> EVItemAffiliateConfig
+	1, // 1: EVOrderAffiliateRebateOrder.affiliateItems:type_name -> EVOrderAffiliateItem
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -321,7 +321,7 @@ func file_message_events_dto_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_message_events_dto_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EVItemAffiliteConfig); i {
+			switch v := v.(*EVItemAffiliateConfig); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -333,7 +333,7 @@ func file_message_events_dto_proto_init() {
 			}
 		}
 		file_message_events_dto_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EVOrderAffiliteItem); i {
+			switch v := v.(*EVOrderAffiliateItem); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -345,7 +345,7 @@ func file_message_events_dto_proto_init() {
 			}
 		}
 		file_message_events_dto_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EVOrderAffiliteRebateOrder); i {
+			switch v := v.(*EVOrderAffiliateRebateOrder); i {
 			case 0:
 				return &v.state
 			case 1:

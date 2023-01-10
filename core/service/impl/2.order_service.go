@@ -134,7 +134,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 		Subject:         r.Subject,
 		CouponCode:      r.CouponCode,
 		BalanceDiscount: r.BalanceDiscount,
-		AffiliteCode:    r.AffiliteCode,
+		AffiliateCode:   r.AffiliateCode,
 		PostedData:      iData,
 	})
 	ret := &proto.OrderSubmitResponse{}

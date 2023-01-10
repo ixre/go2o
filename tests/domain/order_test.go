@@ -132,7 +132,7 @@ func TestCancelOrder(t *testing.T) {
 		AddressId:       addressId,
 		CouponCode:      "",
 		BalanceDiscount: true,
-		AffiliteCode:    "",
+		AffiliateCode:   "",
 		PostedData:      nil,
 	}
 	o, rd, err := manager.SubmitOrder(data)
@@ -215,7 +215,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 		AddressId:       addressId,
 		CouponCode:      "",
 		BalanceDiscount: true,
-		AffiliteCode:    "",
+		AffiliateCode:   "",
 		PostedData:      nil,
 	}
 	o, _, err := manager.SubmitOrder(data)
@@ -247,7 +247,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		AddressId:       addressId,
 		CouponCode:      "",
 		BalanceDiscount: true,
-		AffiliteCode:    "",
+		AffiliateCode:   "",
 		PostedData:      nil,
 	}
 	nio, _, err := repo.Manager().SubmitOrder(data)
@@ -339,7 +339,7 @@ func TestWholesaleOrder(t *testing.T) {
 		AddressId:       addressId,
 		CouponCode:      "",
 		BalanceDiscount: false,
-		AffiliteCode:    "",
+		AffiliateCode:   "",
 		PostedData:      parser.NewPostedData(data, nil),
 	}
 	_, rd, err := manager.SubmitOrder(data1)
@@ -386,7 +386,7 @@ func TestTradeOrder(t *testing.T) {
 		AddressId:       0,
 		CouponCode:      "",
 		BalanceDiscount: false,
-		AffiliteCode:    "",
+		AffiliateCode:   "",
 		PostedData: parser.NewPostedData(nil, &proto.SubmitOrderRequest{
 			TradeOrder: &proto.TradeOrderRequest{
 				StoreId:     int64(storeId),
@@ -446,7 +446,7 @@ func TestMergePaymentOrder(t *testing.T) {
 		AddressId:       addressId,
 		CouponCode:      "",
 		BalanceDiscount: false,
-		AffiliteCode:    "",
+		AffiliateCode:   "",
 		PostedData:      nil,
 	}
 	_, rd, err := repo.Manager().SubmitOrder(data)

@@ -6,7 +6,7 @@ option java_package = "com.github.go2o.rpc";
 
 
 // 商品分销设置
-message EVItemAffiliteConfig{
+message EVItemAffiliateConfig{
 	// 分销比例
 	double rate = 2;
 	// 分销金额
@@ -16,7 +16,7 @@ message EVItemAffiliteConfig{
 }
 
 // 订单分销商品
-message EVOrderAffiliteItem{
+message EVOrderAffiliateItem{
 	// 商品编号
 	int64 itemId = 1;
 	// 商品SKU编号
@@ -28,15 +28,15 @@ message EVOrderAffiliteItem{
 	// 最终金额, 可能会有优惠均摊抵扣的金额
 	int64 finalAmount = 5;
 	// 分销参数
-	repeated EVItemAffiliteConfig Params = 6;
+	repeated EVItemAffiliateConfig Params = 6;
 }
 
 // 分销订单
-message EVOrderAffiliteRebateOrder{
+message EVOrderAffiliateRebateOrder{
     	// 订单号
 	string orderNo = 1;
 	// 订单金额
 	int64 orderAmount = 2;
 	// 分销商品
-	repeated EVOrderAffiliteItem affiliteItems = 3;
+	repeated EVOrderAffiliateItem affiliateItems = 3;
 }

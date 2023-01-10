@@ -1074,7 +1074,7 @@ type SubmitOrderRequest struct {
 	// 优惠券
 	CouponCode string `protobuf:"bytes,5,opt,name=couponCode,proto3" json:"couponCode"`
 	// 推广返利用户代码
-	AffiliteCode string `protobuf:"bytes,6,opt,name=AffiliteCode,proto3" json:"AffiliteCode"`
+	AffiliateCode string `protobuf:"bytes,6,opt,name=AffiliateCode,proto3" json:"AffiliateCode"`
 	// 是否使用余额抵扣
 	BalanceDiscount bool `protobuf:"varint,7,opt,name=balanceDiscount,proto3" json:"balanceDiscount"`
 	// 其他数据
@@ -1150,9 +1150,9 @@ func (x *SubmitOrderRequest) GetCouponCode() string {
 	return ""
 }
 
-func (x *SubmitOrderRequest) GetAffiliteCode() string {
+func (x *SubmitOrderRequest) GetAffiliateCode() string {
 	if x != nil {
-		return x.AffiliteCode
+		return x.AffiliateCode
 	}
 	return ""
 }
@@ -1264,7 +1264,7 @@ type SubmitNormalOrderV2Request struct {
 	// 是否使用余额抵扣
 	BalanceDiscount bool `protobuf:"varint,6,opt,name=balanceDiscount,proto3" json:"balanceDiscount"`
 	// 推广返利用户代码
-	AffiliteCode string `protobuf:"bytes,7,opt,name=AffiliteCode,proto3" json:"AffiliteCode"`
+	AffiliateCode string `protobuf:"bytes,7,opt,name=AffiliateCode,proto3" json:"AffiliateCode"`
 }
 
 func (x *SubmitNormalOrderV2Request) Reset() {
@@ -1341,9 +1341,9 @@ func (x *SubmitNormalOrderV2Request) GetBalanceDiscount() bool {
 	return false
 }
 
-func (x *SubmitNormalOrderV2Request) GetAffiliteCode() string {
+func (x *SubmitNormalOrderV2Request) GetAffiliateCode() string {
 	if x != nil {
-		return x.AffiliteCode
+		return x.AffiliateCode
 	}
 	return ""
 }

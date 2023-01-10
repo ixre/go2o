@@ -122,9 +122,9 @@ func MergeRegistries() []*Registry {
 	mergeAdd("抵扣1元所需要的积分(0不抵扣)", IntegralDiscountQuantity, "1000", "")
 
 	// 订单
-	mergeAdd("是否启用订单返利", OrderEnableAffiliteRebate, "0", "")
-	mergeAdd("全局订单返利比例", OrderGlobalAffiliteRebateRate, "0", "")
-	mergeAdd("推送分销事件", OrderPushAffiliteEvent, "0", "0:不推送(内部处理),1:推送(外部处理分销),2:仅推送")
+	mergeAdd("是否启用订单返利", OrderEnableAffiliateRebate, "0", "")
+	mergeAdd("全局订单返利比例", OrderGlobalAffiliateRebateRate, "0", "")
+	mergeAdd("推送分销事件", OrderPushAffiliateEvent, "0", "0:不推送(内部处理),1:推送(外部处理分销),2:仅推送")
 	// 商户订单
 	mergeAdd("是否必须认证后才可上传商品", MchMustBeTrust, "true", "")
 	mergeAdd("商户订单结算模式", MchOrderSettleMode, "1", "1:按供货价,2:按销售额,3:按单")

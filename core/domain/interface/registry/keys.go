@@ -197,11 +197,11 @@ var (
 
 	/** 订单 */
 	// 是否启用订单返利
-	OrderEnableAffiliteRebate = KeyFormat("OrderEnableAffiliteRebate")
+	OrderEnableAffiliateRebate = KeyFormat("OrderEnableAffiliateRebate")
 	// 全局订单返利比例
-	OrderGlobalAffiliteRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
+	OrderGlobalAffiliateRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
 	// 推送分销事件
-	OrderPushAffiliteEvent = KeyFormat("OrderPushAffiliteEvent")
+	OrderPushAffiliateEvent = KeyFormat("OrderPushAffiliateEvent")
 	//  /* 商户订单 */
 	// MchOrderSettleMode 商户订单结算模式
 	MchOrderSettleMode = KeyFormat("MchOrderSettleMode")

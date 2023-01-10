@@ -11,11 +11,11 @@ type WalletLogClickhouseUpdateEvent struct {
 }
 
 // 订单分销事件
-type OrderAffiliteRebateEvent struct {
+type OrderAffiliateRebateEvent struct {
 	// 订单号
 	OrderNo string
 	// 订单金额
 	OrderAmount int64
 	// 分销商品
-	AffiliteItems []*order.SubOrderItem
+	AffiliateItems []*order.SubOrderItem
 }

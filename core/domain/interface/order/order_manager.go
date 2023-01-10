@@ -142,7 +142,7 @@ type (
 		SaveTradeOrder(v *TradeOrder) (int, error)
 
 		// SaveOrderRebate 保存订单返利
-		SaveOrderRebate(v *AffiliteRebate) (int, error)
+		SaveOrderRebate(v *AffiliateRebate) (int, error)
 	}
 
 	// SubmitData 订单提交数据
@@ -160,7 +160,7 @@ type (
 		// 是否余额支付
 		BalanceDiscount bool
 		// 返利推广人代码
-		AffiliteCode string
+		AffiliateCode string
 		// 提交的订单数据
 		PostedData IPostedData
 	}

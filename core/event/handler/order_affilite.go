@@ -12,35 +12,35 @@ import (
 )
 
 // 订单分销处理
-func (h EventHandler) HandleOrderAffiliteRebateEvent(data interface{}) {
-	v := data.(*events.OrderAffiliteRebateEvent)
+func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
+	v := data.(*events.OrderAffiliateRebateEvent)
 	r := repos.Repo.GetRegistryRepo()
-	s, _ := r.GetValue(registry.OrderPushAffiliteEvent)
+	s, _ := r.GetValue(registry.OrderPushAffiliateEvent)
 	pushValue, _ := strconv.Atoi(s)
 	//todo: 系统内处理分销，不推送分销事件
 	if pushValue == 0 {
 
 	}
-	ev := &proto.EVOrderAffiliteRebateOrder{
-		OrderNo:       v.OrderNo,
-		OrderAmount:   v.OrderAmount,
-		AffiliteItems: []*proto.EVOrderAffiliteItem{},
+	ev := &proto.EVOrderAffiliateRebateOrder{
+		OrderNo:        v.OrderNo,
+		OrderAmount:    v.OrderAmount,
+		AffiliateItems: []*proto.EVOrderAffiliateItem{},
 	}
-	for _, v := range v.AffiliteItems {
+	for _, v := range v.AffiliateItems {
 		//todo: 实现商品自定义分销比例
-		ev.AffiliteItems = append(ev.AffiliteItems, &proto.EVOrderAffiliteItem{
+		ev.AffiliateItems = append(ev.AffiliateItems, &proto.EVOrderAffiliateItem{
 			ItemId:      v.ItemId,
 			SkuId:       v.SkuId,
 			Quantity:    v.Quantity,
 			Amount:      v.Amount,
 			FinalAmount: v.FinalAmount,
-			Params:      []*proto.EVItemAffiliteConfig{},
+			Params:      []*proto.EVItemAffiliateConfig{},
 		})
 	}
 	bytes, _ := json.Marshal(ev)
 	// 推送至外部系统，并由外部系统处理分销
 	if pushValue == 1 {
-		msq.Push(msq.OrderAffiliteTopic, string(bytes))
+		msq.Push(msq.OrderAffiliateTopic, string(bytes))
 		return
 	}
 

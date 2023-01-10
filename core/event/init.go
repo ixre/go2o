@@ -9,5 +9,5 @@ import (
 func InitEvent() {
 	h := &handler.EventHandler{}
 	eventbus.SubscribeAsync(events.WalletLogClickhouseUpdateEvent{}, h.HandleWalletLogWriteEvent)
-	eventbus.SubscribeAsync(events.OrderAffiliteRebateEvent{},h.HandleOrderAffiliteRebateEvent)
+	eventbus.SubscribeAsync(events.OrderAffiliateRebateEvent{}, h.HandleOrderAffiliateRebateEvent)
 }
