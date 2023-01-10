@@ -15,6 +15,7 @@ import (
 	"errors"
 	"math"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -155,22 +156,14 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 	_, err := m.Save()
 	if err == nil {
 		// 创建参数
-		data := map[string]interface{}{
-			"code":      code,
-			"operation": operation,
-			"minutes":   expiresMinutes,
+		data := []string{
+			code,
+			operation,
+			strconv.Itoa(expiresMinutes),
 		}
 		mgr := m.mssRepo.NotifyManager()
 		// 根据消息类型发送信息
 		switch mssType {
-		case notify.TypePhoneMessage:
-			// 某些短信平台要求传入模板ID,在这里附加参数
-			re := m.registryRepo.Get(registry.SmsMemberCheckTemplateId)
-			data["templateId"] = re.StringValue()
-			// 构造并发送短信
-			n := mgr.GetNotifyItem("验证手机")
-			c := notify.PhoneMessage(n.Content)
-			err = mgr.SendPhoneMessage(m.value.Phone, c, data)
 		default:
 		case notify.TypeEmailMessage:
 			n := mgr.GetNotifyItem("验证邮箱")
@@ -179,6 +172,14 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 				Body:    n.Content,
 			}
 			err = mgr.SendEmail(m.value.Email, c, data)
+		case notify.TypePhoneMessage:
+			// 某些短信平台要求传入模板ID,在这里附加参数
+			// re := m.registryRepo.Get(registry.SmsMemberCheckTemplateId)
+			// data["templateId"] = re.StringValue()
+			// 构造并发送短信
+			n := mgr.GetNotifyItem("验证手机")
+			c := notify.PhoneMessage(n.Content)
+			err = mgr.SendPhoneMessage(m.value.Phone, c, data)
 		}
 	}
 	return code, err

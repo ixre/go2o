@@ -11,8 +11,9 @@ package aliyu
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ixre/alidayu"
 	"sync"
+
+	"github.com/ixre/alidayu"
 )
 
 var (
@@ -23,23 +24,22 @@ var (
 
 // 发送短信
 func SendSms(appKey, appSecret, phoneNum string,
-	tpl string, param map[string]interface{}) error {
+	tpl string, param []string,
+	templateName string,
+	templateId string) error {
 	mux.Lock()
 	defer mux.Unlock()
 	alidayu.AppKey = appKey
 	alidayu.AppSecret = appSecret
-	tplName, ok := param[ParamKeyTplName]
-	tplId, ok1 := param[ParamKeyTplId]
-	if !ok || !ok1 {
-		return errors.New("param must contain \"ali_template\" and \"ali_template_id\" keys.")
+	if len(templateName) == 0 || len(templateId) == 0 {
+		return errors.New(`
+		param must contain "ali_template"
+		 and "ali_template_id" keys.`)
 	}
-	delete(param, ParamKeyTplName)
-	delete(param, ParamKeyTplId)
-
 	d, _ := json.Marshal(param)
 	success, resp := alidayu.SendSMS(phoneNum,
-		tplName.(string),
-		tplId.(string),
+		templateName,
+		templateId,
 		string(d),
 	)
 	if success {

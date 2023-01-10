@@ -33,10 +33,12 @@ message EVOrderAffiliateItem{
 
 // 分销订单
 message EVOrderAffiliateRebateOrder{
-    	// 订单号
+    // 订单号
 	string orderNo = 1;
+	// 买家编号
+	int64 buyerId = 2;
 	// 订单金额
-	int64 orderAmount = 2;
+	int64 orderAmount = 3;
 	// 分销商品
-	repeated EVOrderAffiliateItem affiliateItems = 3;
+	repeated EVOrderAffiliateItem affiliateItems = 4;
 }

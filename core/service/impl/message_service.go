@@ -60,13 +60,7 @@ func (m *messageService) GetAllNotifyItem(_ context.Context, empty *proto.Empty)
 // 发送短信
 func (m *messageService) SendPhoneMessage(_ context.Context, r *proto.SendMessageRequest) (*proto.Result, error) {
 	mg := m._rep.NotifyManager()
-	extra := make(map[string]interface{})
-	if r.Data != nil {
-		for k, v := range r.Data {
-			extra[k] = v
-		}
-	}
-	err := mg.SendPhoneMessage(r.Account, notify.PhoneMessage(r.Message), extra)
+	err := mg.SendPhoneMessage(r.Account, notify.PhoneMessage(r.Message), r.Data)
 	if err != nil {
 		return m.error(err), nil
 	}

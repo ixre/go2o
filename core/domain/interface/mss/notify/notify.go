@@ -69,7 +69,7 @@ var (
 	}
 )
 
-//可通过外部添加
+// 可通过外部添加
 func RegisterNotifyItem(key string, item *NotifyItem) {
 	for _, v := range DefaultNotifyItems {
 		if v.Key == key {
@@ -111,9 +111,9 @@ type (
 		// 获取短信API信息
 		GetSmsApiPerm(provider string) *SmsApiPerm
 		// 发送手机短信
-		SendPhoneMessage(phone string, msg PhoneMessage, data map[string]interface{}) error
+		SendPhoneMessage(phone string, msg PhoneMessage, data []string) error
 		// 发送邮件
-		SendEmail(to string, msg *MailMessage, data map[string]interface{}) error
+		SendEmail(to string, msg *MailMessage, data []string) error
 	}
 
 	INotifyRepo interface {

@@ -204,13 +204,13 @@ func (g *Gateway) handlePayment(userId int64, tradeNo string, data wrapperData) 
 func (g *Gateway) notify(userId int64, data *wrapperData) error {
 	cli := http.Client{}
 	values := url.Values{
-		"user_id":       []string{strconv.Itoa(int(userId))},
-		"trade_no":      []string{data.TradeNo},
-		"state":         []string{"success"},
-		"amount":        []string{strconv.Itoa(data.Amount)},
-		"procedure_fee": []string{strconv.Itoa(data.ProcedureFee)},
-		"flag":          []string{strconv.Itoa(data.PayFlag)},
-		"subject":       []string{data.Subject},
+		"user_id":       {strconv.Itoa(int(userId))},
+		"trade_no":      {data.TradeNo},
+		"state":         {"success"},
+		"amount":        {strconv.Itoa(data.Amount)},
+		"procedure_fee": {strconv.Itoa(data.ProcedureFee)},
+		"flag":          {strconv.Itoa(data.PayFlag)},
+		"subject":       {data.Subject},
 	}
 	for k, v := range data.Data {
 		if k != "token" {

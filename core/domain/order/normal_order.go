@@ -962,6 +962,7 @@ func (o *normalOrderImpl) publishAffiliateEvent(subOrders []order.ISubOrder) {
 	if len(affiliateItems) > 0 {
 		eventbus.Publish(&events.OrderAffiliateRebateEvent{
 			OrderNo:        o.OrderNo(),
+			BuyerId:        o.baseValue.BuyerId,
 			OrderAmount:    o.baseValue.FinalAmount,
 			AffiliateItems: affiliateItems,
 		})

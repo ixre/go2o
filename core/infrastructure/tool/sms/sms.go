@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/mss/notify"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/tool/sms/aliyu"
 	"github.com/ixre/go2o/core/infrastructure/tool/sms/cl253"
 	"github.com/ixre/gof/util"
@@ -55,53 +54,56 @@ type SmsApi struct {
 	SuccessChar string
 }
 
-// 发送短信,tpl:短信内容模板
+// 发送短信
 func SendSms(provider string, api *SmsApi, phoneNum string, content string,
-	params map[string]interface{}) error {
+	params []string) error {
 	if api.Signature != "" && strings.Index(content, api.Signature) == -1 {
 		content = api.Signature + content
 	}
-	c := compile(content, params)
+	c := compileArray(content, params)
+	templateId := ""
 	switch getProviderID(provider) {
 	case SmsHttp:
-		return sendPhoneMsgByHttpApi(api, phoneNum, c, params)
+		return sendPhoneMsgByHttpApi(api, phoneNum, c, params, templateId)
 	case SmsAli:
-		return aliyu.SendSms(api.Key, api.Secret, phoneNum, content, params)
+		templateName := ""
+		return aliyu.SendSms(api.Key,
+			api.Secret, phoneNum,
+			content, params,
+			templateName, templateId)
 	case SmsCl253:
 		return cl253.SendMsgToMobile(api.Key, api.Secret, phoneNum, c)
 	}
 	return errors.New("未知的短信接口服务商:" + provider)
 }
 
+// // 解析模板中的参数
+// func compile(tpl string, param map[string]interface{}) string {
+// 	var str string
+// 	for k, v := range param {
+// 		switch v.(type) {
+// 		case string:
+// 			str = v.(string)
+// 		case int, int32, int64:
+// 			str = strconv.Itoa(v.(int))
+// 		case float32, float64:
+// 			str = format.FormatFloat(v.(float32))
+// 		case bool:
+// 			str = strconv.FormatBool(v.(bool))
+// 		default:
+// 			str = "unknown"
+// 		}
+// 		tpl = strings.Replace(tpl, "{"+k+"}", str, -1)
+// 	}
+// 	return tpl
+// }
+
 // 解析模板中的参数
-func compile(tpl string, param map[string]interface{}) string {
-	var str string
+func compileArray(tpl string, param []string) string {
 	for k, v := range param {
-		switch v.(type) {
-		case string:
-			str = v.(string)
-		case int, int32, int64:
-			str = strconv.Itoa(v.(int))
-		case float32, float64:
-			str = format.FormatFloat(v.(float32))
-		case bool:
-			str = strconv.FormatBool(v.(bool))
-		default:
-			str = "unknown"
-		}
-		tpl = strings.Replace(tpl, "{"+k+"}", str, -1)
+		tpl = strings.Replace(tpl, fmt.Sprintf("{%d}", k), v, -1)
 	}
 	return tpl
-}
-
-// 附加检查手机短信的参数
-func AppendCheckPhoneParams(provider string, param map[string]interface{}) map[string]interface{} {
-	//todo: 考虑在参数中读取
-	if getProviderID(provider) == SmsAli {
-		param[aliyu.ParamKeyTplName] = ""
-		param[aliyu.ParamKeyTplId] = ""
-	}
-	return param
 }
 
 func getProviderID(provider string) int {
@@ -143,7 +145,7 @@ func CheckSmsApiPerm(provider string, s *notify.SmsApiPerm) error {
 }
 
 // 通过HTTP-API发送短信, 短信模板参数在data里指定
-func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, params map[string]interface{}) error {
+func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, data []string, templateId string) error {
 	//如果指定了编码，则先编码内容
 	if api.Charset != "" {
 		dst, err := EncodingTransform([]byte(content), api.Charset)
@@ -156,15 +158,17 @@ func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, params map[string
 	if api.Method == "GET" {
 		content = url.QueryEscape(content)
 	}
-	// 格式化短信参数
-	params["key"] = api.Key
-	params["secret"] = api.Secret
-	params["phone"] = phone
-	params["content"] = content
-	params["stamp"] = fmt.Sprintf("%s%d", util.RandString(3), time.Now().Unix())
-	body := compile(api.Params, params)
+	// 请求参数
+	params := url.Values{
+		"key":        {api.Key},
+		"secret":     {api.Secret},
+		"phone":      {phone},
+		"content":    {content},
+		"templateId": {templateId},
+		"stamp":      {fmt.Sprintf("%s%d", util.RandString(3), time.Now().Unix())},
+	}
 	// 创建请求
-	req, err := createHttpRequest(api, body)
+	req, err := createHttpRequest(api, params.Encode())
 	if err != nil {
 		return err
 	}
@@ -195,6 +199,7 @@ func sendPhoneMsgByHttpApi(api *SmsApi, phone, content string, params map[string
 	return err
 }
 
+// 创建HTTP短信发送请求
 func createHttpRequest(api *SmsApi, body string) (*http.Request, error) {
 	var req *http.Request
 	var err error

@@ -22,6 +22,7 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 
 	}
 	ev := &proto.EVOrderAffiliateRebateOrder{
+		BuyerId:v.BuyerId,
 		OrderNo:        v.OrderNo,
 		OrderAmount:    v.OrderAmount,
 		AffiliateItems: []*proto.EVOrderAffiliateItem{},

@@ -10,8 +10,10 @@ package notify
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
+	"github.com/ixre/go2o/core/domain/interface/mss"
 	"github.com/ixre/go2o/core/domain/interface/mss/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
@@ -105,7 +107,7 @@ func (n *notifyManagerImpl) GetSmsApiPerm(provider string) *notify.SmsApiPerm {
 
 // 发送手机短信
 func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessage,
-	data map[string]interface{}) error {
+	data []string) error {
 	provider := n.registryRepo.Get(registry.SmsDefaultProvider).StringValue()
 	if provider == "" {
 		return notify.ErrNotSettingSmsProvider
@@ -127,9 +129,9 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessa
 	eventbus.Publish(&events.SendSmsEvent{
 		Provider: provider,
 		Phone:    phone,
-		Sene:     "",
+		Scene:    mss.UserScene,
 		ApiConf:  a,
-		Content:  string(msg),
+		Template: string(msg),
 		Data:     data,
 	})
 	return sms.SendSms(provider, a, phone, string(msg), data)
@@ -137,6 +139,6 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessa
 
 // 发送邮件
 func (n *notifyManagerImpl) SendEmail(to string,
-	msg *notify.MailMessage, data map[string]interface{}) error {
-	return nil
+	msg *notify.MailMessage, data []string) error {
+	return errors.New("not implement message via mail")
 }
