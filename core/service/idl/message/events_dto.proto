@@ -32,13 +32,29 @@ message EVOrderAffiliateItem{
 }
 
 // 分销订单
-message EVOrderAffiliateRebateOrder{
+message EVOrderAffiliateEventData{
     // 订单号
 	string orderNo = 1;
+	// 是否为子订单
+	bool subOrder = 2;
 	// 买家编号
-	int64 buyerId = 2;
+	int64 buyerId = 3;
 	// 订单金额
-	int64 orderAmount = 3;
+	int64 orderAmount = 4;
 	// 分销商品
-	repeated EVOrderAffiliateItem affiliateItems = 4;
+	repeated EVOrderAffiliateItem affiliateItems = 5;
+}
+
+// 发送短信事件数据
+message EVSendSmsEventData{
+	// 短信服务商
+	string provider = 1;
+	// 手机号
+	string phone = 2;
+	// 短信内容
+	string template = 3; 
+	// 短信模板
+	string templateId  = 4;
+	// 数据
+	repeated string data = 5;
 }

@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ixre/go2o/core/domain/interface/mss"
 	"github.com/ixre/go2o/core/domain/interface/mss/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
@@ -107,7 +106,7 @@ func (n *notifyManagerImpl) GetSmsApiPerm(provider string) *notify.SmsApiPerm {
 
 // 发送手机短信
 func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessage,
-	data []string) error {
+	data []string, templateId string) error {
 	provider, _ := n.registryRepo.GetValue(registry.SmsDefaultProvider)
 	if provider == "" {
 		return notify.ErrNotSettingSmsProvider
@@ -130,12 +129,12 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg notify.PhoneMessa
 	// 通过外部系统发送短信
 	if pushEvent {
 		eventbus.Publish(&events.SendSmsEvent{
-			Provider: provider,
-			Phone:    phone,
-			Scene:    mss.UserScene,
-			ApiConf:  a,
-			Template: string(msg),
-			Data:     data,
+			Provider:   provider,
+			Phone:      phone,
+			ApiConf:    a,
+			Template:   string(msg),
+			TemplateId: templateId,
+			Data:       data,
 		})
 		return nil
 	}

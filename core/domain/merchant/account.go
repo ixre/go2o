@@ -2,6 +2,9 @@
 package merchant
 
 import (
+	"math"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -9,8 +12,6 @@ import (
 	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/db/orm"
-	"math"
-	"time"
 )
 
 var _ merchant.IAccount = new(accountImpl)
@@ -44,8 +45,7 @@ func (a *accountImpl) GetValue() *merchant.Account {
 
 // 保存
 func (a *accountImpl) Save() error {
-	_, err := orm.Save(tmp.Orm, a.value, int(a.GetDomainId()))
-	//_, err := a.mchImpl._repo.SaveMerchantAccount(a)
+	_, err := a.mchImpl._repo.SaveAccount(a.value)
 	return err
 }
 

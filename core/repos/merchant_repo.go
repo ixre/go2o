@@ -12,6 +12,11 @@ package repos
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -27,10 +32,6 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"log"
-	"strings"
-	"sync"
-	"time"
 )
 
 var _ merchant.IMerchantRepo = new(merchantRepo)
@@ -156,6 +157,7 @@ func (m *merchantRepo) GetAccount(mchId int) *merchant.Account {
 	if err == nil {
 		return &e
 	}
+	// 初始化一个钱包账户
 	if err == sql.ErrNoRows {
 		e.MchId = int64(mchId)
 		e.UpdateTime = time.Now().Unix()
@@ -365,28 +367,27 @@ func (m *merchantRepo) SaveMemberLevel(mchId int64, v *merchant.MemberLevel) (in
 	return orm.I32(orm.Save(m.o, v, int(v.Id)))
 }
 
+//	func (m *merchantRepo) UpdateMechOfflineRate(id int, rate float32, return_rate float32) error {
+//		_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate= ? ,return_rate= ? WHERE  id= ?", rate, return_rate, id)
+//		return err
+//	}
 //
-//func (m *merchantRepo) UpdateMechOfflineRate(id int, rate float32, return_rate float32) error {
-//	_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate= ? ,return_rate= ? WHERE  id= ?", rate, return_rate, id)
-//	return err
-//}
+//	func (m *merchantRepo) GetOfflineRate(id int32) (float32, float32, error) {
+//		var rate float32
+//		var return_rate float32
+//		err := m.Connector.ExecScalar("SELECT  offline_rate FROM mch_merchant WHERE id= ?", &rate, id)
+//		m.Connector.ExecScalar("SELECT  return_rate  FROM mch_merchant WHERE id= ?", &return_rate, id)
+//		return rate, return_rate, err
+//	}
 //
-//func (m *merchantRepo) GetOfflineRate(id int32) (float32, float32, error) {
-//	var rate float32
-//	var return_rate float32
-//	err := m.Connector.ExecScalar("SELECT  offline_rate FROM mch_merchant WHERE id= ?", &rate, id)
-//	m.Connector.ExecScalar("SELECT  return_rate  FROM mch_merchant WHERE id= ?", &return_rate, id)
-//	return rate, return_rate, err
-//}
-//
-// 保存销售配置
-func (m *merchantRepo) UpdateAccount(v *merchant.Account) error {
+// 保存会员账户
+func (m *merchantRepo) SaveAccount(v *merchant.Account) (int, error) {
 	orm := m.o
 	var err error
 	if v.MchId > 0 {
 		_, _, err = orm.Save(v.MchId, v)
 	}
-	return err
+	return int(v.MchId), err
 }
 
 // Get MchEnterpriseInfo

@@ -179,7 +179,7 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 			// 构造并发送短信
 			n := mgr.GetNotifyItem("验证手机")
 			c := notify.PhoneMessage(n.Content)
-			err = mgr.SendPhoneMessage(m.value.Phone, c, data)
+			err = mgr.SendPhoneMessage(m.value.Phone, c, data, "")
 		}
 	}
 	return code, err

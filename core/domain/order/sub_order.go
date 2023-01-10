@@ -18,7 +18,9 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/util"
 )
 
@@ -788,8 +790,31 @@ func (o *subOrderImpl) onOrderComplete() error {
 
 	// 处理返现
 	err = o.handleCashBack()
-
+	// 发布处理分销事件
+	o.publishAffiliateEvent()
 	return err
+}
+
+func (o *subOrderImpl) publishAffiliateEvent() {
+	log.Println("^^affiliateEvent")
+	// 获取启用分销的商品
+	affiliateItems := make([]*order.SubOrderItem, 0)
+	for _, it := range o.Items() {
+		i := o.itemRepo.GetItem(it.ItemId)
+		if i != nil && domain.TestFlag(i.GetValue().ItemFlag, item.FlagAffiliate) {
+			affiliateItems = append(affiliateItems, it)
+		}
+	}
+	// 发送分销事件
+	if len(affiliateItems) > 0 {
+		eventbus.Publish(&events.OrderAffiliateRebateEvent{
+			OrderNo:        o.value.OrderNo,
+			SubOrder:       true,
+			BuyerId:        o.value.BuyerId,
+			OrderAmount:    o.value.FinalAmount,
+			AffiliateItems: affiliateItems,
+		})
+	}
 }
 
 // Forbid 删除订单

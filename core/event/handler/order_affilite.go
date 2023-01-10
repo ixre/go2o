@@ -21,8 +21,9 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	if pushValue == 0 {
 
 	}
-	ev := &proto.EVOrderAffiliateRebateOrder{
-		BuyerId:v.BuyerId,
+	ev := &proto.EVOrderAffiliateEventData{
+		BuyerId:        v.BuyerId,
+		SubOrder:       true,
 		OrderNo:        v.OrderNo,
 		OrderAmount:    v.OrderAmount,
 		AffiliateItems: []*proto.EVOrderAffiliateItem{},
@@ -46,4 +47,17 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	}
 
 	//todo: 处理分销后将事件推送至外部系统
+}
+
+func (e EventHandler) HandleSendSmsEvent(data interface{}) {
+	v := data.(*events.SendSmsEvent)
+	ev := &proto.EVSendSmsEventData{
+		Provider:   v.Provider,
+		Phone:      v.Phone,
+		Template:   v.Template,
+		TemplateId: v.TemplateId,
+		Data:       v.Data,
+	}
+	bytes, _ := json.Marshal(ev)
+	msq.Push(msq.SystemSendSmsTopic, string(bytes))
 }

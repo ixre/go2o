@@ -60,7 +60,7 @@ func (m *messageService) GetAllNotifyItem(_ context.Context, empty *proto.Empty)
 // 发送短信
 func (m *messageService) SendPhoneMessage(_ context.Context, r *proto.SendMessageRequest) (*proto.Result, error) {
 	mg := m._rep.NotifyManager()
-	err := mg.SendPhoneMessage(r.Account, notify.PhoneMessage(r.Message), r.Data)
+	err := mg.SendPhoneMessage(r.Account, notify.PhoneMessage(r.Message), r.Data, r.TemplateId)
 	if err != nil {
 		return m.error(err), nil
 	}
@@ -151,12 +151,12 @@ func (m *messageService) SaveConfig(conf *mss.Config) error {
 	return m._rep.GetProvider().SaveConfig(conf)
 }
 
-//可通过外部添加
+// 可通过外部添加
 func (m *messageService) RegisterNotifyItem(key string, item *notify.NotifyItem) {
 	notify.RegisterNotifyItem(key, item)
 }
 
-//todo: 考虑弄一个,确定后再发送.这样可以先在系统,然后才发送
+// todo: 考虑弄一个,确定后再发送.这样可以先在系统,然后才发送
 // 发送站内通知信息,
 // toRole: 为-1时发送给所有用户
 // sendNow: 是否马上发送
