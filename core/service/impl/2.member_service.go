@@ -29,6 +29,7 @@ import (
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
@@ -688,8 +689,12 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 	}
 	memberId := s.repo.GetMemberIdByUser(user)
 	if memberId <= 0 {
-		//todo: 界面加上使用手机号码登陆
-		//val = m.repo.GetMemberValueByPhone(user)
+		// 用户名不正确时,尝试匹配手机号
+		if regex.IsPhone(user) {
+			memberId = s.repo.GetMemberIdByPhone(user)
+		}
+	}
+	if memberId <= 0 {
 		return nil, 2, de.ErrCredential // 用户不存在,也返回用户或密码不正确
 	}
 	im := s.repo.GetMember(memberId)

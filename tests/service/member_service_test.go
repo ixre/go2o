@@ -113,10 +113,10 @@ func TestChangeUsername(t *testing.T) {
 
 }
 func TestChangePasswordAndCheckLogin(t *testing.T) {
-	pwd := domain.Md5("1234567")
+	pwd := domain.Md5("123456")
 	r, _ := impl.MemberService.ChangePassword(context.TODO(),
 		&proto.ChangePasswordRequest{
-			MemberId:    712,
+			MemberId:    1,
 			NewPassword: pwd,
 		})
 	if r.ErrCode > 0 {
@@ -125,6 +125,16 @@ func TestChangePasswordAndCheckLogin(t *testing.T) {
 	ret, _ := impl.MemberService.CheckLogin(context.TODO(), &proto.LoginRequest{
 		Username: "18924140903",
 		Password: pwd,
+	})
+	if ret.ErrCode > 0 {
+		t.Error(ret.ErrMsg)
+	}
+}
+
+func TestCheckUserLogin(t *testing.T) {
+	ret, _ := impl.MemberService.CheckLogin(context.TODO(), &proto.LoginRequest{
+		Username: "13162222872",
+		Password: "14e1b600b1fd579f47433b88e8d85291",
 	})
 	if ret.ErrCode > 0 {
 		t.Error(ret.ErrMsg)
