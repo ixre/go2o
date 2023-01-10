@@ -29,7 +29,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("通行证域名协议", DomainPassportProto, "http", "http或https")
 	mergeAdd("API前缀", DomainPrefixApi, "api.", "")
 	mergeAdd("HAPI前缀", DomainPrefixHApi, "hapi.", "")
-	mergeAdd("文件服务器前缀",DomainFileServerPrefix,"/files/","")
+	mergeAdd("文件服务器前缀", DomainFileServerPrefix, "/files/", "")
 	mergeAdd("静态服务器前缀", DomainPrefixStatic, "static.", "")
 	mergeAdd("图片服务器前缀", DomainPrefixImage, "img.", "")
 	mergeAdd("批发中心移动端", DomainPrefixMobileWholesale, "mwhs.", "")
@@ -73,7 +73,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("用户注册短信模板ID", SmsRegisterTemplateId, "", "")
 	mergeAdd("用户验证码短信模板ID", SmsMemberCheckTemplateId, "", "")
 	mergeAdd("短信接收间隔,默认(2s)", SmsSendDuration, "2000", "")
-
+	mergeAdd("推送短信发送事件", SmsPushSendEvent, "0", "是否推送短信发送事件到外部系统")
 	// 注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册,等于member.RegisterMode
 	mergeAdd("注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册", MemberRegisterMode, "1", "")
 	mergeAdd("是否允许匿名注册", MemberRegisterAllowAnonymous, "true", "")
@@ -122,9 +122,9 @@ func MergeRegistries() []*Registry {
 	mergeAdd("抵扣1元所需要的积分(0不抵扣)", IntegralDiscountQuantity, "1000", "")
 
 	// 订单
-	mergeAdd("是否启用订单返利", OrderEnableAffliteRebate, "0", "")
-	mergeAdd("全局订单返利比例", OrderGlobalAffliteRebateRate, "0", "")
-
+	mergeAdd("是否启用订单返利", OrderEnableAffiliateRebate, "0", "")
+	mergeAdd("全局订单返利比例", OrderGlobalAffiliateRebateRate, "0", "")
+	mergeAdd("推送分销事件", OrderPushAffiliateEvent, "0", "0:不推送(内部处理),1:推送(外部处理分销),2:仅推送")
 	// 商户订单
 	mergeAdd("是否必须认证后才可上传商品", MchMustBeTrust, "true", "")
 	mergeAdd("商户订单结算模式", MchOrderSettleMode, "1", "1:按供货价,2:按销售额,3:按单")

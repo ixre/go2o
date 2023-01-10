@@ -228,7 +228,7 @@ enum EItemFlag{
 	// 赠品
 	Gift = 16;
 	// 分销商品
-	Affilite = 32;
+	Affiliate = 32;
 	// 新品
 	NewOnShelve = 64;
 	// 热销商品
@@ -250,7 +250,7 @@ message SItemFlagData{
 	// 赠品
 	bool isGift = 5;
   // 是否分销
-  bool isAffilite = 6;
+  bool isAffiliate = 6;
   // 自营商品
 	bool isSelfSales = 7;
 	// 免邮

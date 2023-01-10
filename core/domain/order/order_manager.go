@@ -275,8 +275,8 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	// 使用返利用户代码
 	no := o.(order.INormalOrder)
 	if no != nil {
-		if len(data.AffliteCode) > 0 {
-			_ = no.ApplyTraderCode(data.AffliteCode)
+		if len(data.AffiliateCode) > 0 {
+			_ = no.ApplyTraderCode(data.AffiliateCode)
 		}
 	}
 	// 提交订单
@@ -353,6 +353,7 @@ func (t *orderManagerImpl) NotifyOrderTradeSuccess(orderNo string, subOrder bool
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
+	// 主动调用订单支付完成
 	switch o.Type() {
 	case order.TRetail:
 		io := o.(order.INormalOrder)

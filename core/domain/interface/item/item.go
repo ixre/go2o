@@ -47,7 +47,7 @@ const (
 	// 赠品
 	FlagGift = 16
 	// 分销商品
-	FlagAffilite = 32
+	FlagAffiliate = 32
 	// 新品
 	FlagNewOnShelve = 64
 	// 热销商品

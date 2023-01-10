@@ -90,6 +90,8 @@ var (
 	SmsMemberCheckTemplateId = KeyFormat("SmsMemberCheckTemplateId")
 	// 短信接收间隔
 	SmsSendDuration = KeyFormat("SmsSendDuration")
+	// 推送短信发送事件
+	SmsPushSendEvent = KeyFormat("SmsPushSendEvent")
 
 	/** 账户 */
 	// 余额账户
@@ -197,9 +199,11 @@ var (
 
 	/** 订单 */
 	// 是否启用订单返利
-	OrderEnableAffliteRebate = KeyFormat("OrderEnableAffliteRebate")
+	OrderEnableAffiliateRebate = KeyFormat("OrderEnableAffiliateRebate")
 	// 全局订单返利比例
-	OrderGlobalAffliteRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
+	OrderGlobalAffiliateRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
+	// 推送分销事件
+	OrderPushAffiliateEvent = KeyFormat("OrderPushAffiliateEvent")
 	//  /* 商户订单 */
 	// MchOrderSettleMode 商户订单结算模式
 	MchOrderSettleMode = KeyFormat("MchOrderSettleMode")

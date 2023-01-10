@@ -30,7 +30,9 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/types/typeconv"
 )
 
@@ -65,7 +67,7 @@ type normalOrderImpl struct {
 	_list           []order.ISubOrder
 	_payOrder       payment.IPaymentOrder
 	// 返利推荐人
-	_affliteMember member.IMember
+	_AffiliateMember member.IMember
 }
 
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
@@ -115,7 +117,7 @@ func (o *normalOrderImpl) ApplyTraderCode(code string) error {
 	if im == nil || im.ContainFlag(member.FlagRebateDisabled) {
 		return nil
 	}
-	o._affliteMember = im
+	o._AffiliateMember = im
 	return nil
 }
 
@@ -771,22 +773,22 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	v.FinalAmount = v.ItemAmount - v.DiscountAmount +
 		v.PackageFee + v.ExpressFee
 	so := o.repo.CreateNormalSubOrder(v)
-	o.createAffliteRebateOrder(so)
+	o.createAffiliateRebateOrder(so)
 	return so
 }
 
 // 创建返利订单
-func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder) {
-	if o._affliteMember != nil {
+func (o *normalOrderImpl) createAffiliateRebateOrder(so order.ISubOrder) {
+	if o._AffiliateMember != nil {
 		// 未开启返利
-		rv, _ := o.registryRepo.GetValue(registry.OrderEnableAffliteRebate)
+		rv, _ := o.registryRepo.GetValue(registry.OrderEnableAffiliateRebate)
 		if v, _ := strconv.ParseBool(rv); !v {
 			return
 		}
 		// 获取返利比例
-		rv, err := o.registryRepo.GetValue(registry.OrderGlobalAffliteRebateRate)
+		rv, err := o.registryRepo.GetValue(registry.OrderGlobalAffiliateRebateRate)
 		if err != nil {
-			log.Println("[ warning]: affilite rebate rate error", err.Error())
+			log.Println("[ warning]: affiliate rebate rate error", err.Error())
 			return
 		}
 		rate := typeconv.MustFloat(rv)
@@ -795,10 +797,10 @@ func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder) {
 		}
 		ov := so.GetValue()
 		unix := time.Now().Unix()
-		v := &order.AffliteRebate{
+		v := &order.AffiliateRebate{
 			PlanId:        0,
-			TraderId:      o._affliteMember.GetAggregateRootId(),
-			AffiliateCode: o._affliteMember.GetValue().UserCode,
+			TraderId:      o._AffiliateMember.GetAggregateRootId(),
+			AffiliateCode: o._AffiliateMember.GetValue().UserCode,
 			OrderNo:       ov.OrderNo,
 			OrderSubject:  ov.Subject,
 			OrderAmount:   ov.FinalAmount,
@@ -927,6 +929,7 @@ func (o *normalOrderImpl) GetSubOrders() []order.ISubOrder {
 // 在线支付交易完成
 func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
 	for _, o := range o.GetSubOrders() {
+		o.Items()
 		// 销毁拆分支付订单
 		if o.GetValue().BreakStatus == order.BreakDefault {
 			if err := o.Destory(); err != nil {
@@ -940,7 +943,29 @@ func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
 	}
 	o.baseValue.IsPaid = 1
 	o.baseOrderImpl.saveOrder()
+	o.publishAffiliateEvent(o.GetSubOrders())
 	return nil
+}
+
+func (o *normalOrderImpl) publishAffiliateEvent(subOrders []order.ISubOrder) {
+	// 获取启用分销的商品
+	affiliateItems := make([]*order.SubOrderItem, 0)
+	for _, so := range subOrders {
+		for _, it := range so.Items() {
+			i := o.itemRepo.GetItem(it.ItemId)
+			if i != nil && domain.TestFlag(i.GetValue().ItemFlag, item.FlagAffiliate) {
+				affiliateItems = append(affiliateItems, it)
+			}
+		}
+	}
+	// 发送分销事件
+	if len(affiliateItems) > 0 {
+		eventbus.Publish(&events.OrderAffiliateRebateEvent{
+			OrderNo:        o.OrderNo(),
+			OrderAmount:    o.baseValue.FinalAmount,
+			AffiliateItems: affiliateItems,
+		})
+	}
 }
 
 // 扣减商品库存

@@ -71,7 +71,7 @@ func NewOrderRepo(sto storage.Interface, o orm.Orm,
 	shipRepo shipment.IShipmentRepo, shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrderRepo {
 	if !orderRepoMapped {
-		_ = o.Mapping(order.AffliteRebate{}, "order_rebate_list")
+		_ = o.Mapping(order.AffiliateRebate{}, "order_rebate_list")
 		orderRepoMapped = true
 	}
 	return &OrderRepImpl{
@@ -480,7 +480,7 @@ func (o *OrderRepImpl) SaveTradeOrder(v *order.TradeOrder) (int, error) {
 }
 
 // SaveRebateList implements order.IOrderRepo
-func (o *OrderRepImpl) SaveOrderRebate(v *order.AffliteRebate) (int, error) {
+func (o *OrderRepImpl) SaveOrderRebate(v *order.AffiliateRebate) (int, error) {
 	id, err := orm.Save(o._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:RebateList")
