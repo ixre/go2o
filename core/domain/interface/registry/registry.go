@@ -3,11 +3,12 @@ package registry
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"github.com/ixre/go2o/core/msq"
+	"log"
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/ixre/go2o/core/msq"
 )
 
 const (
@@ -138,19 +139,19 @@ func (r *registryImpl) StringValue() string {
 
 func (r *registryImpl) IntValue() int {
 	v, err := strconv.Atoi(r.value.Value)
-	r.panic(err)
+	r.warning(err)
 	return v
 }
 
 func (r *registryImpl) FloatValue() float64 {
 	v, err := strconv.ParseFloat(r.value.Value, 64)
-	r.panic(err)
+	r.warning(err)
 	return v
 }
 
 func (r *registryImpl) BoolValue() bool {
 	v, err := strconv.ParseBool(r.value.Value)
-	r.panic(err)
+	r.warning(err)
 	return v
 }
 
@@ -175,6 +176,9 @@ func (r *registryImpl) Update(value string) error {
 
 func (r *registryImpl) Save() error {
 	r.value.Key = KeyFormat(r.value.Key)
+	if len(r.value.Key) == 0 {
+		return errors.New("key length is zero")
+	}
 	if len(r.value.Key) > 45 {
 		return errors.New("key length out of 40")
 	}
@@ -191,10 +195,11 @@ func (r *registryImpl) Save() error {
 	return r.repo.Save(r)
 }
 
-func (r *registryImpl) panic(e error) {
+func (r *registryImpl) warning(e error) {
 	if e != nil {
-		panic(fmt.Sprintf("parse registry value fail! key:%s value:%s",
+		log.Printf(`[ go2o][ warning]:
+			parse registry value fail! key:%s value:%s \n`,
 			r.value.Key,
-			r.value.Value))
+			r.value.Value)
 	}
 }

@@ -10,11 +10,12 @@ package mss
 
 import (
 	"encoding/json"
-	"github.com/ixre/go2o/core/domain/interface/mss"
-	"github.com/ixre/go2o/core/domain/interface/mss/notify"
 	"regexp"
 	"strconv"
 	"time"
+
+	mss "github.com/ixre/go2o/core/domain/interface/message"
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
 )
 
 var reg = regexp.MustCompile("\\{([^\\}]+)\\}")
@@ -86,7 +87,7 @@ func (m *messageImpl) GetTo(toUserId int32, toRole int) *mss.To {
 }
 
 // 保存
-//todo: 会出现保存后不发送的情况
+// todo: 会出现保存后不发送的情况
 func (m *messageImpl) Save() (int32, error) {
 	if m.GetDomainId() > 0 {
 		return m.msg.Id, mss.ErrMessageUpdate

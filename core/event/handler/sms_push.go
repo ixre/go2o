@@ -11,7 +11,7 @@ import (
 func (e EventHandler) HandleSendSmsEvent(data interface{}) {
 	v := data.(*events.SendSmsEvent)
 	ev := &proto.EVSendSmsEventData{
-		Provider:   v.Provider,
+		Provider:   int32(v.Provider),
 		Phone:      v.Phone,
 		Template:   v.Template,
 		TemplateId: v.TemplateId,

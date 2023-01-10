@@ -3,7 +3,6 @@ package events
 import (
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
-	"github.com/ixre/go2o/core/infrastructure/tool/sms"
 )
 
 // 钱包更新事件
@@ -28,7 +27,7 @@ type OrderAffiliateRebateEvent struct {
 // 发送短信事件
 type SendSmsEvent struct {
 	// 短信服务商
-	Provider string
+	Provider int
 	// 手机号
 	Phone string
 	// 短信内容
@@ -37,6 +36,4 @@ type SendSmsEvent struct {
 	TemplateId string
 	// 数据
 	Data []string
-	// 接口地址
-	ApiConf *sms.SmsApi
 }

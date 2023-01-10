@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/domain/interface/mss"
+	"github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"

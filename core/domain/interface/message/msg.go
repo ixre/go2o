@@ -8,7 +8,7 @@
  */
 package mss
 
-import "github.com/ixre/go2o/core/domain/interface/mss/notify"
+import "github.com/ixre/go2o/core/domain/interface/message/notify"
 
 //todo: 客服消息
 var (

@@ -9,9 +9,9 @@
 package repos
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/mss/notify"
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	impl "github.com/ixre/go2o/core/domain/mss/notify"
+	impl "github.com/ixre/go2o/core/domain/message/notify"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"

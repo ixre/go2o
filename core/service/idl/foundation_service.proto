@@ -14,15 +14,18 @@ service FoundationService {
     /** 替换敏感词 */
     rpc ReplaceSensitive(ReplaceSensitiveRequest)returns(String) {}
 
+  
+    /** 获取短信API凭据, provider 短信服务商, 默认:http */
+    rpc GetSmsSetting (GetSmsSettingRequest) returns (SSmsProviderSetting) {
+    }
+    /** 保存短信API凭据,@provider 短信服务商, 默认:http */
+    rpc SaveSmsSetting (SSmsProviderSetting) returns (Result) {
+    }
+
     /** 清除缓存 */
     rpc CleanCache(CleanCacheRequest) returns (CleanCacheResponse){}
 
-    /** 获取短信API凭据, provider 短信服务商, 默认:http */
-    rpc GetSmsApi (String) returns (SSmsApi) {
-    }
-    /** 保存短信API凭据,@provider 短信服务商, 默认:http */
-    rpc SaveSmsApi (SmsApiSaveRequest) returns (Result) {
-    }
+
     /** 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks */
     rpc SaveBoardHook (BoardHookSaveRequest) returns (Result) {
     }

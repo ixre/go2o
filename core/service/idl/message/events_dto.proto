@@ -48,13 +48,15 @@ message EVOrderAffiliateEventData{
 // 发送短信事件数据
 message EVSendSmsEventData{
 	// 短信服务商
-	string provider = 1;
+	int32 provider = 1;
 	// 手机号
 	string phone = 2;
 	// 短信内容
 	string template = 3; 
 	// 短信模板
 	string templateId  = 4;
+	/** 签名 */
+	string signature = 5;
 	// 数据
-	repeated string data = 5;
+	repeated string data = 6;
 }
