@@ -419,8 +419,8 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment
 // 已收货
 func (o *subOrderImpl) BuyerReceived() error {
 	// 测试发布处理分销事件
-	// o.publishAffiliateEvent()
-	// return nil
+	o.publishAffiliateEvent()
+	return nil
 	if o.value.Status < order.StatShipped {
 		return order.ErrOrderNotShipped
 	}

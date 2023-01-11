@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -45,7 +46,10 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	}
 	// 推送至外部系统，并由外部系统处理分销
 	if pushValue == 2 {
-		msq.Push(msq.OrderAffiliateTopic, typeconv.MustJson(ev))
+		err := msq.Push(msq.OrderAffiliateTopic, typeconv.MustJson(ev))
+		if err != nil {
+			log.Println("[ go2o][ event]: push order affiliate event failed, error: ", err.Error())
+		}
 		return
 	}
 

@@ -49,7 +49,7 @@ func SendSms(setting *notify.SmsApiPerm, phoneNum string, content string,
 	if setting.Signature != "" && !strings.Contains(content, setting.Signature) {
 		content = setting.Signature + content
 	}
-	c := resolveMessage(content, params)
+	c := ResolveMessage(content, params)
 	switch mss.SmsProvider(setting.Provider) {
 	case mss.HTTP:
 		return sendPhoneMsgByHttpApi(setting, phoneNum, c, params, setting.TemplateId)
@@ -93,7 +93,7 @@ func CheckSmsApiPerm(s *notify.SmsApiPerm) error {
 }
 
 // 解析模板中的参数
-func resolveMessage(tpl string, param []string) string {
+func ResolveMessage(tpl string, param []string) string {
 	//　替换字符标签{name}标签为{0}
 	re := regexp.MustCompile(`{(.+?)}`)
 	holders := re.FindAllString(tpl, -1)
