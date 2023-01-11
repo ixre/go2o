@@ -13,7 +13,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -27,7 +26,6 @@ import (
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/tool"
-	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
@@ -274,7 +272,7 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 			//rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
 
 			// 推送消息
-			go msq.Push(msq.MemberUpdated, "update|"+strconv.Itoa(int(v.Id)))
+			//go msq.Push(msq.MemberUpdated, "update|"+strconv.Itoa(int(v.Id)))
 		}
 		return v.Id, err
 	}
@@ -289,7 +287,7 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	}
 	v.Id = id
 	// 推送消息
-	go msq.Push(msq.MemberUpdated, "create|"+strconv.Itoa(int(v.Id)))
+	//go msq.Push(msq.MemberUpdated, "create|"+strconv.Itoa(int(v.Id)))
 	//rc := core.GetRedisConn()
 	//defer rc.Close()
 	//rc.Do("RPUSH", variable.KvMemberUpdateQueue,

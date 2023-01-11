@@ -60,3 +60,33 @@ message EVSendSmsEventData{
 	// 数据
 	repeated string data = 6;
 }
+
+// 会员信息推送事件数据
+message EVMemberPushEventData{
+	  /** 编号 */
+	  int64 memberId = 1;
+	  // 是否新会员
+	  bool isNewMember = 2;
+	  /** 会员编码/邀请码  */
+	  string userCode = 3;
+	  /** 会员标志 */
+	  sint32 userFlag = 4;
+	  /** 用户名 */
+	  string username = 5;
+	  /** 经验值 */
+	  sint64 exp = 6;
+	  /** 等级  */
+	  sint32 level = 7;
+	  /** 昵称 */
+	  string nickname = 9;
+	  /** 会员头像 */
+	  string portrait = 8;
+	  /** 手机号  */
+	  string phone = 10;
+	  /** 电子邮箱 */
+	  string email = 11;
+	  /** 真实姓名 */
+	  string realName = 12;
+	  /** 最后登录时间 */
+	  int64 lastLoginTime = 13;
+}

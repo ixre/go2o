@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -9,15 +8,20 @@ import (
 	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 // 订单分销处理
 func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	v := data.(*events.OrderAffiliateRebateEvent)
+	if v == nil {
+		return
+	}
 	r := repos.Repo.GetRegistryRepo()
 	s, _ := r.GetValue(registry.OrderPushAffiliateEvent)
 	pushValue, _ := strconv.Atoi(s)
 	//todo: 系统内处理分销，不推送分销事件
+	// 0:不推送(内部处理),1:仅推送(内部处理),2:推送并处理(外部处理分销)
 	if pushValue == 0 {
 
 	}
@@ -39,10 +43,9 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 			Params:      []*proto.EVItemAffiliateConfig{},
 		})
 	}
-	bytes, _ := json.Marshal(ev)
 	// 推送至外部系统，并由外部系统处理分销
-	if pushValue == 1 {
-		msq.Push(msq.OrderAffiliateTopic, string(bytes))
+	if pushValue == 2 {
+		msq.Push(msq.OrderAffiliateTopic, typeconv.MustJson(ev))
 		return
 	}
 

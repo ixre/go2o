@@ -506,7 +506,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		Password: domain.Sha1Pwd(r.Password, salt),
 		Nickname: r.Nickname,
 		RealName: "",
-		Avatar:   "", //todo: default avatar
+		Portrait: "", //todo: default avatar
 		Phone:    r.Phone,
 		Email:    r.Email,
 		RegFrom:  r.RegFrom,
@@ -1609,7 +1609,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
 		Flag:           int32(src.UserFlag),
-		Portrait:       src.Avatar,
+		Portrait:       src.Portrait,
 		Phone:          src.Phone,
 		Email:          src.Email,
 		Nickname:       src.Nickname,

@@ -1,6 +1,7 @@
 package events
 
 import (
+	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 )
@@ -36,4 +37,12 @@ type SendSmsEvent struct {
 	TemplateId string
 	// 数据
 	Data []string
+}
+
+// 会员推送事件
+type MemberPushEvent struct {
+	// 是否新会员
+	IsCreate bool
+	// 会员信息
+	Member *member.Member
 }

@@ -22,13 +22,15 @@ import (
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/domain/interface/message"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/util"
 )
 
@@ -86,7 +88,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	s := &member.ComplexMember{
 		Nickname:            mv.Nickname,
 		RealName:            mv.RealName,
-		Avatar:              format.GetResUrl(mv.Avatar),
+		Avatar:              format.GetResUrl(mv.Portrait),
 		Exp:                 mv.Exp,
 		Level:               mv.Level,
 		LevelName:           lv.Name,
@@ -452,9 +454,19 @@ func (m *memberImpl) UpdateLoginTime() error {
 func (m *memberImpl) Save() (int64, error) {
 	m.value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
 	if m.value.Id > 0 {
-		return m.repo.SaveMember(m.value)
+		_, err := m.repo.SaveMember(m.value)
+		if err == nil {
+			go m.pushSaveEvent(false)
+		}
 	}
 	return m.create(m.value)
+}
+
+func (m *memberImpl) pushSaveEvent(create bool) {
+	eventbus.Publish(&events.MemberPushEvent{
+		IsCreate: create,
+		Member:   m.value,
+	})
 }
 
 // Active 激活
@@ -586,6 +598,7 @@ func (m *memberImpl) memberInit() error {
 			Remark:  "sys",
 		}, false, 0)
 	}
+	go m.pushSaveEvent(true)
 	return nil
 }
 
@@ -644,9 +657,9 @@ func (m *memberImpl) prepare() (err error) {
 	if len(m.value.Nickname) == 0 {
 		m.value.Nickname = "User" + m.value.Username
 	}
-	m.value.Avatar = strings.TrimSpace(m.value.Avatar)
-	if len(m.value.Avatar) == 0 {
-		m.value.Avatar = "static/init/avatar.png"
+	m.value.Portrait = strings.TrimSpace(m.value.Portrait)
+	if len(m.value.Portrait) == 0 {
+		m.value.Portrait = "static/init/avatar.png"
 	}
 	return err
 }

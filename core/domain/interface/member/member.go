@@ -236,7 +236,7 @@ type (
 		// 密码
 		Password string `db:"password"`
 		// 头像
-		Avatar string `db:"portrait"`
+		Portrait string `db:"portrait"`
 		// 交易密码
 		TradePassword string `db:"trade_pwd"`
 		// 经验值
