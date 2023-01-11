@@ -383,34 +383,35 @@ message PrepareOrderRequest {
 }
 /** 预生成订单响应 */
 message PrepareOrderResponse{
+    int32 errCode = 1;
     // 错误信息
-    string error = 1;
+    string errMsg = 2;
     // 订单类型
-    int32 orderType = 2;
+    int32 orderType = 3;
     // 商品总金额
-    int64 itemAmount = 3;
+    int64 itemAmount = 4;
     // 优惠金额
-    int64 discountAmount = 4;
+    int64 discountAmount = 5;
     // 抵扣金额
-    int32 deductAmount = 5;
+    int32 deductAmount = 6;
     // 调整金额
-    int32 adjustAmount = 6;
+    int32 adjustAmount = 7;
     // 配送费
-    int64 expressFee = 7;
+    int64 expressFee = 8;
     // 包装费
-    int64 packageFee = 8;
+    int64 packageFee = 9;
     // 手续费
-    int32 procedureFee = 9;
+    int32 procedureFee = 10;
     // 订单总金额
-    int32 totalAmount = 10;
+    int32 totalAmount = 11;
     // 最终金额
-    int64 finalFee = 11;
+    int64 finalFee = 12;
     // 收货人
-    SConsigneeInfo consignee = 12;
+    SConsigneeInfo consignee = 13;
     // 订单项目
-    repeated SPrepareOrderGroup groups = 13;
+    repeated SPrepareOrderGroup groups = 14;
     // 买家留言
-    string buyerComment = 14;
+    string buyerComment = 15;
 }
 
 // 预生成订单店铺分组

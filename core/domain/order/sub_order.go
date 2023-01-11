@@ -799,7 +799,6 @@ func (o *subOrderImpl) onOrderComplete() error {
 }
 
 func (o *subOrderImpl) publishAffiliateEvent() {
-	log.Println("^^affiliateEvent")
 	// 获取启用分销的商品
 	affiliateItems := make([]*order.SubOrderItem, 0)
 	for _, it := range o.Items() {
