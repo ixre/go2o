@@ -10,5 +10,6 @@ func InitEvent() {
 	h := &handler.EventHandler{}
 	eventbus.SubscribeAsync(events.WalletLogClickhouseUpdateEvent{}, h.HandleWalletLogWriteEvent)
 	eventbus.SubscribeAsync(events.OrderAffiliateRebateEvent{}, h.HandleOrderAffiliateRebateEvent)
-	eventbus.SubscribeAsync(events.SendSmsEvent{},h.HandleSendSmsEvent)
+	eventbus.SubscribeAsync(events.SendSmsEvent{}, h.HandleSendSmsEvent)
+	eventbus.SubscribeAsync(events.MemberPushEvent{}, h.HandleMemberPushEvent)
 }

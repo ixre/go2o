@@ -28,7 +28,6 @@ import (
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
 	"github.com/ixre/go2o/core/msq"
-	"github.com/ixre/gof/db/orm"
 )
 
 var _ member.IProfileManager = new(profileManagerImpl)
@@ -564,7 +563,13 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 }
 
 // 拷贝认证信息
-func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error {
+func (p *profileManagerImpl) copyTrustedInfo(src member.TrustedInfo, dst *member.TrustedInfo) error {
+	if dst == nil {
+		dst = &member.TrustedInfo{
+			MemberId:    p.memberId,
+			ReviewState: int(enum.ReviewAwaiting),
+		}
+	}
 	dst.RealName = src.RealName
 	dst.CountryCode = src.CountryCode
 	dst.CardId = src.CardId
@@ -576,23 +581,11 @@ func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error
 }
 
 // 实名认证信息
-func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
+func (p *profileManagerImpl) GetTrustedInfo() *member.TrustedInfo {
 	if p.trustedInfo == nil {
-		p.trustedInfo = &member.TrustedInfo{
-			MemberId:    p.memberId,
-			ReviewState: int(enum.ReviewNotSet),
-		}
-		//如果还没有实名信息,则新建
-		orm := tmp.Orm
-		if err := orm.Get(p.memberId, p.trustedInfo); err != nil {
-			orm.Save(nil, p.trustedInfo)
-		}
+		p.trustedInfo = p.repo.GetTrustedInfo(int(p.memberId))
 	}
-	// 显示示例图片
-	if p.trustedInfo.TrustImage == "" {
-		p.trustedInfo.TrustImage = exampleTrustImageUrl
-	}
-	return *p.trustedInfo
+	return p.trustedInfo
 }
 
 func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
@@ -647,13 +640,18 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		return member.ErrTrustMissingCardImage
 	}
 	// 保存
-	p.GetTrustedInfo()
-	err = p.copyTrustedInfo(v, p.trustedInfo)
+	current := p.GetTrustedInfo()
+	isCreate := current == nil
+	err = p.copyTrustedInfo(*v, current)
 	if err == nil {
 		p.trustedInfo.Remark = ""
 		p.trustedInfo.ReviewState = int(enum.ReviewAwaiting) //标记为待处理
 		p.trustedInfo.UpdateTime = time.Now().Unix()
-		_, err = orm.Save(tmp.Orm, p.trustedInfo, int(p.trustedInfo.MemberId))
+		if isCreate {
+			_, err = p.repo.SaveTrustedInfo(0, p.trustedInfo)
+		} else {
+			_, err = p.repo.SaveTrustedInfo(int(p.memberId), p.trustedInfo)
+		}
 	}
 	return err
 }
@@ -678,8 +676,7 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	unix := time.Now().Unix()
 	p.trustedInfo.Remark = remark
 	p.trustedInfo.ReviewTime = unix
-	_, err := orm.Save(tmp.Orm, p.trustedInfo,
-		int(p.trustedInfo.MemberId))
+	_, err := p.repo.SaveTrustedInfo(int(p.memberId), p.trustedInfo)
 	if err == nil {
 		if _, err = p.member.Save(); err == nil && pass {
 			// 通知实名通过

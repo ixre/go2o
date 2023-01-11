@@ -17,9 +17,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
-	"github.com/ixre/go2o/core/domain/tmp"
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
 )
 
@@ -147,6 +145,6 @@ func (p *profileManagerImpl) ChangePassword(newPwd, oldPwd string) error {
 }
 
 func (p *profileManagerImpl) save(e *merchant.EnterpriseInfo) error {
-	_, err := orm.Save(tmp.Orm, e, int(e.ID))
+	_, err := p._repo.SaveMchEnterpriseInfo(e)
 	return err
 }

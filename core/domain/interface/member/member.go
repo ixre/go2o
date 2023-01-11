@@ -163,7 +163,7 @@ type (
 		// SaveReceiptsCode 保存收款码
 		SaveReceiptsCode(c *ReceiptsCode) error
 		// GetTrustedInfo 实名认证信息
-		GetTrustedInfo() TrustedInfo
+		GetTrustedInfo() *TrustedInfo
 		// SaveTrustedInfo 保存实名认证信息
 		SaveTrustedInfo(v *TrustedInfo) error
 		// ReviewTrustedInfo 审核实名认证,若重复审核将返回错误
@@ -236,7 +236,7 @@ type (
 		// 密码
 		Password string `db:"password"`
 		// 头像
-		Avatar string `db:"portrait"`
+		Portrait string `db:"portrait"`
 		// 交易密码
 		TradePassword string `db:"trade_pwd"`
 		// 经验值

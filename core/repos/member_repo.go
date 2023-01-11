@@ -13,13 +13,12 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/domain/interface/message"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
@@ -27,7 +26,6 @@ import (
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/tool"
-	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
@@ -274,7 +272,7 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 			//rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
 
 			// 推送消息
-			go msq.Push(msq.MemberUpdated, "update|"+strconv.Itoa(int(v.Id)))
+			//go msq.Push(msq.MemberUpdated, "update|"+strconv.Itoa(int(v.Id)))
 		}
 		return v.Id, err
 	}
@@ -289,7 +287,7 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	}
 	v.Id = id
 	// 推送消息
-	go msq.Push(msq.MemberUpdated, "create|"+strconv.Itoa(int(v.Id)))
+	//go msq.Push(msq.MemberUpdated, "create|"+strconv.Itoa(int(v.Id)))
 	//rc := core.GetRedisConn()
 	//defer rc.Close()
 	//rc.Do("RPUSH", variable.KvMemberUpdateQueue,
@@ -763,4 +761,26 @@ func (m *MemberRepoImpl) DeleteLockInfos(memberId int64) error {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmLockInfo")
 	}
 	return err
+}
+
+// GetTrustedInfo implements member.IMemberRepo
+func (m *MemberRepoImpl) GetTrustedInfo(memberId int) *member.TrustedInfo {
+	e := member.TrustedInfo{}
+	err := m.o.Get(&e, memberId)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:TrustedInfo")
+	}
+	return nil
+}
+
+// SaveTrustedInfo implements member.IMemberRepo
+func (m *MemberRepoImpl) SaveTrustedInfo(id int, v *member.TrustedInfo) (int, error) {
+	id, err := orm.Save(m.o, v, id)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:TrustedInfo")
+	}
+	return id, err
 }

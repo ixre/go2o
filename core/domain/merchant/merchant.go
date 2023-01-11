@@ -12,6 +12,9 @@ package merchant
 import (
 	"errors"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -25,14 +28,10 @@ import (
 	si "github.com/ixre/go2o/core/domain/merchant/shop"
 	userImpl "github.com/ixre/go2o/core/domain/merchant/user"
 	wsImpl "github.com/ixre/go2o/core/domain/merchant/wholesale"
-	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/go2o/core/infrastructure"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
 	"github.com/ixre/go2o/core/variable"
-	"github.com/ixre/gof/db/orm"
-	"strings"
-	"time"
 )
 
 var _ merchant.IMerchantManager = new(merchantManagerImpl)
@@ -61,13 +60,8 @@ func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int64 {
 }
 
 // RemoveSignUp 删除会员的商户申请资料
-func (m *merchantManagerImpl) RemoveSignUp(memberId int64) error {
-	_, err := tmp.Orm.Delete(merchant.MchSignUp{}, "member_id= $1", memberId)
-	return err
-}
-func (m *merchantManagerImpl) saveSignUpInfo(v *merchant.MchSignUp) (int32, error) {
-	v.UpdateTime = time.Now().Unix()
-	return orm.I32(orm.Save(tmp.Orm, v, int(v.Id)))
+func (m *merchantManagerImpl) RemoveSignUp(memberId int) error {
+	return m.rep.DeleteMerchantSignUpByMemberId(memberId)
 }
 
 // 检查商户注册信息是否正确
@@ -110,18 +104,20 @@ func (m *merchantManagerImpl) checkSignUpInfo(v *merchant.MchSignUp) error {
 }
 
 // CommitSignUpInfo 提交商户注册信息
-func (m *merchantManagerImpl) CommitSignUpInfo(v *merchant.MchSignUp) (int32, error) {
+func (m *merchantManagerImpl) CommitSignUpInfo(v *merchant.MchSignUp) (int, error) {
 	err := m.checkSignUpInfo(v)
 	if err != nil {
 		return 0, err
 	}
 	v.Reviewed = enum.ReviewAwaiting
 	v.SubmitTime = time.Now().Unix()
-	return m.saveSignUpInfo(v)
+	v.UpdateTime = time.Now().Unix()
+	return m.rep.SaveSignUpInfo(v)
+	
 }
 
 // ReviewMchSignUp 审核商户注册信息
-func (m *merchantManagerImpl) ReviewMchSignUp(id int32, pass bool, remark string) error {
+func (m *merchantManagerImpl) ReviewMchSignUp(id int, pass bool, remark string) error {
 	var err error
 	v := m.GetSignUpInfo(id)
 	if v == nil {
@@ -140,7 +136,8 @@ func (m *merchantManagerImpl) ReviewMchSignUp(id int32, pass bool, remark string
 			return merchant.ErrRequireRejectRemark
 		}
 	}
-	_, err = m.saveSignUpInfo(v)
+	v.UpdateTime = time.Now().Unix()
+	_, err = m.rep.SaveSignUpInfo(v)
 	return err
 }
 
@@ -217,30 +214,18 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 }
 
 // GetSignUpInfo 获取商户申请信息
-func (m *merchantManagerImpl) GetSignUpInfo(id int32) *merchant.MchSignUp {
-	v := merchant.MchSignUp{}
-	if tmp.Orm.Get(id, &v) != nil {
-		return nil
-	}
-	return &v
+func (m *merchantManagerImpl) GetSignUpInfo(id int) *merchant.MchSignUp {
+	return m.rep.GetMerchantSignUpInfo(id)
 }
 
 // GetSignUpInfoByMemberId 获取会员申请的商户信息
-func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
-	v := merchant.MchSignUp{}
-	if tmp.Orm.GetBy(&v, "member_id= $1", memberId) != nil {
-		return nil
-	}
-	return &v
+func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int) *merchant.MchSignUp {
+	return m.rep.GetMerchantSignUpByMemberId(memberId)
 }
 
 // GetMerchantByMemberId 获取会员关联的商户
-func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int64) merchant.IMerchant {
-	v := merchant.Merchant{}
-	if tmp.Orm.GetBy(&v, "member_id= $1", memberId) == nil {
-		return m.rep.CreateMerchant(&v)
-	}
-	return nil
+func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int) merchant.IMerchant {
+	return m.rep.GetMerchantByMemberId(memberId)
 }
 
 var _ merchant.IMerchant = new(merchantImpl)

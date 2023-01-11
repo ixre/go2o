@@ -91,11 +91,11 @@ type (
 		// Save 保存
 		Save() error
 		// GetBalanceLog 根据编号获取余额变动信息
-		GetBalanceLog(id int32) *BalanceLog
+		GetBalanceLog(id int) *BalanceLog
 		// GetBalanceLogByOuterNo 根据号码获取余额变动信息
-		GetBalanceLogByOuterNo(outerNo string) *BalanceLog
+		//GetBalanceLogByOuterNo(outerNo string) *BalanceLog
 		// SaveBalanceLog 保存余额变动信息
-		SaveBalanceLog(*BalanceLog) (int32, error)
+		SaveBalanceLog(*BalanceLog) (int, error)
 		// SettleOrder 订单结账
 		SettleOrder(orderNo string, amount int, tradeFee int, refundAmount int, remark string) error
 		// TakePayment 支出
@@ -127,22 +127,22 @@ type (
 		GetMemberFromSignUpToken(token string) int64
 
 		// CommitSignUpInfo 提交商户注册信息
-		CommitSignUpInfo(*MchSignUp) (int32, error)
+		CommitSignUpInfo(*MchSignUp) (int, error)
 
 		// ReviewMchSignUp 审核商户注册信息
-		ReviewMchSignUp(id int32, pass bool, remark string) error
+		ReviewMchSignUp(id int, pass bool, remark string) error
 
 		// GetSignUpInfo 获取商户申请信息
-		GetSignUpInfo(id int32) *MchSignUp
+		GetSignUpInfo(id int) *MchSignUp
 
 		// GetSignUpInfoByMemberId 获取会员申请的商户信息
-		GetSignUpInfoByMemberId(memberId int64) *MchSignUp
+		GetSignUpInfoByMemberId(memberId int) *MchSignUp
 
 		// GetMerchantByMemberId 获取会员关联的商户
-		GetMerchantByMemberId(memberId int64) IMerchant
+		GetMerchantByMemberId(memberId int) IMerchant
 
 		// RemoveSignUp 删除会员的商户申请资料
-		RemoveSignUp(memberId int64) error
+		RemoveSignUp(memberId int) error
 	}
 
 	// MchSignUp 商户申请信息
