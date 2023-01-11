@@ -94,3 +94,14 @@ message EVMemberPushEventData{
 	  /** 最后登录时间 */
 	  int64 lastLoginTime = 15;
 }
+
+
+// 注册表推送事件数据
+message EVRegistryPushEventData{
+	// 配置键
+	string key = 1;
+	// 配置值
+	string value = 2;
+	// 是否为用户创建的配置
+	bool isUsers = 3;
+}
