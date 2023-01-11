@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"log"
 	"testing"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -46,4 +47,14 @@ func TestChangeMemberPhone(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+}
+
+func TestQueryMemberInviterArray(t *testing.T) {
+	repo := ti.Factory.GetMemberRepo()
+	m := repo.CreateMember(&member.Member{Id: 719})
+	rl := m.GetRelation()
+	log.Println("relation=", rl)
+
+	arr := m.Invitation().InviterArray(719, 3)
+	log.Println(arr)
 }
