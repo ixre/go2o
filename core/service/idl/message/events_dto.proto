@@ -85,8 +85,10 @@ message EVMemberPushEventData{
 	  string phone = 10;
 	  /** 电子邮箱 */
 	  string email = 11;
+  	  /** 注册来源 */
+  	  string regFrom = 12;
 	  /** 真实姓名 */
-	  string realName = 12;
+	  string realName = 13;
 	  /** 最后登录时间 */
-	  int64 lastLoginTime = 13;
+	  int64 lastLoginTime = 14;
 }
