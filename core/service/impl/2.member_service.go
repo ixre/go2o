@@ -1064,7 +1064,7 @@ func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddReque
 
 // 实名认证信息
 func (s *memberService) GetTrustInfo(_ context.Context, id *proto.MemberIdRequest) (*proto.STrustedInfo, error) {
-	t := member.TrustedInfo{}
+	t := &member.TrustedInfo{}
 	m := s.repo.GetMember(id.MemberId)
 	if m != nil {
 		t = m.Profile().GetTrustedInfo()

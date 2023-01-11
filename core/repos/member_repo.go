@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/domain/interface/message"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
@@ -763,4 +763,26 @@ func (m *MemberRepoImpl) DeleteLockInfos(memberId int64) error {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmLockInfo")
 	}
 	return err
+}
+
+// GetTrustedInfo implements member.IMemberRepo
+func (m *MemberRepoImpl) GetTrustedInfo(memberId int) *member.TrustedInfo {
+	e := member.TrustedInfo{}
+	err := m.o.Get(&e, memberId)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:TrustedInfo")
+	}
+	return nil
+}
+
+// SaveTrustedInfo implements member.IMemberRepo
+func (m *MemberRepoImpl) SaveTrustedInfo(id int, v *member.TrustedInfo) (int, error) {
+	id, err := orm.Save(m.o, v, id)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:TrustedInfo")
+	}
+	return id, err
 }

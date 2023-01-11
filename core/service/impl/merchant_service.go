@@ -88,7 +88,7 @@ func (m *merchantService) SignUp(_ context.Context, up *proto.SMchSignUp) (*prot
 
 // GetMchSignUpId 获取会员商户申请信息
 func (m *merchantService) GetMchSignUpId(_ context.Context, id *proto.MemberId) (*proto.Int64, error) {
-	v := m._mchRepo.GetManager().GetSignUpInfoByMemberId(id.Value)
+	v := m._mchRepo.GetManager().GetSignUpInfoByMemberId(int(id.Value))
 	if v != nil {
 		return &proto.Int64{Value: int64(v.Id)}, nil
 	}
@@ -98,7 +98,7 @@ func (m *merchantService) GetMchSignUpId(_ context.Context, id *proto.MemberId) 
 // GetSignUp 获取商户申请信息
 func (m *merchantService) GetSignUp(_ context.Context, id *proto.Int64) (*proto.SMchSignUp, error) {
 	im := m._mchRepo.GetManager()
-	v := im.GetSignUpInfo(int32(id.Value))
+	v := im.GetSignUpInfo(int(id.Value))
 	if v != nil {
 		return m.parseMchSIgnUpDto(v), nil
 	}
@@ -108,18 +108,18 @@ func (m *merchantService) GetSignUp(_ context.Context, id *proto.Int64) (*proto.
 // ReviewSignUp 审核商户申请信息
 func (m *merchantService) ReviewSignUp(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
 	im := m._mchRepo.GetManager()
-	err := im.ReviewMchSignUp(int32(r.MerchantId), r.Pass, r.Remark)
+	err := im.ReviewMchSignUp(int(r.MerchantId), r.Pass, r.Remark)
 	return m.error(err), nil
 }
 
 // RemoveMerchantSignUp 删除会员的商户申请资料
 func (m *merchantService) RemoveMerchantSignUp(_ context.Context, id *proto.MemberId) (*proto.Result, error) {
-	err := m._mchRepo.GetManager().RemoveSignUp(id.Value)
+	err := m._mchRepo.GetManager().RemoveSignUp(int(id.Value))
 	return m.error(err), nil
 }
 
 func (m *merchantService) GetMerchantIdByMember(_ context.Context, id *proto.MemberId) (*proto.Int64, error) {
-	mch := m._mchRepo.GetManager().GetMerchantByMemberId(id.Value)
+	mch := m._mchRepo.GetManager().GetMerchantByMemberId(int(id.Value))
 	if mch != nil {
 		return &proto.Int64{Value: mch.GetAggregateRootId()}, nil
 	}
