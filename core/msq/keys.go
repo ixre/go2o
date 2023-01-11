@@ -9,8 +9,6 @@ const (
 	MemberAccountUpdated = "go2o-member-account-updated"
 	// MemberProfileUpdated 会员资料更新, 消息: 1
 	MemberProfileUpdated = "go2o-member-profile-updated"
-	// MemberRelationUpdated 会员关系更新, 消息: 1
-	MemberRelationUpdated = "go2o-member-relation-updated"
 	// 普通订单状态变更
 	ORDER_NormalOrderStatusChange = "go2o-normal-order-status-change"
 	// OrderAffiliateTopic 订单分销

@@ -19,7 +19,6 @@ func init() {
 func TestMemberUpdate(t *testing.T) {
 	defer msq.Close()
 	msq.Push(msq.MemberUpdated, "update|"+strconv.Itoa(id))
-	msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(id), 1000)
 	msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(id), 1000)
 	msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(id), 1000)
 	time.Sleep(5 * time.Second)

@@ -175,8 +175,7 @@ var (
 	MemberFlowAccountConvertCsn = KeyFormat("MemberFlowAccountConvertCsn")
 	// 是否启用会员账户信息消息推送
 	MemberAccountPushEnabled = KeyFormat("MemberAccountPushEnabled")
-	// 是否启用会员邀请关系变更消息推送
-	MemberRelationPushEnabled = KeyFormat("MemberRelationPushEnabled")
+	
 
 	/* 经验值 */
 	// 是否启用会员经验值功能
