@@ -1,6 +1,11 @@
 package domain
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/ixre/go2o/core/msq"
+	_ "github.com/ixre/go2o/tests/ti"
+)
 
 /**
  * Copyright (C) 2007-2020 56X.NET,All rights reserved.
@@ -17,4 +22,8 @@ func assertError(t *testing.T, err error) {
 		t.Error(err)
 		t.FailNow()
 	}
+}
+
+func init() {
+	msq.Configure(msq.NATS, []string{"192.168.1.159:4222"})
 }

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core"
+	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/gof"
@@ -45,11 +46,13 @@ func GetConnector() db.Connector {
 func init() {
 	// 默认的ETCD端点
 	//etcdEndPoints := []string{"http://127.0.0.1:2379"}
+	natsEndPoints := []string{"http://192.168.1.159:4222"}
 	etcdEndPoints := []string{"http://192.168.1.159:2379"}
 	cfg := clientv3.Config{
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
 	}
+	msq.Configure(msq.NATS, natsEndPoints)
 	confPath := "app.conf"
 	for {
 		_, err := os.Stat(confPath)
