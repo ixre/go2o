@@ -1,6 +1,7 @@
 package event
 
 import (
+	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/event/handler"
 	"github.com/ixre/gof/domain/eventbus"
@@ -12,4 +13,5 @@ func InitEvent() {
 	eventbus.SubscribeAsync(events.OrderAffiliateRebateEvent{}, h.HandleOrderAffiliateRebateEvent)
 	eventbus.SubscribeAsync(events.SendSmsEvent{}, h.HandleSendSmsEvent)
 	eventbus.SubscribeAsync(events.MemberPushEvent{}, h.HandleMemberPushEvent)
+	eventbus.SubscribeAsync(registry.RegistryPushEvent{}, h.HandleRegistryPushEvent)
 }

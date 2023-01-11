@@ -1,14 +1,13 @@
 package registry
 
 import (
-	"encoding/json"
 	"errors"
 	"log"
 	"strconv"
 	"strings"
 	"unicode"
 
-	"github.com/ixre/go2o/core/msq"
+	"github.com/ixre/gof/domain/eventbus"
 )
 
 const (
@@ -189,8 +188,11 @@ func (r *registryImpl) Save() error {
 	// 推送用户自定义键值变更通知
 	if r.IsUser() && r.isChanged {
 		r.isChanged = false
-		bytes, _ := json.Marshal(r.value)
-		msq.Push(msq.RegistryTopic, string(bytes))
+		eventbus.Publish(RegistryPushEvent{
+			IsUser: r.IsUser(),
+			Key:    r.Key(),
+			Value:  r.StringValue(),
+		})
 	}
 	return r.repo.Save(r)
 }
