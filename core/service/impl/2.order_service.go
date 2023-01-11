@@ -172,7 +172,8 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 	}
 	if err != nil {
 		return &proto.PrepareOrderResponse{
-			Error: err.Error(),
+			ErrCode: 1,
+			ErrMsg: err.Error(),
 		}, nil
 	}
 	ov := o.Complex()
