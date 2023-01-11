@@ -463,9 +463,11 @@ func (m *memberImpl) Save() (int64, error) {
 }
 
 func (m *memberImpl) pushSaveEvent(create bool) {
+	rl := m.GetRelation()
 	eventbus.Publish(&events.MemberPushEvent{
-		IsCreate: create,
-		Member:   m.value,
+		IsCreate:  create,
+		Member:    m.value,
+		InviterId: int(rl.InviterId),
 	})
 }
 
@@ -694,8 +696,12 @@ func (m *memberImpl) BindInviter(inviterId int64, force bool) (err error) {
 		return member.ErrExistsInviter
 	}
 	if rl.InviterId != inviterId {
-		m.relation = nil
-		return m.Invitation().UpdateInviter(inviterId, true)
+		isPush := rl.InviterId > 0 //  仅仅更改推荐人时才会推送信息
+		m.relation = nil           // 清除缓存
+		err = m.Invitation().UpdateInviter(inviterId, true)
+		if err == nil && isPush {
+			m.pushSaveEvent(false)
+		}
 	}
 	return err
 }

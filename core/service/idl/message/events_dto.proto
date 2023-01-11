@@ -89,6 +89,8 @@ message EVMemberPushEventData{
   	  string regFrom = 12;
 	  /** 真实姓名 */
 	  string realName = 13;
+	  // 邀请人
+	  int64 inviterId = 14;
 	  /** 最后登录时间 */
-	  int64 lastLoginTime = 14;
+	  int64 lastLoginTime = 15;
 }

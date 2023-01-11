@@ -26,6 +26,7 @@ func (h *EventHandler) HandleMemberPushEvent(data interface{}) {
 		Phone:         m.Phone,
 		Email:         m.Email,
 		RegFrom:       m.RegFrom,
+		InviterId:     int64(v.InviterId),
 		RealName:      m.RealName,
 		LastLoginTime: m.LastLoginTime,
 	}

@@ -45,4 +45,6 @@ type MemberPushEvent struct {
 	IsCreate bool
 	// 会员信息
 	Member *member.Member
+	// 邀请人编号
+	InviterId int
 }
