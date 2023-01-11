@@ -173,6 +173,11 @@ var (
 
 	// 活动账户转为赠送可提现奖金手续费费率
 	MemberFlowAccountConvertCsn = KeyFormat("MemberFlowAccountConvertCsn")
+	// 是否启用会员账户信息消息推送
+	MemberAccountPushEnabled = KeyFormat("MemberAccountPushEnabled")
+	// 是否启用会员邀请关系变更消息推送
+	MemberRelationPushEnabled = KeyFormat("MemberRelationPushEnabled")
+
 	/* 经验值 */
 	// 是否启用会员经验值功能
 	ExperienceEnabled = KeyFormat("ExperienceEnabled")

@@ -21,9 +21,11 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/msq"
+	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/types/typeconv"
 )
 
@@ -109,7 +111,9 @@ func (a *accountImpl) Save() (int64, error) {
 		}
 		// 推送钱包更新消息
 		if !isCreate {
-			go msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), 500)
+			eventbus.Publish(&events.MemberAccountPushEvent{
+				Account: *a.value,
+			})
 		}
 	}
 	return n, err

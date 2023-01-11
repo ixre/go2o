@@ -48,3 +48,8 @@ type MemberPushEvent struct {
 	// 邀请人编号
 	InviterId int
 }
+
+// 会员账户推送事件
+type MemberAccountPushEvent struct {
+	member.Account
+}
