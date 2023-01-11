@@ -458,6 +458,7 @@ func (m *memberImpl) Save() (int64, error) {
 		if err == nil {
 			go m.pushSaveEvent(false)
 		}
+		return m.GetAggregateRootId(), err
 	}
 	return m.create(m.value)
 }

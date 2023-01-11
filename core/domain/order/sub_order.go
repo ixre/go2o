@@ -419,8 +419,8 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment
 // 已收货
 func (o *subOrderImpl) BuyerReceived() error {
 	// 测试发布处理分销事件
-	o.publishAffiliateEvent()
-	return nil
+	// o.publishAffiliateEvent()
+	// return nil
 	if o.value.Status < order.StatShipped {
 		return order.ErrOrderNotShipped
 	}
@@ -436,8 +436,8 @@ func (o *subOrderImpl) BuyerReceived() error {
 		if err == nil {
 			go o.vendorSettle()
 			// 执行其他的操作
-			if err2 := o.onOrderComplete(); err != nil {
-				domain.HandleError(err2, "domain")
+			if err = o.onOrderComplete(); err != nil {
+				domain.HandleError(err, "domain")
 			}
 		}
 	}
