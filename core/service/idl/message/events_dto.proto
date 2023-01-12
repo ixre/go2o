@@ -105,3 +105,57 @@ message EVRegistryPushEventData{
 	// 是否为用户创建的配置
 	bool isUsers = 3;
 }
+
+// 订单推送事件
+message EVSubOrderPushEventData{
+	// 订单号
+	string OrderNo = 1;
+	// 订单金额
+	int64 OrderAmount = 2;
+	// 收货人
+	string ConsigneeName = 3;
+	// 收货电话
+	string ConsigneePhone = 4;
+	// 收货地址
+	string ConsigneeAddress = 5;
+	// 状态
+	int32 OrderState = 6;
+}
+
+
+/** 账户 */
+message EVMemberAccountEventData {
+	int64 memberId = 1;
+	// 积分
+	int64 integral = 2;
+	// 商城余额
+	int64 balance = 3;
+	// 钱包代码
+	string walletCode = 4;
+	// 钱包余额
+	int64 walletBalance = 5;
+	// 浮动账户余额
+	int64 flowBalance = 6;
+	// 增利账户余额
+	int64 growBalance = 7;
+	// 总消费金额
+	int64 totalExpense = 8;
+	// 总充值金额
+	int64 totalCharge = 9;
+	// 更新时间
+	int64 updateTime = 20;
+  }
+  
+  // 提现申请推送事件
+message EVMemberWithdrawalPushEvent {
+	// 会员编号
+	int64 memberId = 1;
+	// 流水号Id
+	int64 requestId = 2;
+	// 提现金额
+	int64 amount = 3;
+	// 手续费
+	int64 procedureFee = 4;
+	// 是否为已审核通过的事件
+	bool isAuditedEvent = 5;
+}

@@ -109,7 +109,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("活动账户转为赠送可提现奖金手续费费率", MemberFlowAccountConvertCsn, "0.20", "")
 	// 会员信息推送
 	mergeAdd("是否启用会员账户信息消息推送", MemberAccountPushEnabled, "0", "0:关闭,1:启用")
- 	mergeAdd("是否启用会员提现消息推送",MemberWithdrawalPushEnabled,"0", "0", "0:关闭,1:启用")
+	mergeAdd("是否启用会员提现消息推送", MemberWithdrawalPushEnabled, "0", "0:关闭,1:启用")
 	// 经验值
 	mergeAdd("是否启用会员经验值功能", ExperienceEnabled, "true", "")
 	mergeAdd("会员普通消费1元产生的经验比例", ExperienceRateByOrder, "1.00", "")
