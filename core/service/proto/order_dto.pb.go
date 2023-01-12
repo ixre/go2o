@@ -2122,6 +2122,7 @@ type PrepareOrderResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// 错误码
 	ErrCode int32 `protobuf:"varint,1,opt,name=errCode,proto3" json:"errCode"`
 	// 错误信息
 	ErrMsg string `protobuf:"bytes,2,opt,name=errMsg,proto3" json:"errMsg"`
