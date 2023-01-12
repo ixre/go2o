@@ -8,7 +8,7 @@ const (
 	// MemberAccountLogTopic 会员账户日志订阅
 	MemberAccountLogTopic = "go2o-member-account-log-topic"
 	// 普通订单状态变更
-	ORDER_NormalOrderStatusChange = "go2o-normal-order-status-change"
+	NormalOrderStatusTopic = "go2o-normal-order-status-topic"
 	// OrderAffiliateTopic 订单分销
 	OrderAffiliateTopic = "go2o-order-affiliate-topic"
 	// RegistryTopic 自定义键值变更订阅
