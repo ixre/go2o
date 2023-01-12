@@ -19,8 +19,15 @@ func (h EventHandler) HandleSubOrderPushEvent(data interface{}) {
 		return
 	}
 	r := repos.Repo.GetRegistryRepo()
-	s, _ := r.GetValue(registry.OrderPushAffiliateEvent)
-	pushValue, _ := strconv.Atoi(s)
+	isPush := r.Get(registry.OrderPushAffiliateEvent).BoolValue()
+	if isPush {
+		ev := &events.SubOrderPushEvent{}
+		err := msq.Push(msq.ORDER_NormalOrderStatusChange, typeconv.MustJson(ev))
+		if err != nil {
+			log.Println("[ go2o][ event]: push order affiliate event failed, error: ", err.Error())
+		}
+		return
+	}
 }
 
 // 订单分销处理

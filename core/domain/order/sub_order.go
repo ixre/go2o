@@ -44,7 +44,7 @@ type subOrderImpl struct {
 	valRepo         valueobject.IValueRepo
 	mchRepo         merchant.IMerchantRepo
 	registryRepo    registry.IRegistryRepo
-	_stateIsChange  bool
+	_stateIsChange  bool // 订单状态是否变更，如果变更后将推送信息
 }
 
 // ChangeShipmentAddress implements order.ISubOrder
@@ -208,6 +208,7 @@ func (o *subOrderImpl) Submit() (int64, error) {
 		o.value.CreateTime = unix
 		o.value.UpdateTime = unix
 	}
+	o._stateIsChange = true
 	id, err := util.I64Err(o.repo.SaveSubOrder(o.value))
 	if err == nil {
 		o.value.Id = id
@@ -385,6 +386,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 	if err == nil {
 		o.value.Status = order.StatShipped
 		o.value.UpdateTime = time.Now().Unix()
+		o._stateIsChange = true
 		err = o.saveSubOrder()
 		if err == nil {
 			// 保存商品的发货状态
@@ -444,6 +446,7 @@ func (o *subOrderImpl) BuyerReceived() error {
 	dt := time.Now()
 	o.value.Status = order.StatCompleted
 	o.value.UpdateTime = dt.Unix()
+	o._stateIsChange = true
 	err := o.saveSubOrder()
 	if err == nil {
 		err = o.AppendLog(order.LogSetup, true, "{completed}")
