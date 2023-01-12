@@ -378,20 +378,20 @@ func (o *OrderRepImpl) saveSubOrder(v *order.NormalSubOrder) (int, error) {
 // SaveSubOrder 保存子订单
 func (o *OrderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
 	// 判断业务状态是否改变
-	statusIsChanged := true
-	if v.Id <= 0 {
-		statusIsChanged = true
-	} else {
-		origin := o.GetSubOrder(v.Id)
-		statusIsChanged = origin.Status != v.Status
-	}
+	//statusIsChanged := true
+	// if v.Id <= 0 {
+	// 	statusIsChanged = true
+	// } else {
+	// 	origin := o.GetSubOrder(v.Id)
+	// 	statusIsChanged = origin.Status != v.Status
+	// }
 	id, err := o.saveSubOrder(v)
 	if err == nil {
 		v.Id = int64(id)
 		//如果业务状态已经发生改变,则提交到队列
-		if statusIsChanged {
-			o.pushSubOrderMessage(v)
-		}
+		// if statusIsChanged {
+		// 	o.pushSubOrderMessage(v)
+		// }
 	}
 	return id, err
 }

@@ -59,3 +59,27 @@ func (h *EventHandler) HandleMemberAccountPushEvent(data interface{}) {
 		msq.PushDelay(msq.MemberAccountUpdated, typeconv.MustJson(ev), 500)
 	}
 }
+
+func (h EventHandler) HandleWithdrawalPushEvent(data interface{}) {
+	v := data.(*events.MemberAccountPushEvent)
+	if v == nil {
+		return
+	}
+	r := repos.Repo.GetRegistryRepo()
+	pushEnabled := r.Get(registry.MemberAccountPushEnabled).BoolValue()
+	if pushEnabled {
+		ev := &proto.SAccount{
+			//MemberId:v.MemberId,
+			Integral:      int64(v.Integral),
+			Balance:       v.Balance,
+			WalletCode:    v.WalletCode,
+			WalletBalance: v.WalletBalance,
+			FlowBalance:   v.FlowBalance,
+			GrowBalance:   v.GrowBalance,
+			TotalExpense:  v.TotalExpense,
+			TotalCharge:   v.TotalCharge,
+			UpdateTime:    v.UpdateTime,
+		}
+		msq.PushDelay(msq.MemberAccountUpdated, typeconv.MustJson(ev), 500)
+	}
+}

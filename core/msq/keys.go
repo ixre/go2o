@@ -16,9 +16,7 @@ const (
 	// RegistryTopic 自定义键值变更订阅
 	RegistryTopic = "go2o-registry-topic"
 	// MemberRequestWithdrawal 用户发起提现申请
-	MemberRequestWithdrawal = "go2o-member-request-withdrawal"
-	// MemberWithdrawalAudited 用户提现申请已通过
-	MemberWithdrawalAudited = "go2o-member-withdrawal-audited"
-	// SystemSendSmsTopic 发送短信
-	SystemSendSmsTopic = "go2o-system-send-sms-topic"
+	MembertWithdrawalTopic = "go2o-member-withdrawal-topic"
+	// SendSmsTopic 发送短信
+	SendSmsTopic = "go2o-send-sms-topic"
 )

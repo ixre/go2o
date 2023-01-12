@@ -69,3 +69,17 @@ type SubOrderPushEvent struct {
 	// 状态
 	OrderState int
 }
+
+// 提现申请推送事件
+type WithdrawalPushEvent struct {
+	// 会员编号
+	MemberId int64
+	// 流水号Id
+	RequestId int
+	// 提现金额
+	Amount int
+	// 手续费
+	ProcedureFee int
+	// 是否为已审核通过的事件
+	IsAuditedEvent bool
+}

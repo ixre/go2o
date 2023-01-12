@@ -15,5 +15,5 @@ func InitEvent() {
 	eventbus.SubscribeAsync(events.SendSmsEvent{}, h.HandleSendSmsEvent)
 	eventbus.SubscribeAsync(events.MemberPushEvent{}, h.HandleMemberPushEvent)
 	eventbus.SubscribeAsync(events.MemberAccountPushEvent{}, h.HandleMemberAccountPushEvent)
-
+	eventbus.SubscribeAsync(events.WithdrawalPushEvent{},h.HandleWithdrawalPushEvent)
 }
