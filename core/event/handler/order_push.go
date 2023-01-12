@@ -29,7 +29,7 @@ func (h EventHandler) HandleSubOrderPushEvent(data interface{}) {
 			ConsigneeAddress: v.ConsigneeAddress,
 			OrderState:       int32(v.OrderState),
 		}
-		err := msq.Push(msq.ORDER_NormalOrderStatusChange, typeconv.MustJson(ev))
+		err := msq.Push(msq.NormalOrderStatusTopic, typeconv.MustJson(ev))
 		if err != nil {
 			log.Println("[ go2o][ event]: push order affiliate event failed, error: ", err.Error())
 		}
@@ -71,7 +71,7 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	}
 	// 推送至外部系统，并由外部系统处理分销
 	if pushValue == 2 {
-		err := msq.Push(msq.OrderAffiliateTopic, typeconv.MustJson(ev))
+		err := msq.Push(msq.NormalOrderAffiliateTopic, typeconv.MustJson(ev))
 		if err != nil {
 			log.Println("[ go2o][ event]: push order affiliate event failed, error: ", err.Error())
 		}
