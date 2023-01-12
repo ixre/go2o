@@ -1,3 +1,5 @@
+/***** ----------- 此SQL涉及到表结构 ------------------*/
+
 /** 2022-11-25 */
 ALTER TABLE IF EXISTS public.perm_dept
     ADD COLUMN code character varying(50) NOT NULL DEFAULT '';
@@ -41,7 +43,7 @@ ALTER TABLE IF EXISTS public.product_model_spec_item
 
 /** 2022-12-29 15:39 */
 ALTER TABLE IF EXISTS public.mm_member
-    RENAME name TO nick_name;
+    RENAME "name" TO nick_name;
 
 ALTER TABLE "public".article_list 
   alter column update_time set not null;
