@@ -12,6 +12,17 @@ import (
 	"github.com/ixre/gof/types/typeconv"
 )
 
+// 子订单推送
+func (h EventHandler) HandleSubOrderPushEvent(data interface{}) {
+	v := data.(*events.SubOrderPushEvent)
+	if v == nil {
+		return
+	}
+	r := repos.Repo.GetRegistryRepo()
+	s, _ := r.GetValue(registry.OrderPushAffiliateEvent)
+	pushValue, _ := strconv.Atoi(s)
+}
+
 // 订单分销处理
 func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	v := data.(*events.OrderAffiliateRebateEvent)

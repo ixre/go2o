@@ -44,6 +44,7 @@ type subOrderImpl struct {
 	valRepo         valueobject.IValueRepo
 	mchRepo         merchant.IMerchantRepo
 	registryRepo    registry.IRegistryRepo
+	_stateIsChange  bool
 }
 
 // ChangeShipmentAddress implements order.ISubOrder
@@ -226,6 +227,18 @@ func (o *subOrderImpl) saveSubOrder() error {
 	_, err := o.repo.SaveSubOrder(o.value)
 	if err == nil {
 		o.syncOrderState()
+		// 推送订单状态事件
+		if o._stateIsChange {
+			vo := o.baseOrder().(*baseOrderImpl)
+			eventbus.Publish(&events.SubOrderPushEvent{
+				OrderNo:          o.value.OrderNo,
+				OrderAmount:      int(o.value.FinalAmount),
+				ConsigneeName:    vo.baseValue.ConsigneeName,
+				ConsigneePhone:   vo.baseValue.ConsigneePhone,
+				ConsigneeAddress: vo.baseValue.ShippingAddress,
+				OrderState:       o.value.Status,
+			})
+		}
 	}
 	return err
 }
@@ -254,6 +267,7 @@ func (o *subOrderImpl) orderFinishPaid() error {
 		}
 		err := o.AppendLog(order.LogSetup, true, "{finish_pay}")
 		if err == nil {
+			o._stateIsChange = true
 			err = o.saveSubOrder()
 		}
 		return err
@@ -636,6 +650,8 @@ func (o *subOrderImpl) Cancel(reason string) error {
 
 	o.value.Status = order.StatCancelled
 	o.value.UpdateTime = time.Now().Unix()
+	o._stateIsChange = true
+
 	err := o.saveSubOrder()
 	if err == nil {
 		domain.HandleError(o.AppendLog(order.LogSetup, true, reason), "domain")
@@ -722,6 +738,7 @@ func (o *subOrderImpl) SubmitRefund(reason string) error {
 		return order.ErrOrderCancelled
 	}
 	o.value.Status = order.StatAwaitingCancel
+	o._stateIsChange = true
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveSubOrder()
 }
@@ -736,6 +753,7 @@ func (o *subOrderImpl) Decline(reason string) error {
 		return order.ErrOrderCancelled
 	}
 	o.value.Status = order.StatDeclined
+	o._stateIsChange = true
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveSubOrder()
 }
@@ -754,6 +772,7 @@ func (o *subOrderImpl) refund() error {
 	}
 	o.value.Status = order.StatRefunded
 	o.value.UpdateTime = time.Now().Unix()
+	o._stateIsChange = true
 	err := o.saveSubOrder()
 	if err == nil {
 		err = o.cancelPaymentOrder()

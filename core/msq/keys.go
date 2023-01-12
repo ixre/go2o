@@ -3,8 +3,6 @@ package msq
 const (
 	// MemberUpdated 会员创建或更新, 消息: create|1
 	MemberUpdated = "go2o-member-updated"
-	// MemberTrustInfoPassed 会员实名信息通过, 消息: 会员ID|证件类型|证件号码|姓名
-	MemberTrustInfoPassed = "go2o-member-trusted-info-passed"
 	// MemberAccountUpdated 会员账户更新, 消息: 1
 	MemberAccountUpdated = "go2o-member-account-updated"
 	// MemberProfileUpdated 会员资料更新, 消息: 1

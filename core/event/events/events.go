@@ -53,3 +53,19 @@ type MemberPushEvent struct {
 type MemberAccountPushEvent struct {
 	member.Account
 }
+
+// 订单推送事件
+type SubOrderPushEvent struct {
+	// 订单号
+	OrderNo string
+	// 订单金额
+	OrderAmount int
+	// 收货人
+	ConsigneeName string
+	// 收货电话
+	ConsigneePhone string
+	// 收货地址
+	ConsigneeAddress string
+	// 状态
+	OrderState int
+}

@@ -176,7 +176,6 @@ var (
 	// 是否启用会员账户信息消息推送
 	MemberAccountPushEnabled = KeyFormat("MemberAccountPushEnabled")
 	
-
 	/* 经验值 */
 	// 是否启用会员经验值功能
 	ExperienceEnabled = KeyFormat("ExperienceEnabled")
