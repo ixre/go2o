@@ -10,9 +10,7 @@ package member
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -27,7 +25,6 @@ import (
 	"github.com/ixre/go2o/core/domain/tmp"
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
-	"github.com/ixre/go2o/core/msq"
 )
 
 var _ member.IProfileManager = new(profileManagerImpl)
@@ -678,7 +675,7 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p.trustedInfo.ReviewTime = unix
 	_, err := p.repo.SaveTrustedInfo(int(p.memberId), p.trustedInfo)
 	if err == nil {
-		 _, err = p.member.Save(); 
+		_, err = p.member.Save()
 	}
 	return err
 }

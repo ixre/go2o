@@ -2,7 +2,6 @@ package wallet
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -10,9 +9,10 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/gof/algorithm"
+	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/util"
 )
 
@@ -202,19 +202,22 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 	if err == nil {
 		l.Id = id
 	}
-	// 将钱包变动订阅到消息队列
-	bytes, _ := json.Marshal(map[string]interface{}{
-		"id":            id,
-		"wallet_type":   w._value.WalletType,
-		"user_id":       w._value.UserId,
-		"update":        isUpdate,
-		"amount":        l.ChangeValue,
-		"procedure_fee": l.ProcedureFee,
-		"balance":       l.Balance,
-		"title":         l.Subject,
-		"outer_no":      l.OuterNo,
-	})
-	msq.Push(msq.WalletLogTopic, string(bytes))
+	if w._value.WalletType == wallet.TPerson {
+		eventbus.Publish(&events.AccountLogPushEvent{
+			IsUpdateEvent: isUpdate,
+			MemberId:      int(w._value.UserId),
+			Account:       3,
+			LogId:         int(id),
+			LogKind:       l.Kind,
+			Subject:       l.Subject,
+			OuterNo:       l.OuterNo,
+			ChangeValue:   int(l.ChangeValue),
+			Balance:       int(l.Balance),
+			ProcedureFee:  l.ProcedureFee,
+			AuditState:    l.AuditState,
+			CreateTime:    int(l.CreateTime),
+		})
+	}
 	return err
 }
 

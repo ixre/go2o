@@ -159,3 +159,31 @@ message EVMemberWithdrawalPushEvent {
 	// 是否为已审核通过的事件
 	bool isAuditedEvent = 5;
 }
+
+// 账户日志推送事件
+message EVAccountLogPushEventData  {
+	// 账户类型
+	int32 account = 1;
+	// 是否为更新日志事件
+	bool isUpdateEvent = 2;
+	// 会员编号
+	int64 UserId = 3;
+	// 编号
+	int64 LogId = 4;
+	// 业务类型
+	int32 LogKind = 5;
+	// 标题
+	string Subject = 6;
+	// 外部订单号
+	string OuterNo = 7;
+	// 变动金额
+	int64 ChangeValue = 8;
+	// 余额
+	int64 Balance = 9;
+	// 交易手续费
+	int64 ProcedureFee = 10;
+	// 审核状态
+	int32 AuditState  = 11;
+	// 创建时间
+	int64 CreateTime = 12;
+}

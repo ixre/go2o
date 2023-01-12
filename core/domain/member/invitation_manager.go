@@ -9,11 +9,10 @@
 package member
 
 import (
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/dto"
-	"github.com/ixre/go2o/core/msq"
-	"strconv"
-	"time"
 )
 
 var _ member.IInvitationManager = new(invitationManager)
@@ -56,8 +55,6 @@ func (i *invitationManager) walkUpdateInvitation(id int64, p *member.InviteRelat
 	}
 	err := i.member.repo.SaveRelation(r)
 	if err == nil {
-		// 推送关系更新消息
-		go msq.PushDelay(msq.MemberRelationUpdated, strconv.Itoa(int(r.MemberId)), 500)
 		// 更新被邀请会员的邀请关系
 		var idList = i.member.repo.GetInviteChildren(id)
 		for idx, cid := range idList {
@@ -120,7 +117,6 @@ func (i *invitationManager) GetInvitationMembers(begin, end int) (
 		i.member.GetAggregateRootId(), begin, end)
 }
 
-
 // 获取邀请会员下级邀请数量
 func (i *invitationManager) GetSubInvitationNum(memberIdArr []int32) map[int32]int {
 	if memberIdArr == nil || len(memberIdArr) == 0 {
@@ -135,7 +131,7 @@ func (i *invitationManager) GetInvitationMeMember() *member.Member {
 	return i.member.repo.GetInvitationMeMember(i.member.GetAggregateRootId())
 }
 
-//  是否存在邀请关系
+// 是否存在邀请关系
 func (i *invitationManager) checkInvitation(inviterId int64, id int64) bool {
 	currId := id
 	for {

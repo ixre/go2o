@@ -66,15 +66,41 @@ func (h EventHandler) HandleWithdrawalPushEvent(data interface{}) {
 		return
 	}
 	r := repos.Repo.GetRegistryRepo()
-	pushEnabled := r.Get(registry.MemberWithdrawalPushEnabled).BoolValue()
-	if pushEnabled {
+	isPush := r.Get(registry.MemberWithdrawalPushEnabled).BoolValue()
+	if isPush {
 		ev := &proto.EVMemberWithdrawalPushEvent{
 			MemberId:       v.MemberId,
-			RequestId:      v.RequestId,
-			Amount:         v.Amount,
-			ProcedureFee:   v.ProcedureFee,
+			RequestId:      int64(v.RequestId),
+			Amount:         int64(v.Amount),
+			ProcedureFee:   int64(v.ProcedureFee),
 			IsAuditedEvent: v.IsAuditedEvent,
 		}
 		msq.PushDelay(msq.MembertWithdrawalTopic, typeconv.MustJson(ev), 500)
+	}
+}
+
+func (h EventHandler) HandleMemberAccountLogPushEvent(data interface{}) {
+	v := data.(*events.AccountLogPushEvent)
+	if v == nil {
+		return
+	}
+	r := repos.Repo.GetRegistryRepo()
+	isPush := r.Get(registry.MemberAccountLogPushEnabled).BoolValue()
+	if isPush {
+		ev := &proto.EVAccountLogPushEventData{
+			Account:       int32(v.Account),
+			IsUpdateEvent: v.IsUpdateEvent,
+			UserId:        int64(v.MemberId),
+			LogId:         int64(v.LogId),
+			LogKind:       int32(v.LogKind),
+			Subject:       v.Subject,
+			OuterNo:       v.OuterNo,
+			ChangeValue:   int64(v.ChangeValue),
+			Balance:       int64(v.Balance),
+			ProcedureFee:  int64(v.ProcedureFee),
+			AuditState:    int32(v.AuditState),
+			CreateTime:    int64(v.CreateTime),
+		}
+		msq.PushDelay(msq.MemberAccountLogTopic, typeconv.MustJson(ev), 500)
 	}
 }

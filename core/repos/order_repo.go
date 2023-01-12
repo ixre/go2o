@@ -11,7 +11,6 @@ package repos
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
 
@@ -32,7 +31,6 @@ import (
 	orderImpl "github.com/ixre/go2o/core/domain/order"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
@@ -321,8 +319,8 @@ func (o *OrderRepImpl) pushOrderQueue(orderNo string, sub bool) {
 
 // 推送子订单到消息队列
 func (o *OrderRepImpl) pushSubOrderMessage(order *order.NormalSubOrder) {
-	bytes, _ := json.Marshal(*order)
-	go msq.Push(msq.ORDER_NormalOrderStatusChange, string(bytes))
+	// bytes, _ := json.Marshal(*order)
+	// go msq.Push(msq.ORDER_NormalOrderStatusChange, string(bytes))
 }
 
 // Save OrderList
