@@ -383,6 +383,7 @@ message PrepareOrderRequest {
 }
 /** 预生成订单响应 */
 message PrepareOrderResponse{
+    // 错误码
     int32 errCode = 1;
     // 错误信息
     string errMsg = 2;
