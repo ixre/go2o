@@ -12,6 +12,31 @@ import (
 	"github.com/ixre/gof/types/typeconv"
 )
 
+// 子订单推送
+func (h EventHandler) HandleSubOrderPushEvent(data interface{}) {
+	v := data.(*events.SubOrderPushEvent)
+	if v == nil {
+		return
+	}
+	r := repos.Repo.GetRegistryRepo()
+	isPush := r.Get(registry.OrderPushAffiliateEvent).BoolValue()
+	if isPush {
+		ev := &proto.EVSubOrderPushEventData{
+			OrderNo:          v.OrderNo,
+			OrderAmount:      v.OrderAmount,
+			ConsigneeName:    v.ConsigneeName,
+			ConsigneePhone:   v.ConsigneePhone,
+			ConsigneeAddress: v.ConsigneeAddress,
+			OrderState:       v.OrderState,
+		}
+		err := msq.Push(msq.ORDER_NormalOrderStatusChange, typeconv.MustJson(ev))
+		if err != nil {
+			log.Println("[ go2o][ event]: push order affiliate event failed, error: ", err.Error())
+		}
+		return
+	}
+}
+
 // 订单分销处理
 func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	v := data.(*events.OrderAffiliateRebateEvent)

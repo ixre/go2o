@@ -48,3 +48,38 @@ type MemberPushEvent struct {
 	// 邀请人编号
 	InviterId int
 }
+
+// 会员账户推送事件
+type MemberAccountPushEvent struct {
+	member.Account
+}
+
+// 订单推送事件
+type SubOrderPushEvent struct {
+	// 订单号
+	OrderNo string
+	// 订单金额
+	OrderAmount int
+	// 收货人
+	ConsigneeName string
+	// 收货电话
+	ConsigneePhone string
+	// 收货地址
+	ConsigneeAddress string
+	// 状态
+	OrderState int
+}
+
+// 提现申请推送事件
+type WithdrawalPushEvent struct {
+	// 会员编号
+	MemberId int64
+	// 流水号Id
+	RequestId int
+	// 提现金额
+	Amount int
+	// 手续费
+	ProcedureFee int
+	// 是否为已审核通过的事件
+	IsAuditedEvent bool
+}

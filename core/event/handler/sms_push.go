@@ -20,6 +20,6 @@ func (e EventHandler) HandleSendSmsEvent(data interface{}) {
 			TemplateId: v.TemplateId,
 			Data:       v.Data,
 		}
-		msq.Push(msq.SystemSendSmsTopic, typeconv.MustJson(ev))
+		msq.Push(msq.SendSmsTopic, typeconv.MustJson(ev))
 	}
 }

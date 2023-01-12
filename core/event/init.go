@@ -9,9 +9,12 @@ import (
 
 func InitEvent() {
 	h := &handler.EventHandler{}
+	eventbus.SubscribeAsync(registry.RegistryPushEvent{}, h.HandleRegistryPushEvent)
 	eventbus.SubscribeAsync(events.WalletLogClickhouseUpdateEvent{}, h.HandleWalletLogWriteEvent)
 	eventbus.SubscribeAsync(events.OrderAffiliateRebateEvent{}, h.HandleOrderAffiliateRebateEvent)
 	eventbus.SubscribeAsync(events.SendSmsEvent{}, h.HandleSendSmsEvent)
+	eventbus.SubscribeAsync(events.SubOrderPushEvent{}, h.HandleSubOrderPushEvent)
 	eventbus.SubscribeAsync(events.MemberPushEvent{}, h.HandleMemberPushEvent)
-	eventbus.SubscribeAsync(registry.RegistryPushEvent{}, h.HandleRegistryPushEvent)
+	eventbus.SubscribeAsync(events.MemberAccountPushEvent{}, h.HandleMemberAccountPushEvent)
+	eventbus.SubscribeAsync(events.WithdrawalPushEvent{}, h.HandleWithdrawalPushEvent)
 }

@@ -243,7 +243,7 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 		err = p.repo.SaveProfile(&ptr)
 		if err == nil {
 			// 推送资料更新消息
-			go msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(int(p.memberId)), 500)
+			// go msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(int(p.memberId)), 500)
 			// 完善资料通知
 			if p.ProfileCompleted() {
 				// 标记会员已完善资料
@@ -678,15 +678,7 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p.trustedInfo.ReviewTime = unix
 	_, err := p.repo.SaveTrustedInfo(int(p.memberId), p.trustedInfo)
 	if err == nil {
-		if _, err = p.member.Save(); err == nil && pass {
-			// 通知实名通过
-			msq.Push(msq.MemberTrustInfoPassed,
-				fmt.Sprintf("%d|%d|%s|%s",
-					p.memberId,
-					p.trustedInfo.CardType,
-					p.trustedInfo.CardId,
-					p.trustedInfo.RealName))
-		}
+		 _, err = p.member.Save(); 
 	}
 	return err
 }
