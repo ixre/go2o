@@ -3,12 +3,34 @@ package events
 import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
-	"github.com/ixre/go2o/core/domain/interface/wallet"
 )
 
-// 钱包更新事件
-type WalletLogClickhouseUpdateEvent struct {
-	Data *wallet.WalletLog
+// 账户日志推送事件
+type AccountLogPushEvent struct {
+	// 账户类型
+	Account int
+	// 是否为更新日志事件
+	IsUpdateEvent bool
+	// 会员编号
+	MemberId int
+	// 编号
+	LogId int
+	// 业务类型
+	LogKind int
+	// 标题
+	Subject string
+	// 外部订单号
+	OuterNo string
+	// 变动金额
+	ChangeValue int
+	// 余额
+	Balance int
+	// 交易手续费
+	ProcedureFee int
+	// 审核状态
+	AuditState int
+	// 创建时间
+	CreateTime int
 }
 
 // 订单分销事件
@@ -82,4 +104,10 @@ type WithdrawalPushEvent struct {
 	ProcedureFee int
 	// 是否为已审核通过的事件
 	IsAuditedEvent bool
+	// 提现账号
+	AccountNo string
+	// 提现账户名称
+	AccountName string
+	// 提现银行名称
+	BankName string
 }

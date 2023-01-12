@@ -110,6 +110,8 @@ func MergeRegistries() []*Registry {
 	// 会员信息推送
 	mergeAdd("是否启用会员账户信息消息推送", MemberAccountPushEnabled, "0", "0:关闭,1:启用")
 	mergeAdd("是否启用会员提现消息推送", MemberWithdrawalPushEnabled, "0", "0:关闭,1:启用")
+	mergeAdd("会员账户流水消息推送", MemberAccountLogPushEnabled, "0", "0:关闭,1:启用")
+
 	// 经验值
 	mergeAdd("是否启用会员经验值功能", ExperienceEnabled, "true", "")
 	mergeAdd("会员普通消费1元产生的经验比例", ExperienceRateByOrder, "1.00", "")
@@ -126,7 +128,9 @@ func MergeRegistries() []*Registry {
 	// 订单
 	mergeAdd("是否启用订单返利", OrderEnableAffiliateRebate, "0", "")
 	mergeAdd("全局订单返利比例", OrderGlobalAffiliateRebateRate, "0", "")
-	mergeAdd("推送分销事件", OrderPushAffiliateEvent, "0", "0:不推送(内部处理),1:仅推送(内部处理),2:推送并处理(外部处理分销)")
+	mergeAdd("推送订单分销事件", OrderPushAffiliateEnabled, "0", "0:不推送(内部处理),1:仅推送(内部处理),2:推送并处理(外部处理分销)")
+	mergeAdd("推送子订单状态变更事件", OrderPushSubOrderEnabled, "0", "0:关闭,1:启用")
+
 	// 商户订单
 	mergeAdd("是否必须认证后才可上传商品", MchMustBeTrust, "true", "")
 	mergeAdd("商户订单结算模式", MchOrderSettleMode, "1", "1:按供货价,2:按销售额,3:按单")

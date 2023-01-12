@@ -177,6 +177,8 @@ var (
 	MemberAccountPushEnabled = KeyFormat("MemberAccountPushEnabled")
 	// 是否启用会员提现消息推送
 	MemberWithdrawalPushEnabled = KeyFormat("MemberWithdrawalPushEnabled")
+	// 会员账户流水消息推送
+	MemberAccountLogPushEnabled = KeyFormat("MemberAccountLogPushEnabled")
 
 	/* 经验值 */
 	// 是否启用会员经验值功能
@@ -206,7 +208,10 @@ var (
 	// 全局订单返利比例
 	OrderGlobalAffiliateRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
 	// 推送分销事件
-	OrderPushAffiliateEvent = KeyFormat("OrderPushAffiliateEvent")
+	OrderPushAffiliateEnabled = KeyFormat("OrderPushAffiliateEnabled")
+	// 推送子订单状态变更事件
+	OrderPushSubOrderEnabled = KeyFormat("OrderPushSubOrderEnabled")
+
 	//  /* 商户订单 */
 	// MchOrderSettleMode 商户订单结算模式
 	MchOrderSettleMode = KeyFormat("MchOrderSettleMode")
