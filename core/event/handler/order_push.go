@@ -19,7 +19,7 @@ func (h EventHandler) HandleSubOrderPushEvent(data interface{}) {
 		return
 	}
 	r := repos.Repo.GetRegistryRepo()
-	isPush := r.Get(registry.OrderPushSubOrderEnabled).BoolValue()
+	isPush := r.Get(registry.OrderSubOrderPushEnabled).BoolValue()
 	if isPush {
 		ev := &proto.EVSubOrderPushEventData{
 			OrderNo:          v.OrderNo,
@@ -44,7 +44,7 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 		return
 	}
 	r := repos.Repo.GetRegistryRepo()
-	s, _ := r.GetValue(registry.OrderPushAffiliateEnabled)
+	s, _ := r.GetValue(registry.OrdeAffiliaterPushEnabled)
 	pushValue, _ := strconv.Atoi(s)
 	//todo: 系统内处理分销，不推送分销事件
 	// 0:不推送(内部处理),1:仅推送(内部处理),2:推送并处理(外部处理分销)
