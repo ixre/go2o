@@ -68,7 +68,7 @@ func (h EventHandler) HandleWithdrawalPushEvent(data interface{}) {
 	r := repos.Repo.GetRegistryRepo()
 	isPush := r.Get(registry.MemberWithdrawalPushEnabled).BoolValue()
 	if isPush {
-		ev := &proto.EVMemberWithdrawalPushEvent{
+		ev := &proto.EVMemberWithdrawalPushEventData{
 			MemberId:       v.MemberId,
 			RequestId:      int64(v.RequestId),
 			Amount:         int64(v.Amount),

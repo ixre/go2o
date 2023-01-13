@@ -147,7 +147,7 @@ message EVMemberAccountEventData {
   }
   
   // 提现申请推送事件
-message EVMemberWithdrawalPushEvent {
+message EVMemberWithdrawalPushEventData {
 	// 会员编号
 	int64 memberId = 1;
 	// 流水号Id
