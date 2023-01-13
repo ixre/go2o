@@ -210,9 +210,9 @@ var (
 	// 全局订单返利比例
 	OrderGlobalAffiliateRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
 	// 推送分销事件
-	OrderPushAffiliateEnabled = KeyFormat("OrderPushAffiliateEnabled")
+	OrdeAffiliaterPushEnabled = KeyFormat("OrdeAffiliaterPushEnabled")
 	// 推送子订单状态变更事件
-	OrderPushSubOrderEnabled = KeyFormat("OrderPushSubOrderEnabled")
+	OrderSubOrderPushEnabled = KeyFormat("OrderSubOrderPushEnabled")
 
 	//  /* 商户订单 */
 	// MchOrderSettleMode 商户订单结算模式
