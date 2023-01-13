@@ -19,13 +19,13 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/smartwalle/resize v1.0.0
 	// indirect
-	google.golang.org/grpc v1.51.0
+	google.golang.org/grpc v1.52.0
 )
 
 require google.golang.org/protobuf v1.28.1
 
 require (
-	github.com/ClickHouse/clickhouse-go/v2 v2.4.3
+	github.com/ClickHouse/clickhouse-go/v2 v2.5.0
 	go.etcd.io/etcd/client/v3 v3.5.6
 	golang.org/x/net v0.5.0
 	golang.org/x/text v0.6.0
@@ -65,6 +65,6 @@ require (
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/time v0.2.0 // indirect
-	google.golang.org/genproto v0.0.0-20230106154932-a12b697841d9 // indirect
+	google.golang.org/genproto v0.0.0-20230112194545-e10362b5ecf9 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
