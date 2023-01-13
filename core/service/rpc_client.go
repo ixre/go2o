@@ -17,8 +17,10 @@ import (
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/log"
-	"go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 )
 
 var staticAddr string
@@ -68,7 +70,14 @@ func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 		addr = next.Addr
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	conn, err := grpc.DialContext(ctx, addr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.DialContext(ctx,
+		addr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
+		grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time:                10 * time.Second,
+			Timeout:             5 * time.Second,
+			PermitWithoutStream: true}))
 	defer cancel()
 	if err != nil {
 		log.Printf("[ Go2o][ ERROR]: %s addr:%s \n", err.Error(), addr)
