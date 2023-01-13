@@ -65,6 +65,8 @@ var (
 	PlatformRetailSiteLogo = KeyFormat("PlatformRetailSiteLogo")
 	// 批发门户标志
 	PlatformWholesaleSiteLogo = KeyFormat("PlatformWholesaleSiteLogo")
+	// 是否开启多店铺模式
+	PlatformMultipleShopEnabled = KeyFormat("PlatformMultipleShopEnabled")
 
 	/** 系统 */
 	// 启用商户店铺商品分类

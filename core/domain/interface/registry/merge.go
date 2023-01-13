@@ -57,6 +57,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("反色标志", PlatformInverseColorLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
 	mergeAdd("零售门户标志", PlatformRetailSiteLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
 	mergeAdd("批发门户标志", PlatformWholesaleSiteLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+	mergeAdd("是否开启多店铺模式", PlatformMultipleShopEnabled, "1", "0:关闭,1:启用")
 
 	/** 系统 */
 	mergeAdd("启用商户店铺商品分类", EnableMchGoodsCategory, "false", "")
