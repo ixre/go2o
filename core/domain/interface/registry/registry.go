@@ -166,6 +166,9 @@ func (r *registryImpl) Reset() error {
 }
 
 func (r *registryImpl) Update(value string) error {
+	if r.value.Key == "app_id" {
+		return errors.New("disable update app_id")
+	}
 	if r.value.Value != value {
 		r.value.Value = value
 		r.isChanged = true

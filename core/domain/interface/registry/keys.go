@@ -1,7 +1,8 @@
 package registry
 
 var (
-
+	// 应用唯一编号
+	AppId = KeyFormat("AppId")
 	/** 域名 */
 	// 访问协议,https或http
 	HttpProtocols = KeyFormat("HttpProtocols")
