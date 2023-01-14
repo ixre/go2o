@@ -49,7 +49,7 @@ type subOrderImpl struct {
 
 // ChangeShipmentAddress implements order.ISubOrder
 func (o *subOrderImpl) ChangeShipmentAddress(addressId int64) error {
-	return o.baseOrder().ChangeShipmentAddress(addressId)
+	return o.parentOrder().ChangeShipmentAddress(addressId)
 }
 
 func NewSubNormalOrder(v *order.NormalSubOrder,
@@ -110,9 +110,9 @@ func parseDetailValue(subOrder order.ISubOrder) *order.ComplexOrderDetails {
 
 // Complex 复合的订单信息
 func (o *subOrderImpl) Complex() *order.ComplexOrder {
-	bo := o.baseOrder()
+	bo := o.parentOrder()
 	if bo != nil {
-		co := o.baseOrder().Complex()
+		co := o.parentOrder().Complex()
 		co.ItemCount = 0
 		for _, v := range o.Items() {
 			co.ItemCount += int(v.Quantity)
@@ -149,7 +149,7 @@ func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexIte
 		IsShipped:      i.IsShipped,
 		Data:           make(map[string]string),
 	}
-	base := o.baseOrder().(*normalOrderImpl)
+	base := o.parentOrder().(*normalOrderImpl)
 	base.baseOrderImpl.bindItemInfo(it)
 	return it
 }
@@ -164,7 +164,7 @@ func (o *subOrderImpl) Items() []*order.SubOrderItem {
 }
 
 // 获取订单
-func (o *subOrderImpl) baseOrder() order.IOrder {
+func (o *subOrderImpl) parentOrder() order.IOrder {
 	if o.parent == nil {
 		o.parent = o.manager.GetOrderById(o.value.OrderId)
 	}
@@ -173,7 +173,7 @@ func (o *subOrderImpl) baseOrder() order.IOrder {
 
 // 获取购买的会员
 func (o *subOrderImpl) getBuyer() member.IMember {
-	return o.baseOrder().Buyer()
+	return o.parentOrder().Buyer()
 }
 
 // 添加备注
@@ -230,7 +230,7 @@ func (o *subOrderImpl) saveSubOrder() error {
 		o.syncOrderState()
 		// 推送订单状态事件
 		if o._stateIsChange {
-			vo := o.baseOrder().(*baseOrderImpl)
+			vo := o.parentOrder().(*normalOrderImpl)
 			eventbus.Publish(&events.SubOrderPushEvent{
 				OrderNo:          o.value.OrderNo,
 				OrderAmount:      int(o.value.FinalAmount),
@@ -246,7 +246,7 @@ func (o *subOrderImpl) saveSubOrder() error {
 
 // 同步订单状态
 func (o *subOrderImpl) syncOrderState() {
-	if bo := o.baseOrder(); bo != nil {
+	if bo := o.parentOrder(); bo != nil {
 		oi := bo.(*normalOrderImpl).baseOrderImpl
 		if oi.State() != order.StatBreak {
 			oi.saveOrderState(order.OrderStatus(o.value.Status))
@@ -402,7 +402,7 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment
 		return nil
 	}
 	unix := time.Now().Unix()
-	orderId := o.baseOrder().GetAggregateRootId()
+	orderId := o.parentOrder().GetAggregateRootId()
 	subOrderId := o.GetDomainId()
 	so := &shipment.ShipmentOrder{
 		ID:          0,
@@ -690,7 +690,7 @@ func (o *subOrderImpl) cancelGoods() error {
 
 // 取消支付单
 func (o *subOrderImpl) cancelPaymentOrder() error {
-	od := o.baseOrder()
+	od := o.parentOrder()
 	if od.Type() != order.TRetail {
 		panic("not support order type")
 	}
