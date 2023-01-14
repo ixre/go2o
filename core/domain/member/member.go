@@ -682,7 +682,7 @@ func (m *memberImpl) checkPhoneBind(phone string, memberId int64) error {
 func (m *memberImpl) generateMemberCode() string {
 	var code string
 	for {
-		code = strings.ToLower(util.RandString(8))
+		code = util.RandString(6)
 		if memberId := m.repo.GetMemberIdByCode(code); memberId == 0 {
 			break
 		}
