@@ -112,7 +112,7 @@ func (o *normalOrderImpl) ApplyTraderCode(code string) error {
 	}
 	im := o.memberRepo.GetMember(memberId)
 	// 用户没有返利标志，则不作任何处理
-	if im == nil || im.ContainFlag(member.FlagRebateDisabled) {
+	if im == nil || im.ContainFlag(member.FlagAffiliateDisabled) {
 		return nil
 	}
 	o._AffiliateMember = im

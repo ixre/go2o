@@ -52,14 +52,16 @@ const (
 	FlagActive = 1 << iota
 	// FlagLocked 已锁定的(2)
 	FlagLocked = 2
-	// FlagTrusted 已认证的(4)
+	// FlagTrusted 已实名认证的(4)
 	FlagTrusted = 4
+	// FlagTempPassword 密码为临时密码,需要重置
+	FlagTempPassword = 32
 	// FlagSeller 商户(64)
 	FlagSeller = 64
 	// FlagNoTradePasswd 交易密码未设置(64)
 	FlagNoTradePasswd = 128
 	// FlagStopRebate 禁用返利权限的(8)
-	FlagRebateDisabled = 256
+	FlagAffiliateDisabled = 256
 	// FlagProfileCompleted 已完善的资料(16)
 	FlagProfileCompleted = 512
 )
