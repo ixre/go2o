@@ -381,10 +381,12 @@ func (p *paymentService) SaveIntegrateApp(_ context.Context, app *proto.SIntegra
 func (p *paymentService) QueryIntegrateAppList(_ context.Context, _ *proto.Empty) (*proto.QueryIntegrateAppResponse, error) {
 	arr := p.repo.FindAllIntegrateApp()
 	ret := &proto.QueryIntegrateAppResponse{
-		Value: make([]*proto.SIntegrateApp, len(arr)),
+		Value: make([]*proto.SIntegrateApp, 0),
 	}
-	for i, v := range arr {
-		ret.Value[i] = p.parseIntegrateApp(v)
+	for _, v := range arr {
+		if v.Enabled == 1 {
+			ret.Value = append(ret.Value, p.parseIntegrateApp(v))
+		}
 	}
 	return ret, nil
 }
