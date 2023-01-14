@@ -191,7 +191,7 @@ func (r *registryImpl) Save() error {
 	// 推送用户自定义键值变更通知
 	if r.IsUser() && r.isChanged {
 		r.isChanged = false
-		eventbus.Publish(RegistryPushEvent{
+		eventbus.Publish(&RegistryPushEvent{
 			IsUser: r.IsUser(),
 			Key:    r.Key(),
 			Value:  r.StringValue(),
