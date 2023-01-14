@@ -1,5 +1,11 @@
 package registry
 
+import (
+	"strconv"
+
+	"github.com/ixre/gof/util"
+)
+
 var mergeData = make([]*Registry, 0)
 
 func mergeAdd(description string, key string, defaultValue string, options string) {
@@ -16,6 +22,8 @@ func mergeAdd(description string, key string, defaultValue string, options strin
 
 // 返回需要合并的注册表数据
 func MergeRegistries() []*Registry {
+	// 应用编号
+	mergeAdd("应用唯一编号", AppId, strconv.Itoa(util.RandInt(8)), "不允许修改")
 	/** 域名 */
 	mergeAdd("访问协议", HttpProtocols, "http", "")
 	mergeAdd("域名", Domain, "yourdomain.com", "")
