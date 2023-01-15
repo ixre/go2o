@@ -253,7 +253,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.Log("提交订单", err.Error())
 		t.FailNow()
 	}
-	t.Logf("提交的订单号为：%s", io.OrderNo())
+	t.Logf("提交的订单号为：%s", nio.OrderNo())
 	ipo := payRepo.GetPaymentOrderByOrderNo(int(order.TRetail), nio.OrderNo())
 	err = ipo.PaymentFinish("alipay", "1233535080808wr")
 	if err == nil {
