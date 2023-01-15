@@ -11,7 +11,6 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
 	github.com/ixre/gof v1.13.6
-	github.com/labstack/echo/v4 v4.9.1
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/nats-io/nats-server/v2 v2.9.8 // indirect
 	github.com/nats-io/nats.go v1.22.1
@@ -43,9 +42,6 @@ require (
 	github.com/go-faster/errors v0.6.1 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/klauspost/compress v1.15.14 // indirect
-	github.com/labstack/gommon v0.4.0 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/paulmach/orb v0.8.0 // indirect
@@ -53,8 +49,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.6 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.6 // indirect
 	go.opentelemetry.io/otel v1.11.2 // indirect

@@ -231,7 +231,8 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	repo := ti.Factory.GetOrderRepo()
 	memRepo := ti.Factory.GetMemberRepo()
 	payRepo := ti.Factory.GetPaymentRepo()
-	io := repo.Manager().GetOrderByNo("1221203000248293")
+	so := repo.GetSubOrderByOrderNo("1220607001313522")
+	io := so.ParentOrder()
 	ic := io.BuildCart()
 	ic.Save()
 	memberId := io.Buyer().GetAggregateRootId()
@@ -261,7 +262,6 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.Log("支付订单", err.Error())
 		t.FailNow()
 	}
-	time.Sleep(time.Second * 2)
 	// 开始完成发货流程并收货
 	ino := nio.(order.INormalOrder)
 	for _, v := range ino.GetSubOrders() {

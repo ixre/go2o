@@ -23,7 +23,7 @@ type (
 		// GetSubOrders 获取子订单列表
 		GetSubOrders() []ISubOrder
 		// ApplyTraderCode 应用成交人代码,用于订单返利
-		ApplyTraderCode(code string)error
+		ApplyTraderCode(code string) error
 		// ApplyCoupon 应用优惠券
 		ApplyCoupon(coupon promotion.ICouponPromotion) error
 		// GetCoupons 获取应用的优惠券
@@ -45,6 +45,8 @@ type (
 		GetValue() *NormalSubOrder
 		// Complex 复合的订单信息
 		Complex() *ComplexOrder
+		// ParentOrder 获取父订单
+		ParentOrder() IOrder
 		// Items 获取商品项
 		Items() []*SubOrderItem
 		// 更改收货人信息

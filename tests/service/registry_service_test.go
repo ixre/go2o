@@ -26,10 +26,10 @@ func TestRegistryUpateValueMap(t *testing.T) {
 
 func TestRegistryClientUpateValueMap(t *testing.T) {
 	mp := map[string]string{
-		"order_push_sub_order_enabled": "0",
+		"order_push_sub_order_enabled":    "0",
 		"member_withdrawal_push_enabled1": "1",
 	}
-	service.ConfigureClient(nil, "192.168.0.159:1427")
+	service.ConfigureClient(nil, "go2o.dev:1427")
 	trans, cli, _ := service.RegistryServiceClient()
 	defer trans.Close()
 	ret, err := cli.UpdateValues(context.TODO(), &proto.StringMap{
