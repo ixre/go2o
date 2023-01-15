@@ -31,7 +31,7 @@ func (h EventHandler) HandleSubOrderPushEvent(data interface{}) {
 		}
 		err := msq.Push(msq.NormalOrderStatusTopic, typeconv.MustJson(ev))
 		if err != nil {
-			log.Println("[ go2o][ event]: push order affiliate event failed, error: ", err.Error())
+			log.Println("[ GO2O][ event]: push order affiliate event failed, error: ", err.Error())
 		}
 		return
 	}
@@ -73,7 +73,7 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	if pushValue == 2 {
 		err := msq.Push(msq.NormalOrderAffiliateTopic, typeconv.MustJson(ev))
 		if err != nil {
-			log.Println("[ go2o][ event]: push order affiliate event failed, error: ", err.Error())
+			log.Println("[ GO2O][ event]: push order affiliate event failed, error: ", err.Error())
 		}
 		return
 	}

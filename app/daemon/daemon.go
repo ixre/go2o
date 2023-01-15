@@ -21,7 +21,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/app/daemon/job"
 	"github.com/ixre/go2o/core"
-	"github.com/ixre/go2o/core/domain/interface/message"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/infrastructure/locker"
 	"github.com/ixre/go2o/core/repos/clickhouse"
@@ -96,7 +96,7 @@ func Start() {
 	}()
 	//运行自定义服务
 	for i, s := range services {
-		log.Println("** [ Go2o][ Daemon] - (", i, ")", s.Name(), "daemon running")
+		log.Println("** [ GO2O][ Daemon] - (", i, ")", s.Name(), "daemon running")
 		go s.Start(appCtx)
 	}
 	startCronTab() // 运行计划任务
@@ -287,7 +287,7 @@ func (d *defaultService) batchDelKeys(conn redis.Conn, key string) {
 	}
 }
 
-//设置订单过期时间
+// 设置订单过期时间
 func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SSingleOrder) {
 	//订单刚创建时,设置过期时间
 	if o.Status == order.StatAwaitingPayment {
@@ -305,7 +305,7 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SSingleOrd
 	}
 }
 
-//取消订单过期时间
+// 取消订单过期时间
 func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *proto.SSingleOrder) {
 	orderNo, sub := d.testSubId(o)
 	prefix := types.StringCond(sub, "sub!", "")
@@ -323,7 +323,7 @@ func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *proto.SSingleOrder
 		Sub:     sub,
 	})
 	if ret.ErrCode > 0 {
-		log.Println(fmt.Sprintf("[ Go2o][ Error]: confirm order failed, %s", ret.ErrMsg))
+		log.Println(fmt.Sprintf("[ GO2O][ ERROR]: confirm order failed, %s", ret.ErrMsg))
 	}
 	d.cancelOrderExpires(conn, o) //付款后取消自动取消
 }

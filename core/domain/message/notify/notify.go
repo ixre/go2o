@@ -100,7 +100,7 @@ func (n *notifyManagerImpl) GetSmsApiPerm(provider int) *notify.SmsApiPerm {
 	if ir != nil {
 		perm := &notify.SmsApiPerm{}
 		if err := json.Unmarshal([]byte(ir.StringValue()), perm); err != nil {
-			log.Println("[ Go2o][ Sms]: unmarshal api perm failed!", err)
+			log.Println("[ GO2O][ Sms]: unmarshal api perm failed!", err)
 			return nil
 		}
 		return perm

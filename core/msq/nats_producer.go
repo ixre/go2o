@@ -13,10 +13,10 @@ type natsProducer struct {
 }
 
 func newNatsProducer(address string) (Producer, error) {
-	log.Println("[ Go2o][ INFO]: start nats producer...")
+	log.Println("[ GO2O][ INFO]: start nats producer...")
 	nc, err := nats.Connect(address)
 	if err != nil {
-		log.Println("[ Go2o][ ERROR]: can't connect nats server!", err.Error())
+		log.Println("[ GO2O][ ERROR]: can't connect nats server!", err.Error())
 		return nil, err
 	}
 	return &natsProducer{

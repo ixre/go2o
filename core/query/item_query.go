@@ -304,13 +304,13 @@ func (i ItemQuery) GetPagedOnShelvesGoods(shopId int64,
 	err := i.o.SelectByQuery(&list, s, shopId, shopId,
 		enum.ReviewPass, item.ShelvesOn, start, end-start)
 	if err != nil {
-		log.Println("[ Go2o][ Repo][ Error]:", err.Error(), s)
+		log.Println("[ GO2O][ Repo][ Error]:", err.Error(), s)
 	}
 	return total, list
 }
 
 // QueryItemSalesHistory 查询商品销售记录
-func (i *ItemQuery) QueryItemSalesHistory(itemId int64,size int,random bool)(rows []*dto.ItemSalesHistoryDto){
+func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (rows []*dto.ItemSalesHistoryDto) {
 	s := fmt.Sprintf(`SELECT m.user_code,m.nickname,m.portrait,ord.create_time,
 		ord.status FROM sale_sub_item it 
 		INNER JOIN sale_normal_order ord ON ord.id = it.order_id
@@ -319,7 +319,7 @@ func (i *ItemQuery) QueryItemSalesHistory(itemId int64,size int,random bool)(row
 	i.Query(s, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := dto.ItemSalesHistoryDto{}
-			_rows.Scan(&e.BuyerUserCode, &e.BuyerName,&e.BuyerPortrait, &e.BuyTime, &e.OrderState)
+			_rows.Scan(&e.BuyerUserCode, &e.BuyerName, &e.BuyerPortrait, &e.BuyTime, &e.OrderState)
 			rows = append(rows, &e)
 		}
 	}, itemId, size)

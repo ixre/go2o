@@ -2,13 +2,14 @@ package service
 
 import (
 	"fmt"
+	"log"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/util"
-	"log"
-	"strings"
 )
 
 /**
@@ -31,7 +32,7 @@ func initSuperLoginToken(repo registry.IRegistryRepo) {
 	value, _ := repo.GetValue(registry.SysSuperLoginToken)
 	if strings.TrimSpace(value) == "" {
 		pwd := util.RandString(8)
-		log.Println(fmt.Sprintf("[ Go2o][ Info]: the initial super pwd is '%s', it only show first time. plese save it.", pwd))
+		log.Println(fmt.Sprintf("[ GO2O][ INFO]: the initial super pwd is '%s', it only show first time. plese save it.", pwd))
 		token := domain.Sha1("master" + crypto.Md5([]byte(pwd)))
 		_ = repo.UpdateValue(registry.SysSuperLoginToken, token)
 	}

@@ -2,11 +2,12 @@ package wholesaler
 
 import (
 	"errors"
+	"log"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/gof/util"
-	"log"
 )
 
 var _ wholesaler.IWholesaler = new(wholesalerImpl)
@@ -106,7 +107,7 @@ func (w *wholesalerImpl) syncSingleItem(itemId int64, syncPrice bool) error {
 				},
 			})
 			if err != nil {
-				log.Println("[ Go2o][ Wholesale][ Sync]:", err.Error(),
+				log.Println("[ GO2O][ Wholesale][ Sync]:", err.Error(),
 					"Id:", itemId, "; SkuId:", v.Id)
 			}
 		}

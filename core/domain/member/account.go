@@ -77,7 +77,7 @@ func (a *accountImpl) initWallet() {
 		a.member.value.Username,
 		1, "MemberWallet", flag)
 	if _, err := a.wallet.Save(); err != nil {
-		log.Println("[ go2o][ member]: create wallet failed,error", err.Error())
+		log.Println("[ GO2O][ member]: create wallet failed,error", err.Error())
 	}
 	a.value.WalletCode = a.wallet.Get().HashCode // 绑定钱包
 }

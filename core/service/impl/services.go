@@ -92,7 +92,7 @@ var (
 func handleError(err error) error {
 	return domain.HandleError(err, "service")
 	//if err != nil && gof.CurrentApp.Debug() {
-	//	gof.CurrentApp.Log().Println("[ Go2o][ Repo][ Error] -", err.Error())
+	//	gof.CurrentApp.Log().Println("[ GO2O][ Repo][ Error] -", err.Error())
 	//}
 	//return err
 }
@@ -202,7 +202,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	CommonDao = impl.NewCommDao(orm, sto, adRepo, catRepo)
 	portalDao := impl.NewPortalDao(orm)
 	PortalService = NewPortalService(orm, CommonDao, portalDao)
-	QueryService = NewQueryService(orm, sto,catRepo)
+	QueryService = NewQueryService(orm, sto, catRepo)
 	AppService = NewAppService(sto, orm)
 	RbacService = NewRbacService(sto, orm, registryRepo)
 	CodeService = NewCodeService(sto, orm)

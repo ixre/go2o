@@ -108,7 +108,7 @@ func (s *shipmentServiceImpl) ShipOrderLogisticTrack(ctx context.Context, rq *pr
 	if so != nil {
 		sp := s.expressRepo.GetExpressProvider(so.Value().SpId)
 		if sp == nil {
-			log.Println("[ Go2o][ Service][ Warning]: no such express provider id ", so.Value().SpId)
+			log.Println("[ GO2O][ Service][ Warning]: no such express provider id ", so.Value().SpId)
 		} else {
 			//spOrder = "462681586678"
 			//sp.ApiCode = "ZTO"

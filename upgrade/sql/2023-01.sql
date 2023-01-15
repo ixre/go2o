@@ -79,8 +79,8 @@ ALTER TABLE IF EXISTS public.mm_member
     RENAME code TO user_code;
 ALTER TABLE IF EXISTS public.mm_member
     RENAME flag TO user_flag;
-ALTER TABLE IF EXISTS public.mm_member
-    RENAME name TO nickname;
+-- ALTER TABLE IF EXISTS public.mm_member
+--     RENAME name TO nickname;
 -- 更新默认头像地址
 update mm_member set portrait = portrait = 'static/init/avatar.png' where portrait like 'init/%'; 
 
@@ -93,7 +93,7 @@ update public.item_info set item_flag = 0 WHERE item_flag < 0;
 
 update item_info set item_flag  = 199 
 WHERE id IN (select id from item_info 
-			 where item_flag = 0  order by id desc limit 30)
+			 where item_flag = 0  order by id desc limit 30);
 
 -- 以下VPP需要更新 --
 -- 去掉赠品字段改用flag

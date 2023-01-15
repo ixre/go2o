@@ -202,7 +202,7 @@ func (r *registryImpl) Save() error {
 
 func (r *registryImpl) warning(e error) {
 	if e != nil {
-		log.Printf(`[ go2o][ warning]:
+		log.Printf(`[ GO2O][ warning]:
 			parse registry value fail! key:%s value:%s \n`,
 			r.value.Key,
 			r.value.Value)

@@ -194,11 +194,11 @@ func (q quickPayServiceImpl) BatchTransfer(_ context.Context, r *proto.BatchTran
 func (q quickPayServiceImpl) checkSafeSign(nonce string, sign string) bool {
 	secret, err := q.registryRepo.GetValue("qp_safe_secret")
 	if err != nil {
-		println("[ Go2o][ Warning]: ", err.Error(), " key: qp_safe_secret")
+		println("[ GO2O][ Warning]: ", err.Error(), " key: qp_safe_secret")
 		return false
 	}
 	if len(secret) == 0 {
-		println("[ Go2o][ Warning]: quick payment safe secret not set")
+		println("[ GO2O][ Warning]: quick payment safe secret not set")
 	}
 	md5 := crypto.Md5([]byte(nonce + secret))
 	return strings.ToLower(md5) == sign

@@ -748,12 +748,12 @@ func (s *memberService) GrantAccessToken(_ context.Context, request *proto.Grant
 		"go2o-api-jwt", request.ExpiresTime).(jwt.MapClaims)
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
-		log.Println("[ go2o][ error]: grant access token error ", err.Error())
+		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
 		return &proto.GrantAccessTokenResponse{Error: err.Error()}, nil
 	}
 	token, err := api.AccessToken(claims, []byte(jwtSecret))
 	if err != nil {
-		log.Println("[ go2o][ error]: grant access token error ", err.Error())
+		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
 		return &proto.GrantAccessTokenResponse{Error: err.Error()}, nil
 	}
 	return &proto.GrantAccessTokenResponse{
@@ -768,7 +768,7 @@ func (s *memberService) CheckAccessToken(_ context.Context, request *proto.Check
 	}
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
-		log.Println("[ go2o][ error]: check access token error ", err.Error())
+		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
 		return &proto.CheckAccessTokenResponse{Error: err.Error()}, nil
 	}
 
