@@ -926,22 +926,20 @@ func (o *normalOrderImpl) GetSubOrders() []order.ISubOrder {
 
 // 在线支付交易完成
 func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
+	// 排除支付子订单
 	for i, so := range o.GetSubOrders() {
-		// 排除支付子订单
-		//o.Items()
-
 		// 销毁支付子订单
 		ov := so.GetValue()
 		if ov.BreakStatus == order.BreakDefault {
 			if err := so.Destory(); err != nil {
 				log.Println("销毁支付子订单失败:" + err.Error())
 			}
-			o._subOrders = append(o._subOrders[:i],o._subOrders[i+1:]...)
-			continue
-		} else {
-			if err = so.PaymentFinishByOnlineTrade(); err != nil {
-				return err
-			}
+			o._subOrders = append(o._subOrders[:i], o._subOrders[i+1:]...)
+		}
+	}
+	for _, so := range o.GetSubOrders() {
+		if err = so.PaymentFinishByOnlineTrade(); err != nil {
+			return err
 		}
 	}
 	o.baseValue.IsPaid = 1
