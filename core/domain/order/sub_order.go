@@ -814,7 +814,7 @@ func (o *subOrderImpl) onOrderComplete() error {
 	}
 
 	// 处理返现
-	err = o.handleCashBack()
+	//err = o.handleCashBack()
 	// 发布处理分销事件
 	o.publishAffiliateEvent()
 	return err

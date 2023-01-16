@@ -137,7 +137,7 @@ func MergeRegistries() []*Registry {
 	// 订单
 	mergeAdd("是否启用订单返利", OrderEnableAffiliateRebate, "0", "")
 	mergeAdd("全局订单返利比例", OrderGlobalAffiliateRebateRate, "0", "")
-	mergeAdd("推送订单分销事件", OrdeAffiliaterPushEnabled, "0", "0:不推送(内部处理),1:仅推送(内部处理),2:推送并处理(外部处理分销)")
+	mergeAdd("推送订单分销事件", OrdeAffiliatePushEnabled, "0", "0:不推送(内部处理),1:仅推送(内部处理),2:推送并处理(外部处理分销)")
 	mergeAdd("推送子订单状态变更事件", OrderSubOrderPushEnabled, "0", "0:关闭,1:启用")
 
 	// 商户订单
