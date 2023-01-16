@@ -1608,7 +1608,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegIp:          src.RegIp,
 		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
-		Flag:           int32(src.UserFlag),
+		UserFlag:       int32(src.UserFlag),
 		Portrait:       src.Portrait,
 		Phone:          src.Phone,
 		Email:          src.Email,
