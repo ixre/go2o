@@ -228,10 +228,11 @@ func TestSubmitNormalOrder(t *testing.T) {
 
 // 测试从订单重新创建订单并提交付款
 func TestRebuildSubmitNormalOrder(t *testing.T) {
+	orderNo := "1230111000414674"
 	repo := ti.Factory.GetOrderRepo()
 	memRepo := ti.Factory.GetMemberRepo()
 	payRepo := ti.Factory.GetPaymentRepo()
-	so := repo.GetSubOrderByOrderNo("1220607001313522")
+	so := repo.GetSubOrderByOrderNo(orderNo)
 	io := so.ParentOrder()
 	ic := io.BuildCart()
 	ic.Save()
@@ -262,7 +263,6 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.Log("支付订单", err.Error())
 		t.FailNow()
 	}
-	return
 	// 开始完成发货流程并收货\
 	newOrder := repo.Manager().GetOrderById(nio.GetAggregateRootId())
 	ino := newOrder.(order.INormalOrder)
@@ -271,15 +271,16 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		err = v.PickUp()
 		if err == nil {
 			err = v.Ship(1, "12345345")
-			if err == nil {
-				err = v.BuyerReceived()
-			}
+			// if err == nil {
+			// 	err = v.BuyerReceived()
+			// }
 		}
 		if err != nil {
 			t.Log("收货不成功：", err)
 			t.FailNow()
 		}
 	}
+	time.Sleep(2000)
 }
 
 func TestFinishSubOrder(t *testing.T) {
