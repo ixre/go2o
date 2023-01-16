@@ -12,6 +12,11 @@ package payment
 import (
 	"errors"
 	"fmt"
+	"math"
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
@@ -19,10 +24,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"math"
-	"regexp"
-	"strings"
-	"time"
 )
 
 var _ payment.IPaymentOrder = new(paymentOrderImpl)
@@ -269,15 +270,17 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 }
 
 // 更新订单状态, 需要注意,防止多次订单更新
-func (p *paymentOrderImpl) notifyPaymentFinish() {
+func (p *paymentOrderImpl) applyPaymentFinish() error {
 	if p.GetAggregateRootId() > 0 {
 		// 通知订单支付完成
 		if p.value.OutOrderNo != "" {
 			subOrder := p.value.SubOrder == 1
 			err := p.orderManager.NotifyOrderTradeSuccess(p.value.OutOrderNo, subOrder)
 			domain.HandleError(err, "domain")
+			return err
 		}
 	}
+	return nil
 }
 
 // 优惠券抵扣
@@ -526,7 +529,7 @@ func (p *paymentOrderImpl) saveOrder() error {
 	//保存支付单后,通知支付成功。只通知一次
 	if err == nil && p.firstFinishPayment {
 		p.firstFinishPayment = false
-		go p.notifyPaymentFinish()
+		err = p.applyPaymentFinish()
 	}
 	return err
 }

@@ -62,7 +62,7 @@ type normalOrderImpl struct {
 	vendorExpressMap map[int]int64
 	// 是否为内部挂起
 	internalSuspend bool
-	_list           []order.ISubOrder
+	_subOrders      []order.ISubOrder
 	_payOrder       payment.IPaymentOrder
 	// 返利推荐人
 	_AffiliateMember member.IMember
@@ -853,7 +853,7 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 		i++
 	}
 	// 设置已拆分的订单
-	o._list = list
+	o._subOrders = list
 	if l > 1 {
 		// 设置订单为已拆分状态
 		o.saveOrderState(order.StatBreak)
@@ -861,7 +861,7 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 	return list, nil
 }
 
-// 生成支付子订单
+// createPaymentSubOrder 生成一个用于合并支付的子订单
 func (o *normalOrderImpl) createPaymentSubOrder() (order.ISubOrder, error) {
 	orderNo := o.OrderNo()
 	breakStatus := order.BreakDefault
@@ -914,29 +914,32 @@ func (o *normalOrderImpl) GetSubOrders() []order.ISubOrder {
 	if orderId <= 0 {
 		panic(order.ErrNoYetCreated)
 	}
-	if o._list == nil {
+	if o._subOrders == nil {
 		list := o.orderRepo.GetNormalSubOrders(orderId)
 		for _, v := range list {
 			sub := o.repo.CreateNormalSubOrder(v)
-			o._list = append(o._list, sub)
+			o._subOrders = append(o._subOrders, sub)
 		}
 	}
-	return o._list
+	return o._subOrders
 }
 
 // 在线支付交易完成
 func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
-	for _, o := range o.GetSubOrders() {
-		o.Items()
-		// 销毁拆分支付订单
-		if o.GetValue().BreakStatus == order.BreakDefault {
-			if err := o.Destory(); err != nil {
+	// 排除支付子订单
+	for i, so := range o.GetSubOrders() {
+		// 销毁支付子订单
+		ov := so.GetValue()
+		if ov.BreakStatus == order.BreakDefault {
+			if err := so.Destory(); err != nil {
 				log.Println("销毁支付子订单失败:" + err.Error())
 			}
-		} else {
-			if err = o.PaymentFinishByOnlineTrade(); err != nil {
-				return err
-			}
+			o._subOrders = append(o._subOrders[:i], o._subOrders[i+1:]...)
+		}
+	}
+	for _, so := range o.GetSubOrders() {
+		if err = so.PaymentFinishByOnlineTrade(); err != nil {
+			return err
 		}
 	}
 	o.baseValue.IsPaid = 1

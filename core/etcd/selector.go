@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 func init() {
@@ -165,9 +165,9 @@ func (s *serverSelector) loadNodes() {
 			continue
 		}
 		s.nodes = append(s.nodes, node)
-		fmt.Sprintf("[ Go2o][ Info]: found node %s", node.Addr)
+		fmt.Sprintf("[ GO2O][ INFO]: found node %s", node.Addr)
 	}
 	if len(s.nodes) == 0 {
-		fmt.Sprintf("[ Go2o][ Warning]: no found any nodes")
+		fmt.Sprintf("[ GO2O][ Warning]: no found any nodes")
 	}
 }

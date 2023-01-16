@@ -9,11 +9,11 @@
 package app
 
 import (
+	"time"
+
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/shell"
-	"time"
 )
-
 
 // 自动安装包
 func AutoInstall() {
@@ -35,7 +35,7 @@ func AutoInstall() {
 func execInstall() error {
 	_, _, err := shell.Run("go install .", false)
 	if err != nil {
-		log.Println("[ Go2o][ Install]:", err)
+		log.Println("[ GO2O][ Install]:", err)
 	}
 	return err
 }

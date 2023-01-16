@@ -6,7 +6,7 @@ import (
 
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/gof/log"
-	"go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 /**
@@ -36,7 +36,7 @@ func RegisterServiceDiscovery(cfg *clientv3.Config, host string, port int) {
 	if err != nil {
 		panic(err)
 	}
-	log.Println(fmt.Sprintf("[ Go2o][ INFO]: service registration discovery succeeded. node: %s:%d", ip, port))
+	log.Println(fmt.Sprintf("[ GO2O][ INFO]: service registration discovery succeeded. node: %s:%d", ip, port))
 }
 
 func resolveIp() string {

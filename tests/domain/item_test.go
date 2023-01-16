@@ -176,6 +176,19 @@ func TestSaveItemImages(t *testing.T) {
 	}
 }
 
+func TestSaveAffiliateItemFlag(t *testing.T) {
+	var itemId int64 = 47
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	err := it.GrantFlag(item.FlagAffiliate)
+	if err == nil {
+		_, err = it.Save()
+	}
+	if err != nil {
+		t.Error(err)
+		t.Failed()
+	}
+}
 func TestSaveItemFreeDeliveryFlag(t *testing.T) {
 	var itemId int64 = 1
 	repo := ti.Factory.GetItemRepo()

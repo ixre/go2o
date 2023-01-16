@@ -46,8 +46,8 @@ func GetConnector() db.Connector {
 func init() {
 	// 默认的ETCD端点
 	//etcdEndPoints := []string{"http://127.0.0.1:2379"}
-	natsEndPoints := []string{"http://192.168.0.159:4222"}
-	etcdEndPoints := []string{"http://192.168.0.159:2379"}
+	natsEndPoints := []string{"http://go2o.dev:4222"}
+	etcdEndPoints := []string{"http://go2o.dev:2379"}
 	cfg := clientv3.Config{
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,

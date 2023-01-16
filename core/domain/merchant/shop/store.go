@@ -10,14 +10,15 @@
 package shop
 
 import (
+	"log"
+	"strconv"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/go2o/core/infrastructure/lbs"
-	"log"
-	"strconv"
-	"strings"
 )
 
 var _ shop.IOfflineShop = new(offlineShopImpl)
@@ -179,7 +180,7 @@ func (s *offlineShopImpl) GetLngLat() (float64, float64) {
 		var err error
 		s._lng, s._lat, err = lbs.GetLocation(s._shopVal.Location())
 		if err != nil {
-			log.Println("[ Go2o][ LBS][ Error] -", err.Error())
+			log.Println("[ GO2O][ LBS][ Error] -", err.Error())
 		}
 	}
 	return s._lng, s._lat
@@ -199,7 +200,7 @@ func (s *offlineShopImpl) CanDeliver(lng, lat float64) (bool, int) {
 func (s *offlineShopImpl) CanDeliverTo(address string) (bool, int) {
 	lng, lat, err := lbs.GetLocation(address)
 	if err != nil {
-		log.Println("[ Go2o][ LBS][ Error] -", err.Error())
+		log.Println("[ GO2O][ LBS][ Error] -", err.Error())
 		return false, -1
 	}
 	return s.CanDeliver(lng, lat)

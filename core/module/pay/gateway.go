@@ -220,7 +220,7 @@ func (g *Gateway) notify(userId int64, data *wrapperData) error {
 	rsp, err := cli.PostForm(data.NotifyUrl, values)
 	// 未通知成功
 	if err != nil {
-		log.Println("[ Go2o][ Pay][ Gateway]: notify failed :",
+		log.Println("[ GO2O][ Pay][ Gateway]: notify failed :",
 			err.Error(), " [URL]:", data.NotifyUrl)
 		return errors.New("通知支付结果失败")
 	}
@@ -228,13 +228,13 @@ func (g *Gateway) notify(userId int64, data *wrapperData) error {
 	rspTxt := string(body)
 	// 响应状态不正确
 	if rsp.StatusCode != 200 {
-		log.Println("[ Go2o][ Pay][ Gateway]: notify failed :",
+		log.Println("[ GO2O][ Pay][ Gateway]: notify failed :",
 			rspTxt, " [URL]:", data.NotifyUrl)
 		return errors.New("通知支付结果失败")
 	}
 	// 判断响应内容
 	if rspTxt != "success" {
-		log.Println("[ Go2o][ Pay][ Gateway]: notify response :", rspTxt)
+		log.Println("[ GO2O][ Pay][ Gateway]: notify response :", rspTxt)
 		return errors.New("通知支付结果异常：" + rspTxt)
 	}
 	return nil

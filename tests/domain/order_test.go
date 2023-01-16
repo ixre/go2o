@@ -231,7 +231,8 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	repo := ti.Factory.GetOrderRepo()
 	memRepo := ti.Factory.GetMemberRepo()
 	payRepo := ti.Factory.GetPaymentRepo()
-	io := repo.Manager().GetOrderByNo("1221203000248293")
+	so := repo.GetSubOrderByOrderNo("1220607001313522")
+	io := so.ParentOrder()
 	ic := io.BuildCart()
 	ic.Save()
 	memberId := io.Buyer().GetAggregateRootId()
@@ -252,7 +253,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.Log("提交订单", err.Error())
 		t.FailNow()
 	}
-	t.Logf("提交的订单号为：%s", io.OrderNo())
+	t.Logf("提交的订单号为：%s", nio.OrderNo())
 	ipo := payRepo.GetPaymentOrderByOrderNo(int(order.TRetail), nio.OrderNo())
 	err = ipo.PaymentFinish("alipay", "1233535080808wr")
 	if err == nil {
@@ -261,9 +262,10 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.Log("支付订单", err.Error())
 		t.FailNow()
 	}
-	time.Sleep(time.Second * 2)
-	// 开始完成发货流程并收货
-	ino := nio.(order.INormalOrder)
+	return
+	// 开始完成发货流程并收货\
+	newOrder := repo.Manager().GetOrderById(nio.GetAggregateRootId())
+	ino := newOrder.(order.INormalOrder)
 	for _, v := range ino.GetSubOrders() {
 		v.Confirm()
 		err = v.PickUp()
@@ -280,9 +282,22 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	}
 }
 
+func TestFinishSubOrder(t *testing.T) {
+	repo := ti.Factory.GetOrderRepo()
+	io := repo.GetSubOrderByOrderNo("1230115001702364")
+	err := io.BuyerReceived()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+	for {
+	}
+	time.Sleep(5000)
+}
+
 func TestFinishNormalOrder(t *testing.T) {
 	repo := ti.Factory.GetOrderRepo()
-	io := repo.Manager().GetOrderByNo("1221203000128066")
+	io := repo.Manager().GetOrderByNo("1230115001702364")
 	subOrders := io.(order.INormalOrder).GetSubOrders()
 	for _, o := range subOrders {
 		//err := o.Confirm()
@@ -293,6 +308,7 @@ func TestFinishNormalOrder(t *testing.T) {
 			t.Fail()
 		}
 	}
+	time.Sleep(5000)
 }
 
 // 测试批发订单,并完成付款

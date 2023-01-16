@@ -19,7 +19,7 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
-	"go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 var (
@@ -62,7 +62,7 @@ func NewApp(confPath string, cfg *clientv3.Config) *AppImpl {
 	`)
 	s, err := infrastructure.NewEtcdStorage(*cfg)
 	if err != nil {
-		panic("[ go2o][ ERROR]: " + err.Error())
+		panic("[ GO2O][ ERROR]: " + err.Error())
 	}
 	return &AppImpl{
 		_storage:  s,
@@ -149,18 +149,18 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	//todo: charset for connection string?
 	conn, err := db.NewConnector(driver, connStr, l, debug)
 	if err == nil {
-		log.Println("[ Go2o][ INFO]: create database connection..")
+		log.Println("[ GO2O][ INFO]: create database connection..")
 		if err := conn.Ping(); err != nil {
 			conn.Close()
 			//如果异常，则显示并退出
-			log.Fatalln("[ Go2o][ Connector]:" + err.Error())
+			log.Fatalln("[ GO2O][ ERROR]:" + err.Error())
 		}
 		conn.SetMaxIdleConns(10000)
 		conn.SetMaxIdleConns(5000)
 		conn.SetConnMaxLifetime(time.Second * 10)
 		return conn
 	}
-	log.Fatalln("[ Go2o][ Connector]:" + err.Error())
+	log.Fatalln("[ GO2O][ ERROR]:" + err.Error())
 	return nil
 }
 
@@ -195,13 +195,13 @@ func CleanRedisCache(app gof.App) {
 	if rs != nil {
 		i, err := rs.DeleteWith("go2o:*")
 		if err != nil {
-			log.Println("[ Go2o][ Redis][ Clean]: Error ", err.Error())
+			log.Println("[ GO2O][ Redis][ Clean]: Error ", err.Error())
 		} else {
-			log.Println("[ Go2o][ Redis][ Clean]: clean redis records :", i)
+			log.Println("[ GO2O][ Redis][ Clean]: clean redis records :", i)
 		}
 	}
 	if CleanHookFunc != nil {
 		CleanHookFunc(app)
 	}
-	log.Println("[ Go2o][ Clean][ Cache]: clean ok !")
+	log.Println("[ GO2O][ Clean][ Cache]: clean ok !")
 }

@@ -30,15 +30,15 @@ var selector etcd.Selector
 func ConfigureClient(c *clientv3.Config, defaultAddr string) {
 	staticAddr = defaultAddr
 	if c != nil && len(staticAddr) == 0 {
-		log.Println("[ Go2o][ INFO]: connecting go2o rpc server...")
+		log.Println("[ GO2O][ INFO]: connecting go2o rpc server...")
 		s, err := etcd.NewSelector(service, *c, etcd.AlgRoundRobin)
 		if err != nil {
-			log.Println("[ Go2o][ ERROR]: can't connect go2o rpc server! ", err.Error())
+			log.Println("[ GO2O][ ERROR]: can't connect go2o rpc server! ", err.Error())
 			os.Exit(1)
 		}
 		selector = s
 	} else if len(staticAddr) > 0 {
-		log.Printf("[ Go2o][ INFO]: connecting static rpc server (node:%s)...\n", staticAddr)
+		log.Printf("[ GO2O][ INFO]: connecting static rpc server (node:%s)...\n", staticAddr)
 	}
 	tryConnect(30)
 }
@@ -53,7 +53,7 @@ func tryConnect(retryTimes int) {
 		}
 		time.Sleep(time.Second)
 		if i >= retryTimes-1 {
-			log.Println("[ Go2o][ Fatal]: Can not connect go2o rpc server")
+			log.Println("[ GO2O][ Fatal]: Can not connect go2o rpc server")
 			os.Exit(1)
 		}
 	}
@@ -80,7 +80,7 @@ func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 			PermitWithoutStream: true}))
 	defer cancel()
 	if err != nil {
-		log.Printf("[ Go2o][ ERROR]: %s addr:%s \n", err.Error(), addr)
+		log.Printf("[ GO2O][ ERROR]: %s addr:%s \n", err.Error(), addr)
 		return conn, fmt.Errorf("%s addr:%s", err.Error(), addr)
 	}
 	return conn, nil

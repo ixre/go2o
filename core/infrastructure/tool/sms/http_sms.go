@@ -66,7 +66,7 @@ func sendPhoneMsgByHttpApi(api *notify.SmsApiPerm, phone, content string, data [
 		if rsp.StatusCode != http.StatusOK {
 			return fmt.Errorf("error : %d", rsp.StatusCode)
 		}
-		//log.Println("[ Go2o][ Sms]:", body)
+		//log.Println("[ GO2O][ Sms]:", body)
 		var data []byte
 		data, err = io.ReadAll(rsp.Body)
 		if err == nil {

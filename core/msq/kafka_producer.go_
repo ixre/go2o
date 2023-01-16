@@ -41,13 +41,13 @@ func createKafkaProducer(address []string) sarama.AsyncProducer {
 	var producer sarama.AsyncProducer
 	var err error
 	var retryTimes = 10
-	log.Println("[ Go2o][ Kafka]: start kafka producer...")
+	log.Println("[ GO2O][ Kafka]: start kafka producer...")
 	for i := 0; i < retryTimes; i++ {
 		producer, err = sarama.NewAsyncProducer(address, config)
 		if err == nil {
 			break
 		} else if i == retryTimes-1 {
-			log.Println("[ Go2o][ Kafka]: can't connect kafka server! ", err.Error())
+			log.Println("[ GO2O][ Kafka]: can't connect kafka server! ", err.Error())
 			os.Exit(1)
 		}
 		time.Sleep(time.Second * 2)

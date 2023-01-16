@@ -66,7 +66,7 @@ func serveRPC(ch chan bool, s *grpc.Server, port int) {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("[ Go2o][ INFO]: grpc node serve on port :" + strconv.Itoa(port))
+	log.Println("[ GO2O][ INFO]: grpc node serve on port :" + strconv.Itoa(port))
 	if err = s.Serve(l); err != nil {
 		ch <- false
 		panic(err)

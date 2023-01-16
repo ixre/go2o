@@ -25,5 +25,5 @@ func assertError(t *testing.T, err error) {
 }
 
 func init() {
-	msq.Configure(msq.NATS, []string{"192.168.0.159:4222"})
+	msq.Configure(msq.NATS, []string{"go2o.dev:4222"})
 }
