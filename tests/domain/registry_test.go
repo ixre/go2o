@@ -18,16 +18,15 @@ func TestGenerateAppId(t *testing.T) {
 	}
 }
 
-
-func TestUpdateRegistryValue(t *testing.T){
+func TestUpdateRegistryValue(t *testing.T) {
 	repo := ti.Factory.GetRegistryRepo()
-	ir := repo.Get(registry.OrdeAffiliaterPushEnabled)
-	if ir != nil{
+	ir := repo.Get(registry.OrdeAffiliatePushEnabled)
+	if ir != nil {
 		err := ir.Update("2")
-		if err == nil{
+		if err == nil {
 			err = ir.Save()
 		}
-		if err != nil{
+		if err != nil {
 			t.Error(err)
 		}
 	}

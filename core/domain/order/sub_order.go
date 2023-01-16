@@ -829,9 +829,6 @@ func (o *subOrderImpl) publishAffiliateEvent() {
 			affiliateItems = append(affiliateItems, it)
 		}
 	}
-	log.Println("[ GO2O][ LOG]: prepare push affiliate event, orderNo=",
-		o.value.OrderNo,
-		"items=", len(affiliateItems))
 	// 发送分销事件
 	if len(affiliateItems) > 0 {
 		eventbus.Publish(&events.OrderAffiliateRebateEvent{

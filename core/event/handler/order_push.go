@@ -44,7 +44,7 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 		return
 	}
 	r := repos.Repo.GetRegistryRepo()
-	s, _ := r.GetValue(registry.OrdeAffiliaterPushEnabled)
+	s, _ := r.GetValue(registry.OrdeAffiliatePushEnabled)
 	pushValue, _ := strconv.Atoi(s)
 	//todo: 系统内处理分销，不推送分销事件
 	// 0:不推送(内部处理),1:仅推送(内部处理),2:推送并处理(外部处理分销)
@@ -71,7 +71,7 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	}
 	// 推送至外部系统，并由外部系统处理分销
 	if pushValue == 2 {
-		log.Println("[ GO2O][ EVENT]: push order affiliate event", ev.OrderNo)
+		log.Println("[ GO2O][ LOG]: push order affiliate event", ev.OrderNo)
 		err := msq.Push(msq.NormalOrderAffiliateTopic, typeconv.MustJson(ev))
 		if err != nil {
 			log.Println("[ GO2O][ event]: push order affiliate event failed, error: ", err.Error())
