@@ -406,7 +406,7 @@ message SMember {
   /** 会员编码/邀请码  */
   string userCode = 2;
   /** 会员标志 */
-  sint32 flag = 3;
+  sint32 userFlag = 3;
   /** 用户名 */
   string username = 4;
   /** 经验值 */
