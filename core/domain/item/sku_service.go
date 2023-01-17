@@ -3,15 +3,16 @@ package item
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/ixre/go2o/core/domain/interface/item"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
-	"github.com/ixre/go2o/core/infrastructure/format"
-	"github.com/ixre/gof/util"
 	"log"
 	"sort"
 	"strconv"
 	"strings"
 	"text/template"
+
+	"github.com/ixre/go2o/core/domain/interface/item"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/gof/util"
 )
 
 var _ item.ISkuService = new(skuServiceImpl)
@@ -47,7 +48,7 @@ func (s *skuServiceImpl) SpecDataToMap(specData string) map[int]int {
 		if err == nil && err1 == nil {
 			mp[k] = v
 		} else {
-			log.Println("[ Go2o][ Warning]: spec arr key or value" +
+			log.Println("[ GO2O][ Warning]: spec arr key or value" +
 				"not as int type! " + specData)
 		}
 	}

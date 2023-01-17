@@ -1,7 +1,9 @@
 package impl
 
 import (
+	"errors"
 	"fmt"
+
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/dao/model"
@@ -61,7 +63,7 @@ func (p *portalService) SaveNav(_ context.Context, r *proto.SaveNavRequest) (*pr
 func (p *portalService) GetNav(context context.Context, id *proto.PortalNavId) (*proto.SNav, error) {
 	v := p.dao.GetNav(id.Value)
 	if v == nil {
-		return nil, nil
+		return nil, fmt.Errorf("no such nav")
 	}
 	return p.parseNav(v), nil
 }
@@ -223,7 +225,7 @@ func (p *portalService) parseSearchWord(v *model.SearchWord) *proto.SSearchWord 
 func (p *portalService) GetSearchWord(_ context.Context, id *proto.SysSearchWordId) (*proto.SSearchWord, error) {
 	v := p.searchWordDao.GetSearchWord(id.Value)
 	if v == nil {
-		return nil, nil
+		return nil, errors.New("no such search word")
 	}
 	return p.parseSearchWord(v), nil
 }

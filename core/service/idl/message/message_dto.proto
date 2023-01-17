@@ -4,9 +4,14 @@ option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 message SendMessageRequest {
+    // 接收信息的账户
     string account = 1;
+    // 模板编号
+    string templateId = 3;
+    // 消息内容,如果isTemplateId为true,则message传入模板编号
     string message = 2;
-    map<string, string> data = 3;
+    // 模板数据参数
+    repeated string data = 4;
 }
 
 /** 消息方式 */

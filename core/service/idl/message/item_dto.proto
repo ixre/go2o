@@ -218,41 +218,45 @@ message SItemDataResponse {
 enum EItemFlag{
   _EItemFlag = 0;
   	// 自营商品
-	FlagSelfSales = 1;
-	// 新品
-	FlagNewGoods = 2;
-	// 热销商品
-	FlagHotSale = 4;
-	// 推荐商品
-	FlagRecommend = 8;
-	// 赠品
-	FlagGift = 16;
-	// 分销商品
-	FlagAffilite = 32;
+	SelfSales = 1;
 	// 免邮
-	FlagFreeDelivery = 64;
+	FreeDelivery = 2;
+	// 推荐商品
+	Recommend = 4;
+  	// 积分兑换商品
+	Exchange = 8;
+	// 赠品
+	Gift = 16;
+	// 分销商品
+	Affiliate = 32;
+	// 新品
+	NewOnShelve = 64;
+	// 热销商品
+	HotSales = 128;
 	// 平台配送
-	FlagSelfDelivery = 128;
+	SelfDelivery = 256;
 }
 
 // 商品标志
 message SItemFlagData{
   // 新品
-	bool isNewGoods = 1;
+	bool isNewOnShelve = 1;
 	// 热销商品
-	bool isHotSale = 2;
+	bool isHotSales = 2;
 	// 推荐商品
 	bool isRecommend = 3;
+  // 是否允许兑换
+  bool isExchange = 4;
 	// 赠品
-	bool isGift = 4;
+	bool isGift = 5;
   // 是否分销
-  bool isAffilite = 5;
+  bool isAffiliate = 6;
   // 自营商品
-	bool isSelfSales = 6;
+	bool isSelfSales = 7;
 	// 免邮
-	bool isFreeDelivery = 7;
+	bool isFreeDelivery = 8;
 	// 平台配送
-	bool isSelfDelivery = 8;
+	bool isSelfDelivery = 9;
 }
 
 // 统一的商品显示对象

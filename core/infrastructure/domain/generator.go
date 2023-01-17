@@ -45,7 +45,7 @@ func NewTradeNo(business int, userId int) string {
 func NewCheckCode() string {
 	unix := time.Now().UnixNano()
 	rand.Seed(unix)
-	rd := 1000 + rand.Intn(9999-1000)
+	rd := 100000 + rand.Intn(999999-100000)
 	return strconv.Itoa(rd)
 }
 

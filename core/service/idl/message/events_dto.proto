@@ -1,0 +1,189 @@
+syntax = "proto3";
+
+option go_package = "./;proto";
+option java_package = "com.github.go2o.rpc";
+
+
+
+// 商品分销设置
+message EVItemAffiliateConfig{
+	// 分销比例
+	double rate = 2;
+	// 分销金额
+	int64 amount = 3;
+	// 是否按比例分销
+	bool isByRate = 4;
+}
+
+// 订单分销商品
+message EVOrderAffiliateItem{
+	// 商品编号
+	int64 itemId = 1;
+	// 商品SKU编号
+	int64 skuId = 2;
+	// 数量
+	int32 quantity =3;
+	// 金额
+	int64 amount = 4;
+	// 最终金额, 可能会有优惠均摊抵扣的金额
+	int64 finalAmount = 5;
+	// 分销参数
+	repeated EVItemAffiliateConfig Params = 6;
+}
+
+// 分销订单
+message EVOrderAffiliateEventData{
+    // 订单号
+	string orderNo = 1;
+	// 是否为子订单
+	bool subOrder = 2;
+	// 买家编号
+	int64 buyerId = 3;
+	// 订单金额
+	int64 orderAmount = 4;
+	// 分销商品
+	repeated EVOrderAffiliateItem affiliateItems = 5;
+}
+
+// 发送短信事件数据
+message EVSendSmsEventData{
+	// 短信服务商
+	int32 provider = 1;
+	// 手机号
+	string phone = 2;
+	// 短信内容
+	string template = 3; 
+	// 短信模板
+	string templateId  = 4;
+	/** 签名 */
+	string signature = 5;
+	// 数据
+	repeated string data = 6;
+}
+
+// 会员信息推送事件数据
+message EVMemberPushEventData{
+	  /** 编号 */
+	  int64 memberId = 1;
+	  // 是否新会员
+	  bool isNewMember = 2;
+	  /** 会员编码/邀请码  */
+	  string userCode = 3;
+	  /** 会员标志 */
+	  sint32 userFlag = 4;
+	  /** 用户名 */
+	  string username = 5;
+	  /** 经验值 */
+	  sint64 exp = 6;
+	  /** 等级  */
+	  sint32 level = 7;
+	  /** 昵称 */
+	  string nickname = 9;
+	  /** 会员头像 */
+	  string portrait = 8;
+	  /** 手机号  */
+	  string phone = 10;
+	  /** 电子邮箱 */
+	  string email = 11;
+  	  /** 注册来源 */
+  	  string regFrom = 12;
+	  /** 真实姓名 */
+	  string realName = 13;
+	  // 邀请人
+	  int64 inviterId = 14;
+	  /** 最后登录时间 */
+	  int64 lastLoginTime = 15;
+}
+
+
+// 注册表推送事件数据
+message EVRegistryPushEventData{
+	// 配置键
+	string key = 1;
+	// 配置值
+	string value = 2;
+	// 是否为用户创建的配置
+	bool isUsers = 3;
+}
+
+// 订单推送事件
+message EVSubOrderPushEventData{
+	// 订单号
+	string OrderNo = 1;
+	// 订单金额
+	int64 OrderAmount = 2;
+	// 收货人
+	string ConsigneeName = 3;
+	// 收货电话
+	string ConsigneePhone = 4;
+	// 收货地址
+	string ConsigneeAddress = 5;
+	// 状态
+	int32 OrderState = 6;
+}
+
+
+/** 账户 */
+message EVMemberAccountEventData {
+	int64 memberId = 1;
+	// 积分
+	int64 integral = 2;
+	// 商城余额
+	int64 balance = 3;
+	// 钱包代码
+	string walletCode = 4;
+	// 钱包余额
+	int64 walletBalance = 5;
+	// 浮动账户余额
+	int64 flowBalance = 6;
+	// 增利账户余额
+	int64 growBalance = 7;
+	// 总消费金额
+	int64 totalExpense = 8;
+	// 总充值金额
+	int64 totalCharge = 9;
+	// 更新时间
+	int64 updateTime = 20;
+  }
+  
+  // 提现申请推送事件
+message EVMemberWithdrawalPushEventData {
+	// 会员编号
+	int64 memberId = 1;
+	// 流水号Id
+	int64 requestId = 2;
+	// 提现金额
+	int64 amount = 3;
+	// 手续费
+	int64 procedureFee = 4;
+	// 是否为已审核通过的事件
+	bool isAuditedEvent = 5;
+}
+
+// 账户日志推送事件
+message EVAccountLogPushEventData  {
+	// 账户类型
+	int32 account = 1;
+	// 是否为更新日志事件
+	bool isUpdateEvent = 2;
+	// 会员编号
+	int64 UserId = 3;
+	// 编号
+	int64 LogId = 4;
+	// 业务类型
+	int32 LogKind = 5;
+	// 标题
+	string Subject = 6;
+	// 外部订单号
+	string OuterNo = 7;
+	// 变动金额
+	int64 ChangeValue = 8;
+	// 余额
+	int64 Balance = 9;
+	// 交易手续费
+	int64 ProcedureFee = 10;
+	// 审核状态
+	int32 AuditState  = 11;
+	// 创建时间
+	int64 CreateTime = 12;
+}

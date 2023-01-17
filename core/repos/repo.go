@@ -9,10 +9,11 @@
 package repos
 
 import (
+	"sync"
+
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
-	"sync"
 )
 
 var (
@@ -24,7 +25,7 @@ var (
 func handleError(err error) error {
 	return domain.HandleError(err, "rep")
 	//if err != nil && gof.CurrentApp.Debug() {
-	//	gof.CurrentApp.Log().Println("[ Go2o][ Repo][ Error] -", err.Error())
+	//	gof.CurrentApp.Log().Println("[ GO2O][ Repo][ Error] -", err.Error())
 	//}
 	//return err
 }

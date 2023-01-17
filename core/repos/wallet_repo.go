@@ -3,13 +3,12 @@ package repos
 import (
 	"database/sql"
 	"fmt"
+	"log"
+
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	wi "github.com/ixre/go2o/core/domain/wallet"
-	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"github.com/ixre/gof/domain/eventbus"
-	"log"
 )
 
 var _ wallet.IWalletRepo = new(WalletRepoImpl)
@@ -87,7 +86,7 @@ func (w *WalletRepoImpl) PagingWalletLog(walletId int64, nodeId int, begin int, 
 		err = w._orm.SelectByQuery(&list, s, walletId, begin, over-begin)
 	}
 	if err != nil {
-		log.Println("[ Go2o][ Repo][ Error]:", err.Error())
+		log.Println("[ GO2O][ Repo][ Error]:", err.Error())
 	}
 	return total, list
 }
@@ -134,11 +133,10 @@ func (w *WalletRepoImpl) SaveWalletLog_(v *wallet.WalletLog) (int, error) {
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WalletLog")
 	}
-	if err == nil && v.Id > 0 {
-		eventbus.Publish(&events.WalletLogClickhouseUpdateEvent{
-			Data: v,
-		})
-	}
+	// if err == nil && v.Id > 0 {
+	// 	eventbus.Publish(&events.AccountLogPushEvent{
+	// 	})
+	// }
 	return id, err
 }
 

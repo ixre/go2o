@@ -15,19 +15,22 @@ import (
 	"errors"
 	"math"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/domain/interface/mss"
-	"github.com/ixre/go2o/core/domain/interface/mss/notify"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/util"
 )
 
@@ -85,7 +88,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	s := &member.ComplexMember{
 		Nickname:            mv.Nickname,
 		RealName:            mv.RealName,
-		Avatar:              format.GetResUrl(mv.Avatar),
+		Avatar:              format.GetResUrl(mv.Portrait),
 		Exp:                 mv.Exp,
 		Level:               mv.Level,
 		LevelName:           lv.Name,
@@ -155,22 +158,14 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 	_, err := m.Save()
 	if err == nil {
 		// 创建参数
-		data := map[string]interface{}{
-			"code":      code,
-			"operation": operation,
-			"minutes":   expiresMinutes,
+		data := []string{
+			code,
+			operation,
+			strconv.Itoa(expiresMinutes),
 		}
 		mgr := m.mssRepo.NotifyManager()
 		// 根据消息类型发送信息
 		switch mssType {
-		case notify.TypePhoneMessage:
-			// 某些短信平台要求传入模板ID,在这里附加参数
-			re := m.registryRepo.Get(registry.SmsMemberCheckTemplateId)
-			data["templateId"] = re.StringValue()
-			// 构造并发送短信
-			n := mgr.GetNotifyItem("验证手机")
-			c := notify.PhoneMessage(n.Content)
-			err = mgr.SendPhoneMessage(m.value.Phone, c, data)
 		default:
 		case notify.TypeEmailMessage:
 			n := mgr.GetNotifyItem("验证邮箱")
@@ -179,6 +174,14 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 				Body:    n.Content,
 			}
 			err = mgr.SendEmail(m.value.Email, c, data)
+		case notify.TypePhoneMessage:
+			// 某些短信平台要求传入模板ID,在这里附加参数
+			// re := m.registryRepo.Get(registry.SmsMemberCheckTemplateId)
+			// data["templateId"] = re.StringValue()
+			// 构造并发送短信
+			n := mgr.GetNotifyItem("验证手机")
+			c := notify.PhoneMessage(n.Content)
+			err = mgr.SendPhoneMessage(m.value.Phone, c, data, "")
 		}
 	}
 	return code, err
@@ -422,10 +425,14 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 
 // 更换用户名
 func (m *memberImpl) ChangeUsername(user string) error {
+	user = strings.TrimSpace(user)
+	if len(user) == 0 {
+		return member.ErrInvalidUsername
+	}
 	if user == m.value.Username {
 		return member.ErrSameUser
 	}
-	err := m.checkUser(m.value.Username)
+	err := m.checkUser(user)
 	if err == nil {
 		m.value.Username = user
 		_, err = m.Save()
@@ -447,9 +454,22 @@ func (m *memberImpl) UpdateLoginTime() error {
 func (m *memberImpl) Save() (int64, error) {
 	m.value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
 	if m.value.Id > 0 {
-		return m.repo.SaveMember(m.value)
+		_, err := m.repo.SaveMember(m.value)
+		if err == nil {
+			go m.pushSaveEvent(false)
+		}
+		return m.GetAggregateRootId(), err
 	}
 	return m.create(m.value)
+}
+
+func (m *memberImpl) pushSaveEvent(create bool) {
+	rl := m.GetRelation()
+	eventbus.Publish(&events.MemberPushEvent{
+		IsCreate:  create,
+		Member:    m.value,
+		InviterId: int(rl.InviterId),
+	})
 }
 
 // Active 激活
@@ -581,6 +601,7 @@ func (m *memberImpl) memberInit() error {
 			Remark:  "sys",
 		}, false, 0)
 	}
+	go m.pushSaveEvent(true)
 	return nil
 }
 
@@ -588,9 +609,20 @@ func (m *memberImpl) memberInit() error {
 func (m *memberImpl) prepare() (err error) {
 	phoneAsUser := m.registryRepo.Get(registry.MemberRegisterPhoneAsUser).BoolValue()
 	mustBindPhone := m.registryRepo.Get(registry.MemberRegisterMustBindPhone).BoolValue()
+	// 用户名全小写
+	m.value.Username = strings.ToLower(m.value.Username)
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
-	m.value.Username = strings.TrimSpace(m.value.Username)
-	if m.value.Username != "" || !phoneAsUser {
+	// 使用手机号作为用户名
+	if phoneAsUser {
+		if m.repo.CheckUserExist(m.value.Phone, 0) {
+			return member.ErrPhoneHasBind
+		}
+		m.value.Username = m.value.Phone
+	}
+	if len(m.value.Username) == 0 {
+		return member.ErrInvalidUsername
+	}
+	if m.value.Username != "" {
 		if err = m.checkUser(m.value.Username); err != nil {
 			return err
 		}
@@ -598,7 +630,7 @@ func (m *memberImpl) prepare() (err error) {
 	// 验证密码
 	m.value.Password = strings.TrimSpace(m.value.Password)
 	if len(m.value.Password) < 6 {
-		return de.ErrPwdLength
+		return de.ErrPwdStrongLength
 	}
 	// 验证手机
 	m.value.Phone = strings.TrimSpace(m.value.Phone)
@@ -615,15 +647,6 @@ func (m *memberImpl) prepare() (err error) {
 			return member.ErrPhoneHasBind
 		}
 	}
-	// 使用手机号作为用户名
-	if phoneAsUser {
-		if m.repo.CheckUserExist(m.value.Phone, 0) {
-			return member.ErrPhoneHasBind
-		}
-		m.value.Username = m.value.Phone
-	}
-	// 用户名全小写
-	m.value.Username = strings.ToLower(m.value.Username)
 
 	// 验证IM
 	//pro.Im = strings.TrimSpace(pro.Im)
@@ -637,9 +660,9 @@ func (m *memberImpl) prepare() (err error) {
 	if len(m.value.Nickname) == 0 {
 		m.value.Nickname = "User" + m.value.Username
 	}
-	m.value.Avatar = strings.TrimSpace(m.value.Avatar)
-	if len(m.value.Avatar) == 0 {
-		m.value.Avatar = "static/init/avatar.png"
+	m.value.Portrait = strings.TrimSpace(m.value.Portrait)
+	if len(m.value.Portrait) == 0 {
+		m.value.Portrait = "static/init/avatar.png"
 	}
 	return err
 }
@@ -659,7 +682,7 @@ func (m *memberImpl) checkPhoneBind(phone string, memberId int64) error {
 func (m *memberImpl) generateMemberCode() string {
 	var code string
 	for {
-		code = strings.ToLower(util.RandString(8))
+		code = util.RandString(6)
 		if memberId := m.repo.GetMemberIdByCode(code); memberId == 0 {
 			break
 		}
@@ -674,8 +697,12 @@ func (m *memberImpl) BindInviter(inviterId int64, force bool) (err error) {
 		return member.ErrExistsInviter
 	}
 	if rl.InviterId != inviterId {
-		m.relation = nil
-		return m.Invitation().UpdateInviter(inviterId, true)
+		isPush := rl.InviterId > 0 //  仅仅更改推荐人时才会推送信息
+		m.relation = nil           // 清除缓存
+		err = m.Invitation().UpdateInviter(inviterId, true)
+		if err == nil && isPush {
+			m.pushSaveEvent(false)
+		}
 	}
 	return err
 }

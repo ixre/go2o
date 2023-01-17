@@ -29,13 +29,13 @@ import (
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
 	api "github.com/ixre/gof/jwt-api"
 	"github.com/ixre/gof/math"
-	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
@@ -52,7 +52,6 @@ type memberService struct {
 	orderQuery   *query.OrderQuery
 	valRepo      valueobject.IValueRepo
 	serviceUtil
-	sto storage.Interface
 	proto.UnimplementedMemberServiceServer
 }
 
@@ -130,7 +129,7 @@ func (s *memberService) GetMember(_ context.Context, id *proto.MemberIdRequest) 
 		}
 		return s.parseMemberDto(&v), nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchMember
 }
 
 // GetProfile 获取资料
@@ -140,7 +139,7 @@ func (s *memberService) GetProfile(_ context.Context, id *proto.MemberIdRequest)
 		v := m.Profile().GetProfile()
 		return s.parseMemberProfile(&v), nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchMember
 }
 
 // SaveProfile 保存资料
@@ -299,7 +298,7 @@ func (s *memberService) GetMemberLevel(_ context.Context, i *proto.Int32) (*prot
 	if lv != nil {
 		return s.parseLevelDto(lv), nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchLevelUpLog
 }
 
 // SaveMemberLevel 保存会员等级信息
@@ -326,7 +325,7 @@ func (s *memberService) GetLevelBySign(_ context.Context, sign *proto.String) (*
 	if lv != nil {
 		return s.parseLevelDto(lv), nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchLevel
 }
 
 // DeleteMemberLevel 删除会员等级
@@ -401,7 +400,7 @@ func (s *memberService) CompareCode(_ context.Context, r *proto.CompareCodeReque
 }
 
 // ChangeUsername 更改会员用户名
-func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUserRequest) (*proto.Result, error) {
+func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUsernameRequest) (*proto.Result, error) {
 	var err error
 	m := s.repo.GetMember(int64(r.MemberId))
 	if m == nil {
@@ -507,7 +506,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		Password: domain.Sha1Pwd(r.Password, salt),
 		Nickname: r.Nickname,
 		RealName: "",
-		Avatar:   "", //todo: default avatar
+		Portrait: "", //todo: default avatar
 		Phone:    r.Phone,
 		Email:    r.Email,
 		RegFrom:  r.RegFrom,
@@ -629,8 +628,8 @@ func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.Member
 	return s.result(err), nil
 }
 
-// ModifyPassword 更改密码
-func (s *memberService) ModifyPassword(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
+// ChangePassword 更改密码
+func (s *memberService) ChangePassword(_ context.Context, r *proto.ChangePasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
@@ -648,15 +647,16 @@ func (s *memberService) ModifyPassword(_ context.Context, r *proto.ModifyPasswor
 	} else {
 		old = domain.MemberSha1Pwd(old, v.Salt)
 	}
-	err := m.Profile().ModifyPassword(pwd, old)
+	log.Println("--password", pwd, v.Password, v.Salt, typeconv.MustJson(v))
+	err := m.Profile().ChangePassword(pwd, old)
 	if err != nil {
 		return s.error(err), nil
 	}
 	return s.success(nil), nil
 }
 
-// ModifyTradePassword 更改交易密码
-func (s *memberService) ModifyTradePassword(_ context.Context, r *proto.ModifyPasswordRequest) (*proto.Result, error) {
+// ChangeTradePassword 更改交易密码
+func (s *memberService) ChangeTradePassword(_ context.Context, r *proto.ChangePasswordRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
@@ -673,7 +673,7 @@ func (s *memberService) ModifyTradePassword(_ context.Context, r *proto.ModifyPa
 	} else {
 		old = domain.TradePassword(old, v.Salt)
 	}
-	err := m.Profile().ModifyTradePassword(pwd, old)
+	err := m.Profile().ChangeTradePassword(pwd, old)
 	if err != nil {
 		return s.error(err), nil
 	}
@@ -689,13 +689,20 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 	}
 	memberId := s.repo.GetMemberIdByUser(user)
 	if memberId <= 0 {
-		//todo: 界面加上使用手机号码登陆
-		//val = m.repo.GetMemberValueByPhone(user)
+		// 用户名不正确时,尝试匹配手机号
+		if regex.IsPhone(user) {
+			memberId = s.repo.GetMemberIdByPhone(user)
+		}
+	}
+	if memberId <= 0 {
 		return nil, 2, de.ErrCredential // 用户不存在,也返回用户或密码不正确
 	}
 	im := s.repo.GetMember(memberId)
 	val := im.GetValue()
-	if val.Password != domain.Sha1Pwd(pwd, val.Salt) {
+
+	if s := domain.Sha1Pwd(pwd, val.Salt); s != val.Password {
+		log.Println("--password-compare", s, val.Password, val.Salt, typeconv.MustJson(val))
+
 		return nil, 1, de.ErrCredential
 	}
 	if val.UserFlag&member.FlagLocked == member.FlagLocked {
@@ -741,12 +748,12 @@ func (s *memberService) GrantAccessToken(_ context.Context, request *proto.Grant
 		"go2o-api-jwt", request.ExpiresTime).(jwt.MapClaims)
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
-		log.Println("[ go2o][ error]: grant access token error ", err.Error())
+		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
 		return &proto.GrantAccessTokenResponse{Error: err.Error()}, nil
 	}
 	token, err := api.AccessToken(claims, []byte(jwtSecret))
 	if err != nil {
-		log.Println("[ go2o][ error]: grant access token error ", err.Error())
+		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
 		return &proto.GrantAccessTokenResponse{Error: err.Error()}, nil
 	}
 	return &proto.GrantAccessTokenResponse{
@@ -761,7 +768,7 @@ func (s *memberService) CheckAccessToken(_ context.Context, request *proto.Check
 	}
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
-		log.Println("[ go2o][ error]: check access token error ", err.Error())
+		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
 		return &proto.CheckAccessTokenResponse{Error: err.Error()}, nil
 	}
 
@@ -867,7 +874,7 @@ func (s *memberService) GetAccount(_ context.Context, id *proto.MemberIdRequest)
 	if acc != nil {
 		return s.parseAccountDto(acc.GetValue()), nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchMember
 }
 
 // 获取上级邀请人会员编号数组
@@ -1057,7 +1064,7 @@ func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddReque
 
 // 实名认证信息
 func (s *memberService) GetTrustInfo(_ context.Context, id *proto.MemberIdRequest) (*proto.STrustedInfo, error) {
-	t := member.TrustedInfo{}
+	t := &member.TrustedInfo{}
 	m := s.repo.GetMember(id.MemberId)
 	if m != nil {
 		t = m.Profile().GetTrustedInfo()
@@ -1139,7 +1146,7 @@ func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest
 			v.Province, v.City, v.District)
 		return d, nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchAddress
 }
 
 // SaveAddress 保存配送地址
@@ -1160,6 +1167,10 @@ func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressReque
 	err := v.SetValue(e)
 	if err == nil {
 		ret.AddressId, err = v.Save()
+		// 设置默认收货地址
+		if e.IsDefault == 1 && err == nil {
+			err = m.Profile().SetDefaultAddress(v.GetDomainId())
+		}
 	}
 	if err != nil {
 		ret.ErrCode = 1
@@ -1261,7 +1272,7 @@ func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*
 		x := m.Complex()
 		return s.parseComplexMemberDto(x), nil
 	}
-	return nil, nil
+	return nil, member.ErrNoSuchMember
 }
 
 func (s *memberService) Freeze(_ context2.Context, r *proto.AccountFreezeRequest) (*proto.AccountFreezeResponse, error) {
@@ -1601,8 +1612,8 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegIp:          src.RegIp,
 		RegFrom:        src.RegFrom,
 		State:          int32(src.State),
-		Flag:           int32(src.UserFlag),
-		Portrait:       src.Avatar,
+		UserFlag:       int32(src.UserFlag),
+		Portrait:       src.Portrait,
 		Phone:          src.Phone,
 		Email:          src.Email,
 		Nickname:       src.Nickname,

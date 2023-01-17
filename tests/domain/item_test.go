@@ -176,6 +176,19 @@ func TestSaveItemImages(t *testing.T) {
 	}
 }
 
+func TestSaveAffiliateItemFlag(t *testing.T) {
+	var itemId int64 = 47
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	err := it.GrantFlag(item.FlagAffiliate)
+	if err == nil {
+		_, err = it.Save()
+	}
+	if err != nil {
+		t.Error(err)
+		t.Failed()
+	}
+}
 func TestSaveItemFreeDeliveryFlag(t *testing.T) {
 	var itemId int64 = 1
 	repo := ti.Factory.GetItemRepo()
@@ -192,7 +205,7 @@ func TestSaveItemFreeDeliveryFlag(t *testing.T) {
 }
 
 func TestCheckContainerItemFlag(t *testing.T) {
-	t.Log(-1&item.FlagNewGoods == item.FlagNewGoods)
+	t.Log(-1&item.FlagNewOnShelve == item.FlagNewOnShelve)
 }
 
 func TestAuditItem(t *testing.T) {

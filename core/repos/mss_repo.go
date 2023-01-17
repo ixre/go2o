@@ -11,12 +11,13 @@ package repos
 import (
 	"database/sql"
 	"fmt"
-	"github.com/ixre/go2o/core/domain/interface/mss"
-	"github.com/ixre/go2o/core/domain/interface/mss/notify"
+
+	mss "github.com/ixre/go2o/core/domain/interface/message"
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
-	mssImpl "github.com/ixre/go2o/core/domain/mss"
-	notifyImpl "github.com/ixre/go2o/core/domain/mss/notify"
+	mssImpl "github.com/ixre/go2o/core/domain/message"
+	notifyImpl "github.com/ixre/go2o/core/domain/message/notify"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"

@@ -52,14 +52,16 @@ const (
 	FlagActive = 1 << iota
 	// FlagLocked 已锁定的(2)
 	FlagLocked = 2
-	// FlagTrusted 已认证的(4)
+	// FlagTrusted 已实名认证的(4)
 	FlagTrusted = 4
+	// FlagTempPassword 密码为临时密码,需要重置
+	FlagTempPassword = 32
 	// FlagSeller 商户(64)
 	FlagSeller = 64
 	// FlagNoTradePasswd 交易密码未设置(64)
 	FlagNoTradePasswd = 128
 	// FlagStopRebate 禁用返利权限的(8)
-	FlagRebateDisabled = 256
+	FlagAffiliateDisabled = 256
 	// FlagProfileCompleted 已完善的资料(16)
 	FlagProfileCompleted = 512
 )
@@ -146,10 +148,10 @@ type (
 		ProfileCompleted() bool
 		// CheckProfileComplete 检查资料是否完善
 		CheckProfileComplete() error
-		// ModifyPassword 修改密码,旧密码可为空; 传入原始密码。密码均为密文
-		ModifyPassword(newPwd, oldPwd string) error
-		// ModifyTradePassword 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
-		ModifyTradePassword(newPassword, oldPwd string) error
+		// ChangePassword 修改密码,旧密码可为空; 传入原始密码。密码均为密文
+		ChangePassword(newPwd, oldPwd string) error
+		// ChangeTradePassword 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
+		ChangeTradePassword(newPassword, oldPwd string) error
 		// GetBankCards 获取提现银行信息
 		GetBankCards() []BankCard
 		// GetBankCard 获取绑定的银行卡
@@ -163,7 +165,7 @@ type (
 		// SaveReceiptsCode 保存收款码
 		SaveReceiptsCode(c *ReceiptsCode) error
 		// GetTrustedInfo 实名认证信息
-		GetTrustedInfo() TrustedInfo
+		GetTrustedInfo() *TrustedInfo
 		// SaveTrustedInfo 保存实名认证信息
 		SaveTrustedInfo(v *TrustedInfo) error
 		// ReviewTrustedInfo 审核实名认证,若重复审核将返回错误
@@ -236,7 +238,7 @@ type (
 		// 密码
 		Password string `db:"password"`
 		// 头像
-		Avatar string `db:"portrait"`
+		Portrait string `db:"portrait"`
 		// 交易密码
 		TradePassword string `db:"trade_pwd"`
 		// 经验值

@@ -18,7 +18,9 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/util"
 )
 
@@ -42,11 +44,12 @@ type subOrderImpl struct {
 	valRepo         valueobject.IValueRepo
 	mchRepo         merchant.IMerchantRepo
 	registryRepo    registry.IRegistryRepo
+	_stateIsChange  bool // 订单状态是否变更，如果变更后将推送信息
 }
 
 // ChangeShipmentAddress implements order.ISubOrder
 func (o *subOrderImpl) ChangeShipmentAddress(addressId int64) error {
-	return o.baseOrder().ChangeShipmentAddress(addressId)
+	return o.ParentOrder().ChangeShipmentAddress(addressId)
 }
 
 func NewSubNormalOrder(v *order.NormalSubOrder,
@@ -107,9 +110,9 @@ func parseDetailValue(subOrder order.ISubOrder) *order.ComplexOrderDetails {
 
 // Complex 复合的订单信息
 func (o *subOrderImpl) Complex() *order.ComplexOrder {
-	bo := o.baseOrder()
+	bo := o.ParentOrder()
 	if bo != nil {
-		co := o.baseOrder().Complex()
+		co := o.ParentOrder().Complex()
 		co.ItemCount = 0
 		for _, v := range o.Items() {
 			co.ItemCount += int(v.Quantity)
@@ -146,7 +149,7 @@ func (o *subOrderImpl) parseComplexItem(i *order.SubOrderItem) *order.ComplexIte
 		IsShipped:      i.IsShipped,
 		Data:           make(map[string]string),
 	}
-	base := o.baseOrder().(*normalOrderImpl)
+	base := o.ParentOrder().(*normalOrderImpl)
 	base.baseOrderImpl.bindItemInfo(it)
 	return it
 }
@@ -161,7 +164,7 @@ func (o *subOrderImpl) Items() []*order.SubOrderItem {
 }
 
 // 获取订单
-func (o *subOrderImpl) baseOrder() order.IOrder {
+func (o *subOrderImpl) ParentOrder() order.IOrder {
 	if o.parent == nil {
 		o.parent = o.manager.GetOrderById(o.value.OrderId)
 	}
@@ -170,7 +173,7 @@ func (o *subOrderImpl) baseOrder() order.IOrder {
 
 // 获取购买的会员
 func (o *subOrderImpl) getBuyer() member.IMember {
-	return o.baseOrder().Buyer()
+	return o.ParentOrder().Buyer()
 }
 
 // 添加备注
@@ -205,6 +208,7 @@ func (o *subOrderImpl) Submit() (int64, error) {
 		o.value.CreateTime = unix
 		o.value.UpdateTime = unix
 	}
+	o._stateIsChange = true
 	id, err := util.I64Err(o.repo.SaveSubOrder(o.value))
 	if err == nil {
 		o.value.Id = id
@@ -224,13 +228,25 @@ func (o *subOrderImpl) saveSubOrder() error {
 	_, err := o.repo.SaveSubOrder(o.value)
 	if err == nil {
 		o.syncOrderState()
+		// 推送订单状态事件
+		if o._stateIsChange {
+			vo := o.ParentOrder().(*normalOrderImpl)
+			eventbus.Publish(&events.SubOrderPushEvent{
+				OrderNo:          o.value.OrderNo,
+				OrderAmount:      int(o.value.FinalAmount),
+				ConsigneeName:    vo.baseValue.ConsigneeName,
+				ConsigneePhone:   vo.baseValue.ConsigneePhone,
+				ConsigneeAddress: vo.baseValue.ShippingAddress,
+				OrderState:       o.value.Status,
+			})
+		}
 	}
 	return err
 }
 
 // 同步订单状态
 func (o *subOrderImpl) syncOrderState() {
-	if bo := o.baseOrder(); bo != nil {
+	if bo := o.ParentOrder(); bo != nil {
 		oi := bo.(*normalOrderImpl).baseOrderImpl
 		if oi.State() != order.StatBreak {
 			oi.saveOrderState(order.OrderStatus(o.value.Status))
@@ -252,6 +268,7 @@ func (o *subOrderImpl) orderFinishPaid() error {
 		}
 		err := o.AppendLog(order.LogSetup, true, "{finish_pay}")
 		if err == nil {
+			o._stateIsChange = true
 			err = o.saveSubOrder()
 		}
 		return err
@@ -267,7 +284,7 @@ func (o *subOrderImpl) PaymentFinishByOnlineTrade() error {
 // 添加日志
 func (o *subOrderImpl) AppendLog(logType order.LogType, system bool, message string) error {
 	if o.GetDomainId() <= 0 {
-		return errors.New("order not created.")
+		return errors.New("order not created")
 	}
 	var systemInt int
 	if system {
@@ -325,7 +342,7 @@ func (o *subOrderImpl) addItemSalesNum() {
 // PickUp 捡货(备货)
 func (o *subOrderImpl) PickUp() error {
 	if o.value.Status < order.StatAwaitingPickup {
-		return order.ErrOrderNotConfirm
+		return order.ErrOrderNotPayed
 	}
 	if o.value.Status >= order.StatAwaitingShipment {
 		return order.ErrOrderHasPickUp
@@ -369,6 +386,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 	if err == nil {
 		o.value.Status = order.StatShipped
 		o.value.UpdateTime = time.Now().Unix()
+		o._stateIsChange = true
 		err = o.saveSubOrder()
 		if err == nil {
 			// 保存商品的发货状态
@@ -384,7 +402,7 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment
 		return nil
 	}
 	unix := time.Now().Unix()
-	orderId := o.baseOrder().GetAggregateRootId()
+	orderId := o.ParentOrder().GetAggregateRootId()
 	subOrderId := o.GetDomainId()
 	so := &shipment.ShipmentOrder{
 		ID:          0,
@@ -416,6 +434,9 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment
 
 // 已收货
 func (o *subOrderImpl) BuyerReceived() error {
+	// 测试发布处理分销事件
+	// o.publishAffiliateEvent()
+	// return nil
 	if o.value.Status < order.StatShipped {
 		return order.ErrOrderNotShipped
 	}
@@ -425,14 +446,15 @@ func (o *subOrderImpl) BuyerReceived() error {
 	dt := time.Now()
 	o.value.Status = order.StatCompleted
 	o.value.UpdateTime = dt.Unix()
+	o._stateIsChange = true
 	err := o.saveSubOrder()
 	if err == nil {
 		err = o.AppendLog(order.LogSetup, true, "{completed}")
 		if err == nil {
 			go o.vendorSettle()
 			// 执行其他的操作
-			if err2 := o.onOrderComplete(); err != nil {
-				domain.HandleError(err2, "domain")
+			if err = o.onOrderComplete(); err != nil {
+				domain.HandleError(err, "domain")
 			}
 		}
 	}
@@ -631,6 +653,8 @@ func (o *subOrderImpl) Cancel(reason string) error {
 
 	o.value.Status = order.StatCancelled
 	o.value.UpdateTime = time.Now().Unix()
+	o._stateIsChange = true
+
 	err := o.saveSubOrder()
 	if err == nil {
 		domain.HandleError(o.AppendLog(order.LogSetup, true, reason), "domain")
@@ -666,7 +690,7 @@ func (o *subOrderImpl) cancelGoods() error {
 
 // 取消支付单
 func (o *subOrderImpl) cancelPaymentOrder() error {
-	od := o.baseOrder()
+	od := o.ParentOrder()
 	if od.Type() != order.TRetail {
 		panic("not support order type")
 	}
@@ -717,6 +741,7 @@ func (o *subOrderImpl) SubmitRefund(reason string) error {
 		return order.ErrOrderCancelled
 	}
 	o.value.Status = order.StatAwaitingCancel
+	o._stateIsChange = true
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveSubOrder()
 }
@@ -731,6 +756,7 @@ func (o *subOrderImpl) Decline(reason string) error {
 		return order.ErrOrderCancelled
 	}
 	o.value.Status = order.StatDeclined
+	o._stateIsChange = true
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveSubOrder()
 }
@@ -749,6 +775,7 @@ func (o *subOrderImpl) refund() error {
 	}
 	o.value.Status = order.StatRefunded
 	o.value.UpdateTime = time.Now().Unix()
+	o._stateIsChange = true
 	err := o.saveSubOrder()
 	if err == nil {
 		err = o.cancelPaymentOrder()
@@ -787,9 +814,31 @@ func (o *subOrderImpl) onOrderComplete() error {
 	}
 
 	// 处理返现
-	err = o.handleCashBack()
-
+	//err = o.handleCashBack()
+	// 发布处理分销事件
+	o.publishAffiliateEvent()
 	return err
+}
+
+func (o *subOrderImpl) publishAffiliateEvent() {
+	// 获取启用分销的商品
+	affiliateItems := make([]*order.SubOrderItem, 0)
+	for _, it := range o.Items() {
+		i := o.itemRepo.GetItem(it.ItemId)
+		if i != nil && domain.TestFlag(i.GetValue().ItemFlag, item.FlagAffiliate) {
+			affiliateItems = append(affiliateItems, it)
+		}
+	}
+	// 发送分销事件
+	if len(affiliateItems) > 0 {
+		eventbus.Publish(&events.OrderAffiliateRebateEvent{
+			OrderNo:        o.value.OrderNo,
+			SubOrder:       true,
+			BuyerId:        o.value.BuyerId,
+			OrderAmount:    o.value.FinalAmount,
+			AffiliateItems: affiliateItems,
+		})
+	}
 }
 
 // Forbid 删除订单

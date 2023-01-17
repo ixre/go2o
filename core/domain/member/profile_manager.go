@@ -10,9 +10,7 @@ package member
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -20,15 +18,13 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/mss"
-	"github.com/ixre/go2o/core/domain/interface/mss/notify"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/tmp"
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
-	"github.com/ixre/go2o/core/msq"
-	"github.com/ixre/gof/db/orm"
 )
 
 var _ member.IProfileManager = new(profileManagerImpl)
@@ -244,7 +240,7 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 		err = p.repo.SaveProfile(&ptr)
 		if err == nil {
 			// 推送资料更新消息
-			go msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(int(p.memberId)), 500)
+			// go msq.PushDelay(msq.MemberProfileUpdated, strconv.Itoa(int(p.memberId)), 500)
 			// 完善资料通知
 			if p.ProfileCompleted() {
 				// 标记会员已完善资料
@@ -376,8 +372,8 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	return errors.New("no such email template")
 }
 
-// ModifyPassword 修改密码,旧密码可为空
-func (p *profileManagerImpl) ModifyPassword(newPassword, oldPwd string) error {
+// ChangePassword 修改密码,旧密码可为空
+func (p *profileManagerImpl) ChangePassword(newPassword, oldPwd string) error {
 	if b, err := dm.ChkPwdRight(newPassword); !b {
 		return err
 	}
@@ -394,8 +390,8 @@ func (p *profileManagerImpl) ModifyPassword(newPassword, oldPwd string) error {
 	return err
 }
 
-// ModifyTradePassword 修改交易密码，旧密码可为空
-func (p *profileManagerImpl) ModifyTradePassword(newPassword, oldPwd string) error {
+// ChangeTradePassword 修改交易密码，旧密码可为空
+func (p *profileManagerImpl) ChangeTradePassword(newPassword, oldPwd string) error {
 	if newPassword == oldPwd {
 		return domain.ErrPwdCannotSame
 	}
@@ -505,7 +501,7 @@ func (p *profileManagerImpl) RemoveBankCard(cardNo string) error {
 // 创建配送地址
 func (p *profileManagerImpl) CreateDeliver(v *member.ConsigneeAddress) member.IDeliverAddress {
 	v.MemberId = p.memberId
-	return newDeliver(v, p.repo, p.valueRepo)
+	return newDeliverAddress(v, p.repo, p.valueRepo)
 }
 
 // 获取配送地址
@@ -527,7 +523,7 @@ func (p *profileManagerImpl) SetDefaultAddress(addressId int64) error {
 		} else {
 			vv.IsDefault = 0
 		}
-		p.repo.SaveDeliver(&vv)
+		p.repo.SaveDeliverAddress(&vv)
 	}
 	return nil
 }
@@ -564,7 +560,13 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 }
 
 // 拷贝认证信息
-func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error {
+func (p *profileManagerImpl) copyTrustedInfo(src member.TrustedInfo, dst *member.TrustedInfo) error {
+	if dst == nil {
+		dst = &member.TrustedInfo{
+			MemberId:    p.memberId,
+			ReviewState: int(enum.ReviewAwaiting),
+		}
+	}
 	dst.RealName = src.RealName
 	dst.CountryCode = src.CountryCode
 	dst.CardId = src.CardId
@@ -576,23 +578,11 @@ func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error
 }
 
 // 实名认证信息
-func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
+func (p *profileManagerImpl) GetTrustedInfo() *member.TrustedInfo {
 	if p.trustedInfo == nil {
-		p.trustedInfo = &member.TrustedInfo{
-			MemberId:    p.memberId,
-			ReviewState: int(enum.ReviewNotSet),
-		}
-		//如果还没有实名信息,则新建
-		orm := tmp.Orm
-		if err := orm.Get(p.memberId, p.trustedInfo); err != nil {
-			orm.Save(nil, p.trustedInfo)
-		}
+		p.trustedInfo = p.repo.GetTrustedInfo(int(p.memberId))
 	}
-	// 显示示例图片
-	if p.trustedInfo.TrustImage == "" {
-		p.trustedInfo.TrustImage = exampleTrustImageUrl
-	}
-	return *p.trustedInfo
+	return p.trustedInfo
 }
 
 func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
@@ -647,13 +637,18 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		return member.ErrTrustMissingCardImage
 	}
 	// 保存
-	p.GetTrustedInfo()
-	err = p.copyTrustedInfo(v, p.trustedInfo)
+	current := p.GetTrustedInfo()
+	isCreate := current == nil
+	err = p.copyTrustedInfo(*v, current)
 	if err == nil {
 		p.trustedInfo.Remark = ""
 		p.trustedInfo.ReviewState = int(enum.ReviewAwaiting) //标记为待处理
 		p.trustedInfo.UpdateTime = time.Now().Unix()
-		_, err = orm.Save(tmp.Orm, p.trustedInfo, int(p.trustedInfo.MemberId))
+		if isCreate {
+			_, err = p.repo.SaveTrustedInfo(0, p.trustedInfo)
+		} else {
+			_, err = p.repo.SaveTrustedInfo(int(p.memberId), p.trustedInfo)
+		}
 	}
 	return err
 }
@@ -678,18 +673,9 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	unix := time.Now().Unix()
 	p.trustedInfo.Remark = remark
 	p.trustedInfo.ReviewTime = unix
-	_, err := orm.Save(tmp.Orm, p.trustedInfo,
-		int(p.trustedInfo.MemberId))
+	_, err := p.repo.SaveTrustedInfo(int(p.memberId), p.trustedInfo)
 	if err == nil {
-		if _, err = p.member.Save(); err == nil && pass {
-			// 通知实名通过
-			msq.Push(msq.MemberTrustInfoPassed,
-				fmt.Sprintf("%d|%d|%s|%s",
-					p.memberId,
-					p.trustedInfo.CardType,
-					p.trustedInfo.CardId,
-					p.trustedInfo.RealName))
-		}
+		_, err = p.member.Save()
 	}
 	return err
 }
@@ -702,88 +688,4 @@ func (p *profileManagerImpl) bankCardIsExists(cardNo string) bool {
 		}
 	}
 	return false
-}
-
-var _ member.IDeliverAddress = new(addressImpl)
-
-type addressImpl struct {
-	_value      *member.ConsigneeAddress
-	_memberRepo member.IMemberRepo
-	_valRepo    valueobject.IValueRepo
-}
-
-func newDeliver(v *member.ConsigneeAddress, memberRepo member.IMemberRepo,
-	valRepo valueobject.IValueRepo) member.IDeliverAddress {
-	d := &addressImpl{
-		_value:      v,
-		_memberRepo: memberRepo,
-		_valRepo:    valRepo,
-	}
-	return d
-}
-
-func (p *addressImpl) GetDomainId() int64 {
-	return p._value.Id
-}
-
-func (p *addressImpl) GetValue() member.ConsigneeAddress {
-	return *p._value
-}
-
-func (p *addressImpl) SetValue(v *member.ConsigneeAddress) error {
-	if p._value.MemberId == v.MemberId {
-		if err := p.checkValue(v); err != nil {
-			return err
-		}
-		p._value = v
-	}
-	return nil
-}
-
-// 设置地区中文名
-func (p *addressImpl) renewAreaName(v *member.ConsigneeAddress) string {
-	//names := p._valRepo.GetAreaNames([]int{
-	//	v.Province,
-	//	v.City,
-	//	v.District,
-	//})
-	//if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
-	//	return strings.Join([]string{names[0], names[2]}, " ")
-	//}
-	//return strings.Join(names, " ")
-
-	return p._valRepo.GetAreaString(v.Province, v.City, v.District)
-}
-
-func (p *addressImpl) checkValue(v *member.ConsigneeAddress) error {
-	v.DetailAddress = strings.TrimSpace(v.DetailAddress)
-	v.ConsigneeName = strings.TrimSpace(v.ConsigneeName)
-	v.ConsigneePhone = strings.TrimSpace(v.ConsigneePhone)
-
-	if len([]rune(v.ConsigneeName)) < 2 {
-		return member.ErrDeliverContactPersonName
-	}
-
-	if v.Province <= 0 || v.City <= 0 || v.District <= 0 {
-		return member.ErrNotSetArea
-	}
-
-	if !phoneRegex.MatchString(v.ConsigneePhone) {
-		return member.ErrDeliverContactPhone
-	}
-
-	if len([]rune(v.DetailAddress)) < 6 {
-		// 判断字符长度
-		return member.ErrDeliverAddressLen
-	}
-
-	return nil
-}
-
-func (p *addressImpl) Save() (int64, error) {
-	if err := p.checkValue(p._value); err != nil {
-		return p.GetDomainId(), err
-	}
-	p._value.Area = p.renewAreaName(p._value)
-	return p._memberRepo.SaveDeliver(p._value)
 }

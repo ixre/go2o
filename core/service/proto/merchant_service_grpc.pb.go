@@ -75,7 +75,7 @@ type MerchantServiceClient interface {
 	GetSaleConf(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantSaleConf, error)
 	GetShopId(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*Int64, error)
 	// 修改密码
-	ModifyPassword(ctx context.Context, in *ModifyMerchantPasswordRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangePassword(ctx context.Context, in *ModifyMerchantPasswordRequest, opts ...grpc.CallOption) (*Result, error)
 	// 保存API信息
 	// rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
 	// 获取API接口
@@ -365,9 +365,9 @@ func (c *merchantServiceClient) GetShopId(ctx context.Context, in *MerchantId, o
 	return out, nil
 }
 
-func (c *merchantServiceClient) ModifyPassword(ctx context.Context, in *ModifyMerchantPasswordRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *merchantServiceClient) ChangePassword(ctx context.Context, in *ModifyMerchantPasswordRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/MerchantService/ModifyPassword", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/MerchantService/ChangePassword", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -548,7 +548,7 @@ type MerchantServiceServer interface {
 	GetSaleConf(context.Context, *MerchantId) (*SMerchantSaleConf, error)
 	GetShopId(context.Context, *MerchantId) (*Int64, error)
 	// 修改密码
-	ModifyPassword(context.Context, *ModifyMerchantPasswordRequest) (*Result, error)
+	ChangePassword(context.Context, *ModifyMerchantPasswordRequest) (*Result, error)
 	// 保存API信息
 	// rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
 	// 获取API接口
@@ -667,8 +667,8 @@ func (UnimplementedMerchantServiceServer) GetSaleConf(context.Context, *Merchant
 func (UnimplementedMerchantServiceServer) GetShopId(context.Context, *MerchantId) (*Int64, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetShopId not implemented")
 }
-func (UnimplementedMerchantServiceServer) ModifyPassword(context.Context, *ModifyMerchantPasswordRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ModifyPassword not implemented")
+func (UnimplementedMerchantServiceServer) ChangePassword(context.Context, *ModifyMerchantPasswordRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
 }
 func (UnimplementedMerchantServiceServer) GetApiInfo(context.Context, *MerchantId) (*SMerchantApiInfo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetApiInfo not implemented")
@@ -1226,20 +1226,20 @@ func _MerchantService_GetShopId_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MerchantService_ModifyPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MerchantService_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ModifyMerchantPasswordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MerchantServiceServer).ModifyPassword(ctx, in)
+		return srv.(MerchantServiceServer).ChangePassword(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MerchantService/ModifyPassword",
+		FullMethod: "/MerchantService/ChangePassword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).ModifyPassword(ctx, req.(*ModifyMerchantPasswordRequest))
+		return srv.(MerchantServiceServer).ChangePassword(ctx, req.(*ModifyMerchantPasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1598,8 +1598,8 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MerchantService_GetShopId_Handler,
 		},
 		{
-			MethodName: "ModifyPassword",
-			Handler:    _MerchantService_ModifyPassword_Handler,
+			MethodName: "ChangePassword",
+			Handler:    _MerchantService_ChangePassword_Handler,
 		},
 		{
 			MethodName: "GetApiInfo",

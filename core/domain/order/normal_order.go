@@ -62,10 +62,10 @@ type normalOrderImpl struct {
 	vendorExpressMap map[int]int64
 	// 是否为内部挂起
 	internalSuspend bool
-	_list           []order.ISubOrder
+	_subOrders      []order.ISubOrder
 	_payOrder       payment.IPaymentOrder
 	// 返利推荐人
-	_affliteMember member.IMember
+	_AffiliateMember member.IMember
 }
 
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
@@ -112,10 +112,10 @@ func (o *normalOrderImpl) ApplyTraderCode(code string) error {
 	}
 	im := o.memberRepo.GetMember(memberId)
 	// 用户没有返利标志，则不作任何处理
-	if im == nil || im.ContainFlag(member.FlagRebateDisabled) {
+	if im == nil || im.ContainFlag(member.FlagAffiliateDisabled) {
 		return nil
 	}
-	o._affliteMember = im
+	o._AffiliateMember = im
 	return nil
 }
 
@@ -771,22 +771,22 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	v.FinalAmount = v.ItemAmount - v.DiscountAmount +
 		v.PackageFee + v.ExpressFee
 	so := o.repo.CreateNormalSubOrder(v)
-	o.createAffliteRebateOrder(so)
+	o.createAffiliateRebateOrder(so)
 	return so
 }
 
 // 创建返利订单
-func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder) {
-	if o._affliteMember != nil {
+func (o *normalOrderImpl) createAffiliateRebateOrder(so order.ISubOrder) {
+	if o._AffiliateMember != nil {
 		// 未开启返利
-		rv, _ := o.registryRepo.GetValue(registry.OrderEnableAffliteRebate)
+		rv, _ := o.registryRepo.GetValue(registry.OrderEnableAffiliateRebate)
 		if v, _ := strconv.ParseBool(rv); !v {
 			return
 		}
 		// 获取返利比例
-		rv, err := o.registryRepo.GetValue(registry.OrderGlobalAffliteRebateRate)
+		rv, err := o.registryRepo.GetValue(registry.OrderGlobalAffiliateRebateRate)
 		if err != nil {
-			log.Println("[ warning]: affilite rebate rate error", err.Error())
+			log.Println("[ warning]: affiliate rebate rate error", err.Error())
 			return
 		}
 		rate := typeconv.MustFloat(rv)
@@ -795,10 +795,10 @@ func (o *normalOrderImpl) createAffliteRebateOrder(so order.ISubOrder) {
 		}
 		ov := so.GetValue()
 		unix := time.Now().Unix()
-		v := &order.AffliteRebate{
+		v := &order.AffiliateRebate{
 			PlanId:        0,
-			TraderId:      o._affliteMember.GetAggregateRootId(),
-			AffiliateCode: o._affliteMember.GetValue().UserCode,
+			TraderId:      o._AffiliateMember.GetAggregateRootId(),
+			AffiliateCode: o._AffiliateMember.GetValue().UserCode,
 			OrderNo:       ov.OrderNo,
 			OrderSubject:  ov.Subject,
 			OrderAmount:   ov.FinalAmount,
@@ -853,7 +853,7 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 		i++
 	}
 	// 设置已拆分的订单
-	o._list = list
+	o._subOrders = list
 	if l > 1 {
 		// 设置订单为已拆分状态
 		o.saveOrderState(order.StatBreak)
@@ -861,7 +861,7 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 	return list, nil
 }
 
-// 生成支付子订单
+// createPaymentSubOrder 生成一个用于合并支付的子订单
 func (o *normalOrderImpl) createPaymentSubOrder() (order.ISubOrder, error) {
 	orderNo := o.OrderNo()
 	breakStatus := order.BreakDefault
@@ -914,28 +914,32 @@ func (o *normalOrderImpl) GetSubOrders() []order.ISubOrder {
 	if orderId <= 0 {
 		panic(order.ErrNoYetCreated)
 	}
-	if o._list == nil {
+	if o._subOrders == nil {
 		list := o.orderRepo.GetNormalSubOrders(orderId)
 		for _, v := range list {
 			sub := o.repo.CreateNormalSubOrder(v)
-			o._list = append(o._list, sub)
+			o._subOrders = append(o._subOrders, sub)
 		}
 	}
-	return o._list
+	return o._subOrders
 }
 
 // 在线支付交易完成
 func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
-	for _, o := range o.GetSubOrders() {
-		// 销毁拆分支付订单
-		if o.GetValue().BreakStatus == order.BreakDefault {
-			if err := o.Destory(); err != nil {
+	// 排除支付子订单
+	for i, so := range o.GetSubOrders() {
+		// 销毁支付子订单
+		ov := so.GetValue()
+		if ov.BreakStatus == order.BreakDefault {
+			if err := so.Destory(); err != nil {
 				log.Println("销毁支付子订单失败:" + err.Error())
 			}
-		} else {
-			if err = o.PaymentFinishByOnlineTrade(); err != nil {
-				return err
-			}
+			o._subOrders = append(o._subOrders[:i], o._subOrders[i+1:]...)
+		}
+	}
+	for _, so := range o.GetSubOrders() {
+		if err = so.PaymentFinishByOnlineTrade(); err != nil {
+			return err
 		}
 	}
 	o.baseValue.IsPaid = 1

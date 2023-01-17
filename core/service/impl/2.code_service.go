@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"errors"
 
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/impl"
@@ -64,7 +65,7 @@ func (c *codeServiceImpl) SaveQrTemplate(_ context.Context, r *proto.SaveQrTempl
 func (c *codeServiceImpl) GetQrTemplate(_ context.Context, id *proto.CommQrTemplateId) (*proto.SQrTemplate, error) {
 	v := c.dao.GetQrTemplate(id.Value)
 	if v == nil {
-		return nil, nil
+		return nil, errors.New("no such qr template")
 	}
 	return c.parseQrTemplate(v), nil
 }

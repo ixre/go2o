@@ -117,7 +117,7 @@ func (si *shopServiceImpl) GetShop(_ context.Context, req *proto.GetShopIdReques
 		}
 		return ret, nil
 	}
-	return nil, nil
+	return nil, shop.ErrNoSuchShop
 }
 
 // CheckMerchantShopState 检查商户是否开通店铺
@@ -178,7 +178,7 @@ func (si *shopServiceImpl) GetStore(_ context.Context, storeId *proto.StoreId) (
 		}
 		return ret, nil
 	}
-	return nil, nil
+	return nil, shop.ErrNoSuchShop
 }
 
 // TurnShop 打开或关闭商店

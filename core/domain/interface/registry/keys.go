@@ -1,7 +1,8 @@
 package registry
 
 var (
-
+	// 应用唯一编号
+	AppId = KeyFormat("AppId")
 	/** 域名 */
 	// 访问协议,https或http
 	HttpProtocols = KeyFormat("HttpProtocols")
@@ -65,6 +66,8 @@ var (
 	PlatformRetailSiteLogo = KeyFormat("PlatformRetailSiteLogo")
 	// 批发门户标志
 	PlatformWholesaleSiteLogo = KeyFormat("PlatformWholesaleSiteLogo")
+	// 是否开启多店铺模式
+	PlatformMultipleShopEnabled = KeyFormat("PlatformMultipleShopEnabled")
 
 	/** 系统 */
 	// 启用商户店铺商品分类
@@ -82,7 +85,7 @@ var (
 	// 超级管理员登录密钥
 	SysSuperLoginToken = KeyFormat("sys_super_login_token")
 	/** 短信 */
-	// 默认短信服务商
+	// 默认短信服务商,当值为1时,将推送短信发送请求到外部系统
 	SmsDefaultProvider = KeyFormat("SmsDefaultProvider")
 	// 用户注册短信模板ID
 	SmsRegisterTemplateId = KeyFormat("SmsRegisterTemplateId")
@@ -173,6 +176,13 @@ var (
 
 	// 活动账户转为赠送可提现奖金手续费费率
 	MemberFlowAccountConvertCsn = KeyFormat("MemberFlowAccountConvertCsn")
+	// 是否启用会员账户信息消息推送
+	MemberAccountPushEnabled = KeyFormat("MemberAccountPushEnabled")
+	// 是否启用会员提现消息推送
+	MemberWithdrawalPushEnabled = KeyFormat("MemberWithdrawalPushEnabled")
+	// 会员账户流水消息推送
+	MemberAccountLogPushEnabled = KeyFormat("MemberAccountLogPushEnabled")
+
 	/* 经验值 */
 	// 是否启用会员经验值功能
 	ExperienceEnabled = KeyFormat("ExperienceEnabled")
@@ -197,9 +207,14 @@ var (
 
 	/** 订单 */
 	// 是否启用订单返利
-	OrderEnableAffliteRebate = KeyFormat("OrderEnableAffliteRebate")
+	OrderEnableAffiliateRebate = KeyFormat("OrderEnableAffiliateRebate")
 	// 全局订单返利比例
-	OrderGlobalAffliteRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
+	OrderGlobalAffiliateRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
+	// 推送分销事件
+	OrdeAffiliatePushEnabled = KeyFormat("OrdeAffiliatePushEnabled")
+	// 推送子订单状态变更事件
+	OrderSubOrderPushEnabled = KeyFormat("OrderSubOrderPushEnabled")
+
 	//  /* 商户订单 */
 	// MchOrderSettleMode 商户订单结算模式
 	MchOrderSettleMode = KeyFormat("MchOrderSettleMode")

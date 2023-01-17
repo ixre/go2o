@@ -26,7 +26,7 @@ func Configure(servers []string, database string, password string) {
 	if len(servers) == 0 || servers[0] == "" {
 		return
 	}
-	log.Println("[ Go2o][ Info]: configure clickhouse connection..")
+	log.Println("[ GO2O][ INFO]: configure clickhouse connection..")
 	IsCluster = len(servers) > 1
 	conn, err := clickhouse.Open(&clickhouse.Options{
 		Addr: servers,
@@ -72,7 +72,7 @@ func InitializeDB(servers []string, database string, password string) {
 	if len(servers) == 0 || servers[0] == "" {
 		return
 	}
-	log.Println("[ Go2o][ Info]: configure clickhouse sql connection..")
+	log.Println("[ GO2O][ INFO]: configure clickhouse sql connection..")
 	IsCluster = len(servers) > 1
 	// 初始化连接
 	conn := clickhouse.OpenDB(&clickhouse.Options{

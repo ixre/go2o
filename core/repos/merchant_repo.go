@@ -12,13 +12,18 @@ package repos
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
-	"github.com/ixre/go2o/core/domain/interface/mss"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
@@ -27,10 +32,6 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"log"
-	"strings"
-	"sync"
-	"time"
 )
 
 var _ merchant.IMerchantRepo = new(merchantRepo)
@@ -51,6 +52,8 @@ type merchantRepo struct {
 	_registryRepo registry.IRegistryRepo
 	mux           *sync.RWMutex
 }
+
+// GetBalanceAccountLog implements merchant.IMerchantRepo
 
 func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
@@ -156,6 +159,7 @@ func (m *merchantRepo) GetAccount(mchId int) *merchant.Account {
 	if err == nil {
 		return &e
 	}
+	// 初始化一个钱包账户
 	if err == sql.ErrNoRows {
 		e.MchId = int64(mchId)
 		e.UpdateTime = time.Now().Unix()
@@ -365,28 +369,27 @@ func (m *merchantRepo) SaveMemberLevel(mchId int64, v *merchant.MemberLevel) (in
 	return orm.I32(orm.Save(m.o, v, int(v.Id)))
 }
 
+//	func (m *merchantRepo) UpdateMechOfflineRate(id int, rate float32, return_rate float32) error {
+//		_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate= ? ,return_rate= ? WHERE  id= ?", rate, return_rate, id)
+//		return err
+//	}
 //
-//func (m *merchantRepo) UpdateMechOfflineRate(id int, rate float32, return_rate float32) error {
-//	_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate= ? ,return_rate= ? WHERE  id= ?", rate, return_rate, id)
-//	return err
-//}
+//	func (m *merchantRepo) GetOfflineRate(id int32) (float32, float32, error) {
+//		var rate float32
+//		var return_rate float32
+//		err := m.Connector.ExecScalar("SELECT  offline_rate FROM mch_merchant WHERE id= ?", &rate, id)
+//		m.Connector.ExecScalar("SELECT  return_rate  FROM mch_merchant WHERE id= ?", &return_rate, id)
+//		return rate, return_rate, err
+//	}
 //
-//func (m *merchantRepo) GetOfflineRate(id int32) (float32, float32, error) {
-//	var rate float32
-//	var return_rate float32
-//	err := m.Connector.ExecScalar("SELECT  offline_rate FROM mch_merchant WHERE id= ?", &rate, id)
-//	m.Connector.ExecScalar("SELECT  return_rate  FROM mch_merchant WHERE id= ?", &return_rate, id)
-//	return rate, return_rate, err
-//}
-//
-// 保存销售配置
-func (m *merchantRepo) UpdateAccount(v *merchant.Account) error {
+// 保存会员账户
+func (m *merchantRepo) SaveAccount(v *merchant.Account) (int, error) {
 	orm := m.o
 	var err error
 	if v.MchId > 0 {
 		_, _, err = orm.Save(v.MchId, v)
 	}
-	return err
+	return int(v.MchId), err
 }
 
 // Get MchEnterpriseInfo
@@ -504,4 +507,82 @@ func (m *merchantRepo) BatchDeleteMchTradeConf(where string, v ...interface{}) (
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
 	}
 	return r, err
+}
+
+func (m *merchantRepo) GetBalanceAccountLog(id int) *merchant.BalanceLog {
+	e := merchant.BalanceLog{}
+	err := m.o.Get(id, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBalanceLog")
+	}
+	return nil
+}
+
+// SaveBalanceAccountLog implements merchant.IMerchantRepo
+func (m *merchantRepo) SaveBalanceAccountLog(v *merchant.BalanceLog) (int, error) {
+	id, err := orm.Save(m.o, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBalanceLog")
+	}
+	return id, err
+}
+
+// GetMerchantByMemberId implements merchant.IMerchantRepo
+func (m *merchantRepo) GetMerchantByMemberId(memberId int) merchant.IMerchant {
+	v := merchant.Merchant{}
+	err := m.o.GetBy(&v, "member_id= $1", memberId)
+	if err == nil {
+		return m.CreateMerchant(&v)
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchMerchant")
+	}
+	return nil
+}
+
+// GetMerchantSignUpByMemberId implements merchant.IMerchantRepo
+func (m *merchantRepo) GetMerchantSignUpByMemberId(memberId int) *merchant.MchSignUp {
+	v := merchant.MchSignUp{}
+	err := m.o.GetBy(&v, "member_id= $1", memberId)
+	if err == nil {
+		return &v
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchSignUp")
+	}
+	return nil
+}
+
+// DeleteMerchantSignUpByMemberId implements merchant.IMerchantRepo
+func (m *merchantRepo) DeleteMerchantSignUpByMemberId(memberId int) error {
+	_, err := m.o.Delete(merchant.MchSignUp{}, "member_id= $1", memberId)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
+	}
+	return err
+}
+
+// GetMerchantSignUpInfo implements merchant.IMerchantRepo
+func (m *merchantRepo) GetMerchantSignUpInfo(id int) *merchant.MchSignUp {
+	v := merchant.MchSignUp{}
+	err := m.o.Get(&v, id)
+	if err == nil {
+		return &v
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchSignUp")
+	}
+	return nil
+}
+
+// SaveSignUpInfo implements merchant.IMerchantRepo
+func (m *merchantRepo) SaveSignUpInfo(v *merchant.MchSignUp) (int, error) {
+	id, err := orm.Save(m.o, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchSignUp")
+	}
+	return id, err
 }

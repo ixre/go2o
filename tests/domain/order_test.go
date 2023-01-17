@@ -58,7 +58,7 @@ func logState(t *testing.T, err error, o order.IOrder) {
 }
 
 func TestOrderSetup(t *testing.T) {
-	orderNo := "1220606007633559"
+	orderNo := "1230111000185776"
 	orderRepo := ti.Factory.GetOrderRepo()
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
@@ -67,13 +67,6 @@ func TestOrderSetup(t *testing.T) {
 	t.Log("-[ 订单状态为:" + order.OrderStatus(o.GetValue().Status).String())
 
 	err := o.PaymentFinishByOnlineTrade()
-	if err != nil {
-		t.Log(err)
-	} else {
-		t.Log(order.OrderStatus(o.GetValue().Status).String())
-	}
-
-	err = o.Confirm()
 	if err != nil {
 		t.Log(err)
 	} else {
@@ -94,13 +87,17 @@ func TestOrderSetup(t *testing.T) {
 		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
 
-	return
 	err = o.BuyerReceived()
 	if err != nil {
-		t.Log(err)
+		t.Error(err)
+		t.FailNow()
 	} else {
 		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
+	for {
+
+	}
+	time.Sleep(20000)
 }
 
 func TestCancelOrder(t *testing.T) {
@@ -132,7 +129,7 @@ func TestCancelOrder(t *testing.T) {
 		AddressId:       addressId,
 		CouponCode:      "",
 		BalanceDiscount: true,
-		AffliteCode:     "",
+		AffiliateCode:   "",
 		PostedData:      nil,
 	}
 	o, rd, err := manager.SubmitOrder(data)
@@ -215,7 +212,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 		AddressId:       addressId,
 		CouponCode:      "",
 		BalanceDiscount: true,
-		AffliteCode:     "",
+		AffiliateCode:   "",
 		PostedData:      nil,
 	}
 	o, _, err := manager.SubmitOrder(data)
@@ -231,10 +228,12 @@ func TestSubmitNormalOrder(t *testing.T) {
 
 // 测试从订单重新创建订单并提交付款
 func TestRebuildSubmitNormalOrder(t *testing.T) {
+	orderNo := "1230111000414674"
 	repo := ti.Factory.GetOrderRepo()
 	memRepo := ti.Factory.GetMemberRepo()
 	payRepo := ti.Factory.GetPaymentRepo()
-	io := repo.Manager().GetOrderByNo("1221203000248293")
+	so := repo.GetSubOrderByOrderNo(orderNo)
+	io := so.ParentOrder()
 	ic := io.BuildCart()
 	ic.Save()
 	memberId := io.Buyer().GetAggregateRootId()
@@ -247,7 +246,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		AddressId:       addressId,
 		CouponCode:      "",
 		BalanceDiscount: true,
-		AffliteCode:     "",
+		AffiliateCode:   "",
 		PostedData:      nil,
 	}
 	nio, _, err := repo.Manager().SubmitOrder(data)
@@ -255,7 +254,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.Log("提交订单", err.Error())
 		t.FailNow()
 	}
-	t.Logf("提交的订单号为：%s", io.OrderNo())
+	t.Logf("提交的订单号为：%s", nio.OrderNo())
 	ipo := payRepo.GetPaymentOrderByOrderNo(int(order.TRetail), nio.OrderNo())
 	err = ipo.PaymentFinish("alipay", "1233535080808wr")
 	if err == nil {
@@ -264,28 +263,42 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.Log("支付订单", err.Error())
 		t.FailNow()
 	}
-	time.Sleep(time.Second * 2)
-	// 开始完成发货流程并收货
-	ino := nio.(order.INormalOrder)
+	// 开始完成发货流程并收货\
+	newOrder := repo.Manager().GetOrderById(nio.GetAggregateRootId())
+	ino := newOrder.(order.INormalOrder)
 	for _, v := range ino.GetSubOrders() {
 		v.Confirm()
 		err = v.PickUp()
 		if err == nil {
 			err = v.Ship(1, "12345345")
-			if err == nil {
-				err = v.BuyerReceived()
-			}
+			// if err == nil {
+			// 	err = v.BuyerReceived()
+			// }
 		}
 		if err != nil {
 			t.Log("收货不成功：", err)
 			t.FailNow()
 		}
 	}
+	time.Sleep(2000)
+}
+
+func TestFinishSubOrder(t *testing.T) {
+	repo := ti.Factory.GetOrderRepo()
+	io := repo.GetSubOrderByOrderNo("1230115001702364")
+	err := io.BuyerReceived()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+	for {
+	}
+	time.Sleep(5000)
 }
 
 func TestFinishNormalOrder(t *testing.T) {
 	repo := ti.Factory.GetOrderRepo()
-	io := repo.Manager().GetOrderByNo("1221203000128066")
+	io := repo.Manager().GetOrderByNo("1230115001702364")
 	subOrders := io.(order.INormalOrder).GetSubOrders()
 	for _, o := range subOrders {
 		//err := o.Confirm()
@@ -296,6 +309,7 @@ func TestFinishNormalOrder(t *testing.T) {
 			t.Fail()
 		}
 	}
+	time.Sleep(5000)
 }
 
 // 测试批发订单,并完成付款
@@ -339,7 +353,7 @@ func TestWholesaleOrder(t *testing.T) {
 		AddressId:       addressId,
 		CouponCode:      "",
 		BalanceDiscount: false,
-		AffliteCode:     "",
+		AffiliateCode:   "",
 		PostedData:      parser.NewPostedData(data, nil),
 	}
 	_, rd, err := manager.SubmitOrder(data1)
@@ -386,7 +400,7 @@ func TestTradeOrder(t *testing.T) {
 		AddressId:       0,
 		CouponCode:      "",
 		BalanceDiscount: false,
-		AffliteCode:     "",
+		AffiliateCode:   "",
 		PostedData: parser.NewPostedData(nil, &proto.SubmitOrderRequest{
 			TradeOrder: &proto.TradeOrderRequest{
 				StoreId:     int64(storeId),
@@ -446,7 +460,7 @@ func TestMergePaymentOrder(t *testing.T) {
 		AddressId:       addressId,
 		CouponCode:      "",
 		BalanceDiscount: false,
-		AffliteCode:     "",
+		AffiliateCode:   "",
 		PostedData:      nil,
 	}
 	_, rd, err := repo.Manager().SubmitOrder(data)

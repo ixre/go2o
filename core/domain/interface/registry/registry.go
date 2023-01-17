@@ -1,13 +1,13 @@
 package registry
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
-	"github.com/ixre/go2o/core/msq"
+	"log"
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/ixre/gof/domain/eventbus"
 )
 
 const (
@@ -138,19 +138,19 @@ func (r *registryImpl) StringValue() string {
 
 func (r *registryImpl) IntValue() int {
 	v, err := strconv.Atoi(r.value.Value)
-	r.panic(err)
+	r.warning(err)
 	return v
 }
 
 func (r *registryImpl) FloatValue() float64 {
 	v, err := strconv.ParseFloat(r.value.Value, 64)
-	r.panic(err)
+	r.warning(err)
 	return v
 }
 
 func (r *registryImpl) BoolValue() bool {
 	v, err := strconv.ParseBool(r.value.Value)
-	r.panic(err)
+	r.warning(err)
 	return v
 }
 
@@ -166,6 +166,9 @@ func (r *registryImpl) Reset() error {
 }
 
 func (r *registryImpl) Update(value string) error {
+	if r.value.Key == "app_id" {
+		return errors.New("disable update app_id")
+	}
 	if r.value.Value != value {
 		r.value.Value = value
 		r.isChanged = true
@@ -175,6 +178,9 @@ func (r *registryImpl) Update(value string) error {
 
 func (r *registryImpl) Save() error {
 	r.value.Key = KeyFormat(r.value.Key)
+	if len(r.value.Key) == 0 {
+		return errors.New("key length is zero")
+	}
 	if len(r.value.Key) > 45 {
 		return errors.New("key length out of 40")
 	}
@@ -185,16 +191,20 @@ func (r *registryImpl) Save() error {
 	// 推送用户自定义键值变更通知
 	if r.IsUser() && r.isChanged {
 		r.isChanged = false
-		bytes, _ := json.Marshal(r.value)
-		msq.Push(msq.RegistryTopic, string(bytes))
+		eventbus.Publish(&RegistryPushEvent{
+			IsUser: r.IsUser(),
+			Key:    r.Key(),
+			Value:  r.StringValue(),
+		})
 	}
 	return r.repo.Save(r)
 }
 
-func (r *registryImpl) panic(e error) {
+func (r *registryImpl) warning(e error) {
 	if e != nil {
-		panic(fmt.Sprintf("parse registry value fail! key:%s value:%s",
+		log.Printf(`[ GO2O][ warning]:
+			parse registry value fail! key:%s value:%s \n`,
 			r.value.Key,
-			r.value.Value))
+			r.value.Value)
 	}
 }

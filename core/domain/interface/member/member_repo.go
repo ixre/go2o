@@ -58,7 +58,7 @@ type IMemberRepo interface {
 
 	// 获取会员最后更新时间
 	GetMemberLatestUpdateTime(id int64) int64
-	
+
 	// 根据手机号获取会员编号
 	GetMemberIdByPhone(phone string) int64
 
@@ -116,7 +116,10 @@ type IMemberRepo interface {
 
 	// 获取会员关联
 	GetRelation(memberId int64) *InviteRelation
-
+	// 保存实名信息
+	SaveTrustedInfo(id int, v *TrustedInfo) (int, error)
+	// 获取实名信息
+	GetTrustedInfo(memberId int) *TrustedInfo
 	// 获取经验值对应的等级
 	GetLevelValueByExp(mchId int64, exp int64) int
 
@@ -127,7 +130,7 @@ type IMemberRepo interface {
 	SaveLevelUpLog(l *LevelUpLog) (int32, error)
 
 	// 保存地址
-	SaveDeliver(*ConsigneeAddress) (int64, error)
+	SaveDeliverAddress(*ConsigneeAddress) (int64, error)
 
 	// 获取全部配送地址
 	GetDeliverAddress(memberId int64) []*ConsigneeAddress

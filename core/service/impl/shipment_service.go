@@ -10,6 +10,8 @@ package impl
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/ixre/go2o/core/domain/interface/delivery"
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/domain/interface/shipment"
@@ -106,7 +108,7 @@ func (s *shipmentServiceImpl) ShipOrderLogisticTrack(ctx context.Context, rq *pr
 	if so != nil {
 		sp := s.expressRepo.GetExpressProvider(so.Value().SpId)
 		if sp == nil {
-			log.Println("[ Go2o][ Service][ Warning]: no such express provider id ", so.Value().SpId)
+			log.Println("[ GO2O][ Service][ Warning]: no such express provider id ", so.Value().SpId)
 		} else {
 			//spOrder = "462681586678"
 			//sp.ApiCode = "ZTO"
@@ -120,7 +122,7 @@ func (s *shipmentServiceImpl) ShipOrderLogisticTrack(ctx context.Context, rq *pr
 			return r, err
 		}
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such ship order")
 }
 
 func (s *shipmentServiceImpl) parseCoverArea(r *proto.SCoverageValue) *delivery.CoverageValue {

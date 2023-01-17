@@ -1,5 +1,11 @@
 package registry
 
+import (
+	"strconv"
+
+	"github.com/ixre/gof/util"
+)
+
 var mergeData = make([]*Registry, 0)
 
 func mergeAdd(description string, key string, defaultValue string, options string) {
@@ -16,6 +22,8 @@ func mergeAdd(description string, key string, defaultValue string, options strin
 
 // 返回需要合并的注册表数据
 func MergeRegistries() []*Registry {
+	// 应用编号
+	mergeAdd("应用唯一编号", AppId, strconv.Itoa(util.RandInt(8)), "不允许修改")
 	/** 域名 */
 	mergeAdd("访问协议", HttpProtocols, "http", "")
 	mergeAdd("域名", Domain, "yourdomain.com", "")
@@ -29,7 +37,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("通行证域名协议", DomainPassportProto, "http", "http或https")
 	mergeAdd("API前缀", DomainPrefixApi, "api.", "")
 	mergeAdd("HAPI前缀", DomainPrefixHApi, "hapi.", "")
-	mergeAdd("文件服务器前缀",DomainFileServerPrefix,"/files/","")
+	mergeAdd("文件服务器前缀", DomainFileServerPrefix, "/files/", "")
 	mergeAdd("静态服务器前缀", DomainPrefixStatic, "static.", "")
 	mergeAdd("图片服务器前缀", DomainPrefixImage, "img.", "")
 	mergeAdd("批发中心移动端", DomainPrefixMobileWholesale, "mwhs.", "")
@@ -57,6 +65,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("反色标志", PlatformInverseColorLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
 	mergeAdd("零售门户标志", PlatformRetailSiteLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
 	mergeAdd("批发门户标志", PlatformWholesaleSiteLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+	mergeAdd("是否开启多店铺模式", PlatformMultipleShopEnabled, "1", "0:关闭,1:启用")
 
 	/** 系统 */
 	mergeAdd("启用商户店铺商品分类", EnableMchGoodsCategory, "false", "")
@@ -73,7 +82,6 @@ func MergeRegistries() []*Registry {
 	mergeAdd("用户注册短信模板ID", SmsRegisterTemplateId, "", "")
 	mergeAdd("用户验证码短信模板ID", SmsMemberCheckTemplateId, "", "")
 	mergeAdd("短信接收间隔,默认(2s)", SmsSendDuration, "2000", "")
-
 	// 注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册,等于member.RegisterMode
 	mergeAdd("注册模式,1:普通注册 2:关闭注册 3:仅直接注册 4:仅邀请注册", MemberRegisterMode, "1", "")
 	mergeAdd("是否允许匿名注册", MemberRegisterAllowAnonymous, "true", "")
@@ -108,6 +116,11 @@ func MergeRegistries() []*Registry {
 	mergeAdd("会员转账提示信息", MemberAccountTransferMessage, "平台仅提供转账功能，请尽量当面交易以保证安全！", "")
 	mergeAdd("会员转账手续费费率", MemberAccountTransferProcedureRate, "0.00", "")
 	mergeAdd("活动账户转为赠送可提现奖金手续费费率", MemberFlowAccountConvertCsn, "0.20", "")
+	// 会员信息推送
+	mergeAdd("是否启用会员账户信息消息推送", MemberAccountPushEnabled, "0", "0:关闭,1:启用")
+	mergeAdd("是否启用会员提现消息推送", MemberWithdrawalPushEnabled, "0", "0:关闭,1:启用")
+	mergeAdd("会员账户流水消息推送", MemberAccountLogPushEnabled, "0", "0:关闭,1:启用")
+
 	// 经验值
 	mergeAdd("是否启用会员经验值功能", ExperienceEnabled, "true", "")
 	mergeAdd("会员普通消费1元产生的经验比例", ExperienceRateByOrder, "1.00", "")
@@ -122,8 +135,10 @@ func MergeRegistries() []*Registry {
 	mergeAdd("抵扣1元所需要的积分(0不抵扣)", IntegralDiscountQuantity, "1000", "")
 
 	// 订单
-	mergeAdd("是否启用订单返利", OrderEnableAffliteRebate, "0", "")
-	mergeAdd("全局订单返利比例", OrderGlobalAffliteRebateRate, "0", "")
+	mergeAdd("是否启用订单返利", OrderEnableAffiliateRebate, "0", "")
+	mergeAdd("全局订单返利比例", OrderGlobalAffiliateRebateRate, "0", "")
+	mergeAdd("推送订单分销事件", OrdeAffiliatePushEnabled, "0", "0:不推送(内部处理),1:仅推送(内部处理),2:推送并处理(外部处理分销)")
+	mergeAdd("推送子订单状态变更事件", OrderSubOrderPushEnabled, "0", "0:关闭,1:启用")
 
 	// 商户订单
 	mergeAdd("是否必须认证后才可上传商品", MchMustBeTrust, "true", "")

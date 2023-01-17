@@ -11,7 +11,6 @@ package repos
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
 
@@ -32,7 +31,6 @@ import (
 	orderImpl "github.com/ixre/go2o/core/domain/order"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
@@ -71,7 +69,7 @@ func NewOrderRepo(sto storage.Interface, o orm.Orm,
 	shipRepo shipment.IShipmentRepo, shopRepo shop.IShopRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) order.IOrderRepo {
 	if !orderRepoMapped {
-		_ = o.Mapping(order.AffliteRebate{}, "order_rebate_list")
+		_ = o.Mapping(order.AffiliateRebate{}, "order_rebate_list")
 		orderRepoMapped = true
 	}
 	return &OrderRepImpl{
@@ -321,8 +319,8 @@ func (o *OrderRepImpl) pushOrderQueue(orderNo string, sub bool) {
 
 // 推送子订单到消息队列
 func (o *OrderRepImpl) pushSubOrderMessage(order *order.NormalSubOrder) {
-	bytes, _ := json.Marshal(*order)
-	go msq.Push(msq.ORDER_NormalOrderStatusChange, string(bytes))
+	// bytes, _ := json.Marshal(*order)
+	// go msq.Push(msq.ORDER_NormalOrderStatusChange, string(bytes))
 }
 
 // Save OrderList
@@ -378,20 +376,20 @@ func (o *OrderRepImpl) saveSubOrder(v *order.NormalSubOrder) (int, error) {
 // SaveSubOrder 保存子订单
 func (o *OrderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
 	// 判断业务状态是否改变
-	statusIsChanged := true
-	if v.Id <= 0 {
-		statusIsChanged = true
-	} else {
-		origin := o.GetSubOrder(v.Id)
-		statusIsChanged = origin.Status != v.Status
-	}
+	//statusIsChanged := true
+	// if v.Id <= 0 {
+	// 	statusIsChanged = true
+	// } else {
+	// 	origin := o.GetSubOrder(v.Id)
+	// 	statusIsChanged = origin.Status != v.Status
+	// }
 	id, err := o.saveSubOrder(v)
 	if err == nil {
 		v.Id = int64(id)
 		//如果业务状态已经发生改变,则提交到队列
-		if statusIsChanged {
-			o.pushSubOrderMessage(v)
-		}
+		// if statusIsChanged {
+		// 	o.pushSubOrderMessage(v)
+		// }
 	}
 	return id, err
 }
@@ -480,7 +478,7 @@ func (o *OrderRepImpl) SaveTradeOrder(v *order.TradeOrder) (int, error) {
 }
 
 // SaveRebateList implements order.IOrderRepo
-func (o *OrderRepImpl) SaveOrderRebate(v *order.AffliteRebate) (int, error) {
+func (o *OrderRepImpl) SaveOrderRebate(v *order.AffiliateRebate) (int, error) {
 	id, err := orm.Save(o._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:RebateList")

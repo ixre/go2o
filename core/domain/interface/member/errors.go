@@ -62,7 +62,8 @@ var (
 		"err_member_level_up_confirm", "会员升级已经确认")
 	ErrLevelUpLaterConfirm = domain.NewError(
 		"err_member_level_up_later_confirm", "请稍后二分钟后确认")
-
+	ErrNoSuchLevel = domain.NewError(
+		"err_member_no_such_level", "等级不存在")
 	ErrNoSuchLevelUpLog = domain.NewError(
 		"err_member_no_such_level_up_log", "不存在升级信息")
 
@@ -159,7 +160,8 @@ var (
 
 	ErrUserValidErr = domain.NewError(
 		"err_user_valid_err", "用户名为6位以上字符和数字的组合")
-
+	ErrInvalidUsername = domain.NewError(
+		"err_member_invalid_username", "用户名不正确")
 	ErrSameUser = domain.NewError(
 		"err_same_user", "用户名与原来相同")
 

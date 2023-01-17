@@ -204,13 +204,13 @@ func (g *Gateway) handlePayment(userId int64, tradeNo string, data wrapperData) 
 func (g *Gateway) notify(userId int64, data *wrapperData) error {
 	cli := http.Client{}
 	values := url.Values{
-		"user_id":       []string{strconv.Itoa(int(userId))},
-		"trade_no":      []string{data.TradeNo},
-		"state":         []string{"success"},
-		"amount":        []string{strconv.Itoa(data.Amount)},
-		"procedure_fee": []string{strconv.Itoa(data.ProcedureFee)},
-		"flag":          []string{strconv.Itoa(data.PayFlag)},
-		"subject":       []string{data.Subject},
+		"user_id":       {strconv.Itoa(int(userId))},
+		"trade_no":      {data.TradeNo},
+		"state":         {"success"},
+		"amount":        {strconv.Itoa(data.Amount)},
+		"procedure_fee": {strconv.Itoa(data.ProcedureFee)},
+		"flag":          {strconv.Itoa(data.PayFlag)},
+		"subject":       {data.Subject},
 	}
 	for k, v := range data.Data {
 		if k != "token" {
@@ -220,7 +220,7 @@ func (g *Gateway) notify(userId int64, data *wrapperData) error {
 	rsp, err := cli.PostForm(data.NotifyUrl, values)
 	// 未通知成功
 	if err != nil {
-		log.Println("[ Go2o][ Pay][ Gateway]: notify failed :",
+		log.Println("[ GO2O][ Pay][ Gateway]: notify failed :",
 			err.Error(), " [URL]:", data.NotifyUrl)
 		return errors.New("通知支付结果失败")
 	}
@@ -228,13 +228,13 @@ func (g *Gateway) notify(userId int64, data *wrapperData) error {
 	rspTxt := string(body)
 	// 响应状态不正确
 	if rsp.StatusCode != 200 {
-		log.Println("[ Go2o][ Pay][ Gateway]: notify failed :",
+		log.Println("[ GO2O][ Pay][ Gateway]: notify failed :",
 			rspTxt, " [URL]:", data.NotifyUrl)
 		return errors.New("通知支付结果失败")
 	}
 	// 判断响应内容
 	if rspTxt != "success" {
-		log.Println("[ Go2o][ Pay][ Gateway]: notify response :", rspTxt)
+		log.Println("[ GO2O][ Pay][ Gateway]: notify response :", rspTxt)
 		return errors.New("通知支付结果异常：" + rspTxt)
 	}
 	return nil

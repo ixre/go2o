@@ -36,16 +36,14 @@ type IMerchantRepo interface {
 
 	// 获取账户
 	GetAccount(mchId int) *Account
+	// 保存会员账户
+	SaveAccount(a *Account) (int, error)
 
 	// 获取销售配置
 	GetMerchantSaleConf(mchId int64) *SaleConf
 
 	// 保存销售配置
 	SaveMerchantSaleConf(v *SaleConf) error
-
-	// 保存商户账户信息
-	UpdateAccount(v *Account) error
-
 	// 保存API信息
 	SaveApiInfo(d *ApiInfo) error
 
@@ -121,4 +119,21 @@ type IMerchantRepo interface {
 	//SavePresionBlanceLog(v *member.PresentLog) error
 	//
 	//GetOfflineRate(id int32) (float32, float32, error)
+	// // 根据外部订单号查找账户日志
+	// GetBalanceLogByOuterNo(outerTradeNo string) *BalanceLog
+
+	// 保存商户申请信息
+	SaveSignUpInfo(*MchSignUp) (int, error)
+	// 获取商户申请记录
+	GetMerchantSignUpInfo(int) *MchSignUp
+	// 根据会员编号获取商户申请记录
+	GetMerchantSignUpByMemberId(memberId int) *MchSignUp
+	// 删除会员申请商户记录
+	DeleteMerchantSignUpByMemberId(memberId int) error
+	// 根据会员编号获取商户
+	GetMerchantByMemberId(memberId int) IMerchant
+	// 查找账户流水
+	GetBalanceAccountLog(id int) *BalanceLog
+	// 保存账户日志
+	SaveBalanceAccountLog(*BalanceLog) (int, error)
 }

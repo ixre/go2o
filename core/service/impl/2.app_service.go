@@ -3,6 +3,10 @@ package impl
 import (
 	"context"
 	"errors"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/dao/model"
@@ -10,9 +14,6 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
-	"strconv"
-	"strings"
-	"time"
 )
 
 /**
@@ -132,7 +133,7 @@ func (a *appServiceImpl) getLatest(prodId int64, channel int16) *model.AppVersio
 func (a *appServiceImpl) GetProd(_ context.Context, id *proto.AppId) (*proto.SAppProd, error) {
 	v := a.dao.Get(id.Value)
 	if v == nil {
-		return nil, nil
+		return nil, errors.New("no such app product")
 	}
 	return &proto.SAppProd{
 		Id:             v.Id,
@@ -152,7 +153,7 @@ func (a *appServiceImpl) GetProd(_ context.Context, id *proto.AppId) (*proto.SAp
 func (a *appServiceImpl) GetVersion(_ context.Context, id *proto.AppVersionId) (*proto.SAppVersion, error) {
 	v := a.dao.GetVersion(id.Value)
 	if v == nil {
-		return nil, nil
+		return nil, errors.New("no such version")
 	}
 	return &proto.SAppVersion{
 		Id:            v.Id,

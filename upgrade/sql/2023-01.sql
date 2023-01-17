@@ -80,7 +80,7 @@ ALTER TABLE IF EXISTS public.mm_member
 ALTER TABLE IF EXISTS public.mm_member
     RENAME flag TO user_flag;
 ALTER TABLE IF EXISTS public.mm_member
-    RENAME name TO nickname;
+    RENAME nick_name TO nickname;
 -- 更新默认头像地址
 update mm_member set portrait = portrait = 'static/init/avatar.png' where portrait like 'init/%'; 
 
@@ -91,9 +91,20 @@ DROP TABLE IF EXISTS public.mch_shop;
 -- 重置商品标志
 update public.item_info set item_flag = 0 WHERE item_flag < 0;
 
+update item_info set item_flag  = 199 
+WHERE id IN (select id from item_info 
+			 where item_flag = 0  order by id desc limit 30);
+
 -- 以下VPP需要更新 --
 -- 去掉赠品字段改用flag
 ALTER TABLE IF EXISTS public.item_info
    DROP is_present;
    ALTER TABLE IF EXISTS public.item_snapshot
    DROP is_present;
+
+/* 2023-01-10 */
+update registry set key='sms_api_2' where key='sms_api_http';
+delete FROM registry where key in ('order_push_affiliate_enabled',
+'order_push_affiliate_event',
+'sms_push_send_event',
+'order_push_sub_order_enabled');

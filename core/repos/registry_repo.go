@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
+	"strings"
+	"sync"
+
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"log"
-	"strings"
-	"sync"
 )
 
 var _ registry.IRegistryRepo = new(registryRepo)
@@ -108,7 +109,7 @@ func (r *registryRepo) SearchRegistry(key string) []registry.Registry {
 	r.lock.RLock()
 	arr := make([]registry.Registry, 0)
 	for k, v := range r.data {
-		if strings.Index(k, key) != -1 {
+		if strings.Contains(k, key) {
 			arr = append(arr, v.Value())
 		}
 	}

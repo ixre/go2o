@@ -21,10 +21,10 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
-	"github.com/ixre/go2o/core/msq"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/domain/eventbus"
 )
 
 var _ member.IAccount = new(accountImpl)
@@ -77,7 +77,7 @@ func (a *accountImpl) initWallet() {
 		a.member.value.Username,
 		1, "MemberWallet", flag)
 	if _, err := a.wallet.Save(); err != nil {
-		log.Println("[ go2o][ member]: create wallet failed,error", err.Error())
+		log.Println("[ GO2O][ member]: create wallet failed,error", err.Error())
 	}
 	a.value.WalletCode = a.wallet.Get().HashCode // 绑定钱包
 }
@@ -109,7 +109,9 @@ func (a *accountImpl) Save() (int64, error) {
 		}
 		// 推送钱包更新消息
 		if !isCreate {
-			go msq.PushDelay(msq.MemberAccountUpdated, strconv.Itoa(int(a.value.MemberId)), 500)
+			eventbus.Publish(&events.MemberAccountPushEvent{
+				Account: *a.value,
+			})
 		}
 	}
 	return n, err
@@ -960,14 +962,14 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		if err == nil {
 			go a.rep.AddTodayTakeOutTimes(a.GetDomainId())
 		}
-		// 发送消息通知
-		mp := map[string]interface{}{
-			"memberId":     a.value.MemberId,
-			"logId":        id,
-			"amount":       amount,
-			"procedureFee": procedureFee,
-		}
-		go msq.Push(msq.MemberRequestWithdrawal, typeconv.MustJson(mp))
+		// 推送提现申请事件
+		eventbus.Publish(&events.WithdrawalPushEvent{
+			MemberId:       a.value.MemberId,
+			RequestId:      int(id),
+			Amount:         amount,
+			ProcedureFee:   procedureFee,
+			IsAuditedEvent: false,
+		})
 	}
 	return id, tradeNo, err
 }
@@ -980,14 +982,14 @@ func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error
 		err = a.asyncWallet()
 		if pass {
 			log := a.wallet.GetLog(id)
-			// 发送消息通知
-			mp := map[string]interface{}{
-				"memberId":     a.value.MemberId,
-				"logId":        id,
-				"amount":       log.ChangeValue,
-				"procedureFee": log.ProcedureFee,
-			}
-			go msq.Push(msq.MemberWithdrawalAudited, typeconv.MustJson(mp))
+			// 推送提现申请事件
+			eventbus.Publish(&events.WithdrawalPushEvent{
+				MemberId:       a.value.MemberId,
+				RequestId:      int(id),
+				Amount:         int(log.ChangeValue),
+				ProcedureFee:   log.ProcedureFee,
+				IsAuditedEvent: true,
+			})
 		}
 	}
 	return err

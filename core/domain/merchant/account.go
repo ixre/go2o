@@ -2,15 +2,14 @@
 package merchant
 
 import (
+	"math"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
-	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/go2o/core/variable"
-	"github.com/ixre/gof/db/orm"
-	"math"
-	"time"
 )
 
 var _ merchant.IAccount = new(accountImpl)
@@ -44,30 +43,23 @@ func (a *accountImpl) GetValue() *merchant.Account {
 
 // 保存
 func (a *accountImpl) Save() error {
-	_, err := orm.Save(tmp.Orm, a.value, int(a.GetDomainId()))
-	//_, err := a.mchImpl._repo.SaveMerchantAccount(a)
+	_, err := a.mchImpl._repo.SaveAccount(a.value)
 	return err
 }
 
 // 根据编号获取余额变动信息
-func (a *accountImpl) GetBalanceLog(id int32) *merchant.BalanceLog {
-	e := merchant.BalanceLog{}
-	if tmp.Orm.Get(id, &e) == nil {
-		return &e
-	}
-	return nil
-	//return a.mchImpl._repo.GetBalanceLog(id)
+func (a *accountImpl) GetBalanceLog(id int) *merchant.BalanceLog {
+	return a.mchImpl._repo.GetBalanceAccountLog(id)
 }
 
-// 根据号码获取余额变动信息
-func (a *accountImpl) GetBalanceLogByOuterNo(outerNo string) *merchant.BalanceLog {
-	e := merchant.BalanceLog{}
-	if tmp.Orm.GetBy(&e, "outer_no= $1", outerNo) == nil {
-		return &e
-	}
-	return nil
-	//return a.mchImpl._repo.GetBalanceLogByOuterNo(outerNo)
-}
+// // 根据号码获取余额变动信息
+// func (a *accountImpl) GetBalanceLogByOuterNo(outerNo string) *merchant.BalanceLog {
+// 	e := merchant.BalanceLog{}
+// 	if tmp.Orm.GetBy(&e, "outer_no= $1", outerNo) == nil {
+// 		return &e
+// 	}
+// 	return a.mchImpl._repo.GetBalanceLogByOuterNo(outerNo)
+// }
 
 func (a *accountImpl) createBalanceLog(kind int, title string, outerNo string,
 	amount int64, csn int64, state int) *merchant.BalanceLog {
@@ -97,9 +89,8 @@ func (a *accountImpl) createBalanceLog(kind int, title string, outerNo string,
 }
 
 // 保存余额变动信息
-func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int32, error) {
-	return orm.I32(orm.Save(tmp.Orm, v, int(v.Id)))
-	//return a.mchImpl._repo.SaveBalanceLog(v)
+func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int, error) {
+	return a.mchImpl._repo.SaveBalanceAccountLog(v)
 }
 
 // 支出

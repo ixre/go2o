@@ -205,7 +205,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 		dst.Roles, dst.Permissions = p.getUserRolesPerm(r.UserId)
 		usr := p.dao.GetPermUser(r.UserId)
 		if usr == nil {
-			return nil, nil
+			return nil,fmt.Errorf("no such user %v",r.UserId) 
 		}
 		roleList := make([]int, len(dst.Roles))
 		for i, v := range dst.Roles {
@@ -302,7 +302,7 @@ func (p *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptR
 func (p *rbacServiceImpl) GetPermDept(_ context.Context, id *proto.PermDeptId) (*proto.SPermDept, error) {
 	v := p.dao.GetPermDept(id.Value)
 	if v == nil {
-		return nil, nil
+		return nil,fmt.Errorf("no such dept: %v",id)
 	}
 	return p.parsePermDept(v), nil
 }
@@ -364,7 +364,7 @@ func (p *rbacServiceImpl) parsePermJob(v *model.PermJob) *proto.SPermJob {
 func (p *rbacServiceImpl) GetPermJob(_ context.Context, id *proto.PermJobId) (*proto.SPermJob, error) {
 	v := p.dao.GetPermJob(id.Value)
 	if v == nil {
-		return nil, nil
+		return nil, fmt.Errorf("no such job: %v", id.Value)
 	}
 	return p.parsePermJob(v), nil
 }
@@ -488,7 +488,7 @@ func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SPermUser {
 func (p *rbacServiceImpl) GetPermUser(_ context.Context, id *proto.PermUserId) (*proto.SPermUser, error) {
 	v := p.dao.GetPermUser(id.Value)
 	if v == nil {
-		return nil, nil
+		return nil, fmt.Errorf("no such user %v",id.Value) 
 	}
 	dst := p.parsePermUser(v)
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(v.Id)
@@ -622,7 +622,7 @@ func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SPermRole {
 func (p *rbacServiceImpl) GetPermRole(_ context.Context, id *proto.PermRoleId) (*proto.SPermRole, error) {
 	v := p.dao.GetPermRole(id.Value)
 	if v == nil {
-		return nil, nil
+		return nil, fmt.Errorf("no such role: %v", id.Value)
 	}
 	dst := p.parsePermRole(v)
 	// 绑定资源ID
@@ -776,7 +776,7 @@ func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
 func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*proto.SPermRes, error) {
 	v := p.dao.GetPermRes(id.Value)
 	if v == nil {
-		return nil, nil
+		return nil, fmt.Errorf("no such resource %v", id.Value)
 	}
 	return p.parsePermRes(v), nil
 }

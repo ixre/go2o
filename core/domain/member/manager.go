@@ -113,7 +113,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	// 验证密码
 	v.Password = strings.TrimSpace(v.Password)
 	if len(v.Password) < 6 {
-		return 0, de.ErrPwdLength
+		return 0, de.ErrPwdStrongLength
 	}
 
 	// 验证手机

@@ -17,7 +17,7 @@ var (
 	ErrCredential = domain.NewError(
 		"err_credential", "用户或密码不正确")
 
-	ErrPwdLength = domain.NewError(
+	ErrPwdStrongLength = domain.NewError(
 		"err_pwd_length", "密码至少包含6个字符")
 
 	ErrCheckCodeError = domain.NewError(

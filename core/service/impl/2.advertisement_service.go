@@ -44,7 +44,7 @@ func (a *advertisementService) GetPosition(_ context.Context, id *proto.AdPositi
 	if ip != nil {
 		return a.parseAdPositionDto(ip), nil
 	}
-	return nil, nil
+	return nil,ad.ErrNoSuchAdPosition 
 }
 
 func (a *advertisementService) SaveAdPosition(_ context.Context, r *proto.SAdPosition) (*proto.Result, error) {
@@ -115,7 +115,7 @@ func (a *advertisementService) GetAdvertisement(_ context.Context, r *proto.AdId
 		}
 		return ret, nil
 	}
-	return nil, nil
+	return nil, ad.ErrNoSuchAd
 }
 
 // 获取广告数据传输对象
@@ -200,7 +200,7 @@ func (a *advertisementService) GetSwiperAdImage(_ context.Context, r *proto.Imag
 			return a.parseAdImageDto(gad.GetImage(r.ImageId)), nil
 		}
 	}
-	return nil, nil
+	return nil, ad.ErrNoSuchAd
 }
 
 // DeleteSwiperAdImage 删除广告图片

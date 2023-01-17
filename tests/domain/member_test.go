@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"log"
 	"testing"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -24,7 +25,7 @@ func TestModifyMemberPwd(t *testing.T) {
 	md5 := crypto.Md5([]byte("1234567"))
 	pwd := domain.Sha1Pwd(md5, m.GetValue().Salt)
 	// 7c4a8d09ca3762af61e59520943dc26494f8941b
-	err := m.Profile().ModifyPassword(pwd, "")
+	err := m.Profile().ChangePassword(pwd, "")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -46,4 +47,24 @@ func TestChangeMemberPhone(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+}
+
+func TestQueryMemberInviterArray(t *testing.T) {
+	repo := ti.Factory.GetMemberRepo()
+	m := repo.CreateMember(&member.Member{Id: 719})
+	rl := m.GetRelation()
+	log.Println("relation=", rl)
+
+	arr := m.Invitation().InviterArray(719, 3)
+	log.Println(arr)
+}
+
+
+func TestMemberSaveDefaultAddress(t *testing.T){
+	repo := ti.Factory.GetMemberRepo()
+	m := repo.CreateMember(&member.Member{Id: 719})	
+	addrList := m.Profile().GetDeliverAddress()
+	m.Profile().SetDefaultAddress(addrList[0].GetDomainId())
+	addrList = m.Profile().GetDeliverAddress()
+
 }

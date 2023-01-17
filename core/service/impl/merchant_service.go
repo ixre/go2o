@@ -11,6 +11,7 @@ package impl
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	de "github.com/ixre/go2o/core/domain/interface/domain"
@@ -87,7 +88,7 @@ func (m *merchantService) SignUp(_ context.Context, up *proto.SMchSignUp) (*prot
 
 // GetMchSignUpId 获取会员商户申请信息
 func (m *merchantService) GetMchSignUpId(_ context.Context, id *proto.MemberId) (*proto.Int64, error) {
-	v := m._mchRepo.GetManager().GetSignUpInfoByMemberId(id.Value)
+	v := m._mchRepo.GetManager().GetSignUpInfoByMemberId(int(id.Value))
 	if v != nil {
 		return &proto.Int64{Value: int64(v.Id)}, nil
 	}
@@ -97,28 +98,28 @@ func (m *merchantService) GetMchSignUpId(_ context.Context, id *proto.MemberId) 
 // GetSignUp 获取商户申请信息
 func (m *merchantService) GetSignUp(_ context.Context, id *proto.Int64) (*proto.SMchSignUp, error) {
 	im := m._mchRepo.GetManager()
-	v := im.GetSignUpInfo(int32(id.Value))
+	v := im.GetSignUpInfo(int(id.Value))
 	if v != nil {
 		return m.parseMchSIgnUpDto(v), nil
 	}
-	return nil, nil
+	return nil, merchant.ErrNoSuchMerchant
 }
 
 // ReviewSignUp 审核商户申请信息
 func (m *merchantService) ReviewSignUp(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
 	im := m._mchRepo.GetManager()
-	err := im.ReviewMchSignUp(int32(r.MerchantId), r.Pass, r.Remark)
+	err := im.ReviewMchSignUp(int(r.MerchantId), r.Pass, r.Remark)
 	return m.error(err), nil
 }
 
 // RemoveMerchantSignUp 删除会员的商户申请资料
 func (m *merchantService) RemoveMerchantSignUp(_ context.Context, id *proto.MemberId) (*proto.Result, error) {
-	err := m._mchRepo.GetManager().RemoveSignUp(id.Value)
+	err := m._mchRepo.GetManager().RemoveSignUp(int(id.Value))
 	return m.error(err), nil
 }
 
 func (m *merchantService) GetMerchantIdByMember(_ context.Context, id *proto.MemberId) (*proto.Int64, error) {
-	mch := m._mchRepo.GetManager().GetMerchantByMemberId(id.Value)
+	mch := m._mchRepo.GetManager().GetMerchantByMemberId(int(id.Value))
 	if mch != nil {
 		return &proto.Int64{Value: mch.GetAggregateRootId()}, nil
 	}
@@ -134,7 +135,7 @@ func (m *merchantService) GetEnterpriseInfo(_ context.Context, id *proto.Merchan
 			return m.parseEnterpriseInfoDto(v), nil
 		}
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such merchant info")
 }
 
 // SaveEnterpriseInfo 保存企业信息
@@ -169,7 +170,7 @@ func (m *merchantService) GetAccount(_ context.Context, id *proto.MerchantId) (*
 	if v != nil {
 		return m.parseAccountDto(v), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such merchant account")
 }
 
 // SetEnabled 设置商户启用或停用
@@ -218,7 +219,7 @@ func (m *merchantService) GetSaleConf(_ context.Context, id *proto.MerchantId) (
 		conf := mch.ConfManager().GetSaleConf()
 		return m.parseSaleConfDto(conf), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such sale conf")
 }
 
 // GetShopId 获取商户的店铺编号
@@ -231,8 +232,8 @@ func (m *merchantService) GetShopId(_ context.Context, id *proto.MerchantId) (*p
 	return &proto.Int64{}, nil
 }
 
-// ModifyPassword 修改密码
-func (m *merchantService) ModifyPassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
+// ChangePassword 修改密码
+func (m *merchantService) ChangePassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
 	if mch == nil {
@@ -243,7 +244,7 @@ func (m *merchantService) ModifyPassword(_ context.Context, r *proto.ModifyMerch
 		} else if len(r.Password) != 32 {
 			err = de.ErrNotMD5Format
 		} else {
-			err = mch.ProfileManager().ModifyPassword(r.Password, r.Origin)
+			err = mch.ProfileManager().ChangePassword(r.Password, r.Origin)
 		}
 	}
 	return m.error(err), nil
@@ -256,7 +257,7 @@ func (m *merchantService) GetApiInfo(_ context.Context, id *proto.MerchantId) (*
 		v := mch.ApiManager().GetApiInfo()
 		return m.parseApiDto(v), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such api info")
 }
 
 // 启用/停用接口权限
@@ -365,7 +366,7 @@ func (m *merchantService) GetMchBuyerGroup_(_ context.Context, id *proto.Merchan
 		v := mch.ConfManager().GetGroupByGroupId(int32(id.GroupId))
 		return m.parseGroupDto(v), nil
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such buyer group")
 }
 
 // 保存
@@ -491,7 +492,7 @@ func (m *merchantService) GetTradeConf(_ context.Context, r *proto.TradeConfRequ
 			return m.parseTradeConfDto(v), nil
 		}
 	}
-	return nil, nil
+	return nil, fmt.Errorf("no such trade conf")
 }
 
 func (m *merchantService) SaveTradeConf(_ context.Context, r *proto.TradeConfSaveRequest) (rsp *proto.Result, err error) {
@@ -587,7 +588,7 @@ func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*prot
 		c := mch.Complex()
 		return m.parseMerchantDto(c), nil
 	}
-	return nil, nil
+	return nil, merchant.ErrNoSuchMerchant
 }
 
 func (m *merchantService) SaveMerchant(_ context.Context, r *proto.SaveMerchantRequest) (*proto.Result, error) {
@@ -934,8 +935,8 @@ func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSi
 		Id:           int64(v.Id),
 		SignNo:       v.SignNo,
 		MemberId:     v.MemberId,
-		Username:         v.Username,
-		Password:          v.Password,
+		Username:     v.Username,
+		Password:     v.Password,
 		Salt:         v.Salt,
 		MchName:      v.MchName,
 		Province:     v.Province,

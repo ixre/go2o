@@ -10,13 +10,14 @@ package query
 
 import (
 	"fmt"
+	"log"
+	"regexp"
+
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"log"
-	"regexp"
 )
 
 type ShopQuery struct {
@@ -76,7 +77,7 @@ func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
 		err = s.o.SelectByQuery(&e, sql, begin, end-begin)
 	}
 	if err != nil {
-		log.Println("[ Go2o][ Params][ Error]:", err.Error())
+		log.Println("[ GO2O][ Params][ Error]:", err.Error())
 	}
 	return total, e
 }

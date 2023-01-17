@@ -154,7 +154,7 @@ func (a *afterSalesService) GetAfterSaleOrder(_ context.Context, req *proto.Afte
 		v.ShipmentImage = format.GetResUrl(v.ShipmentImage)
 		return a.parseAfterSalesDto(v), nil
 	}
-	return nil, nil
+	return nil, order.ErrNoSuchOrder
 }
 
 // 同意售后

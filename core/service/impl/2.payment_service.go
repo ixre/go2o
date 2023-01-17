@@ -10,13 +10,14 @@ package impl
  */
 import (
 	"context"
+	"errors"
+	"strconv"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/service/proto"
-	context2 "golang.org/x/net/context"
-	"strconv"
 )
 
 var _ proto.PaymentServiceServer = new(paymentService)
@@ -45,7 +46,7 @@ func (p *paymentService) GetPaymentOrderById(_ context.Context, id *proto.Int32)
 		v := po.Get()
 		return p.parsePaymentOrderDto(&v), nil
 	}
-	return nil, nil
+	return nil, payment.ErrNoSuchPaymentOrder
 }
 
 // GetPaymentOrderId 根据交易号获取支付单编号
@@ -67,7 +68,7 @@ func (p *paymentService) GetPaymentOrder(_ context.Context, paymentNo *proto.Str
 		}
 		return sp, nil
 	}
-	return nil, nil
+	return nil, payment.ErrNoSuchPaymentOrder
 }
 
 // SubmitPaymentOrder 创建支付单
@@ -162,11 +163,11 @@ func (p *paymentService) HybridPayment(_ context.Context, r *proto.HyperPaymentR
 
 // FinishPayment 完成支付单支付，并传入支付方式及外部订单号
 func (p *paymentService) FinishPayment(_ context.Context, r *proto.FinishPaymentRequest) (rs *proto.Result, err error) {
-	o := p.repo.GetPaymentOrder(r.TradeNo)
+	o := p.repo.GetPaymentOrder(r.PaymentOrderNo)
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
-		err = o.PaymentFinish(r.SpName, r.OuterNo)
+		err = o.PaymentFinish(r.SpName, r.SpTradeNo)
 	}
 	return p.result(err), nil
 }
@@ -250,7 +251,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 }
 
 // GatewayV2 支付网关V2
-func (p *paymentService) GatewayV2(_ context2.Context, r *proto.PayGatewayV2Request) (*proto.PayGatewayResponse, error) {
+func (p *paymentService) GatewayV2(_ context.Context, r *proto.PayGatewayV2Request) (*proto.PayGatewayResponse, error) {
 	var arr []payment.IPaymentOrder
 	if r.MergePay {
 		arr = p.repo.GetMergePayOrders(r.TradeNo)
@@ -284,7 +285,7 @@ func (p *paymentService) GatewayV2(_ context2.Context, r *proto.PayGatewayV2Requ
 
 // MixedPayment 混合支付
 func (p *paymentService) MixedPayment(_ context.Context, _ *proto.MixedPaymentRequest) (*proto.Result, error) {
-	return nil, nil
+	return nil, errors.New("not support MixedPayment")
 }
 
 func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Order {
@@ -363,7 +364,7 @@ func (p *paymentService) parseTradeMethodDataDto(src *payment.TradeMethodData) *
 	}
 }
 
-func (p *paymentService) SaveIntegrateApp(_ context2.Context, app *proto.SIntegrateApp) (*proto.Result, error) {
+func (p *paymentService) SaveIntegrateApp(_ context.Context, app *proto.SIntegrateApp) (*proto.Result, error) {
 	_, err := p.repo.SaveIntegrateApp(&payment.IntegrateApp{
 		Id:            int(app.Id),
 		AppName:       app.AppName,
@@ -377,13 +378,15 @@ func (p *paymentService) SaveIntegrateApp(_ context2.Context, app *proto.SIntegr
 	return p.error(err), nil
 }
 
-func (p *paymentService) QueryIntegrateAppList(_ context2.Context, _ *proto.Empty) (*proto.QueryIntegrateAppResponse, error) {
+func (p *paymentService) QueryIntegrateAppList(_ context.Context, _ *proto.Empty) (*proto.QueryIntegrateAppResponse, error) {
 	arr := p.repo.FindAllIntegrateApp()
 	ret := &proto.QueryIntegrateAppResponse{
-		Value: make([]*proto.SIntegrateApp, len(arr)),
+		Value: make([]*proto.SIntegrateApp, 0),
 	}
-	for i, v := range arr {
-		ret.Value[i] = p.parseIntegrateApp(v)
+	for _, v := range arr {
+		if v.Enabled == 1 {
+			ret.Value = append(ret.Value, p.parseIntegrateApp(v))
+		}
 	}
 	return ret, nil
 }
@@ -400,7 +403,7 @@ func (p *paymentService) parseIntegrateApp(v *payment.IntegrateApp) *proto.SInte
 		Highlight:     int32(v.Highlight),
 	}
 }
-func (p *paymentService) DeleteIntegrateApp(_ context2.Context, id *proto.PayIntegrateAppId) (*proto.Result, error) {
+func (p *paymentService) DeleteIntegrateApp(_ context.Context, id *proto.PayIntegrateAppId) (*proto.Result, error) {
 	err := p.repo.DeleteIntegrateApp(id.Value)
 	return p.error(err), nil
 }

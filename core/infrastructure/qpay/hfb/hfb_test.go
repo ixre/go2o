@@ -69,7 +69,7 @@ func TestHfbImpl_DirectPayment(t *testing.T) {
 	}
 	orderNo := "BZ" + time.Now().Format("20060102150405")
 	ret, err := h.DirectPayment(orderNo, 1, "补差价链接", rsp.BankAuthToken,
-		"127.0.0.1", "http://www.go2o-dev.56x.net/qpay/notify_url",
+		"127.0.0.1", "http://www.go2o.dev/qpay/notify_url",
 		"")
 	if err != nil {
 		t.Error(err)
@@ -118,7 +118,7 @@ func TestHfbImpl_BatchTransfer(t *testing.T) {
 			StoreName:       "-",
 		},
 	}
-	r, err := h.BatchTransfer(orderNo, batch, nonce, "http://www.go2o-dev.56x.net/qpay/callback")
+	r, err := h.BatchTransfer(orderNo, batch, nonce, "http://www.go2o.dev/qpay/callback")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -128,7 +128,7 @@ func TestHfbImpl_BatchTransfer(t *testing.T) {
 }
 
 func TestHfbImpl_Encrypt3DES(t *testing.T) {
-	detail_data := "agent_id=2126129&batch_amt=0.01&batch_no=bz20201108080915&batch_num=1&detail_data=bz20201108080915^2^0^6227000010990006191^闫雪龙^0.01^上游结算款^^^&ext_param1=1604794155&key=0e05aac3be0746269f114bd7&notify_url=http://www.go2o-dev.56x.net/qpay/callback&version=3"
+	detail_data := "agent_id=2126129&batch_amt=0.01&batch_no=bz20201108080915&batch_num=1&detail_data=bz20201108080915^2^0^6227000010990006191^闫雪龙^0.01^上游结算款^^^&ext_param1=1604794155&key=0e05aac3be0746269f114bd7&notify_url=http://www.go2o.dev/qpay/callback&version=3"
 	key := []byte("4865534446254C0F8837DFB3")
 	bytes, _ := crypto.EncryptECB3DES([]byte(detail_data), key)
 	s := hex.EncodeToString(bytes)

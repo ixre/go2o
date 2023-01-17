@@ -35,9 +35,10 @@ type queryService struct {
 	memberQuery     *query.MemberQuery
 	itemQuery       *query.ItemQuery
 	statisticsQuery *query.StatisticsQuery
-	catRepo product.ICategoryRepo
+	catRepo         product.ICategoryRepo
 	proto.UnimplementedQueryServiceServer
 }
+
 
 
 func NewQueryService(o orm.Orm, s storage.Interface,
@@ -48,7 +49,7 @@ func NewQueryService(o orm.Orm, s storage.Interface,
 		itemQuery:       query.NewItemQuery(o),
 		memberQuery:     query.NewMemberQuery(o),
 		orderQuery:      query.NewOrderQuery(o),
-		catRepo :catRepo,
+		catRepo:         catRepo,
 		statisticsQuery: query.NewStatisticsQuery(o, s),
 	}
 }
@@ -79,7 +80,6 @@ func (q *queryService) MemberStatistics(_ context.Context, req *proto.MemberStat
 		CompletedOrders:     ret[int32(order.StatCompleted)],
 	}, nil
 }
-
 
 // PagingShops 获取分页店铺数据
 func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRequest) (*proto.QueryPagingShopsResponse, error) {
@@ -373,7 +373,7 @@ func (q *queryService) PagedOnShelvesGoods(_ context.Context, r *proto.PagingSho
 		r.Params.SortBy = "item_info.sort_num DESC,item_info.update_time DESC"
 	}
 	total, list = q.itemQuery.GetPagedOnShelvesGoods(
-		r.ShopId, ids,int(r.Flag),
+		r.ShopId, ids, int(r.Flag),
 		int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
@@ -385,7 +385,6 @@ func (q *queryService) PagedOnShelvesGoods(_ context.Context, r *proto.PagingSho
 	}
 	return ret, nil
 }
-
 
 func (q *queryService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 	return &proto.SGoods{
@@ -409,3 +408,26 @@ func (q *queryService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 		SaleNum:     v.SaleNum,
 	}
 }
+
+// QueryItemSalesHistory 查询商品销售记录
+func (q *queryService) QueryItemSalesHistory(_ context.Context,req *proto.QueryItemSalesHistoryRequest) (*proto.QueryItemSalesHistoryResponse, error) {
+	list := q.itemQuery.QueryItemSalesHistory(req.ItemId,int(req.Size),req.Random)
+	ret := &proto.QueryItemSalesHistoryResponse{
+		Value: []*proto.SItemSalesHistory{},
+	}
+	for _,v := range list{
+		dst := &proto.SItemSalesHistory{
+			BuyerUserCode:   v.BuyerUserCode,
+			BuyerName:       v.BuyerName,
+			BuyerPortrait: v.BuyerPortrait,
+			BuyTime:         v.BuyTime,
+			IsFinishPayment: v.OrderState > order.StatAwaitingPayment,
+		}
+		if req.MaskBuyer{
+			dst.BuyerName = format.MaskNickname(dst.BuyerName)
+		}
+		ret.Value = append(ret.Value,dst)
+	}
+	return ret, nil
+}
+

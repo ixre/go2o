@@ -93,7 +93,7 @@ service MerchantService {
     rpc GetShopId (MerchantId) returns (Int64) {
     }
     // 修改密码
-    rpc ModifyPassword (ModifyMerchantPasswordRequest) returns (Result) {
+    rpc ChangePassword (ModifyMerchantPasswordRequest) returns (Result) {
     }
 
     // 保存API信息

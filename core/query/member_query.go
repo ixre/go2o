@@ -118,7 +118,7 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, valueFilter int32,
 			}
 		}, memberId, begin, over-begin)
 		if err != nil {
-			log.Println("[ Go2o][ Params]: query error ", err.Error())
+			log.Println("[ GO2O][ Params]: query error ", err.Error())
 		}
 	}
 	return num, rows

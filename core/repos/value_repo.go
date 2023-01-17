@@ -13,6 +13,12 @@ package repos
 import (
 	"database/sql"
 	"errors"
+	"log"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
@@ -20,11 +26,6 @@ import (
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
-	"log"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
 )
 
 var _ valueobject.IValueRepo = new(valueRepo)
@@ -56,7 +57,7 @@ type valueRepo struct {
 func NewValueRepo(confPath string, o orm.Orm, storage storage.Interface) valueobject.IValueRepo {
 	//confRegistry, err := gof.NewRegistry(confPath, ":")
 	//if err != nil {
-	//	log.Println("[ Go2o][ Crash]: can't load registry,", err.Error())
+	//	log.Println("[ GO2O][ Crash]: can't load registry,", err.Error())
 	//	os.Exit(1)
 	//}
 	return &valueRepo{

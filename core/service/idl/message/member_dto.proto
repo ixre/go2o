@@ -201,7 +201,7 @@ message ChangePhoneRequest {
 }
 
 // 修改用户名请求
-message ChangeUserRequest {
+message ChangeUsernameRequest {
   // 会员编号
   int64 memberId = 1;
   // 用户名
@@ -218,7 +218,7 @@ message ChangeNicknameRequest{
   bool limitTime = 3;
 }
 
-message ModifyPasswordRequest {
+message ChangePasswordRequest {
   sint64 memberId = 1;
   string originPassword = 2;
   string newPassword = 3;
@@ -406,7 +406,7 @@ message SMember {
   /** 会员编码/邀请码  */
   string userCode = 2;
   /** 会员标志 */
-  sint32 flag = 3;
+  sint32 userFlag = 3;
   /** 用户名 */
   string username = 4;
   /** 经验值 */

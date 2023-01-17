@@ -13,16 +13,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/core"
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/util"
-	"log"
-	"strconv"
-	"strings"
-	"time"
 )
 
 // 监视新订单
@@ -168,7 +169,7 @@ func memberAutoUnlock() {
 		trans, cli, err := service.MemberServiceClient()
 		if err == nil {
 			for _, oKey := range list {
-				memberId, _ := redis.Int64(conn.Do("GET", oKey))
+				memberId,_ := redis.Int64(conn.Do("GET", oKey))
 				if memberId > 0 {
 					cli.Unlock(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 				}
