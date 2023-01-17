@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"errors"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
@@ -25,7 +26,7 @@ type cartImpl struct {
 	snapMap    map[int64]*item.Snapshot
 }
 
-func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
+func NewNormalCart(val *cart.NormalCart, rep cart.ICartRepo,
 	memberRepo member.IMemberRepo, goodsRepo item.IItemRepo) cart.ICart {
 	c := &cartImpl{
 		value:      val,
@@ -37,7 +38,7 @@ func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
 }
 
 // 创建新的购物车
-func NewNormalCart(cartCode string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
+func CreateNormalCart(cartCode string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
 	goodsRepo item.IItemRepo) cart.ICart {
 	unix := time.Now().Unix()
 	if cartCode == "" {
@@ -46,13 +47,13 @@ func NewNormalCart(cartCode string, rep cart.ICartRepo, memberRepo member.IMembe
 	value := &cart.NormalCart{
 		CartCode:   cartCode,
 		DeliverId:  0,
-		BuyerId: 0,
+		BuyerId:    0,
 		PaymentOpt: 1,
 		CreateTime: unix,
 		UpdateTime: unix,
 		Items:      []*cart.NormalCartItem{},
 	}
-	return CreateCart(value, rep, memberRepo, goodsRepo)
+	return NewNormalCart(value, rep, memberRepo, goodsRepo)
 }
 
 func (c *cartImpl) init() cart.ICart {
@@ -81,6 +82,16 @@ func (c *cartImpl) Kind() cart.Kind {
 // 获取买家编号
 func (c *cartImpl) BuyerId() int64 {
 	return c.value.BuyerId
+}
+
+// Bind 绑定买家
+func (c *cartImpl) Bind(buyerId int) error {
+	if c.value.BuyerId > 0 {
+		return errors.New("cart has already bind buyer")
+	}
+	c.value.BuyerId = int64(buyerId)
+	_, err := c.Save()
+	return err
 }
 
 func (c *cartImpl) Clone() cart.ICart {
@@ -398,7 +409,7 @@ func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 			}
 		}
 		err := ic.Destroy() //合并后,需销毁购物车
-		if err != nil{
+		if err != nil {
 			log.Println("[ GO2O][ ERROR]: combine cart failed: ", err.Error())
 		}
 	}
