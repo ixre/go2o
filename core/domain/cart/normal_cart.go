@@ -8,6 +8,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/log"
 )
 
 var _ cart.ICart = new(cartImpl)
@@ -36,15 +37,16 @@ func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
 }
 
 // 创建新的购物车
-func NewNormalCart(code string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
+func NewNormalCart(cartCode string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
 	goodsRepo item.IItemRepo) cart.ICart {
 	unix := time.Now().Unix()
-	if code == "" {
-		code = domain.GenerateCartCode(unix, time.Now().Nanosecond())
+	if cartCode == "" {
+		cartCode = domain.GenerateCartCode(unix, time.Now().Nanosecond())
 	}
 	value := &cart.NormalCart{
-		CartCode:   code,
+		CartCode:   cartCode,
 		DeliverId:  0,
+		BuyerId: 0,
 		PaymentOpt: 1,
 		CreateTime: unix,
 		UpdateTime: unix,
@@ -395,7 +397,10 @@ func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 				}
 			}
 		}
-		_ = ic.Destroy() //合并后,需销毁购物车
+		err := ic.Destroy() //合并后,需销毁购物车
+		if err != nil{
+			log.Println("[ GO2O][ ERROR]: combine cart failed: ", err.Error())
+		}
 	}
 	c.snapMap = nil //clean
 	return c

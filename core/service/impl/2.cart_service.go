@@ -18,6 +18,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	proItem "github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -226,35 +227,37 @@ func (s *cartServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*pr
 /*---------------- 普通购物车 ----------------*/
 
 // 获取购物车
-func (s *cartServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICart {
-	var c cart.ICart
-	var cc cart.ICart
-	if len(code) > 0 {
-		cc = s.cartRepo.GetShoppingCartByKey(code)
+func (s *cartServiceImpl) getShoppingCart(buyerId int64, cartCode string) cart.ICart {
+	// 本地的购物车
+	var ic cart.ICart
+	if len(cartCode) > 0 {
+		ic = s.cartRepo.GetShoppingCartByKey(cartCode)
 	}
-	// 如果传入会员编号，则合并购物车
+	// 如果传入会员编号，则合并购物车,并返回会员的购物车
 	if buyerId > 0 {
-		c = s.cartRepo.GetMyCart(buyerId, cart.KNormal)
-		if cc != nil {
-			rc := c.(cart.INormalCart)
-			rc.Combine(cc)
-			_, _ = c.Save()
+		// 如果用户没有购物车, 则新建一个购物车
+		mc := s.cartRepo.GetMyCart(buyerId, cart.KNormal)
+		if ic != nil {
+			mc.(cart.INormalCart).Combine(ic)
+			_, _ = mc.Save()
 		}
-		return c
+		return mc
+	}
+	// 不存在，或者为其他会员的购物车, 则新建一个购物车
+	if ic == nil || ic.BuyerId() > 0 {
+		newUUID, _ := uuid.NewUUID()
+		cartCode = strings.ToLower(newUUID.String())
+		return s.cartRepo.NewNormalCart(cartCode)
 	}
 	// 如果只传入code,且购物车存在，直接返回。
-	if cc != nil {
-		return cc
-	}
-	// 不存在，则新建购物车
-	c = s.cartRepo.NewNormalCart(code)
-	//_, err := c.Save()
-	//domain.HandleError(err, "service")
-	return c
+	return ic
 }
 
 // GetShoppingCart 获取购物车,当购物车编号不存在时,将返回一个新的购物车
 func (s *cartServiceImpl) GetShoppingCart(_ context.Context, r *proto.ShoppingCartId) (*proto.SShoppingCart, error) {
+	if r.IsWholesale {
+		return nil, errors.New("not implement")
+	}
 	c := s.getShoppingCart(r.GetUserId(), r.CartCode)
 	return s.parseCart(c), nil
 }
