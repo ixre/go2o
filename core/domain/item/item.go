@@ -490,6 +490,13 @@ func (i *itemImpl) Save() (_ int64, err error) {
 			return i.value.Id, err
 		}
 	}
+	// 新增自营商品自动上架(待审核)
+	if i.GetAggregateRootId() <= 0 {
+		if domain.TestFlag(i.value.ItemFlag, item.FlagSelfSales) {
+			i.value.ShelveState = item.ShelvesOn
+			i.value.AuditState = enum.ReviewAwaiting
+		}
+	}
 
 	// 保存商品
 	i.value.Id, err = i.repo.SaveValueGoods(i.value)
