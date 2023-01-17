@@ -501,7 +501,7 @@ func (p *profileManagerImpl) RemoveBankCard(cardNo string) error {
 // 创建配送地址
 func (p *profileManagerImpl) CreateDeliver(v *member.ConsigneeAddress) member.IDeliverAddress {
 	v.MemberId = p.memberId
-	return newDeliver(v, p.repo, p.valueRepo)
+	return newDeliverAddress(v, p.repo, p.valueRepo)
 }
 
 // 获取配送地址
@@ -523,7 +523,7 @@ func (p *profileManagerImpl) SetDefaultAddress(addressId int64) error {
 		} else {
 			vv.IsDefault = 0
 		}
-		p.repo.SaveDeliver(&vv)
+		p.repo.SaveDeliverAddress(&vv)
 	}
 	return nil
 }
@@ -688,88 +688,4 @@ func (p *profileManagerImpl) bankCardIsExists(cardNo string) bool {
 		}
 	}
 	return false
-}
-
-var _ member.IDeliverAddress = new(addressImpl)
-
-type addressImpl struct {
-	_value      *member.ConsigneeAddress
-	_memberRepo member.IMemberRepo
-	_valRepo    valueobject.IValueRepo
-}
-
-func newDeliver(v *member.ConsigneeAddress, memberRepo member.IMemberRepo,
-	valRepo valueobject.IValueRepo) member.IDeliverAddress {
-	d := &addressImpl{
-		_value:      v,
-		_memberRepo: memberRepo,
-		_valRepo:    valRepo,
-	}
-	return d
-}
-
-func (p *addressImpl) GetDomainId() int64 {
-	return p._value.Id
-}
-
-func (p *addressImpl) GetValue() member.ConsigneeAddress {
-	return *p._value
-}
-
-func (p *addressImpl) SetValue(v *member.ConsigneeAddress) error {
-	if p._value.MemberId == v.MemberId {
-		if err := p.checkValue(v); err != nil {
-			return err
-		}
-		p._value = v
-	}
-	return nil
-}
-
-// 设置地区中文名
-func (p *addressImpl) renewAreaName(v *member.ConsigneeAddress) string {
-	//names := p._valRepo.GetAreaNames([]int{
-	//	v.Province,
-	//	v.City,
-	//	v.District,
-	//})
-	//if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
-	//	return strings.Join([]string{names[0], names[2]}, " ")
-	//}
-	//return strings.Join(names, " ")
-
-	return p._valRepo.GetAreaString(v.Province, v.City, v.District)
-}
-
-func (p *addressImpl) checkValue(v *member.ConsigneeAddress) error {
-	v.DetailAddress = strings.TrimSpace(v.DetailAddress)
-	v.ConsigneeName = strings.TrimSpace(v.ConsigneeName)
-	v.ConsigneePhone = strings.TrimSpace(v.ConsigneePhone)
-
-	if len([]rune(v.ConsigneeName)) < 2 {
-		return member.ErrDeliverContactPersonName
-	}
-
-	if v.Province <= 0 || v.City <= 0 || v.District <= 0 {
-		return member.ErrNotSetArea
-	}
-
-	if !phoneRegex.MatchString(v.ConsigneePhone) {
-		return member.ErrDeliverContactPhone
-	}
-
-	if len([]rune(v.DetailAddress)) < 6 {
-		// 判断字符长度
-		return member.ErrDeliverAddressLen
-	}
-
-	return nil
-}
-
-func (p *addressImpl) Save() (int64, error) {
-	if err := p.checkValue(p._value); err != nil {
-		return p.GetDomainId(), err
-	}
-	p._value.Area = p.renewAreaName(p._value)
-	return p._memberRepo.SaveDeliver(p._value)
 }

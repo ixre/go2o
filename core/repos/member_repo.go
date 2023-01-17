@@ -588,8 +588,8 @@ func (m *MemberRepoImpl) SaveLevelUpLog(v *member.LevelUpLog) (int32, error) {
 	return orm.I32(orm.Save(m.o, v, int(v.Id)))
 }
 
-// SaveDeliver 保存地址
-func (m *MemberRepoImpl) SaveDeliver(v *member.ConsigneeAddress) (int64, error) {
+// SaveDeliverAddress 保存地址
+func (m *MemberRepoImpl) SaveDeliverAddress(v *member.ConsigneeAddress) (int64, error) {
 	return orm.I64(orm.Save(m.o, v, int(v.Id)))
 }
 
