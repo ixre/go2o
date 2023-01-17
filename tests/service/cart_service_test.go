@@ -12,7 +12,7 @@ import (
 func TestCombileCart(t *testing.T) {
 	id := &proto.ShoppingCartId{
 		UserId:      1,
-		CartCode:    "af7d4093-9645-11ed-b327-50ebf6326d4d",
+		CartCode:    "b61d09ec4a3782cd",
 		IsWholesale: false,
 	}
 	ret, _ := impl.CartService.GetShoppingCart(context.TODO(), id)
