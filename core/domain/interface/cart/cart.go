@@ -68,6 +68,8 @@ type (
 		Code() string
 		// BuyerId 获取买家编号
 		BuyerId() int64
+		// 绑定买家
+		Bind(buyerId int) error
 		// Prepare 预先准备购物车
 		Prepare() error
 		// SignItemChecked 标记商品结算
