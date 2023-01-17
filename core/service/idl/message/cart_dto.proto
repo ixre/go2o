@@ -22,7 +22,7 @@ message SShoppingCart {
     //编号
     sint32 cartId = 1;
     //购物车KEY
-    string code = 2;
+    string cartCode = 2;
     //店铺分组
     repeated SShoppingCartGroup shops = 3;
 }

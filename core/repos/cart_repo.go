@@ -10,6 +10,11 @@ package repos
 
 import (
 	"database/sql"
+	"log"
+	"strings"
+	"time"
+
+	"github.com/google/uuid"
 	cartImpl "github.com/ixre/go2o/core/domain/cart"
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
@@ -17,8 +22,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"log"
-	"time"
 )
 
 var _ cart.ICartRepo = new(cartRepo)
@@ -58,15 +61,17 @@ func (c *cartRepo) GetMyCart(buyerId int64, k cart.Kind) cart.ICart {
 func (c *cartRepo) getMyNormalCart(buyerId int64) cart.ICart {
 	v := c.getNormalCart(buyerId)
 	if v == nil {
+		newUUID, _ := uuid.NewUUID()
+		cartCode := strings.ToLower(newUUID.String())
 		unix := time.Now().Unix()
 		v = &cart.NormalCart{
 			BuyerId:    buyerId,
+			CartCode:   cartCode,
 			CreateTime: unix,
 			UpdateTime: unix,
 		}
 	}
-	return cartImpl.CreateCart(v, c,
-		c._memberRepo, c._itemRepo)
+	return cartImpl.CreateCart(v, c,c._memberRepo, c._itemRepo)
 }
 
 // 获取批发购物车

@@ -3,9 +3,9 @@ package parser
 import (
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/types"
-	"github.com/ixre/go2o/core/service/proto"
 )
 
 /**
@@ -50,11 +50,11 @@ func ParseToDtoCart(ic cart.ICart) *proto.SShoppingCart {
 	v := rc.Value()
 
 	c.CartId = ic.GetAggregateRootId()
-	c.Code = v.CartCode
+	c.CartCode = v.CartCode
 	c.Shops = []*proto.SShoppingCartGroup{}
 
 	items := rc.Items()
-	if items != nil && len(items) > 0 {
+	if len(items) > 0 {
 		mp := make(map[int64]*proto.SShoppingCartGroup, 0) //保存运营商到map
 		for _, v := range items {
 			vendor, ok := mp[v.ShopId]
@@ -71,7 +71,6 @@ func ParseToDtoCart(ic cart.ICart) *proto.SShoppingCart {
 				vendor.Checked = true
 			}
 			vendor.Items = append(vendor.Items, ParseCartItem(v))
-			//cart.TotalNum += v.Quantity
 		}
 	}
 	return c

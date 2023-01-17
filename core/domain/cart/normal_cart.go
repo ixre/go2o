@@ -36,15 +36,16 @@ func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
 }
 
 // 创建新的购物车
-func NewNormalCart(code string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
+func NewNormalCart(cartCode string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
 	goodsRepo item.IItemRepo) cart.ICart {
 	unix := time.Now().Unix()
-	if code == "" {
-		code = domain.GenerateCartCode(unix, time.Now().Nanosecond())
+	if cartCode == "" {
+		cartCode = domain.GenerateCartCode(unix, time.Now().Nanosecond())
 	}
 	value := &cart.NormalCart{
-		CartCode:   code,
+		CartCode:   cartCode,
 		DeliverId:  0,
+		BuyerId: 0,
 		PaymentOpt: 1,
 		CreateTime: unix,
 		UpdateTime: unix,
