@@ -546,17 +546,27 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	return ret, nil
 }
 
-// GetRelation 获取会员邀请关系
-func (s *memberService) GetRelation(_ context.Context, id *proto.MemberIdRequest) (*proto.MemberRelationResponse, error) {
+// GetInviter 获取会员邀请关系
+func (s *memberService) GetInviter(_ context.Context, id *proto.MemberIdRequest) (*proto.MemberInviterResponse, error) {
 	r := s.repo.GetRelation(id.MemberId)
 	if r != nil {
-		return &proto.MemberRelationResponse{
+		ret := &proto.MemberInviterResponse{
 			InviterId: r.InviterId,
 			InviterD2: r.InviterD2,
 			InviterD3: r.InviterD3,
-		}, nil
+		}
+		if r.InviterId > 0 {
+			if mm := s.repo.GetMember(r.InviterId); mm != nil {
+				mv := mm.GetValue()
+				ret.InviterUsername = mv.Username
+				ret.InviterNickname = mv.Nickname
+				ret.InviterPortrait = mv.Portrait
+				ret.InviterPhone = mv.Phone
+			}
+		}
+		return ret, nil
 	}
-	return &proto.MemberRelationResponse{}, nil
+	return &proto.MemberInviterResponse{}, nil
 }
 
 // Active 激活会员
