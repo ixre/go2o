@@ -630,13 +630,22 @@ message SMemberOrderSummary {
   sint32 completed = 4;
 }
 
-message MemberRelationResponse {
+// 查询会员邀请人信息
+message MemberInviterResponse {
   // 邀请人（会员）
   sint64 inviterId = 1;
+  // 邀请人用户名
+  string inviterUsername = 2;
+  // 邀请人姓名
+  string inviterNickname = 3;
+  // 邀请人头像
+  string inviterPortrait = 4;
+  // 邀请人电话
+  string inviterPhone = 5;
   // 邀请会员编号(depth2)
-  sint64 inviterD2 = 2;
+  sint64 inviterD2 = 6;
   // 邀请会员编号(depth3)
-  sint64 inviterD3 = 3;
+  sint64 inviterD3 = 7;
 }
 
 /** 凭据 */

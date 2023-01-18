@@ -407,12 +407,15 @@ message ItemSnapshotResponse {
   repeated SSku skuArray = 22;
   // 规格
   repeated SSpecOption specOptions = 24;
-  // 返回Sku-HTML
-  string skuHtml = 26;
   // SkuJson
   string skuJson = 25;
+  // 商品标志数据
+  SItemFlagData flagData = 27;
   // 会员价
   repeated SLevelPrice levelPrices = 28;
+
+  // 返回Sku-HTML
+  string skuHtml = 29;
 }
 
 // 商品模型规格
