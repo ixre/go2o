@@ -51,7 +51,7 @@ func ParseToDtoCart(ic cart.ICart) *proto.SShoppingCart {
 
 	c.CartId = ic.GetAggregateRootId()
 	c.CartCode = v.CartCode
-	c.Shops = []*proto.SShoppingCartGroup{}
+	c.Sellers = []*proto.SShoppingCartGroup{}
 
 	items := rc.Items()
 	if len(items) > 0 {
@@ -60,12 +60,12 @@ func ParseToDtoCart(ic cart.ICart) *proto.SShoppingCart {
 			vendor, ok := mp[v.ShopId]
 			if !ok {
 				vendor = &proto.SShoppingCartGroup{
-					VendorId: v.VendorId,
+					SellerId: v.VendorId,
 					ShopId:   v.ShopId,
 					Items:    []*proto.SShoppingCartItem{},
 				}
 				mp[v.ShopId] = vendor
-				c.Shops = append(c.Shops, vendor)
+				c.Sellers = append(c.Sellers, vendor)
 			}
 			if v.Checked == 1 {
 				vendor.Checked = true
@@ -92,7 +92,7 @@ func ParsePrepareOrderGroups(ic cart.ICart) []*proto.SPrepareOrderGroup {
 			vendor, ok := mp[v.ShopId]
 			if !ok {
 				vendor = &proto.SPrepareOrderGroup{
-					VendorId: v.VendorId,
+					SellerId: v.VendorId,
 					ShopId:   v.ShopId,
 					Items:    []*proto.SPrepareOrderItem{},
 				}

@@ -410,17 +410,17 @@ message PrepareOrderResponse{
     // 收货人
     SConsigneeInfo consignee = 13;
     // 订单项目
-    repeated SPrepareOrderGroup groups = 14;
+    repeated SPrepareOrderGroup sellers = 14;
     // 买家留言
     string buyerComment = 15;
 }
 
 // 预生成订单店铺分组
 message SPrepareOrderGroup {
-    //店铺编号
-    sint64 shopId = 1;
     //供货商编号
-    sint64 vendorId = 2;
+    sint64 sellerId = 1;
+    //店铺编号
+    sint64 shopId = 2;
     //店铺名称
     string shopName = 3;
     //商品

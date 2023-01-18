@@ -282,7 +282,7 @@ func (s *cartServiceImpl) GetShoppingCart(_ context.Context, r *proto.ShoppingCa
 // 转换购物车数据
 func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 	dto := parser.ParseToDtoCart(c)
-	for _, v := range dto.Shops {
+	for _, v := range dto.Sellers {
 		is := s.shopRepo.GetShop(v.ShopId)
 		if is != nil {
 			io := is.(shop.IOnlineShop)

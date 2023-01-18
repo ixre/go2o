@@ -173,7 +173,7 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 	if err != nil {
 		return &proto.PrepareOrderResponse{
 			ErrCode: 1,
-			ErrMsg: err.Error(),
+			ErrMsg:  err.Error(),
 		}, nil
 	}
 	ov := o.Complex()
@@ -191,7 +191,7 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		}
 	}
 	rsp := parser.PrepareOrderDto(ov)
-	rsp.Groups = s.parsePrepareItemsFromCart(ic)
+	rsp.Sellers = s.parsePrepareItemsFromCart(ic)
 	return rsp, err
 }
 
