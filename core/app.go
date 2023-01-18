@@ -153,7 +153,8 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 		if err := conn.Ping(); err != nil {
 			conn.Close()
 			//如果异常，则显示并退出
-			log.Fatalln("[ GO2O][ ERROR]:" + err.Error())
+			log.Fatalln("[ GO2O][ ERROR]: database connect failed; error:",
+			 err.Error(),"; connection string:", connStr)
 		}
 		conn.SetMaxIdleConns(10000)
 		conn.SetMaxIdleConns(5000)
