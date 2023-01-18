@@ -123,8 +123,8 @@ type (
 	ICartRepo interface {
 		// GetMyCart 获取买家的购物车
 		GetMyCart(buyerId int64, k Kind) ICart
-		// NewNormalCart 创建一个购物车
-		NewNormalCart(code string) ICart
+		// NewNormalCart 创建一个临时购物车
+		NewTempNormalCart(buyerId int, code string) ICart
 		// CreateNormalCart 创建一个普通购物车
 		CreateNormalCart(r *NormalCart) ICart
 		// GetNormalCart 获取购物车

@@ -109,8 +109,8 @@ func (c *cartRepo) CreateNormalCart(v *cart.NormalCart) cart.ICart {
 }
 
 // 创建一个购物车
-func (c *cartRepo) NewNormalCart(code string) cart.ICart {
-	return cartImpl.CreateNormalCart(code, c, c._memberRepo, c._itemRepo)
+func (c *cartRepo) NewTempNormalCart(buyerId int, code string) cart.ICart {
+	return cartImpl.CreateTempNormalCart(buyerId, code, c, c._memberRepo, c._itemRepo)
 }
 
 // 获取购物车

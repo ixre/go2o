@@ -84,7 +84,7 @@ func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICar
 		return cc
 	}
 	// 不存在，则新建购物车
-	c = s.cartRepo.NewNormalCart(code)
+	c = s.cartRepo.NewTempNormalCart(int(buyerId), code)
 	//_, err := c.Save()
 	//domain.HandleError(err, "service")
 	return c

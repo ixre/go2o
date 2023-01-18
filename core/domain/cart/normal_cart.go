@@ -37,8 +37,8 @@ func NewNormalCart(val *cart.NormalCart, rep cart.ICartRepo,
 	return c.init()
 }
 
-// 创建新的购物车
-func CreateNormalCart(cartCode string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
+// 创建新的临时购物车
+func CreateTempNormalCart(buyerId int, cartCode string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
 	goodsRepo item.IItemRepo) cart.ICart {
 	unix := time.Now().Unix()
 	if cartCode == "" {
@@ -47,7 +47,7 @@ func CreateNormalCart(cartCode string, rep cart.ICartRepo, memberRepo member.IMe
 	value := &cart.NormalCart{
 		CartCode:   cartCode,
 		DeliverId:  0,
-		BuyerId:    0,
+		BuyerId:    int64(buyerId),
 		PaymentOpt: 1,
 		CreateTime: unix,
 		UpdateTime: unix,
