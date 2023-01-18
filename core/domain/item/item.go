@@ -11,6 +11,7 @@ package item
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -491,7 +492,8 @@ func (i *itemImpl) Save() (_ int64, err error) {
 		}
 	}
 	// 新增自营商品自动上架(待审核)
-	if i.GetAggregateRootId() <= 0 {
+	if i.GetAggregateRootId() == 0 {
+		log.Println("[ GO2O][ LOG]: new item",i.value.ItemFlag)
 		if domain.TestFlag(i.value.ItemFlag, item.FlagSelfSales) {
 			i.value.ShelveState = item.ShelvesOn
 			i.value.AuditState = enum.ReviewAwaiting
