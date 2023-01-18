@@ -24,14 +24,14 @@ message SShoppingCart {
     //购物车KEY
     string cartCode = 2;
     //店铺分组
-    repeated SShoppingCartGroup shops = 3;
+    repeated SShoppingCartGroup sellers = 3;
 }
 // 购物车店铺分组
 message SShoppingCartGroup {
-    //店铺编号
-    sint64 shopId = 1;
     //供货商编号
-    sint64 vendorId = 2;
+    sint64 sellerId = 1;
+    //店铺编号
+    sint64 shopId = 2;
     //店铺名称
     string shopName = 3;
     //是否结算
