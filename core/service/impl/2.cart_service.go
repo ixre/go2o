@@ -236,15 +236,6 @@ func (s *cartServiceImpl) getShoppingCart(buyerId int64, cartCode string) cart.I
 	if buyerId > 0 {
 		// 如果用户没有购物车, 则新建一个购物车
 		mc := s.cartRepo.GetMyCart(buyerId, cart.KNormal)
-		// if mc == nil {
-		// 	unix := time.Now().Unix()
-		// 	mc = s.cartRepo.CreateNormalCart(&cart.NormalCart{
-		// 		BuyerId:    buyerId,
-		// 		CartCode:   "",
-		// 		CreateTime: unix,
-		// 		UpdateTime: unix,
-		// 	})
-		// }
 		if ic != nil {
 			// 绑定临时购物车为会员购物车
 			if mc == nil {
@@ -255,7 +246,10 @@ func (s *cartServiceImpl) getShoppingCart(buyerId int64, cartCode string) cart.I
 			mc.(cart.INormalCart).Combine(ic)
 			_, _ = mc.Save()
 		}
-		return mc
+		// 如果会员购物车存在则返回, 不存在也需创建一个临时的购物车
+		if mc != nil {
+			return mc
+		}
 	}
 	// 为其他会员的购物车, 则新建购物车
 	if ic != nil && ic.BuyerId() > 0 {
@@ -264,7 +258,7 @@ func (s *cartServiceImpl) getShoppingCart(buyerId int64, cartCode string) cart.I
 	}
 	// 生成一个新的code和购物车
 	if ic == nil {
-		return s.cartRepo.NewNormalCart(cartCode)
+		return s.cartRepo.NewTempNormalCart(int(buyerId), cartCode)
 	}
 	// 如果只传入code,且购物车存在，直接返回。
 	return ic
