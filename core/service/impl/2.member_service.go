@@ -711,8 +711,6 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 	val := im.GetValue()
 
 	if s := domain.Sha1Pwd(pwd, val.Salt); s != val.Password {
-		log.Println("--password-compare", s, val.Password, val.Salt, typeconv.MustJson(val))
-
 		return nil, 1, de.ErrCredential
 	}
 	if val.UserFlag&member.FlagLocked == member.FlagLocked {
