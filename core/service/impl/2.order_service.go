@@ -153,7 +153,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 
 // PrepareOrder 预生成订单
 func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrderRequest) (*proto.PrepareOrderResponse, error) {
-	ic := s.getShoppingCart(r.BuyerId, r.CouponCode)
+	ic := s.getShoppingCart(r.BuyerId, r.CartCode)
 	o, err := s.manager.PrepareNormalOrder(ic)
 	if err == nil {
 		// 设置收货地址
