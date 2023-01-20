@@ -224,7 +224,8 @@ var (
 
 	ErrDisallowRefund = domain.NewError(
 		"err_order_disallow_refund", "订单不允许退款")
-
+	ErrDisallowCancel = domain.NewError(
+		"err_order_disallow_cancel", "会员无法取消此订单")
 	ErrTradeRateLessZero = domain.NewError(
 		"err_order_trade_rate_less_zero", "交易类订单结算比例不能小于零")
 

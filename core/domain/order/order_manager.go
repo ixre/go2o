@@ -428,12 +428,12 @@ func (u *unifiedOrderAdapterImpl) Complex() *order.ComplexOrder {
 }
 
 // 取消订单
-func (u *unifiedOrderAdapterImpl) Cancel(reason string) error {
+func (u *unifiedOrderAdapterImpl) Cancel(buyerCancel bool,reason string) error {
 	if err := u.check(); err != nil {
 		return err
 	}
 	if u.sub {
-		return u.subOrder.Cancel(reason)
+		return u.subOrder.Cancel(buyerCancel,reason)
 	}
 	return u.cancel(reason)
 }

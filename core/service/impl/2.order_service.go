@@ -304,7 +304,7 @@ func (s *orderServiceImpl) TradeOrderUpdateTicket(_ context.Context, r *proto.Tr
 // CancelOrder 取消订单
 func (s *orderServiceImpl) CancelOrder(_ context.Context, r *proto.CancelOrderRequest) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
-	err := c.Cancel(r.Reason)
+	err := c.Cancel(r.IsBuyerCancel,r.Reason)
 	return s.error(err), nil
 }
 

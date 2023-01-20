@@ -58,7 +58,7 @@ type (
 		// 复合的订单信息
 		Complex() *ComplexOrder
 		// 取消订单
-		Cancel(reason string) error
+		Cancel(buyerCancel bool, reason string) error
 		// 订单确认
 		Confirm() error
 		// 备货完成

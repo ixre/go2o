@@ -214,6 +214,8 @@ var (
 	OrderAffiliatePushEnabled = KeyFormat("OrderAffiliatePushEnabled")
 	// 推送子订单状态变更事件
 	OrderSubOrderPushEnabled = KeyFormat("OrderSubOrderPushEnabled")
+	// 是否禁止用户取消订单
+	OrderDisallowUserCancel = KeyFormat("OrderDisallowUserCancel")
 
 	//  /* 商户订单 */
 	// MchOrderSettleMode 商户订单结算模式

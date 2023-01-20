@@ -551,7 +551,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 	if err != nil {
 		orders := o.GetSubOrders()
 		for _, it := range orders {
-			_ = it.Cancel("")
+			_ = it.Cancel(false, "下单错误自动取消")
 		}
 	}
 	return err
