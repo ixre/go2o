@@ -20,7 +20,7 @@ func TestGenerateAppId(t *testing.T) {
 
 func TestUpdateRegistryValue(t *testing.T) {
 	repo := ti.Factory.GetRegistryRepo()
-	ir := repo.Get(registry.OrdeAffiliatePushEnabled)
+	ir := repo.Get(registry.OrderAffiliatePushEnabled)
 	if ir != nil {
 		err := ir.Update("2")
 		if err == nil {

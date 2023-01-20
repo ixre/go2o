@@ -44,7 +44,7 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 		return
 	}
 	r := repos.Repo.GetRegistryRepo()
-	s, _ := r.GetValue(registry.OrdeAffiliatePushEnabled)
+	s, _ := r.GetValue(registry.OrderAffiliatePushEnabled)
 	pushValue, _ := strconv.Atoi(s)
 	//todo: 系统内处理分销，不推送分销事件
 	// 0:不推送(内部处理),1:仅推送(内部处理),2:推送并处理(外部处理分销)

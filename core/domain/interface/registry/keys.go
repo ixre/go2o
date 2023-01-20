@@ -211,7 +211,7 @@ var (
 	// 全局订单返利比例
 	OrderGlobalAffiliateRebateRate = KeyFormat("OrderGlobalAffiteRebateRate")
 	// 推送分销事件
-	OrdeAffiliatePushEnabled = KeyFormat("OrdeAffiliatePushEnabled")
+	OrderAffiliatePushEnabled = KeyFormat("OrderAffiliatePushEnabled")
 	// 推送子订单状态变更事件
 	OrderSubOrderPushEnabled = KeyFormat("OrderSubOrderPushEnabled")
 

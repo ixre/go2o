@@ -104,7 +104,12 @@ ALTER TABLE IF EXISTS public.item_info
 
 /* 2023-01-10 */
 update registry set key='sms_api_2' where key='sms_api_http';
-delete FROM registry where key in ('order_push_affiliate_enabled',
+delete FROM registry where key in (
+'order_push_affiliate_enabled',
 'order_push_affiliate_event',
 'sms_push_send_event',
-'order_push_sub_order_enabled');
+'order_push_sub_order_enabled',
+'order_enable_affiliate_rebate',
+'orde_affiliater_push_enabled',
+'orde_affiliate_push_enabled'
+);
