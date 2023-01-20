@@ -779,8 +779,9 @@ func (s *memberService) CheckAccessToken(_ context.Context, request *proto.Check
 		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
 		return &proto.CheckAccessTokenResponse{Error: err.Error()}, nil
 	}
-
-	if strings.HasPrefix(request.AccessToken, "Bearer") {
+	// 去掉"Bearer "
+	if len(request.AccessToken) > 6 &&
+		strings.HasPrefix(request.AccessToken, "Bearer") {
 		request.AccessToken = request.AccessToken[7:]
 	}
 	// 转换token
