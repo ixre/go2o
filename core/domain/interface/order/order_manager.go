@@ -142,7 +142,7 @@ type (
 		SaveTradeOrder(v *TradeOrder) (int, error)
 
 		// SaveOrderRebate 保存订单返利
-		SaveOrderRebate(v *AffiliateRebate) (int, error)
+		SaveOrderRebate(v *AffiliateDistribution) (int, error)
 	}
 
 	// SubmitData 订单提交数据

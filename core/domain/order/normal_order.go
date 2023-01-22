@@ -795,17 +795,21 @@ func (o *normalOrderImpl) createAffiliateRebateOrder(so order.ISubOrder) {
 		}
 		ov := so.GetValue()
 		unix := time.Now().Unix()
-		v := &order.AffiliateRebate{
-			PlanId:        0,
-			TraderId:      o._AffiliateMember.GetAggregateRootId(),
-			AffiliateCode: o._AffiliateMember.GetValue().UserCode,
-			OrderNo:       ov.OrderNo,
-			OrderSubject:  ov.Subject,
-			OrderAmount:   ov.FinalAmount,
-			RebaseAmount:  int64(float64(ov.FinalAmount) * rate),
-			Status:        1,
-			CreateTime:    unix,
-			UpdateTime:    unix,
+		v := &order.AffiliateDistribution{
+			Id:               0,
+			PlanId:           0,
+			BuyerId:          o._AffiliateMember.GetAggregateRootId(),
+			OwnerId:          o._AffiliateMember.GetAggregateRootId(),
+			Flag:             1,
+			IsRead:           0,
+			AffiliateCode:    o._AffiliateMember.GetValue().UserCode,
+			OrderNo:          ov.OrderNo,
+			OrderSubject:     ov.Subject,
+			OrderAmount:      ov.FinalAmount,
+			DistributeAmount: int64(float64(ov.FinalAmount) * rate),
+			Status:           1,
+			CreateTime:       unix,
+			UpdateTime:       unix,
 		}
 		o.orderRepo.SaveOrderRebate(v)
 	}
