@@ -9,7 +9,6 @@
 package core
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -78,9 +77,9 @@ func (a *AppImpl) Db() db.Connector {
 }
 
 func (a *AppImpl) Storage() storage.Interface {
-	if a._storage == nil {
-		//a._storage = storage.NewRedisStorage(a.Redis())
-	}
+	// if a._storage == nil {
+	// 	//a._storage = storage.NewRedisStorage(a.Redis())
+	// }
 	return a._storage
 }
 
@@ -154,15 +153,15 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 			conn.Close()
 			//如果异常，则显示并退出
 			log.Fatalln("[ GO2O][ ERROR]: database connect failed; error:",
-			 err.Error(),"; connection string:", connStr)
+				err.Error(), "; connection string:", connStr)
+		} else {
+			log.Println("[ GO2O][ INFO]: database connection success")
+			conn.SetMaxIdleConns(10000)
+			conn.SetMaxIdleConns(5000)
+			conn.SetConnMaxLifetime(time.Second * 10)
 		}
-		conn.SetMaxIdleConns(10000)
-		conn.SetMaxIdleConns(5000)
-		conn.SetConnMaxLifetime(time.Second * 10)
-		return conn
 	}
-	log.Fatalln("[ GO2O][ ERROR]:" + err.Error())
-	return nil
+	return conn
 }
 
 // GetRedisPool 获取Redis连接池,will be remove
@@ -170,12 +169,12 @@ func GetRedisPool() *redis.Pool {
 	if redisPool == nil {
 		app := gof.CurrentApp
 		if app == nil {
-			panic(errors.New("gobal serve not initialize!"))
+			panic("gobal serve not initialize!")
 		}
 		var ok bool
 		redisPool, ok = app.Storage().Source().(*redis.Pool)
 		if !ok {
-			panic(errors.New("storage drive not base redis"))
+			panic("storage drive not base redis")
 		}
 	}
 	return redisPool
