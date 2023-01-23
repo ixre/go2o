@@ -28,6 +28,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 )
 
@@ -152,6 +153,8 @@ func (i *itemImpl) SetImages(images []string) error {
 		i.value.Image = images[0]
 	}
 	i.awaitSaveImages = arr
+	println("arr==", typeconv.MustJson(arr))
+
 	// 清除图片数据
 	i.images = nil
 	return nil

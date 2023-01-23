@@ -152,7 +152,7 @@ func TestCancelOrder(t *testing.T) {
 
 	no := o.(order.INormalOrder)
 	for _, v := range no.GetSubOrders() {
-		err = v.Cancel("买多了，不想要了")
+		err = v.Cancel(true, "买多了，不想要了")
 		if err != nil {
 			t.Log("取消失败：", err.Error())
 			t.FailNow()
@@ -168,7 +168,7 @@ func TestCancelSubOrderByOrderNo(t *testing.T) {
 	orderRepo := ti.Factory.GetOrderRepo()
 	manager := orderRepo.Manager()
 	is := manager.GetSubOrder(orderId)
-	err := is.Cancel("不想要了")
+	err := is.Cancel(true, "不想要了")
 	if err != nil {
 		t.Log("取消失败：", err.Error())
 		t.FailNow()
