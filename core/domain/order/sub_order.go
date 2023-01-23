@@ -651,8 +651,8 @@ func (o *subOrderImpl) Cancel(buyerCancel bool, reason string) error {
 		return order.ErrOrderShippedCancel
 	}
 	if buyerCancel {
-		disallow := o.registryRepo.Get(registry.OrderDisallowUserCancel).BoolValue()
-		if disallow {
+		allow := o.registryRepo.Get(registry.OrderAllowUserCancelAfterPayment).BoolValue()
+		if !allow {
 			return order.ErrDisallowCancel
 		}
 	}
