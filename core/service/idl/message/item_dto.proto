@@ -170,23 +170,25 @@ message SItemDataResponse {
   string title = 6;
   // 副标题
   string shortTitle = 7;
+  // 视频介绍
+  string introVideo = 8;
   // 货号
-  string goodsNo = 8;
+  string goodsNo = 9;
   // 主图
-  string thumbnail = 9;
+  string thumbnail = 10;
   // 图片
-  repeated string images = 10;
+  repeated string images = 11;
   //定价
-  int64 retailPrice = 11;
+  int64 retailPrice = 12;
   //销售价
-  int64 price = 12;
+  int64 price = 13;
   // 促销价
-  int64 promPrice = 13;
+  int64 promPrice = 14;
   // 价格区间
-  string priceRange = 14;
-  int64 goodsId = 15;
+  string priceRange = 15;
+  int64 goodsId = 16;
   // SkuId
-  int64 skuId = 16;
+  int64 skuId = 17;
   // 促销标志
   int32 itemFlag = 18;
   // 库存
