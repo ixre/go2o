@@ -26,7 +26,8 @@ type Goods struct {
 	// 货号
 	GoodsNo string `db:"code"`
 	Image   string `db:"image"`
-
+	// 视频
+	IntroVideo string `db:"intro_video"`
 	//定价
 	RetailPrice int64 `db:"retail_price"`
 
@@ -38,8 +39,8 @@ type Goods struct {
 	// 价格区间
 	PriceRange string `db:"price_range"`
 
-	GoodsId   int64 `db:"item_info.id"`
-	SkuId     int64 `db:"sku_id"`
+	GoodsId int64 `db:"item_info.id"`
+	SkuId   int64 `db:"sku_id"`
 
 	// 商品标志
 	ItemFlag int `db:"item_flag"`
