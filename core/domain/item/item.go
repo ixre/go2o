@@ -125,7 +125,7 @@ func (i *itemImpl) SetImages(images []string) error {
 				exists = true
 			}
 		}
-		if !exists {
+		if !exists || oldMap[v.ImageUrl] != nil {
 			delArr = append(delArr, v.Id)
 			continue
 		}
