@@ -517,7 +517,7 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 // 为所有子订单生成支付单
 func (o *normalOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.baseValue
-	itemAmount := v.ItemAmount
+	itemAmount := v.ItemAmount + v.ExpressFee + v.PackageFee
 	finalAmount := v.FinalAmount
 	disAmount := v.DiscountAmount
 	po := &payment.Order{
@@ -534,6 +534,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		DeductAmount:   0,
 		AdjustAmount:   0,
 		FinalFee:       finalAmount,
+		TotalAmount:    finalAmount,
 		PayFlag:        payment.PAllFlag,
 		TradeChannel:   0,
 		ExtraData:      "",
@@ -770,7 +771,6 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	// 最终金额 = 商品金额 - 商品抵扣金额(促销折扣) + 包装费 + 快递费
 	v.FinalAmount = v.ItemAmount - v.DiscountAmount +
 		v.PackageFee + v.ExpressFee
-	log.Println("----", vendorId, v.ExpressFee, v.FinalAmount)
 	so := o.repo.CreateNormalSubOrder(v)
 	o.createAffiliateRebateOrder(so)
 	return so

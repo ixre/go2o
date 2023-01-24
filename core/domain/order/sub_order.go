@@ -398,7 +398,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 }
 
 func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment.IShipmentOrder {
-	if items == nil || len(items) == 0 {
+	if len(items) == 0 {
 		return nil
 	}
 	unix := time.Now().Unix()

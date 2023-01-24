@@ -228,7 +228,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 
 // 测试从订单重新创建订单并提交付款
 func TestRebuildSubmitNormalOrder(t *testing.T) {
-	orderNo := "1230111000414674"
+	orderNo := "1230124001810642"
 	repo := ti.Factory.GetOrderRepo()
 	memRepo := ti.Factory.GetMemberRepo()
 	payRepo := ti.Factory.GetPaymentRepo()
