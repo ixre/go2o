@@ -29,7 +29,7 @@ type CartServiceClient interface {
 	// 放入购物车
 	PutInCart(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
 	// 更新购物车多件商品
-	UpdateItems(ctx context.Context, in *CartUpdateRequest, opts ...grpc.CallOption) (*Result, error)
+	UpdateItems(ctx context.Context, in *CartUpdateRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
 	// 从购物车里删除指定数量单件商品
 	ReduceCartItem(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
 	// 勾选商品结算
@@ -71,8 +71,8 @@ func (c *cartServiceClient) PutInCart(ctx context.Context, in *CartItemRequest, 
 	return out, nil
 }
 
-func (c *cartServiceClient) UpdateItems(ctx context.Context, in *CartUpdateRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *cartServiceClient) UpdateItems(ctx context.Context, in *CartUpdateRequest, opts ...grpc.CallOption) (*CartItemResponse, error) {
+	out := new(CartItemResponse)
 	err := c.cc.Invoke(ctx, "/CartService/UpdateItems", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ type CartServiceServer interface {
 	// 放入购物车
 	PutInCart(context.Context, *CartItemRequest) (*CartItemResponse, error)
 	// 更新购物车多件商品
-	UpdateItems(context.Context, *CartUpdateRequest) (*Result, error)
+	UpdateItems(context.Context, *CartUpdateRequest) (*CartItemResponse, error)
 	// 从购物车里删除指定数量单件商品
 	ReduceCartItem(context.Context, *CartItemRequest) (*CartItemResponse, error)
 	// 勾选商品结算
@@ -130,7 +130,7 @@ func (UnimplementedCartServiceServer) GetShoppingCart(context.Context, *Shopping
 func (UnimplementedCartServiceServer) PutInCart(context.Context, *CartItemRequest) (*CartItemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PutInCart not implemented")
 }
-func (UnimplementedCartServiceServer) UpdateItems(context.Context, *CartUpdateRequest) (*Result, error) {
+func (UnimplementedCartServiceServer) UpdateItems(context.Context, *CartUpdateRequest) (*CartItemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateItems not implemented")
 }
 func (UnimplementedCartServiceServer) ReduceCartItem(context.Context, *CartItemRequest) (*CartItemResponse, error) {

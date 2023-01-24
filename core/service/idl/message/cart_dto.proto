@@ -52,9 +52,12 @@ message SCheckCartItem {
 
 // 购物车商品操作响应
 message CartItemResponse {
+    // 错误码
     int32 errCode = 1;
+    // 错误信息
     string errMsg = 2;
-    SShoppingCartItem item = 3;
+    // 购物车商品信息
+    repeated SShoppingCartItem items = 3;
 }
 
 // 购物车商品
