@@ -327,3 +327,14 @@ COMMENT ON COLUMN public.order_distribution_item.item_amount
 
 COMMENT ON COLUMN public.order_distribution_item.distribute_amount
     IS '分销金额';
+
+
+ALTER TABLE public.mch_express_template
+    ALTER COLUMN first_fee TYPE integer;
+COMMENT ON COLUMN public.mch_express_template.first_fee
+    IS '首次计价单价(元),如续重1kg';
+
+ALTER TABLE public.mch_express_template
+    ALTER COLUMN add_fee TYPE integer;
+COMMENT ON COLUMN public.mch_express_template.add_fee
+    IS '超过首次计价单价(元)，如续重1kg';

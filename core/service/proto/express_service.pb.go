@@ -188,11 +188,11 @@ type SExpressTemplate struct {
 	Basis int32 `protobuf:"varint,5,opt,name=basis,proto3" json:"basis"`
 	// 首次计价单位,如首重为2kg
 	FirstUnit int32 `protobuf:"varint,6,opt,name=firstUnit,proto3" json:"firstUnit"`
-	// 首次计价单价,如续重1kg
+	// 首次计价单价(元),如续重1kg
 	FirstFee int64 `protobuf:"varint,7,opt,name=firstFee,proto3" json:"firstFee"`
 	// 超过首次计价计算单位,如续重1kg
 	AddUnit int32 `protobuf:"varint,8,opt,name=addUnit,proto3" json:"addUnit"`
-	// 超过首次计价单价，如续重1kg
+	// 超过首次计价单价(元)，如续重1kg
 	AddFee int64 `protobuf:"varint,9,opt,name=addFee,proto3" json:"addFee"`
 	// 是否启用
 	Enabled bool `protobuf:"varint,10,opt,name=enabled,proto3" json:"enabled"`
