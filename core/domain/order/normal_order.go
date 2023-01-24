@@ -770,6 +770,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	// 最终金额 = 商品金额 - 商品抵扣金额(促销折扣) + 包装费 + 快递费
 	v.FinalAmount = v.ItemAmount - v.DiscountAmount +
 		v.PackageFee + v.ExpressFee
+	log.Println("----", vendorId, v.ExpressFee, v.FinalAmount)
 	so := o.repo.CreateNormalSubOrder(v)
 	o.createAffiliateRebateOrder(so)
 	return so
