@@ -10,6 +10,7 @@ package member
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -480,9 +481,9 @@ func (p *profileManagerImpl) checkBank(v *member.BankCard) error {
 	if l := len(v.BankAccount); l < 16 || l > 19 {
 		return member.ErrBankAccount
 	}
-	if v.Network == "" {
-		//return member.ErrBankNetwork
-	}
+	//if v.Network == "" {
+	//return member.ErrBankNetwork
+	//}
 	return nil
 }
 
@@ -688,4 +689,36 @@ func (p *profileManagerImpl) bankCardIsExists(cardNo string) bool {
 		}
 	}
 	return false
+}
+
+// BindOAuthApp implements member.IProfileManager
+func (p *profileManagerImpl) BindOAuthApp(app string, openId string, authToken string) error {
+	b := p.GetOAuthBindInfo(app)
+	if b != nil {
+		return fmt.Errorf("app %s aready has binding info", app)
+	}
+	b = &member.OAuthAccount{
+		MemberId:   p.memberId,
+		AppCode:    app,
+		OpenId:     openId,
+		AuthToken:  authToken,
+		HeadImgUrl: "",
+		UpdateTime: time.Now().Unix(),
+	}
+	_, err := p.repo.SaveOAuthAccount(b)
+	return err
+}
+
+// GetOAuthBindInfo implements member.IProfileManager
+func (p *profileManagerImpl) GetOAuthBindInfo(app string) *member.OAuthAccount {
+	return p.repo.GetOAuthAccount(int(p.memberId), app)
+}
+
+// UnbindOAuthApp implements member.IProfileManager
+func (p *profileManagerImpl) UnbindOAuthApp(app string) error {
+	b := p.GetOAuthBindInfo(app)
+	if b != nil {
+		return p.repo.DeleteOAuthAccount(b.Id)
+	}
+	return nil
 }

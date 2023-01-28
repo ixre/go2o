@@ -180,4 +180,11 @@ type IMemberRepo interface {
 	RegisterUnlockJob(info *MmLockInfo)
 	// 获取会员邀请的会员编号列表
 	GetInviteChildren(id int64) []int64
+
+	// GetOAuthAccount 关联第三方应用账号
+	GetOAuthAccount(memberId int, appCode string) *OAuthAccount
+	// SaveOAuthAccount 关联第三方应用账号
+	SaveOAuthAccount(v *OAuthAccount) (int, error)
+	// DeleteOAuthAccount 关联第三方应用账号
+	DeleteOAuthAccount(primary interface{}) error
 }

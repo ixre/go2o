@@ -176,6 +176,12 @@ type MemberServiceClient interface {
 	FinishWithdrawal(ctx context.Context, in *FinishWithdrawalRequest, opts ...grpc.CallOption) (*Result, error)
 	// 查询提现记录
 	QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogResponse, error)
+	// 绑定第三方应用
+	BindOAuthApp(ctx context.Context, in *SMemberOAuthAccount, opts ...grpc.CallOption) (*Result, error)
+	// 解除第三方应用绑定
+	UnbindOAuthApp(ctx context.Context, in *MemberOAuthRequest, opts ...grpc.CallOption) (*Result, error)
+	// 获取第三方应用绑定信息
+	GetOAuthBindInfo(ctx context.Context, in *MemberOAuthRequest, opts ...grpc.CallOption) (*SMemberOAuthAccount, error)
 	// !银行四要素认证
 	B4EAuth(ctx context.Context, in *B4EAuthRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取钱包流水记录
@@ -846,6 +852,33 @@ func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *Withdr
 	return out, nil
 }
 
+func (c *memberServiceClient) BindOAuthApp(ctx context.Context, in *SMemberOAuthAccount, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MemberService/BindOAuthApp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) UnbindOAuthApp(ctx context.Context, in *MemberOAuthRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MemberService/UnbindOAuthApp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) GetOAuthBindInfo(ctx context.Context, in *MemberOAuthRequest, opts ...grpc.CallOption) (*SMemberOAuthAccount, error) {
+	out := new(SMemberOAuthAccount)
+	err := c.cc.Invoke(ctx, "/MemberService/GetOAuthBindInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *memberServiceClient) B4EAuth(ctx context.Context, in *B4EAuthRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/MemberService/B4EAuth", in, out, opts...)
@@ -1058,6 +1091,12 @@ type MemberServiceServer interface {
 	FinishWithdrawal(context.Context, *FinishWithdrawalRequest) (*Result, error)
 	// 查询提现记录
 	QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error)
+	// 绑定第三方应用
+	BindOAuthApp(context.Context, *SMemberOAuthAccount) (*Result, error)
+	// 解除第三方应用绑定
+	UnbindOAuthApp(context.Context, *MemberOAuthRequest) (*Result, error)
+	// 获取第三方应用绑定信息
+	GetOAuthBindInfo(context.Context, *MemberOAuthRequest) (*SMemberOAuthAccount, error)
 	// !银行四要素认证
 	B4EAuth(context.Context, *B4EAuthRequest) (*Result, error)
 	// 获取钱包流水记录
@@ -1292,6 +1331,15 @@ func (UnimplementedMemberServiceServer) FinishWithdrawal(context.Context, *Finis
 }
 func (UnimplementedMemberServiceServer) QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryWithdrawalLog not implemented")
+}
+func (UnimplementedMemberServiceServer) BindOAuthApp(context.Context, *SMemberOAuthAccount) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BindOAuthApp not implemented")
+}
+func (UnimplementedMemberServiceServer) UnbindOAuthApp(context.Context, *MemberOAuthRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnbindOAuthApp not implemented")
+}
+func (UnimplementedMemberServiceServer) GetOAuthBindInfo(context.Context, *MemberOAuthRequest) (*SMemberOAuthAccount, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOAuthBindInfo not implemented")
 }
 func (UnimplementedMemberServiceServer) B4EAuth(context.Context, *B4EAuthRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method B4EAuth not implemented")
@@ -2620,6 +2668,60 @@ func _MemberService_QueryWithdrawalLog_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemberService_BindOAuthApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SMemberOAuthAccount)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).BindOAuthApp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MemberService/BindOAuthApp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).BindOAuthApp(ctx, req.(*SMemberOAuthAccount))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_UnbindOAuthApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberOAuthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).UnbindOAuthApp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MemberService/UnbindOAuthApp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).UnbindOAuthApp(ctx, req.(*MemberOAuthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_GetOAuthBindInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberOAuthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).GetOAuthBindInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MemberService/GetOAuthBindInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).GetOAuthBindInfo(ctx, req.(*MemberOAuthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MemberService_B4EAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(B4EAuthRequest)
 	if err := dec(in); err != nil {
@@ -3022,6 +3124,18 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryWithdrawalLog",
 			Handler:    _MemberService_QueryWithdrawalLog_Handler,
+		},
+		{
+			MethodName: "BindOAuthApp",
+			Handler:    _MemberService_BindOAuthApp_Handler,
+		},
+		{
+			MethodName: "UnbindOAuthApp",
+			Handler:    _MemberService_UnbindOAuthApp_Handler,
+		},
+		{
+			MethodName: "GetOAuthBindInfo",
+			Handler:    _MemberService_GetOAuthBindInfo_Handler,
 		},
 		{
 			MethodName: "B4EAuth",

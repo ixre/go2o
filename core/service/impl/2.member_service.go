@@ -39,7 +39,6 @@ import (
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
-	context2 "golang.org/x/net/context"
 )
 
 var _ proto.MemberServiceServer = new(memberService)
@@ -1284,7 +1283,7 @@ func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*
 	return nil, member.ErrNoSuchMember
 }
 
-func (s *memberService) Freeze(_ context2.Context, r *proto.AccountFreezeRequest) (*proto.AccountFreezeResponse, error) {
+func (s *memberService) Freeze(_ context.Context, r *proto.AccountFreezeRequest) (*proto.AccountFreezeResponse, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return &proto.AccountFreezeResponse{ErrCode: 1, ErrMsg: member.ErrNoSuchMember.Error()}, nil
@@ -1302,7 +1301,7 @@ func (s *memberService) Freeze(_ context2.Context, r *proto.AccountFreezeRequest
 	return &proto.AccountFreezeResponse{LogId: int64(id)}, nil
 }
 
-func (s *memberService) Unfreeze(_ context2.Context, r *proto.AccountUnfreezeRequest) (*proto.Result, error) {
+func (s *memberService) Unfreeze(_ context.Context, r *proto.AccountUnfreezeRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
@@ -1749,4 +1748,43 @@ func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddre
 		DetailAddress:  src.DetailAddress,
 		IsDefault:      types.ElseInt(src.IsDefault, 1, 0),
 	}
+}
+
+// BindOAuthApp 绑定第三方应用
+func (m *memberService) BindOAuthApp(_ context.Context, req *proto.SMemberOAuthAccount) (*proto.Result, error) {
+	mm := m.repo.GetMember(req.MemberId)
+	if m == nil {
+		return m.error(member.ErrNoSuchMember), nil
+	}
+	err := mm.Profile().BindOAuthApp(req.AppCode, req.OpenId, req.AuthToken)
+	return m.error(err), nil
+}
+
+// GetOAuthBindInfo 获取第三方应用绑定信息
+func (m *memberService) GetOAuthBindInfo(_ context.Context, req *proto.MemberOAuthRequest) (*proto.SMemberOAuthAccount, error) {
+	mm := m.repo.GetMember(req.MemberId)
+	if m == nil {
+		return &proto.SMemberOAuthAccount{}, nil
+	}
+	bind := mm.Profile().GetOAuthBindInfo(req.AppCode)
+	if bind == nil {
+		return &proto.SMemberOAuthAccount{}, nil
+	}
+	return &proto.SMemberOAuthAccount{
+		MemberId:    req.MemberId,
+		AppCode:     req.AppCode,
+		OpenId:      bind.OpenId,
+		AuthToken:   bind.AuthToken,
+		PortraitUrl: bind.HeadImgUrl,
+	}, nil
+}
+
+// UnbindOAuthApp 解除第三方应用绑定
+func (m *memberService) UnbindOAuthApp(_ context.Context, req *proto.MemberOAuthRequest) (*proto.Result, error) {
+	mm := m.repo.GetMember(req.MemberId)
+	if m == nil {
+		return m.error(member.ErrNoSuchMember), nil
+	}
+	err := mm.Profile().UnbindOAuthApp(req.AppCode)
+	return m.error(err), nil
 }

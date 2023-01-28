@@ -313,4 +313,22 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
+
+	// OAuthAccount 关联第三方应用账号
+	OAuthAccount struct {
+		// 编号
+		Id int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
+		// 会员ID
+		MemberId int64 `db:"member_id" json:"memberId"`
+		// 应用代码,如wx
+		AppCode string `db:"app_code" json:"appCode"`
+		// 第三方应用id
+		OpenId string `db:"open_id" json:"openId"`
+		// 第三方应用认证令牌
+		AuthToken string `db:"auth_token" json:"auth_token"`
+		// 头像地址
+		HeadImgUrl string `db:"head_img_url" json:"headImgUrl"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time" json:"updateTime"`
+	}
 )

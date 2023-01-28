@@ -241,6 +241,16 @@ service MemberService {
     // 查询提现记录
     rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogResponse) {
     }
+
+    // 绑定第三方应用
+    rpc	BindOAuthApp(SMemberOAuthAccount) returns (Result){}
+
+    // 解除第三方应用绑定
+    rpc	UnbindOAuthApp(MemberOAuthRequest)returns (Result){}
+    
+    // 获取第三方应用绑定信息
+    rpc	GetOAuthBindInfo(MemberOAuthRequest) returns (SMemberOAuthAccount){}
+
     // !银行四要素认证
     rpc B4EAuth (B4EAuthRequest) returns (Result) {
     }

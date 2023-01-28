@@ -338,3 +338,48 @@ ALTER TABLE public.mch_express_template
     ALTER COLUMN add_fee TYPE integer;
 COMMENT ON COLUMN public.mch_express_template.add_fee
     IS '超过首次计价单价(元)，如续重1kg';
+
+-- Table: public.mm_app_account
+
+-- DROP TABLE IF EXISTS public.mm_app_account;
+
+CREATE TABLE IF NOT EXISTS public.mm_app_account
+(
+    id BIGSERIAL NOT NULL,
+    member_id bigint NOT NULL,
+    app_code character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    open_id character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    auth_token character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    head_img_url character varying(120) COLLATE pg_catalog."default" NOT NULL,
+    update_time bigint NOT NULL,
+    CONSTRAINT mm_app_account_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.mm_app_account
+    OWNER to postgres;
+
+COMMENT ON TABLE public.mm_app_account
+  IS '关联第三方应用账号';
+
+COMMENT ON COLUMN public.mm_app_account.id
+    IS '编号';
+
+COMMENT ON COLUMN public.mm_app_account.member_id
+    IS '会员ID';
+
+COMMENT ON COLUMN public.mm_app_account.app_code
+    IS '应用代码,如wx';
+
+COMMENT ON COLUMN public.mm_app_account.open_id
+    IS '第三方应用id';
+
+COMMENT ON COLUMN public.mm_app_account.auth_token
+    IS '第三方应用认证令牌';
+
+COMMENT ON COLUMN public.mm_app_account.head_img_url
+    IS '头像地址';
+
+COMMENT ON COLUMN public.mm_app_account.update_time
+    IS '更新时间';

@@ -947,3 +947,25 @@ message MemberIdListResponse {
   repeated sint64 value = 1;
 }
 
+
+// 关联第三方应用账号请求
+message MemberOAuthRequest{
+  /** 会员ID */
+  int64 memberId = 1;
+  /** 应用代码 */
+  string appCode = 2;
+}
+
+/** 关联第三方应用账号 */
+message SMemberOAuthAccount{
+   /** 会员ID */
+   int64 memberId = 1;
+   /** 应用代码,如wx */
+   string appCode = 2;
+   /** 第三方应用id */
+   string openId = 3;
+   /** 第三方应用认证令牌 */
+   string authToken = 4;
+   /** 头像地址 */
+   string portraitUrl = 5;
+}
