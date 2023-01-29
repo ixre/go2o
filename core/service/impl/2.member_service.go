@@ -35,7 +35,6 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
 	api "github.com/ixre/gof/jwt-api"
-	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
@@ -1683,9 +1682,7 @@ func (s *memberService) parseAddressDto(src *member.ConsigneeAddress) *proto.SAd
 		IsDefault:      src.IsDefault == 1,
 	}
 }
-func round(f float32, n int) float64 {
-	return math.Round(float64(f), n)
-}
+
 func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 	return &proto.SAccount{
 		Integral:            int64(src.Integral),
@@ -1753,7 +1750,7 @@ func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddre
 // BindOAuthApp 绑定第三方应用
 func (m *memberService) BindOAuthApp(_ context.Context, req *proto.SMemberOAuthAccount) (*proto.Result, error) {
 	mm := m.repo.GetMember(req.MemberId)
-	if m == nil {
+	if mm == nil {
 		return m.error(member.ErrNoSuchMember), nil
 	}
 	err := mm.Profile().BindOAuthApp(req.AppCode, req.OpenId, req.AuthToken)
@@ -1763,7 +1760,7 @@ func (m *memberService) BindOAuthApp(_ context.Context, req *proto.SMemberOAuthA
 // GetOAuthBindInfo 获取第三方应用绑定信息
 func (m *memberService) GetOAuthBindInfo(_ context.Context, req *proto.MemberOAuthRequest) (*proto.SMemberOAuthAccount, error) {
 	mm := m.repo.GetMember(req.MemberId)
-	if m == nil {
+	if mm == nil {
 		return &proto.SMemberOAuthAccount{}, nil
 	}
 	bind := mm.Profile().GetOAuthBindInfo(req.AppCode)
@@ -1782,7 +1779,7 @@ func (m *memberService) GetOAuthBindInfo(_ context.Context, req *proto.MemberOAu
 // UnbindOAuthApp 解除第三方应用绑定
 func (m *memberService) UnbindOAuthApp(_ context.Context, req *proto.MemberOAuthRequest) (*proto.Result, error) {
 	mm := m.repo.GetMember(req.MemberId)
-	if m == nil {
+	if mm == nil {
 		return m.error(member.ErrNoSuchMember), nil
 	}
 	err := mm.Profile().UnbindOAuthApp(req.AppCode)
