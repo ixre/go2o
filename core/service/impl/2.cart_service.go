@@ -347,30 +347,6 @@ func (s *cartServiceImpl) UpdateItems(_ context.Context, r *proto.CartUpdateRequ
 	return ret, nil
 }
 
-func (s *cartServiceImpl) ReduceCartItem(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
-	c := s.getShoppingCart(r.Id.UserId, r.Id.CartCode)
-	var err error
-	if c == nil {
-		err = cart.ErrNoSuchCart
-	} else {
-		it := r.Item
-		err = c.Remove(it.ItemId, it.SkuId, it.Quantity)
-		if err == nil {
-			_, err = c.Save()
-			if err == nil {
-				rc := c.(cart.INormalCart)
-				item := rc.GetItem(it.ItemId, it.SkuId)
-				return &proto.CartItemResponse{
-					Items: []*proto.SShoppingCartItem{
-						parser.ParseCartItem(item),
-					},
-				}, nil
-			}
-		}
-	}
-	return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
-}
-
 // CheckCart 勾选商品结算
 func (s *cartServiceImpl) CheckCart(_ context.Context, r *proto.CheckCartRequest) (*proto.Result, error) {
 	c := s.getShoppingCart(r.Id.UserId, r.Id.CartCode)
