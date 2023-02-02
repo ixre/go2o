@@ -39,14 +39,14 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		//SkuNum:       src.SkuNum,
 		//SkuId:        src.SkuId,
 		//Cost:         float64(src.Cost),
-		Price: src.Price,
+		Price:      src.Price,
 		PriceRange: src.PriceRange,
 		StockNum:   src.StockNum,
 		//RetailPrice:  float64(src.RetailPrice),
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
 		ShelveState: src.AuditState,
-		AuditState: src.AuditState,
+		AuditState:  src.AuditState,
 		//ReviewRemark: src.ReviewRemark,
 		//SortNum:      src.SortNum,
 		//CreateTime:   src.CreateTime,
@@ -76,7 +76,7 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		ExpressTid: int64(src.ExpressTid),
 		Title:      src.Title,
 		ShortTitle: src.ShortTitle,
-		IntroVideo:src.IntroVideo,
+		IntroVideo: src.IntroVideo,
 		Code:       src.Code,
 		//SaleNum:      src.SaleNum,
 		//SkuNum:       src.SkuNum,
@@ -117,6 +117,18 @@ func SkuArrayDto(src []*item.Sku) []*proto.SSku {
 	var dst = make([]*proto.SSku, len(src))
 	for i, v := range src {
 		dst[i] = SkuDto(v)
+	}
+	return dst
+}
+
+func AttrValueArrayDto(src []*product.AttrValue) []*proto.SAttrValue {
+	var dst = make([]*proto.SAttrValue, len(src))
+	for i, v := range src {
+		dst[i] = &proto.SAttrValue{
+			AttrId:    v.AttrId,
+			AttrName:  v.AttrName,
+			AttrValue: v.AttrWord,
+		}
 	}
 	return dst
 }

@@ -199,6 +199,9 @@ func (i *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndS
 		if len(ret.Images) == 0 && len(sn.Image) > 0 {
 			ret.Images = []string{sn.Image}
 		}
+		// 获取属性
+		attrArr := it.Product().Attr()
+		ret.AttrArray = parser.AttrValueArrayDto(attrArr)
 		// 获取SKU和详情等
 		skuArr := it.SkuArray()
 		specArr := it.SpecArray()
