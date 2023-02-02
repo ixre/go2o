@@ -407,13 +407,15 @@ message ItemSnapshotResponse {
   // 已销售数量
   int32 saleNum = 21;
   // 商品详情
-  string description = 23;
+  string description = 22;
+  // 商品属性
+  repeated SAttrValue attrArray = 23;
   // SKU
-  repeated SSku skuArray = 22;
+  repeated SSku skuArray = 24;
   // 规格
-  repeated SSpecOption specOptions = 24;
+  repeated SSpecOption specOptions = 25;
   // SkuJson
-  string skuJson = 25;
+  string skuJson = 26;
   // 商品标志数据
   SItemFlagData flagData = 27;
   // 会员价
@@ -422,6 +424,16 @@ message ItemSnapshotResponse {
   string introVideo = 29;
   // 返回Sku-HTML
   string skuHtml = 30;
+}
+
+/** 产品属性值(用于展示详情) */
+message SAttrValue{
+  // 属性编号
+  int64 attrId = 2;
+  // 属性名称
+  string attrName = 3;
+  // 属性文本
+  string attrValue = 4;
 }
 
 // 商品模型规格
