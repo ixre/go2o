@@ -204,7 +204,8 @@ func (i *itemService) GetItemAndSnapshot(_ context.Context, r *proto.GetItemAndS
 		specArr := it.SpecArray()
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		ret.SpecOptions = parser.SpecOptionsDto(specArr)
-
+		// 视频介绍
+		ret.IntroVideo = it.GetValue().IntroVideo
 		// 商品标志
 		ret.FlagData = i.getFlagData(it.GetValue().ItemFlag)
 		// 产品详情

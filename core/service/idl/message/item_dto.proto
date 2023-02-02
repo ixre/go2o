@@ -125,29 +125,32 @@ message SaveItemRequest {
   string goodsNo = 8;
   // 图片
   repeated string images = 9;
+  // 视频介绍
+  string introVideo = 10;
   //定价
-  int64 retailPrice = 10;
-  int64 cost = 11;
+  int64 retailPrice = 11;
+  // 成本
+  int64 cost = 12;
   //销售价
-  int64 price = 12;
+  int64 price = 13;
   // 促销价
-  int64 promPrice = 13;
+  int64 promPrice = 14;
   // 价格区间
-  string priceRange = 14;
-  int64 goodsId = 15;
-  int64 skuId = 16;
+  string priceRange = 15;
+  int64 goodsId = 16;
+  int64 skuId = 17;
   // 库存
-  int32 stockNum = 19;
+  int32 stockNum = 18;
   // 已售件数
-  int32 saleNum = 20;
-
+  int32 saleNum = 19;
+  // 促销标志
+  SItemFlagData flagData = 20;
+  
   //todo: 对比SGoods多出的字段
   sint64 brandId = 21;
   string code = 22;
   int64 expressTid = 23;
   repeated SSku skuArray = 24;
-  // 促销标志
-  SItemFlagData flagData = 18;
   repeated SLevelPrice levelPrices = 25;
 }
 
@@ -167,23 +170,25 @@ message SItemDataResponse {
   string title = 6;
   // 副标题
   string shortTitle = 7;
+  // 视频介绍
+  string introVideo = 8;
   // 货号
-  string goodsNo = 8;
+  string goodsNo = 9;
   // 主图
-  string thumbnail = 9;
+  string thumbnail = 10;
   // 图片
-  repeated string images = 10;
+  repeated string images = 11;
   //定价
-  int64 retailPrice = 11;
+  int64 retailPrice = 12;
   //销售价
-  int64 price = 12;
+  int64 price = 13;
   // 促销价
-  int64 promPrice = 13;
+  int64 promPrice = 14;
   // 价格区间
-  string priceRange = 14;
-  int64 goodsId = 15;
+  string priceRange = 15;
+  int64 goodsId = 16;
   // SkuId
-  int64 skuId = 16;
+  int64 skuId = 17;
   // 促销标志
   int32 itemFlag = 18;
   // 库存
@@ -413,9 +418,10 @@ message ItemSnapshotResponse {
   SItemFlagData flagData = 27;
   // 会员价
   repeated SLevelPrice levelPrices = 28;
-
+  // 视频介绍
+  string introVideo = 29;
   // 返回Sku-HTML
-  string skuHtml = 29;
+  string skuHtml = 30;
 }
 
 // 商品模型规格

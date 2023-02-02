@@ -40,7 +40,7 @@ func Push(topic string, message string) error {
 	if producer != nil {
 		return producer.Push(topic, message)
 	}
-	log.Println("[ GO2O][ warning]: nats producer not available")
+	log.Println("[ GO2O][ WARNING]: nats producer not available")
 	return nil
 }
 

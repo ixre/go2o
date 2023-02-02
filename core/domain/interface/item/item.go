@@ -383,6 +383,8 @@ type (
 		Code string `db:"code"`
 		// 主图
 		Image string `db:"image"`
+		// 视频介绍
+		IntroVideo string `db:"intro_video"`
 		// 销售价格区间
 		PriceRange string `db:"price_range"`
 		// 总库存

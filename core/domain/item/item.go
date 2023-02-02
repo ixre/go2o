@@ -124,7 +124,7 @@ func (i *itemImpl) SetImages(images []string) error {
 				exists = true
 			}
 		}
-		if !exists {
+		if !exists || oldMap[v.ImageUrl] != nil {
 			delArr = append(delArr, v.Id)
 			continue
 		}
@@ -152,6 +152,7 @@ func (i *itemImpl) SetImages(images []string) error {
 		i.value.Image = images[0]
 	}
 	i.awaitSaveImages = arr
+
 	// 清除图片数据
 	i.images = nil
 	return nil
@@ -210,6 +211,7 @@ func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 		Title:       gv.Title,
 		GoodsNo:     gv.Code,
 		Image:       gv.Image,
+		IntroVideo:  gv.IntroVideo,
 		RetailPrice: gv.RetailPrice,
 		Price:       gv.Price,
 		PriceRange:  gv.PriceRange,
@@ -271,6 +273,8 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.Price = v.Price
 		i.value.Weight = v.Weight
 		i.value.Bulk = v.Bulk
+		// 更新视频
+		i.value.IntroVideo = v.IntroVideo
 		// 如果零售价和成本未填写,则默认等于价格
 		if i.value.RetailPrice == 0 {
 			i.value.RetailPrice = v.Price
@@ -493,7 +497,7 @@ func (i *itemImpl) Save() (_ int64, err error) {
 	}
 	// 新增自营商品自动上架(待审核)
 	if i.GetAggregateRootId() == 0 {
-		log.Println("[ GO2O][ LOG]: new item",i.value.ItemFlag)
+		log.Println("[ GO2O][ LOG]: new item", i.value.ItemFlag)
 		if domain.TestFlag(i.value.ItemFlag, item.FlagSelfSales) {
 			i.value.ShelveState = item.ShelvesOn
 			i.value.AuditState = enum.ReviewAwaiting

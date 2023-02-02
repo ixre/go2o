@@ -272,6 +272,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.No
 					return v, item.ErrOutOfStock // 库存不足
 				}
 				v.Quantity = num
+				v.Checked = 1
 			} else {
 				if v.Quantity+num > stock {
 					return v, item.ErrOutOfStock // 库存不足
@@ -280,6 +281,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.No
 			}
 			return v, err
 		} else {
+			// 取消掉其他要结算的商品
 			if checkOnly {
 				v.Checked = 0
 			}

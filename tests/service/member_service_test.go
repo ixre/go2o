@@ -27,6 +27,7 @@ func TestGrantMemberAccessToken(t *testing.T) {
 	}
 	t.Log("token is:", token.AccessToken)
 	now := time.Now().Unix()
+	token.AccessToken = "Bearer "// + token.AccessToken
 	accessToken, _ := s.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken:      token.AccessToken,
 		CheckExpireTime:  now + 800,
@@ -114,7 +115,7 @@ func TestChangeUsername(t *testing.T) {
 }
 func TestChangePasswordAndCheckLogin(t *testing.T) {
 	pwd := domain.Md5("123456")
-	t.Log("md5=",pwd)
+	t.Log("md5=", pwd)
 	r, _ := impl.MemberService.ChangePassword(context.TODO(),
 		&proto.ChangePasswordRequest{
 			MemberId:    1,

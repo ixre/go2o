@@ -52,7 +52,7 @@ type TraceResult struct {
 
 func KdnTraces(shipperCode string, logisticCode string) (traceResult *TraceResult, err error) {
 	if AppKey == "" || EBusinessID == "" {
-		fmt.Println("[ GO2O][ warning]: not KDN AppKey & EBusinessID setting")
+		fmt.Println("[ GO2O][ WARNING]: not KDN AppKey & EBusinessID setting")
 		return nil, nil
 	}
 	if requestDataJson, err := json.Marshal(&RequestData{

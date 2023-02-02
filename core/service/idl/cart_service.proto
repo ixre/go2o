@@ -18,7 +18,7 @@ service CartService {
     rpc PutInCart(CartItemRequest) returns (CartItemResponse) {
     }
     // 更新购物车多件商品
-    rpc UpdateItems(CartUpdateRequest) returns (Result) {
+    rpc UpdateItems(CartUpdateRequest) returns (CartItemResponse) {
     }
     // 从购物车里删除指定数量单件商品
     rpc ReduceCartItem(CartItemRequest) returns (CartItemResponse) {

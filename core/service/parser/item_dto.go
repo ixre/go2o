@@ -136,6 +136,7 @@ func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
 		ShopCatId:  0,                     //todo:??
 		ExpressTid: int32(src.ExpressTid), //src.,
 		Title:      src.Title,
+		IntroVideo: src.IntroVideo,
 		ShortTitle: "", //src.Sho,
 		Code:       src.Code,
 		Image:      image,

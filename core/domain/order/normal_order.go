@@ -517,7 +517,7 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 // 为所有子订单生成支付单
 func (o *normalOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.baseValue
-	itemAmount := v.ItemAmount
+	itemAmount := v.ItemAmount + v.ExpressFee + v.PackageFee
 	finalAmount := v.FinalAmount
 	disAmount := v.DiscountAmount
 	po := &payment.Order{
@@ -534,6 +534,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		DeductAmount:   0,
 		AdjustAmount:   0,
 		FinalFee:       finalAmount,
+		TotalAmount:    finalAmount,
 		PayFlag:        payment.PAllFlag,
 		TradeChannel:   0,
 		ExtraData:      "",
@@ -551,7 +552,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 	if err != nil {
 		orders := o.GetSubOrders()
 		for _, it := range orders {
-			_ = it.Cancel("")
+			_ = it.Cancel(false, "下单错误自动取消")
 		}
 	}
 	return err
@@ -795,17 +796,21 @@ func (o *normalOrderImpl) createAffiliateRebateOrder(so order.ISubOrder) {
 		}
 		ov := so.GetValue()
 		unix := time.Now().Unix()
-		v := &order.AffiliateRebate{
-			PlanId:        0,
-			TraderId:      o._AffiliateMember.GetAggregateRootId(),
-			AffiliateCode: o._AffiliateMember.GetValue().UserCode,
-			OrderNo:       ov.OrderNo,
-			OrderSubject:  ov.Subject,
-			OrderAmount:   ov.FinalAmount,
-			RebaseAmount:  int64(float64(ov.FinalAmount) * rate),
-			Status:        1,
-			CreateTime:    unix,
-			UpdateTime:    unix,
+		v := &order.AffiliateDistribution{
+			Id:               0,
+			PlanId:           0,
+			BuyerId:          o._AffiliateMember.GetAggregateRootId(),
+			OwnerId:          o._AffiliateMember.GetAggregateRootId(),
+			Flag:             1,
+			IsRead:           0,
+			AffiliateCode:    o._AffiliateMember.GetValue().UserCode,
+			OrderNo:          ov.OrderNo,
+			OrderSubject:     ov.Subject,
+			OrderAmount:      ov.FinalAmount,
+			DistributeAmount: int64(float64(ov.FinalAmount) * rate),
+			Status:           1,
+			CreateTime:       unix,
+			UpdateTime:       unix,
 		}
 		o.orderRepo.SaveOrderRebate(v)
 	}

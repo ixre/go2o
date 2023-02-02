@@ -152,7 +152,7 @@ func TestCancelOrder(t *testing.T) {
 
 	no := o.(order.INormalOrder)
 	for _, v := range no.GetSubOrders() {
-		err = v.Cancel("买多了，不想要了")
+		err = v.Cancel(true, "买多了，不想要了")
 		if err != nil {
 			t.Log("取消失败：", err.Error())
 			t.FailNow()
@@ -168,7 +168,7 @@ func TestCancelSubOrderByOrderNo(t *testing.T) {
 	orderRepo := ti.Factory.GetOrderRepo()
 	manager := orderRepo.Manager()
 	is := manager.GetSubOrder(orderId)
-	err := is.Cancel("不想要了")
+	err := is.Cancel(true, "不想要了")
 	if err != nil {
 		t.Log("取消失败：", err.Error())
 		t.FailNow()
@@ -228,7 +228,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 
 // 测试从订单重新创建订单并提交付款
 func TestRebuildSubmitNormalOrder(t *testing.T) {
-	orderNo := "1230111000414674"
+	orderNo := "1230124001810642"
 	repo := ti.Factory.GetOrderRepo()
 	memRepo := ti.Factory.GetMemberRepo()
 	payRepo := ti.Factory.GetPaymentRepo()

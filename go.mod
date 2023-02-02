@@ -10,7 +10,7 @@ require (
 	github.com/gomodule/redigo v1.8.9
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.13.6
+	github.com/ixre/gof v1.13.7
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/nats-io/nats-server/v2 v2.9.8 // indirect
 	github.com/nats-io/nats.go v1.22.1

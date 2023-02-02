@@ -47,16 +47,22 @@ type MemberRepoImpl struct {
 	valueRepo    valueobject.IValueRepo
 	mssRepo      mss.IMssRepo
 	registryRepo registry.IRegistryRepo
-	o            orm.Orm
+	_orm         orm.Orm
 }
+
+var memberRepoImplMapped = false
 
 func NewMemberRepo(sto storage.Interface, o orm.Orm,
 	walletRepo wallet.IWalletRepo, mssRepo mss.IMssRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *MemberRepoImpl {
+	if !memberRepoImplMapped {
+		_ = o.Mapping(member.OAuthAccount{}, "mm_app_account")
+		memberRepoImplMapped = true
+	}
 	return &MemberRepoImpl{
 		storage:      sto,
 		Connector:    o.Connector(),
-		o:            o,
+		_orm:         o,
 		mssRepo:      mssRepo,
 		walletRepo:   walletRepo,
 		valueRepo:    valRepo,
@@ -79,11 +85,11 @@ func (m *MemberRepoImpl) GetProfile(memberId int64) *member.Profile {
 	e := &member.Profile{}
 	key := m.getProfileCk(memberId)
 	if m.storage.Get(key, &e) != nil {
-		if err := m.o.Get(memberId, e); err != nil {
+		if err := m._orm.Get(memberId, e); err != nil {
 			if err == sql.ErrNoRows {
 				//todo: 没有资料应该到会员注册时候创建
 				e.MemberId = memberId
-				orm.Save(m.o, e, 0)
+				orm.Save(m._orm, e, 0)
 			}
 		} else {
 			m.storage.Set(key, *e)
@@ -94,7 +100,7 @@ func (m *MemberRepoImpl) GetProfile(memberId int64) *member.Profile {
 
 // 保存资料
 func (m *MemberRepoImpl) SaveProfile(v *member.Profile) error {
-	_, _, err := m.o.Save(v.MemberId, v)
+	_, _, err := m._orm.Save(v.MemberId, v)
 	if err == nil {
 		err = m.storage.Set(m.getProfileCk(v.MemberId), *v)
 	}
@@ -103,7 +109,7 @@ func (m *MemberRepoImpl) SaveProfile(v *member.Profile) error {
 
 // 收藏,typeId 为类型编号, referId为关联的ID
 func (m *MemberRepoImpl) Favorite(memberId int64, favType int, referId int64) error {
-	_, _, err := m.o.Save(nil, &member.Favorite{
+	_, _, err := m._orm.Save(nil, &member.Favorite{
 		MemberId:   memberId,
 		FavType:    favType,
 		ReferId:    referId,
@@ -123,7 +129,7 @@ func (m *MemberRepoImpl) Favored(memberId int64, favType int, referId int64) boo
 
 // 取消收藏
 func (m *MemberRepoImpl) CancelFavorite(memberId int64, favType int, referId int64) error {
-	_, err := m.o.Delete(&member.Favorite{},
+	_, err := m._orm.Delete(&member.Favorite{},
 		"member_id= $1 AND fav_type= $2 AND refer_id= $3",
 		memberId, favType, referId)
 	return err
@@ -140,7 +146,7 @@ func (m *MemberRepoImpl) GetMemberLevels_New() []*member.Level {
 	load := err != nil || i != 1 || globLevels == nil
 	if load {
 		list := make([]*member.Level, 0)
-		m.o.Select(&list, "1=1 ORDER BY id ASC")
+		m._orm.Select(&list, "1=1 ORDER BY id ASC")
 		globLevels = list
 		m.storage.Set(key, 1)
 	}
@@ -156,7 +162,7 @@ func (m *MemberRepoImpl) GetMemberNumByLevel_New(id int) int {
 
 // 删除会员等级
 func (m *MemberRepoImpl) DeleteMemberLevel_New(id int) error {
-	err := m.o.DeleteByPk(&member.Level{}, id)
+	err := m._orm.DeleteByPk(&member.Level{}, id)
 	if err == nil {
 		globLevels = nil
 		PrefixDel(m.storage, "go2o:repo:level:*")
@@ -166,7 +172,7 @@ func (m *MemberRepoImpl) DeleteMemberLevel_New(id int) error {
 
 // 保存会员等级
 func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
-	id, err := orm.I32(orm.Save(m.o, v, int(v.Id)))
+	id, err := orm.I32(orm.Save(m._orm, v, int(v.Id)))
 	if err == nil {
 		globLevels = nil
 		PrefixDel(m.storage, "go2o:repo:level:*")
@@ -177,7 +183,7 @@ func (m *MemberRepoImpl) SaveMemberLevel_New(v *member.Level) (int, error) {
 // 根据用户名获取会员
 func (m *MemberRepoImpl) GetMemberByUser(user string) *member.Member {
 	e := &member.Member{}
-	err := m.o.GetBy(e, "username = $1", user)
+	err := m._orm.GetBy(e, "username = $1", user)
 	if err == nil {
 		return e
 	}
@@ -204,7 +210,7 @@ func (m *MemberRepoImpl) GetMemberIdByCode(code string) int64 {
 // 根据手机号码获取会员
 func (m *MemberRepoImpl) GetMemberValueByPhone(phone string) *member.Member {
 	e := &member.Member{}
-	err := m.o.GetBy(e, "phone = $1", phone)
+	err := m._orm.GetBy(e, "phone = $1", phone)
 	if err == nil {
 		return e
 	}
@@ -243,7 +249,7 @@ func (m *MemberRepoImpl) GetMember(memberId int64) member.IMember {
 	key := m.getMemberCk(memberId)
 	if err := m.storage.Get(key, &e); err != nil {
 		//log.("-- mm",err)
-		err = m.o.Get(memberId, e)
+		err = m._orm.Get(memberId, e)
 		if err != nil {
 			return nil
 		}
@@ -263,7 +269,7 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 		//rc.Do("RPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
 
 		// 保存会员信息
-		_, _, err := m.o.Save(v.Id, v)
+		_, _, err := m._orm.Save(v.Id, v)
 
 		if err == nil {
 			// 存储到缓存中
@@ -281,7 +287,7 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 
 func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	var id int64
-	_, id, err := m.o.Save(nil, v)
+	_, id, err := m._orm.Save(nil, v)
 	if err != nil {
 		return -1, err
 	}
@@ -357,7 +363,7 @@ func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
 	e := &member.Account{}
 	key := m.getAccountCk(memberId)
 	if m.storage.Get(key, &e) != nil {
-		if m.o.Get(memberId, e) != nil {
+		if m._orm.Get(memberId, e) != nil {
 			return nil
 		}
 		m.storage.Set(key, *e)
@@ -369,9 +375,9 @@ func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
 func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
 	var err error
 	if m.GetAccount(v.MemberId) == nil {
-		_, _, err = m.o.Save(nil, v)
+		_, _, err = m._orm.Save(nil, v)
 	} else {
-		_, _, err = m.o.Save(v.MemberId, v)
+		_, _, err = m._orm.Save(v.MemberId, v)
 		if err == nil {
 			go m.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
 		}
@@ -395,13 +401,13 @@ func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int64, updateTime int
 // 获取银行信息
 func (m *MemberRepoImpl) BankCards(memberId int64) []member.BankCard {
 	var arr = make([]member.BankCard, 0)
-	m.o.Select(&arr, "member_id=$1", memberId)
+	m._orm.Select(&arr, "member_id=$1", memberId)
 	return arr
 }
 
 // 保存银行信息
 func (m *MemberRepoImpl) SaveBankCard(v *member.BankCard) error {
-	_, err := orm.Save(m.o, v, int(v.Id))
+	_, err := orm.Save(m._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmBankCard")
 	}
@@ -409,14 +415,14 @@ func (m *MemberRepoImpl) SaveBankCard(v *member.BankCard) error {
 }
 
 func (m *MemberRepoImpl) RemoveBankCard(memberId int64, cardNo string) error {
-	_, err := m.o.Delete(&member.BankCard{},
+	_, err := m._orm.Delete(&member.BankCard{},
 		"member_id=$1 AND bank_account=$2", memberId, cardNo)
 	return err
 }
 
 func (m *MemberRepoImpl) ReceiptsCodes(memberId int64) []member.ReceiptsCode {
 	list := make([]member.ReceiptsCode, 0)
-	err := m.o.Select(&list, "member_id=$1", memberId)
+	err := m._orm.Select(&list, "member_id=$1", memberId)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmReceiptsCode")
 	}
@@ -424,7 +430,7 @@ func (m *MemberRepoImpl) ReceiptsCodes(memberId int64) []member.ReceiptsCode {
 }
 
 func (m *MemberRepoImpl) SaveReceiptsCode(v *member.ReceiptsCode, memberId int64) (int, error) {
-	id, err := orm.Save(m.o, v, int(v.Id))
+	id, err := orm.Save(m._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmReceiptsCode")
 	}
@@ -433,7 +439,7 @@ func (m *MemberRepoImpl) SaveReceiptsCode(v *member.ReceiptsCode, memberId int64
 
 // SaveIntegralLog 保存积分记录
 func (m *MemberRepoImpl) SaveIntegralLog(v *member.IntegralLog) error {
-	id, err := orm.Save(m.o, v, int(v.Id))
+	id, err := orm.Save(m._orm, v, int(v.Id))
 	if err == nil {
 		v.Id = id
 	}
@@ -442,7 +448,7 @@ func (m *MemberRepoImpl) SaveIntegralLog(v *member.IntegralLog) error {
 
 // SaveBalanceLog 保存余额日志
 func (m *MemberRepoImpl) SaveBalanceLog(v *member.BalanceLog) (int32, error) {
-	id, err := orm.Save(m.o, v, int(v.Id))
+	id, err := orm.Save(m._orm, v, int(v.Id))
 	if err == nil {
 		v.Id = int64(id)
 	}
@@ -451,12 +457,12 @@ func (m *MemberRepoImpl) SaveBalanceLog(v *member.BalanceLog) (int32, error) {
 
 // 保存钱包账户日志
 func (m *MemberRepoImpl) SaveWalletAccountLog(v *member.WalletAccountLog) (int32, error) {
-	return orm.I32(orm.Save(m.o, v, int(v.Id)))
+	return orm.I32(orm.Save(m._orm, v, int(v.Id)))
 }
 
 func (m *MemberRepoImpl) GetWalletLog(id int32) *member.WalletAccountLog {
 	e := member.WalletAccountLog{}
-	if err := m.o.Get(id, &e); err != nil {
+	if err := m._orm.Get(id, &e); err != nil {
 		return nil
 	}
 	return &e
@@ -504,7 +510,7 @@ func (m *MemberRepoImpl) GetRelation(memberId int64) *member.InviteRelation {
 	e := member.InviteRelation{}
 	key := m.getRelationCk(memberId)
 	if m.storage.Get(key, &e) != nil {
-		if err := m.o.Get(memberId, &e); err != nil {
+		if err := m._orm.Get(memberId, &e); err != nil {
 			return nil
 		}
 		m.storage.Set(key, e)
@@ -564,9 +570,9 @@ func (m *MemberRepoImpl) CheckNicknameIsUse(phone string, memberId int64) bool {
 func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
 	rel := m.GetRelation(v.MemberId)
 	if rel == nil {
-		_, _, err = m.o.Save(nil, v)
+		_, _, err = m._orm.Save(nil, v)
 	} else {
-		_, _, err = m.o.Save(v.MemberId, v)
+		_, _, err = m._orm.Save(v.MemberId, v)
 	}
 	if err == nil {
 		err = m.storage.Set(m.getRelationCk(v.MemberId), *v)
@@ -577,7 +583,7 @@ func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
 // 获取会员升级记录
 func (m *MemberRepoImpl) GetLevelUpLog(id int) *member.LevelUpLog {
 	e := member.LevelUpLog{}
-	if m.o.Get(id, &e) == nil {
+	if m._orm.Get(id, &e) == nil {
 		return &e
 	}
 	return nil
@@ -585,25 +591,25 @@ func (m *MemberRepoImpl) GetLevelUpLog(id int) *member.LevelUpLog {
 
 // SaveLevelUpLog 保存会员升级记录
 func (m *MemberRepoImpl) SaveLevelUpLog(v *member.LevelUpLog) (int32, error) {
-	return orm.I32(orm.Save(m.o, v, int(v.Id)))
+	return orm.I32(orm.Save(m._orm, v, int(v.Id)))
 }
 
 // SaveDeliverAddress 保存地址
 func (m *MemberRepoImpl) SaveDeliverAddress(v *member.ConsigneeAddress) (int64, error) {
-	return orm.I64(orm.Save(m.o, v, int(v.Id)))
+	return orm.I64(orm.Save(m._orm, v, int(v.Id)))
 }
 
 // GetDeliverAddress 获取全部配送地址
 func (m *MemberRepoImpl) GetDeliverAddress(memberId int64) []*member.ConsigneeAddress {
 	var addresses []*member.ConsigneeAddress
-	m.o.Select(&addresses, "member_id= $1 ORDER BY id ASC", memberId)
+	m._orm.Select(&addresses, "member_id= $1 ORDER BY id ASC", memberId)
 	return addresses
 }
 
 // GetSingleDeliverAddress 获取配送地址
 func (m *MemberRepoImpl) GetSingleDeliverAddress(memberId, deliverId int64) *member.ConsigneeAddress {
 	var address member.ConsigneeAddress
-	err := m.o.Get(deliverId, &address)
+	err := m._orm.Get(deliverId, &address)
 
 	if err == nil && address.MemberId == memberId {
 		return &address
@@ -666,7 +672,7 @@ func (m *MemberRepoImpl) GetSubInvitationNum(memberId int64, memberIdArr []int32
 // 获取推荐我的人
 func (m *MemberRepoImpl) GetInvitationMeMember(memberId int64) *member.Member {
 	var d = new(member.Member)
-	err := m.o.GetByQuery(d,
+	err := m._orm.GetByQuery(d,
 		"SELECT * FROM mm_member WHERE id = (SELECT inviter_id FROM mm_relation  WHERE id= $1)",
 		memberId)
 
@@ -678,7 +684,7 @@ func (m *MemberRepoImpl) GetInvitationMeMember(memberId int64) *member.Member {
 
 // 保存余额变动信息
 func (m *MemberRepoImpl) SaveFlowAccountInfo(v *member.FlowAccountLog) (int32, error) {
-	return orm.I32(orm.Save(m.o, v, int(v.Id)))
+	return orm.I32(orm.Save(m._orm, v, int(v.Id)))
 }
 
 // 保存理财账户信息
@@ -702,7 +708,7 @@ func (m *MemberRepoImpl) GetMemberPagedCoupon(memberId int64, start, end int, wh
 	    INNER JOIN pm_coupon_bind pb ON pb.coupon_id=pi.id
 	    WHERE member_id= $1 AND %s`, where), &total, memberId)
 	if total > 0 {
-		m.o.SelectByQuery(&list,
+		m._orm.SelectByQuery(&list,
 			fmt.Sprintf(`SELECT pi.id,SUM(1) as num,pi.short_name as title,
             code,fee,c.discount,is_used,over_time FROM pm_info pi
              INNER JOIN pm_coupon c ON c.id = pi.id
@@ -716,7 +722,7 @@ func (m *MemberRepoImpl) GetMemberPagedCoupon(memberId int64, start, end int, wh
 // Select MmBuyerGroup
 func (m *MemberRepoImpl) SelectMmBuyerGroup(where string, v ...interface{}) []*member.BuyerGroup {
 	var list []*member.BuyerGroup
-	err := m.o.Select(&list, where, v...)
+	err := m._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmBuyerGroup")
 	}
@@ -725,7 +731,7 @@ func (m *MemberRepoImpl) SelectMmBuyerGroup(where string, v ...interface{}) []*m
 
 // Save MmBuyerGroup
 func (m *MemberRepoImpl) SaveMmBuyerGroup(v *member.BuyerGroup) (int, error) {
-	id, err := orm.Save(m.o, v, int(v.ID))
+	id, err := orm.Save(m._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmBuyerGroup")
 	}
@@ -733,7 +739,7 @@ func (m *MemberRepoImpl) SaveMmBuyerGroup(v *member.BuyerGroup) (int, error) {
 }
 
 func (m *MemberRepoImpl) SaveLockHistory(v *member.MmLockHistory) (int, error) {
-	id, err := orm.Save(m.o, v, int(v.Id))
+	id, err := orm.Save(m._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmLockHistory")
 	}
@@ -741,7 +747,7 @@ func (m *MemberRepoImpl) SaveLockHistory(v *member.MmLockHistory) (int, error) {
 }
 
 func (m *MemberRepoImpl) SaveLockInfo(v *member.MmLockInfo) (int, error) {
-	id, err := orm.Save(m.o, v, v.Id)
+	id, err := orm.Save(m._orm, v, v.Id)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmLockInfo")
 	}
@@ -756,7 +762,7 @@ func (m *MemberRepoImpl) RegisterUnlockJob(v *member.MmLockInfo) {
 }
 
 func (m *MemberRepoImpl) DeleteLockInfos(memberId int64) error {
-	_, err := m.o.Delete(member.MmLockInfo{}, "member_id=$1", memberId)
+	_, err := m._orm.Delete(member.MmLockInfo{}, "member_id=$1", memberId)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmLockInfo")
 	}
@@ -766,7 +772,7 @@ func (m *MemberRepoImpl) DeleteLockInfos(memberId int64) error {
 // GetTrustedInfo implements member.IMemberRepo
 func (m *MemberRepoImpl) GetTrustedInfo(memberId int) *member.TrustedInfo {
 	e := member.TrustedInfo{}
-	err := m.o.Get(&e, memberId)
+	err := m._orm.Get(&e, memberId)
 	if err == nil {
 		return &e
 	}
@@ -778,9 +784,40 @@ func (m *MemberRepoImpl) GetTrustedInfo(memberId int) *member.TrustedInfo {
 
 // SaveTrustedInfo implements member.IMemberRepo
 func (m *MemberRepoImpl) SaveTrustedInfo(id int, v *member.TrustedInfo) (int, error) {
-	id, err := orm.Save(m.o, v, id)
+	id, err := orm.Save(m._orm, v, id)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:TrustedInfo")
+	}
+	return id, err
+}
+
+// DeleteOAuthAccount implements member.IMemberRepo
+func (m *MemberRepoImpl) DeleteOAuthAccount(primary interface{}) error {
+	err := m._orm.DeleteByPk(member.OAuthAccount{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OAuthAccount")
+	}
+	return err
+}
+
+// GetOAuthAccount implements member.IMemberRepo
+func (m *MemberRepoImpl) GetOAuthAccount(memberId int, appCode string) *member.OAuthAccount {
+	e := member.OAuthAccount{}
+	err := m._orm.GetBy(&e, "member_id = $1 AND app_code = $2", memberId, appCode)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OAuthAccount")
+	}
+	return nil
+}
+
+// SaveOAuthAccount implements member.IMemberRepo
+func (m *MemberRepoImpl) SaveOAuthAccount(v *member.OAuthAccount) (int, error) {
+	id, err := orm.Save(m._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OAuthAccount")
 	}
 	return id, err
 }

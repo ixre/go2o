@@ -2,11 +2,13 @@ package domain
 
 import (
 	"encoding/json"
-	"github.com/ixre/go2o/core/domain/interface/cart"
-	"github.com/ixre/go2o/tests/ti"
 	"log"
 	"strconv"
 	"testing"
+
+	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 // 测试普通购物车
@@ -27,6 +29,18 @@ func TestNormalCart(t *testing.T) {
 		t.Error("保存购物车失败:", err.Error())
 		t.Fail()
 	}
+}
+
+func TestCheckOnlyItem(t *testing.T) {
+	repo := ti.Factory.GetCartRepo()
+	ic := repo.NewTempNormalCart(0,"1234")
+	err := ic.Put(1,7,1,true)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+ 	in :=	ic.(cart.INormalCart)
+	t.Log(typeconv.MustJson(in.Items()))
 }
 
 // 测试合并购物车

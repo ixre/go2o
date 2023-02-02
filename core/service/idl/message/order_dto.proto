@@ -351,8 +351,10 @@ message CancelOrderRequest {
     string orderNo = 1;
     // 是否为子订单
     bool sub = 2;
+    // 是否为买家取消
+    bool isBuyerCancel = 3;
     // 取消原因
-    string reason = 3;
+    string reason = 4;
 }
 
 message OrderShipmentRequest {

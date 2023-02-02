@@ -76,6 +76,7 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		ExpressTid: int64(src.ExpressTid),
 		Title:      src.Title,
 		ShortTitle: src.ShortTitle,
+		IntroVideo:src.IntroVideo,
 		Code:       src.Code,
 		//SaleNum:      src.SaleNum,
 		//SkuNum:       src.SkuNum,

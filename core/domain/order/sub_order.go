@@ -398,7 +398,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 }
 
 func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment.IShipmentOrder {
-	if items == nil || len(items) == 0 {
+	if len(items) == 0 {
 		return nil
 	}
 	unix := time.Now().Unix()
@@ -642,7 +642,7 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 }
 
 // 取消订单
-func (o *subOrderImpl) Cancel(reason string) error {
+func (o *subOrderImpl) Cancel(buyerCancel bool, reason string) error {
 	if o.value.Status == order.StatCancelled {
 		return order.ErrOrderCancelled
 	}
@@ -650,7 +650,12 @@ func (o *subOrderImpl) Cancel(reason string) error {
 	if o.value.Status >= order.StatShipped {
 		return order.ErrOrderShippedCancel
 	}
-
+	if buyerCancel {
+		allow := o.registryRepo.Get(registry.OrderAllowUserCancelAfterPayment).BoolValue()
+		if !allow {
+			return order.ErrDisallowCancel
+		}
+	}
 	o.value.Status = order.StatCancelled
 	o.value.UpdateTime = time.Now().Unix()
 	o._stateIsChange = true
@@ -734,7 +739,7 @@ func (o *subOrderImpl) RevertReturn(snapshotId int64, quantity int32) error {
 // 申请退款
 func (o *subOrderImpl) SubmitRefund(reason string) error {
 	if o.value.Status == order.StatAwaitingPayment {
-		return o.Cancel("订单主动申请取消,原因:" + reason)
+		return o.Cancel(true, "订单主动申请取消,原因:"+reason)
 	}
 	if o.value.Status >= order.StatShipped ||
 		o.value.Status >= order.StatCancelled {
@@ -749,7 +754,7 @@ func (o *subOrderImpl) SubmitRefund(reason string) error {
 // 谢绝订单
 func (o *subOrderImpl) Decline(reason string) error {
 	if o.value.Status == order.StatAwaitingPayment {
-		return o.Cancel("商户取消,原因:" + reason)
+		return o.Cancel(false, "商户取消,原因:"+reason)
 	}
 	if o.value.Status >= order.StatShipped ||
 		o.value.Status >= order.StatCancelled {
