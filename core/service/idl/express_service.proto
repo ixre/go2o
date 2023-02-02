@@ -81,11 +81,11 @@ message SExpressTemplate {
   int32 basis = 5;
   // 首次计价单位,如首重为2kg
   int32 firstUnit = 6;
-  // 首次计价单价,如续重1kg
+  // 首次计价单价(元),如续重1kg
   int64 firstFee = 7;
   // 超过首次计价计算单位,如续重1kg
   int32 addUnit = 8;
-  // 超过首次计价单价，如续重1kg
+  // 超过首次计价单价(元)，如续重1kg
   int64 addFee = 9;
   // 是否启用
   bool enabled = 10;

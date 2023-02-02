@@ -226,35 +226,51 @@ func (s *cartServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*pr
 /*---------------- 普通购物车 ----------------*/
 
 // 获取购物车
-func (s *cartServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICart {
-	var c cart.ICart
-	var cc cart.ICart
-	if len(code) > 0 {
-		cc = s.cartRepo.GetShoppingCartByKey(code)
+func (s *cartServiceImpl) getShoppingCart(buyerId int64, cartCode string) cart.ICart {
+	// 本地的购物车
+	var ic cart.ICart
+	if len(cartCode) > 0 {
+		ic = s.cartRepo.GetShoppingCartByKey(cartCode)
 	}
-	// 如果传入会员编号，则合并购物车
+	// 如果传入会员编号，则合并购物车,并返回会员的购物车
 	if buyerId > 0 {
-		c = s.cartRepo.GetMyCart(buyerId, cart.KNormal)
-		if cc != nil {
-			rc := c.(cart.INormalCart)
-			rc.Combine(cc)
-			_, _ = c.Save()
+		// 获取用户购物车
+		mc := s.cartRepo.GetMyCart(buyerId, cart.KNormal)
+		if ic != nil {
+			// 绑定临时购物车为会员购物车
+			if mc == nil {
+				ic.Bind(int(buyerId))
+				return ic
+			}
+			// 会员购物车合并临时购物车
+			if mc.GetAggregateRootId() != ic.GetAggregateRootId() {
+				mc.(cart.INormalCart).Combine(ic)
+				_, _ = mc.Save()
+			}
 		}
-		return c
+		// 如果会员购物车存在则返回, 不存在也需创建一个临时的购物车
+		if mc != nil {
+			return mc
+		}
+	}
+	// 为其他会员的购物车, 则新建购物车
+	if ic != nil && ic.BuyerId() > 0 {
+		cartCode = ""
+		ic = nil
+	}
+	// 生成一个新的code和购物车
+	if ic == nil {
+		return s.cartRepo.NewTempNormalCart(int(buyerId), cartCode)
 	}
 	// 如果只传入code,且购物车存在，直接返回。
-	if cc != nil {
-		return cc
-	}
-	// 不存在，则新建购物车
-	c = s.cartRepo.NewNormalCart(code)
-	//_, err := c.Save()
-	//domain.HandleError(err, "service")
-	return c
+	return ic
 }
 
 // GetShoppingCart 获取购物车,当购物车编号不存在时,将返回一个新的购物车
 func (s *cartServiceImpl) GetShoppingCart(_ context.Context, r *proto.ShoppingCartId) (*proto.SShoppingCart, error) {
+	if r.IsWholesale {
+		return nil, errors.New("not implement")
+	}
 	c := s.getShoppingCart(r.GetUserId(), r.CartCode)
 	return s.parseCart(c), nil
 }
@@ -262,7 +278,7 @@ func (s *cartServiceImpl) GetShoppingCart(_ context.Context, r *proto.ShoppingCa
 // 转换购物车数据
 func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 	dto := parser.ParseToDtoCart(c)
-	for _, v := range dto.Shops {
+	for _, v := range dto.Sellers {
 		is := s.shopRepo.GetShop(v.ShopId)
 		if is != nil {
 			io := is.(shop.IOnlineShop)
@@ -289,7 +305,9 @@ func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest)
 			rc := c.(cart.INormalCart)
 			item := rc.GetItem(it.ItemId, it.SkuId)
 			return &proto.CartItemResponse{
-				Item: parser.ParseCartItem(item),
+				Items: []*proto.SShoppingCartItem{
+					parser.ParseCartItem(item),
+				},
 			}, nil
 		}
 	}
@@ -297,19 +315,36 @@ func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest)
 }
 
 // UpdateItems 更新购物车项目
-func (s *cartServiceImpl) UpdateItems(_ context.Context, r *proto.CartUpdateRequest) (*proto.Result, error) {
+func (s *cartServiceImpl) UpdateItems(_ context.Context, r *proto.CartUpdateRequest) (*proto.CartItemResponse, error) {
 	c := s.getShoppingCart(r.CartId.UserId, r.CartId.CartCode)
 	if c == nil {
-		return s.error(cart.ErrNoSuchCart), nil
+		return &proto.CartItemResponse{
+			ErrCode: 1,
+			ErrMsg:  cart.ErrNoSuchCart.Error(),
+		}, nil
 	}
+	rc := c.(cart.INormalCart)
+	arr := make([]*proto.SShoppingCartItem, 0)
 	for _, v := range r.Items {
 		err := c.Update(v.ItemId, v.SkuId, v.Quantity)
 		if err != nil {
-			return s.error(err), nil
+			return &proto.CartItemResponse{
+				ErrCode: 2,
+				ErrMsg:  err.Error(),
+			}, nil
 		}
+		it := rc.GetItem(v.ItemId, v.SkuId)
+		arr = append(arr, parser.ParseCartItem(it))
 	}
 	_, err := c.Save()
-	return s.result(err), nil
+	ret := &proto.CartItemResponse{
+		Items: arr,
+	}
+	if err != nil {
+		ret.ErrCode = 1
+		ret.ErrMsg = err.Error()
+	}
+	return ret, nil
 }
 
 func (s *cartServiceImpl) ReduceCartItem(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
@@ -326,7 +361,9 @@ func (s *cartServiceImpl) ReduceCartItem(_ context.Context, r *proto.CartItemReq
 				rc := c.(cart.INormalCart)
 				item := rc.GetItem(it.ItemId, it.SkuId)
 				return &proto.CartItemResponse{
-					Item: parser.ParseCartItem(item),
+					Items: []*proto.SShoppingCartItem{
+						parser.ParseCartItem(item),
+					},
 				}, nil
 			}
 		}

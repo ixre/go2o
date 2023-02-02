@@ -2,6 +2,10 @@ package cart
 
 import (
 	"encoding/json"
+	"errors"
+	"strconv"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -9,8 +13,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
-	"strconv"
-	"time"
 )
 
 var _ cart.ICart = new(wholesaleCartImpl)
@@ -84,6 +86,16 @@ func (c *wholesaleCartImpl) Kind() cart.Kind {
 // 获取买家编号
 func (c *wholesaleCartImpl) BuyerId() int64 {
 	return c.value.BuyerId
+}
+
+// Bind 绑定买家
+func (c *wholesaleCartImpl) Bind(buyerId int) error {
+	if c.value.BuyerId > 0 {
+		return errors.New("cart has already bind buyer")
+	}
+	c.value.BuyerId = int64(buyerId)
+	_, err := c.Save()
+	return err
 }
 
 func (c *wholesaleCartImpl) Clone() cart.ICart {

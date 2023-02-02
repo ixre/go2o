@@ -58,7 +58,7 @@ type (
 		// 复合的订单信息
 		Complex() *ComplexOrder
 		// 取消订单
-		Cancel(reason string) error
+		Cancel(buyerCancel bool, reason string) error
 		// 订单确认
 		Confirm() error
 		// 备货完成
@@ -142,7 +142,7 @@ type (
 		SaveTradeOrder(v *TradeOrder) (int, error)
 
 		// SaveOrderRebate 保存订单返利
-		SaveOrderRebate(v *AffiliateRebate) (int, error)
+		SaveOrderRebate(v *AffiliateDistribution) (int, error)
 	}
 
 	// SubmitData 订单提交数据

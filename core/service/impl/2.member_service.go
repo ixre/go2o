@@ -35,11 +35,9 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
 	api "github.com/ixre/gof/jwt-api"
-	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
-	context2 "golang.org/x/net/context"
 )
 
 var _ proto.MemberServiceServer = new(memberService)
@@ -546,17 +544,27 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	return ret, nil
 }
 
-// GetRelation 获取会员邀请关系
-func (s *memberService) GetRelation(_ context.Context, id *proto.MemberIdRequest) (*proto.MemberRelationResponse, error) {
+// GetInviter 获取会员邀请关系
+func (s *memberService) GetInviter(_ context.Context, id *proto.MemberIdRequest) (*proto.MemberInviterResponse, error) {
 	r := s.repo.GetRelation(id.MemberId)
 	if r != nil {
-		return &proto.MemberRelationResponse{
+		ret := &proto.MemberInviterResponse{
 			InviterId: r.InviterId,
 			InviterD2: r.InviterD2,
 			InviterD3: r.InviterD3,
-		}, nil
+		}
+		if r.InviterId > 0 {
+			if mm := s.repo.GetMember(r.InviterId); mm != nil {
+				mv := mm.GetValue()
+				ret.InviterUsername = mv.Username
+				ret.InviterNickname = mv.Nickname
+				ret.InviterPortrait = mv.Portrait
+				ret.InviterPhone = mv.Phone
+			}
+		}
+		return ret, nil
 	}
-	return &proto.MemberRelationResponse{}, nil
+	return &proto.MemberInviterResponse{}, nil
 }
 
 // Active 激活会员
@@ -701,8 +709,6 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 	val := im.GetValue()
 
 	if s := domain.Sha1Pwd(pwd, val.Salt); s != val.Password {
-		log.Println("--password-compare", s, val.Password, val.Salt, typeconv.MustJson(val))
-
 		return nil, 1, de.ErrCredential
 	}
 	if val.UserFlag&member.FlagLocked == member.FlagLocked {
@@ -771,8 +777,9 @@ func (s *memberService) CheckAccessToken(_ context.Context, request *proto.Check
 		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
 		return &proto.CheckAccessTokenResponse{Error: err.Error()}, nil
 	}
-
-	if strings.HasPrefix(request.AccessToken, "Bearer") {
+	// 去掉"Bearer "
+	if len(request.AccessToken) > 6 &&
+		strings.HasPrefix(request.AccessToken, "Bearer") {
 		request.AccessToken = request.AccessToken[7:]
 	}
 	// 转换token
@@ -1275,7 +1282,7 @@ func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*
 	return nil, member.ErrNoSuchMember
 }
 
-func (s *memberService) Freeze(_ context2.Context, r *proto.AccountFreezeRequest) (*proto.AccountFreezeResponse, error) {
+func (s *memberService) Freeze(_ context.Context, r *proto.AccountFreezeRequest) (*proto.AccountFreezeResponse, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return &proto.AccountFreezeResponse{ErrCode: 1, ErrMsg: member.ErrNoSuchMember.Error()}, nil
@@ -1293,7 +1300,7 @@ func (s *memberService) Freeze(_ context2.Context, r *proto.AccountFreezeRequest
 	return &proto.AccountFreezeResponse{LogId: int64(id)}, nil
 }
 
-func (s *memberService) Unfreeze(_ context2.Context, r *proto.AccountUnfreezeRequest) (*proto.Result, error) {
+func (s *memberService) Unfreeze(_ context.Context, r *proto.AccountUnfreezeRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
@@ -1675,9 +1682,7 @@ func (s *memberService) parseAddressDto(src *member.ConsigneeAddress) *proto.SAd
 		IsDefault:      src.IsDefault == 1,
 	}
 }
-func round(f float32, n int) float64 {
-	return math.Round(float64(f), n)
-}
+
 func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 	return &proto.SAccount{
 		Integral:            int64(src.Integral),
@@ -1740,4 +1745,43 @@ func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddre
 		DetailAddress:  src.DetailAddress,
 		IsDefault:      types.ElseInt(src.IsDefault, 1, 0),
 	}
+}
+
+// BindOAuthApp 绑定第三方应用
+func (m *memberService) BindOAuthApp(_ context.Context, req *proto.SMemberOAuthAccount) (*proto.Result, error) {
+	mm := m.repo.GetMember(req.MemberId)
+	if mm == nil {
+		return m.error(member.ErrNoSuchMember), nil
+	}
+	err := mm.Profile().BindOAuthApp(req.AppCode, req.OpenId, req.AuthToken)
+	return m.error(err), nil
+}
+
+// GetOAuthBindInfo 获取第三方应用绑定信息
+func (m *memberService) GetOAuthBindInfo(_ context.Context, req *proto.MemberOAuthRequest) (*proto.SMemberOAuthAccount, error) {
+	mm := m.repo.GetMember(req.MemberId)
+	if mm == nil {
+		return &proto.SMemberOAuthAccount{}, nil
+	}
+	bind := mm.Profile().GetOAuthBindInfo(req.AppCode)
+	if bind == nil {
+		return &proto.SMemberOAuthAccount{}, nil
+	}
+	return &proto.SMemberOAuthAccount{
+		MemberId:    req.MemberId,
+		AppCode:     req.AppCode,
+		OpenId:      bind.OpenId,
+		AuthToken:   bind.AuthToken,
+		PortraitUrl: bind.HeadImgUrl,
+	}, nil
+}
+
+// UnbindOAuthApp 解除第三方应用绑定
+func (m *memberService) UnbindOAuthApp(_ context.Context, req *proto.MemberOAuthRequest) (*proto.Result, error) {
+	mm := m.repo.GetMember(req.MemberId)
+	if mm == nil {
+		return m.error(member.ErrNoSuchMember), nil
+	}
+	err := mm.Profile().UnbindOAuthApp(req.AppCode)
+	return m.error(err), nil
 }

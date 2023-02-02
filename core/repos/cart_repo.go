@@ -10,6 +10,9 @@ package repos
 
 import (
 	"database/sql"
+	"log"
+	"time"
+
 	cartImpl "github.com/ixre/go2o/core/domain/cart"
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
@@ -17,8 +20,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"log"
-	"time"
 )
 
 var _ cart.ICartRepo = new(cartRepo)
@@ -57,16 +58,10 @@ func (c *cartRepo) GetMyCart(buyerId int64, k cart.Kind) cart.ICart {
 // 获取普通购物车
 func (c *cartRepo) getMyNormalCart(buyerId int64) cart.ICart {
 	v := c.getNormalCart(buyerId)
-	if v == nil {
-		unix := time.Now().Unix()
-		v = &cart.NormalCart{
-			BuyerId:    buyerId,
-			CreateTime: unix,
-			UpdateTime: unix,
-		}
+	if v != nil {
+		return c.CreateNormalCart(v)
 	}
-	return cartImpl.CreateCart(v, c,
-		c._memberRepo, c._itemRepo)
+	return nil
 }
 
 // 获取批发购物车
@@ -110,12 +105,12 @@ func (w *cartRepo) getWholesaleCart(buyerId int64) *cart.WsCart {
 
 // 创建购物车对象
 func (c *cartRepo) CreateNormalCart(v *cart.NormalCart) cart.ICart {
-	return cartImpl.CreateCart(v, c, c._memberRepo, c._itemRepo)
+	return cartImpl.NewNormalCart(v, c, c._memberRepo, c._itemRepo)
 }
 
 // 创建一个购物车
-func (c *cartRepo) NewNormalCart(code string) cart.ICart {
-	return cartImpl.NewNormalCart(code, c, c._memberRepo, c._itemRepo)
+func (c *cartRepo) NewTempNormalCart(buyerId int, code string) cart.ICart {
+	return cartImpl.CreateTempNormalCart(buyerId, code, c, c._memberRepo, c._itemRepo)
 }
 
 // 获取购物车

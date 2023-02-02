@@ -63,31 +63,27 @@ func NewShoppingService(r order.IOrderRepo,
 }
 
 // 获取购物车
-func (s *orderServiceImpl) getShoppingCart(buyerId int64, code string) cart.ICart {
-	var c cart.ICart
-	var cc cart.ICart
-	if len(code) > 0 {
-		cc = s.cartRepo.GetShoppingCartByKey(code)
+func (s *orderServiceImpl) getShoppingCart(buyerId int64, cartCode string) cart.ICart {
+	// 本地的购物车
+	var ic cart.ICart
+	if len(cartCode) > 0 {
+		ic = s.cartRepo.GetShoppingCartByKey(cartCode)
 	}
-	// 如果传入会员编号，则合并购物车
-	if buyerId > 0 {
-		c = s.cartRepo.GetMyCart(buyerId, cart.KNormal)
-		if cc != nil {
-			rc := c.(cart.INormalCart)
-			rc.Combine(cc)
-			c.Save()
+	// 获取用户购物车
+	mc := s.cartRepo.GetMyCart(buyerId, cart.KNormal)
+	if ic != nil {
+		// 绑定临时购物车为会员购物车
+		if mc == nil {
+			ic.Bind(int(buyerId))
+			return ic
 		}
-		return c
+		// 会员购物车合并临时购物车
+		if mc.GetAggregateRootId() != ic.GetAggregateRootId() {
+			mc.(cart.INormalCart).Combine(ic)
+			_, _ = mc.Save()
+		}
 	}
-	// 如果只传入code,且购物车存在，直接返回。
-	if cc != nil {
-		return cc
-	}
-	// 不存在，则新建购物车
-	c = s.cartRepo.NewNormalCart(code)
-	//_, err := c.Save()
-	//domain.HandleError(err, "service")
-	return c
+	return mc
 }
 
 // SubmitOrderV1 提交订单
@@ -153,7 +149,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 
 // PrepareOrder 预生成订单
 func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrderRequest) (*proto.PrepareOrderResponse, error) {
-	ic := s.getShoppingCart(r.BuyerId, r.CouponCode)
+	ic := s.getShoppingCart(r.BuyerId, r.CartCode)
 	o, err := s.manager.PrepareNormalOrder(ic)
 	if err == nil {
 		// 设置收货地址
@@ -173,7 +169,7 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 	if err != nil {
 		return &proto.PrepareOrderResponse{
 			ErrCode: 1,
-			ErrMsg: err.Error(),
+			ErrMsg:  err.Error(),
 		}, nil
 	}
 	ov := o.Complex()
@@ -191,7 +187,7 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		}
 	}
 	rsp := parser.PrepareOrderDto(ov)
-	rsp.Groups = s.parsePrepareItemsFromCart(ic)
+	rsp.Sellers = s.parsePrepareItemsFromCart(ic)
 	return rsp, err
 }
 
@@ -308,7 +304,7 @@ func (s *orderServiceImpl) TradeOrderUpdateTicket(_ context.Context, r *proto.Tr
 // CancelOrder 取消订单
 func (s *orderServiceImpl) CancelOrder(_ context.Context, r *proto.CancelOrderRequest) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
-	err := c.Cancel(r.Reason)
+	err := c.Cancel(r.IsBuyerCancel,r.Reason)
 	return s.error(err), nil
 }
 

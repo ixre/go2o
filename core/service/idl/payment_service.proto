@@ -102,9 +102,43 @@ service PaymentService {
     /** 获取集成支付应用列表 */
     rpc QueryIntegrateAppList (Empty) returns (QueryIntegrateAppResponse) {
     }
+
+    // 准备集成支付的参数
+    rpc PrepareIntegrateParams(IntegrateParamsRequest)returns(IntegrateParamsResponse){}
+
     /** 删除集成支付应用 */
     rpc DeleteIntegrateApp (PayIntegrateAppId) returns (Result) {
     }
+}
+
+// 申请获取集成支付参数
+message IntegrateParamsRequest{
+    // 支付单号
+    string payOrderNo = 1;
+    // 支付应用ID
+    int32 appId  = 2;
+}
+
+// 集成支付参数响应
+message IntegrateParamsResponse{
+    // 错误码
+    int32 errCode = 1;
+    // 错误信息
+    string errMsg = 2;
+    // 支付应用ID
+    int32 appId  = 3; 
+    // 支付应用名称
+    string appName = 4;
+    // 支付应用请求地址
+    string appUrl = 5;
+    // 服务,默认为pay
+    string service = 6;
+     // 支付单号
+    string orderNo = 7;
+    // 订单金额
+    int32 orderAmount = 8;
+    // 支付描述
+    string subject = 9;
 }
 
 /** 支付网关请求 */
@@ -321,7 +355,7 @@ message SIntegrateApp{
     string appName = 2;
     /** 支付应用接口 */
     string appUrl = 3;
-    /** 集成类型: 1:API调用 2: 跳转 */
+    /** 集成类型: 1:API调用(密码验证) 2: 跳转 3:直接唤起 */
     int32 integrateType = 4;
     /** 显示顺序 */
     int32 sortNumber = 5;

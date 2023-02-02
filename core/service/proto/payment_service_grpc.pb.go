@@ -60,6 +60,8 @@ type PaymentServiceClient interface {
 	SaveIntegrateApp(ctx context.Context, in *SIntegrateApp, opts ...grpc.CallOption) (*Result, error)
 	// * 获取集成支付应用列表
 	QueryIntegrateAppList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*QueryIntegrateAppResponse, error)
+	// 准备集成支付的参数
+	PrepareIntegrateParams(ctx context.Context, in *IntegrateParamsRequest, opts ...grpc.CallOption) (*IntegrateParamsResponse, error)
 	// * 删除集成支付应用
 	DeleteIntegrateApp(ctx context.Context, in *PayIntegrateAppId, opts ...grpc.CallOption) (*Result, error)
 }
@@ -216,6 +218,15 @@ func (c *paymentServiceClient) QueryIntegrateAppList(ctx context.Context, in *Em
 	return out, nil
 }
 
+func (c *paymentServiceClient) PrepareIntegrateParams(ctx context.Context, in *IntegrateParamsRequest, opts ...grpc.CallOption) (*IntegrateParamsResponse, error) {
+	out := new(IntegrateParamsResponse)
+	err := c.cc.Invoke(ctx, "/PaymentService/PrepareIntegrateParams", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *paymentServiceClient) DeleteIntegrateApp(ctx context.Context, in *PayIntegrateAppId, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/PaymentService/DeleteIntegrateApp", in, out, opts...)
@@ -267,6 +278,8 @@ type PaymentServiceServer interface {
 	SaveIntegrateApp(context.Context, *SIntegrateApp) (*Result, error)
 	// * 获取集成支付应用列表
 	QueryIntegrateAppList(context.Context, *Empty) (*QueryIntegrateAppResponse, error)
+	// 准备集成支付的参数
+	PrepareIntegrateParams(context.Context, *IntegrateParamsRequest) (*IntegrateParamsResponse, error)
 	// * 删除集成支付应用
 	DeleteIntegrateApp(context.Context, *PayIntegrateAppId) (*Result, error)
 	mustEmbedUnimplementedPaymentServiceServer()
@@ -323,6 +336,9 @@ func (UnimplementedPaymentServiceServer) SaveIntegrateApp(context.Context, *SInt
 }
 func (UnimplementedPaymentServiceServer) QueryIntegrateAppList(context.Context, *Empty) (*QueryIntegrateAppResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryIntegrateAppList not implemented")
+}
+func (UnimplementedPaymentServiceServer) PrepareIntegrateParams(context.Context, *IntegrateParamsRequest) (*IntegrateParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrepareIntegrateParams not implemented")
 }
 func (UnimplementedPaymentServiceServer) DeleteIntegrateApp(context.Context, *PayIntegrateAppId) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIntegrateApp not implemented")
@@ -628,6 +644,24 @@ func _PaymentService_QueryIntegrateAppList_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PaymentService_PrepareIntegrateParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IntegrateParamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).PrepareIntegrateParams(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/PaymentService/PrepareIntegrateParams",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).PrepareIntegrateParams(ctx, req.(*IntegrateParamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PaymentService_DeleteIntegrateApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PayIntegrateAppId)
 	if err := dec(in); err != nil {
@@ -716,6 +750,10 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryIntegrateAppList",
 			Handler:    _PaymentService_QueryIntegrateAppList_Handler,
+		},
+		{
+			MethodName: "PrepareIntegrateParams",
+			Handler:    _PaymentService_PrepareIntegrateParams_Handler,
 		},
 		{
 			MethodName: "DeleteIntegrateApp",

@@ -182,6 +182,13 @@ type (
 		GetDefaultAddress() IDeliverAddress
 		// DeleteAddress 删除配送地址
 		DeleteAddress(addressId int64) error
+
+		// BindOAuthApp 绑定第三方应用
+		BindOAuthApp(app string, openId string, authToken string) error
+		// UnbindOAuthApp 解除第三方应用绑定
+		UnbindOAuthApp(app string) error
+		// GetOAuthBindInfo 获取第三方应用绑定信息
+		GetOAuthBindInfo(app string) *OAuthAccount
 	}
 
 	// IFavoriteManager 收藏服务

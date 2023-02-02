@@ -630,13 +630,22 @@ message SMemberOrderSummary {
   sint32 completed = 4;
 }
 
-message MemberRelationResponse {
+// 查询会员邀请人信息
+message MemberInviterResponse {
   // 邀请人（会员）
   sint64 inviterId = 1;
+  // 邀请人用户名
+  string inviterUsername = 2;
+  // 邀请人姓名
+  string inviterNickname = 3;
+  // 邀请人头像
+  string inviterPortrait = 4;
+  // 邀请人电话
+  string inviterPhone = 5;
   // 邀请会员编号(depth2)
-  sint64 inviterD2 = 2;
+  sint64 inviterD2 = 6;
   // 邀请会员编号(depth3)
-  sint64 inviterD3 = 3;
+  sint64 inviterD3 = 7;
 }
 
 /** 凭据 */
@@ -938,3 +947,25 @@ message MemberIdListResponse {
   repeated sint64 value = 1;
 }
 
+
+// 关联第三方应用账号请求
+message MemberOAuthRequest{
+  /** 会员ID */
+  int64 memberId = 1;
+  /** 应用代码 */
+  string appCode = 2;
+}
+
+/** 关联第三方应用账号 */
+message SMemberOAuthAccount{
+   /** 会员ID */
+   int64 memberId = 1;
+   /** 应用代码,如wx */
+   string appCode = 2;
+   /** 第三方应用id */
+   string openId = 3;
+   /** 第三方应用认证令牌 */
+   string authToken = 4;
+   /** 头像地址 */
+   string portraitUrl = 5;
+}

@@ -68,7 +68,7 @@ type (
 		// LogBytes 获取订单的日志
 		LogBytes() []byte
 		// Cancel 取消订单/退款
-		Cancel(reason string) error
+		Cancel(buyerCancel bool, reason string) error
 		// Return 退回商品
 		Return(snapshotId int64, quantity int32) error
 		// RevertReturn 撤销退回商品

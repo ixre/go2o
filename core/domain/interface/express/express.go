@@ -216,11 +216,11 @@ type (
 		Basis int `db:"basis"`
 		// 首次计价单位,如首重为2kg
 		FirstUnit int `db:"first_unit"`
-		// 首次计价单价,如续重1kg
+		// 首次计价单价(元),如续重1kg
 		FirstFee int64 `db:"first_fee"`
 		// 超过首次计价计算单位,如续重1kg
 		AddUnit int `db:"add_unit"`
-		// 超过首次计价单价，如续重1kg
+		// 超过首次计价单价(元)，如续重1kg
 		AddFee int64 `db:"add_fee"`
 		// 是否启用
 		Enabled int `db:"enabled"`

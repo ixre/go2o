@@ -66,8 +66,8 @@ type MemberServiceClient interface {
 	GetProfile(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*SProfile, error)
 	// 保存资料
 	SaveProfile(ctx context.Context, in *SProfile, opts ...grpc.CallOption) (*Result, error)
-	// 获取会员邀请关系
-	GetRelation(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberRelationResponse, error)
+	// 获取会员邀请人信息
+	GetInviter(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviterResponse, error)
 	// 获取会员绑定银行卡信息
 	GetBankCards(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*BankCardListResponse, error)
 	// 添加银行卡
@@ -176,6 +176,12 @@ type MemberServiceClient interface {
 	FinishWithdrawal(ctx context.Context, in *FinishWithdrawalRequest, opts ...grpc.CallOption) (*Result, error)
 	// 查询提现记录
 	QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogResponse, error)
+	// 绑定第三方应用
+	BindOAuthApp(ctx context.Context, in *SMemberOAuthAccount, opts ...grpc.CallOption) (*Result, error)
+	// 解除第三方应用绑定
+	UnbindOAuthApp(ctx context.Context, in *MemberOAuthRequest, opts ...grpc.CallOption) (*Result, error)
+	// 获取第三方应用绑定信息
+	GetOAuthBindInfo(ctx context.Context, in *MemberOAuthRequest, opts ...grpc.CallOption) (*SMemberOAuthAccount, error)
 	// !银行四要素认证
 	B4EAuth(ctx context.Context, in *B4EAuthRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取钱包流水记录
@@ -351,9 +357,9 @@ func (c *memberServiceClient) SaveProfile(ctx context.Context, in *SProfile, opt
 	return out, nil
 }
 
-func (c *memberServiceClient) GetRelation(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberRelationResponse, error) {
-	out := new(MemberRelationResponse)
-	err := c.cc.Invoke(ctx, "/MemberService/GetRelation", in, out, opts...)
+func (c *memberServiceClient) GetInviter(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviterResponse, error) {
+	out := new(MemberInviterResponse)
+	err := c.cc.Invoke(ctx, "/MemberService/GetInviter", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -846,6 +852,33 @@ func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *Withdr
 	return out, nil
 }
 
+func (c *memberServiceClient) BindOAuthApp(ctx context.Context, in *SMemberOAuthAccount, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MemberService/BindOAuthApp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) UnbindOAuthApp(ctx context.Context, in *MemberOAuthRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/MemberService/UnbindOAuthApp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) GetOAuthBindInfo(ctx context.Context, in *MemberOAuthRequest, opts ...grpc.CallOption) (*SMemberOAuthAccount, error) {
+	out := new(SMemberOAuthAccount)
+	err := c.cc.Invoke(ctx, "/MemberService/GetOAuthBindInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *memberServiceClient) B4EAuth(ctx context.Context, in *B4EAuthRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/MemberService/B4EAuth", in, out, opts...)
@@ -948,8 +981,8 @@ type MemberServiceServer interface {
 	GetProfile(context.Context, *MemberIdRequest) (*SProfile, error)
 	// 保存资料
 	SaveProfile(context.Context, *SProfile) (*Result, error)
-	// 获取会员邀请关系
-	GetRelation(context.Context, *MemberIdRequest) (*MemberRelationResponse, error)
+	// 获取会员邀请人信息
+	GetInviter(context.Context, *MemberIdRequest) (*MemberInviterResponse, error)
 	// 获取会员绑定银行卡信息
 	GetBankCards(context.Context, *MemberIdRequest) (*BankCardListResponse, error)
 	// 添加银行卡
@@ -1058,6 +1091,12 @@ type MemberServiceServer interface {
 	FinishWithdrawal(context.Context, *FinishWithdrawalRequest) (*Result, error)
 	// 查询提现记录
 	QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error)
+	// 绑定第三方应用
+	BindOAuthApp(context.Context, *SMemberOAuthAccount) (*Result, error)
+	// 解除第三方应用绑定
+	UnbindOAuthApp(context.Context, *MemberOAuthRequest) (*Result, error)
+	// 获取第三方应用绑定信息
+	GetOAuthBindInfo(context.Context, *MemberOAuthRequest) (*SMemberOAuthAccount, error)
 	// !银行四要素认证
 	B4EAuth(context.Context, *B4EAuthRequest) (*Result, error)
 	// 获取钱包流水记录
@@ -1128,8 +1167,8 @@ func (UnimplementedMemberServiceServer) GetProfile(context.Context, *MemberIdReq
 func (UnimplementedMemberServiceServer) SaveProfile(context.Context, *SProfile) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveProfile not implemented")
 }
-func (UnimplementedMemberServiceServer) GetRelation(context.Context, *MemberIdRequest) (*MemberRelationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRelation not implemented")
+func (UnimplementedMemberServiceServer) GetInviter(context.Context, *MemberIdRequest) (*MemberInviterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInviter not implemented")
 }
 func (UnimplementedMemberServiceServer) GetBankCards(context.Context, *MemberIdRequest) (*BankCardListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBankCards not implemented")
@@ -1292,6 +1331,15 @@ func (UnimplementedMemberServiceServer) FinishWithdrawal(context.Context, *Finis
 }
 func (UnimplementedMemberServiceServer) QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryWithdrawalLog not implemented")
+}
+func (UnimplementedMemberServiceServer) BindOAuthApp(context.Context, *SMemberOAuthAccount) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BindOAuthApp not implemented")
+}
+func (UnimplementedMemberServiceServer) UnbindOAuthApp(context.Context, *MemberOAuthRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnbindOAuthApp not implemented")
+}
+func (UnimplementedMemberServiceServer) GetOAuthBindInfo(context.Context, *MemberOAuthRequest) (*SMemberOAuthAccount, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOAuthBindInfo not implemented")
 }
 func (UnimplementedMemberServiceServer) B4EAuth(context.Context, *B4EAuthRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method B4EAuth not implemented")
@@ -1630,20 +1678,20 @@ func _MemberService_SaveProfile_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_GetRelation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MemberService_GetInviter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MemberIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).GetRelation(ctx, in)
+		return srv.(MemberServiceServer).GetInviter(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/MemberService/GetRelation",
+		FullMethod: "/MemberService/GetInviter",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).GetRelation(ctx, req.(*MemberIdRequest))
+		return srv.(MemberServiceServer).GetInviter(ctx, req.(*MemberIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2620,6 +2668,60 @@ func _MemberService_QueryWithdrawalLog_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemberService_BindOAuthApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SMemberOAuthAccount)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).BindOAuthApp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MemberService/BindOAuthApp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).BindOAuthApp(ctx, req.(*SMemberOAuthAccount))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_UnbindOAuthApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberOAuthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).UnbindOAuthApp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MemberService/UnbindOAuthApp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).UnbindOAuthApp(ctx, req.(*MemberOAuthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_GetOAuthBindInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberOAuthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).GetOAuthBindInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MemberService/GetOAuthBindInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).GetOAuthBindInfo(ctx, req.(*MemberOAuthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MemberService_B4EAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(B4EAuthRequest)
 	if err := dec(in); err != nil {
@@ -2804,8 +2906,8 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemberService_SaveProfile_Handler,
 		},
 		{
-			MethodName: "GetRelation",
-			Handler:    _MemberService_GetRelation_Handler,
+			MethodName: "GetInviter",
+			Handler:    _MemberService_GetInviter_Handler,
 		},
 		{
 			MethodName: "GetBankCards",
@@ -3022,6 +3124,18 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryWithdrawalLog",
 			Handler:    _MemberService_QueryWithdrawalLog_Handler,
+		},
+		{
+			MethodName: "BindOAuthApp",
+			Handler:    _MemberService_BindOAuthApp_Handler,
+		},
+		{
+			MethodName: "UnbindOAuthApp",
+			Handler:    _MemberService_UnbindOAuthApp_Handler,
+		},
+		{
+			MethodName: "GetOAuthBindInfo",
+			Handler:    _MemberService_GetOAuthBindInfo_Handler,
 		},
 		{
 			MethodName: "B4EAuth",

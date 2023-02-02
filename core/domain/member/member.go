@@ -159,8 +159,8 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 	if err == nil {
 		// 创建参数
 		data := []string{
-			code,
 			operation,
+			code,
 			strconv.Itoa(expiresMinutes),
 		}
 		mgr := m.mssRepo.NotifyManager()

@@ -104,7 +104,282 @@ ALTER TABLE IF EXISTS public.item_info
 
 /* 2023-01-10 */
 update registry set key='sms_api_2' where key='sms_api_http';
-delete FROM registry where key in ('order_push_affiliate_enabled',
+delete FROM registry where key in (
+'order_push_affiliate_enabled',
 'order_push_affiliate_event',
 'sms_push_send_event',
-'order_push_sub_order_enabled');
+'order_push_sub_order_enabled',
+'order_enable_affiliate_rebate',
+'orde_affiliater_push_enabled',
+'orde_affiliate_push_enabled'
+);
+
+/* 2023-01-23 */
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN product_id SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN item_flag SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN cat_id SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN vendor_id SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN brand_id SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN shop_id SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN shop_cat_id SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN express_tid SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN title SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN short_title SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN code SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN image SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN price_range SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN stock_num SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN sale_num SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN sku_num SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN sku_id SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN cost SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN price SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN retail_price SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN weight SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN bulk SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN shelve_state SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN audit_state SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN audit_remark SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN sort_num SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN create_time SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ALTER COLUMN update_time SET NOT NULL;
+
+ALTER TABLE IF EXISTS public.item_info
+    ADD COLUMN intro_video character varying(120) NOT NULL DEFAULT '' ;
+
+COMMENT ON COLUMN public.item_info.intro_video
+    IS '视频介绍';
+
+
+
+-- Table: public.order_distribution
+
+DROP TABLE IF EXISTS public.order_rebate_list; 
+DROP TABLE IF EXISTS public.order_rebate_item; 
+
+-- DROP TABLE IF EXISTS public.order_distribution;
+
+CREATE TABLE IF NOT EXISTS public.order_distribution
+(
+    id BIGSERIAL NOT NULL,
+    plan_id integer NOT NULL,
+    buyer_id bigint NOT NULL,
+    owner_id bigint NOT NULL,
+    flag int4range NOT NULL,
+    is_read int4range NOT NULL,
+    affiliate_code character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    order_no character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    order_subject character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    order_amount bigint NOT NULL,
+    distribute_amount bigint NOT NULL,
+    status integer NOT NULL,
+    create_time bigint NOT NULL,
+    update_time bigint NOT NULL,
+    CONSTRAINT order_distribution_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.order_distribution
+    OWNER to postgres;
+
+COMMENT ON TABLE public.order_distribution
+    IS '订单分销';
+
+COMMENT ON COLUMN public.order_distribution.id
+    IS '编号';
+
+COMMENT ON COLUMN public.order_distribution.plan_id
+    IS '返利方案Id';
+
+COMMENT ON COLUMN public.order_distribution.buyer_id
+    IS '买家';
+
+COMMENT ON COLUMN public.order_distribution.affiliate_code
+    IS '分享码';
+
+COMMENT ON COLUMN public.order_distribution.order_no
+    IS '订单号';
+
+COMMENT ON COLUMN public.order_distribution.order_subject
+    IS '订单标题';
+
+COMMENT ON COLUMN public.order_distribution.order_amount
+    IS '订单金额';
+
+COMMENT ON COLUMN public.order_distribution.distribute_amount
+    IS '分销奖励金额';
+
+COMMENT ON COLUMN public.order_distribution.status
+    IS '返利状态';
+
+COMMENT ON COLUMN public.order_distribution.create_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.order_distribution.update_time
+    IS '更新时间';
+
+COMMENT ON COLUMN public.order_distribution.owner_id
+    IS '返利所有人编号';
+
+COMMENT ON COLUMN public.order_distribution.is_read
+    IS '是否已读';
+
+COMMENT ON COLUMN public.order_distribution.flag
+    IS '标志';
+
+-- Table: public.order_distribution_item
+
+-- DROP TABLE IF EXISTS public.order_distribution_item;
+
+CREATE TABLE IF NOT EXISTS public.order_distribution_item
+(
+    id BIGSERIAL NOT NULL,
+    distribute_id bigint NOT NULL,
+    item_id bigint NOT NULL,
+    item_name character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    item_image character varying(120) COLLATE pg_catalog."default" NOT NULL,
+    item_amount bigint NOT NULL,
+    distribute_amount bigint NOT NULL,
+    CONSTRAINT order_distribution_item_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.order_distribution_item
+    OWNER to postgres;
+
+COMMENT ON TABLE public.order_distribution_item
+    IS '订单分销详情';
+
+COMMENT ON COLUMN public.order_distribution_item.id
+    IS '编号';
+
+COMMENT ON COLUMN public.order_distribution_item.distribute_id
+    IS '分销单Id';
+
+COMMENT ON COLUMN public.order_distribution_item.item_id
+    IS '商品编号';
+
+COMMENT ON COLUMN public.order_distribution_item.item_name
+    IS '商品名称';
+
+COMMENT ON COLUMN public.order_distribution_item.item_image
+    IS '商品图片';
+
+COMMENT ON COLUMN public.order_distribution_item.item_amount
+    IS '商品金额';
+
+COMMENT ON COLUMN public.order_distribution_item.distribute_amount
+    IS '分销金额';
+
+
+ALTER TABLE public.mch_express_template
+    ALTER COLUMN first_fee TYPE integer;
+COMMENT ON COLUMN public.mch_express_template.first_fee
+    IS '首次计价单价(元),如续重1kg';
+
+ALTER TABLE public.mch_express_template
+    ALTER COLUMN add_fee TYPE integer;
+COMMENT ON COLUMN public.mch_express_template.add_fee
+    IS '超过首次计价单价(元)，如续重1kg';
+
+-- Table: public.mm_app_account
+
+-- DROP TABLE IF EXISTS public.mm_app_account;
+
+CREATE TABLE IF NOT EXISTS public.mm_app_account
+(
+    id BIGSERIAL NOT NULL,
+    member_id bigint NOT NULL,
+    app_code character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    open_id character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    auth_token character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    head_img_url character varying(120) COLLATE pg_catalog."default" NOT NULL,
+    update_time bigint NOT NULL,
+    CONSTRAINT mm_app_account_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.mm_app_account
+    OWNER to postgres;
+
+COMMENT ON TABLE public.mm_app_account
+  IS '关联第三方应用账号';
+
+COMMENT ON COLUMN public.mm_app_account.id
+    IS '编号';
+
+COMMENT ON COLUMN public.mm_app_account.member_id
+    IS '会员ID';
+
+COMMENT ON COLUMN public.mm_app_account.app_code
+    IS '应用代码,如wx';
+
+COMMENT ON COLUMN public.mm_app_account.open_id
+    IS '第三方应用id';
+
+COMMENT ON COLUMN public.mm_app_account.auth_token
+    IS '第三方应用认证令牌';
+
+COMMENT ON COLUMN public.mm_app_account.head_img_url
+    IS '头像地址';
+
+COMMENT ON COLUMN public.mm_app_account.update_time
+    IS '更新时间';

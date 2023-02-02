@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"errors"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
@@ -8,6 +9,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/log"
 )
 
 var _ cart.ICart = new(cartImpl)
@@ -24,7 +26,7 @@ type cartImpl struct {
 	snapMap    map[int64]*item.Snapshot
 }
 
-func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
+func NewNormalCart(val *cart.NormalCart, rep cart.ICartRepo,
 	memberRepo member.IMemberRepo, goodsRepo item.IItemRepo) cart.ICart {
 	c := &cartImpl{
 		value:      val,
@@ -35,22 +37,23 @@ func CreateCart(val *cart.NormalCart, rep cart.ICartRepo,
 	return c.init()
 }
 
-// 创建新的购物车
-func NewNormalCart(code string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
+// 创建新的临时购物车
+func CreateTempNormalCart(buyerId int, cartCode string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
 	goodsRepo item.IItemRepo) cart.ICart {
 	unix := time.Now().Unix()
-	if code == "" {
-		code = domain.GenerateCartCode(unix, time.Now().Nanosecond())
+	if cartCode == "" {
+		cartCode = domain.GenerateCartCode(unix, time.Now().Nanosecond())
 	}
 	value := &cart.NormalCart{
-		CartCode:   code,
+		CartCode:   cartCode,
 		DeliverId:  0,
+		BuyerId:    int64(buyerId),
 		PaymentOpt: 1,
 		CreateTime: unix,
 		UpdateTime: unix,
 		Items:      []*cart.NormalCartItem{},
 	}
-	return CreateCart(value, rep, memberRepo, goodsRepo)
+	return NewNormalCart(value, rep, memberRepo, goodsRepo)
 }
 
 func (c *cartImpl) init() cart.ICart {
@@ -79,6 +82,16 @@ func (c *cartImpl) Kind() cart.Kind {
 // 获取买家编号
 func (c *cartImpl) BuyerId() int64 {
 	return c.value.BuyerId
+}
+
+// Bind 绑定买家
+func (c *cartImpl) Bind(buyerId int) error {
+	if c.value.BuyerId > 0 {
+		return errors.New("cart has already bind buyer")
+	}
+	c.value.BuyerId = int64(buyerId)
+	_, err := c.Save()
+	return err
 }
 
 func (c *cartImpl) Clone() cart.ICart {
@@ -259,6 +272,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.No
 					return v, item.ErrOutOfStock // 库存不足
 				}
 				v.Quantity = num
+				v.Checked = 1
 			} else {
 				if v.Quantity+num > stock {
 					return v, item.ErrOutOfStock // 库存不足
@@ -267,6 +281,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.No
 			}
 			return v, err
 		} else {
+			// 取消掉其他要结算的商品
 			if checkOnly {
 				v.Checked = 0
 			}
@@ -395,7 +410,10 @@ func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 				}
 			}
 		}
-		_ = ic.Destroy() //合并后,需销毁购物车
+		err := ic.Destroy() //合并后,需销毁购物车
+		if err != nil {
+			log.Println("[ GO2O][ ERROR]: combine cart failed: ", err.Error())
+		}
 	}
 	c.snapMap = nil //clean
 	return c

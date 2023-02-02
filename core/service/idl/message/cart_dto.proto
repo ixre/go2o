@@ -22,16 +22,16 @@ message SShoppingCart {
     //编号
     sint32 cartId = 1;
     //购物车KEY
-    string code = 2;
+    string cartCode = 2;
     //店铺分组
-    repeated SShoppingCartGroup shops = 3;
+    repeated SShoppingCartGroup sellers = 3;
 }
 // 购物车店铺分组
 message SShoppingCartGroup {
-    //店铺编号
-    sint64 shopId = 1;
     //供货商编号
-    sint64 vendorId = 2;
+    sint64 sellerId = 1;
+    //店铺编号
+    sint64 shopId = 2;
     //店铺名称
     string shopName = 3;
     //是否结算
@@ -52,9 +52,12 @@ message SCheckCartItem {
 
 // 购物车商品操作响应
 message CartItemResponse {
+    // 错误码
     int32 errCode = 1;
+    // 错误信息
     string errMsg = 2;
-    SShoppingCartItem item = 3;
+    // 购物车商品信息
+    repeated SShoppingCartItem items = 3;
 }
 
 // 购物车商品

@@ -68,6 +68,8 @@ type (
 		Code() string
 		// BuyerId 获取买家编号
 		BuyerId() int64
+		// 绑定买家
+		Bind(buyerId int) error
 		// Prepare 预先准备购物车
 		Prepare() error
 		// SignItemChecked 标记商品结算
@@ -121,8 +123,8 @@ type (
 	ICartRepo interface {
 		// GetMyCart 获取买家的购物车
 		GetMyCart(buyerId int64, k Kind) ICart
-		// NewNormalCart 创建一个购物车
-		NewNormalCart(code string) ICart
+		// NewNormalCart 创建一个临时购物车
+		NewTempNormalCart(buyerId int, code string) ICart
 		// CreateNormalCart 创建一个普通购物车
 		CreateNormalCart(r *NormalCart) ICart
 		// GetNormalCart 获取购物车

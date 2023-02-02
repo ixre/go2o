@@ -1,12 +1,12 @@
 package order
 
 type (
-	// RebateItem 订单返利详情
-	RebateItem struct {
+	// DistributionItem 订单返利详情
+	DistributionItem struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes" json:"id"`
-		// 返利单Id
-		DebateId int64 `db:"debate_id" json:"debateId"`
+		Id int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
+		// 分销单Id
+		DistributeId int64 `db:"distribute_id" json:"distributeId"`
 		// 商品编号
 		ItemId int64 `db:"item_id" json:"itemId"`
 		// 商品名称
@@ -15,18 +15,24 @@ type (
 		ItemImage string `db:"item_image" json:"itemImage"`
 		// 商品金额
 		ItemAmount int64 `db:"item_amount" json:"itemAmount"`
-		// 返利金额
-		RebateAmount int64 `db:"rebate_amount" json:"rebateAmount"`
+		// 分销金额
+		DistributeAmount int64 `db:"distribute_amount" json:"distributeAmount"`
 	}
 
-	// AffiliateRebate 订单返利
-	AffiliateRebate struct {
+	// AffiliateDistribution 订单分销
+	AffiliateDistribution struct {
 		// 编号
 		Id int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 返利方案Id
 		PlanId int `db:"plan_id" json:"planId"`
-		// 成交人Id
-		TraderId int64 `db:"trader_id" json:"traderId"`
+		// 买家
+		BuyerId int64 `db:"buyer_id" json:"buyerId"`
+		// 返利所有人编号
+		OwnerId int64 `db:"owner_id" json:"ownerId"`
+		// 标志
+		Flag int16 `db:"flag" json:"flag"`
+		// 是否已读
+		IsRead int16 `db:"is_read" json:"isRead"`
 		// 分享码
 		AffiliateCode string `db:"affiliate_code" json:"affiliateCode"`
 		// 订单号
@@ -35,8 +41,8 @@ type (
 		OrderSubject string `db:"order_subject" json:"orderSubject"`
 		// 订单金额
 		OrderAmount int64 `db:"order_amount" json:"orderAmount"`
-		// 返利金额
-		RebaseAmount int64 `db:"rebase_amount" json:"rebaseAmount"`
+		// 分销奖励金额
+		DistributeAmount int64 `db:"distribute_amount" json:"distributeAmount"`
 		// 返利状态
 		Status int `db:"status" json:"status"`
 		// 创建时间

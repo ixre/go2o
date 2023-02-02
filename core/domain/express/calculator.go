@@ -101,7 +101,7 @@ func (e *expressCalculatorImpl) mathFee(basis int, unit, firstUnit int,
 	return e.getExpressFee(unit, firstUnit, firstFee, addUnit, addFee)
 }
 
-// 根据计量单位和值计算运费
+// 根据计量单位和值计算运费(结果放大100倍,在订单计算时会除100)
 func (e *expressCalculatorImpl) getExpressFee(unit, firstUnit int,
 	firstFee int64, addUnit int, addFee int64) int64 {
 	outUnit := unit - firstUnit
@@ -111,9 +111,9 @@ func (e *expressCalculatorImpl) getExpressFee(unit, firstUnit int,
 		if outUnit%addUnit > 0 {
 			outTimes += 1
 		}
-		return firstFee + int64(outTimes)*addFee
+		return (firstFee + int64(outTimes)*addFee) * 100
 	}
-	return firstFee
+	return firstFee * 100
 }
 
 // 获取累计运费

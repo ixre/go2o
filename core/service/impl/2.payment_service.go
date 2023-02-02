@@ -391,6 +391,46 @@ func (p *paymentService) QueryIntegrateAppList(_ context.Context, _ *proto.Empty
 	return ret, nil
 }
 
+// PrepareIntegrateParams 准备集成支付的参数
+func (p *paymentService) PrepareIntegrateParams(_ context.Context, req *proto.IntegrateParamsRequest) (*proto.IntegrateParamsResponse, error) {
+	arr := p.repo.FindAllIntegrateApp()
+	var ret *payment.IntegrateApp
+	for _, v := range arr {
+		if v.Id == int(req.AppId) {
+			ret = v
+		}
+	}
+	if ret == nil {
+		return &proto.IntegrateParamsResponse{
+			ErrCode: 1,
+			ErrMsg:  "no such payment app",
+		}, nil
+	}
+	if ret.Enabled != 1 {
+		return &proto.IntegrateParamsResponse{
+			ErrCode: 2,
+			ErrMsg:  ret.AppName + "暂不可用",
+		}, nil
+	}
+	ord := p.repo.GetPaymentOrder(req.PayOrderNo)
+	if ord == nil {
+		return &proto.IntegrateParamsResponse{
+			ErrCode: 3,
+			ErrMsg:  "支付单无效",
+		}, nil
+	}
+	ov := ord.Get()
+	return &proto.IntegrateParamsResponse{
+		AppId:       int32(ret.Id),
+		AppName:     ret.AppName,
+		AppUrl:      ret.AppUrl,
+		Service:     "pay",
+		OrderNo:     ov.TradeNo,
+		OrderAmount: int32(ov.FinalFee),
+		Subject:     ov.Subject,
+	}, nil
+}
+
 func (p *paymentService) parseIntegrateApp(v *payment.IntegrateApp) *proto.SIntegrateApp {
 	return &proto.SIntegrateApp{
 		Id:            int32(v.Id),
