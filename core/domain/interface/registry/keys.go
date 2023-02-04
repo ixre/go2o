@@ -29,7 +29,7 @@ var (
 	// HAPI前缀
 	DomainPrefixHApi = KeyFormat("DomainPrefixHApi")
 	// 文件(上传)服务器前缀
-	FileServer = KeyFormat("DomainFileServerPrefix")
+	FileServerPath = KeyFormat("DomainFileServerPrefix")
 	// 静态服务器前缀
 	DomainPrefixStatic = KeyFormat("DomainPrefixStatic")
 	// 图片服务器前缀
