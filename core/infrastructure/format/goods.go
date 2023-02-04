@@ -19,7 +19,8 @@ var (
 	picCfgLoaded bool
 )
 
-var GlobalImageServer = ""
+// 静态文件服务器路径
+var GlobalFileServerPath = ""
 
 // 获取无图片地址
 func GetNoPicPath() string {
@@ -35,42 +36,23 @@ func containProto(s string) bool {
 		strings.HasPrefix(s, "https://")
 }
 
-// 获取资源前缀
-func GetResUrlPrefix() string {
-	if len(imageServe) == 0 {
-		imageServe = GlobalImageServer
+// GetFileFullUrl 获取完整的文件地址
+func GetFileFullUrl(url string) string {
+	if len(url) == 0 {
+		return ""
 	}
-	return imageServe
+	if containProto(url) {
+		return url
+	}
+	return GlobalFileServerPath + url
 }
 
 // 获取商品图片地址
 func GetGoodsImageUrl(image string) string {
+	return GetFileFullUrl(image)
 	if !picCfgLoaded {
 		if len(imageServe) == 0 {
-			imageServe = GlobalImageServer
-		}
-
-		if len(noPicUrl) == 0 {
-			noPicUrl = imageServe + "/res/nopic.gif"
-		}
-		picCfgLoaded = true
-	}
-
-	if len(image) == 0 {
-		return noPicUrl
-	}
-
-	if containProto(image) {
-		return image
-	}
-	return imageServe + "/" + image
-}
-
-// 获取资源地址
-func GetResUrl(image string) string {
-	if !picCfgLoaded {
-		if len(imageServe) == 0 {
-			imageServe = GlobalImageServer
+			imageServe = GlobalFileServerPath
 		}
 
 		if len(noPicUrl) == 0 {

@@ -214,7 +214,7 @@ type (
 		// 类型
 		Kind int `db:"kind"`
 		// 标题
-		Title string `db:"subject"`
+		Subject string `db:"subject"`
 		// 关联的编号
 		OuterNo string `db:"outer_no"`
 		// 积分值

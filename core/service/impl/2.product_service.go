@@ -442,7 +442,7 @@ func (p *productService) GetBigCategories(mchId int64) []*proto.SProductCategory
 	var list []*proto.SProductCategory
 	for _, v := range cats {
 		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
-			v2.Icon = format.GetResUrl(v2.Icon)
+			v2.Icon = format.GetFileFullUrl(v2.Icon)
 			list = append(list, p.parseCategoryDto(v2))
 		}
 	}
@@ -454,7 +454,7 @@ func (p *productService) GetChildCategories(mchId int64, parentId int64) []*prot
 	var list []*proto.SProductCategory
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == int(parentId) && vv.Enabled == 1 {
-			vv.Icon = format.GetResUrl(vv.Icon)
+			vv.Icon = format.GetFileFullUrl(vv.Icon)
 			p.setChild(cats, vv)
 			list = append(list, p.parseCategoryDto(vv))
 		}
@@ -468,7 +468,7 @@ func (p *productService) setChild(list []product.ICategory, dst *product.Categor
 			if dst.Children == nil {
 				dst.Children = []*product.Category{}
 			}
-			vv.Icon = format.GetResUrl(vv.Icon)
+			vv.Icon = format.GetFileFullUrl(vv.Icon)
 			dst.Children = append(dst.Children, vv)
 		}
 	}

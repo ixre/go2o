@@ -88,7 +88,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	s := &member.ComplexMember{
 		Nickname:            mv.Nickname,
 		RealName:            mv.RealName,
-		Avatar:              format.GetResUrl(mv.Portrait),
+		Avatar:              format.GetFileFullUrl(mv.Portrait),
 		Exp:                 mv.Exp,
 		Level:               mv.Level,
 		LevelName:           lv.Name,

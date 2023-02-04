@@ -93,7 +93,7 @@ func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRe
 	}
 	if len(rows) > 0 {
 		for i, v := range rows {
-			v.Logo = format.GetResUrl(v.Logo)
+			v.Logo = format.GetFileFullUrl(v.Logo)
 			if v.Host == "" {
 				v.Host = v.Alias + "." + variable.Domain
 			}
@@ -250,7 +250,7 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 		Value: make([]*proto.MemberListSingle, len(list)),
 	}
 	for i, v := range list {
-		v.Avatar = format.GetResUrl(v.Avatar)
+		v.Avatar = format.GetFileFullUrl(v.Avatar)
 		rsp.Value[i] = &proto.MemberListSingle{
 			MemberId:      int64(v.MemberId),
 			Username:      v.Usr,

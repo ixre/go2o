@@ -161,7 +161,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	if err := m.Profile().SaveTrustedInfo(&member.TrustedInfo{
 		RealName:   realName,
 		CardId:     idCard,
-		TrustImage: format.GetResUrl(""),
+		TrustImage: format.GetFileFullUrl(""),
 	}); err != nil {
 		return err
 	}
