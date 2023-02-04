@@ -1,0 +1,1 @@
+delete FROM registry where key in ('order_disallow_user_cancel');
