@@ -1,1 +1,1 @@
-delete FROM registry where key in ('order_disallow_user_cancel');
+delete FROM registry where key in ('order_disallow_user_cancel',"domain_file_server_prefix");
