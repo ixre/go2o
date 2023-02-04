@@ -1238,7 +1238,7 @@ func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.
 		num := iv.GetSubInvitationNum(arr)
 		for i := 0; i < l; i++ {
 			rows[i].InvitationNum = num[rows[i].MemberId]
-			rows[i].Portrait = format.GetResUrl(rows[i].Portrait)
+			rows[i].Portrait = format.GetFileFullUrl(rows[i].Portrait)
 			ret.Data = append(ret.Data, &proto.SInvitationMember{
 				MemberId: int64(rows[i].MemberId),
 				Username: rows[i].Username,

@@ -11,6 +11,8 @@ package core
 import (
 	"context"
 	"encoding/gob"
+	"os"
+
 	"github.com/ixre/go2o/core/domain/interface/ad"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -19,14 +21,15 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/dto"
+	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/locker"
 	"github.com/ixre/go2o/core/module/express/kdniao"
 	"github.com/ixre/go2o/core/msq"
+	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/log"
-	"os"
 )
 
 func init() {
@@ -95,6 +98,9 @@ func InitialModules() {
 }
 
 func initSSOModule() {
+	// 初始化静态文件服务器地址
+	format.GlobalFileServerPath, _ = repos.Repo.GetRegistryRepo().GetValue(registry.FileServerPath)
+
 	//domain := variable.Domain
 	trans, _, err := service.RegistryServiceClient()
 	if err == nil {

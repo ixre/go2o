@@ -298,7 +298,7 @@ func (s *foundationService) SaveWxApiConfig(_ context.Context, cfg *proto.SWxApi
 
 // ResourceUrl 获取资源地址
 func (s *foundationService) ResourceUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
-	return &proto.String{Value: format.GetResUrl(s2.Value)}, nil
+	return &proto.String{Value: format.GetFileFullUrl(s2.Value)}, nil
 }
 
 // GetSmsApiSet 获取短信设置
