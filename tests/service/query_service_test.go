@@ -93,3 +93,11 @@ func TestPagingShopGoodsRequest(t *testing.T) {
 		t.Log(len(goods.Data), typeconv.MustJson(goods.Data))
 	}
 }
+
+func TestMemberStatifics(t *testing.T) {
+	var memberId int64 = 699
+	mp, _ := impl.QueryService.MemberStatistics(context.TODO(), &proto.MemberStatisticsRequest{
+		MemberId: memberId,
+	})
+	t.Log("未支付订单数", mp.AwaitPaymentOrders)
+}
