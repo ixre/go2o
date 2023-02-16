@@ -216,6 +216,8 @@ var (
 	OrderSubOrderPushEnabled = KeyFormat("OrderSubOrderPushEnabled")
 	// 是否允许用户付款后取消订单
 	OrderAllowUserCancelAfterPayment = KeyFormat("OrderAllowUserCancelAfterPayment")
+	// 付款超时关闭分钟数
+	OrderPaymentOverMinutes = KeyFormat("OrderPaymentOverMinutes")
 
 	//  /* 商户订单 */
 	// MchOrderSettleMode 商户订单结算模式
