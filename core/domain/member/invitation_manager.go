@@ -19,7 +19,6 @@ var _ member.IInvitationManager = new(invitationManager)
 
 type invitationManager struct {
 	member       *memberImpl
-	myInvMembers []*member.Member
 }
 
 // 更换邀请人
@@ -29,7 +28,7 @@ func (i *invitationManager) UpdateInviter(inviterId int64, sync bool) error {
 	if inviterId > 0 {
 		rl = i.member.repo.GetRelation(inviterId)
 	}
-	// 判断邀请人是否为下别的被邀请会员
+	// 判断邀请人是否为下级的被邀请会员
 	if i.checkInvitation(id, inviterId) {
 		return member.ErrInvalidInviteLevel
 	}
