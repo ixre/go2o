@@ -481,11 +481,11 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.Status, &e.CreateTime, &user)
 				e.Data = map[string]string{
-					"StatusText":  order.OrderStatus(e.Status).String(),
-					"CashPay":     strconv.Itoa(cashPay),
-					"TicketImage": ticket,
-					"User":        user,
-					"CreateTime":  format.UnixTimeStr(e.CreateTime),
+					"statusText":  order.OrderStatus(e.Status).String(),
+					"cashPay":     strconv.Itoa(cashPay),
+					"ticketImage": ticket,
+					"user":        user,
+					"createTime":  format.UnixTimeStr(e.CreateTime),
 				}
 				orderList = append(orderList, e)
 			}
