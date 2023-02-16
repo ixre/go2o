@@ -263,6 +263,7 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 		return payment.ErrOrderCancelled
 	}
 	p.value.State = payment.StateFinished
+	p.value.OutTradeSp =spName
 	p.value.OutTradeNo = outerNo
 	p.value.PaidTime = time.Now().Unix()
 	p.firstFinishPayment = true

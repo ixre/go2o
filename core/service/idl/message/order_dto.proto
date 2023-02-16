@@ -109,6 +109,8 @@ message SParentOrder {
     string statusText = 14;
     // 下单时间
     sint64 createTime = 15;
+    // 支付截止时间,超过时间关闭订单
+    sint64 paymentOverTime = 16;
 }
 
 message SSubOrder{
@@ -195,6 +197,8 @@ message SSingleOrder {
     sint32 status = 22;
     // 下单时间
     sint64 submitTime = 23;
+    // 支付截止时间,超过时间关闭订单
+    int64 paymentOverTime = 27;
     //sint64 updateTime = 21;
     repeated SOrderItem items = 24;
     // 扩展信息
@@ -238,7 +242,7 @@ message SubmitOrderRequest {
     // 优惠券
     string couponCode = 5;
     // 推广返利用户代码
-    string AffiliateCode = 6;
+    string affiliateCode = 6;
     // 是否使用余额抵扣
     bool balanceDiscount = 7;
     // 其他数据
