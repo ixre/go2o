@@ -269,6 +269,10 @@ message SPaymentOrder {
     sint64 paidTime = 25;
     /** 交易数据 */
     repeated STradeMethodData tradeData = 26;
+    /** 支付SP(后面会删除) */
+    string outTradeSp = 28;
+    /** 支付SP单号(后面会删除) */
+    string outTradeNo = 29;
     /** 编号 */
     sint32 id = 27;
 }

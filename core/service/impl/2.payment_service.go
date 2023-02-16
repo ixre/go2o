@@ -349,7 +349,10 @@ func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymen
 		SubOrder:       src.SubOrder == 1,
 		OrderType:      int32(src.OrderType),
 		OutOrderNo:     src.OutOrderNo,
-		TradeData:      make([]*proto.STradeMethodData, 0),
+
+		OutTradeNo: src.OutTradeNo,
+		OutTradeSp: src.OutTradeSp,
+		TradeData:  make([]*proto.STradeMethodData, 0),
 	}
 }
 
