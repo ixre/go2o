@@ -39,8 +39,6 @@ type queryService struct {
 	proto.UnimplementedQueryServiceServer
 }
 
-
-
 func NewQueryService(o orm.Orm, s storage.Interface,
 	catRepo product.ICategoryRepo) *queryService {
 	shopQuery := query.NewShopQuery(o, s)
@@ -75,7 +73,7 @@ func (q *queryService) MemberStatistics(_ context.Context, req *proto.MemberStat
 	}
 	return &proto.MemberStatisticsResponse{
 		AwaitPaymentOrders:  ret[int32(order.StatAwaitingPayment)],
-		AwaitShipmentOrders: ret[int32(order.StatAwaitingShipment)],
+		AwaitShipmentOrders: ret[int32(order.StatAwaitingPickup)] + ret[int32(order.StatAwaitingShipment)],
 		AwaitReceiveOrders:  ret[int32(order.StatShipped)],
 		CompletedOrders:     ret[int32(order.StatCompleted)],
 	}, nil
@@ -410,24 +408,23 @@ func (q *queryService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 }
 
 // QueryItemSalesHistory 查询商品销售记录
-func (q *queryService) QueryItemSalesHistory(_ context.Context,req *proto.QueryItemSalesHistoryRequest) (*proto.QueryItemSalesHistoryResponse, error) {
-	list := q.itemQuery.QueryItemSalesHistory(req.ItemId,int(req.Size),req.Random)
+func (q *queryService) QueryItemSalesHistory(_ context.Context, req *proto.QueryItemSalesHistoryRequest) (*proto.QueryItemSalesHistoryResponse, error) {
+	list := q.itemQuery.QueryItemSalesHistory(req.ItemId, int(req.Size), req.Random)
 	ret := &proto.QueryItemSalesHistoryResponse{
 		Value: []*proto.SItemSalesHistory{},
 	}
-	for _,v := range list{
+	for _, v := range list {
 		dst := &proto.SItemSalesHistory{
 			BuyerUserCode:   v.BuyerUserCode,
 			BuyerName:       v.BuyerName,
-			BuyerPortrait: v.BuyerPortrait,
+			BuyerPortrait:   v.BuyerPortrait,
 			BuyTime:         v.BuyTime,
 			IsFinishPayment: v.OrderState > order.StatAwaitingPayment,
 		}
-		if req.MaskBuyer{
+		if req.MaskBuyer {
 			dst.BuyerName = format.MaskNickname(dst.BuyerName)
 		}
-		ret.Value = append(ret.Value,dst)
+		ret.Value = append(ret.Value, dst)
 	}
 	return ret, nil
 }
-
