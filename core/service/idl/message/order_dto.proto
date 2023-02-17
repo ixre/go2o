@@ -197,12 +197,14 @@ message SSingleOrder {
     sint32 status = 22;
     // 下单时间
     sint64 submitTime = 23;
-    //sint64 updateTime = 21;
+    // 商品详情
     repeated SOrderItem items = 24;
+    // 支付交易号
+    string paymentTradeNo = 25;
     // 扩展信息
-    map<string, string> data = 25;
+    map<string, string> data = 26;
     // 更新时间
-    int64 updateTime = 26;
+    int64 updateTime = 27;
     // 是否为子订单
     //bool SubOrder = 27;
 }

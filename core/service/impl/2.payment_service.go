@@ -39,28 +39,9 @@ func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo,
 	}
 }
 
-// GetPaymentOrderById 根据编号获取支付单
-func (p *paymentService) GetPaymentOrderById(_ context.Context, id *proto.Int32) (*proto.SPaymentOrder, error) {
-	po := p.repo.GetPaymentOrderById(int(id.Value))
-	if po != nil {
-		v := po.Get()
-		return p.parsePaymentOrderDto(&v), nil
-	}
-	return nil, payment.ErrNoSuchPaymentOrder
-}
-
-// GetPaymentOrderId 根据交易号获取支付单编号
-func (p *paymentService) GetPaymentOrderId(_ context.Context, tradeNo *proto.String) (*proto.Int32, error) {
-	po := p.repo.GetPaymentOrder(tradeNo.Value)
-	if po != nil {
-		return &proto.Int32{Value: int32(po.GetAggregateRootId())}, nil
-	}
-	return &proto.Int32{Value: 0}, nil
-}
-
 // GetPaymentOrder 根据支付单号获取支付单
-func (p *paymentService) GetPaymentOrder(_ context.Context, paymentNo *proto.String) (*proto.SPaymentOrder, error) {
-	if po := p.repo.GetPaymentOrder(paymentNo.Value); po != nil {
+func (p *paymentService) GetPaymentOrder(_ context.Context, req *proto.PaymentOrderRequest) (*proto.SPaymentOrder, error) {
+	if po := p.repo.GetPaymentOrder(req.TradeNo); po != nil {
 		v := po.Get()
 		sp := p.parsePaymentOrderDto(&v)
 		for _, t := range po.TradeMethods() {
@@ -152,7 +133,7 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 
 // HybridPayment 余额钱包混合支付，优先扣除余额。
 func (p *paymentService) HybridPayment(_ context.Context, r *proto.HyperPaymentRequest) (rs *proto.Result, err error) {
-	o := p.repo.GetPaymentOrderById(int(r.OrderId))
+	o := p.repo.GetPaymentOrder(r.TradeNo)
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
