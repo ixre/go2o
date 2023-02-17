@@ -235,7 +235,7 @@ type (
 		// 手续费
 		ProcedureFee int64 `db:"procedure_fee"`
 		// 最终支付金额，包含手续费，不包含抵扣金额
-		FinalAmount int64 `db:"final_fee"`
+		FinalAmount int64 `db:"final_amount"`
 		// 实付金额
 		PaidAmount int64 `db:"paid_amount"`
 		// 可⽤支付方式
