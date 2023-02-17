@@ -90,6 +90,7 @@ func parseDetailValue(subOrder order.ISubOrder) *order.ComplexOrderDetails {
 		OrderNo:        v.OrderNo,
 		ShopId:         v.ShopId,
 		ShopName:       v.ShopName,
+		ItemCount:      v.ItemCount,
 		ItemAmount:     v.ItemAmount,
 		DiscountAmount: v.DiscountAmount,
 		ExpressFee:     v.ExpressFee,

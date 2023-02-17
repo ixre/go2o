@@ -740,13 +740,14 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	isp := o.shopRepo.GetShop(items[0].ShopId).(shop.IOnlineShop)
 	shopName := isp.GetShopValue().ShopName
 	v := &order.NormalSubOrder{
-		OrderNo:  orderNo,
-		BuyerId:  buyerId,
-		VendorId: int64(vendorId),
-		OrderId:  o.GetAggregateRootId(),
-		Subject:  "子订单",
-		ShopId:   items[0].ShopId,
-		ShopName: shopName,
+		OrderNo:   orderNo,
+		BuyerId:   buyerId,
+		VendorId:  int64(vendorId),
+		OrderId:   o.GetAggregateRootId(),
+		Subject:   "子订单",
+		ShopId:    items[0].ShopId,
+		ShopName:  shopName,
+		ItemCount: 0,
 		// 总金额
 		ItemAmount: 0,
 		// 减免金额(包含优惠券金额)
@@ -763,6 +764,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	}
 	// 计算订单金额
 	for _, iit := range items {
+		v.ItemCount += int(iit.Quantity)
 		//计算商品金额
 		v.ItemAmount += iit.Amount
 		//计算商品优惠金额
@@ -876,13 +878,14 @@ func (o *normalOrderImpl) createPaymentSubOrder() (order.ISubOrder, error) {
 	breakStatus := order.BreakDefault
 	vo := o.baseValue
 	v := &order.NormalSubOrder{
-		OrderNo:  orderNo,
-		BuyerId:  o.baseValue.BuyerId,
-		VendorId: 0,
-		OrderId:  o.GetAggregateRootId(),
-		Subject:  "支付子订单",
-		ShopId:   0,
-		ShopName: "",
+		OrderNo:   orderNo,
+		BuyerId:   o.baseValue.BuyerId,
+		VendorId:  0,
+		OrderId:   o.GetAggregateRootId(),
+		Subject:   "支付子订单",
+		ShopId:    0,
+		ShopName:  "",
+		ItemCount: vo.ItemCount,
 		// 总金额
 		ItemAmount: vo.ItemAmount,
 		// 减免金额(包含优惠券金额)

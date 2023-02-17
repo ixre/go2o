@@ -94,7 +94,8 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 
 	//orderMap := make(map[int64]int) //存储订单编号和对象的索引
 	// 查询分页的订单
-	err := d.Query(fmt.Sprintf(`SELECT id,order_no,buyer_id,shop_id,shop_name,express_fee,final_amount,status,create_time
+	err := d.Query(fmt.Sprintf(`SELECT id,order_no,buyer_id,shop_id,shop_name,express_fee,
+			item_count,final_amount,status,create_time
 			FROM sale_sub_order  
          	WHERE %s %s LIMIT $2 OFFSET $1`,
 		where, orderBy),
@@ -103,7 +104,7 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 			for rs.Next() {
 				e := &dto.MemberPagingOrderDto{}
 				err := rs.Scan(&e.OrderId, &e.OrderNo, &e.BuyerId,
-					&e.ShopId, &e.ShopName, &e.ExpressFee,
+					&e.ShopId, &e.ShopName, &e.ExpressFee,&e.ItemCount,
 					&e.FinalAmount, &e.Status, &e.CreateTime)
 				if err != nil {
 					log.Println(" normal order list scan error:", err.Error())

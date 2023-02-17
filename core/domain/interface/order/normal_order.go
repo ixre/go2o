@@ -101,6 +101,8 @@ type (
 		ShopName string `db:"shop_name"`
 		// 订单标题
 		Subject string `db:"subject"`
+		// 商品数量
+		ItemCount int `db:"item_count"`
 		// 商品金额
 		ItemAmount int64 `db:"item_amount"`
 		// 优惠减免金额

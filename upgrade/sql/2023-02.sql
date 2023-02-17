@@ -9,3 +9,9 @@ ALTER TABLE IF EXISTS public.pay_order
 
 ALTER TABLE IF EXISTS public.pay_order
     RENAME pay_uid TO payer_id;
+
+ALTER TABLE IF EXISTS public.sale_sub_order
+    ADD COLUMN item_count integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.sale_sub_order.item_count
+    IS '商品数量';

@@ -69,6 +69,8 @@ type (
 		ShopId int64
 		// 店铺名称
 		ShopName string
+		// 商品数量
+		ItemCount int
 		// 商品金额
 		ItemAmount int64
 		// 优惠减免金额
