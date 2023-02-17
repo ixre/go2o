@@ -148,7 +148,7 @@ func (q *queryService) QueryWholesaleOrders(_ context.Context, r *proto.MemberOr
 
 // QueryTradeOrders 查询分页交易/服务类订单
 func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderPagingRequest) (*proto.MemberOrderPagingResponse, error) {
-	n, list := q.orderQuery.PagedTradeOrderOfBuyer(
+	n, list := q.orderQuery.PagingTradeOrderOfBuyer(
 		r.MemberId,
 		r.Params.Begin,
 		r.Params.End,
@@ -190,6 +190,7 @@ func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberP
 			Id:             int64(it.Id),
 			SnapshotId:     int64(it.SnapshotId),
 			SkuId:          int64(it.SkuId),
+			ItemSpec:       it.ItemSpec,
 			ItemId:         int64(it.ItemId),
 			ItemTitle:      it.ItemTitle,
 			Image:          it.Image,

@@ -292,7 +292,7 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 		}
 	}
 	// 使用余额抵扣,如果余额抵扣失败,仍然应该继续结算
-	if data.BalanceDiscount {
+	if data.BalanceDeduct {
 		_ = ip.BalanceDiscount("")
 	}
 	// 如果全部支付成功
@@ -301,7 +301,7 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	}
 
 	rd.TradeNo = ipv.TradeNo
-	rd.TradeAmount = ipv.FinalFee
+	rd.TradeAmount = ipv.FinalAmount
 	rd.OrderNo = ipv.OutOrderNo
 	rd.PaymentOrderNo = o.GetPaymentOrder().TradeNo()
 	return o, rd, err
@@ -428,12 +428,12 @@ func (u *unifiedOrderAdapterImpl) Complex() *order.ComplexOrder {
 }
 
 // 取消订单
-func (u *unifiedOrderAdapterImpl) Cancel(buyerCancel bool,reason string) error {
+func (u *unifiedOrderAdapterImpl) Cancel(buyerCancel bool, reason string) error {
 	if err := u.check(); err != nil {
 		return err
 	}
 	if u.sub {
-		return u.subOrder.Cancel(buyerCancel,reason)
+		return u.subOrder.Cancel(buyerCancel, reason)
 	}
 	return u.cancel(reason)
 }

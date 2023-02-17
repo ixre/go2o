@@ -13,7 +13,7 @@ type (
 	   o.order_no,po.order_no as parent_no,
 	       o.vendor_id,o.shop_id,s.shop_name,
 	       o.item_amount,o.discount_amount,o.express_fee,
-	       o.package_fee,o.final_fee,o.status
+	       o.package_fee,o.final_amount,o.status
 	*/
 
 	// MemberPagingOrderDto 会员订单分页对象
@@ -82,7 +82,7 @@ type (
 
 	/*
 	   SELECT si.id,si.order_id,si.snap_id,sn.sku_id,sn.goods_title,sn.img,
-	           si.quantity,si.fee,si.final_fee
+	           si.quantity,si.fee,si.final_amount
 	*/
 
 	// OrderItem 订单商品项
@@ -93,6 +93,8 @@ type (
 		OrderId int64 `json:"orderId"`
 		// 商品快照编号
 		SnapshotId int `json:"snapshotId"`
+		// Sku规格
+		ItemSpec string `json:"itemSpec"`
 		// Sku编号
 		SkuId int `json:"skuId"`
 		// 商品编号

@@ -517,9 +517,13 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 // 为所有子订单生成支付单
 func (o *normalOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.baseValue
+	// 计算订单金额
 	itemAmount := v.ItemAmount + v.ExpressFee + v.PackageFee
 	finalAmount := v.FinalAmount
-	disAmount := v.DiscountAmount
+	discountAmount := v.DiscountAmount
+	// 计算订单超时时间
+	expiresMiniutes := o.registryRepo.Get(registry.OrderPaymentOverMinutes).IntValue()
+	expiresTime := v.CreateTime + int64(expiresMiniutes)*60
 	po := &payment.Order{
 		SellerId:       0,
 		TradeNo:        v.OrderNo,
@@ -528,12 +532,12 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		OutOrderNo:     v.OrderNo,
 		Subject:        v.Subject,
 		BuyerId:        v.BuyerId,
-		PayUid:         v.BuyerId,
+		PayerId:        v.BuyerId,
 		ItemAmount:     itemAmount,
-		DiscountAmount: disAmount,
+		DiscountAmount: discountAmount,
 		DeductAmount:   0,
 		AdjustAmount:   0,
-		FinalFee:       finalAmount,
+		FinalAmount:    finalAmount,
 		TotalAmount:    finalAmount,
 		PayFlag:        payment.PAllFlag,
 		TradeChannel:   0,
@@ -542,7 +546,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		OutTradeNo:     "",
 		State:          payment.StateAwaitingPayment,
 		SubmitTime:     v.CreateTime,
-		ExpiresTime:    0,
+		ExpiresTime:    expiresTime,
 		PaidTime:       0,
 		UpdateTime:     v.CreateTime,
 		TradeMethods:   []*payment.TradeMethodData{},
@@ -596,7 +600,7 @@ func (o *normalOrderImpl) applyCartPromotionOnSubmit(cart cart.ICart) ([]promoti
 	//var prom promotion.IPromotion
 	//var saveFee int
 	var totalSaveFee int
-	//var intOrderFee = int(vo.FinalFee)
+	//var intOrderFee = int(vo.FinalAmount)
 	//var rightBack bool
 	//
 	//for _, v := range cart.GetCartGoods() {
@@ -736,13 +740,14 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	isp := o.shopRepo.GetShop(items[0].ShopId).(shop.IOnlineShop)
 	shopName := isp.GetShopValue().ShopName
 	v := &order.NormalSubOrder{
-		OrderNo:  orderNo,
-		BuyerId:  buyerId,
-		VendorId: int64(vendorId),
-		OrderId:  o.GetAggregateRootId(),
-		Subject:  "子订单",
-		ShopId:   items[0].ShopId,
-		ShopName: shopName,
+		OrderNo:   orderNo,
+		BuyerId:   buyerId,
+		VendorId:  int64(vendorId),
+		OrderId:   o.GetAggregateRootId(),
+		Subject:   "子订单",
+		ShopId:    items[0].ShopId,
+		ShopName:  shopName,
+		ItemCount: 0,
 		// 总金额
 		ItemAmount: 0,
 		// 减免金额(包含优惠券金额)
@@ -759,6 +764,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	}
 	// 计算订单金额
 	for _, iit := range items {
+		v.ItemCount += int(iit.Quantity)
 		//计算商品金额
 		v.ItemAmount += iit.Amount
 		//计算商品优惠金额
@@ -872,13 +878,14 @@ func (o *normalOrderImpl) createPaymentSubOrder() (order.ISubOrder, error) {
 	breakStatus := order.BreakDefault
 	vo := o.baseValue
 	v := &order.NormalSubOrder{
-		OrderNo:  orderNo,
-		BuyerId:  o.baseValue.BuyerId,
-		VendorId: 0,
-		OrderId:  o.GetAggregateRootId(),
-		Subject:  "支付子订单",
-		ShopId:   0,
-		ShopName: "",
+		OrderNo:   orderNo,
+		BuyerId:   o.baseValue.BuyerId,
+		VendorId:  0,
+		OrderId:   o.GetAggregateRootId(),
+		Subject:   "支付子订单",
+		ShopId:    0,
+		ShopName:  "",
+		ItemCount: vo.ItemCount,
 		// 总金额
 		ItemAmount: vo.ItemAmount,
 		// 减免金额(包含优惠券金额)

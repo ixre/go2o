@@ -645,7 +645,7 @@ func (c *wholesaleCartImpl) checkoutJdoData(jdo *cart.WCartJdo) {
 	//总计
 	jdo.Data["TotalExpressAmount"] = format.DecimalToString(0)
 	jdo.Data["TotalItemAmount"] = format.FormatIntMoney(totalAmount)
-	jdo.Data["FinalFee"] = format.FormatIntMoney(totalAmount)
+	jdo.Data["FinalAmount"] = format.FormatIntMoney(totalAmount)
 }
 
 // 简单Jdo数据,max为最多数量

@@ -62,18 +62,20 @@ message SOrderItem {
     int64 price = 7;
     // 商品实际单价
     int64 finalPrice = 8;
+    // 商品规格
+    string itemSpec = 9;
     // 商品数量
-    int32 quantity = 9;
+    int32 quantity = 10;
     // 退货数量
-    int32 returnQuantity = 10;
+    int32 returnQuantity = 11;
     // 商品总金额
-    int64 itemAmount = 11;
+    int64 itemAmount = 12;
     // 商品实际总金额
-    int64 finalAmount = 12;
+    int64 finalAmount = 13;
     // 是否已发货
-    bool isShipped = 13;
+    bool isShipped = 14;
     // 其他信息
-    map<string, string> data = 14;
+    map<string, string> data = 15;
 }
 
 message SParentOrder {
@@ -109,8 +111,6 @@ message SParentOrder {
     string statusText = 14;
     // 下单时间
     sint64 createTime = 15;
-    // 支付截止时间,超过时间关闭订单
-    sint64 paymentOverTime = 16;
 }
 
 message SSubOrder{
@@ -197,14 +197,14 @@ message SSingleOrder {
     sint32 status = 22;
     // 下单时间
     sint64 submitTime = 23;
-    // 支付截止时间,超过时间关闭订单
-    int64 paymentOverTime = 27;
-    //sint64 updateTime = 21;
+    // 商品详情
     repeated SOrderItem items = 24;
+    // 支付交易号
+    string paymentTradeNo = 25;
     // 扩展信息
-    map<string, string> data = 25;
+    map<string, string> data = 26;
     // 更新时间
-    int64 updateTime = 26;
+    int64 updateTime = 27;
     // 是否为子订单
     //bool SubOrder = 27;
 }
@@ -244,7 +244,7 @@ message SubmitOrderRequest {
     // 推广返利用户代码
     string affiliateCode = 6;
     // 是否使用余额抵扣
-    bool balanceDiscount = 7;
+    bool balanceDeduct = 7;
     // 其他数据
     map<string, string> data = 8;
     // 交易类订单请求参数
@@ -275,9 +275,9 @@ message SubmitNormalOrderV2Request {
     // 优惠券
     string couponCode = 5;
     // 是否使用余额抵扣
-    bool balanceDiscount = 6;
+    bool balanceDeduct = 6;
     // 推广返利用户代码
-    string AffiliateCode = 7;
+    string affiliateCode = 7;
 }
 
 // 订单提交返回数据
@@ -412,7 +412,7 @@ message PrepareOrderResponse{
     // 订单总金额
     int32 totalAmount = 11;
     // 最终金额
-    int64 finalFee = 12;
+    int64 finalAmount = 12;
     // 收货人
     SConsigneeInfo consignee = 13;
     // 订单项目

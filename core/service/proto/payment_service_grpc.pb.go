@@ -24,12 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type PaymentServiceClient interface {
 	// 创建支付单并提交
 	SubmitPaymentOrder(ctx context.Context, in *SPaymentOrder, opts ...grpc.CallOption) (*Result, error)
-	// 根据支付单号获取支付单,orderNo
-	GetPaymentOrder(ctx context.Context, in *String, opts ...grpc.CallOption) (*SPaymentOrder, error)
-	// 根据交易号获取支付单编号,tradeNo
-	GetPaymentOrderId(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int32, error)
-	// 根据编号获取支付单
-	GetPaymentOrderById(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*SPaymentOrder, error)
+	// 根据支付单号或订单号获取支付单
+	GetPaymentOrder(ctx context.Context, in *PaymentOrderRequest, opts ...grpc.CallOption) (*SPaymentOrder, error)
 	// 调整支付单金额
 	AdjustOrder(ctx context.Context, in *AdjustOrderRequest, opts ...grpc.CallOption) (*Result, error)
 	// 余额抵扣
@@ -83,27 +79,9 @@ func (c *paymentServiceClient) SubmitPaymentOrder(ctx context.Context, in *SPaym
 	return out, nil
 }
 
-func (c *paymentServiceClient) GetPaymentOrder(ctx context.Context, in *String, opts ...grpc.CallOption) (*SPaymentOrder, error) {
+func (c *paymentServiceClient) GetPaymentOrder(ctx context.Context, in *PaymentOrderRequest, opts ...grpc.CallOption) (*SPaymentOrder, error) {
 	out := new(SPaymentOrder)
 	err := c.cc.Invoke(ctx, "/PaymentService/GetPaymentOrder", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *paymentServiceClient) GetPaymentOrderId(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int32, error) {
-	out := new(Int32)
-	err := c.cc.Invoke(ctx, "/PaymentService/GetPaymentOrderId", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *paymentServiceClient) GetPaymentOrderById(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*SPaymentOrder, error) {
-	out := new(SPaymentOrder)
-	err := c.cc.Invoke(ctx, "/PaymentService/GetPaymentOrderById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -242,12 +220,8 @@ func (c *paymentServiceClient) DeleteIntegrateApp(ctx context.Context, in *PayIn
 type PaymentServiceServer interface {
 	// 创建支付单并提交
 	SubmitPaymentOrder(context.Context, *SPaymentOrder) (*Result, error)
-	// 根据支付单号获取支付单,orderNo
-	GetPaymentOrder(context.Context, *String) (*SPaymentOrder, error)
-	// 根据交易号获取支付单编号,tradeNo
-	GetPaymentOrderId(context.Context, *String) (*Int32, error)
-	// 根据编号获取支付单
-	GetPaymentOrderById(context.Context, *Int32) (*SPaymentOrder, error)
+	// 根据支付单号或订单号获取支付单
+	GetPaymentOrder(context.Context, *PaymentOrderRequest) (*SPaymentOrder, error)
 	// 调整支付单金额
 	AdjustOrder(context.Context, *AdjustOrderRequest) (*Result, error)
 	// 余额抵扣
@@ -292,14 +266,8 @@ type UnimplementedPaymentServiceServer struct {
 func (UnimplementedPaymentServiceServer) SubmitPaymentOrder(context.Context, *SPaymentOrder) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitPaymentOrder not implemented")
 }
-func (UnimplementedPaymentServiceServer) GetPaymentOrder(context.Context, *String) (*SPaymentOrder, error) {
+func (UnimplementedPaymentServiceServer) GetPaymentOrder(context.Context, *PaymentOrderRequest) (*SPaymentOrder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentOrder not implemented")
-}
-func (UnimplementedPaymentServiceServer) GetPaymentOrderId(context.Context, *String) (*Int32, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentOrderId not implemented")
-}
-func (UnimplementedPaymentServiceServer) GetPaymentOrderById(context.Context, *Int32) (*SPaymentOrder, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentOrderById not implemented")
 }
 func (UnimplementedPaymentServiceServer) AdjustOrder(context.Context, *AdjustOrderRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdjustOrder not implemented")
@@ -375,7 +343,7 @@ func _PaymentService_SubmitPaymentOrder_Handler(srv interface{}, ctx context.Con
 }
 
 func _PaymentService_GetPaymentOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(String)
+	in := new(PaymentOrderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -387,43 +355,7 @@ func _PaymentService_GetPaymentOrder_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/PaymentService/GetPaymentOrder",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PaymentServiceServer).GetPaymentOrder(ctx, req.(*String))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PaymentService_GetPaymentOrderId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(String)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PaymentServiceServer).GetPaymentOrderId(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/PaymentService/GetPaymentOrderId",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PaymentServiceServer).GetPaymentOrderId(ctx, req.(*String))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PaymentService_GetPaymentOrderById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Int32)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PaymentServiceServer).GetPaymentOrderById(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/PaymentService/GetPaymentOrderById",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PaymentServiceServer).GetPaymentOrderById(ctx, req.(*Int32))
+		return srv.(PaymentServiceServer).GetPaymentOrder(ctx, req.(*PaymentOrderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -694,14 +626,6 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPaymentOrder",
 			Handler:    _PaymentService_GetPaymentOrder_Handler,
-		},
-		{
-			MethodName: "GetPaymentOrderId",
-			Handler:    _PaymentService_GetPaymentOrderId_Handler,
-		},
-		{
-			MethodName: "GetPaymentOrderById",
-			Handler:    _PaymentService_GetPaymentOrderById_Handler,
 		},
 		{
 			MethodName: "AdjustOrder",

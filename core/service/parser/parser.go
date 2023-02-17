@@ -229,41 +229,6 @@ func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 	}
 }
 
-func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
-	o := &proto.SSingleOrder{
-		OrderId:       src.Id,
-		ParentOrderId: src.OrderId,
-		OrderNo:       src.OrderNo,
-		//OrderType:            src.,
-		BuyerId:        src.BuyerId,
-		SellerId:       src.VendorId,
-		ShopId:         src.ShopId,
-		Subject:        src.Subject,
-		ItemAmount:     src.ItemAmount,
-		DiscountAmount: src.DiscountAmount,
-		DeductAmount:   0,
-		AdjustAmount:   0,
-		ExpressFee:     src.ExpressFee,
-		PackageFee:     src.PackageFee,
-		ProcedureFee:   0,
-		//TotalAmount:          src.ItemAmount,
-		FinalAmount: src.FinalAmount,
-		Consignee: &proto.SConsigneeInfo{
-			ConsigneeName:   "",
-			ConsigneePhone:  "",
-			ShippingAddress: "",
-		},
-		BuyerComment: src.BuyerComment,
-		Status:       int32(src.Status),
-		SubmitTime:   src.CreateTime,
-		Items:        make([]*proto.SOrderItem, len(src.Items)),
-	}
-	for i, v := range src.Items {
-		o.Items[i] = SubOrderItemDto(v)
-	}
-	return o
-}
-
 func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
 	return &proto.SOrderItem{
 		SnapshotId:     src.SnapshotId,
@@ -376,7 +341,7 @@ func PrepareOrderDto(src *order.ComplexOrder) *proto.PrepareOrderResponse {
 		DiscountAmount: src.DiscountAmount,
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
-		FinalFee:       src.FinalAmount,
+		FinalAmount:    src.FinalAmount,
 		Consignee: &proto.SConsigneeInfo{
 			ConsigneeName:   src.Consignee.ConsigneeName,
 			ConsigneePhone:  src.Consignee.ConsigneePhone,

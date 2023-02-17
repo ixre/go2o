@@ -158,7 +158,7 @@ type (
 		// 优惠券
 		CouponCode string
 		// 是否余额支付
-		BalanceDiscount bool
+		BalanceDeduct bool
 		// 返利推广人代码
 		AffiliateCode string
 		// 提交的订单数据
