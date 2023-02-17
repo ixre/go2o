@@ -15,3 +15,8 @@ ALTER TABLE IF EXISTS public.sale_sub_order
 
 COMMENT ON COLUMN public.sale_sub_order.item_count
     IS '商品数量';
+
+update sale_sub_order set item_count = 
+(SELECT  coalesce(SUM(quantity),0) FROM sale_order_item 
+ WHERE order_id = sale_sub_order.id)
+WHERE item_count = 0;
