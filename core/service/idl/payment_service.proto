@@ -170,7 +170,7 @@ message PayGatewayResponse{
     // 交易费用
     int64 procedureFee = 6;
     // 金额
-    int64 finalFee = 7;
+    int64 finalAmount = 7;
     // 支付表单
     string paymentForm = 8;
 }
@@ -250,9 +250,9 @@ message SPaymentOrder {
     /** 手续费 */
     int64 procedureFee = 16;
     /** 实付金额 */
-    int64 paidFee = 17;
+    int64 paidAmount = 17;
     /** 最终应付金额 */
-    int64 finalFee = 18;
+    int64 finalAmount = 18;
     /** 可⽤支付方式  */
     int32 payFlag = 19;
     /** 实际使用支付方式 */
@@ -322,7 +322,7 @@ message SPrepareTradeData {
     /** 手续费 */
     int64 procedureFee = 8;
     /** 最终支付金额 */
-    int64 finalFee = 9;
+    int64 finalAmount = 9;
 }
 
 /** 支付单数据 */
@@ -338,7 +338,7 @@ message SPaymentOrderData {
     /** 手续费 */
     int64 procedureFee = 5;
     /** 最终支付金额 */
-    int64 finalFee = 6;
+    int64 finalAmount = 6;
 }
 
 /** 集成支付应用编号 */

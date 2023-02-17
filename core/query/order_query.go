@@ -260,7 +260,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId, begin, size int64, pag
 				//}
 				//rs.Scan(&e.Id, &e.OrderNo, &e.VendorId, &e.ShopId,
 				//	&e.ShopName, &e.ItemAmount, &e.DiscountAmount, &e.ExpressFee,
-				//	&e.PackageFee, &e.FinalFee, &e.IsPaid, &e.State,
+				//	&e.PackageFee, &e.FinalAmount, &e.IsPaid, &e.State,
 				//	&e.CreateTime)
 				//e.StateText = order.OrderState(e.State).String()
 				//orderList = append(orderList, e)

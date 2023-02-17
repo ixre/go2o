@@ -124,14 +124,14 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 	return rs, nil
 	*/
 	_, rd, err := s.manager.SubmitOrder(order.SubmitOrderData{
-		Type:            order.OrderType(r.OrderType),
-		BuyerId:         r.BuyerId,
-		AddressId:       r.AddressId,
-		Subject:         r.Subject,
-		CouponCode:      r.CouponCode,
-		BalanceDiscount: r.BalanceDiscount,
-		AffiliateCode:   r.AffiliateCode,
-		PostedData:      iData,
+		Type:          order.OrderType(r.OrderType),
+		BuyerId:       r.BuyerId,
+		AddressId:     r.AddressId,
+		Subject:       r.Subject,
+		CouponCode:    r.CouponCode,
+		BalanceDeduct: r.BalanceDeduct,
+		AffiliateCode: r.AffiliateCode,
+		PostedData:    iData,
 	})
 	ret := &proto.OrderSubmitResponse{}
 	if err != nil {
@@ -304,7 +304,7 @@ func (s *orderServiceImpl) TradeOrderUpdateTicket(_ context.Context, r *proto.Tr
 // CancelOrder 取消订单
 func (s *orderServiceImpl) CancelOrder(_ context.Context, r *proto.CancelOrderRequest) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
-	err := c.Cancel(r.IsBuyerCancel,r.Reason)
+	err := c.Cancel(r.IsBuyerCancel, r.Reason)
 	return s.error(err), nil
 }
 

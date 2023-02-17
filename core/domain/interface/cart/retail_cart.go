@@ -73,7 +73,7 @@ type RetailCartItem struct {
 	// 调整金额
 	AdjustAmount int64 `db:"adjust_amount"`
 	// 最终价
-	FinalFee int64 `db:"final_fee"`
+	FinalAmount int64 `db:"final_fee"`
 	// 是否勾选结算
 	Checked int `db:"checked"`
 }

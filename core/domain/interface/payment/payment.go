@@ -65,15 +65,15 @@ var (
 	ErrPaymentNotSave = domain.NewError(
 		"err_payment_not_save", "支付单需存后才能执行操作")
 
-	ErrFinalFee = domain.NewError(
-		"err_final_fee", "支付单金额有误")
+	ErrFinalAmount = domain.NewError(
+		"err_final_amount", "支付单金额有误")
 
 	ErrNotSupportPaymentChannel = domain.NewError(
 		"err_payment_not_support_channel", "不支持此支付方式,无法完成付款")
-	ErrItemAmount    = domain.NewError("err_payment_item_amount", "支付单金额不能为零")
-	ErrOutOfFinalFee = domain.NewError("err_out_of_final_fee",
+	ErrItemAmount       = domain.NewError("err_payment_item_amount", "支付单金额不能为零")
+	ErrOutOfFinalAmount = domain.NewError("err_out_of_final_amount",
 		"超出支付单金额")
-	ErrNotMatchFinalFee = domain.NewError("err_not_match_final_fee",
+	ErrNotMatchFinalAmount = domain.NewError("err_not_match_final_amount",
 		"金额与实际金额不符，无法完成付款")
 	ErrTradeNoPrefix = domain.NewError(
 		"err_payment_trade_no_prefix", "支付单号前缀不正确")
@@ -123,7 +123,7 @@ type (
 		// Submit 提交支付单
 		Submit() error
 		// MergePay 合并支付
-		MergePay(orders []IPaymentOrder) (mergeTradeNo string, finalFee int, err error)
+		MergePay(orders []IPaymentOrder) (mergeTradeNo string, finalAmount int, err error)
 		// Cancel 取消支付
 		Cancel() error
 		// OfflineDiscount 线下现金/刷卡支付,cash:现金,bank:刷卡金额,finalZero:是否金额必须为零
@@ -235,9 +235,9 @@ type (
 		// 手续费
 		ProcedureFee int64 `db:"procedure_fee"`
 		// 最终支付金额，包含手续费，不包含抵扣金额
-		FinalFee int64 `db:"final_fee"`
+		FinalAmount int64 `db:"final_fee"`
 		// 实付金额
-		PaidFee int64 `db:"paid_fee"`
+		PaidAmount int64 `db:"paid_amount"`
 		// 可⽤支付方式
 		PayFlag int `db:"pay_flag"`
 		// 实际支付方式

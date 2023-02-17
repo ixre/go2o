@@ -244,7 +244,7 @@ message SubmitOrderRequest {
     // 推广返利用户代码
     string affiliateCode = 6;
     // 是否使用余额抵扣
-    bool balanceDiscount = 7;
+    bool balanceDeduct = 7;
     // 其他数据
     map<string, string> data = 8;
     // 交易类订单请求参数
@@ -275,9 +275,9 @@ message SubmitNormalOrderV2Request {
     // 优惠券
     string couponCode = 5;
     // 是否使用余额抵扣
-    bool balanceDiscount = 6;
+    bool balanceDeduct = 6;
     // 推广返利用户代码
-    string AffiliateCode = 7;
+    string affiliateCode = 7;
 }
 
 // 订单提交返回数据
@@ -412,7 +412,7 @@ message PrepareOrderResponse{
     // 订单总金额
     int32 totalAmount = 11;
     // 最终金额
-    int64 finalFee = 12;
+    int64 finalAmount = 12;
     // 收货人
     SConsigneeInfo consignee = 13;
     // 订单项目

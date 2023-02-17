@@ -533,7 +533,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		DiscountAmount: disAmount,
 		DeductAmount:   0,
 		AdjustAmount:   0,
-		FinalFee:       finalAmount,
+		FinalAmount:    finalAmount,
 		TotalAmount:    finalAmount,
 		PayFlag:        payment.PAllFlag,
 		TradeChannel:   0,
@@ -596,7 +596,7 @@ func (o *normalOrderImpl) applyCartPromotionOnSubmit(cart cart.ICart) ([]promoti
 	//var prom promotion.IPromotion
 	//var saveFee int
 	var totalSaveFee int
-	//var intOrderFee = int(vo.FinalFee)
+	//var intOrderFee = int(vo.FinalAmount)
 	//var rightBack bool
 	//
 	//for _, v := range cart.GetCartGoods() {

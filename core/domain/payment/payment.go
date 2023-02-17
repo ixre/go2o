@@ -92,14 +92,14 @@ func (p *paymentOrderImpl) Submit() error {
 }
 
 // MergePay 合并支付
-func (p *paymentOrderImpl) MergePay(orders []payment.IPaymentOrder) (mergeTradeNo string, finalFee int, err error) {
+func (p *paymentOrderImpl) MergePay(orders []payment.IPaymentOrder) (mergeTradeNo string, finalAmount int, err error) {
 	if err := p.CheckPaymentState(); err != nil { // 验证支付单是否可以支付
 		return "", 0, err
 	}
 	if len(orders) == 0 {
 		return "", 0, errors.New("will be merge trade orders is nil")
 	}
-	finalFee = int(p.value.FinalFee)
+	finalAmount = int(p.value.FinalAmount)
 	tradeOrders := []string{p.TradeNo()}
 	for _, v := range orders {
 		// 检查支付单状态
@@ -107,7 +107,7 @@ func (p *paymentOrderImpl) MergePay(orders []payment.IPaymentOrder) (mergeTradeN
 			return "", 0, err
 		}
 		// 统计支付总金额
-		finalFee += int(v.Get().FinalFee)
+		finalAmount += int(v.Get().FinalAmount)
 		tradeOrders = append(tradeOrders, v.TradeNo())
 	}
 	// 清除欲合并的支付单
@@ -117,7 +117,7 @@ func (p *paymentOrderImpl) MergePay(orders []payment.IPaymentOrder) (mergeTradeN
 		mergeTradeNo = "MG" + p.TradeNo()
 		err = p.repo.SaveMergePaymentOrders(mergeTradeNo, tradeOrders)
 	}
-	return mergeTradeNo, finalFee, err
+	return mergeTradeNo, finalAmount, err
 }
 
 // 准备提交支付单
@@ -140,8 +140,8 @@ func (p *paymentOrderImpl) CheckPaymentState() error {
 	}
 	switch p.value.State {
 	case payment.StateAwaitingPayment:
-		if p.value.FinalFee == 0 {
-			return payment.ErrFinalFee
+		if p.value.FinalAmount == 0 {
+			return payment.ErrFinalAmount
 		}
 	case payment.StateFinished:
 		return payment.ErrOrderPayed
@@ -152,7 +152,7 @@ func (p *paymentOrderImpl) CheckPaymentState() error {
 }
 
 // 检查是否支付完成, 且返回是否为第一次支付成功,
-func (p *paymentOrderImpl) checkOrderFinalFee() error {
+func (p *paymentOrderImpl) checkOrderFinalAmount() error {
 	if p.value.State == payment.StateAwaitingPayment {
 		if p.value.ItemAmount <= 0 { // 检查支付金额
 			return payment.ErrItemAmount
@@ -160,10 +160,10 @@ func (p *paymentOrderImpl) checkOrderFinalFee() error {
 		// 修正支付单共计金额
 		p.value.TotalAmount = p.value.ItemAmount - p.value.DiscountAmount + p.value.AdjustAmount
 		// 修正支付单金额
-		p.value.FinalFee = p.value.ItemAmount - p.value.DeductAmount + p.value.ProcedureFee
+		p.value.FinalAmount = p.value.ItemAmount - p.value.DeductAmount + p.value.ProcedureFee
 		unix := time.Now().Unix()
 		// 如果支付完成,则更新订单状态
-		if p.value.FinalFee == 0 {
+		if p.value.FinalAmount == 0 {
 			p.value.State = payment.StateFinished
 			p.firstFinishPayment = true
 		}
@@ -216,11 +216,11 @@ func (p *paymentOrderImpl) OfflineDiscount(cash int, bank int, finalZero bool) e
 	if !p.andMethod(p.value.PayFlag, payment.MBankCard) {
 		return payment.ErrNotSupportPaymentChannel
 	}
-	if int64(cash+bank) > p.value.FinalFee {
-		return payment.ErrOutOfFinalFee
+	if int64(cash+bank) > p.value.FinalAmount {
+		return payment.ErrOutOfFinalAmount
 	}
-	if finalZero && p.value.FinalFee > int64(cash+bank) {
-		return payment.ErrNotMatchFinalFee
+	if finalZero && p.value.FinalAmount > int64(cash+bank) {
+		return payment.ErrNotMatchFinalAmount
 	}
 	p.value.DeductAmount += int64(cash + bank)
 	var err error
@@ -263,7 +263,7 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 		return payment.ErrOrderCancelled
 	}
 	p.value.State = payment.StateFinished
-	p.value.OutTradeSp =spName
+	p.value.OutTradeSp = spName
 	p.value.OutTradeNo = outerNo
 	p.value.PaidTime = time.Now().Unix()
 	p.firstFinishPayment = true
@@ -295,7 +295,7 @@ func (p *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
 	}
 	p.coupons = append(p.coupons, coupon)
 	// 支付金额应减去立减和系统支付的部分
-	fee := p.value.FinalFee
+	fee := p.value.FinalAmount
 	for _, v := range p.coupons {
 		p.value.DiscountAmount += int64(v.GetCouponFee(int(fee)) * 100)
 	}
@@ -305,12 +305,12 @@ func (p *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
 
 // 应用余额支付
 func (p *paymentOrderImpl) getBalanceDiscountAmount(acc member.IAccount) int64 {
-	if p.value.FinalFee <= 0 {
+	if p.value.FinalAmount <= 0 {
 		return 0
 	}
 	acv := acc.GetValue()
-	if acv.Balance >= p.value.FinalFee {
-		return p.value.FinalFee
+	if acv.Balance >= p.value.FinalAmount {
+		return p.value.FinalAmount
 	}
 	return acv.Balance
 }
@@ -379,8 +379,8 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 	// 判断扣减金额是否大于0
 	amount = p.getIntegralExchangeAmount(integral)
 	// 如果不忽略超出订单支付金额的积分,那么按实际来抵扣
-	if !ignoreAmount && int64(amount) > p.value.FinalFee {
-		amount = int(p.value.FinalFee)
+	if !ignoreAmount && int64(amount) > p.value.FinalAmount {
+		amount = int(p.value.FinalAmount)
 		dic := p.registryRepo.Get(registry.IntegralDiscountQuantity).IntValue()
 		integral = int(float32(amount) * float32(dic))
 	}
@@ -460,7 +460,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	// 如果余额够支付，则优先余额支付
-	if acc.Balance >= v.FinalFee {
+	if acc.Balance >= v.FinalAmount {
 		return p.BalanceDiscount(remark)
 	}
 	// 判断是否能钱包支付
@@ -468,7 +468,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	// 判断是否余额不足
-	if acc.Balance+acc.WalletBalance < v.FinalFee {
+	if acc.Balance+acc.WalletBalance < v.FinalAmount {
 		return payment.ErrNotEnoughAmount
 	}
 	err := p.BalanceDiscount(remark)
@@ -487,7 +487,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 	if buyer == nil {
 		return member.ErrNoSuchMember
 	}
-	amount := p.value.FinalFee
+	amount := p.value.FinalAmount
 	// 判断并从钱包里扣款
 	acc := buyer.GetAccount()
 	if acc.GetValue().WalletBalance < amount {
@@ -522,7 +522,7 @@ func (p *paymentOrderImpl) SetTradeSP(spName string) error {
 
 func (p *paymentOrderImpl) saveOrder() error {
 	// 检查支付单
-	err := p.checkOrderFinalFee()
+	err := p.checkOrderFinalAmount()
 	if err == nil {
 		p.value.UpdateTime = time.Now().Unix()
 		p.value.Id, err = p.repo.SavePaymentOrder(p.value)
@@ -582,9 +582,9 @@ func (p *paymentOrderImpl) Refund(amount int) (err error) {
 // 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
 func (p *paymentOrderImpl) Adjust(amount int) error {
 	p.value.AdjustAmount += int64(amount)
-	p.value.FinalFee += int64(amount)
-	if p.value.FinalFee <= 0 {
-		return p.checkOrderFinalFee()
+	p.value.FinalAmount += int64(amount)
+	if p.value.FinalAmount <= 0 {
+		return p.checkOrderFinalAmount()
 	}
 	return p.saveOrder()
 }

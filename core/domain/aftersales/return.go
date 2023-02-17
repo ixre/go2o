@@ -208,8 +208,8 @@ func (r *returnOrderImpl) backAmount(amount int) error {
 	if pv.IntegralDiscount > 0 {
 	}
 	//多退少补
-	if pv.FinalFee > amount {
-		amount = pv.FinalFee
+	if pv.FinalAmount > amount {
+		amount = pv.FinalAmount
 	}
 	//退到钱包账户
 	if pv.PaymentSign == payment.SignWalletAccount {
