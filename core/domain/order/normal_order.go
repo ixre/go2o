@@ -517,9 +517,13 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 // 为所有子订单生成支付单
 func (o *normalOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.baseValue
+	// 计算订单金额
 	itemAmount := v.ItemAmount + v.ExpressFee + v.PackageFee
 	finalAmount := v.FinalAmount
-	disAmount := v.DiscountAmount
+	discountAmount := v.DiscountAmount
+	// 计算订单超时时间
+	expiresMiniutes := o.registryRepo.Get(registry.OrderPaymentOverMinutes).IntValue()
+	expiresTime := v.CreateTime + int64(expiresMiniutes)*60
 	po := &payment.Order{
 		SellerId:       0,
 		TradeNo:        v.OrderNo,
@@ -528,9 +532,9 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		OutOrderNo:     v.OrderNo,
 		Subject:        v.Subject,
 		BuyerId:        v.BuyerId,
-		PayUid:         v.BuyerId,
+		PayerId:        v.BuyerId,
 		ItemAmount:     itemAmount,
-		DiscountAmount: disAmount,
+		DiscountAmount: discountAmount,
 		DeductAmount:   0,
 		AdjustAmount:   0,
 		FinalAmount:    finalAmount,
@@ -542,7 +546,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		OutTradeNo:     "",
 		State:          payment.StateAwaitingPayment,
 		SubmitTime:     v.CreateTime,
-		ExpiresTime:    0,
+		ExpiresTime:    expiresTime,
 		PaidTime:       0,
 		UpdateTime:     v.CreateTime,
 		TradeMethods:   []*payment.TradeMethodData{},

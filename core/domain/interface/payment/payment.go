@@ -221,7 +221,7 @@ type (
 		// 买家编号
 		BuyerId int64 `db:"buyer_id"`
 		// 支付用户编号
-		PayUid int64 `db:"pay_uid"`
+		PayerId int64 `db:"payer_id"`
 		// 商品金额
 		ItemAmount int64 `db:"item_amount"`
 		// 优惠金额
@@ -254,7 +254,7 @@ type (
 		State int `db:"state"`
 		// 提交时间
 		SubmitTime int64 `db:"submit_time"`
-		// 过期时间
+		// 支付过期时间
 		ExpiresTime int64 `db:"expires_time"`
 		// 支付时间
 		PaidTime int64 `db:"paid_time"`

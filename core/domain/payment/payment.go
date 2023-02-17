@@ -128,8 +128,8 @@ func (p *paymentOrderImpl) prepareSubmit() {
 	// 初始化状态
 	p.value.State = payment.StateAwaitingPayment
 	// 初始化支付用户编号
-	if p.value.PayUid <= 0 {
-		p.value.PayUid = p.value.BuyerId
+	if p.value.PayerId <= 0 {
+		p.value.PayerId = p.value.BuyerId
 	}
 }
 
@@ -316,8 +316,8 @@ func (p *paymentOrderImpl) getBalanceDiscountAmount(acc member.IAccount) int64 {
 }
 
 func (p *paymentOrderImpl) getPaymentUser() member.IMember {
-	if p.paymentUser == nil && p.value.PayUid > 0 {
-		p.paymentUser = p.memberRepo.GetMember(p.value.PayUid)
+	if p.paymentUser == nil && p.value.PayerId > 0 {
+		p.paymentUser = p.memberRepo.GetMember(p.value.PayerId)
 	}
 	return p.paymentUser
 }

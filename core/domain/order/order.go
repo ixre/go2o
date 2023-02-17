@@ -62,13 +62,14 @@ type orderItem struct {
 var _ order.IOrder = new(baseOrderImpl)
 
 type baseOrderImpl struct {
-	baseValue  *order.Order
-	buyer      member.IMember
-	repo       order.IOrderRepo
-	memberRepo member.IMemberRepo
-	itemRepo   item.IItemRepo
-	manager    order.IOrderManager
-	complex    *order.ComplexOrder
+	baseValue    *order.Order
+	buyer        member.IMember
+	repo         order.IOrderRepo
+	memberRepo   member.IMemberRepo
+	itemRepo     item.IItemRepo
+	manager      order.IOrderManager
+	complex      *order.ComplexOrder
+	registryRepo registry.IRegistryRepo
 }
 
 // GetAggregateRootId 获取编号
@@ -237,6 +238,9 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 	}
 	buyerId := o.Buyer().GetAggregateRootId()
 	unix := time.Now().Unix()
+	// 计算订单超时时间
+	expiresMiniutes := o.registryRepo.Get(registry.OrderPaymentOverMinutes).IntValue()
+	expiresTime := unix + int64(expiresMiniutes)*60
 	v2 := &payment.Order{
 		Id:             0,
 		SellerId:       0,
@@ -247,7 +251,7 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 		OutOrderNo:     o.OrderNo(),
 		Subject:        "支付订单",
 		BuyerId:        buyerId,
-		PayUid:         buyerId,
+		PayerId:        buyerId,
 		TotalAmount:    0,
 		DiscountAmount: 0,
 		DeductAmount:   0,
@@ -260,7 +264,7 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 		OutTradeNo:     "",
 		State:          payment.StateAwaitingPayment,
 		SubmitTime:     unix,
-		ExpiresTime:    0,
+		ExpiresTime:    expiresTime,
 		PaidTime:       0,
 		UpdateTime:     unix,
 		TradeMethods:   make([]*payment.TradeMethodData, 0),
@@ -278,11 +282,12 @@ func FactoryOrder(v *order.Order, manager order.IOrderManager,
 	shopRepo shop.IShopRepo, valRepo valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo) order.IOrder {
 	b := &baseOrderImpl{
-		baseValue:  v,
-		repo:       repo,
-		itemRepo:   itemRepo,
-		memberRepo: memberRepo,
-		manager:    manager,
+		baseValue:    v,
+		repo:         repo,
+		itemRepo:     itemRepo,
+		memberRepo:   memberRepo,
+		manager:      manager,
+		registryRepo: registryRepo,
 	}
 	t := order.OrderType(v.OrderType)
 	switch t {

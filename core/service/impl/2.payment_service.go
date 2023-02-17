@@ -132,7 +132,7 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 		return p.result(err), nil
 	}
 	// 合并支付单支付
-	payUid := arr[0].Get().PayUid
+	payUid := arr[0].Get().PayerId
 	var finalAmount int64 = 0
 	for _, v := range arr {
 		finalAmount += v.Get().FinalAmount
@@ -229,7 +229,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 			TradeType:    iv.TradeType,
 			State:        int32(iv.State),
 			ProcedureFee: iv.ProcedureFee,
-			FinalAmount:     iv.FinalAmount,
+			FinalAmount:  iv.FinalAmount,
 		}
 		// 更新支付状态
 		if so.State != payment.StateAwaitingPayment {
@@ -242,7 +242,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 		// 更新支付金额
 		d.TradeOrders = append(d.TradeOrders, so)
 		d.ProcedureFee += so.ProcedureFee // 手续费
-		d.FinalAmount += so.FinalAmount         // 最终金额
+		d.FinalAmount += so.FinalAmount   // 最终金额
 		d.TotalAmount += iv.TotalAmount   // 累计金额
 	}
 	d.ErrCode = 0
@@ -277,7 +277,7 @@ func (p *paymentService) GatewayV2(_ context.Context, r *proto.PayGatewayV2Reque
 	for _, ip := range arr {
 		iv := ip.Get()
 		ret.ProcedureFee += iv.ProcedureFee // 手续费
-		ret.FinalAmount += iv.FinalAmount      // 最终金额
+		ret.FinalAmount += iv.FinalAmount   // 最终金额
 		ret.TotalAmount += iv.TotalAmount   // 累计金额
 	}
 	return &ret, nil
@@ -298,7 +298,7 @@ func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Or
 		OutOrderNo:     src.OutOrderNo,
 		Subject:        src.Subject,
 		BuyerId:        src.BuyerId,
-		PayUid:         src.PayUid,
+		PayerId:        src.PayerId,
 		TotalAmount:    src.TotalAmount,
 		DiscountAmount: src.DiscountAmount,
 		DeductAmount:   src.DeductAmount,
@@ -306,7 +306,7 @@ func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Or
 		ItemAmount:     src.ItemAmount,
 		ProcedureFee:   src.ProcedureFee,
 		FinalAmount:    src.FinalAmount,
-		PaidAmount:        src.PaidAmount,
+		PaidAmount:     src.PaidAmount,
 		PayFlag:        int(src.PayFlag),
 		FinalFlag:      int(src.FinalFlag),
 		ExtraData:      src.ExtraData,
@@ -330,15 +330,15 @@ func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymen
 		TradeNo:        src.TradeNo,
 		Subject:        src.Subject,
 		BuyerId:        src.BuyerId,
-		PayUid:         src.PayUid,
+		PayerId:        src.PayerId,
 		TotalAmount:    src.TotalAmount,
 		DiscountAmount: src.DiscountAmount,
 		DeductAmount:   src.DeductAmount,
 		AdjustAmount:   src.AdjustAmount,
 		ItemAmount:     src.ItemAmount,
 		ProcedureFee:   src.ProcedureFee,
-		FinalAmount:       src.FinalAmount,
-		PaidAmount:        src.PaidAmount,
+		FinalAmount:    src.FinalAmount,
+		PaidAmount:     src.PaidAmount,
 		PayFlag:        int32(src.PayFlag),
 		FinalFlag:      int32(src.FinalFlag),
 		ExtraData:      src.ExtraData,

@@ -6,3 +6,6 @@ ALTER TABLE IF EXISTS public.pay_order
 
 ALTER TABLE IF EXISTS public.pay_order
     RENAME paid_fee TO paid_amount;
+
+ALTER TABLE IF EXISTS public.pay_order
+    RENAME pay_uid TO payer_id;

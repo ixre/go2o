@@ -236,7 +236,7 @@ message SPaymentOrder {
     /** 买家编号 */
     int64 buyerId = 9;
     /** 支付用户编号 */
-    int64 payUid = 10;
+    int64 payerId = 10;
     /** 商品金额 */
     int64 itemAmount = 11;
     /** 优惠金额  */
