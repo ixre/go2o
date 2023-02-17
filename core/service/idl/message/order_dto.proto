@@ -62,18 +62,20 @@ message SOrderItem {
     int64 price = 7;
     // 商品实际单价
     int64 finalPrice = 8;
+    // 商品规格
+    string itemSpec = 9;
     // 商品数量
-    int32 quantity = 9;
+    int32 quantity = 10;
     // 退货数量
-    int32 returnQuantity = 10;
+    int32 returnQuantity = 11;
     // 商品总金额
-    int64 itemAmount = 11;
+    int64 itemAmount = 12;
     // 商品实际总金额
-    int64 finalAmount = 12;
+    int64 finalAmount = 13;
     // 是否已发货
-    bool isShipped = 13;
+    bool isShipped = 14;
     // 其他信息
-    map<string, string> data = 14;
+    map<string, string> data = 15;
 }
 
 message SParentOrder {

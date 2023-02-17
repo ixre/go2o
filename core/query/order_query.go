@@ -379,7 +379,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfVendor(vendorId int64, begin, size int
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*proto.SSingleOrder) {
+func (o *OrderQuery) PagingTradeOrderOfBuyer(memberId, begin, size int64, pagination bool, where, orderBy string) (int, []*proto.SSingleOrder) {
 	d := o.Connector
 	var orderList []*proto.SSingleOrder
 	num := 0
@@ -501,7 +501,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 func (o *OrderQuery) queryNormalOrderItems(idArr []string) []*dto.OrderItem {
 	list := make([]*dto.OrderItem, 0)
 	// 查询分页订单的Item
-	_ = o.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,
+	_ = o.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku,sn.sku_id,
             sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,si.amount,si.final_amount,
             si.is_shipped FROM sale_order_item si INNER JOIN item_trade_snapshot sn
             ON sn.id=si.snap_id WHERE si.order_id IN (%s)
@@ -510,7 +510,8 @@ func (o *OrderQuery) queryNormalOrderItems(idArr []string) []*dto.OrderItem {
 		func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.OrderItem{}
-				_ = rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.ItemTitle,
+				_ = rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId,
+					&e.ItemSpec, &e.SkuId, &e.ItemTitle,
 					&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
 				e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
 				e.Image = format.GetGoodsImageUrl(e.Image)
