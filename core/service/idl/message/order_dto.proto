@@ -63,7 +63,7 @@ message SOrderItem {
     // 商品实际单价
     int64 finalPrice = 8;
     // 商品规格
-    string itemSpec = 9;
+    string specWord = 9;
     // 商品数量
     int32 quantity = 10;
     // 退货数量
@@ -276,8 +276,10 @@ message SubmitNormalOrderV2Request {
     string couponCode = 5;
     // 是否使用余额抵扣
     bool balanceDeduct = 6;
+    // 是否使用钱包抵扣
+    bool walletDeduct = 7;
     // 推广返利用户代码
-    string affiliateCode = 7;
+    string affiliateCode = 8;
 }
 
 // 订单提交返回数据
@@ -417,8 +419,18 @@ message PrepareOrderResponse{
     SConsigneeInfo consignee = 13;
     // 订单项目
     repeated SPrepareOrderGroup sellers = 14;
+    // 买家信息
+    SPrepareOrderBuyerResponse buyer = 15;
     // 买家留言
-    string buyerComment = 15;
+    string buyerComment = 16;
+}
+
+// 预生成订单买家信息
+message SPrepareOrderBuyerResponse{
+    // 商城余额
+    sint64 balance = 1;
+    // 钱包余额
+    sint64 walletBalance = 2;
 }
 
 // 预生成订单店铺分组

@@ -190,7 +190,7 @@ func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberP
 			Id:             int64(it.Id),
 			SnapshotId:     int64(it.SnapshotId),
 			SkuId:          int64(it.SkuId),
-			ItemSpec:       it.ItemSpec,
+			SpecWord:       it.SpecWord,
 			ItemId:         int64(it.ItemId),
 			ItemTitle:      it.ItemTitle,
 			Image:          it.Image,
@@ -205,25 +205,6 @@ func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberP
 		})
 	}
 	return dst
-}
-
-func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
-	return &proto.SOrderItem{
-		Id:             int64(v.Id),
-		SnapshotId:     int64(v.SnapshotId),
-		SkuId:          int64(v.SkuId),
-		ItemId:         int64(v.ItemId),
-		ItemTitle:      v.ItemTitle,
-		Image:          v.Image,
-		Price:          v.Price,
-		FinalPrice:     v.FinalPrice,
-		Quantity:       int32(v.Quantity),
-		ReturnQuantity: int32(v.ReturnQuantity),
-		ItemAmount:     v.Amount,
-		FinalAmount:    v.FinalAmount,
-		IsShipped:      v.IsShipped == 1,
-		Data:           nil,
-	}
 }
 
 func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SMemberPagingOrder {

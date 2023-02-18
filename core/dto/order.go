@@ -94,7 +94,7 @@ type (
 		// 商品快照编号
 		SnapshotId int `json:"snapshotId"`
 		// Sku规格
-		ItemSpec string `json:"itemSpec"`
+		SpecWord string `json:"specWord"`
 		// Sku编号
 		SkuId int `json:"skuId"`
 		// 商品编号

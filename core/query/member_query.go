@@ -147,11 +147,11 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 	//rows = make([]*proto.SMemberAccountLog,0)
 
 	if num > 0 {
-		sqlLine := fmt.Sprintf(`SELECT id,kind,title,outer_no,change_value,procedure_fee,
+		sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,procedure_fee,
 			balance,audit_state,create_time FROM wal_wallet_log 
 			WHERE wallet_id = $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)
-		d.Query(sqlLine, func(_rows *sql.Rows) {
+		err := d.Query(sqlLine, func(_rows *sql.Rows) {
 			for _rows.Next() {
 				e := proto.SMemberAccountLog{}
 				_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
@@ -160,6 +160,9 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 				rows = append(rows, &e)
 			}
 		}, walletId, begin, end-begin)
+		if err != nil {
+			log.Println("[ GO2O][ ERROR]: query wallet log", err.Error())
+		}
 	}
 	return num, rows
 }
@@ -391,9 +394,10 @@ func (m *MemberQuery) InviteMembersQuantity(memberId int64, where string) int {
 // 获取订单状态及其数量
 func (m *MemberQuery) OrdersQuantity(memberId int64) map[int]int {
 	mp := make(map[int]int, 0)
-	m.Connector.Query(`SELECT o.status,COUNT(0) as n FROM sale_sub_order o
-	INNER JOIN order_list po ON o.order_id = po.id 
-	GROUP BY o.status,o.buyer_id having o.buyer_id= $1`, func(rows *sql.Rows) {
+	m.Connector.Query(`
+	SELECT o.status,COUNT(0) as n FROM sale_sub_order o
+	GROUP BY o.status,o.buyer_id,is_forbidden
+	having is_forbidden = 0 AND o.buyer_id = $1`, func(rows *sql.Rows) {
 		s, n := 0, 0
 		for rows.Next() {
 			rows.Scan(&s, &n)
