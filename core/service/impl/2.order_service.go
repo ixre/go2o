@@ -22,6 +22,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
@@ -175,19 +176,38 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 	ov := o.Complex()
 
 	// 使用余额
-	if r.PaymentFlag&payment.MBalance == payment.MBalance {
+	buyer := &proto.SPrepareOrderBuyerResponse{}
+	if fb, fw := domain.TestFlag(int(r.PaymentFlag), payment.MBalance),
+		domain.TestFlag(int(r.PaymentFlag), payment.MWallet); fb || fw {
 		acc := s.memberRepo.GetMember(r.BuyerId).GetAccount()
 		balance := acc.GetValue().Balance
-		if balance >= ov.FinalAmount {
-			ov.DiscountAmount = ov.FinalAmount
-			ov.FinalAmount = 0
-		} else {
-			ov.DiscountAmount = balance
-			ov.FinalAmount -= balance
+		walletBalance := acc.GetValue().WalletBalance
+		buyer.Balance = balance
+		buyer.WalletBalance = walletBalance
+		// 更新抵扣余额之后的金额
+		if fb {
+			if balance >= ov.FinalAmount {
+				ov.DiscountAmount = ov.FinalAmount
+				ov.FinalAmount = 0
+			} else {
+				ov.DiscountAmount = balance
+				ov.FinalAmount -= balance
+			}
+		}
+		// 更新抵扣钱包余额之后的金额
+		if fw {
+			if walletBalance >= ov.FinalAmount {
+				ov.DiscountAmount = ov.FinalAmount
+				ov.FinalAmount = 0
+			} else {
+				ov.DiscountAmount = walletBalance
+				ov.FinalAmount -= walletBalance
+			}
 		}
 	}
 	rsp := parser.PrepareOrderDto(ov)
 	rsp.Sellers = s.parsePrepareItemsFromCart(ic)
+	rsp.Buyer = buyer
 	return rsp, err
 }
 
