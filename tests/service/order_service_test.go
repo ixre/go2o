@@ -20,7 +20,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 			AddressId:       1,
 			Subject:         "",
 			CouponCode:      "",
-			BalanceDiscount: false,
+			BalanceDeduct: false,
 		})
 	if err != nil {
 		t.Error(err)

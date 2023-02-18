@@ -95,7 +95,7 @@ func TestPagingShopGoodsRequest(t *testing.T) {
 }
 
 func TestMemberStatifics(t *testing.T) {
-	var memberId int64 = 699
+	var memberId int64 = 723 
 	mp, _ := impl.QueryService.MemberStatistics(context.TODO(), &proto.MemberStatisticsRequest{
 		MemberId: memberId,
 	})

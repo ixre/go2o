@@ -67,7 +67,7 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 	if size == 0 || begin < 0 {
 		return 0, orderList
 	}
-	where += fmt.Sprintf(" AND break_status <> %d", order.BreakAwaitBreak)
+	where += " AND break_status <> 0"
 	if memberId > 0 {
 		where += fmt.Sprintf(" AND buyer_id = %d", memberId)
 	}
@@ -79,7 +79,7 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 
 	if pagination {
 		err := d.ExecScalar(fmt.Sprintf(`
-			SELECT COUNT(1) FROM sale_sub_order WHERE is_forbidden = 0 %s`,
+			SELECT COUNT(1) FROM sale_sub_order WHERE is_forbidden = 0 AND %s`,
 			where), &num)
 		if err != nil {
 			log.Println("query order error", err.Error())
@@ -95,7 +95,7 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 	cmd := fmt.Sprintf(`SELECT id,order_no,buyer_id,shop_id,shop_name,express_fee,
 	item_count,final_amount,status,create_time
 	FROM sale_sub_order  
-	 WHERE is_forbidden = 0 %s %s LIMIT $2 OFFSET $1`,
+	 WHERE is_forbidden = 0 AND %s %s LIMIT $2 OFFSET $1`,
 		where, orderBy)
 	err := d.Query(cmd,
 		func(rs *sql.Rows) {

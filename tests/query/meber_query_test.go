@@ -12,7 +12,7 @@ import (
 
 func TestQueryMemberWalletLog(t *testing.T) {
 	q := query.NewMemberQuery(ti.GetOrm())
-	count, rows := q.PagedWalletAccountLog(718, 0,0, 20, "", "")
+	count, rows := q.PagedWalletAccountLog(723, 0,0, 20, "", "")
 	t.Log("count:", count)
 	t.Log(fmt.Sprintf("rows:%#v", rows))
 	t.Log(typeconv.MustJson(rows))

@@ -1,7 +1,6 @@
 package query
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/ixre/go2o/core/query"
@@ -9,11 +8,11 @@ import (
 )
 
 func TestQueryMemberNormalOrderList(t *testing.T) {
-	var memberId int64 = 659
+	var memberId int64 = 723
 	q := query.NewOrderQuery(ti.GetOrm())
-	_, orders := q.QueryPagingNormalOrder(memberId, 0, 50, false, "", "")
+	_, orders := q.QueryPagingNormalOrder(memberId, 0, 50, false, "status=1", "")
 	t.Log("count:", len(orders))
 	t.Logf("orders:%#v", orders)
-	bytes, _ := json.Marshal(orders[0])
-	t.Log(string(bytes))
+	//bytes, _ := json.Marshal(orders[0])
+	//t.Log(string(bytes))
 }
