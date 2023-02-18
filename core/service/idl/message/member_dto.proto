@@ -729,14 +729,14 @@ message AccountTransferRequest {
 }
 
 // 提现方式
-enum EWithdrawKind {
+enum EWithdrawalKind {
   ___WithdrawKind = 0;
-  // 提现到第三方账户
-  KWithdrawToThirdPart = 1;
   // 提现到银行卡
-  KWithdrawToBankCard = 22;
+  WithdrawToBankCard = 1;
+  // 提现到第三方账户
+  WithdrawToThirdPart = 2;
   // 兑换为商城余额
-  KWithdrawExchange = 23;
+  WithdrawByExchange = 3;
 }
 
 // 提现申请
@@ -748,7 +748,7 @@ message WithdrawRequest {
   // 手续费
   int64 procedureFee = 3;
   // 提现方式,21:提现并兑换到余额  22:提现到银行卡(人工提现) 23:第三方钱包
-  EWithdrawKind withdrawKind = 4;
+  EWithdrawalKind withdrawalKind = 4;
   // 银行账号或第三方支付钱包
   string accountNo = 5;
 }

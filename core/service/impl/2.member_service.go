@@ -1439,16 +1439,20 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
 	title := ""
-	switch int(r.WithdrawKind) {
-	case wallet.KWithdrawToThirdPart:
-		title = "充值到第三方账户"
-	case wallet.KWithdrawToBankCard:
+	kind := 0
+	switch int(r.WithdrawalKind) {
+	case int(proto.EWithdrawalKind_WithdrawToBankCard):
 		title = "提现到银行卡"
-	case wallet.KWithdrawExchange:
+		kind = wallet.KWithdrawToBankCard
+	case int(proto.EWithdrawalKind_WithdrawToThirdPart):
+		title = "充值到第三方账户"
+		kind = wallet.KWithdrawToThirdPart
+	case int(proto.EWithdrawalKind_WithdrawByExchange):
 		title = "提现到余额"
+		kind = wallet.KWithdrawExchange
 	}
 	acc := m.GetAccount()
-	_, tradeNo, err := acc.RequestWithdrawal(int(r.WithdrawKind), title,
+	_, tradeNo, err := acc.RequestWithdrawal(kind, title,
 		int(r.Amount), int(r.ProcedureFee), r.AccountNo)
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
