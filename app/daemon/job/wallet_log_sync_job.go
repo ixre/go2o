@@ -52,7 +52,7 @@ func writeWalletLogToClickHouse(list []*wallet.WalletLog) error {
 	conn := clickhouse.GetClickhouseConn()
 	batch, err := conn.PrepareBatch(context.TODO(),
 		`INSERT INTO go2o_wal_wallet_log (
-id,wallet_id,wallet_user,kind,title,outer_chan,
+id,wallet_id,wallet_user,kind,subject,outer_chan,
 outer_no,change_value,balance,procedure_fee,
 opr_uid,opr_name,account_no,
 account_name,bank_name,audit_state,
