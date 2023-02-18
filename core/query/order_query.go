@@ -104,7 +104,7 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 			for rs.Next() {
 				e := &dto.MemberPagingOrderDto{}
 				err := rs.Scan(&e.OrderId, &e.OrderNo, &e.BuyerId,
-					&e.ShopId, &e.ShopName, &e.ExpressFee,&e.ItemCount,
+					&e.ShopId, &e.ShopName, &e.ExpressFee, &e.ItemCount,
 					&e.FinalAmount, &e.Status, &e.CreateTime)
 				if err != nil {
 					log.Println(" normal order list scan error:", err.Error())
@@ -512,7 +512,7 @@ func (o *OrderQuery) queryNormalOrderItems(idArr []string) []*dto.OrderItem {
 			for rs.Next() {
 				e := &dto.OrderItem{}
 				_ = rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId,
-					&e.ItemSpec, &e.SkuId, &e.ItemTitle,
+					&e.SpecWord, &e.SkuId, &e.ItemTitle,
 					&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
 				e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
 				e.Image = format.GetGoodsImageUrl(e.Image)

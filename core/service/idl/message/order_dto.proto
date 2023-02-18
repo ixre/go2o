@@ -63,7 +63,7 @@ message SOrderItem {
     // 商品实际单价
     int64 finalPrice = 8;
     // 商品规格
-    string itemSpec = 9;
+    string specWord = 9;
     // 商品数量
     int32 quantity = 10;
     // 退货数量

@@ -60,7 +60,7 @@ func (c *cartImpl) init() cart.ICart {
 	// 获取购物车项
 	if c.GetAggregateRootId() > 0 {
 		if c.value.Items == nil {
-			c.value.Items = c.rep.SelectNormalCartItem("cart_id= $1",
+			c.value.Items = c.rep.SelectNormalCartItem("cart_id= $1 ORDER BY id DESC",
 				c.GetAggregateRootId())
 		}
 	}
