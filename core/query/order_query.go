@@ -67,10 +67,7 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 	if size == 0 || begin < 0 {
 		return 0, orderList
 	}
-	if where != "" {
-		where += " AND"
-	}
-	where += fmt.Sprintf(" break_status <> %d", order.BreakAwaitBreak)
+	where += fmt.Sprintf(" AND break_status <> %d", order.BreakAwaitBreak)
 	if memberId > 0 {
 		where += fmt.Sprintf(" AND buyer_id = %d", memberId)
 	}
@@ -81,7 +78,8 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 	}
 
 	if pagination {
-		err := d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM sale_sub_order WHERE %s`,
+		err := d.ExecScalar(fmt.Sprintf(`
+			SELECT COUNT(1) FROM sale_sub_order WHERE is_forbidden = 0 %s`,
 			where), &num)
 		if err != nil {
 			log.Println("query order error", err.Error())
@@ -94,11 +92,12 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 
 	//orderMap := make(map[int64]int) //存储订单编号和对象的索引
 	// 查询分页的订单
-	err := d.Query(fmt.Sprintf(`SELECT id,order_no,buyer_id,shop_id,shop_name,express_fee,
-			item_count,final_amount,status,create_time
-			FROM sale_sub_order  
-         	WHERE %s %s LIMIT $2 OFFSET $1`,
-		where, orderBy),
+	cmd := fmt.Sprintf(`SELECT id,order_no,buyer_id,shop_id,shop_name,express_fee,
+	item_count,final_amount,status,create_time
+	FROM sale_sub_order  
+	 WHERE is_forbidden = 0 %s %s LIMIT $2 OFFSET $1`,
+		where, orderBy)
+	err := d.Query(cmd,
 		func(rs *sql.Rows) {
 			i := 0
 			for rs.Next() {
@@ -117,8 +116,9 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 			}
 			_ = rs.Close()
 		}, begin, size)
+	//log.Println(cmd)
 	if err != nil {
-		log.Println("query order error", err.Error())
+		log.Println("[ GO2O][ ERROR]:query order error", err.Error())
 	}
 	// 获取子订单
 	if l := len(orderList); l > 0 {
