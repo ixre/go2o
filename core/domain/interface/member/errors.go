@@ -97,8 +97,8 @@ var (
 	ErrDeliverAddressLen = domain.NewError(
 		"err_deliver_address_len", "请填写详细的配送地址")
 
-	ErrDeliverContactPersonName = domain.NewError(
-		"err_deliver_contact_person_name", "收货人不正确")
+	ErrDeliverContactConsigneeName = domain.NewError(
+		"err_deliver_consignee_name", "收货人不正确")
 
 	ErrDeliverContactPhone = domain.NewError(
 		"err_deliver_phone_is_null", "联系人电话有误")

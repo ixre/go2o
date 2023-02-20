@@ -20,3 +20,7 @@ update sale_sub_order set item_count =
 (SELECT  coalesce(SUM(quantity),0) FROM sale_order_item 
  WHERE order_id = sale_sub_order.id)
 WHERE item_count = 0;
+
+/** 2023-02-20 更改收货地址的is_default类型 */
+ALTER TABLE public.mm_deliver_addr
+    ALTER COLUMN is_default TYPE int USING is_default::integer; 
