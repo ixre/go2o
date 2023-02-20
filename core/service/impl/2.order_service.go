@@ -177,13 +177,13 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 
 	// 使用余额
 	buyer := &proto.SPrepareOrderBuyerResponse{}
+	acc := s.memberRepo.GetMember(r.BuyerId).GetAccount()
+	buyer.Balance = acc.GetValue().Balance
+	buyer.WalletBalance = acc.GetValue().WalletBalance
 	if fb, fw := domain.TestFlag(int(r.PaymentFlag), payment.MBalance),
 		domain.TestFlag(int(r.PaymentFlag), payment.MWallet); fb || fw {
-		acc := s.memberRepo.GetMember(r.BuyerId).GetAccount()
 		balance := acc.GetValue().Balance
 		walletBalance := acc.GetValue().WalletBalance
-		buyer.Balance = balance
-		buyer.WalletBalance = walletBalance
 		// 更新抵扣余额之后的金额
 		if fb {
 			if balance >= ov.FinalAmount {
