@@ -67,7 +67,10 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 	if size == 0 || begin < 0 {
 		return 0, orderList
 	}
-	where += " AND break_status <> 0"
+	if len(where) > 0 {
+		where += " AND "
+	}
+	where += " break_status <> 0"
 	if memberId > 0 {
 		where += fmt.Sprintf(" AND buyer_id = %d", memberId)
 	}
