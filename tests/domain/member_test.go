@@ -59,12 +59,20 @@ func TestQueryMemberInviterArray(t *testing.T) {
 	log.Println(arr)
 }
 
-
-func TestMemberSaveDefaultAddress(t *testing.T){
+func TestMemberSaveDefaultAddress(t *testing.T) {
 	repo := ti.Factory.GetMemberRepo()
-	m := repo.CreateMember(&member.Member{Id: 719})	
+	m := repo.CreateMember(&member.Member{Id: 723})
 	addrList := m.Profile().GetDeliverAddress()
-	m.Profile().SetDefaultAddress(addrList[0].GetDomainId())
-	addrList = m.Profile().GetDeliverAddress()
-
+	addr := addrList[0]
+	av := addr.GetValue()
+	err := addr.SetValue(&av)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	err = m.Profile().SetDefaultAddress(addr.GetDomainId())
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 }

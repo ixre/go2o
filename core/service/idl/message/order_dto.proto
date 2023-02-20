@@ -62,18 +62,20 @@ message SOrderItem {
     int64 price = 7;
     // 商品实际单价
     int64 finalPrice = 8;
+    // 商品规格
+    string specWord = 9;
     // 商品数量
-    int32 quantity = 9;
+    int32 quantity = 10;
     // 退货数量
-    int32 returnQuantity = 10;
+    int32 returnQuantity = 11;
     // 商品总金额
-    int64 itemAmount = 11;
+    int64 itemAmount = 12;
     // 商品实际总金额
-    int64 finalAmount = 12;
+    int64 finalAmount = 13;
     // 是否已发货
-    bool isShipped = 13;
+    bool isShipped = 14;
     // 其他信息
-    map<string, string> data = 14;
+    map<string, string> data = 15;
 }
 
 message SParentOrder {
@@ -195,12 +197,14 @@ message SSingleOrder {
     sint32 status = 22;
     // 下单时间
     sint64 submitTime = 23;
-    //sint64 updateTime = 21;
+    // 商品详情
     repeated SOrderItem items = 24;
+    // 支付交易号
+    string paymentTradeNo = 25;
     // 扩展信息
-    map<string, string> data = 25;
+    map<string, string> data = 26;
     // 更新时间
-    int64 updateTime = 26;
+    int64 updateTime = 27;
     // 是否为子订单
     //bool SubOrder = 27;
 }
@@ -238,9 +242,9 @@ message SubmitOrderRequest {
     // 优惠券
     string couponCode = 5;
     // 推广返利用户代码
-    string AffiliateCode = 6;
+    string affiliateCode = 6;
     // 是否使用余额抵扣
-    bool balanceDiscount = 7;
+    bool balanceDeduct = 7;
     // 其他数据
     map<string, string> data = 8;
     // 交易类订单请求参数
@@ -271,9 +275,11 @@ message SubmitNormalOrderV2Request {
     // 优惠券
     string couponCode = 5;
     // 是否使用余额抵扣
-    bool balanceDiscount = 6;
+    bool balanceDeduct = 6;
+    // 是否使用钱包抵扣
+    bool walletDeduct = 7;
     // 推广返利用户代码
-    string AffiliateCode = 7;
+    string affiliateCode = 8;
 }
 
 // 订单提交返回数据
@@ -391,30 +397,34 @@ message PrepareOrderResponse{
     string errMsg = 2;
     // 订单类型
     int32 orderType = 3;
-    // 商品总金额
-    int64 itemAmount = 4;
-    // 优惠金额
-    int64 discountAmount = 5;
-    // 抵扣金额
-    int32 deductAmount = 6;
-    // 调整金额
-    int32 adjustAmount = 7;
-    // 配送费
-    int64 expressFee = 8;
-    // 包装费
-    int64 packageFee = 9;
-    // 手续费
-    int32 procedureFee = 10;
-    // 订单总金额
-    int32 totalAmount = 11;
-    // 最终金额
-    int64 finalFee = 12;
-    // 收货人
-    SConsigneeInfo consignee = 13;
     // 订单项目
-    repeated SPrepareOrderGroup sellers = 14;
-    // 买家留言
-    string buyerComment = 15;
+    repeated SPrepareOrderGroup sellers = 4;
+    // 收货人
+    SConsigneeInfo consignee = 5;
+    // 商品总金额
+    int64 itemAmount = 6;
+    // 优惠金额
+    int64 discountAmount = 7;
+    // 抵扣金额
+    int32 deductAmount = 8;
+    // 调整金额
+    int32 adjustAmount = 9;
+    // 配送费
+    int64 expressFee = 10;
+    // 包装费
+    int64 packageFee = 11;
+    // 手续费
+    int32 procedureFee = 12;
+    // 订单总金额
+    int32 totalAmount = 13;
+    // 最终金额
+    int64 finalAmount = 14;
+	// 积分
+	sint64 buyerIntegral = 15;
+	// 商城余额
+	sint64 buyerBalance = 16;
+	// 钱包余额
+	sint64 buyerWallet = 17;
 }
 
 // 预生成订单店铺分组

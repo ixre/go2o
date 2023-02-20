@@ -111,16 +111,16 @@ func superviseMemberUpdate(ss []Service) {
 // 监视支付单完成
 func supervisePaymentOrderFinish(ss []Service) {
 	notify := func(id int, ss []Service) {
-		trans, cli, _ := service.PaymentServiceClient()
-		defer trans.Close()
-		order, _ := cli.GetPaymentOrderById(context.TODO(), &proto.Int32{Value: int32(id)})
-		if order != nil {
-			for _, v := range ss {
-				if !v.PaymentOrderObs(order) {
-					break
-				}
-			}
-		}
+		//trans, cli, _ := service.PaymentServiceClient()
+		//defer trans.Close()
+		// order, _ := cli.GetPaymentOrderById(context.TODO(), &proto.Int32{Value: int32(id)})
+		// if order != nil {
+		// 	for _, v := range ss {
+		// 		if !v.PaymentOrderObs(order) {
+		// 			break
+		// 		}
+		// 	}
+		// }
 	}
 	id := 0
 	conn := core.GetRedisConn()
@@ -169,7 +169,7 @@ func memberAutoUnlock() {
 		trans, cli, err := service.MemberServiceClient()
 		if err == nil {
 			for _, oKey := range list {
-				memberId,_ := redis.Int64(conn.Do("GET", oKey))
+				memberId, _ := redis.Int64(conn.Do("GET", oKey))
 				if memberId > 0 {
 					cli.Unlock(context.TODO(), &proto.MemberIdRequest{MemberId: memberId})
 				}

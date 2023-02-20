@@ -39,8 +39,6 @@ type queryService struct {
 	proto.UnimplementedQueryServiceServer
 }
 
-
-
 func NewQueryService(o orm.Orm, s storage.Interface,
 	catRepo product.ICategoryRepo) *queryService {
 	shopQuery := query.NewShopQuery(o, s)
@@ -75,7 +73,7 @@ func (q *queryService) MemberStatistics(_ context.Context, req *proto.MemberStat
 	}
 	return &proto.MemberStatisticsResponse{
 		AwaitPaymentOrders:  ret[int32(order.StatAwaitingPayment)],
-		AwaitShipmentOrders: ret[int32(order.StatAwaitingShipment)],
+		AwaitShipmentOrders: ret[int32(order.StatAwaitingPickup)] + ret[int32(order.StatAwaitingShipment)],
 		AwaitReceiveOrders:  ret[int32(order.StatShipped)],
 		CompletedOrders:     ret[int32(order.StatCompleted)],
 	}, nil
@@ -93,7 +91,7 @@ func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRe
 	}
 	if len(rows) > 0 {
 		for i, v := range rows {
-			v.Logo = format.GetResUrl(v.Logo)
+			v.Logo = format.GetFileFullUrl(v.Logo)
 			if v.Host == "" {
 				v.Host = v.Alias + "." + variable.Domain
 			}
@@ -150,7 +148,7 @@ func (q *queryService) QueryWholesaleOrders(_ context.Context, r *proto.MemberOr
 
 // QueryTradeOrders 查询分页交易/服务类订单
 func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderPagingRequest) (*proto.MemberOrderPagingResponse, error) {
-	n, list := q.orderQuery.PagedTradeOrderOfBuyer(
+	n, list := q.orderQuery.PagingTradeOrderOfBuyer(
 		r.MemberId,
 		r.Params.Begin,
 		r.Params.End,
@@ -192,6 +190,7 @@ func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberP
 			Id:             int64(it.Id),
 			SnapshotId:     int64(it.SnapshotId),
 			SkuId:          int64(it.SkuId),
+			SpecWord:       it.SpecWord,
 			ItemId:         int64(it.ItemId),
 			ItemTitle:      it.ItemTitle,
 			Image:          it.Image,
@@ -206,25 +205,6 @@ func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberP
 		})
 	}
 	return dst
-}
-
-func (q *queryService) parseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
-	return &proto.SOrderItem{
-		Id:             int64(v.Id),
-		SnapshotId:     int64(v.SnapshotId),
-		SkuId:          int64(v.SkuId),
-		ItemId:         int64(v.ItemId),
-		ItemTitle:      v.ItemTitle,
-		Image:          v.Image,
-		Price:          v.Price,
-		FinalPrice:     v.FinalPrice,
-		Quantity:       int32(v.Quantity),
-		ReturnQuantity: int32(v.ReturnQuantity),
-		ItemAmount:     v.Amount,
-		FinalAmount:    v.FinalAmount,
-		IsShipped:      v.IsShipped == 1,
-		Data:           nil,
-	}
 }
 
 func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SMemberPagingOrder {
@@ -250,7 +230,7 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 		Value: make([]*proto.MemberListSingle, len(list)),
 	}
 	for i, v := range list {
-		v.Avatar = format.GetResUrl(v.Avatar)
+		v.Avatar = format.GetFileFullUrl(v.Avatar)
 		rsp.Value[i] = &proto.MemberListSingle{
 			MemberId:      int64(v.MemberId),
 			Username:      v.Usr,
@@ -410,24 +390,23 @@ func (q *queryService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 }
 
 // QueryItemSalesHistory 查询商品销售记录
-func (q *queryService) QueryItemSalesHistory(_ context.Context,req *proto.QueryItemSalesHistoryRequest) (*proto.QueryItemSalesHistoryResponse, error) {
-	list := q.itemQuery.QueryItemSalesHistory(req.ItemId,int(req.Size),req.Random)
+func (q *queryService) QueryItemSalesHistory(_ context.Context, req *proto.QueryItemSalesHistoryRequest) (*proto.QueryItemSalesHistoryResponse, error) {
+	list := q.itemQuery.QueryItemSalesHistory(req.ItemId, int(req.Size), req.Random)
 	ret := &proto.QueryItemSalesHistoryResponse{
 		Value: []*proto.SItemSalesHistory{},
 	}
-	for _,v := range list{
+	for _, v := range list {
 		dst := &proto.SItemSalesHistory{
 			BuyerUserCode:   v.BuyerUserCode,
 			BuyerName:       v.BuyerName,
-			BuyerPortrait: v.BuyerPortrait,
+			BuyerPortrait:   v.BuyerPortrait,
 			BuyTime:         v.BuyTime,
 			IsFinishPayment: v.OrderState > order.StatAwaitingPayment,
 		}
-		if req.MaskBuyer{
+		if req.MaskBuyer {
 			dst.BuyerName = format.MaskNickname(dst.BuyerName)
 		}
-		ret.Value = append(ret.Value,dst)
+		ret.Value = append(ret.Value, dst)
 	}
 	return ret, nil
 }
-

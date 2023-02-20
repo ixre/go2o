@@ -23,13 +23,16 @@ message DiscountIntegralRequest {
 }
 
 message WalletPaymentRequest {
+        // 支付交易单号
     string tradeNo = 1;
     bool mergePay = 2;
     string remark = 3;
 }
 
 message HyperPaymentRequest {
-    sint32 orderId = 1;
+    // 支付交易单号
+    string tradeNo = 1;
+    // 备注
     string remark = 2;
 }
 
@@ -48,14 +51,8 @@ service PaymentService {
     // 创建支付单并提交
     rpc SubmitPaymentOrder (SPaymentOrder) returns (Result) {
     }
-    // 根据支付单号获取支付单,orderNo
-    rpc GetPaymentOrder (String) returns (SPaymentOrder) {
-    }
-    // 根据交易号获取支付单编号,tradeNo
-    rpc GetPaymentOrderId (String) returns (Int32) {
-    }
-    // 根据编号获取支付单
-    rpc GetPaymentOrderById (Int32) returns (SPaymentOrder) {
+    // 根据支付单号或订单号获取支付单
+    rpc GetPaymentOrder (PaymentOrderRequest) returns (SPaymentOrder) {
     }
     // 调整支付单金额
     rpc AdjustOrder (AdjustOrderRequest) returns (Result) {
@@ -170,7 +167,7 @@ message PayGatewayResponse{
     // 交易费用
     int64 procedureFee = 6;
     // 金额
-    int64 finalFee = 7;
+    int64 finalAmount = 7;
     // 支付表单
     string paymentForm = 8;
 }
@@ -236,7 +233,7 @@ message SPaymentOrder {
     /** 买家编号 */
     int64 buyerId = 9;
     /** 支付用户编号 */
-    int64 payUid = 10;
+    int64 payerId = 10;
     /** 商品金额 */
     int64 itemAmount = 11;
     /** 优惠金额  */
@@ -250,9 +247,9 @@ message SPaymentOrder {
     /** 手续费 */
     int64 procedureFee = 16;
     /** 实付金额 */
-    int64 paidFee = 17;
+    int64 paidAmount = 17;
     /** 最终应付金额 */
-    int64 finalFee = 18;
+    int64 finalAmount = 18;
     /** 可⽤支付方式  */
     int32 payFlag = 19;
     /** 实际使用支付方式 */
@@ -269,8 +266,20 @@ message SPaymentOrder {
     sint64 paidTime = 25;
     /** 交易数据 */
     repeated STradeMethodData tradeData = 26;
+    /** 支付SP(后面会删除) */
+    string outTradeSp = 28;
+    /** 支付SP单号(后面会删除) */
+    string outTradeNo = 29;
     /** 编号 */
     sint32 id = 27;
+}
+
+// 获取支付单请求
+message PaymentOrderRequest{
+    // 支付单号
+    string tradeNo = 1;
+    // 允许在多店下单后需单独支付的支付单进行拆分
+    bool allowBreak = 2;
 }
 
 /** 请求支付数据 */
@@ -318,7 +327,7 @@ message SPrepareTradeData {
     /** 手续费 */
     int64 procedureFee = 8;
     /** 最终支付金额 */
-    int64 finalFee = 9;
+    int64 finalAmount = 9;
 }
 
 /** 支付单数据 */
@@ -334,7 +343,7 @@ message SPaymentOrderData {
     /** 手续费 */
     int64 procedureFee = 5;
     /** 最终支付金额 */
-    int64 finalFee = 6;
+    int64 finalAmount = 6;
 }
 
 /** 集成支付应用编号 */

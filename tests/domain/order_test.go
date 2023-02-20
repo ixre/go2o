@@ -58,7 +58,7 @@ func logState(t *testing.T, err error, o order.IOrder) {
 }
 
 func TestOrderSetup(t *testing.T) {
-	orderNo := "1230111000185776"
+	orderNo := "1230213010595516"
 	orderRepo := ti.Factory.GetOrderRepo()
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
@@ -72,7 +72,6 @@ func TestOrderSetup(t *testing.T) {
 	} else {
 		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
-
 	err = o.PickUp()
 	if err != nil {
 		t.Log(err)
@@ -123,14 +122,14 @@ func TestCancelOrder(t *testing.T) {
 	m := mmRepo.GetMember(buyerId)
 	addressId := m.Profile().GetDefaultAddress().GetDomainId()
 	data := order.SubmitOrderData{
-		BuyerId:         buyerId,
-		Type:            order.TRetail,
-		Subject:         "",
-		AddressId:       addressId,
-		CouponCode:      "",
-		BalanceDiscount: true,
-		AffiliateCode:   "",
-		PostedData:      nil,
+		BuyerId:       buyerId,
+		Type:          order.TRetail,
+		Subject:       "",
+		AddressId:     addressId,
+		CouponCode:    "",
+		BalanceDeduct: true,
+		AffiliateCode: "",
+		PostedData:    nil,
 	}
 	o, rd, err := manager.SubmitOrder(data)
 	if err != nil {
@@ -144,7 +143,7 @@ func TestCancelOrder(t *testing.T) {
 	pv := py.Get()
 	payState := pv.State
 	if payState == payment.StateFinished {
-		t.Logf("订单支付完成,金额：%d", pv.FinalFee)
+		t.Logf("订单支付完成,金额：%d", pv.FinalAmount)
 	} else {
 		t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.TradeNo())
 	}
@@ -206,14 +205,14 @@ func TestSubmitNormalOrder(t *testing.T) {
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
 
 	data := order.SubmitOrderData{
-		BuyerId:         buyer.GetValue().Id,
-		Type:            order.TRetail,
-		Subject:         "",
-		AddressId:       addressId,
-		CouponCode:      "",
-		BalanceDiscount: true,
-		AffiliateCode:   "",
-		PostedData:      nil,
+		BuyerId:       buyer.GetValue().Id,
+		Type:          order.TRetail,
+		Subject:       "",
+		AddressId:     addressId,
+		CouponCode:    "",
+		BalanceDeduct: true,
+		AffiliateCode: "",
+		PostedData:    nil,
 	}
 	o, _, err := manager.SubmitOrder(data)
 	if err != nil {
@@ -240,14 +239,14 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	addressId := memRepo.GetDeliverAddress(memberId)[0].Id
 
 	data := order.SubmitOrderData{
-		BuyerId:         memberId,
-		Type:            io.Type(),
-		Subject:         "",
-		AddressId:       addressId,
-		CouponCode:      "",
-		BalanceDiscount: true,
-		AffiliateCode:   "",
-		PostedData:      nil,
+		BuyerId:       memberId,
+		Type:          io.Type(),
+		Subject:       "",
+		AddressId:     addressId,
+		CouponCode:    "",
+		BalanceDeduct: true,
+		AffiliateCode: "",
+		PostedData:    nil,
 	}
 	nio, _, err := repo.Manager().SubmitOrder(data)
 	if err != nil {
@@ -258,7 +257,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	ipo := payRepo.GetPaymentOrderByOrderNo(int(order.TRetail), nio.OrderNo())
 	err = ipo.PaymentFinish("alipay", "1233535080808wr")
 	if err == nil {
-		t.Logf("支付的交易号为：%s,最终金额:%d", nio.OrderNo(), ipo.Get().FinalFee)
+		t.Logf("支付的交易号为：%s,最终金额:%d", nio.OrderNo(), ipo.Get().FinalAmount)
 	} else {
 		t.Log("支付订单", err.Error())
 		t.FailNow()
@@ -347,14 +346,14 @@ func TestWholesaleOrder(t *testing.T) {
 
 	log.Println("----", fmt.Sprintf("%#v", data))
 	data1 := order.SubmitOrderData{
-		BuyerId:         buyerId,
-		Type:            order.TWholesale,
-		Subject:         "",
-		AddressId:       addressId,
-		CouponCode:      "",
-		BalanceDiscount: false,
-		AffiliateCode:   "",
-		PostedData:      parser.NewPostedData(data, nil),
+		BuyerId:       buyerId,
+		Type:          order.TWholesale,
+		Subject:       "",
+		AddressId:     addressId,
+		CouponCode:    "",
+		BalanceDeduct: false,
+		AffiliateCode: "",
+		PostedData:    parser.NewPostedData(data, nil),
 	}
 	_, rd, err := manager.SubmitOrder(data1)
 
@@ -394,13 +393,13 @@ func TestTradeOrder(t *testing.T) {
 		//repos.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
 	}
 	c := order.SubmitOrderData{
-		BuyerId:         397,
-		Type:            0,
-		Subject:         "万宁佛山祖庙店",
-		AddressId:       0,
-		CouponCode:      "",
-		BalanceDiscount: false,
-		AffiliateCode:   "",
+		BuyerId:       397,
+		Type:          0,
+		Subject:       "万宁佛山祖庙店",
+		AddressId:     0,
+		CouponCode:    "",
+		BalanceDeduct: false,
+		AffiliateCode: "",
 		PostedData: parser.NewPostedData(nil, &proto.SubmitOrderRequest{
 			TradeOrder: &proto.TradeOrderRequest{
 				StoreId:     int64(storeId),
@@ -454,14 +453,14 @@ func TestMergePaymentOrder(t *testing.T) {
 	memberId := io.Buyer().GetAggregateRootId()
 	addressId := memRepo.GetDeliverAddress(memberId)[0].Id
 	data := order.SubmitOrderData{
-		BuyerId:         io.Buyer().GetValue().Id,
-		Type:            io.Type(),
-		Subject:         "",
-		AddressId:       addressId,
-		CouponCode:      "",
-		BalanceDiscount: false,
-		AffiliateCode:   "",
-		PostedData:      nil,
+		BuyerId:       io.Buyer().GetValue().Id,
+		Type:          io.Type(),
+		Subject:       "",
+		AddressId:     addressId,
+		CouponCode:    "",
+		BalanceDeduct: false,
+		AffiliateCode: "",
+		PostedData:    nil,
 	}
 	_, rd, err := repo.Manager().SubmitOrder(data)
 	if err != nil {

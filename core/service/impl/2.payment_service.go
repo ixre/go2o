@@ -39,28 +39,9 @@ func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo,
 	}
 }
 
-// GetPaymentOrderById 根据编号获取支付单
-func (p *paymentService) GetPaymentOrderById(_ context.Context, id *proto.Int32) (*proto.SPaymentOrder, error) {
-	po := p.repo.GetPaymentOrderById(int(id.Value))
-	if po != nil {
-		v := po.Get()
-		return p.parsePaymentOrderDto(&v), nil
-	}
-	return nil, payment.ErrNoSuchPaymentOrder
-}
-
-// GetPaymentOrderId 根据交易号获取支付单编号
-func (p *paymentService) GetPaymentOrderId(_ context.Context, tradeNo *proto.String) (*proto.Int32, error) {
-	po := p.repo.GetPaymentOrder(tradeNo.Value)
-	if po != nil {
-		return &proto.Int32{Value: int32(po.GetAggregateRootId())}, nil
-	}
-	return &proto.Int32{Value: 0}, nil
-}
-
 // GetPaymentOrder 根据支付单号获取支付单
-func (p *paymentService) GetPaymentOrder(_ context.Context, paymentNo *proto.String) (*proto.SPaymentOrder, error) {
-	if po := p.repo.GetPaymentOrder(paymentNo.Value); po != nil {
+func (p *paymentService) GetPaymentOrder(_ context.Context, req *proto.PaymentOrderRequest) (*proto.SPaymentOrder, error) {
+	if po := p.repo.GetPaymentOrder(req.TradeNo); po != nil {
 		v := po.Get()
 		sp := p.parsePaymentOrderDto(&v)
 		for _, t := range po.TradeMethods() {
@@ -132,13 +113,13 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 		return p.result(err), nil
 	}
 	// 合并支付单支付
-	payUid := arr[0].Get().PayUid
-	var finalFee int64 = 0
+	payUid := arr[0].Get().PayerId
+	var finalAmount int64 = 0
 	for _, v := range arr {
-		finalFee += v.Get().FinalFee
+		finalAmount += v.Get().FinalAmount
 	}
 	acc := p.memberRepo.GetAccount(payUid)
-	if acc.Balance*100 < finalFee {
+	if acc.Balance*100 < finalAmount {
 		err = member.ErrAccountBalanceNotEnough
 	} else {
 		for _, v := range arr {
@@ -152,7 +133,7 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 
 // HybridPayment 余额钱包混合支付，优先扣除余额。
 func (p *paymentService) HybridPayment(_ context.Context, r *proto.HyperPaymentRequest) (rs *proto.Result, err error) {
-	o := p.repo.GetPaymentOrderById(int(r.OrderId))
+	o := p.repo.GetPaymentOrder(r.TradeNo)
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
@@ -229,7 +210,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 			TradeType:    iv.TradeType,
 			State:        int32(iv.State),
 			ProcedureFee: iv.ProcedureFee,
-			FinalFee:     iv.FinalFee,
+			FinalAmount:  iv.FinalAmount,
 		}
 		// 更新支付状态
 		if so.State != payment.StateAwaitingPayment {
@@ -242,7 +223,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 		// 更新支付金额
 		d.TradeOrders = append(d.TradeOrders, so)
 		d.ProcedureFee += so.ProcedureFee // 手续费
-		d.FinalFee += so.FinalFee         // 最终金额
+		d.FinalAmount += so.FinalAmount   // 最终金额
 		d.TotalAmount += iv.TotalAmount   // 累计金额
 	}
 	d.ErrCode = 0
@@ -277,7 +258,7 @@ func (p *paymentService) GatewayV2(_ context.Context, r *proto.PayGatewayV2Reque
 	for _, ip := range arr {
 		iv := ip.Get()
 		ret.ProcedureFee += iv.ProcedureFee // 手续费
-		ret.FinalFee += iv.FinalFee         // 最终金额
+		ret.FinalAmount += iv.FinalAmount   // 最终金额
 		ret.TotalAmount += iv.TotalAmount   // 累计金额
 	}
 	return &ret, nil
@@ -298,15 +279,15 @@ func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Or
 		OutOrderNo:     src.OutOrderNo,
 		Subject:        src.Subject,
 		BuyerId:        src.BuyerId,
-		PayUid:         src.PayUid,
+		PayerId:        src.PayerId,
 		TotalAmount:    src.TotalAmount,
 		DiscountAmount: src.DiscountAmount,
 		DeductAmount:   src.DeductAmount,
 		AdjustAmount:   src.AdjustAmount,
 		ItemAmount:     src.ItemAmount,
 		ProcedureFee:   src.ProcedureFee,
-		FinalFee:       src.FinalFee,
-		PaidFee:        src.PaidFee,
+		FinalAmount:    src.FinalAmount,
+		PaidAmount:     src.PaidAmount,
 		PayFlag:        int(src.PayFlag),
 		FinalFlag:      int(src.FinalFlag),
 		ExtraData:      src.ExtraData,
@@ -330,15 +311,15 @@ func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymen
 		TradeNo:        src.TradeNo,
 		Subject:        src.Subject,
 		BuyerId:        src.BuyerId,
-		PayUid:         src.PayUid,
+		PayerId:        src.PayerId,
 		TotalAmount:    src.TotalAmount,
 		DiscountAmount: src.DiscountAmount,
 		DeductAmount:   src.DeductAmount,
 		AdjustAmount:   src.AdjustAmount,
 		ItemAmount:     src.ItemAmount,
 		ProcedureFee:   src.ProcedureFee,
-		FinalFee:       src.FinalFee,
-		PaidFee:        src.PaidFee,
+		FinalAmount:    src.FinalAmount,
+		PaidAmount:     src.PaidAmount,
 		PayFlag:        int32(src.PayFlag),
 		FinalFlag:      int32(src.FinalFlag),
 		ExtraData:      src.ExtraData,
@@ -349,7 +330,10 @@ func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymen
 		SubOrder:       src.SubOrder == 1,
 		OrderType:      int32(src.OrderType),
 		OutOrderNo:     src.OutOrderNo,
-		TradeData:      make([]*proto.STradeMethodData, 0),
+
+		OutTradeNo: src.OutTradeNo,
+		OutTradeSp: src.OutTradeSp,
+		TradeData:  make([]*proto.STradeMethodData, 0),
 	}
 }
 
@@ -426,7 +410,7 @@ func (p *paymentService) PrepareIntegrateParams(_ context.Context, req *proto.In
 		AppUrl:      ret.AppUrl,
 		Service:     "pay",
 		OrderNo:     ov.TradeNo,
-		OrderAmount: int32(ov.FinalFee),
+		OrderAmount: int32(ov.FinalAmount),
 		Subject:     ov.Subject,
 	}, nil
 }

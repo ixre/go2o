@@ -109,17 +109,17 @@ message EVRegistryPushEventData{
 // 订单推送事件
 message EVSubOrderPushEventData{
 	// 订单号
-	string OrderNo = 1;
+	string orderNo = 1;
 	// 订单金额
-	int64 OrderAmount = 2;
+	int64 orderAmount = 2;
 	// 收货人
-	string ConsigneeName = 3;
+	string consigneeName = 3;
 	// 收货电话
-	string ConsigneePhone = 4;
+	string consigneePhone = 4;
 	// 收货地址
-	string ConsigneeAddress = 5;
+	string consigneeAddress = 5;
 	// 状态
-	int32 OrderState = 6;
+	int32 orderState = 6;
 }
 
 
@@ -167,23 +167,23 @@ message EVAccountLogPushEventData  {
 	// 是否为更新日志事件
 	bool isUpdateEvent = 2;
 	// 会员编号
-	int64 UserId = 3;
+	int64 userId = 3;
 	// 编号
-	int64 LogId = 4;
+	int64 logId = 4;
 	// 业务类型
-	int32 LogKind = 5;
+	int32 logKind = 5;
 	// 标题
-	string Subject = 6;
+	string subject = 6;
 	// 外部订单号
-	string OuterNo = 7;
+	string outerNo = 7;
 	// 变动金额
-	int64 ChangeValue = 8;
+	int64 changeValue = 8;
 	// 余额
-	int64 Balance = 9;
+	int64 balance = 9;
 	// 交易手续费
-	int64 ProcedureFee = 10;
+	int64 procedureFee = 10;
 	// 审核状态
-	int32 AuditState  = 11;
+	int32 auditState  = 11;
 	// 创建时间
-	int64 CreateTime = 12;
+	int64 createTime = 12;
 }

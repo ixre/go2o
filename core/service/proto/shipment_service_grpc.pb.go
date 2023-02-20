@@ -25,7 +25,7 @@ type ShipmentServiceClient interface {
 	// 创建一个配送覆盖的区域
 	CreateCoverageArea_(ctx context.Context, in *SCoverageValue, opts ...grpc.CallOption) (*Result, error)
 	// 获取订单的发货单信息
-	GetShipOrderOfOrder(ctx context.Context, in *OrderId, opts ...grpc.CallOption) (*ShipmentOrderListResponse, error)
+	GetOrderShipments(ctx context.Context, in *OrderId, opts ...grpc.CallOption) (*ShipmentOrderListResponse, error)
 	// * 物流追踪
 	GetLogisticFlowTrack(ctx context.Context, in *LogisticFlowTrackRequest, opts ...grpc.CallOption) (*SShipOrderTrack, error)
 	// * 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列
@@ -49,9 +49,9 @@ func (c *shipmentServiceClient) CreateCoverageArea_(ctx context.Context, in *SCo
 	return out, nil
 }
 
-func (c *shipmentServiceClient) GetShipOrderOfOrder(ctx context.Context, in *OrderId, opts ...grpc.CallOption) (*ShipmentOrderListResponse, error) {
+func (c *shipmentServiceClient) GetOrderShipments(ctx context.Context, in *OrderId, opts ...grpc.CallOption) (*ShipmentOrderListResponse, error) {
 	out := new(ShipmentOrderListResponse)
-	err := c.cc.Invoke(ctx, "/ShipmentService/GetShipOrderOfOrder", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ShipmentService/GetOrderShipments", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ type ShipmentServiceServer interface {
 	// 创建一个配送覆盖的区域
 	CreateCoverageArea_(context.Context, *SCoverageValue) (*Result, error)
 	// 获取订单的发货单信息
-	GetShipOrderOfOrder(context.Context, *OrderId) (*ShipmentOrderListResponse, error)
+	GetOrderShipments(context.Context, *OrderId) (*ShipmentOrderListResponse, error)
 	// * 物流追踪
 	GetLogisticFlowTrack(context.Context, *LogisticFlowTrackRequest) (*SShipOrderTrack, error)
 	// * 获取发货单的物流追踪信息,$shipOrderId:发货单编号 $invert:是否倒序排列
@@ -98,8 +98,8 @@ type UnimplementedShipmentServiceServer struct {
 func (UnimplementedShipmentServiceServer) CreateCoverageArea_(context.Context, *SCoverageValue) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCoverageArea_ not implemented")
 }
-func (UnimplementedShipmentServiceServer) GetShipOrderOfOrder(context.Context, *OrderId) (*ShipmentOrderListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetShipOrderOfOrder not implemented")
+func (UnimplementedShipmentServiceServer) GetOrderShipments(context.Context, *OrderId) (*ShipmentOrderListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOrderShipments not implemented")
 }
 func (UnimplementedShipmentServiceServer) GetLogisticFlowTrack(context.Context, *LogisticFlowTrackRequest) (*SShipOrderTrack, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLogisticFlowTrack not implemented")
@@ -138,20 +138,20 @@ func _ShipmentService_CreateCoverageArea__Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ShipmentService_GetShipOrderOfOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ShipmentService_GetOrderShipments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(OrderId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ShipmentServiceServer).GetShipOrderOfOrder(ctx, in)
+		return srv.(ShipmentServiceServer).GetOrderShipments(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ShipmentService/GetShipOrderOfOrder",
+		FullMethod: "/ShipmentService/GetOrderShipments",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShipmentServiceServer).GetShipOrderOfOrder(ctx, req.(*OrderId))
+		return srv.(ShipmentServiceServer).GetOrderShipments(ctx, req.(*OrderId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -204,8 +204,8 @@ var ShipmentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ShipmentService_CreateCoverageArea__Handler,
 		},
 		{
-			MethodName: "GetShipOrderOfOrder",
-			Handler:    _ShipmentService_GetShipOrderOfOrder_Handler,
+			MethodName: "GetOrderShipments",
+			Handler:    _ShipmentService_GetOrderShipments_Handler,
 		},
 		{
 			MethodName: "GetLogisticFlowTrack",

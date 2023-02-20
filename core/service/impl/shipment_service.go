@@ -47,20 +47,25 @@ func (s *shipmentServiceImpl) CreateCoverageArea_(_ context.Context, r *proto.SC
 	return s.error(err), nil
 }
 
-// GetShipOrderOfOrder 获取订单的发货单信息
-func (s *shipmentServiceImpl) GetShipOrderOfOrder(_ context.Context, r *proto.OrderId) (*proto.ShipmentOrderListResponse, error) {
+// GetOrderShipments 获取订单的发货单信息
+func (s *shipmentServiceImpl) GetOrderShipments(_ context.Context, r *proto.OrderId) (*proto.ShipmentOrderListResponse, error) {
 	list := s.repo.GetShipOrders(r.Value, true)
 	arr := make([]*proto.SShipmentOrder, len(list))
-	if list != nil {
-		for i, v := range list {
-			dst := s.parseShipOrderDto(v.Value())
-			items := v.Items()
-			dst.Items = make([]*proto.SShipmentItem, len(items))
-			for i, v := range items {
-				dst.Items[i] = s.parseShipItemDto(v)
-			}
-			arr[i] = dst
+	for i, v := range list {
+		dst := s.parseShipOrderDto(v.Value())
+		// 绑定快递名称
+		ex := s.expressRepo.GetExpressProvider(int32(dst.ExpressId))
+		if ex != nil {
+			dst.ExpressName = ex.Name
+			dst.ExpressCode = ex.Code
 		}
+		// 绑定商品
+		items := v.Items()
+		dst.Items = make([]*proto.SShipmentItem, len(items))
+		for i, v := range items {
+			dst.Items[i] = s.parseShipItemDto(v)
+		}
+		arr[i] = dst
 	}
 	return &proto.ShipmentOrderListResponse{Value: arr}, nil
 }
@@ -142,8 +147,8 @@ func (s *shipmentServiceImpl) parseShipOrderDto(v shipment.ShipmentOrder) *proto
 		Id:          v.ID,
 		OrderId:     v.OrderId,
 		SubOrderId:  v.SubOrderId,
-		ExpressSpId: int64(v.SpId),
-		ShipOrderNo: v.SpOrder,
+		ExpressId:   int64(v.SpId),
+		ShipmentNo:  v.SpOrder,
 		ShipmentLog: v.ShipmentLog,
 		Amount:      v.Amount,
 		FinalAmount: v.FinalAmount,

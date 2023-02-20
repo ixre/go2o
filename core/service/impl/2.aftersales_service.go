@@ -151,7 +151,7 @@ func (a *afterSalesService) GetAfterSaleOrder(_ context.Context, req *proto.Afte
 	if as != nil {
 		v := as.Value()
 		v.StatusText = afterSales.Stat(v.Status).String()
-		v.ShipmentImage = format.GetResUrl(v.ShipmentImage)
+		v.ShipmentImage = format.GetFileFullUrl(v.ShipmentImage)
 		return a.parseAfterSalesDto(v), nil
 	}
 	return nil, order.ErrNoSuchOrder

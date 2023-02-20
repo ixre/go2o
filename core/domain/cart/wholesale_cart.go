@@ -525,7 +525,7 @@ func (c *wholesaleCartImpl) getItemJdoData(list []*cart.ItemPair,
 	itJdo := cart.WCartItemJdo{
 		ItemId:    int64(itemId),
 		ItemName:  v.Title,
-		ItemImage: format.GetResUrl(v.Image),
+		ItemImage: format.GetFileFullUrl(v.Image),
 		Sku:       []cart.WCartSkuJdo{},
 		Data:      map[string]string{},
 	}
@@ -538,7 +538,7 @@ func (c *wholesaleCartImpl) getItemJdoData(list []*cart.ItemPair,
 		skuJdo := cart.WCartSkuJdo{
 			SkuId:            v.SkuId,
 			SkuCode:          skuV.Code,
-			SkuImage:         format.GetResUrl(skuV.Image),
+			SkuImage:         format.GetFileFullUrl(skuV.Image),
 			SpecWord:         skuV.SpecWord,
 			Quantity:         v.Quantity,
 			Price:            0,
@@ -645,7 +645,7 @@ func (c *wholesaleCartImpl) checkoutJdoData(jdo *cart.WCartJdo) {
 	//总计
 	jdo.Data["TotalExpressAmount"] = format.DecimalToString(0)
 	jdo.Data["TotalItemAmount"] = format.FormatIntMoney(totalAmount)
-	jdo.Data["FinalFee"] = format.FormatIntMoney(totalAmount)
+	jdo.Data["FinalAmount"] = format.FormatIntMoney(totalAmount)
 }
 
 // 简单Jdo数据,max为最多数量

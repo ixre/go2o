@@ -22,6 +22,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
@@ -124,14 +125,14 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 	return rs, nil
 	*/
 	_, rd, err := s.manager.SubmitOrder(order.SubmitOrderData{
-		Type:            order.OrderType(r.OrderType),
-		BuyerId:         r.BuyerId,
-		AddressId:       r.AddressId,
-		Subject:         r.Subject,
-		CouponCode:      r.CouponCode,
-		BalanceDiscount: r.BalanceDiscount,
-		AffiliateCode:   r.AffiliateCode,
-		PostedData:      iData,
+		Type:          order.OrderType(r.OrderType),
+		BuyerId:       r.BuyerId,
+		AddressId:     r.AddressId,
+		Subject:       r.Subject,
+		CouponCode:    r.CouponCode,
+		BalanceDeduct: r.BalanceDeduct,
+		AffiliateCode: r.AffiliateCode,
+		PostedData:    iData,
 	})
 	ret := &proto.OrderSubmitResponse{}
 	if err != nil {
@@ -173,20 +174,39 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		}, nil
 	}
 	ov := o.Complex()
-
+	// 绑定账户信息
+	acc := s.memberRepo.GetMember(r.BuyerId).GetAccount()
+	balance := acc.GetValue().Balance
+	walletBalance := acc.GetValue().WalletBalance
 	// 使用余额
-	if r.PaymentFlag&payment.MBalance == payment.MBalance {
-		acc := s.memberRepo.GetMember(r.BuyerId).GetAccount()
-		balance := acc.GetValue().Balance
-		if balance >= ov.FinalAmount {
-			ov.DiscountAmount = ov.FinalAmount
-			ov.FinalAmount = 0
-		} else {
-			ov.DiscountAmount = balance
-			ov.FinalAmount -= balance
+	if fb, fw := domain.TestFlag(int(r.PaymentFlag), payment.MBalance),
+		domain.TestFlag(int(r.PaymentFlag), payment.MWallet); fb || fw {
+
+		// 更新抵扣余额之后的金额
+		if fb {
+			if balance >= ov.FinalAmount {
+				ov.DiscountAmount = ov.FinalAmount
+				ov.FinalAmount = 0
+			} else {
+				ov.DiscountAmount = balance
+				ov.FinalAmount -= balance
+			}
+		}
+		// 更新抵扣钱包余额之后的金额
+		if fw {
+			if walletBalance >= ov.FinalAmount {
+				ov.DiscountAmount = ov.FinalAmount
+				ov.FinalAmount = 0
+			} else {
+				ov.DiscountAmount = walletBalance
+				ov.FinalAmount -= walletBalance
+			}
 		}
 	}
 	rsp := parser.PrepareOrderDto(ov)
+	rsp.BuyerBalance = balance
+	rsp.BuyerWallet = walletBalance
+	rsp.BuyerIntegral = int64(acc.GetValue().Integral)
 	rsp.Sellers = s.parsePrepareItemsFromCart(ic)
 	return rsp, err
 }
@@ -304,7 +324,7 @@ func (s *orderServiceImpl) TradeOrderUpdateTicket(_ context.Context, r *proto.Tr
 // CancelOrder 取消订单
 func (s *orderServiceImpl) CancelOrder(_ context.Context, r *proto.CancelOrderRequest) (*proto.Result, error) {
 	c := s.manager.Unified(r.OrderNo, r.Sub)
-	err := c.Cancel(r.IsBuyerCancel,r.Reason)
+	err := c.Cancel(r.IsBuyerCancel, r.Reason)
 	return s.error(err), nil
 }
 

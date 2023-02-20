@@ -39,14 +39,14 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		//SkuNum:       src.SkuNum,
 		//SkuId:        src.SkuId,
 		//Cost:         float64(src.Cost),
-		Price: src.Price,
+		Price:      src.Price,
 		PriceRange: src.PriceRange,
 		StockNum:   src.StockNum,
 		//RetailPrice:  float64(src.RetailPrice),
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
 		ShelveState: src.AuditState,
-		AuditState: src.AuditState,
+		AuditState:  src.AuditState,
 		//ReviewRemark: src.ReviewRemark,
 		//SortNum:      src.SortNum,
 		//CreateTime:   src.CreateTime,
@@ -76,7 +76,7 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		ExpressTid: int64(src.ExpressTid),
 		Title:      src.Title,
 		ShortTitle: src.ShortTitle,
-		IntroVideo:src.IntroVideo,
+		IntroVideo: src.IntroVideo,
 		Code:       src.Code,
 		//SaleNum:      src.SaleNum,
 		//SkuNum:       src.SkuNum,
@@ -117,6 +117,18 @@ func SkuArrayDto(src []*item.Sku) []*proto.SSku {
 	var dst = make([]*proto.SSku, len(src))
 	for i, v := range src {
 		dst[i] = SkuDto(v)
+	}
+	return dst
+}
+
+func AttrValueArrayDto(src []*product.AttrValue) []*proto.SAttrValue {
+	var dst = make([]*proto.SAttrValue, len(src))
+	for i, v := range src {
+		dst[i] = &proto.SAttrValue{
+			AttrId:    v.AttrId,
+			AttrName:  v.AttrName,
+			AttrValue: v.AttrWord,
+		}
 	}
 	return dst
 }
@@ -215,41 +227,6 @@ func SubOrderItemDto(src *order.SubOrderItem) *proto.SOrderItem {
 		IsShipped:      src.IsShipped == 1,
 		Data:           nil,
 	}
-}
-
-func SubOrderDto(src *order.NormalSubOrder) *proto.SSingleOrder {
-	o := &proto.SSingleOrder{
-		OrderId:       src.Id,
-		ParentOrderId: src.OrderId,
-		OrderNo:       src.OrderNo,
-		//OrderType:            src.,
-		BuyerId:        src.BuyerId,
-		SellerId:       src.VendorId,
-		ShopId:         src.ShopId,
-		Subject:        src.Subject,
-		ItemAmount:     src.ItemAmount,
-		DiscountAmount: src.DiscountAmount,
-		DeductAmount:   0,
-		AdjustAmount:   0,
-		ExpressFee:     src.ExpressFee,
-		PackageFee:     src.PackageFee,
-		ProcedureFee:   0,
-		//TotalAmount:          src.ItemAmount,
-		FinalAmount: src.FinalAmount,
-		Consignee: &proto.SConsigneeInfo{
-			ConsigneeName:   "",
-			ConsigneePhone:  "",
-			ShippingAddress: "",
-		},
-		BuyerComment: src.BuyerComment,
-		Status:       int32(src.Status),
-		SubmitTime:   src.CreateTime,
-		Items:        make([]*proto.SOrderItem, len(src.Items)),
-	}
-	for i, v := range src.Items {
-		o.Items[i] = SubOrderItemDto(v)
-	}
-	return o
 }
 
 func OrderItemDto(src *order.ComplexItem) *proto.SOrderItem {
@@ -364,13 +341,12 @@ func PrepareOrderDto(src *order.ComplexOrder) *proto.PrepareOrderResponse {
 		DiscountAmount: src.DiscountAmount,
 		ExpressFee:     src.ExpressFee,
 		PackageFee:     src.PackageFee,
-		FinalFee:       src.FinalAmount,
+		FinalAmount:    src.FinalAmount,
 		Consignee: &proto.SConsigneeInfo{
 			ConsigneeName:   src.Consignee.ConsigneeName,
 			ConsigneePhone:  src.Consignee.ConsigneePhone,
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
-		BuyerComment: "", //src.BuyerComment,
 	}
 	return o
 }

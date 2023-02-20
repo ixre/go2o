@@ -519,12 +519,18 @@ func (p *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
 func (p *profileManagerImpl) SetDefaultAddress(addressId int64) error {
 	for _, v := range p.GetDeliverAddress() {
 		vv := v.GetValue()
+		o := vv.IsDefault
 		if v.GetDomainId() == addressId {
 			vv.IsDefault = 1
 		} else {
 			vv.IsDefault = 0
 		}
-		p.repo.SaveDeliverAddress(&vv)
+		if o != vv.IsDefault {
+			_,err := p.repo.SaveDeliverAddress(&vv)
+			if err != nil{
+				return err
+			}
+		}
 	}
 	return nil
 }

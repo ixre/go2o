@@ -60,7 +60,7 @@ func (c *cartImpl) init() cart.ICart {
 	// 获取购物车项
 	if c.GetAggregateRootId() > 0 {
 		if c.value.Items == nil {
-			c.value.Items = c.rep.SelectNormalCartItem("cart_id= $1",
+			c.value.Items = c.rep.SelectNormalCartItem("cart_id= $1 ORDER BY id DESC",
 				c.GetAggregateRootId())
 		}
 	}
@@ -329,13 +329,9 @@ func (c *cartImpl) update(itemId, skuId int64, quantity int32) error {
 	iv := it.GetValue()
 	// 库存,如有SKU，则使用SKU的库存
 	stock := iv.StockNum
-	if quantity > stock {
-		return item.ErrOutOfStock
-	}
 	// 判断商品SkuId
 	if skuId > 0 {
-		var sku *item.Sku
-		sku = it.GetSku(skuId)
+		sku := it.GetSku(skuId)
 		if sku == nil {
 			return item.ErrNoSuchSku
 		}

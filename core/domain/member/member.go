@@ -88,7 +88,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	s := &member.ComplexMember{
 		Nickname:            mv.Nickname,
 		RealName:            mv.RealName,
-		Avatar:              format.GetResUrl(mv.Portrait),
+		Avatar:              format.GetFileFullUrl(mv.Portrait),
 		Exp:                 mv.Exp,
 		Level:               mv.Level,
 		LevelName:           lv.Name,
@@ -696,6 +696,11 @@ func (m *memberImpl) BindInviter(inviterId int64, force bool) (err error) {
 	if !force && rl.InviterId > 0 {
 		return member.ErrExistsInviter
 	}
+	// 不能绑定自己为推荐人
+	if m.GetAggregateRootId() == inviterId {
+		return member.ErrInvalidInviter
+	}
+	// 更改邀请人,在更改邀请人方法里会验证是否绑定下级会员
 	if rl.InviterId != inviterId {
 		isPush := rl.InviterId > 0 //  仅仅更改推荐人时才会推送信息
 		m.relation = nil           // 清除缓存
