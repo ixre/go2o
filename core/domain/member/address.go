@@ -54,7 +54,7 @@ func (p *addressImpl) checkValue(v *member.ConsigneeAddress) error {
 	v.ConsigneePhone = strings.TrimSpace(v.ConsigneePhone)
 
 	if len([]rune(v.ConsigneeName)) < 2 {
-		return member.ErrDeliverContactPersonName
+		return member.ErrDeliverContactConsigneeName
 	}
 
 	if v.Province <= 0 || v.City <= 0 || v.District <= 0 {

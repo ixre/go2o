@@ -14,7 +14,7 @@ service ShipmentService {
     rpc CreateCoverageArea_ (SCoverageValue) returns (Result) {
     }
     // 获取订单的发货单信息
-    rpc GetShipOrderOfOrder (OrderId) returns (ShipmentOrderListResponse) {
+    rpc GetOrderShipments (OrderId) returns (ShipmentOrderListResponse) {
     }
     /** 物流追踪 */
     rpc GetLogisticFlowTrack (LogisticFlowTrackRequest) returns (SShipOrderTrack) {

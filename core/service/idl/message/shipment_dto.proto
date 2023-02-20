@@ -26,23 +26,27 @@ message SShipmentOrder {
     // 子订单编号
     int64 subOrderId = 3;
     // 快递SP编号
-    int64 expressSpId = 4;
+    int64 expressId = 4;
+    // 快递名称
+    string expressName = 5;
+    // 快递代码
+    string expressCode = 6;
     // 快递SP单号
-    string shipOrderNo = 5;
+    string shipmentNo = 7;
     // 物流日志
-    string shipmentLog = 6;
+    string shipmentLog = 8;
     // 运费
-    double amount = 7;
+    double amount = 9;
     // 实际运费
-    double finalAmount = 8;
+    double finalAmount = 10;
     // 发货时间
-    int64 shipTime = 9;
+    int64 shipTime = 11;
     // 状态
-    int32 state = 10;
-    // 更新时间
-    int64 updateTime = 11;
+    int32 state = 12;
     // 配送项目
-    repeated SShipmentItem items = 12;
+    repeated SShipmentItem items = 13;
+    // 更新时间
+    int64 updateTime = 14;
 }
 
 // 发货单详情

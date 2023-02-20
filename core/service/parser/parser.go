@@ -347,7 +347,6 @@ func PrepareOrderDto(src *order.ComplexOrder) *proto.PrepareOrderResponse {
 			ConsigneePhone:  src.Consignee.ConsigneePhone,
 			ShippingAddress: src.Consignee.ShippingAddress,
 		},
-		BuyerComment: "", //src.BuyerComment,
 	}
 	return o
 }
