@@ -174,16 +174,14 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		}, nil
 	}
 	ov := o.Complex()
-
-	// 使用余额
-	buyer := &proto.SPrepareOrderBuyerResponse{}
+	// 绑定账户信息
 	acc := s.memberRepo.GetMember(r.BuyerId).GetAccount()
-	buyer.Balance = acc.GetValue().Balance
-	buyer.WalletBalance = acc.GetValue().WalletBalance
+	balance := acc.GetValue().Balance
+	walletBalance := acc.GetValue().WalletBalance
+	// 使用余额
 	if fb, fw := domain.TestFlag(int(r.PaymentFlag), payment.MBalance),
 		domain.TestFlag(int(r.PaymentFlag), payment.MWallet); fb || fw {
-		balance := acc.GetValue().Balance
-		walletBalance := acc.GetValue().WalletBalance
+
 		// 更新抵扣余额之后的金额
 		if fb {
 			if balance >= ov.FinalAmount {
@@ -206,8 +204,10 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		}
 	}
 	rsp := parser.PrepareOrderDto(ov)
+	rsp.BuyerBalance = balance
+	rsp.BuyerWallet = walletBalance
+	rsp.BuyerIntegral = int64(acc.GetValue().Integral)
 	rsp.Sellers = s.parsePrepareItemsFromCart(ic)
-	rsp.Buyer = buyer
 	return rsp, err
 }
 

@@ -397,40 +397,34 @@ message PrepareOrderResponse{
     string errMsg = 2;
     // 订单类型
     int32 orderType = 3;
-    // 商品总金额
-    int64 itemAmount = 4;
-    // 优惠金额
-    int64 discountAmount = 5;
-    // 抵扣金额
-    int32 deductAmount = 6;
-    // 调整金额
-    int32 adjustAmount = 7;
-    // 配送费
-    int64 expressFee = 8;
-    // 包装费
-    int64 packageFee = 9;
-    // 手续费
-    int32 procedureFee = 10;
-    // 订单总金额
-    int32 totalAmount = 11;
-    // 最终金额
-    int64 finalAmount = 12;
-    // 收货人
-    SConsigneeInfo consignee = 13;
     // 订单项目
-    repeated SPrepareOrderGroup sellers = 14;
-    // 买家信息
-    SPrepareOrderBuyerResponse buyer = 15;
-    // 买家留言
-    string buyerComment = 16;
-}
-
-// 预生成订单买家信息
-message SPrepareOrderBuyerResponse{
-    // 商城余额
-    sint64 balance = 1;
-    // 钱包余额
-    sint64 walletBalance = 2;
+    repeated SPrepareOrderGroup sellers = 4;
+    // 收货人
+    SConsigneeInfo consignee = 5;
+    // 商品总金额
+    int64 itemAmount = 6;
+    // 优惠金额
+    int64 discountAmount = 7;
+    // 抵扣金额
+    int32 deductAmount = 8;
+    // 调整金额
+    int32 adjustAmount = 9;
+    // 配送费
+    int64 expressFee = 10;
+    // 包装费
+    int64 packageFee = 11;
+    // 手续费
+    int32 procedureFee = 12;
+    // 订单总金额
+    int32 totalAmount = 13;
+    // 最终金额
+    int64 finalAmount = 14;
+	// 积分
+	sint64 buyerIntegral = 15;
+	// 商城余额
+	sint64 buyerBalance = 16;
+	// 钱包余额
+	sint64 buyerWallet = 17;
 }
 
 // 预生成订单店铺分组
