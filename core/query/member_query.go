@@ -103,7 +103,7 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, valueFilter int32,
 	if num > 0 {
 		orderBy := ""
 		if sortBy != "" {
-			orderBy = "ORDER BY " + sortBy + ",bi.id DESC"
+			orderBy = "ORDER BY " + sortBy
 		}
 		sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,
 		balance,review_state,create_time FROM mm_integral_log 
@@ -135,7 +135,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 		where += ` AND change_value < 0 `
 	}
 	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
+		orderBy = "ORDER BY " + orderBy
 	}
 	var walletId = 0
 	d.ExecScalar(`SELECT id FROM wal_wallet LEFT JOIN mm_account 
@@ -147,11 +147,11 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 	//rows = make([]*proto.SMemberAccountLog,0)
 
 	if num > 0 {
-		sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,procedure_fee,
+		cmd := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,procedure_fee,
 			balance,review_state,create_time FROM wal_wallet_log 
 			WHERE wallet_id = $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)
-		err := d.Query(sqlLine, func(_rows *sql.Rows) {
+		err := d.Query(cmd, func(_rows *sql.Rows) {
 			for _rows.Next() {
 				e := proto.SMemberAccountLog{}
 				_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
@@ -161,7 +161,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 			}
 		}, walletId, begin, end-begin)
 		if err != nil {
-			log.Println("[ GO2O][ ERROR]: query wallet log", err.Error())
+			log.Println("[ GO2O][ ERROR]: query wallet log", err.Error(), ";sql=", cmd)
 		}
 	}
 	return num, rows

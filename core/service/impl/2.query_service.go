@@ -322,7 +322,7 @@ func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.Paging
 		total, rows = q.memberQuery.PagedWalletAccountLog(
 			r.MemberId, r.ValueFilter, int(r.Params.Begin),
 			int(r.Params.End), r.Params.Where,
-			r.Params.Where)
+			r.Params.SortBy)
 	}
 	rs := &proto.MemberAccountPagingLogResponse{
 		Total: int32(total),
