@@ -50,14 +50,14 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 	}
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.audit_state= $1
+		 WHERE item_info.review_state= $1
 		 AND item_info.shelve_state= $2 %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn)
 	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.audit_state= $1
+		 WHERE item_info.review_state= $1
 		 AND item_info.shelve_state= $2 %s
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
@@ -123,14 +123,14 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE  item_info.audit_state= $1
+		 WHERE  item_info.review_state= $1
 		 AND item_info.shelve_state= $2 %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn)
 	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.audit_state= $1
+		 WHERE item_info.review_state= $1
 		 AND item_info.shelve_state= $2 %s
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
@@ -177,7 +177,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		ws_item.price_range,item_info.stock_num,
 		item_info.sale_num,item_info.sku_num,item_info.sku_id,item_info.cost,
 		ws_item.price,item_info.retail_price,item_info.weight,item_info.bulk,
-		item_info.shelve_state,item_info.audit_state,item_info.review_remark,
+		item_info.shelve_state,item_info.review_state,item_info.review_remark,
 		item_info.sort_num,item_info.create_time,item_info.update_time
 		 FROM ws_item INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN product ON product.id = item_info.product_id
@@ -199,7 +199,7 @@ func (i ItemQuery) GetOnShelvesItem(catIdArr []int, begin, end int,
 		catIdStr := format.IntArrStrJoin(catIdArr)
 		sql := fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE item_info.cat_id IN(%s) AND item_info.audit_state= $1
+		 WHERE item_info.cat_id IN(%s) AND item_info.review_state= $1
 		 AND item_info.shelve_state= $2 %s
 		 ORDER BY item_info.update_time DESC LIMIT $4 OFFSET $3`, catIdStr, where)
 		i.o.SelectByQuery(&list, sql,
@@ -235,11 +235,11 @@ func (i ItemQuery) GetRandomItem(catIdArr []int, begin, end int, where string) [
 	var list []*item.GoodsItem
 	sql := fmt.Sprintf(`SELECT * FROM item_info
     JOIN (SELECT ROUND(RAND() * (
-      SELECT MAX(id)-? FROM item_info WHERE  item_info.audit_state= $1
+      SELECT MAX(id)-? FROM item_info WHERE  item_info.review_state= $1
          AND item_info.shelve_state= ? %s
          )) AS id) AS r2
 		 WHERE item_info.Id > r2.id
-		  AND item_info.audit_state= ?
+		  AND item_info.review_state= ?
 		 AND item_info.shelve_state= ? %s LIMIT ? OFFSET $3`,
 		search, search)
 	i.o.SelectByQuery(&list, sql,
@@ -299,7 +299,7 @@ func (i ItemQuery) GetPagedOnShelvesGoods(shopId int64,
 	var list = make([]*valueobject.Goods, 0)
 	s := fmt.Sprintf(`SELECT item_info.* FROM item_info INNER JOIN product_category cat
 		 ON item_info.cat_id=cat.id
-		 WHERE ($1 <= 0 OR item_info.shop_id = $2) AND item_info.audit_state= $3 AND item_info.shelve_state= $4
+		 WHERE ($1 <= 0 OR item_info.shop_id = $2) AND item_info.review_state= $3 AND item_info.shelve_state= $4
 		  %s ORDER BY %s LIMIT $6 OFFSET $5`, where, orderBy)
 	err := i.o.SelectByQuery(&list, s, shopId, shopId,
 		enum.ReviewPass, item.ShelvesOn, start, end-start)

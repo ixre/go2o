@@ -10,9 +10,10 @@ package item
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
-	"time"
 )
 
 var _ item.ISnapshotService = new(snapshotServiceImpl)
@@ -67,7 +68,7 @@ func (s *snapshotServiceImpl) GenerateSnapshot(it *item.GoodsItem) (int64, error
 	// 检查快照
 	err := s.checkSnapshot(ls, it)
 	// 审核通过后更新快照
-	if err == nil && it.AuditState == enum.ReviewPass {
+	if err == nil && it.ReviewState == enum.ReviewPass {
 		return s.updateSnapshot(ls, it)
 	}
 	return 0, err

@@ -198,9 +198,9 @@ message SItemDataResponse {
   // 上架状态
   int32 shelveState = 21;
   // 审核状态
-  int32 auditState = 22;
+  int32 reviewState = 22;
   // 审核意见
-  string auditRemark = 23;
+  string reviewRemark = 23;
 
   //todo: 对比SGoods多出的字段
   // 品牌编号
@@ -303,7 +303,7 @@ message SUnifiedViewItem {
   string code = 23;
   int64 expressTid = 24;
   sint32 shelveState = 25;
-  sint32 auditState = 26;
+  sint32 reviewState = 26;
   sint64 updateTime = 27;
   repeated SSku skuArray = 28;
   repeated SLevelPrice levelPrices = 29;

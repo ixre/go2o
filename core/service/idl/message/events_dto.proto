@@ -157,7 +157,7 @@ message EVMemberWithdrawalPushEventData {
 	// 手续费
 	int64 procedureFee = 4;
 	// 是否为已审核通过的事件
-	bool isAuditedEvent = 5;
+	bool isReviewEvent = 5;
 }
 
 // 账户日志推送事件
@@ -183,7 +183,7 @@ message EVAccountLogPushEventData  {
 	// 交易手续费
 	int64 procedureFee = 10;
 	// 审核状态
-	int32 auditState  = 11;
+	int32 reviewState  = 11;
 	// 创建时间
 	int64 createTime = 12;
 }

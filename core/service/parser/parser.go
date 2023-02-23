@@ -45,8 +45,8 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		//RetailPrice:  float64(src.RetailPrice),
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
-		ShelveState: src.AuditState,
-		AuditState:  src.AuditState,
+		ShelveState: src.ReviewState,
+		ReviewState: src.ReviewState,
 		//ReviewRemark: src.ReviewRemark,
 		//SortNum:      src.SortNum,
 		//CreateTime:   src.CreateTime,
@@ -86,9 +86,9 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		RetailPrice: src.RetailPrice,
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
-		ShelveState: src.ShelveState,
-		AuditState:  src.AuditState,
-		AuditRemark: src.AuditRemark,
+		ShelveState:  src.ShelveState,
+		ReviewState:  src.ReviewState,
+		ReviewRemark: src.ReviewRemark,
 		//CreateTime:   src.CreateTime,
 	}
 	if src.SkuArray != nil {

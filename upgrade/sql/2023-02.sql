@@ -46,3 +46,37 @@ COMMENT ON COLUMN "public".perm_res.component_name IS '组件路径';
 COMMENT ON COLUMN "public".perm_res.cache_ IS '缓存';
 COMMENT ON COLUMN "public".perm_res.depth IS '深度/层级';
 COMMENT ON COLUMN "public".perm_res.is_forbidden IS '是否禁止';
+
+
+ALTER TABLE IF EXISTS public.mm_flag_request
+    RENAME audit_state TO review_state;
+
+ALTER TABLE IF EXISTS public.mm_flag_request
+    RENAME audit_time TO review_time;
+
+ALTER TABLE IF EXISTS public.mm_flag_request
+    RENAME audit_uid TO review_uid;
+
+ALTER TABLE IF EXISTS public.mm_flag_request
+    RENAME audit_remark TO review_remark;
+
+    ALTER TABLE IF EXISTS public.mm_flow_log
+    RENAME audit_state TO review_state;
+
+    ALTER TABLE IF EXISTS public.mm_integral_log
+    RENAME audit_state TO review_state;
+
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME audit_state TO review_state;
+
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME audit_remark TO review_remark;
+
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME audit_time TO review_time;
+
+ALTER TABLE IF EXISTS public.item_info
+    RENAME audit_state TO review_state;
+
+ALTER TABLE IF EXISTS public.item_info
+    RENAME audit_remark TO review_remark;

@@ -352,7 +352,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		Title:       v.Subject,
 		Amount:      float64(v.ChangeValue),
 		TradeFee:    float64(v.ProcedureFee),
-		ReviewState: int32(v.AuditState),
+		ReviewState: int32(v.ReviewState),
 		Remark:      v.Remark,
 		CreateTime:  v.CreateTime,
 		UpdateTime:  v.UpdateTime,

@@ -69,11 +69,11 @@ func (h EventHandler) HandleWithdrawalPushEvent(data interface{}) {
 	isPush := r.Get(registry.MemberWithdrawalPushEnabled).BoolValue()
 	if isPush {
 		ev := &proto.EVMemberWithdrawalPushEventData{
-			MemberId:       v.MemberId,
-			RequestId:      int64(v.RequestId),
-			Amount:         int64(v.Amount),
-			ProcedureFee:   int64(v.ProcedureFee),
-			IsAuditedEvent: v.IsAuditedEvent,
+			MemberId:      v.MemberId,
+			RequestId:     int64(v.RequestId),
+			Amount:        int64(v.Amount),
+			ProcedureFee:  int64(v.ProcedureFee),
+			IsReviewEvent: v.IsReviewEvent,
 		}
 		msq.PushDelay(msq.MembertWithdrawalTopic, typeconv.MustJson(ev), 500)
 	}
@@ -98,7 +98,7 @@ func (h EventHandler) HandleMemberAccountLogPushEvent(data interface{}) {
 			ChangeValue:   int64(v.ChangeValue),
 			Balance:       int64(v.Balance),
 			ProcedureFee:  int64(v.ProcedureFee),
-			AuditState:    int32(v.AuditState),
+			ReviewState:   int32(v.ReviewState),
 			CreateTime:    int64(v.CreateTime),
 		}
 		msq.PushDelay(msq.MemberAccountLogTopic, typeconv.MustJson(ev), 500)

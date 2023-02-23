@@ -964,11 +964,11 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		}
 		// 推送提现申请事件
 		eventbus.Publish(&events.WithdrawalPushEvent{
-			MemberId:       a.value.MemberId,
-			RequestId:      int(id),
-			Amount:         amount,
-			ProcedureFee:   procedureFee,
-			IsAuditedEvent: false,
+			MemberId:      a.value.MemberId,
+			RequestId:     int(id),
+			Amount:        amount,
+			ProcedureFee:  procedureFee,
+			IsReviewEvent: false,
 		})
 	}
 	return id, tradeNo, err
@@ -984,11 +984,11 @@ func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error
 			log := a.wallet.GetLog(id)
 			// 推送提现申请事件
 			eventbus.Publish(&events.WithdrawalPushEvent{
-				MemberId:       a.value.MemberId,
-				RequestId:      int(id),
-				Amount:         int(log.ChangeValue),
-				ProcedureFee:   log.ProcedureFee,
-				IsAuditedEvent: true,
+				MemberId:      a.value.MemberId,
+				RequestId:     int(id),
+				Amount:        int(log.ChangeValue),
+				ProcedureFee:  log.ProcedureFee,
+				IsReviewEvent: true,
 			})
 		}
 	}

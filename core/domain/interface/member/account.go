@@ -226,7 +226,7 @@ type (
 		// 关联用户
 		RelateUser int `db:"rel_user"`
 		// 审核状态
-		ReviewState int16 `db:"audit_state"`
+		ReviewState int16 `db:"review_state"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
@@ -251,7 +251,7 @@ type (
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int64 `db:"rel_user"`
 		// 状态
-		ReviewState int32 `db:"audit_state"`
+		ReviewState int32 `db:"review_state"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间
@@ -305,7 +305,7 @@ type (
 		// 引用编号
 		RelateUser int64 `db:"rel_user"`
 		// 审核状态
-		ReviewState int `db:"audit_state"`
+		ReviewState int `db:"review_state"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间
