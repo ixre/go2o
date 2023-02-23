@@ -196,7 +196,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	if r.UserId <= 0 { // 管理员
 		dst.Roles = []int64{}
 		dst.Permissions = []string{"master", "admin"}
-		resList = p.dao.SelectPermRes("is_forbidden <> 1")
+		resList = p.dao.SelectPermRes("is_forbidden <> 1 AND is_hidden <> 1")
 		// 获取管理员
 		for _, v := range resList {
 			v.Permission = "master,admin"
