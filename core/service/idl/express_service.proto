@@ -56,12 +56,15 @@ message ExpressProviderListResponse {
 
 // 快递服务商分组响应
 message ExpressProviderGroupResponse{
- repeated SExpressProviderGroup list = 1;
+  // 列表
+  repeated SExpressProviderGroup list = 1;
 }
 
 // 快递服务商分组
 message SExpressProviderGroup{
+  // 分组
   string group = 1;
+  // 快递列表
   repeated SMinifiyExpressProvider list = 2;
 }
 

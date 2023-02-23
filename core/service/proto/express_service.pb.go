@@ -73,6 +73,7 @@ type ExpressProviderGroupResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// 列表
 	List []*SExpressProviderGroup `protobuf:"bytes,1,rep,name=list,proto3" json:"list"`
 }
 
@@ -121,8 +122,10 @@ type SExpressProviderGroup struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Group string                     `protobuf:"bytes,1,opt,name=group,proto3" json:"group"`
-	List  []*SMinifiyExpressProvider `protobuf:"bytes,2,rep,name=list,proto3" json:"list"`
+	// 分组
+	Group string `protobuf:"bytes,1,opt,name=group,proto3" json:"group"`
+	// 快递列表
+	List []*SMinifiyExpressProvider `protobuf:"bytes,2,rep,name=list,proto3" json:"list"`
 }
 
 func (x *SExpressProviderGroup) Reset() {
