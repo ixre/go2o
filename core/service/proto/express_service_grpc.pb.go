@@ -28,6 +28,8 @@ type ExpressServiceClient interface {
 	SaveExpressProvider(ctx context.Context, in *SExpressProvider, opts ...grpc.CallOption) (*Result, error)
 	// 获取可用的快递公司
 	GetProviders(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ExpressProviderListResponse, error)
+	// 获取可用的快递公司分组
+	GetProviderGroup(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ExpressProviderGroupResponse, error)
 	// 保存快递模板
 	SaveTemplate(ctx context.Context, in *SExpressTemplate, opts ...grpc.CallOption) (*SaveTemplateResponse, error)
 	// 获取单个快递模板
@@ -71,6 +73,15 @@ func (c *expressServiceClient) SaveExpressProvider(ctx context.Context, in *SExp
 func (c *expressServiceClient) GetProviders(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ExpressProviderListResponse, error) {
 	out := new(ExpressProviderListResponse)
 	err := c.cc.Invoke(ctx, "/ExpressService/GetProviders", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *expressServiceClient) GetProviderGroup(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ExpressProviderGroupResponse, error) {
+	out := new(ExpressProviderGroupResponse)
+	err := c.cc.Invoke(ctx, "/ExpressService/GetProviderGroup", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -141,6 +152,8 @@ type ExpressServiceServer interface {
 	SaveExpressProvider(context.Context, *SExpressProvider) (*Result, error)
 	// 获取可用的快递公司
 	GetProviders(context.Context, *Empty) (*ExpressProviderListResponse, error)
+	// 获取可用的快递公司分组
+	GetProviderGroup(context.Context, *Empty) (*ExpressProviderGroupResponse, error)
 	// 保存快递模板
 	SaveTemplate(context.Context, *SExpressTemplate) (*SaveTemplateResponse, error)
 	// 获取单个快递模板
@@ -168,6 +181,9 @@ func (UnimplementedExpressServiceServer) SaveExpressProvider(context.Context, *S
 }
 func (UnimplementedExpressServiceServer) GetProviders(context.Context, *Empty) (*ExpressProviderListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProviders not implemented")
+}
+func (UnimplementedExpressServiceServer) GetProviderGroup(context.Context, *Empty) (*ExpressProviderGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProviderGroup not implemented")
 }
 func (UnimplementedExpressServiceServer) SaveTemplate(context.Context, *SExpressTemplate) (*SaveTemplateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveTemplate not implemented")
@@ -250,6 +266,24 @@ func _ExpressService_GetProviders_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ExpressServiceServer).GetProviders(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ExpressService_GetProviderGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExpressServiceServer).GetProviderGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ExpressService/GetProviderGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExpressServiceServer).GetProviderGroup(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -380,6 +414,10 @@ var ExpressService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProviders",
 			Handler:    _ExpressService_GetProviders_Handler,
+		},
+		{
+			MethodName: "GetProviderGroup",
+			Handler:    _ExpressService_GetProviderGroup_Handler,
 		},
 		{
 			MethodName: "SaveTemplate",
