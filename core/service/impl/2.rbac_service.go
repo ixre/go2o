@@ -154,7 +154,7 @@ func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
 	}
 	// 获取角色的权限
 	rolesList := p.dao.SelectPermRole(
-		fmt.Sprintf("id IN (%_s)", util.JoinIntArray(roleList, ",")))
+		fmt.Sprintf("id IN (%s)", util.JoinIntArray(roleList, ",")))
 	permissions := make([]string, len(roles))
 	for i, v := range rolesList {
 		permissions[i] = v.Permission
@@ -205,7 +205,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 		dst.Roles, dst.Permissions = p.getUserRolesPerm(r.UserId)
 		usr := p.dao.GetPermUser(r.UserId)
 		if usr == nil {
-			return nil,fmt.Errorf("no such user %v",r.UserId) 
+			return nil, fmt.Errorf("no such user %v", r.UserId)
 		}
 		roleList := make([]int, len(dst.Roles))
 		for i, v := range dst.Roles {
@@ -302,7 +302,7 @@ func (p *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptR
 func (p *rbacServiceImpl) GetPermDept(_ context.Context, id *proto.PermDeptId) (*proto.SPermDept, error) {
 	v := p.dao.GetPermDept(id.Value)
 	if v == nil {
-		return nil,fmt.Errorf("no such dept: %v",id)
+		return nil, fmt.Errorf("no such dept: %v", id)
 	}
 	return p.parsePermDept(v), nil
 }
@@ -488,7 +488,7 @@ func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SPermUser {
 func (p *rbacServiceImpl) GetPermUser(_ context.Context, id *proto.PermUserId) (*proto.SPermUser, error) {
 	v := p.dao.GetPermUser(id.Value)
 	if v == nil {
-		return nil, fmt.Errorf("no such user %v",id.Value) 
+		return nil, fmt.Errorf("no such user %v", id.Value)
 	}
 	dst := p.parsePermUser(v)
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(v.Id)
@@ -783,7 +783,7 @@ func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*p
 
 // 获取PermRes列表
 func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryPermResRequest) (*proto.QueryPermResResponse, error) {
-	var where string = "1=1"
+	var where string = "is_forbidden <> 1"
 	if r.Keyword != "" {
 		where += " AND name LIKE '%" + r.Keyword + "%'"
 	}
@@ -838,18 +838,6 @@ func (p *rbacServiceImpl) queryResChildren(parentId int64, arr []*model.PermRes)
 		list = append(list, c)
 	}
 	return list
-}
-
-func (p *rbacServiceImpl) walkPermRes(root *proto.SPermRes, arr []*model.PermRes) {
-	root.IsLeaf = true // 已经加载子项, 不再懒加载
-	root.Children = []*proto.SPermRes{}
-	for _, v := range arr {
-		if v.Pid == root.Id {
-			c := p.parsePermRes(v)
-			root.Children = append(root.Children, c)
-			p.walkPermRes(c, arr)
-		}
-	}
 }
 
 func (p *rbacServiceImpl) DeletePermRes(_ context.Context, id *proto.PermResId) (*proto.Result, error) {
