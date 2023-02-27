@@ -954,6 +954,7 @@ func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
 			return err
 		}
 	}
+	o.baseValue.Status = order.StatAwaitingPickup
 	o.baseValue.IsPaid = 1
 	o.baseOrderImpl.saveOrder()
 	return nil
