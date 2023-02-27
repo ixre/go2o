@@ -27,7 +27,7 @@ func TestGrantMemberAccessToken(t *testing.T) {
 	}
 	t.Log("token is:", token.AccessToken)
 	now := time.Now().Unix()
-	token.AccessToken = "Bearer "// + token.AccessToken
+	token.AccessToken = "Bearer " // + token.AccessToken
 	accessToken, _ := s.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken:      token.AccessToken,
 		CheckExpireTime:  now + 800,
@@ -40,7 +40,7 @@ func TestGrantMemberAccessToken(t *testing.T) {
 }
 
 func TestCheckMemberAccessToken(t *testing.T) {
-	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI3MDIiLCJleHAiOjE2NzIzMDM4MDIsImlzcyI6ImdvMm8iLCJzdWIiOiJnbzJvLWFwaS1qd3QifQ.Ebx4PcD0KSIftqejzfbyYbUpunm3jEi0gsScipcl-lo"
+	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOjAsImV4cCI6MTY3NzU3NTczMywiaXNzIjoiR28ybyIsIm5hbWUiOiJtYXN0ZXIiLCJzdWIiOiJHbzJvLVJCQUMtVG9rZW4iLCJ4LXBlcm0iOiJtYXN0ZXIsYWRtaW4ifQ.nuwgYIIEhBAGDaKENKxhF8HhNtvDnj7kGypsMkPG7Qg"
 	ret, _ := impl.MemberService.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken: accessToken,
 	})
