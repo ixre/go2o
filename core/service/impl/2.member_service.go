@@ -567,6 +567,23 @@ func (s *memberService) GetInviter(_ context.Context, id *proto.MemberIdRequest)
 	return &proto.MemberInviterResponse{}, nil
 }
 
+// GetInviteCount 获取会员邀请数量
+func (s *memberService) GetInviteCount(_ context.Context, req *proto.MemberIdRequest) (*proto.MemberInviteCountResponse, error) {
+	memberId := int(req.MemberId)
+	if memberId > 0 {
+		f := func(level int) int32 {
+			return int32(s.repo.GetInvitationCount(int(req.MemberId), level))
+		}
+		return &proto.MemberInviteCountResponse{
+			FirstLevelCount: f(1),
+			SecondCount:     f(2),
+			ThridCount:      f(3),
+		}, nil
+	}
+	return &proto.MemberInviteCountResponse{}, nil
+
+}
+
 // Active 激活会员
 func (s *memberService) Active(_ context.Context, id *proto.MemberIdRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(id.MemberId)

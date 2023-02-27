@@ -76,6 +76,11 @@ service MemberService {
     // 获取会员邀请人信息
     rpc GetInviter (MemberIdRequest) returns (MemberInviterResponse) {
     }
+
+    // 获取会员邀请数量
+    rpc GetInviteCount (MemberIdRequest) returns (MemberInviteCountResponse) {
+    }
+
     // 获取会员绑定银行卡信息
     rpc GetBankCards (MemberIdRequest) returns (BankCardListResponse) {
     }

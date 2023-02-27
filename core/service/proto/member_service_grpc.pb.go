@@ -68,6 +68,8 @@ type MemberServiceClient interface {
 	SaveProfile(ctx context.Context, in *SProfile, opts ...grpc.CallOption) (*Result, error)
 	// 获取会员邀请人信息
 	GetInviter(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviterResponse, error)
+	// 查询邀请数量
+	GetInviteCount(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviteCountResponse, error)
 	// 获取会员绑定银行卡信息
 	GetBankCards(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*BankCardListResponse, error)
 	// 添加银行卡
@@ -360,6 +362,15 @@ func (c *memberServiceClient) SaveProfile(ctx context.Context, in *SProfile, opt
 func (c *memberServiceClient) GetInviter(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviterResponse, error) {
 	out := new(MemberInviterResponse)
 	err := c.cc.Invoke(ctx, "/MemberService/GetInviter", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) GetInviteCount(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviteCountResponse, error) {
+	out := new(MemberInviteCountResponse)
+	err := c.cc.Invoke(ctx, "/MemberService/GetInviteCount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -983,6 +994,8 @@ type MemberServiceServer interface {
 	SaveProfile(context.Context, *SProfile) (*Result, error)
 	// 获取会员邀请人信息
 	GetInviter(context.Context, *MemberIdRequest) (*MemberInviterResponse, error)
+	// 查询邀请数量
+	GetInviteCount(context.Context, *MemberIdRequest) (*MemberInviteCountResponse, error)
 	// 获取会员绑定银行卡信息
 	GetBankCards(context.Context, *MemberIdRequest) (*BankCardListResponse, error)
 	// 添加银行卡
@@ -1169,6 +1182,9 @@ func (UnimplementedMemberServiceServer) SaveProfile(context.Context, *SProfile) 
 }
 func (UnimplementedMemberServiceServer) GetInviter(context.Context, *MemberIdRequest) (*MemberInviterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInviter not implemented")
+}
+func (UnimplementedMemberServiceServer) GetInviteCount(context.Context, *MemberIdRequest) (*MemberInviteCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInviteCount not implemented")
 }
 func (UnimplementedMemberServiceServer) GetBankCards(context.Context, *MemberIdRequest) (*BankCardListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBankCards not implemented")
@@ -1692,6 +1708,24 @@ func _MemberService_GetInviter_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemberServiceServer).GetInviter(ctx, req.(*MemberIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_GetInviteCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).GetInviteCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MemberService/GetInviteCount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).GetInviteCount(ctx, req.(*MemberIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2908,6 +2942,10 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetInviter",
 			Handler:    _MemberService_GetInviter_Handler,
+		},
+		{
+			MethodName: "GetInviteCount",
+			Handler:    _MemberService_GetInviteCount_Handler,
 		},
 		{
 			MethodName: "GetBankCards",
