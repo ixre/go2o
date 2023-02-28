@@ -124,8 +124,8 @@ func (p *rbacServiceImpl) createAccessToken(userId int64, userName string, perm 
 	var claims = jwt.MapClaims{
 		"exp":    time.Now().Add(time.Second * time.Duration(exp)).Unix(),
 		"aud":    userId,
-		"iss":    "Go2o",
-		"sub":    "Go2o-RBAC-Token",
+		"iss":    "go2o",
+		"sub":    "go2o-rbac-token",
 		"name":   userName,
 		"x-perm": perm,
 	}
