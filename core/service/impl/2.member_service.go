@@ -808,8 +808,7 @@ func (s *memberService) CheckAccessToken(_ context.Context, request *proto.Check
 		return &proto.CheckAccessTokenResponse{Error: "令牌无效"}, nil
 	}
 	if !dstClaims.VerifyIssuer("go2o", true) ||
-		(dstClaims["sub"] != "go2o-api-jwt" &&
-		 dstClaims["sub"] != "go2o-rbac-token") {
+		dstClaims["sub"] != "go2o-api-jwt" {
 		return &proto.CheckAccessTokenResponse{Error: "未知颁发者的令牌"}, nil
 	}
 	// 令牌过期时间

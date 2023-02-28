@@ -40,7 +40,7 @@ func TestGrantMemberAccessToken(t *testing.T) {
 }
 
 func TestCheckMemberAccessToken(t *testing.T) {
-	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOjAsImV4cCI6MTY3NzU3NTczMywiaXNzIjoiR28ybyIsIm5hbWUiOiJtYXN0ZXIiLCJzdWIiOiJHbzJvLVJCQUMtVG9rZW4iLCJ4LXBlcm0iOiJtYXN0ZXIsYWRtaW4ifQ.nuwgYIIEhBAGDaKENKxhF8HhNtvDnj7kGypsMkPG7Qg"
+	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOjAsImV4cCI6MTY3NzY0MTEyMCwiaXNzIjoiZ28ybyIsIm5hbWUiOiJtYXN0ZXIiLCJzdWIiOiJnbzJvLXJiYWMtdG9rZW4iLCJ4LXBlcm0iOiJtYXN0ZXIsYWRtaW4ifQ.GBis-mWtN7gqNHyZaAWbuQ6lyFMUeE0DkBGFXhE2gso"
 	ret, _ := impl.MemberService.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken: accessToken,
 	})

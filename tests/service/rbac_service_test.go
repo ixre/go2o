@@ -3,9 +3,11 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"testing"
+
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
-	"testing"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestInitialTreeNode(t *testing.T) {
@@ -21,4 +23,17 @@ func TestInitialTreeNode(t *testing.T) {
 	t.Log(len(list.List))
 	bytes, _ := json.Marshal(list.List)
 	t.Log(string(bytes))
+}
+
+func TestCheckRBACToken(t *testing.T) {
+	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOjAsImV4cCI6MTY3NzY0MTEyMCwiaXNzIjoiZ28ybyIsIm5hbWUiOiJtYXN0ZXIiLCJzdWIiOiJnbzJvLXJiYWMtdG9rZW4iLCJ4LXBlcm0iOiJtYXN0ZXIsYWRtaW4ifQ.GBis-mWtN7gqNHyZaAWbuQ6lyFMUeE0DkBGFXhE2gso"
+	ret, _ := impl.RbacService.CheckRBACToken(context.TODO(), &proto.CheckRBACTokenRequest{
+		AccessToken: accessToken,
+	})
+	if len(ret.Error) > 0 {
+		t.Log(ret.Error)
+		t.FailNow()
+	}
+	t.Log(typeconv.MustJson(ret))
+	t.Log("用户Id", ret.UserId)
 }
