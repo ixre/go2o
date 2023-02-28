@@ -18,8 +18,8 @@ func TestPagingMemberAccountLog(t *testing.T) {
 		ValueFilter: 0,
 		AccountType: int32(member.AccountWallet),
 		Params: &proto.SPagingParams{
-			Begin: 0,
-			End:   10,
+			Begin:  0,
+			End:    10,
 			SortBy: "create_time DESC,id DESC",
 		},
 	})
@@ -96,9 +96,23 @@ func TestPagingShopGoodsRequest(t *testing.T) {
 }
 
 func TestMemberStatifics(t *testing.T) {
-	var memberId int64 = 723 
+	var memberId int64 = 723
 	mp, _ := impl.QueryService.MemberStatistics(context.TODO(), &proto.MemberStatisticsRequest{
 		MemberId: memberId,
 	})
 	t.Log("未支付订单数", mp.AwaitPaymentOrders)
+}
+
+func TestQuerySearchItem(t *testing.T) {
+	list, err := impl.QueryService.SearchItem(context.TODO(), &proto.SearchItemRequest{
+		ShopId:  0,
+		Keyword: "1",
+		Size:    10,
+	})
+
+	if err != nil {
+		t.Error(err)
+	} else {
+		t.Log(len(list.Value), typeconv.MustJson(list.Value))
+	}
 }

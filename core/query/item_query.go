@@ -316,25 +316,28 @@ func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (
 		INNER JOIN sale_normal_order ord ON ord.id = it.order_id
 		INNER JOIN mm_member m ON m.member_id = ord.buyer_id
 		WHERE it.item_id = $1 LIMIT $2 `
-	i.Query(s, func(_rows *sql.Rows) {
+	err := i.Query(s, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := dto.ItemSalesHistoryDto{}
 			_rows.Scan(&e.BuyerUserCode, &e.BuyerName, &e.BuyerPortrait, &e.BuyTime, &e.OrderState)
 			rows = append(rows, &e)
 		}
 	}, itemId, size)
+	if err != nil {
+		log.Println("[ GO2O][ ERROR]", err.Error(), s)
+	}
 	return rows
 }
 
 func (i *ItemQuery) SearchItem(shopId int, keyword string, size int) (rows []*dto.SearchItemResultDto) {
-	where := "title LIKE '%" + keyword + "%"
+	where := "title LIKE '%" + keyword + "%'"
 	if shopId > 0 {
 		where += fmt.Sprintf(" AND shop_id = %d", shopId)
 	}
-	s := fmt.Sprintf(`SELECT id,item_flag, code,title,image,
+	cmd := fmt.Sprintf(`SELECT id,item_flag, code,title,image,
 			vendor_id,price_range,stock_num
-			WHERE %s LIMIT $21 `, where)
-	i.Query(s, func(_rows *sql.Rows) {
+			FROM item_info WHERE %s LIMIT $1 `, where)
+	err := i.Query(cmd, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := dto.SearchItemResultDto{}
 			_rows.Scan(&e.ItemId, &e.ItemFlag, &e.Code, &e.Title, &e.Image,
@@ -342,5 +345,8 @@ func (i *ItemQuery) SearchItem(shopId int, keyword string, size int) (rows []*dt
 			rows = append(rows, &e)
 		}
 	}, size)
+	if err != nil {
+		log.Println("[ GO2O][ ERROR]", err.Error(), cmd)
+	}
 	return rows
 }
