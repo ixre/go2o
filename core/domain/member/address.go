@@ -64,12 +64,10 @@ func (p *addressImpl) checkValue(v *member.ConsigneeAddress) error {
 	if !phoneRegex.MatchString(v.ConsigneePhone) {
 		return member.ErrDeliverContactPhone
 	}
-
-	if len([]rune(v.DetailAddress)) < 6 {
-		// 判断字符长度
-		return member.ErrDeliverAddressLen
+	// 判断字符长度
+	if len([]rune(v.DetailAddress)) == 0 {
+		return member.ErrEmptyDeliverAddress
 	}
-
 	return nil
 }
 
