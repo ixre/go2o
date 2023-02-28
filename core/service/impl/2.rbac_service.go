@@ -74,7 +74,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 			UserId:      -1,
 			Permissions: []string{"master", "admin"},
 		}
-		return p.withAccessToken(0, "master", dst, expires)
+		return p.withAccessToken("master", dst, expires)
 	}
 	// 普通系统用户登录
 	usr := p.dao.GetPermUserBy("usr=$1", r.Username)
@@ -101,13 +101,13 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		UserId: usr.Id,
 	}
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(usr.Id)
-	return p.withAccessToken(usr.Id, usr.Usr, dst, expires)
+	return p.withAccessToken( usr.Usr, dst, expires)
 }
 
 // 返回带有令牌的结果
-func (p *rbacServiceImpl) withAccessToken(userId int64, userName string,
+func (p *rbacServiceImpl) withAccessToken( userName string,
 	dst *proto.RbacLoginResponse, expires int) (*proto.RbacLoginResponse, error) {
-	accessToken, err := p.createAccessToken(userId, userName,
+	accessToken, err := p.createAccessToken(dst.UserId, userName,
 		strings.Join(dst.Permissions, ","), expires)
 	dst.AccessToken = accessToken
 	if err != nil {

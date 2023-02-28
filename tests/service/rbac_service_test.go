@@ -26,7 +26,7 @@ func TestInitialTreeNode(t *testing.T) {
 }
 
 func TestCheckRBACToken(t *testing.T) {
-	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOjAsImV4cCI6MTY3NzY0MTEyMCwiaXNzIjoiZ28ybyIsIm5hbWUiOiJtYXN0ZXIiLCJzdWIiOiJnbzJvLXJiYWMtdG9rZW4iLCJ4LXBlcm0iOiJtYXN0ZXIsYWRtaW4ifQ.GBis-mWtN7gqNHyZaAWbuQ6lyFMUeE0DkBGFXhE2gso"
+	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOjAsImV4cCI6MTY3NzY2MTAwOCwiaXNzIjoiZ28ybyIsIm5hbWUiOiJtYXN0ZXIiLCJzdWIiOiJnbzJvLXJiYWMtdG9rZW4iLCJ4LXBlcm0iOiJtYXN0ZXIsYWRtaW4ifQ.wuPIxCjW8OjvG_n9RQhsZMxHCxO0okjQZwB3KMfna_4"
 	ret, _ := impl.RbacService.CheckRBACToken(context.TODO(), &proto.CheckRBACTokenRequest{
 		AccessToken: accessToken,
 	})
