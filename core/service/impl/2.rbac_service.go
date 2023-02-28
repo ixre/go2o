@@ -71,7 +71,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 			}, nil
 		}
 		dst := &proto.RbacLoginResponse{
-			UserId:      -1,
+			UserId:      0,
 			Permissions: []string{"master", "admin"},
 		}
 		return p.withAccessToken("master", dst, expires)
@@ -101,11 +101,11 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		UserId: usr.Id,
 	}
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(usr.Id)
-	return p.withAccessToken( usr.Usr, dst, expires)
+	return p.withAccessToken(usr.Usr, dst, expires)
 }
 
 // 返回带有令牌的结果
-func (p *rbacServiceImpl) withAccessToken( userName string,
+func (p *rbacServiceImpl) withAccessToken(userName string,
 	dst *proto.RbacLoginResponse, expires int) (*proto.RbacLoginResponse, error) {
 	accessToken, err := p.createAccessToken(dst.UserId, userName,
 		strings.Join(dst.Permissions, ","), expires)
