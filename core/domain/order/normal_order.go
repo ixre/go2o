@@ -739,6 +739,9 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	}
 	isp := o.shopRepo.GetShop(items[0].ShopId).(shop.IOnlineShop)
 	shopName := isp.GetShopValue().ShopName
+	if vendorId == 0 {
+		log.Println("---", typeconv.MustJson(items[0]))
+	}
 	v := &order.NormalSubOrder{
 		OrderNo:   orderNo,
 		BuyerId:   buyerId,
@@ -830,9 +833,9 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 		o.vendorItemsMap == nil ||
 		len(o.vendorItemsMap) == 0 {
 		//todo: 订单要取消掉
-		panic(fmt.Sprintf("订单异常: 订单未生成或VendorItemMap为空,"+
+		return nil, fmt.Errorf("订单异常: 订单未生成或VendorItemMap为空,"+
 			"订单编号:%d,订单号:%s,vendor len:%d",
-			parentOrderId, o.OrderNo(), len(o.vendorItemsMap)))
+			parentOrderId, o.OrderNo(), len(o.vendorItemsMap))
 	}
 
 	l := len(o.vendorItemsMap)
@@ -851,13 +854,13 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 	}
 
 	buyerId := o.buyer.GetAggregateRootId()
-	for k, v := range o.vendorItemsMap {
+	for vendorId, v := range o.vendorItemsMap {
 		// 绑定商品项的订单编号到支付单
 		for _, it := range v {
 			it.OrderId = int64(orderId)
 		}
 		// log.Println("----- vendor ", k, len(v),l)
-		list[i] = o.createSubOrderByVendor(parentOrderId, buyerId, k, l > 1, v)
+		list[i] = o.createSubOrderByVendor(parentOrderId, buyerId, vendorId, l > 1, v)
 		if _, err := list[i].Submit(); err != nil {
 			_ = domain.HandleError(err, "domain")
 		}
