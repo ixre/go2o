@@ -410,3 +410,25 @@ func (q *queryService) QueryItemSalesHistory(_ context.Context, req *proto.Query
 	}
 	return ret, nil
 }
+
+// SearchItem 搜索商品
+func (q *queryService) SearchItem(_ context.Context, req *proto.SearchItemRequest) (*proto.SearchItemResponse, error) {
+	list := q.itemQuery.SearchItem(int(req.ShopId), req.Keyword, int(req.Size))
+	ret := &proto.SearchItemResponse{
+		Value: []*proto.SSearchItemResult{},
+	}
+	for _, v := range list {
+		dst := &proto.SSearchItemResult{
+			ItemId:     v.ItemId,
+			ItemFlag:   int32(v.ItemFlag),
+			Code:       v.Code,
+			SellerId:   v.SellerId,
+			Title:      v.Title,
+			Image:      v.Image,
+			PriceRange: v.PriceRange,
+			StockNum:   v.StockNum,
+		}
+		ret.Value = append(ret.Value, dst)
+	}
+	return ret, nil
+}

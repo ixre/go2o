@@ -68,7 +68,7 @@ type MemberServiceClient interface {
 	SaveProfile(ctx context.Context, in *SProfile, opts ...grpc.CallOption) (*Result, error)
 	// 获取会员邀请人信息
 	GetInviter(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviterResponse, error)
-	// 查询邀请数量
+	// 获取会员邀请数量
 	GetInviteCount(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviteCountResponse, error)
 	// 获取会员绑定银行卡信息
 	GetBankCards(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*BankCardListResponse, error)
@@ -994,7 +994,7 @@ type MemberServiceServer interface {
 	SaveProfile(context.Context, *SProfile) (*Result, error)
 	// 获取会员邀请人信息
 	GetInviter(context.Context, *MemberIdRequest) (*MemberInviterResponse, error)
-	// 查询邀请数量
+	// 获取会员邀请数量
 	GetInviteCount(context.Context, *MemberIdRequest) (*MemberInviteCountResponse, error)
 	// 获取会员绑定银行卡信息
 	GetBankCards(context.Context, *MemberIdRequest) (*BankCardListResponse, error)

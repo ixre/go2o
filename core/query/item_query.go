@@ -311,11 +311,11 @@ func (i ItemQuery) GetPagedOnShelvesGoods(shopId int64,
 
 // QueryItemSalesHistory 查询商品销售记录
 func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (rows []*dto.ItemSalesHistoryDto) {
-	s := fmt.Sprintf(`SELECT m.user_code,m.nickname,m.portrait,ord.create_time,
+	s := `SELECT m.user_code,m.nickname,m.portrait,ord.create_time,
 		ord.status FROM sale_sub_item it 
 		INNER JOIN sale_normal_order ord ON ord.id = it.order_id
 		INNER JOIN mm_member m ON m.member_id = ord.buyer_id
-		WHERE it.item_id = $1 LIMIT $2 `)
+		WHERE it.item_id = $1 LIMIT $2 `
 	i.Query(s, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := dto.ItemSalesHistoryDto{}
@@ -323,5 +323,24 @@ func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (
 			rows = append(rows, &e)
 		}
 	}, itemId, size)
+	return rows
+}
+
+func (i *ItemQuery) SearchItem(shopId int, keyword string, size int) (rows []*dto.SearchItemResultDto) {
+	where := "title LIKE '%" + keyword + "%"
+	if shopId > 0 {
+		where += fmt.Sprintf(" AND shop_id = %d", shopId)
+	}
+	s := fmt.Sprintf(`SELECT id,item_flag, code,title,image,
+			vendor_id,price_range,stock_num
+			WHERE %s LIMIT $21 `, where)
+	i.Query(s, func(_rows *sql.Rows) {
+		for _rows.Next() {
+			e := dto.SearchItemResultDto{}
+			_rows.Scan(&e.ItemId, &e.ItemFlag, &e.Code, &e.Title, &e.Image,
+				&e.SellerId, &e.PriceRange, &e.StockNum)
+			rows = append(rows, &e)
+		}
+	}, size)
 	return rows
 }

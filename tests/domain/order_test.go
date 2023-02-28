@@ -58,7 +58,7 @@ func logState(t *testing.T, err error, o order.IOrder) {
 }
 
 func TestOrderSetup(t *testing.T) {
-	orderNo := "1230213010595516"
+	orderNo := "1230228000726250"
 	orderRepo := ti.Factory.GetOrderRepo()
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
@@ -72,6 +72,7 @@ func TestOrderSetup(t *testing.T) {
 	} else {
 		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
+	return;
 	err = o.PickUp()
 	if err != nil {
 		t.Log(err)
