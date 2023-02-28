@@ -489,18 +489,17 @@ func (i *itemService) SaveLevelPrices(_ context.Context, r *proto.SaveLevelPrice
 func (i *itemService) SetShelveState(_ context.Context, r *proto.ShelveStateRequest) (*proto.Result, error) {
 	it := i.itemRepo.GetItem(r.ItemId)
 	var err error
-	if it == nil || it.GetValue().VendorId != r.SellerId {
-		err = item.ErrNoSuchItem
-	} else {
-		state := int32(types.ElseInt(r.ShelveOn,
-			int(item.ShelvesOn),
-			int(item.ShelvesDown)))
-		switch r.ItemType {
-		case proto.EItemSalesType_IT_WHOLESALE:
-			err = it.Wholesale().SetShelve(state, r.Remark)
-		case proto.EItemSalesType_IT_NORMAL:
-			err = it.SetShelve(state, r.Remark)
-		}
+	if it == nil {
+		return i.result(item.ErrNoSuchItem), nil
+	}
+	state := int32(types.ElseInt(r.ShelveOn,
+		int(item.ShelvesOn),
+		int(item.ShelvesDown)))
+	switch r.ItemType {
+	case proto.EItemSalesType_IT_WHOLESALE:
+		err = it.Wholesale().SetShelve(state, r.Remark)
+	case proto.EItemSalesType_IT_NORMAL:
+		err = it.SetShelve(state, r.Remark)
 	}
 	return i.result(err), nil
 }

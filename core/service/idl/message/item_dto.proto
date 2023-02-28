@@ -526,7 +526,6 @@ message SaveLevelPriceRequest {
 }
 
 message ShelveStateRequest {
-  int64 sellerId = 1;
   EItemSalesType itemType = 3;
   int64 itemId = 2;
   bool shelveOn = 4;
