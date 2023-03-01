@@ -72,7 +72,7 @@ func TestOrderSetup(t *testing.T) {
 	} else {
 		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
-	return;
+	return
 	err = o.PickUp()
 	if err != nil {
 		t.Log(err)
@@ -164,7 +164,7 @@ func TestCancelOrder(t *testing.T) {
 }
 
 func TestCancelSubOrderByOrderNo(t *testing.T) {
-	var orderId int64 = 117
+	var orderId int64 = 543
 	orderRepo := ti.Factory.GetOrderRepo()
 	manager := orderRepo.Manager()
 	is := manager.GetSubOrder(orderId)
@@ -172,6 +172,10 @@ func TestCancelSubOrderByOrderNo(t *testing.T) {
 	if err != nil {
 		t.Log("取消失败：", err.Error())
 		t.FailNow()
+	}
+	ip := is.ParentOrder().GetPaymentOrder()
+	if ip != nil {
+		t.Log("支付单状态:", ip.Get().State)
 	}
 }
 

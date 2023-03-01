@@ -1221,11 +1221,11 @@ func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRe
 	}
 	var accountTid member.AccountType
 	switch r.Account {
-	case proto.PaymentAccountType_PA_BALANCE:
+	case proto.EPaymentAccountType_PA_BALANCE:
 		accountTid = member.AccountBalance
-	case proto.PaymentAccountType_PA_WALLET:
+	case proto.EPaymentAccountType_PA_WALLET:
 		accountTid = member.AccountWallet
-	case proto.PaymentAccountType_PA_QUICK_PAY:
+	case proto.EPaymentAccountType_PA_QUICK_PAY:
 		return s.error(errors.New("暂时不支持")), nil
 	}
 	err := m.GetAccount().SetPriorityPay(accountTid, true)
