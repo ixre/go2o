@@ -68,10 +68,12 @@ func (i *itemService) GetItem(_ context.Context, req *proto.GetItemRequest) (*pr
 	if it != nil {
 		ret := parser.ItemDataDto(it.GetValue())
 		skuArr := it.SkuArray()
+		specArr := it.SpecArray()
 		ret.Images = it.Images()
 		ret.AttrArray = parser.AttrArrayDto(it.Product().Attr())
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		ret.LevelPrices = parser.PriceArrayDto(it.GetLevelPrices())
+		ret.SpecOptions = parser.SpecOptionsDto(specArr)
 		ret.FlagData = i.getFlagData(it.GetValue().ItemFlag)
 		return ret, nil
 	}

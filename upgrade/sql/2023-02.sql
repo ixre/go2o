@@ -80,3 +80,8 @@ ALTER TABLE IF EXISTS public.item_info
 
 ALTER TABLE IF EXISTS public.item_info
     RENAME audit_remark TO review_remark;
+
+delete from perm_res where name	='上架审核';
+delete from perm_res where name	='违规商品';
+delete from perm_res where name	='已下架商品';
+
