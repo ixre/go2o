@@ -145,6 +145,7 @@ func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
 		StockNum:   src.StockNum,
 		SaleNum:    0,
 		SkuId:      src.SkuId,
+		RetailPrice: src.RetailPrice,
 		Cost:       src.Cost,
 		Price:      src.Price,
 		SkuArray:   make([]*item.Sku, len(src.SkuArray)),
