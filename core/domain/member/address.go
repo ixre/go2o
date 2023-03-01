@@ -78,10 +78,6 @@ func (p *addressImpl) Save() (int64, error) {
 	}
 	p._value.Area = p.renewAreaName(p._value)
 	return p._memberRepo.SaveDeliverAddress(p._value)
-	// if err == nil {
-	// 	p.resetDefaultAddress()
-	// }
-	// return id, err
 }
 
 // resetDefaultAddress 重置默认收货地址

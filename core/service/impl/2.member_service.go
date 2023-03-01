@@ -1185,6 +1185,12 @@ func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressReque
 	ret := &proto.SaveAddressResponse{}
 	if e.Id > 0 {
 		v = m.Profile().GetAddress(e.Id)
+		if v == nil {
+			return &proto.SaveAddressResponse{
+				ErrCode: 1,
+				ErrMsg:  member.ErrNoSuchAddress.Error(),
+			}, nil
+		}
 	} else {
 		v = m.Profile().CreateDeliver(e)
 	}
