@@ -1197,11 +1197,14 @@ func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressReque
 	err := v.SetValue(e)
 	if err == nil {
 		ret.AddressId, err = v.Save()
+
+		log.Println("---address", e.IsDefault)
 		// 设置默认收货地址
 		if e.IsDefault == 1 && err == nil {
 			err = m.Profile().SetDefaultAddress(v.GetDomainId())
 		}
 	}
+
 	if err != nil {
 		ret.ErrCode = 1
 		ret.ErrMsg = err.Error()
