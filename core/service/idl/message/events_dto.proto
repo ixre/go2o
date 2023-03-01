@@ -158,6 +158,8 @@ message EVMemberWithdrawalPushEventData {
 	int64 procedureFee = 4;
 	// 是否为已审核通过的事件
 	bool isReviewEvent = 5;
+	// 是否审核通过
+	bool reviewResult = 6;
 }
 
 // 账户日志推送事件

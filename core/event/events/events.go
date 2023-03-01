@@ -104,6 +104,8 @@ type WithdrawalPushEvent struct {
 	ProcedureFee int
 	// 是否为已审核通过的事件
 	IsReviewEvent bool
+	// 是否审核通过
+	ReviewResult bool
 	// 提现账号
 	AccountNo string
 	// 提现账户名称

@@ -962,6 +962,7 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		if err == nil {
 			go a.rep.AddTodayTakeOutTimes(a.GetDomainId())
 		}
+
 		// 推送提现申请事件
 		eventbus.Publish(&events.WithdrawalPushEvent{
 			MemberId:      a.value.MemberId,
@@ -988,6 +989,7 @@ func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error
 				RequestId:     int(id),
 				Amount:        int(log.ChangeValue),
 				ProcedureFee:  log.ProcedureFee,
+				ReviewResult:  log.ReviewState == int(enum.ReviewPass),
 				IsReviewEvent: true,
 			})
 		}

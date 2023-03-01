@@ -73,6 +73,7 @@ func (h EventHandler) HandleWithdrawalPushEvent(data interface{}) {
 			RequestId:     int64(v.RequestId),
 			Amount:        int64(v.Amount),
 			ProcedureFee:  int64(v.ProcedureFee),
+			ReviewResult:  v.ReviewResult,
 			IsReviewEvent: v.IsReviewEvent,
 		}
 		msq.PushDelay(msq.MembertWithdrawalTopic, typeconv.MustJson(ev), 500)
