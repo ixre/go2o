@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	ErrNoSuchSku = domain.NewError(
+	ErrInvalidTitle = domain.NewError("err_item_invalid_title", "商品标题不能包含特殊字符")
+	ErrNoSuchSku    = domain.NewError(
 		"err_item_no_such_item_sku", "商品SKU不存在")
 
 	ErrIncorrectShopOfItem = domain.NewError(

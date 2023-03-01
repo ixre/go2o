@@ -28,6 +28,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/gof/util"
 )
 
@@ -434,6 +435,9 @@ func (i *itemImpl) resetReview() {
 
 // 检查商品数据是否正确
 func (i *itemImpl) checkItemValue(v *item.GoodsItem) error {
+	if b, _ := regex.ContainInvalidChars(v.Title); b {
+		return item.ErrInvalidTitle
+	}
 	defaultImage := i.registryRepo.Get(registry.GoodsDefaultImage).StringValue()
 	// 检测是否上传图片
 	if v.Image == "" || v.Image == defaultImage {
