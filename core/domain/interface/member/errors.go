@@ -44,7 +44,7 @@ var (
 		"member_invalid_session", "异常会话")
 
 	ErrNoSuchAddress = domain.NewError(
-		"member_no_such_deliver_address", "配送地址错误")
+		"member_no_such_deliver_address", "配送地址不存在")
 
 	ErrLevelUsed = domain.NewError(
 		"member_level_used", "此等级已被会员使用")

@@ -1196,8 +1196,8 @@ func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressReque
 	}
 	err := v.SetValue(e)
 	if err == nil {
-		ret.AddressId, err = v.Save()
-
+		err = v.Save()
+		ret.AddressId = v.GetDomainId()
 		log.Println("---address", e.IsDefault)
 		// 设置默认收货地址
 		if e.IsDefault == 1 && err == nil {
