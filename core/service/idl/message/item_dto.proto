@@ -178,12 +178,12 @@ message SItemDataResponse {
   string thumbnail = 10;
   // 图片
   repeated string images = 11;
-  //定价
-  int64 retailPrice = 12;
-  //销售价
-  int64 price = 13;
-  // 促销价
-  int64 promPrice = 14;
+  // 成本价
+  int64 cost = 12;
+  // 建议零售价
+  int64 retailPrice = 13;
+  // 销售价
+  int64 price = 14;
   // 价格区间
   string priceRange = 15;
   // SkuId

@@ -80,6 +80,7 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		Code:       src.Code,
 		//SaleNum:      src.SaleNum,
 		//SkuNum:       src.SkuNum,
+		Cost:       src.Cost,
 		Price:       src.Price,
 		PriceRange:  src.PriceRange,
 		StockNum:    src.StockNum,
