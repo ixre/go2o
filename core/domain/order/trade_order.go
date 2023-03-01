@@ -219,8 +219,8 @@ func (o *tradeOrderImpl) CashPay() error {
 	py := o.GetPaymentOrder()
 	pv := py.Get()
 	switch int(pv.State) {
-	case payment.StateCancelled:
-		return payment.ErrOrderCancelled
+	case payment.StateClosed:
+		return payment.ErrOrderClosed
 	case payment.StateFinished:
 		return payment.ErrOrderPayed
 	}
