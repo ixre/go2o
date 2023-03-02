@@ -152,7 +152,11 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrderRequest) (*proto.PrepareOrderResponse, error) {
 	ic := s.getShoppingCart(r.BuyerId, r.CartCode)
 	if r.Item != nil {
-		if err := ic.Put(r.Item.ItemId, r.Item.SkuId, r.Item.Quantity, true, true); err != nil {
+		err := ic.Put(r.Item.ItemId, r.Item.SkuId, r.Item.Quantity, true, true)
+		if err == nil {
+			_, err = ic.Save()
+		}
+		if err != nil {
 			return &proto.PrepareOrderResponse{
 				ErrCode: 1,
 				ErrMsg:  err.Error(),

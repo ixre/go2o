@@ -17,9 +17,6 @@ service CartService {
     // 放入购物车
     rpc PutInCart(CartItemRequest) returns (CartItemResponse) {
     }
-    // 更新购物车多件商品
-    rpc UpdateItems(CartUpdateRequest) returns (CartItemResponse) {
-    }
     // 从购物车里删除指定数量单件商品
     rpc ReduceCartItem(CartItemRequest) returns (CartItemResponse) {
     }
@@ -33,7 +30,7 @@ message CartItemRequest {
     // 买家编号
     ShoppingCartId id = 1;
     // 商品项
-    RCartItem item = 2;
+    repeated RCartItem items = 2;
 }
 
 // 商品项请求参数
@@ -63,10 +60,3 @@ message ShoppingCartId{
     bool isWholesale = 3;
 }
 
-// 购物车商品更新请求
-message CartUpdateRequest{
-    // 购物车编号
-    ShoppingCartId cartId = 1; 
-    // Sku列表
-    repeated RCartItem items = 2;
-}

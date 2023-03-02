@@ -189,7 +189,7 @@ func (s *cartServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*p
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
-		err = c.Update(itemId, v.SkuId, v.Quantity)
+		err = c.Put(itemId, v.SkuId, v.Quantity, true, false)
 		if err != nil {
 			break
 		}
@@ -298,53 +298,23 @@ func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
-	it := r.Item
-	err := c.Put(it.ItemId, it.SkuId, it.Quantity, false, it.CheckOnly)
-	if err == nil {
-		if _, err = c.Save(); err == nil {
-			rc := c.(cart.INormalCart)
-			item := rc.GetItem(it.ItemId, it.SkuId)
-			return &proto.CartItemResponse{
-				Items: []*proto.SShoppingCartItem{
-					parser.ParseCartItem(item),
-				},
-			}, nil
-		}
-	}
-	return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
-}
-
-// UpdateItems 更新购物车项目
-func (s *cartServiceImpl) UpdateItems(_ context.Context, r *proto.CartUpdateRequest) (*proto.CartItemResponse, error) {
-	c := s.getShoppingCart(r.CartId.UserId, r.CartId.CartCode)
-	if c == nil {
-		return &proto.CartItemResponse{
-			ErrCode: 1,
-			ErrMsg:  cart.ErrNoSuchCart.Error(),
-		}, nil
-	}
 	rc := c.(cart.INormalCart)
-	arr := make([]*proto.SShoppingCartItem, 0)
-	for _, v := range r.Items {
-		err := c.Update(v.ItemId, v.SkuId, v.Quantity)
+	items := make([]*proto.SShoppingCartItem, 0)
+	for _, it := range r.Items {
+		err := c.Put(it.ItemId, it.SkuId, it.Quantity, false, it.CheckOnly)
 		if err != nil {
-			return &proto.CartItemResponse{
-				ErrCode: 2,
-				ErrMsg:  err.Error(),
-			}, nil
+			return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 		}
-		it := rc.GetItem(v.ItemId, v.SkuId)
-		arr = append(arr, parser.ParseCartItem(it))
+		item := rc.GetItem(it.ItemId, it.SkuId)
+		items = append(items, parser.ParseCartItem(item))
 	}
-	_, err := c.Save()
-	ret := &proto.CartItemResponse{
-		Items: arr,
+	if _, err := c.Save(); err != nil {
+		return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
-	if err != nil {
-		ret.ErrCode = 1
-		ret.ErrMsg = err.Error()
-	}
-	return ret, nil
+	return &proto.CartItemResponse{
+		Items: items,
+	}, nil
+
 }
 
 // CheckCart 勾选商品结算

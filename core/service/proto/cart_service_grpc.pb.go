@@ -28,8 +28,6 @@ type CartServiceClient interface {
 	GetShoppingCart(ctx context.Context, in *ShoppingCartId, opts ...grpc.CallOption) (*SShoppingCart, error)
 	// 放入购物车
 	PutInCart(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
-	// 更新购物车多件商品
-	UpdateItems(ctx context.Context, in *CartUpdateRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
 	// 从购物车里删除指定数量单件商品
 	ReduceCartItem(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
 	// 勾选商品结算
@@ -71,15 +69,6 @@ func (c *cartServiceClient) PutInCart(ctx context.Context, in *CartItemRequest, 
 	return out, nil
 }
 
-func (c *cartServiceClient) UpdateItems(ctx context.Context, in *CartUpdateRequest, opts ...grpc.CallOption) (*CartItemResponse, error) {
-	out := new(CartItemResponse)
-	err := c.cc.Invoke(ctx, "/CartService/UpdateItems", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *cartServiceClient) ReduceCartItem(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error) {
 	out := new(CartItemResponse)
 	err := c.cc.Invoke(ctx, "/CartService/ReduceCartItem", in, out, opts...)
@@ -108,8 +97,6 @@ type CartServiceServer interface {
 	GetShoppingCart(context.Context, *ShoppingCartId) (*SShoppingCart, error)
 	// 放入购物车
 	PutInCart(context.Context, *CartItemRequest) (*CartItemResponse, error)
-	// 更新购物车多件商品
-	UpdateItems(context.Context, *CartUpdateRequest) (*CartItemResponse, error)
 	// 从购物车里删除指定数量单件商品
 	ReduceCartItem(context.Context, *CartItemRequest) (*CartItemResponse, error)
 	// 勾选商品结算
@@ -129,9 +116,6 @@ func (UnimplementedCartServiceServer) GetShoppingCart(context.Context, *Shopping
 }
 func (UnimplementedCartServiceServer) PutInCart(context.Context, *CartItemRequest) (*CartItemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PutInCart not implemented")
-}
-func (UnimplementedCartServiceServer) UpdateItems(context.Context, *CartUpdateRequest) (*CartItemResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateItems not implemented")
 }
 func (UnimplementedCartServiceServer) ReduceCartItem(context.Context, *CartItemRequest) (*CartItemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReduceCartItem not implemented")
@@ -206,24 +190,6 @@ func _CartService_PutInCart_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CartService_UpdateItems_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CartUpdateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CartServiceServer).UpdateItems(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/CartService/UpdateItems",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).UpdateItems(ctx, req.(*CartUpdateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _CartService_ReduceCartItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CartItemRequest)
 	if err := dec(in); err != nil {
@@ -278,10 +244,6 @@ var CartService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PutInCart",
 			Handler:    _CartService_PutInCart_Handler,
-		},
-		{
-			MethodName: "UpdateItems",
-			Handler:    _CartService_UpdateItems_Handler,
 		},
 		{
 			MethodName: "ReduceCartItem",
