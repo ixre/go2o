@@ -85,3 +85,17 @@ delete from perm_res where name	='上架审核';
 delete from perm_res where name	='违规商品';
 delete from perm_res where name	='已下架商品';
 
+/** 添加close_time和payment_time */
+ALTER TABLE "public".sale_sub_order 
+  alter column shop_name set default ''::character varying;
+ALTER TABLE "public".sale_sub_order 
+  ADD COLUMN payment_time int8 DEFAULT 0 NOT NULL;
+ALTER TABLE "public".sale_sub_order 
+  ADD COLUMN close_time int8 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".sale_sub_order.shop_id IS '店铺编号';
+COMMENT ON COLUMN "public".sale_sub_order.item_count IS '商品数量';
+COMMENT ON COLUMN "public".sale_sub_order.is_forbidden IS '是否被用户删除';
+COMMENT ON COLUMN "public".sale_sub_order.shop_name IS '店铺名称';
+COMMENT ON COLUMN "public".sale_sub_order.break_status IS '拆分状态: 0.默认 1:待拆分 2:无需拆分 3:已拆分';
+COMMENT ON COLUMN "public".sale_sub_order.payment_time IS '支付时间';
+COMMENT ON COLUMN "public".sale_sub_order.close_time IS '关闭时间';

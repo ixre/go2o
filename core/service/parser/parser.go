@@ -322,6 +322,8 @@ func ParentOrderDto(src *order.ComplexOrder) *proto.SParentOrder {
 			TotalAmount:    0,
 			FinalAmount:    v.FinalAmount,
 			BuyerComment:   v.BuyerComment,
+			PaymentTime:v.PaymentTime,
+			CloseTime:v.CloseTime,
 			Status:         int32(v.Status),
 			Items:          []*proto.SOrderItem{},
 			StatusText:     order.OrderStatus(v.Status).String(),

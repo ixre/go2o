@@ -101,6 +101,8 @@ func parseDetailValue(subOrder order.ISubOrder) *order.ComplexOrderDetails {
 		StatusText:     "",
 		Items:          []*order.ComplexItem{},
 		UpdateTime:     v.UpdateTime,
+		PaymentTime:    v.PaymentTime,
+		CloseTime:      v.CloseTime,
 	}
 	impl := subOrder.(*subOrderImpl)
 	for _, v := range subOrder.Items() {
@@ -262,6 +264,7 @@ func (o *subOrderImpl) orderFinishPaid() error {
 		return order.ErrOrderPayed
 	}
 	if o.value.Status == order.StatAwaitingPayment {
+		o.value.PaymentTime = time.Now().Unix()
 		o.value.Status = order.StatAwaitingPickup
 		// 更新拆分状态
 		if o.value.BreakStatus == order.BreakAwaitBreak {
@@ -658,6 +661,7 @@ func (o *subOrderImpl) Cancel(buyerCancel bool, reason string) error {
 		}
 	}
 	o.value.Status = order.StatCancelled
+	o.value.CloseTime = time.Now().Unix()
 	o.value.UpdateTime = time.Now().Unix()
 	o._stateIsChange = true
 
