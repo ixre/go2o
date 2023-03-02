@@ -379,6 +379,16 @@ message OrderShipmentRequest {
     string shipOrderNo = 4;
 }
 
+// 预生成订单商品项
+message RPrepareOrderItem{
+  //商品编号
+  sint64 itemId = 1;
+  //SKU编号
+  sint64 skuId = 2;
+  // 数量
+  int32 quantity = 3;
+}
+  
 /** 预生成订单请求 */
 message PrepareOrderRequest {
     /** 买家编号 */
@@ -387,12 +397,14 @@ message PrepareOrderRequest {
     string cartCode = 2;
     /** 收货地址 */
     int64 addressId = 3;
+    /** 支付方式 */
+    int32 paymentFlag = 4;
     /** 优惠券 */
     string couponCode = 5;
-    /** 支付方式 */
-    int32 paymentFlag = 6;
-    /** 使用余额 */
-    string subject = 4;
+    // 订单主题(可选) 
+    string subject = 6;
+    // 预生成订单商品,如果传空,则默认使用购物车标记为结算的商品
+    RPrepareOrderItem item = 7;
 }
 /** 预生成订单响应 */
 message PrepareOrderResponse{

@@ -39,13 +39,13 @@ message CartItemRequest {
 // 商品项请求参数
 message RCartItem{
   //商品编号
-  sint64 itemId = 2;
+  sint64 itemId = 1;
   //SKU编号
-  sint64 skuId = 3;
+  sint64 skuId = 2;
   // 数量
-  int32 quantity = 4;
+  int32 quantity = 3;
   // 是否只勾选当前商品(直接购买)
-  bool checkOnly = 5;
+  bool checkOnly = 4;
 }
 
 message CheckCartRequest {

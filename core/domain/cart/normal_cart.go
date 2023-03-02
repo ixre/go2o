@@ -225,13 +225,13 @@ func (c *cartImpl) getItems() []*cart.NormalCartItem {
 }
 
 // Put 添加项
-func (c *cartImpl) Put(itemId, skuId int64, num int32, checkOnly bool) error {
-	_, err := c.put(itemId, skuId, num, checkOnly)
+func (c *cartImpl) Put(itemId, skuId int64, num int32, reset bool, checkOnly bool) error {
+	_, err := c.put(itemId, skuId, num, reset, checkOnly)
 	return err
 }
 
 // 添加项
-func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.NormalCartItem, error) {
+func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly bool) (*cart.NormalCartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.NormalCartItem{}
@@ -274,10 +274,15 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.No
 				v.Quantity = num
 				v.Checked = 1
 			} else {
-				if v.Quantity+num > stock {
+				// 设置商品数量
+				initial := v.Quantity
+				if reset {
+					initial = 0
+				}
+				if initial+num > stock {
 					return v, item.ErrOutOfStock // 库存不足
 				}
-				v.Quantity += num
+				v.Quantity = initial + num
 			}
 			return v, err
 		} else {
@@ -400,7 +405,7 @@ func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 		rc := ic.(cart.INormalCart)
 		for _, v := range rc.Items() {
 			if it, err := c.put(v.ItemId,
-				v.SkuId, v.Quantity, false); err == nil {
+				v.SkuId, v.Quantity, false, false); err == nil {
 				if v.Checked == 1 {
 					it.Checked = 1
 				}

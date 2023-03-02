@@ -151,6 +151,14 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 // PrepareOrder 预生成订单
 func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrderRequest) (*proto.PrepareOrderResponse, error) {
 	ic := s.getShoppingCart(r.BuyerId, r.CartCode)
+	if r.Item != nil {
+		if err := ic.Put(r.Item.ItemId, r.Item.SkuId, r.Item.Quantity, true, true); err != nil {
+			return &proto.PrepareOrderResponse{
+				ErrCode: 1,
+				ErrMsg:  err.Error(),
+			}, nil
+		}
+	}
 	o, err := s.manager.PrepareNormalOrder(ic)
 	if err == nil {
 		// 设置收货地址

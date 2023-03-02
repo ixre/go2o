@@ -253,7 +253,7 @@ func (c *wholesaleCartImpl) getSkuItem(itemId, skuId int64) *cart.WsCartItem {
 }
 
 // 添加项
-func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, checkOnly bool) (*cart.WsCartItem, error) {
+func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, reset bool, checkOnly bool) (*cart.WsCartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.WsCartItem{}
@@ -295,10 +295,15 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, checkOnly b
 	// 添加数量
 	for _, v := range c.value.Items {
 		if v.ItemId == itemId && v.SkuId == skuId {
-			if v.Quantity+quantity > stock {
+			// 设置商品数量
+			initial := v.Quantity
+			if reset {
+				initial = 0
+			}
+			if initial+quantity > stock {
 				return v, item.ErrOutOfStock // 库存不足
 			}
-			v.Quantity += quantity
+			v.Quantity = initial + quantity
 			return v, err
 		} else {
 			if checkOnly {
@@ -366,8 +371,8 @@ func (c *wholesaleCartImpl) update(itemId, skuId int64, quantity int32) error {
 }
 
 // Put 添加项
-func (c *wholesaleCartImpl) Put(itemId, skuId int64, num int32, checkOnly bool) error {
-	_, err := c.put(itemId, skuId, num, checkOnly)
+func (c *wholesaleCartImpl) Put(itemId, skuId int64, num int32,reset bool, checkOnly bool) error {
+	_, err := c.put(itemId, skuId, num,reset, checkOnly)
 	return err
 }
 
