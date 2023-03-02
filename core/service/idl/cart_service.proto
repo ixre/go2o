@@ -41,8 +41,8 @@ message RCartItem{
   sint64 skuId = 2;
   // 数量
   int32 quantity = 3;
-  // 是否只勾选当前商品(直接购买)
-  bool checkOnly = 4;
+  // 是否重置数量
+  bool resetQuantity = 4;
 }
 
 message CheckCartRequest {

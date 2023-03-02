@@ -301,7 +301,7 @@ func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest)
 	rc := c.(cart.INormalCart)
 	items := make([]*proto.SShoppingCartItem, 0)
 	for _, it := range r.Items {
-		err := c.Put(it.ItemId, it.SkuId, it.Quantity, false, it.CheckOnly)
+		err := c.Put(it.ItemId, it.SkuId, it.Quantity, it.ResetQuantity, false)
 		if err != nil {
 			return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 		}
