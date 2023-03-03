@@ -2,8 +2,9 @@ package promodel
 
 import (
 	"database/sql"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
 	"sort"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 )
 
 var _ promodel.ISpecService = new(specServiceImpl)
@@ -112,19 +113,18 @@ func (s *specServiceImpl) DeleteItem(itemId int32) error {
 }
 
 // 获取规格的规格项
-func (s *specServiceImpl) GetItems(specId int32) []*promodel.SpecItem {
-	return s.rep.SelectSpecItem("spec_id= $1", specId)
+func (s *specServiceImpl) GetItems(specId int32) promodel.SpecItemList {
+	var items promodel.SpecItemList = s.rep.SelectSpecItem("spec_id= $1", specId)
+	sort.Sort(items)
+	return items
+
 }
 
 // 获取产品模型的规格
 func (s *specServiceImpl) GetModelSpecs(proModel int32) promodel.SpecList {
-	var arr promodel.SpecList
-	var items promodel.SpecItemList
-	arr = s.rep.SelectSpec("prod_model= $1", proModel)
+	var arr promodel.SpecList = s.rep.SelectSpec("prod_model= $1", proModel)
 	for _, v := range arr {
-		items = s.GetItems(v.Id)
-		sort.Sort(items)
-		v.Items = items
+		v.Items = s.GetItems(v.Id)
 	}
 	sort.Sort(arr)
 	return arr

@@ -22,12 +22,12 @@ func TestCombileCart(t *testing.T) {
 			CartCode:    ret.CartCode,
 			IsWholesale: false,
 		},
-		Item: &proto.RCartItem{
-			ItemId:    187,
-			SkuId:     0,
-			Quantity:  1,
-			CheckOnly: true,
-		},
+		Items: []*proto.RCartItem{
+			{
+				ItemId:   187,
+				SkuId:    0,
+				Quantity: 1,
+			}},
 	})
 	t.Log(id.CartCode)
 	t.Log(ret.CartCode)

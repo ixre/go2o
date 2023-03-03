@@ -35,7 +35,7 @@ func NewProductService(pmRepo promodel.IProductModelRepo,
 
 // GetModel 获取产品模型
 func (p *productService) GetProductModel(_ context.Context, id *proto.ProductModelId) (*proto.SProductModel, error) {
-	im := p.pmRepo.GetModel(int32(id.Value))
+	im := p.pmRepo.GetModel(int(id.Value))
 	if im != nil {
 		ret := p.parseModelDto(im.Value())
 		// 绑定属性
@@ -241,7 +241,7 @@ func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*
 	var pm promodel.IProductModel
 	v := p.parseProductModel(r)
 	if v.ID > 0 {
-		pm = p.pmRepo.GetModel(int32(r.Id))
+		pm = p.pmRepo.GetModel(int(r.Id))
 		if pm == nil {
 			return p.error(errors.New("模型不存在")), nil
 		}

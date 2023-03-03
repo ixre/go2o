@@ -34,7 +34,7 @@ func (p *proModelRepo) CreateModel(v *promodel.ProductModel) promodel.IProductMo
 }
 
 // 获取商品模型
-func (p *proModelRepo) GetModel(id int32) promodel.IProductModel {
+func (p *proModelRepo) GetModel(id int) promodel.IProductModel {
 	v := p.GetProModel(id)
 	if v != nil {
 		return p.CreateModel(v)

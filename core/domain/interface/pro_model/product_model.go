@@ -58,7 +58,7 @@ type IProductModelRepo interface {
 	// 创建商品模型
 	CreateModel(v *ProductModel) IProductModel
 	// 获取商品模型
-	GetModel(id int32) IProductModel
+	GetModel(id int) IProductModel
 
 	// 属性服务
 	AttrService() IAttrService

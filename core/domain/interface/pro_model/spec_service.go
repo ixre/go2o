@@ -51,7 +51,7 @@ type ISpecService interface {
 	// 删除规格项
 	DeleteItem(itemId int32) error
 	// 获取规格的规格项
-	GetItems(specId int32) []*SpecItem
+	GetItems(specId int32) SpecItemList
 	// 获取产品模型的规格
 	GetModelSpecs(proModel int32) SpecList
 	// 保存模型的规格
@@ -69,8 +69,8 @@ func (s SpecList) Len() int {
 // Less reports whether the element with
 // index i should sort before the element with index j.
 func (s SpecList) Less(i, j int) bool {
-	b := s[i].SortNum < s[j].SortNum
-	return b || !b && s[i].Id < s[j].Id
+	b := s[i].SortNum - s[j].SortNum
+	return b < 0 || b == 0 && s[i].Id < s[j].Id
 }
 
 // Swap swaps the elements with indexes i and j.
@@ -89,8 +89,8 @@ func (s SpecItemList) Len() int {
 // Less reports whether the element with
 // index i should sort before the element with index j.
 func (s SpecItemList) Less(i, j int) bool {
-	b := s[i].SortNum < s[j].SortNum
-	return b || !b && s[i].Id < s[j].Id
+	b := s[i].SortNum - s[j].SortNum
+	return b < 0 || b == 0 && s[i].Id < s[j].Id
 }
 
 // Swap swaps the elements with indexes i and j.

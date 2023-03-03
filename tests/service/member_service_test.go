@@ -142,3 +142,11 @@ func TestCheckUserLogin(t *testing.T) {
 		t.Error(ret.ErrMsg)
 	}
 }
+
+func Test_memberService_InviterArray(t *testing.T) {
+	ret, _ := impl.MemberService.InviterArray(context.TODO(), &proto.DepthRequest{
+		MemberId: 710,
+		Depth:    2,
+	})
+	t.Log(ret)
+}
