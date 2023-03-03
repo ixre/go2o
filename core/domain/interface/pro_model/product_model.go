@@ -13,7 +13,7 @@ var (
 
 type ProductModel struct {
 	// 编号
-	ID int32 `db:"id" pk:"yes" auto:"yes"`
+	Id int `db:"id" pk:"yes" auto:"yes"`
 	// 名称
 	Name string `db:"name"`
 	// 是否启用
@@ -27,13 +27,13 @@ type ProductModel struct {
 	// 规格
 	Specs []*Spec `db:"-"`
 	// 关联品牌
-	BrandArray []int32 `db:"-"`
+	BrandArray []int `db:"-"`
 }
 
 // 产品模型
 type IProductModel interface {
 	// 获取聚合根编号
-	GetAggregateRootId() int32
+	GetAggregateRootId() int
 	// 获取值
 	Value() *ProductModel
 	// 是否启用
@@ -49,9 +49,9 @@ type IProductModel interface {
 	// 获取关联的品牌编号
 	Brands() []*ProductBrand
 	// 设置关联品牌
-	SetBrands(brandId []int32) error
+	SetBrands(brandId []int) error
 	// 保存
-	Save() (int32, error)
+	Save() (int, error)
 }
 
 type IProductModelRepo interface {
@@ -68,7 +68,7 @@ type IProductModelRepo interface {
 	//获取品牌服务
 	BrandService() IBrandService
 	// 获取模型的商品品牌
-	GetModelBrands(proModel int32) []*ProductBrand
+	GetModelBrands(proModel int) []*ProductBrand
 
 	// Get ProductModel
 	GetProModel(primary interface{}) *ProductModel

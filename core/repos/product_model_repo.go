@@ -68,7 +68,7 @@ func (p *proModelRepo) BrandService() promodel.IBrandService {
 }
 
 // 获取模型的商品品牌
-func (p *proModelRepo) GetModelBrands(proModel int32) []*promodel.ProductBrand {
+func (p *proModelRepo) GetModelBrands(proModel int) []*promodel.ProductBrand {
 	return p.selectProBrandByQuery(`SELECT * FROM product_brand WHERE id IN (
 	SELECT brand_id FROM product_model_brand WHERE prod_model= $1)`, proModel)
 }
@@ -98,7 +98,7 @@ func (p *proModelRepo) SelectProModel(where string, v ...interface{}) []*promode
 
 // Save ProductModel
 func (p *proModelRepo) SaveProModel(v *promodel.ProductModel) (int, error) {
-	id, err := orm.Save(p.o, v, int(v.ID))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductModel")
 	}
