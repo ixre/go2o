@@ -2,11 +2,12 @@ package repos
 
 import (
 	"database/sql"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	"log"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	pmImpl "github.com/ixre/go2o/core/domain/pro_model"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"log"
 )
 
 var _ promodel.IProductModelRepo = new(proModelRepo)
@@ -58,7 +59,7 @@ func (p *proModelRepo) SpecService() promodel.ISpecService {
 	return p.specService
 }
 
-//获取品牌服务
+// 获取品牌服务
 func (p *proModelRepo) BrandService() promodel.IBrandService {
 	if p.brandService == nil {
 		p.brandService = pmImpl.NewBrandService(p)
@@ -328,7 +329,7 @@ func (p *proModelRepo) GetProBrand(primary interface{}) *promodel.ProductBrand {
 
 // Save ProductBrand
 func (p *proModelRepo) SaveProBrand(v *promodel.ProductBrand) (int, error) {
-	id, err := orm.Save(p.o, v, int(v.ID))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
@@ -388,7 +389,7 @@ func (p *proModelRepo) GetProModelBrand(primary interface{}) *promodel.ProModelB
 
 // Save ProModelBrand
 func (p *proModelRepo) SaveProModelBrand(v *promodel.ProModelBrand) (int, error) {
-	id, err := orm.Save(p.o, v, int(v.ID))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
 	}

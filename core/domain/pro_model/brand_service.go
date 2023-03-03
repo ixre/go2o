@@ -1,41 +1,52 @@
 package promodel
 
-import "github.com/ixre/go2o/core/domain/interface/pro_model"
+import (
+	"fmt"
+
+	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/product"
+)
 
 var _ promodel.IBrandService = new(brandServiceImpl)
 
 type brandServiceImpl struct {
-	rep promodel.IProductModelRepo
+	repo promodel.IProductModelRepo
 }
 
 func NewBrandService(rep promodel.IProductModelRepo) *brandServiceImpl {
 	return &brandServiceImpl{
-		rep: rep,
+		repo: rep,
 	}
 }
 
 // 获取品牌
 func (b *brandServiceImpl) Get(brandId int32) *promodel.ProductBrand {
-	return b.rep.GetProBrand(brandId)
+	return b.repo.GetProBrand(brandId)
 }
 
 // 保存品牌
 func (b *brandServiceImpl) SaveBrand(v *promodel.ProductBrand) (int32, error) {
-	id, err := b.rep.SaveProBrand(v)
+	id, err := b.repo.SaveProBrand(v)
 	return int32(id), err
 }
 
 // 删除品牌
 func (b *brandServiceImpl) DeleteBrand(id int32) error {
-	return b.rep.DeleteProBrand(id)
+	arr := b.repo.SelectProModelBrand("brand_id=$1",id)
+	for _,v := range arr{
+		if m := b.repo.GetModel(v.ModelId);m != nil{
+			return fmt.Errorf(product.ErrBrandIsUsed.Error(),m.Value().Name)
+		}
+	}
+	return b.repo.DeleteProBrand(id)
 }
 
 // 获取所有品牌
 func (b *brandServiceImpl) AllBrands() []*promodel.ProductBrand {
-	return b.rep.SelectProBrand("")
+	return b.repo.SelectProBrand("")
 }
 
 // 获取关联的品牌编号
 func (b *brandServiceImpl) Brands(proModel int32) []*promodel.ProductBrand {
-	return b.rep.GetModelBrands(proModel)
+	return b.repo.GetModelBrands(proModel)
 }

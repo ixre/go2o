@@ -4,7 +4,7 @@ package promodel
 type (
 	ProductBrand struct {
 		// 编号
-		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 品牌名称
 		Name string `db:"name"`
 		// 品牌图片
@@ -25,9 +25,12 @@ type (
 
 	// 产品模型与品牌关联
 	ProModelBrand struct {
-		ID       int32 `db:"id" pk:"yes" auto:"yes"`
-		BrandId  int32 `db:"brand_id"`
-		ProModel int32 `db:"prod_model"`
+		// 关联编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 品牌编号
+		BrandId int `db:"brand_id"`
+		// 模型编号
+		ModelId int `db:"prod_model"`
 	}
 )
 

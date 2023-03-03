@@ -60,7 +60,7 @@ func (p *productService) GetProductModel(_ context.Context, id *proto.ProductMod
 		}
 		return ret, nil
 	}
-	return nil,product.ErrNoSuchProduct 
+	return nil, product.ErrNoSuchProduct
 }
 
 func (p *productService) appendAttrItems(attr *proto.SProductAttr, items []*promodel.AttrItem) *proto.SProductAttr {
@@ -99,7 +99,7 @@ func (p *productService) GetAttr(_ context.Context, id *proto.ProductAttrId) (*p
 		attr = p.appendAttrItems(attr, v.Items)
 		return attr, nil
 	}
-	return nil, product.ErrNoSuchAttr 
+	return nil, product.ErrNoSuchAttr
 }
 
 // GetAttrItem 获取属性项
@@ -108,7 +108,7 @@ func (p *productService) GetAttrItem(_ context.Context, id *proto.ProductAttrIte
 	if it != nil {
 		return p.parseProductAttrItemDto(it), nil
 	}
-	return nil,  product.ErrNoSuchAttr
+	return nil, product.ErrNoSuchAttr
 }
 
 // GetBrands 获取所有产品品牌
@@ -184,7 +184,7 @@ func (p *productService) GetProduct(_ context.Context, id *proto.ProductId) (*pr
 		}
 		return ret, nil
 	}
-	return nil,  product.ErrNoSuchProduct
+	return nil, product.ErrNoSuchProduct
 }
 
 // SaveProduct 保存产品
@@ -283,7 +283,7 @@ func (p *productService) GetBrand(_ context.Context, id *proto.Int64) (*proto.SP
 	if brand != nil {
 		return p.parseBrandDto(brand), nil
 	}
-	return nil,product.ErrNoSuchBrand 
+	return nil, product.ErrNoSuchBrand
 }
 
 // SaveBrand Save 产品品牌
@@ -548,7 +548,7 @@ func (p *productService) parseProductAttrItemDto(v *promodel.AttrItem) *proto.SP
 
 func (p *productService) parseBrandDto(v *promodel.ProductBrand) *proto.SProductBrand {
 	return &proto.SProductBrand{
-		Id:           int64(v.ID),
+		Id:           int64(v.Id),
 		Name:         v.Name,
 		Image:        v.Image,
 		SiteUrl:      v.SiteUrl,
@@ -672,7 +672,7 @@ func (p *productService) parseProductModel(v *proto.SProductModel) *promodel.Pro
 
 func (p *productService) parseBrand(v *proto.SProductBrand) *promodel.ProductBrand {
 	return &promodel.ProductBrand{
-		ID:           int32(v.Id),
+		Id:           int32(v.Id),
 		Name:         v.Name,
 		Image:        v.Image,
 		SiteUrl:      v.SiteUrl,

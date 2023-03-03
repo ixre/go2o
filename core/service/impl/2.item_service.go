@@ -343,7 +343,7 @@ func (i *itemService) attachWholesaleItemDataV2(dto *proto.SUnifiedViewItem) {
 		if b != nil {
 			dto.Data["BrandName"] = b.Name
 			dto.Data["BrandImage"] = b.Image
-			dto.Data["BrandId"] = strconv.Itoa(int(b.ID))
+			dto.Data["BrandId"] = strconv.Itoa(int(b.Id))
 		}
 	}
 }

@@ -2,7 +2,8 @@ package promodel
 
 import (
 	"errors"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/infrastructure/format"
 )
 
@@ -233,9 +234,9 @@ func (m *modelImpl) saveModelBrand(brandIds []int32) (err error) {
 		}
 		if !isExist {
 			e := &promodel.ProModelBrand{
-				ID:       0,
-				BrandId:  v,
-				ProModel: pk,
+				Id:      0,
+				BrandId: v,
+				ModelId: pk,
 			}
 			_, err = m.rep.SaveProModelBrand(e)
 			if err != nil {
