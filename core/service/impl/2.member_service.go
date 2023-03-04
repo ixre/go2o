@@ -404,6 +404,8 @@ func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUsernam
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
+		log.Println("222", r.Username)
+
 		if err = m.ChangeUsername(r.Username); err == nil {
 			return s.success(nil), nil
 		}

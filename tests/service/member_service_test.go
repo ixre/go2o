@@ -105,8 +105,8 @@ func TestChangeMemberLevel(t *testing.T) {
 }
 func TestChangeUsername(t *testing.T) {
 	ret, _ := impl.MemberService.ChangeUsername(context.TODO(), &proto.ChangeUsernameRequest{
-		MemberId: 702,
-		Username: "18924140900",
+		MemberId: 729,
+		Username: "哈哈",
 	})
 	if ret.ErrCode > 0 {
 		t.Log(ret.ErrMsg)
