@@ -54,9 +54,9 @@ func (p *productService) GetProductModel(_ context.Context, id *proto.ProductMod
 		}
 		// 绑定品牌
 		brands := im.Brands()
-		ret.Brands = make([]*proto.SProductBrand, len(brands))
+		ret.Brands = make([]int64, len(brands))
 		for i, v := range brands {
-			ret.Brands[i] = p.parseBrandDto(v)
+			ret.Brands[i] = int64(v.Id)
 		}
 		return ret, nil
 	}
@@ -664,7 +664,7 @@ func (p *productService) parseProductModel(v *proto.SProductModel) *promodel.Pro
 	if v.Brands != nil {
 		ret.BrandArray = make([]int, len(v.Brands))
 		for i, v := range v.Brands {
-			ret.BrandArray[i] = int(v.Id)
+			ret.BrandArray[i] = int(v)
 		}
 	}
 	return ret

@@ -16,8 +16,8 @@ func TestCombileCart(t *testing.T) {
 		IsWholesale: false,
 	}
 	ret, _ := impl.CartService.GetShoppingCart(context.TODO(), id)
-	impl.CartService.PutInCart(context.TODO(), &proto.CartItemRequest{
-		Id: &proto.ShoppingCartId{
+	impl.CartService.PutItems(context.TODO(), &proto.CartItemRequest{
+		CartId: &proto.ShoppingCartId{
 			UserId:      id.UserId,
 			CartCode:    ret.CartCode,
 			IsWholesale: false,

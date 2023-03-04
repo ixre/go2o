@@ -1,0 +1,1 @@
+delete FROM registry where key like 'uams_%'

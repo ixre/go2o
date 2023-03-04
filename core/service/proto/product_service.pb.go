@@ -376,7 +376,7 @@ type SProductModel struct {
 	// 规格
 	Specs []*SProductSpec `protobuf:"bytes,6,rep,name=specs,proto3" json:"specs"`
 	// 关联品牌
-	Brands []*SProductBrand `protobuf:"bytes,7,rep,name=brands,proto3" json:"brands"`
+	Brands []int64 `protobuf:"varint,7,rep,packed,name=brands,proto3" json:"brands"`
 	// 是否启用
 	Enabled int32 `protobuf:"varint,8,opt,name=enabled,proto3" json:"enabled"`
 }
@@ -455,7 +455,7 @@ func (x *SProductModel) GetSpecs() []*SProductSpec {
 	return nil
 }
 
-func (x *SProductModel) GetBrands() []*SProductBrand {
+func (x *SProductModel) GetBrands() []int64 {
 	if x != nil {
 		return x.Brands
 	}
@@ -2287,7 +2287,7 @@ var file_product_service_proto_rawDesc = []byte{
 	0x64, 0x75, 0x63, 0x74, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73,
 	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x24, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01,
 	0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x53, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x4d,
-	0x6f, 0x64, 0x65, 0x6c, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xf3, 0x01, 0x0a, 0x0d,
+	0x6f, 0x64, 0x65, 0x6c, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xe3, 0x01, 0x0a, 0x0d,
 	0x53, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x12, 0x0e, 0x0a,
 	0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a,
 	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d,
@@ -2299,8 +2299,7 @@ var file_product_service_proto_rawDesc = []byte{
 	0x74, 0x74, 0x72, 0x52, 0x05, 0x61, 0x74, 0x74, 0x72, 0x73, 0x12, 0x23, 0x0a, 0x05, 0x73, 0x70,
 	0x65, 0x63, 0x73, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x53, 0x50, 0x72, 0x6f,
 	0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x05, 0x73, 0x70, 0x65, 0x63, 0x73, 0x12,
-	0x26, 0x0a, 0x06, 0x62, 0x72, 0x61, 0x6e, 0x64, 0x73, 0x18, 0x07, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x0e, 0x2e, 0x53, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x42, 0x72, 0x61, 0x6e, 0x64, 0x52,
+	0x16, 0x0a, 0x06, 0x62, 0x72, 0x61, 0x6e, 0x64, 0x73, 0x18, 0x07, 0x20, 0x03, 0x28, 0x03, 0x52,
 	0x06, 0x62, 0x72, 0x61, 0x6e, 0x64, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c,
 	0x65, 0x64, 0x18, 0x08, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65,
 	0x64, 0x22, 0xd1, 0x01, 0x0a, 0x0c, 0x53, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x41, 0x74,
@@ -2648,61 +2647,60 @@ var file_product_service_proto_depIdxs = []int32{
 	7,  // 0: ProductModelListResponse.value:type_name -> SProductModel
 	8,  // 1: SProductModel.attrs:type_name -> SProductAttr
 	11, // 2: SProductModel.specs:type_name -> SProductSpec
-	14, // 3: SProductModel.brands:type_name -> SProductBrand
-	9,  // 4: SProductAttr.items:type_name -> SProductAttrItem
-	12, // 5: SProductSpec.items:type_name -> SProductSpecItem
-	14, // 6: ProductBrandListResponse.value:type_name -> SProductBrand
-	27, // 7: SProductCategory.options:type_name -> SProductCategory.OptionsEntry
-	14, // 8: SProductCategory.brands:type_name -> SProductBrand
-	15, // 9: SProductCategory.children:type_name -> SProductCategory
-	18, // 10: SCategoryTree.children:type_name -> SCategoryTree
-	18, // 11: CategoryTreeResponse.value:type_name -> SCategoryTree
-	15, // 12: CategoriesResponse.list:type_name -> SProductCategory
-	10, // 13: SProduct.attrs:type_name -> SProductAttrValue
-	10, // 14: SaveProductRequest.attrs:type_name -> SProductAttrValue
-	3,  // 15: ProductService.GetProductModel:input_type -> ProductModelId
-	28, // 16: ProductService.GetModels:input_type -> Empty
-	4,  // 17: ProductService.GetAttr:input_type -> ProductAttrId
-	5,  // 18: ProductService.GetAttrItem:input_type -> ProductAttrItemId
-	7,  // 19: ProductService.SaveModel:input_type -> SProductModel
-	3,  // 20: ProductService.DeleteModel_:input_type -> ProductModelId
-	29, // 21: ProductService.GetBrand:input_type -> Int64
-	14, // 22: ProductService.SaveBrand:input_type -> SProductBrand
-	29, // 23: ProductService.DeleteBrand:input_type -> Int64
-	28, // 24: ProductService.GetBrands:input_type -> Empty
-	19, // 25: ProductService.GetCategory:input_type -> GetCategoryRequest
-	29, // 26: ProductService.DeleteCategory:input_type -> Int64
-	16, // 27: ProductService.SaveCategory:input_type -> SaveProductCategoryRequest
-	20, // 28: ProductService.GetCategoryTreeNode:input_type -> CategoryTreeRequest
-	0,  // 29: ProductService.FindParentCategory:input_type -> CategoryIdRequest
-	2,  // 30: ProductService.GetProduct:input_type -> ProductId
-	24, // 31: ProductService.SaveProduct:input_type -> SaveProductRequest
-	1,  // 32: ProductService.DeleteProduct:input_type -> DeleteProductRequest
-	25, // 33: ProductService.SaveProductInfo:input_type -> ProductInfoRequest
-	7,  // 34: ProductService.GetProductModel:output_type -> SProductModel
-	6,  // 35: ProductService.GetModels:output_type -> ProductModelListResponse
-	8,  // 36: ProductService.GetAttr:output_type -> SProductAttr
-	9,  // 37: ProductService.GetAttrItem:output_type -> SProductAttrItem
-	30, // 38: ProductService.SaveModel:output_type -> Result
-	30, // 39: ProductService.DeleteModel_:output_type -> Result
-	14, // 40: ProductService.GetBrand:output_type -> SProductBrand
-	30, // 41: ProductService.SaveBrand:output_type -> Result
-	30, // 42: ProductService.DeleteBrand:output_type -> Result
-	13, // 43: ProductService.GetBrands:output_type -> ProductBrandListResponse
-	15, // 44: ProductService.GetCategory:output_type -> SProductCategory
-	30, // 45: ProductService.DeleteCategory:output_type -> Result
-	17, // 46: ProductService.SaveCategory:output_type -> SaveProductCategoryResponse
-	21, // 47: ProductService.GetCategoryTreeNode:output_type -> CategoryTreeResponse
-	22, // 48: ProductService.FindParentCategory:output_type -> CategoriesResponse
-	23, // 49: ProductService.GetProduct:output_type -> SProduct
-	26, // 50: ProductService.SaveProduct:output_type -> SaveProductResponse
-	30, // 51: ProductService.DeleteProduct:output_type -> Result
-	30, // 52: ProductService.SaveProductInfo:output_type -> Result
-	34, // [34:53] is the sub-list for method output_type
-	15, // [15:34] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	9,  // 3: SProductAttr.items:type_name -> SProductAttrItem
+	12, // 4: SProductSpec.items:type_name -> SProductSpecItem
+	14, // 5: ProductBrandListResponse.value:type_name -> SProductBrand
+	27, // 6: SProductCategory.options:type_name -> SProductCategory.OptionsEntry
+	14, // 7: SProductCategory.brands:type_name -> SProductBrand
+	15, // 8: SProductCategory.children:type_name -> SProductCategory
+	18, // 9: SCategoryTree.children:type_name -> SCategoryTree
+	18, // 10: CategoryTreeResponse.value:type_name -> SCategoryTree
+	15, // 11: CategoriesResponse.list:type_name -> SProductCategory
+	10, // 12: SProduct.attrs:type_name -> SProductAttrValue
+	10, // 13: SaveProductRequest.attrs:type_name -> SProductAttrValue
+	3,  // 14: ProductService.GetProductModel:input_type -> ProductModelId
+	28, // 15: ProductService.GetModels:input_type -> Empty
+	4,  // 16: ProductService.GetAttr:input_type -> ProductAttrId
+	5,  // 17: ProductService.GetAttrItem:input_type -> ProductAttrItemId
+	7,  // 18: ProductService.SaveModel:input_type -> SProductModel
+	3,  // 19: ProductService.DeleteModel_:input_type -> ProductModelId
+	29, // 20: ProductService.GetBrand:input_type -> Int64
+	14, // 21: ProductService.SaveBrand:input_type -> SProductBrand
+	29, // 22: ProductService.DeleteBrand:input_type -> Int64
+	28, // 23: ProductService.GetBrands:input_type -> Empty
+	19, // 24: ProductService.GetCategory:input_type -> GetCategoryRequest
+	29, // 25: ProductService.DeleteCategory:input_type -> Int64
+	16, // 26: ProductService.SaveCategory:input_type -> SaveProductCategoryRequest
+	20, // 27: ProductService.GetCategoryTreeNode:input_type -> CategoryTreeRequest
+	0,  // 28: ProductService.FindParentCategory:input_type -> CategoryIdRequest
+	2,  // 29: ProductService.GetProduct:input_type -> ProductId
+	24, // 30: ProductService.SaveProduct:input_type -> SaveProductRequest
+	1,  // 31: ProductService.DeleteProduct:input_type -> DeleteProductRequest
+	25, // 32: ProductService.SaveProductInfo:input_type -> ProductInfoRequest
+	7,  // 33: ProductService.GetProductModel:output_type -> SProductModel
+	6,  // 34: ProductService.GetModels:output_type -> ProductModelListResponse
+	8,  // 35: ProductService.GetAttr:output_type -> SProductAttr
+	9,  // 36: ProductService.GetAttrItem:output_type -> SProductAttrItem
+	30, // 37: ProductService.SaveModel:output_type -> Result
+	30, // 38: ProductService.DeleteModel_:output_type -> Result
+	14, // 39: ProductService.GetBrand:output_type -> SProductBrand
+	30, // 40: ProductService.SaveBrand:output_type -> Result
+	30, // 41: ProductService.DeleteBrand:output_type -> Result
+	13, // 42: ProductService.GetBrands:output_type -> ProductBrandListResponse
+	15, // 43: ProductService.GetCategory:output_type -> SProductCategory
+	30, // 44: ProductService.DeleteCategory:output_type -> Result
+	17, // 45: ProductService.SaveCategory:output_type -> SaveProductCategoryResponse
+	21, // 46: ProductService.GetCategoryTreeNode:output_type -> CategoryTreeResponse
+	22, // 47: ProductService.FindParentCategory:output_type -> CategoriesResponse
+	23, // 48: ProductService.GetProduct:output_type -> SProduct
+	26, // 49: ProductService.SaveProduct:output_type -> SaveProductResponse
+	30, // 50: ProductService.DeleteProduct:output_type -> Result
+	30, // 51: ProductService.SaveProductInfo:output_type -> Result
+	33, // [33:52] is the sub-list for method output_type
+	14, // [14:33] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_product_service_proto_init() }
