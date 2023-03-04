@@ -293,8 +293,8 @@ func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 }
 
 // PutInCart 放入购物车
-func (s *cartServiceImpl) PutItem(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
-	c := s.getShoppingCart(r.Id.UserId, r.Id.CartCode)
+func (s *cartServiceImpl) PutItems(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
+	c := s.getShoppingCart(r.CartId.UserId, r.CartId.CartCode)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
@@ -317,8 +317,8 @@ func (s *cartServiceImpl) PutItem(_ context.Context, r *proto.CartItemRequest) (
 }
 
 // ReduceItem 从购物车里删除指定数量的商品
-func (s *cartServiceImpl) ReduceItem(_ context.Context, r *proto.CartItemRequest) (*proto.Result, error) {
-	c := s.getShoppingCart(r.Id.UserId, r.Id.CartCode)
+func (s *cartServiceImpl) ReduceItems(_ context.Context, r *proto.CartItemRequest) (*proto.Result, error) {
+	c := s.getShoppingCart(r.CartId.UserId, r.CartId.CartCode)
 	if c == nil {
 		return s.error(cart.ErrNoSuchCart), nil
 	}

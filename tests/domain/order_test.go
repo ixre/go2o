@@ -164,7 +164,7 @@ func TestCancelOrder(t *testing.T) {
 }
 
 func TestCancelSubOrderByOrderNo(t *testing.T) {
-	var orderId int64 = 543
+	var orderId int64 = 605
 	orderRepo := ti.Factory.GetOrderRepo()
 	manager := orderRepo.Manager()
 	is := manager.GetSubOrder(orderId)
@@ -177,6 +177,7 @@ func TestCancelSubOrderByOrderNo(t *testing.T) {
 	if ip != nil {
 		t.Log("支付单状态:", ip.Get().State)
 	}
+	time.Sleep(3000)
 }
 
 // 测试提交普通订单,并完成付款

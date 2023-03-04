@@ -27,9 +27,9 @@ type CartServiceClient interface {
 	// 获取购物车,当购物车编号不存在时,将返回一个新的购物车
 	GetShoppingCart(ctx context.Context, in *ShoppingCartId, opts ...grpc.CallOption) (*SShoppingCart, error)
 	// 放入购物车
-	PutItem(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
+	PutItems(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error)
 	// 从购物车里删除指定数量的商品
-	ReduceItem(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*Result, error)
+	ReduceItems(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*Result, error)
 	// 勾选商品结算
 	CheckCart(ctx context.Context, in *CheckCartRequest, opts ...grpc.CallOption) (*Result, error)
 }
@@ -60,18 +60,18 @@ func (c *cartServiceClient) GetShoppingCart(ctx context.Context, in *ShoppingCar
 	return out, nil
 }
 
-func (c *cartServiceClient) PutItem(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error) {
+func (c *cartServiceClient) PutItems(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*CartItemResponse, error) {
 	out := new(CartItemResponse)
-	err := c.cc.Invoke(ctx, "/CartService/PutItem", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/CartService/PutItems", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *cartServiceClient) ReduceItem(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *cartServiceClient) ReduceItems(ctx context.Context, in *CartItemRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, "/CartService/ReduceItem", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/CartService/ReduceItems", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -96,9 +96,9 @@ type CartServiceServer interface {
 	// 获取购物车,当购物车编号不存在时,将返回一个新的购物车
 	GetShoppingCart(context.Context, *ShoppingCartId) (*SShoppingCart, error)
 	// 放入购物车
-	PutItem(context.Context, *CartItemRequest) (*CartItemResponse, error)
+	PutItems(context.Context, *CartItemRequest) (*CartItemResponse, error)
 	// 从购物车里删除指定数量的商品
-	ReduceItem(context.Context, *CartItemRequest) (*Result, error)
+	ReduceItems(context.Context, *CartItemRequest) (*Result, error)
 	// 勾选商品结算
 	CheckCart(context.Context, *CheckCartRequest) (*Result, error)
 	mustEmbedUnimplementedCartServiceServer()
@@ -114,11 +114,11 @@ func (UnimplementedCartServiceServer) WholesaleCartV1(context.Context, *WsCartRe
 func (UnimplementedCartServiceServer) GetShoppingCart(context.Context, *ShoppingCartId) (*SShoppingCart, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetShoppingCart not implemented")
 }
-func (UnimplementedCartServiceServer) PutItem(context.Context, *CartItemRequest) (*CartItemResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PutItem not implemented")
+func (UnimplementedCartServiceServer) PutItems(context.Context, *CartItemRequest) (*CartItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PutItems not implemented")
 }
-func (UnimplementedCartServiceServer) ReduceItem(context.Context, *CartItemRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReduceItem not implemented")
+func (UnimplementedCartServiceServer) ReduceItems(context.Context, *CartItemRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReduceItems not implemented")
 }
 func (UnimplementedCartServiceServer) CheckCart(context.Context, *CheckCartRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckCart not implemented")
@@ -172,38 +172,38 @@ func _CartService_GetShoppingCart_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CartService_PutItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CartService_PutItems_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CartItemRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CartServiceServer).PutItem(ctx, in)
+		return srv.(CartServiceServer).PutItems(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CartService/PutItem",
+		FullMethod: "/CartService/PutItems",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).PutItem(ctx, req.(*CartItemRequest))
+		return srv.(CartServiceServer).PutItems(ctx, req.(*CartItemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CartService_ReduceItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CartService_ReduceItems_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CartItemRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CartServiceServer).ReduceItem(ctx, in)
+		return srv.(CartServiceServer).ReduceItems(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CartService/ReduceItem",
+		FullMethod: "/CartService/ReduceItems",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).ReduceItem(ctx, req.(*CartItemRequest))
+		return srv.(CartServiceServer).ReduceItems(ctx, req.(*CartItemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -242,12 +242,12 @@ var CartService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CartService_GetShoppingCart_Handler,
 		},
 		{
-			MethodName: "PutItem",
-			Handler:    _CartService_PutItem_Handler,
+			MethodName: "PutItems",
+			Handler:    _CartService_PutItems_Handler,
 		},
 		{
-			MethodName: "ReduceItem",
-			Handler:    _CartService_ReduceItem_Handler,
+			MethodName: "ReduceItems",
+			Handler:    _CartService_ReduceItems_Handler,
 		},
 		{
 			MethodName: "CheckCart",
