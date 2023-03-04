@@ -293,7 +293,7 @@ func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 }
 
 // PutInCart 放入购物车
-func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
+func (s *cartServiceImpl) PutItem(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
 	c := s.getShoppingCart(r.Id.UserId, r.Id.CartCode)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
@@ -314,7 +314,25 @@ func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest)
 	return &proto.CartItemResponse{
 		Items: items,
 	}, nil
+}
 
+// ReduceItem 从购物车里删除指定数量的商品
+func (s *cartServiceImpl) ReduceItem(_ context.Context, r *proto.CartItemRequest) (*proto.Result, error) {
+	c := s.getShoppingCart(r.Id.UserId, r.Id.CartCode)
+	if c == nil {
+		return s.error(cart.ErrNoSuchCart), nil
+	}
+	for _, it := range r.Items {
+		err := c.Remove(it.ItemId, it.SkuId, it.Quantity)
+		if err != nil {
+			return s.error(err), nil
+		}
+	}
+	_, err := c.Save()
+	if err == nil {
+		return s.success(nil), nil
+	}
+	return s.error(err), nil
 }
 
 // CheckCart 勾选商品结算

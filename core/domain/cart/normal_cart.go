@@ -313,47 +313,6 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly boo
 	return v, err
 }
 
-// 更新商品数量，如数量为0，则删除
-func (c *cartImpl) Update(itemId, skuId int64, quantity int32) error {
-	return c.update(itemId, skuId, quantity)
-}
-
-// 更新项
-func (c *cartImpl) update(itemId, skuId int64, quantity int32) error {
-	if c.value.Items == nil {
-		return cart.ErrEmptyShoppingCart
-	}
-	ci := c.GetItem(itemId, skuId)
-	if ci == nil {
-		return cart.ErrItemNoSku
-	}
-	it := c.goodsRepo.GetItem(itemId)
-	if it == nil {
-		return item.ErrNoSuchItem // 没有商品
-	}
-	iv := it.GetValue()
-	// 库存,如有SKU，则使用SKU的库存
-	stock := iv.StockNum
-	// 判断商品SkuId
-	if skuId > 0 {
-		sku := it.GetSku(skuId)
-		if sku == nil {
-			return item.ErrNoSuchSku
-		}
-		stock = sku.Stock
-	}
-	// 检查是否已经卖完了
-	if stock == 0 {
-		return item.ErrFullOfStock
-	}
-	// 超出库存
-	if quantity > stock {
-		return item.ErrOutOfStock
-	}
-	ci.Quantity = quantity
-	return nil
-}
-
 // 移出项
 func (c *cartImpl) Remove(itemId, skuId int64, quantity int32) error {
 	if c.value.Items == nil {

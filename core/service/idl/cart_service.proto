@@ -15,10 +15,10 @@ service CartService {
     rpc GetShoppingCart (ShoppingCartId) returns (SShoppingCart) {
     }
     // 放入购物车
-    rpc PutInCart(CartItemRequest) returns (CartItemResponse) {
+    rpc PutItem(CartItemRequest) returns (CartItemResponse) {
     }
-    // 从购物车里删除指定数量单件商品
-    rpc ReduceCartItem(CartItemRequest) returns (CartItemResponse) {
+    // 从购物车里删除指定数量的商品
+    rpc ReduceItem(CartItemRequest) returns (Result) {
     }
     // 勾选商品结算
     rpc CheckCart (CheckCartRequest) returns (Result) {
