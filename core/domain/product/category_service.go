@@ -156,7 +156,7 @@ func (c *categoryImpl) GetModel() promodel.IProductModel {
 	if c._model != nil && mid > 0 && c._model.GetAggregateRootId() != mid {
 		c._model = nil
 	}
-	for c._model == nil {
+	if c._model == nil {
 		// 查询分类上级绑定的模型
 		parentId := c.value.ParentId
 		for mid == 0 && parentId > 0 {

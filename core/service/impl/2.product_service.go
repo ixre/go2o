@@ -44,6 +44,9 @@ func (p *productService) GetProductModel(_ context.Context, id *proto.ProductMod
 
 // 　转换产品模型数据
 func (p *productService) fromProductModel(im promodel.IProductModel) *proto.SProductModel {
+	if im == nil {
+		return nil
+	}
 	ret := p.parseModelDto(im.Value())
 	// 绑定属性
 	attrs := im.Attrs()
