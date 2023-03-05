@@ -37,6 +37,8 @@ type (
 		Key string `db:"snapshot_key"`
 		// 分类编号
 		CatId int32 `db:"cat_id"`
+		// 商品标志
+		ItemFlag int `db:"item_flag"`
 		// 供货商编号
 		VendorId int64 `db:"vendor_id"`
 		// 编号
