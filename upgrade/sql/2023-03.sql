@@ -76,3 +76,55 @@ COMMENT ON COLUMN public.item_snapshot.item_flag
 
 
 UPDATE item_snapshot SET item_flag = (SELECT item_flag FROM item_info where id=item_id) WHERE item_flag = 0;
+
+
+CREATE TABLE public.sys_safeguard
+(
+    id bigserial NOT NULL,
+    bind_type integer NOT NULL,
+    name character varying(20)[] NOT NULL,
+    content character varying(120)[] NOT NULL,
+    class_name character varying(20)[] NOT NULL,
+    sort_num integer NOT NULL,
+    enabled integer NOT NULL,
+    is_internal integer NOT NULL,
+    create_time bigint NOT NULL,
+    update_time bigint NOT NULL,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE IF EXISTS public.sys_safeguard
+    OWNER to postgres;
+
+COMMENT ON TABLE public.sys_safeguard
+    IS '保障';
+
+COMMENT ON COLUMN public.sys_safeguard.id
+    IS '编号';
+
+COMMENT ON COLUMN public.sys_safeguard.bind_type
+    IS '绑定类型:1:店铺 2:商品';
+
+COMMENT ON COLUMN public.sys_safeguard.name
+    IS '保障名称';
+
+COMMENT ON COLUMN public.sys_safeguard.content
+    IS '保障内容';
+
+COMMENT ON COLUMN public.sys_safeguard.class_name
+    IS '样式表类名';
+
+COMMENT ON COLUMN public.sys_safeguard.sort_num
+    IS '序号';
+
+COMMENT ON COLUMN public.sys_safeguard.enabled
+    IS '是否启用';
+
+COMMENT ON COLUMN public.sys_safeguard.is_internal
+    IS '是否内置';
+
+COMMENT ON COLUMN public.sys_safeguard.create_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.sys_safeguard.update_time
+    IS '更新时间';
