@@ -10,8 +10,8 @@ package product
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
+	"log"
 	"sort"
 	"strconv"
 	"time"
@@ -21,7 +21,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/algorithm/iterator"
-	"github.com/ixre/gof/log"
 )
 
 var _ product.ICategory = new(categoryImpl)
@@ -35,7 +34,7 @@ type categoryImpl struct {
 	childIdArr      []int
 	opt             domain.IOptionStore
 
-	_model *promodel.ProductModel
+	_model promodel.IProductModel
 }
 
 func newCategory(rep product.ICategoryRepo,
@@ -151,10 +150,10 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 }
 
 // GetModel 获取产品模型
-func (c *categoryImpl) GetModel() *promodel.ProductModel {
+func (c *categoryImpl) GetModel() promodel.IProductModel {
 	mid := c.value.ModelId
 	// 当模型实例为空,或分类模型与实例不匹配时,加载模型
-	if c._model != nil && mid > 0 && c._model.Id != mid {
+	if c._model != nil && mid > 0 && c._model.GetAggregateRootId() != mid {
 		c._model = nil
 	}
 	for c._model == nil {
@@ -167,10 +166,12 @@ func (c *categoryImpl) GetModel() *promodel.ProductModel {
 			}
 			mid = p.GetValue().ModelId
 			parentId = p.GetValue().ParentId
-			log.Println("====", mid, parentId)
 		}
 		// 查询模型
-		c._model = c._modelRepo.GetProModel(mid)
+		v := c._modelRepo.GetProModel(mid)
+		if v != nil {
+			c._model = c._modelRepo.CreateModel(v)
+		}
 	}
 	return c._model
 }
@@ -200,7 +201,7 @@ func (c *categoryImpl) parentWalk(list []*product.Category,
 	}
 	for _, v := range list {
 		if v.Id == v.ParentId {
-			log.Error(errors.New(fmt.Sprintf("Bad category , id is same of parent id , id:%d", v.Id)))
+			log.Println(fmt.Sprintf("Bad category , id is same of parent id , id:%d", v.Id))
 			continue
 		} else if v.Id == parentId {
 			c.parentWalk(list, v.ParentId, level)
