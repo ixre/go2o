@@ -37,30 +37,38 @@ func NewProductService(pmRepo promodel.IProductModelRepo,
 func (p *productService) GetProductModel(_ context.Context, id *proto.ProductModelId) (*proto.SProductModel, error) {
 	im := p.pmRepo.GetModel(int(id.Value))
 	if im != nil {
-		ret := p.parseModelDto(im.Value())
-		// 绑定属性
-		attrs := im.Attrs()
-		ret.Attrs = make([]*proto.SProductAttr, len(attrs))
-		for i, v := range attrs {
-			attr := p.appendAttrItems(p.parseProductAttrDto(v), v.Items)
-			ret.Attrs[i] = attr
-		}
-		// 绑定规格
-		specList := im.Specs()
-		ret.Specs = make([]*proto.SProductSpec, len(specList))
-		for i, v := range specList {
-			spec := p.appendSpecItems(p.parseSpecDto(v), v.Items)
-			ret.Specs[i] = spec
-		}
-		// 绑定品牌
-		brands := im.Brands()
-		ret.Brands = make([]int64, len(brands))
-		for i, v := range brands {
-			ret.Brands[i] = int64(v.Id)
-		}
-		return ret, nil
+		return p.fromProductModel(im), nil
 	}
 	return nil, product.ErrNoSuchProduct
+}
+
+// 　转换产品模型数据
+func (p *productService) fromProductModel(im promodel.IProductModel) *proto.SProductModel {
+	if im == nil {
+		return nil
+	}
+	ret := p.parseModelDto(im.Value())
+	// 绑定属性
+	attrs := im.Attrs()
+	ret.Attrs = make([]*proto.SProductAttr, len(attrs))
+	for i, v := range attrs {
+		attr := p.appendAttrItems(p.parseProductAttrDto(v), v.Items)
+		ret.Attrs[i] = attr
+	}
+	// 绑定规格
+	specList := im.Specs()
+	ret.Specs = make([]*proto.SProductSpec, len(specList))
+	for i, v := range specList {
+		spec := p.appendSpecItems(p.parseSpecDto(v), v.Items)
+		ret.Specs[i] = spec
+	}
+	// 绑定品牌
+	brands := im.Brands()
+	ret.Brands = make([]int64, len(brands))
+	for i, v := range brands {
+		ret.Brands[i] = int64(v.Id)
+	}
+	return ret
 }
 
 func (p *productService) appendAttrItems(attr *proto.SProductAttr, items []*promodel.AttrItem) *proto.SProductAttr {
@@ -138,8 +146,11 @@ func (p *productService) GetCategory(_ context.Context, req *proto.GetCategoryRe
 	v := ic.GetCategory(int(req.CategoryId))
 	if v != nil {
 		cat := p.parseCategoryDto(v.GetValue())
-		if req.Brand {
+		if req.WithBrand {
 			p.appendCategoryBrands(ic, v, cat)
+		}
+		if req.WithModel {
+			cat.Model = p.fromProductModel(v.GetModel())
 		}
 		return cat, nil
 	}
@@ -513,6 +524,9 @@ func (p *productService) SaveItemSaleLabels(mchId, itemId int64, tagIds []int) e
 }
 
 func (p *productService) parseModelDto(v *promodel.ProductModel) *proto.SProductModel {
+	if v == nil {
+		return nil
+	}
 	ret := &proto.SProductModel{
 		Id:      int64(v.Id),
 		Name:    v.Name,
