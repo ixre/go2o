@@ -167,6 +167,7 @@ func (c *categoryImpl) GetModel() *promodel.ProductModel {
 			}
 			mid = p.GetValue().ModelId
 			parentId = p.GetValue().ParentId
+			log.Println("====", mid, parentId)
 		}
 		// 查询模型
 		c._model = c._modelRepo.GetProModel(mid)
@@ -317,7 +318,7 @@ type categoryManagerImpl struct {
 	readonly       bool
 	repo           product.ICategoryRepo
 	registryRepo   registry.IRegistryRepo
-	_modelRepo      promodel.IProductModelRepo
+	_modelRepo     promodel.IProductModelRepo
 	vendorId       int64
 	lastUpdateTime int64
 	categories     []product.ICategory
@@ -331,7 +332,7 @@ func NewCategoryManager(mchId int64,
 		repo:         rep,
 		vendorId:     mchId,
 		registryRepo: registryRepo,
-		_modelRepo:    modelRepo,
+		_modelRepo:   modelRepo,
 	}
 	return c.init()
 }
