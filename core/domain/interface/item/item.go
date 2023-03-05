@@ -408,9 +408,9 @@ type (
 		// 是否上架
 		ShelveState int32 `db:"shelve_state"`
 		// 审核状态
-		AuditState int32 `db:"audit_state"`
+		ReviewState int32 `db:"review_state"`
 		// 审核备注
-		AuditRemark string `db:"audit_remark"`
+		ReviewRemark string `db:"review_remark"`
 		// 排序序号
 		SortNum int32 `db:"sort_num"`
 		// 创建时间

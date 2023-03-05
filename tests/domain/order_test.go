@@ -58,7 +58,7 @@ func logState(t *testing.T, err error, o order.IOrder) {
 }
 
 func TestOrderSetup(t *testing.T) {
-	orderNo := "1230213010595516"
+	orderNo := "1230301000215829"
 	orderRepo := ti.Factory.GetOrderRepo()
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
@@ -72,6 +72,7 @@ func TestOrderSetup(t *testing.T) {
 	} else {
 		t.Log(order.OrderStatus(o.GetValue().Status).String())
 	}
+	return
 	err = o.PickUp()
 	if err != nil {
 		t.Log(err)
@@ -163,7 +164,7 @@ func TestCancelOrder(t *testing.T) {
 }
 
 func TestCancelSubOrderByOrderNo(t *testing.T) {
-	var orderId int64 = 117
+	var orderId int64 = 605
 	orderRepo := ti.Factory.GetOrderRepo()
 	manager := orderRepo.Manager()
 	is := manager.GetSubOrder(orderId)
@@ -172,6 +173,11 @@ func TestCancelSubOrderByOrderNo(t *testing.T) {
 		t.Log("取消失败：", err.Error())
 		t.FailNow()
 	}
+	ip := is.ParentOrder().GetPaymentOrder()
+	if ip != nil {
+		t.Log("支付单状态:", ip.Get().State)
+	}
+	time.Sleep(3000)
 }
 
 // 测试提交普通订单,并完成付款

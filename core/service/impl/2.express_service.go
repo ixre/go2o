@@ -10,6 +10,8 @@ package impl
 
 import (
 	"context"
+	"sort"
+	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/service/proto"
@@ -42,7 +44,7 @@ func (e *expressService) GetExpressProvider(_ context.Context, name *proto.IdOrN
 	if v != nil {
 		return e.parseProviderDto(v), nil
 	}
-	return nil,express.ErrNotSupportProvider
+	return nil, express.ErrNotSupportProvider
 }
 
 // 保存快递公司
@@ -64,6 +66,52 @@ func (e *expressService) GetProviders(_ context.Context, _ *proto.Empty) (*proto
 	return &proto.ExpressProviderListResponse{
 		Value: arr,
 	}, nil
+}
+
+// 获取卖家的快递公司分组
+func (e *expressService) GetProviderGroup(_ context.Context, _ *proto.Empty) (*proto.ExpressProviderGroupResponse, error) {
+	list := e._rep.GetExpressProviders()
+	for i, v := range list {
+		if v.Enabled == 0 {
+			list = append(list[:i], list[i+1:]...)
+		}
+	}
+	iMap := make(map[string][]*proto.SMinifiyExpressProvider, 0)
+	var letArr []string
+	for _, v := range list {
+		for _, g := range strings.Split(v.GroupFlag, ",") {
+			if g == "" {
+				continue
+			}
+			arr, ok := iMap[g]
+			if !ok {
+				arr = []*proto.SMinifiyExpressProvider{}
+				letArr = append(letArr, g)
+			}
+			arr = append(arr, &proto.SMinifiyExpressProvider{
+				Id:     int64(v.Id),
+				Name:   v.Name,
+				Letter: v.FirstLetter,
+			})
+			iMap[g] = arr
+		}
+	}
+	sort.Strings(letArr)
+	// 将常用移动到数组开始位置
+	l := len(letArr)
+	if letArr[l-1] == "常用" {
+		letArr = append(letArr[l-1:], letArr[:l-1]...)
+	}
+	dst := &proto.ExpressProviderGroupResponse{
+		List: []*proto.SExpressProviderGroup{},
+	}
+	for _, k := range letArr {
+		dst.List = append(dst.List, &proto.SExpressProviderGroup{
+			Group: k,
+			List:  iMap[k],
+		})
+	}
+	return dst, nil
 }
 
 // 保存快递模板

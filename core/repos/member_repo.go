@@ -682,6 +682,22 @@ func (m *MemberRepoImpl) GetInvitationMeMember(memberId int64) *member.Member {
 	return d
 }
 
+// GetInvitationCount 获取邀请会员数量
+func (m *MemberRepoImpl) GetInvitationCount(memberId int, level int) int {
+	var count = 0
+	field := "inviter_id"
+	switch level {
+	case 2:
+		field = "inviter_d2"
+	case 3:
+		field = "inviter_d3"
+	}
+	m._orm.Connector().ExecScalar(fmt.Sprintf(`
+		SELECT COUNT(1) FROM mm_relation WHERE %s = %d`,
+		field, memberId), &count)
+	return count
+}
+
 // 保存余额变动信息
 func (m *MemberRepoImpl) SaveFlowAccountInfo(v *member.FlowAccountLog) (int32, error) {
 	return orm.I32(orm.Save(m._orm, v, int(v.Id)))

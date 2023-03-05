@@ -89,6 +89,10 @@ type (
 		StatusText string
 		// 商品项
 		Items []*ComplexItem
+		// 关闭时间
+		CloseTime int64
+		// 支付时间
+		PaymentTime int64
 		// 更新时间
 		UpdateTime int64
 	}

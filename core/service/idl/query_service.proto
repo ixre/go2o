@@ -46,6 +46,9 @@ service QueryService {
 
     // 查询商品销售记录
     rpc QueryItemSalesHistory(QueryItemSalesHistoryRequest) returns (QueryItemSalesHistoryResponse){}
+
+    // 搜索商品
+    rpc SearchItem(SearchItemRequest) returns (SearchItemResponse){}
 }
 
 message FavoriteQueryRequest {
@@ -285,4 +288,40 @@ message SItemSalesHistory{
 message QueryItemSalesHistoryResponse{
     // 销售记录
     repeated SItemSalesHistory value = 1;
+}
+
+// 搜索商品请求
+message SearchItemRequest{
+    // 店铺编号,如果不传递,则默认所有店铺
+    int32 shopId = 1;
+    // 商品关键词
+    string keyword = 2;
+    // 数量
+    int32 size = 3;
+}
+
+// 搜索商品返回数据
+message SearchItemResponse{
+    // 搜索结果
+    repeated SSearchItemResult value = 1;
+}
+
+// 搜索商品结果
+message SSearchItemResult{
+  // 商品编号
+  int64 itemId = 1;
+  // 商品标志
+  int32 itemFlag = 2;
+  // 商品编码
+  string code = 3;
+  // 供货商编号
+  int64 sellerId = 4;
+  // 商品标题
+  string title = 5;
+  // 商品图片
+  string image = 6;
+  // 价格区间
+  string priceRange = 7;
+  // 库存数量
+  int32 stockNum = 8;
 }

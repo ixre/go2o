@@ -2,7 +2,8 @@ package promodel
 
 import (
 	"errors"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/infrastructure/format"
 )
 
@@ -29,8 +30,8 @@ func NewModel(v *promodel.ProductModel, rep promodel.IProductModelRepo,
 }
 
 // 获取聚合根编号
-func (m *modelImpl) GetAggregateRootId() int32 {
-	return m.value.ID
+func (m *modelImpl) GetAggregateRootId() int {
+	return m.value.Id
 }
 
 // 获取值
@@ -88,7 +89,7 @@ func (m *modelImpl) Brands() []*promodel.ProductBrand {
 }
 
 // 关联品牌
-func (m *modelImpl) SetBrands(brandId []int32) error {
+func (m *modelImpl) SetBrands(brandId []int) error {
 	if brandId == nil {
 		return promodel.ErrEmptyBrandArray
 	}
@@ -97,13 +98,13 @@ func (m *modelImpl) SetBrands(brandId []int32) error {
 }
 
 // 保存
-func (m *modelImpl) Save() (id int32, err error) {
+func (m *modelImpl) Save() (id int, err error) {
 	var i int
 	// 新增模型
 	if m.GetAggregateRootId() <= 0 {
 		i, err = m.rep.SaveProModel(m.value)
 		if err == nil {
-			m.value.ID = int32(i)
+			m.value.Id = i
 		} else {
 			return 0, err
 		}
@@ -138,7 +139,7 @@ func (m *modelImpl) Save() (id int32, err error) {
 	if err == nil {
 		i, err = m.rep.SaveProModel(m.value)
 		if err == nil {
-			m.value.ID = int32(i)
+			m.value.Id = i
 		}
 	}
 	return m.GetAggregateRootId(), err
@@ -150,8 +151,8 @@ func (m *modelImpl) saveModelSpecs(specs []*promodel.Spec) (err error) {
 	// 获取存在的项
 	old := m.rep.SelectSpec("prod_model = $1", pk)
 	// 分析当前项目并加入到MAP中
-	delList := []int32{}
-	currMap := make(map[int32]*promodel.Spec, len(specs))
+	delList := []int{}
+	currMap := make(map[int]*promodel.Spec, len(specs))
 	for _, v := range specs {
 		currMap[v.Id] = v
 	}
@@ -184,8 +185,8 @@ func (m *modelImpl) saveModelAttrs(attrs []*promodel.Attr) (err error) {
 	// 获取存在的项
 	old := m.rep.SelectAttr("prod_model = $1", pk)
 	// 分析当前项目并加入到MAP中
-	delList := []int32{}
-	currMap := make(map[int32]*promodel.Attr, len(attrs))
+	delList := []int{}
+	currMap := make(map[int]*promodel.Attr, len(attrs))
 	for _, v := range attrs {
 		currMap[v.Id] = v
 	}
@@ -212,12 +213,12 @@ func (m *modelImpl) saveModelAttrs(attrs []*promodel.Attr) (err error) {
 }
 
 // 保存品牌
-func (m *modelImpl) saveModelBrand(brandIds []int32) (err error) {
+func (m *modelImpl) saveModelBrand(brandIds []int) (err error) {
 	pk := m.GetAggregateRootId()
 	//获取存在的品牌
 	old := m.rep.SelectProModelBrand("prod_model = $1", pk)
 	//删除不包括的品牌
-	idArrStr := format.I32ArrStrJoin(brandIds)
+	idArrStr := format.IntArrStrJoin(brandIds)
 	if len(old) > 0 {
 		m.rep.BatchDeleteProModelBrand("prod_model = $1"+
 			" AND brand_id NOT IN("+idArrStr+")", pk)
@@ -233,9 +234,9 @@ func (m *modelImpl) saveModelBrand(brandIds []int32) (err error) {
 		}
 		if !isExist {
 			e := &promodel.ProModelBrand{
-				ID:       0,
-				BrandId:  v,
-				ProModel: pk,
+				Id:      0,
+				BrandId: v,
+				ModelId: pk,
 			}
 			_, err = m.rep.SaveProModelBrand(e)
 			if err != nil {

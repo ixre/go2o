@@ -168,7 +168,7 @@ func (s *cartServiceImpl) wsPutItem(c cart.ICart, data map[string]string) (*prot
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
-		err = c.Put(itemId, v.SkuId, v.Quantity, false)
+		err = c.Put(itemId, v.SkuId, v.Quantity, false, false)
 		if err != nil {
 			break
 		}
@@ -189,7 +189,7 @@ func (s *cartServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*p
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
-		err = c.Update(itemId, v.SkuId, v.Quantity)
+		err = c.Put(itemId, v.SkuId, v.Quantity, true, false)
 		if err != nil {
 			break
 		}
@@ -293,58 +293,46 @@ func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
 }
 
 // PutInCart 放入购物车
-func (s *cartServiceImpl) PutInCart(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
-	c := s.getShoppingCart(r.Id.UserId, r.Id.CartCode)
+func (s *cartServiceImpl) PutItems(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
+	c := s.getShoppingCart(r.CartId.UserId, r.CartId.CartCode)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
-	it := r.Item
-	err := c.Put(it.ItemId, it.SkuId, it.Quantity, it.CheckOnly)
-	if err == nil {
-		if _, err = c.Save(); err == nil {
-			rc := c.(cart.INormalCart)
-			item := rc.GetItem(it.ItemId, it.SkuId)
-			return &proto.CartItemResponse{
-				Items: []*proto.SShoppingCartItem{
-					parser.ParseCartItem(item),
-				},
-			}, nil
+	rc := c.(cart.INormalCart)
+	items := make([]*proto.SShoppingCartItem, 0)
+	for _, it := range r.Items {
+		err := c.Put(it.ItemId, it.SkuId, it.Quantity, it.ResetQuantity, false)
+		if err != nil {
+			return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 		}
+		item := rc.GetItem(it.ItemId, it.SkuId)
+		items = append(items, parser.ParseCartItem(item))
 	}
-	return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+	if _, err := c.Save(); err != nil {
+		return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+	}
+	return &proto.CartItemResponse{
+		Items: items,
+	}, nil
 }
 
-// UpdateItems 更新购物车项目
-func (s *cartServiceImpl) UpdateItems(_ context.Context, r *proto.CartUpdateRequest) (*proto.CartItemResponse, error) {
+// ReduceItem 从购物车里删除指定数量的商品
+func (s *cartServiceImpl) ReduceItems(_ context.Context, r *proto.CartItemRequest) (*proto.Result, error) {
 	c := s.getShoppingCart(r.CartId.UserId, r.CartId.CartCode)
 	if c == nil {
-		return &proto.CartItemResponse{
-			ErrCode: 1,
-			ErrMsg:  cart.ErrNoSuchCart.Error(),
-		}, nil
+		return s.error(cart.ErrNoSuchCart), nil
 	}
-	rc := c.(cart.INormalCart)
-	arr := make([]*proto.SShoppingCartItem, 0)
-	for _, v := range r.Items {
-		err := c.Update(v.ItemId, v.SkuId, v.Quantity)
+	for _, it := range r.Items {
+		err := c.Remove(it.ItemId, it.SkuId, it.Quantity)
 		if err != nil {
-			return &proto.CartItemResponse{
-				ErrCode: 2,
-				ErrMsg:  err.Error(),
-			}, nil
+			return s.error(err), nil
 		}
-		it := rc.GetItem(v.ItemId, v.SkuId)
-		arr = append(arr, parser.ParseCartItem(it))
 	}
 	_, err := c.Save()
-	ret := &proto.CartItemResponse{
-		Items: arr,
+	if err == nil {
+		return s.success(nil), nil
 	}
-	if err != nil {
-		ret.ErrCode = 1
-		ret.ErrMsg = err.Error()
-	}
-	return ret, nil
+	return s.error(err), nil
 }
 
 // CheckCart 勾选商品结算

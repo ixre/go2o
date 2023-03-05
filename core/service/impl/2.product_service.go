@@ -35,7 +35,7 @@ func NewProductService(pmRepo promodel.IProductModelRepo,
 
 // GetModel 获取产品模型
 func (p *productService) GetProductModel(_ context.Context, id *proto.ProductModelId) (*proto.SProductModel, error) {
-	im := p.pmRepo.GetModel(int32(id.Value))
+	im := p.pmRepo.GetModel(int(id.Value))
 	if im != nil {
 		ret := p.parseModelDto(im.Value())
 		// 绑定属性
@@ -54,13 +54,13 @@ func (p *productService) GetProductModel(_ context.Context, id *proto.ProductMod
 		}
 		// 绑定品牌
 		brands := im.Brands()
-		ret.Brands = make([]*proto.SProductBrand, len(brands))
+		ret.Brands = make([]int64, len(brands))
 		for i, v := range brands {
-			ret.Brands[i] = p.parseBrandDto(v)
+			ret.Brands[i] = int64(v.Id)
 		}
 		return ret, nil
 	}
-	return nil,product.ErrNoSuchProduct 
+	return nil, product.ErrNoSuchProduct
 }
 
 func (p *productService) appendAttrItems(attr *proto.SProductAttr, items []*promodel.AttrItem) *proto.SProductAttr {
@@ -93,13 +93,13 @@ func (p *productService) GetModels(_ context.Context, _ *proto.Empty) (*proto.Pr
 
 // GetAttr 获取属性
 func (p *productService) GetAttr(_ context.Context, id *proto.ProductAttrId) (*proto.SProductAttr, error) {
-	v := p.pmRepo.AttrService().GetAttr(int32(id.Value))
+	v := p.pmRepo.AttrService().GetAttr(int(id.Value))
 	if v != nil {
 		attr := p.parseProductAttrDto(v)
 		attr = p.appendAttrItems(attr, v.Items)
 		return attr, nil
 	}
-	return nil, product.ErrNoSuchAttr 
+	return nil, product.ErrNoSuchAttr
 }
 
 // GetAttrItem 获取属性项
@@ -108,7 +108,7 @@ func (p *productService) GetAttrItem(_ context.Context, id *proto.ProductAttrIte
 	if it != nil {
 		return p.parseProductAttrItemDto(it), nil
 	}
-	return nil,  product.ErrNoSuchAttr
+	return nil, product.ErrNoSuchAttr
 }
 
 // GetBrands 获取所有产品品牌
@@ -184,7 +184,7 @@ func (p *productService) GetProduct(_ context.Context, id *proto.ProductId) (*pr
 		}
 		return ret, nil
 	}
-	return nil,  product.ErrNoSuchProduct
+	return nil, product.ErrNoSuchProduct
 }
 
 // SaveProduct 保存产品
@@ -240,8 +240,8 @@ func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfo
 func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
 	var pm promodel.IProductModel
 	v := p.parseProductModel(r)
-	if v.ID > 0 {
-		pm = p.pmRepo.GetModel(int32(r.Id))
+	if v.Id > 0 {
+		pm = p.pmRepo.GetModel(int(r.Id))
 		if pm == nil {
 			return p.error(errors.New("模型不存在")), nil
 		}
@@ -265,7 +265,7 @@ func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*
 	}
 	// 保存模型
 	if err == nil {
-		v.ID, err = pm.Save()
+		v.Id, err = pm.Save()
 	}
 	return p.result(err), nil
 }
@@ -279,11 +279,11 @@ func (p *productService) DeleteModel_(_ context.Context, id *proto.ProductModelI
 
 // GetBrand 获取产品品牌
 func (p *productService) GetBrand(_ context.Context, id *proto.Int64) (*proto.SProductBrand, error) {
-	brand := p.pmRepo.BrandService().Get(int32(id.Value))
+	brand := p.pmRepo.BrandService().Get(int(id.Value))
 	if brand != nil {
 		return p.parseBrandDto(brand), nil
 	}
-	return nil,product.ErrNoSuchBrand 
+	return nil, product.ErrNoSuchBrand
 }
 
 // SaveBrand Save 产品品牌
@@ -295,7 +295,7 @@ func (p *productService) SaveBrand(_ context.Context, brand *proto.SProductBrand
 
 // DeleteBrand 删除产品品牌
 func (p *productService) DeleteBrand(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	err := p.pmRepo.BrandService().DeleteBrand(int32(id.Value))
+	err := p.pmRepo.BrandService().DeleteBrand(int(id.Value))
 	return p.result(err), nil
 }
 
@@ -514,7 +514,7 @@ func (p *productService) SaveItemSaleLabels(mchId, itemId int64, tagIds []int) e
 
 func (p *productService) parseModelDto(v *promodel.ProductModel) *proto.SProductModel {
 	ret := &proto.SProductModel{
-		Id:      int64(v.ID),
+		Id:      int64(v.Id),
 		Name:    v.Name,
 		AttrStr: v.AttrStr,
 		SpecStr: v.SpecStr,
@@ -530,9 +530,9 @@ func (p *productService) parseProductAttrDto(v *promodel.Attr) *proto.SProductAt
 	return &proto.SProductAttr{
 		Id:         int64(v.Id),
 		Name:       v.Name,
-		IsFilter:   v.IsFilter,
-		MultiCheck: v.MultiCheck,
-		SortNum:    v.SortNum,
+		IsFilter:   int32(v.IsFilter),
+		MultiCheck: int32(v.MultiCheck),
+		SortNum:    int32(v.SortNum),
 		ItemValues: v.ItemValues,
 		Items:      nil,
 	}
@@ -542,13 +542,13 @@ func (p *productService) parseProductAttrItemDto(v *promodel.AttrItem) *proto.SP
 	return &proto.SProductAttrItem{
 		Id:      int64(v.Id),
 		Value:   v.Value,
-		SortNum: v.SortNum,
+		SortNum: int32(v.SortNum),
 	}
 }
 
 func (p *productService) parseBrandDto(v *promodel.ProductBrand) *proto.SProductBrand {
 	return &proto.SProductBrand{
-		Id:           int64(v.ID),
+		Id:           int64(v.Id),
 		Name:         v.Name,
 		Image:        v.Image,
 		SiteUrl:      v.SiteUrl,
@@ -645,7 +645,7 @@ func (p *productService) parseProduct(v *proto.SaveProductRequest) *product.Prod
 
 func (p *productService) parseProductModel(v *proto.SProductModel) *promodel.ProductModel {
 	ret := &promodel.ProductModel{
-		ID:      int32(v.Id),
+		Id:      int(v.Id),
 		Name:    v.Name,
 		Enabled: int(v.Enabled),
 	}
@@ -662,9 +662,9 @@ func (p *productService) parseProductModel(v *proto.SProductModel) *promodel.Pro
 		}
 	}
 	if v.Brands != nil {
-		ret.BrandArray = make([]int32, len(v.Brands))
+		ret.BrandArray = make([]int, len(v.Brands))
 		for i, v := range v.Brands {
-			ret.BrandArray[i] = int32(v.Id)
+			ret.BrandArray[i] = int(v)
 		}
 	}
 	return ret
@@ -672,7 +672,7 @@ func (p *productService) parseProductModel(v *proto.SProductModel) *promodel.Pro
 
 func (p *productService) parseBrand(v *proto.SProductBrand) *promodel.ProductBrand {
 	return &promodel.ProductBrand{
-		ID:           int32(v.Id),
+		Id:           int32(v.Id),
 		Name:         v.Name,
 		Image:        v.Image,
 		SiteUrl:      v.SiteUrl,
@@ -686,12 +686,12 @@ func (p *productService) parseBrand(v *proto.SProductBrand) *promodel.ProductBra
 
 func (p *productService) parseProductAttr(v *proto.SProductAttr) *promodel.Attr {
 	ret := &promodel.Attr{
-		Id:         int32(v.Id),
+		Id:         int(v.Id),
 		Name:       v.Name,
-		IsFilter:   v.IsFilter,
-		MultiCheck: v.MultiCheck,
+		IsFilter:   int(v.IsFilter),
+		MultiCheck: int(v.MultiCheck),
 		ItemValues: "",
-		SortNum:    v.SortNum,
+		SortNum:    int(v.SortNum),
 	}
 	if v.Items != nil {
 		ret.Items = make([]*promodel.AttrItem, len(v.Items))
@@ -704,10 +704,10 @@ func (p *productService) parseProductAttr(v *proto.SProductAttr) *promodel.Attr 
 
 func (p *productService) parseProductSpec(v *proto.SProductSpec) *promodel.Spec {
 	ret := &promodel.Spec{
-		Id:         int32(v.Id),
+		Id:         int(v.Id),
 		Name:       v.Name,
 		ItemValues: v.ItemValues,
-		SortNum:    v.SortNum,
+		SortNum:    int(v.SortNum),
 	}
 	if v.Items != nil {
 		ret.Items = make([]*promodel.SpecItem, len(v.Items))
@@ -720,18 +720,18 @@ func (p *productService) parseProductSpec(v *proto.SProductSpec) *promodel.Spec 
 
 func (p *productService) parseProductAttrItem(v *proto.SProductAttrItem) *promodel.AttrItem {
 	return &promodel.AttrItem{
-		Id:      int32(v.Id),
+		Id:      int(v.Id),
 		Value:   v.Value,
-		SortNum: v.SortNum,
+		SortNum: int(v.SortNum),
 	}
 }
 
 func (p *productService) parseProductSpecItem(v *proto.SProductSpecItem) *promodel.SpecItem {
 	return &promodel.SpecItem{
-		Id:      int32(v.Id),
+		Id:      int(v.Id),
 		Value:   v.Value,
 		Color:   v.Color,
-		SortNum: v.SortNum,
+		SortNum: int(v.SortNum),
 	}
 }
 
@@ -749,7 +749,7 @@ func (p *productService) parseSpecDto(v *promodel.Spec) *proto.SProductSpec {
 	return &proto.SProductSpec{
 		Id:         int64(v.Id),
 		Name:       v.Name,
-		SortNum:    v.SortNum,
+		SortNum:    int32(v.SortNum),
 		ItemValues: v.ItemValues,
 		Items:      nil,
 	}
@@ -760,7 +760,7 @@ func (p *productService) parseProductSpecItemDto(v *promodel.SpecItem) *proto.SP
 		Id:      int64(v.Id),
 		Value:   v.Value,
 		Color:   v.Color,
-		SortNum: v.SortNum,
+		SortNum: int32(v.SortNum),
 	}
 }
 

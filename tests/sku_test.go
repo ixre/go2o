@@ -24,7 +24,7 @@ func TestSetBrand(t *testing.T) {
 	list := []int32{}
 	for i, v := range brands {
 		if true || i%2 == 0 || i == 0 {
-			list = append(list, v.ID)
+			list = append(list, v.Id)
 		}
 	}
 	if len(list) == 0 {

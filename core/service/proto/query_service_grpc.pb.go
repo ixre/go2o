@@ -48,6 +48,8 @@ type QueryServiceClient interface {
 	PagedOnShelvesGoods(ctx context.Context, in *PagingShopGoodsRequest, opts ...grpc.CallOption) (*PagingShopGoodsResponse, error)
 	// 查询商品销售记录
 	QueryItemSalesHistory(ctx context.Context, in *QueryItemSalesHistoryRequest, opts ...grpc.CallOption) (*QueryItemSalesHistoryResponse, error)
+	// 搜索商品
+	SearchItem(ctx context.Context, in *SearchItemRequest, opts ...grpc.CallOption) (*SearchItemResponse, error)
 }
 
 type queryServiceClient struct {
@@ -175,6 +177,15 @@ func (c *queryServiceClient) QueryItemSalesHistory(ctx context.Context, in *Quer
 	return out, nil
 }
 
+func (c *queryServiceClient) SearchItem(ctx context.Context, in *SearchItemRequest, opts ...grpc.CallOption) (*SearchItemResponse, error) {
+	out := new(SearchItemResponse)
+	err := c.cc.Invoke(ctx, "/QueryService/SearchItem", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServiceServer is the server API for QueryService service.
 // All implementations must embed UnimplementedQueryServiceServer
 // for forward compatibility
@@ -205,6 +216,8 @@ type QueryServiceServer interface {
 	PagedOnShelvesGoods(context.Context, *PagingShopGoodsRequest) (*PagingShopGoodsResponse, error)
 	// 查询商品销售记录
 	QueryItemSalesHistory(context.Context, *QueryItemSalesHistoryRequest) (*QueryItemSalesHistoryResponse, error)
+	// 搜索商品
+	SearchItem(context.Context, *SearchItemRequest) (*SearchItemResponse, error)
 	mustEmbedUnimplementedQueryServiceServer()
 }
 
@@ -250,6 +263,9 @@ func (UnimplementedQueryServiceServer) PagedOnShelvesGoods(context.Context, *Pag
 }
 func (UnimplementedQueryServiceServer) QueryItemSalesHistory(context.Context, *QueryItemSalesHistoryRequest) (*QueryItemSalesHistoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryItemSalesHistory not implemented")
+}
+func (UnimplementedQueryServiceServer) SearchItem(context.Context, *SearchItemRequest) (*SearchItemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchItem not implemented")
 }
 func (UnimplementedQueryServiceServer) mustEmbedUnimplementedQueryServiceServer() {}
 
@@ -498,6 +514,24 @@ func _QueryService_QueryItemSalesHistory_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QueryService_SearchItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).SearchItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/QueryService/SearchItem",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).SearchItem(ctx, req.(*SearchItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // QueryService_ServiceDesc is the grpc.ServiceDesc for QueryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -556,6 +590,10 @@ var QueryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryItemSalesHistory",
 			Handler:    _QueryService_QueryItemSalesHistory_Handler,
+		},
+		{
+			MethodName: "SearchItem",
+			Handler:    _QueryService_SearchItem_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

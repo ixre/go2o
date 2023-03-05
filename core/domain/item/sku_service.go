@@ -12,7 +12,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/infrastructure/format"
-	"github.com/ixre/gof/util"
 )
 
 var _ item.ISkuService = new(skuServiceImpl)
@@ -161,10 +160,10 @@ func (s *skuServiceImpl) Merge(from []*item.Sku, to *[]*item.Sku) {
 
 // GetNameMap 根据SKU获取规格名称字典，多个SKU的规格名称是相同的
 func (s *skuServiceImpl) GetNameMap(skuArr []*item.Sku) (
-	specMap map[int32]string, itemMap map[int32]string) {
+	specMap map[int]string, itemMap map[int]string) {
 	// 获取传入的规格信息,按传入规格名称SKU
-	specMap = make(map[int32]string)
-	itemMap = make(map[int32]string)
+	specMap = make(map[int]string)
+	itemMap = make(map[int]string)
 	for _, sku := range skuArr {
 		sku.SpecData = strings.TrimSpace(sku.SpecData)
 		sku.SpecWord = strings.TrimSpace(sku.SpecWord)
@@ -183,12 +182,12 @@ func (s *skuServiceImpl) GetNameMap(skuArr []*item.Sku) (
 				continue
 			}
 			//绑定规格
-			specId, _ := util.I32Err(strconv.Atoi(arr[j][:ki]))
+			specId, _ := strconv.Atoi(arr[j][:ki])
 			if _, ok := specMap[specId]; !ok {
 				specMap[specId] = wordArr[j][:wi]
 			}
 			//绑定项
-			itemId, _ := util.I32Err(strconv.Atoi(arr[j][ki+1:]))
+			itemId, _ := strconv.Atoi(arr[j][ki+1:])
 			if _, ok := itemMap[itemId]; !ok {
 				itemMap[itemId] = wordArr[j][wi+1:]
 			}
@@ -204,14 +203,14 @@ func (s *skuServiceImpl) RebuildSkuArray(sku *[]*item.Sku,
 	// 获取传入的规格信息,按传入规格名称SKU直到找到结果为止
 	sName, iName := s.GetNameMap(skuArr)
 	// 获取当前规格及规格项存储于map中
-	skMap := map[int32]*promodel.Spec{}
-	siMap := map[int32]*promodel.SpecItem{}
+	skMap := map[int]*promodel.Spec{}
+	siMap := map[int]*promodel.SpecItem{}
 	sa, ia := s.GetSpecItemArray(skuArr)
 	for _, v := range sa {
-		skMap[int32(v)] = s.proMRepo.GetSpec(v)
+		skMap[v] = s.proMRepo.GetSpec(v)
 	}
 	for _, v := range ia {
-		siMap[int32(v)] = s.proMRepo.GetSpecItem(v)
+		siMap[v] = s.proMRepo.GetSpecItem(v)
 	}
 	// 赋值SpecWord
 	for _, v := range skuArr {
@@ -228,14 +227,14 @@ func (s *skuServiceImpl) RebuildSkuArray(sku *[]*item.Sku,
 		items := make([]string, l)
 		for i, v := range arr {
 			idx := strings.Index(v, ":")
-			specId, _ := util.I32Err(strconv.Atoi(v[:idx]))
+			specId, _ := strconv.Atoi(v[:idx])
 			if n, ok := sName[specId]; ok && n != "" {
 				items[i] = n
 			} else {
 				items[i] = skMap[specId].Name
 			}
 			items[i] += ":"
-			itemId, _ := util.I32Err(strconv.Atoi(v[idx+1:]))
+			itemId, _ := strconv.Atoi(v[idx+1:])
 			if n, ok := iName[itemId]; ok && n != "" {
 				items[i] += n
 			} else {
@@ -250,7 +249,7 @@ func (s *skuServiceImpl) RebuildSkuArray(sku *[]*item.Sku,
 			titArr[0] = it.Title
 			for i, v := range arr {
 				ii := strings.Index(v, ":")
-				iid, _ := util.I32Err(strconv.Atoi(v[ii+1:]))
+				iid, _ := strconv.Atoi(v[ii+1:])
 				//先从自定义规格值获取文本，再从规格项获取
 				if n, ok := iName[iid]; ok && n != "" {
 					titArr[i+1] = n
@@ -273,7 +272,7 @@ func (s *skuServiceImpl) GetItemSpecArray(skuArr []*item.Sku) (
 		sName, iName := s.GetNameMap(skuArr)
 		// 绑定规格
 		specArr = make([]*promodel.Spec, l)
-		imp := make(map[int32]int, l) //记录规格对应数组的索引
+		imp := make(map[int]int, l) //记录规格对应数组的索引
 		for i, v := range sa {
 			spec := s.proMRepo.GetSpec(v)
 			if spec == nil {

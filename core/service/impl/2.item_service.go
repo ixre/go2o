@@ -68,10 +68,12 @@ func (i *itemService) GetItem(_ context.Context, req *proto.GetItemRequest) (*pr
 	if it != nil {
 		ret := parser.ItemDataDto(it.GetValue())
 		skuArr := it.SkuArray()
+		specArr := it.SpecArray()
 		ret.Images = it.Images()
 		ret.AttrArray = parser.AttrArrayDto(it.Product().Attr())
 		ret.SkuArray = parser.SkuArrayDto(skuArr)
 		ret.LevelPrices = parser.PriceArrayDto(it.GetLevelPrices())
+		ret.SpecOptions = parser.SpecOptionsDto(specArr)
 		ret.FlagData = i.getFlagData(it.GetValue().ItemFlag)
 		return ret, nil
 	}
@@ -129,8 +131,9 @@ func (i *itemService) SaveItem(_ context.Context, r *proto.SaveItemRequest) (*pr
 		i.saveItemFlag(gi, r)
 	}
 	return &proto.SaveItemResponse{
-		ErrCode: 0,
-		ItemId:  it.Id,
+		ErrCode:  0,
+		ItemId:   it.Id,
+		ItemFlag: int32(it.ItemFlag),
 	}, nil
 }
 
@@ -336,34 +339,17 @@ func (i *itemService) attachWholesaleItemDataV2(dto *proto.SUnifiedViewItem) {
 			dto.Data["Authorized"] = "false"
 		}
 		// 品牌
-		b := i.promRepo.BrandService().Get(int32(dto.BrandId))
+		b := i.promRepo.BrandService().Get(int(dto.BrandId))
 		if b != nil {
 			dto.Data["BrandName"] = b.Name
 			dto.Data["BrandImage"] = b.Image
-			dto.Data["BrandId"] = strconv.Itoa(int(b.ID))
+			dto.Data["BrandId"] = strconv.Itoa(int(b.Id))
 		}
 	}
 }
 
 // 获取上架商品数据
 func (i *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*proto.PagingGoodsResponse, error) {
-	/*
-		hash := fmt.Sprintf("%d-%d-%_s", catId, quantity, where)
-			hash = crypto.Md5([]byte(hash))
-			key := "go2o:shopQuery:cache:rd-item:" + hash
-			var arr []*proto.SOldItem
-
-			fn := func() interface{} {
-				list := _i.itemQuery.GetRandomItem(catId, quantity, where)
-				for _, v := range list {
-					v.Image = format.GetGoodsImageUrl(v.Image)
-					arr = append(arr, parser.ItemDto(v))
-				}
-				return arr
-			}
-			_i.sto.RWJson(key, &arr, fn, 600)
-			return arr
-	*/
 	c := i.cateRepo.GlobCatService().GetCategory(int(r.CategoryId))
 	var idList []int = nil
 	var list []*item.GoodsItem
@@ -436,39 +422,6 @@ func (i *itemService) DeleteSaleLabel(_ context.Context, s *proto.Int64) (*proto
 	return i.error(err), nil
 }
 
-// // 根据销售标签获取指定数目的商品
-// func (i *itemService) GetValueGoodsBySaleLabel(_ context.Context, r *proto.GetItemsByLabelRequest) (*proto.PagingShopGoodsResponse, error) {
-// 	tag := i.labelRepo.LabelService().GetSaleLabelByCode(r.Label)
-// 	ret := &proto.PagingShopGoodsResponse{
-// 		Data: make([]*proto.SGoods, 0),
-// 	}
-// 	if tag != nil {
-// 		list := tag.GetValueGoods(r.SortBy, int(r.Begin), int(r.End))
-// 		for _, v := range list {
-// 			v.Image = format.GetGoodsImageUrl(v.Image)
-// 			ret.Data = append(ret.Data, i.parseGoods(v))
-// 		}
-// 	}
-// 	return ret, nil
-// }
-
-// // 根据分页销售标签获取指定数目的商品
-// func (i *itemService) GetPagedValueGoodsBySaleLabel_(_ context.Context, r *proto.SaleLabelItemsRequest_) (*proto.PagingGoodsResponse, error) {
-// 	tag := i.labelRepo.LabelService().CreateSaleLabel(&item.Label{
-// 		Id: r.LabelId,
-// 	})
-// 	total, list := tag.GetPagedValueGoods(r.Params.SortBy, int(r.Params.Begin), int(r.Params.End))
-// 	arr := make([]*proto.SUnifiedViewItem, len(list))
-// 	for i, v := range list {
-// 		v.Image = format.GetGoodsImageUrl(v.Image)
-// 		arr[i] = parser.ParseGoodsDto_(v)
-// 	}
-// 	return &proto.PagingGoodsResponse{
-// 		Total: int64(total),
-// 		Data:  arr,
-// 	}, nil
-// }
-
 // 保存商品的会员价
 func (i *itemService) SaveLevelPrices(_ context.Context, r *proto.SaveLevelPriceRequest) (*proto.Result, error) {
 	it := i.itemRepo.GetItem(r.ItemId)
@@ -489,18 +442,17 @@ func (i *itemService) SaveLevelPrices(_ context.Context, r *proto.SaveLevelPrice
 func (i *itemService) SetShelveState(_ context.Context, r *proto.ShelveStateRequest) (*proto.Result, error) {
 	it := i.itemRepo.GetItem(r.ItemId)
 	var err error
-	if it == nil || it.GetValue().VendorId != r.SellerId {
-		err = item.ErrNoSuchItem
-	} else {
-		state := int32(types.ElseInt(r.ShelveOn,
-			int(item.ShelvesOn),
-			int(item.ShelvesDown)))
-		switch r.ItemType {
-		case proto.EItemSalesType_IT_WHOLESALE:
-			err = it.Wholesale().SetShelve(state, r.Remark)
-		case proto.EItemSalesType_IT_NORMAL:
-			err = it.SetShelve(state, r.Remark)
-		}
+	if it == nil {
+		return i.result(item.ErrNoSuchItem), nil
+	}
+	state := int32(types.ElseInt(r.ShelveOn,
+		int(item.ShelvesOn),
+		int(item.ShelvesDown)))
+	switch r.ItemType {
+	case proto.EItemSalesType_IT_WHOLESALE:
+		err = it.Wholesale().SetShelve(state, r.Remark)
+	case proto.EItemSalesType_IT_NORMAL:
+		err = it.SetShelve(state, r.Remark)
 	}
 	return i.result(err), nil
 }

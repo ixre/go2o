@@ -17,3 +17,4 @@ func TestQueryMemberWalletLog(t *testing.T) {
 	t.Log(fmt.Sprintf("rows:%#v", rows))
 	t.Log(typeconv.MustJson(rows))
 }
+

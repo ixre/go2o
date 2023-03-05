@@ -458,7 +458,7 @@ type (
 		GetDomainId() int64
 		GetValue() ConsigneeAddress
 		SetValue(*ConsigneeAddress) error
-		Save() (int64, error)
+		Save() error
 	}
 
 	// 收货地址

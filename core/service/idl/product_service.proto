@@ -121,7 +121,7 @@ message SProductModel {
     // 规格
     repeated SProductSpec specs = 6;
     // 关联品牌
-    repeated SProductBrand brands = 7;
+    repeated int64 brands = 7;
     // 是否启用
     int32 enabled = 8;
 }

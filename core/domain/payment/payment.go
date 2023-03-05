@@ -145,8 +145,10 @@ func (p *paymentOrderImpl) CheckPaymentState() error {
 		}
 	case payment.StateFinished:
 		return payment.ErrOrderPayed
-	case payment.StateCancelled, payment.StateAborted:
-		return payment.ErrOrderCancelled
+	case payment.StateRefunded:
+		return payment.ErrOrderRefunded
+	case payment.StateClosed:
+		return payment.ErrOrderClosed
 	}
 	return nil
 }
@@ -174,10 +176,10 @@ func (p *paymentOrderImpl) checkOrderFinalAmount() error {
 
 // 取消支付,并退款
 func (p *paymentOrderImpl) Cancel() (err error) {
-	if p.value.State == payment.StateCancelled {
-		return payment.ErrOrderCancelled
+	if p.value.State == payment.StateClosed {
+		return payment.ErrOrderClosed
 	}
-	p.value.State = payment.StateCancelled
+	p.value.State = payment.StateClosed
 	if err = p.saveOrder(); err != nil {
 		return err
 	}
@@ -259,8 +261,11 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 	if p.value.State == payment.StateFinished {
 		return payment.ErrOrderPayed
 	}
-	if p.value.State == payment.StateCancelled {
-		return payment.ErrOrderCancelled
+	if p.value.State == payment.StateRefunded {
+		return payment.ErrOrderRefunded
+	}
+	if p.value.State == payment.StateClosed {
+		return payment.ErrOrderClosed
 	}
 	p.value.State = payment.StateFinished
 	p.value.OutTradeSp = spName

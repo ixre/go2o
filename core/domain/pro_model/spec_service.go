@@ -2,8 +2,9 @@ package promodel
 
 import (
 	"database/sql"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
 	"sort"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 )
 
 var _ promodel.ISpecService = new(specServiceImpl)
@@ -19,17 +20,17 @@ func NewSpecService(rep promodel.IProductModelRepo) *specServiceImpl {
 }
 
 // 获取规格
-func (s *specServiceImpl) GetSpec(specId int32) *promodel.Spec {
+func (s *specServiceImpl) GetSpec(specId int) *promodel.Spec {
 	return s.rep.GetSpec(specId)
 }
 
 // 保存规格
-func (s *specServiceImpl) SaveSpec(v *promodel.Spec) (id int32, err error) {
+func (s *specServiceImpl) SaveSpec(v *promodel.Spec) (id int, err error) {
 	var i int
 	// 如不存在，则新增
 	if v.Id <= 0 {
 		i, err = s.rep.SaveSpec(v)
-		v.Id = int32(i)
+		v.Id = i
 		if v == nil {
 			return v.Id, err
 		}
@@ -55,14 +56,14 @@ func (s *specServiceImpl) SaveSpec(v *promodel.Spec) (id int32, err error) {
 }
 
 // 保存属性项
-func (a *specServiceImpl) saveSpecItems(specId int32, items []*promodel.SpecItem) (err error) {
+func (a *specServiceImpl) saveSpecItems(specId int, items []*promodel.SpecItem) (err error) {
 	var i int
 	pk := specId
 	// 获取存在的项
 	old := a.rep.SelectSpecItem("spec_id = $1", pk)
 	// 分析当前项目并加入到MAP中
-	delList := []int32{}
-	currMap := make(map[int32]*promodel.SpecItem, len(items))
+	delList := []int{}
+	currMap := make(map[int]*promodel.SpecItem, len(items))
 	for _, v := range items {
 		currMap[v.Id] = v
 	}
@@ -84,7 +85,7 @@ func (a *specServiceImpl) saveSpecItems(specId int32, items []*promodel.SpecItem
 		}
 		if v.SpecId == pk {
 			if i, err = a.rep.SaveSpecItem(v); err == nil {
-				v.Id = int32(i)
+				v.Id = int(i)
 			}
 		}
 	}
@@ -92,13 +93,13 @@ func (a *specServiceImpl) saveSpecItems(specId int32, items []*promodel.SpecItem
 }
 
 // 保存规格项
-func (s *specServiceImpl) SaveItem(v *promodel.SpecItem) (int32, error) {
+func (s *specServiceImpl) SaveItem(v *promodel.SpecItem) (int, error) {
 	id, err := s.rep.SaveSpecItem(v)
-	return int32(id), err
+	return int(id), err
 }
 
 // 删除规格
-func (s *specServiceImpl) DeleteSpec(specId int32) error {
+func (s *specServiceImpl) DeleteSpec(specId int) error {
 	_, err := s.rep.BatchDeleteSpecItem("spec_id= $1", specId)
 	if err == nil || err == sql.ErrNoRows {
 		err = s.rep.DeleteSpec(specId)
@@ -107,24 +108,23 @@ func (s *specServiceImpl) DeleteSpec(specId int32) error {
 }
 
 // 删除规格项
-func (s *specServiceImpl) DeleteItem(itemId int32) error {
+func (s *specServiceImpl) DeleteItem(itemId int) error {
 	return s.rep.DeleteSpecItem(itemId)
 }
 
 // 获取规格的规格项
-func (s *specServiceImpl) GetItems(specId int32) []*promodel.SpecItem {
-	return s.rep.SelectSpecItem("spec_id= $1", specId)
+func (s *specServiceImpl) GetItems(specId int) promodel.SpecItemList {
+	var items promodel.SpecItemList = s.rep.SelectSpecItem("spec_id= $1", specId)
+	sort.Sort(items)
+	return items
+
 }
 
 // 获取产品模型的规格
-func (s *specServiceImpl) GetModelSpecs(proModel int32) promodel.SpecList {
-	var arr promodel.SpecList
-	var items promodel.SpecItemList
-	arr = s.rep.SelectSpec("prod_model= $1", proModel)
+func (s *specServiceImpl) GetModelSpecs(proModel int) promodel.SpecList {
+	var arr promodel.SpecList = s.rep.SelectSpec("prod_model= $1", proModel)
 	for _, v := range arr {
-		items = s.GetItems(v.Id)
-		sort.Sort(items)
-		v.Items = items
+		v.Items = s.GetItems(v.Id)
 	}
 	sort.Sort(arr)
 	return arr

@@ -322,7 +322,7 @@ func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.Paging
 		total, rows = q.memberQuery.PagedWalletAccountLog(
 			r.MemberId, r.ValueFilter, int(r.Params.Begin),
 			int(r.Params.End), r.Params.Where,
-			r.Params.Where)
+			r.Params.SortBy)
 	}
 	rs := &proto.MemberAccountPagingLogResponse{
 		Total: int32(total),
@@ -405,6 +405,28 @@ func (q *queryService) QueryItemSalesHistory(_ context.Context, req *proto.Query
 		}
 		if req.MaskBuyer {
 			dst.BuyerName = format.MaskNickname(dst.BuyerName)
+		}
+		ret.Value = append(ret.Value, dst)
+	}
+	return ret, nil
+}
+
+// SearchItem 搜索商品
+func (q *queryService) SearchItem(_ context.Context, req *proto.SearchItemRequest) (*proto.SearchItemResponse, error) {
+	list := q.itemQuery.SearchItem(int(req.ShopId), req.Keyword, int(req.Size))
+	ret := &proto.SearchItemResponse{
+		Value: []*proto.SSearchItemResult{},
+	}
+	for _, v := range list {
+		dst := &proto.SSearchItemResult{
+			ItemId:     v.ItemId,
+			ItemFlag:   int32(v.ItemFlag),
+			Code:       v.Code,
+			SellerId:   v.SellerId,
+			Title:      v.Title,
+			Image:      v.Image,
+			PriceRange: v.PriceRange,
+			StockNum:   v.StockNum,
 		}
 		ret.Value = append(ret.Value, dst)
 	}
