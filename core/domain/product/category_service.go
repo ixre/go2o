@@ -30,16 +30,21 @@ var _ product.ICategory = new(categoryImpl)
 type categoryImpl struct {
 	value           *product.Category
 	_repo           product.ICategoryRepo
+	_modelRepo      promodel.IProductModelRepo
 	parentIdChanged bool
 	childIdArr      []int
 	opt             domain.IOptionStore
+
+	_model *promodel.ProductModel
 }
 
 func newCategory(rep product.ICategoryRepo,
+	modelRepo promodel.IProductModelRepo,
 	v *product.Category) product.ICategory {
 	return &categoryImpl{
-		value: v,
-		_repo: rep,
+		value:      v,
+		_repo:      rep,
+		_modelRepo: modelRepo,
 	}
 }
 
@@ -143,6 +148,30 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 		}
 	}
 	return nil
+}
+
+// GetModel 获取产品模型
+func (c *categoryImpl) GetModel() *promodel.ProductModel {
+	mid := c.value.ModelId
+	// 当模型实例为空,或分类模型与实例不匹配时,加载模型
+	if c._model != nil && mid > 0 && c._model.Id != mid {
+		c._model = nil
+	}
+	for c._model == nil {
+		// 查询分类上级绑定的模型
+		parentId := c.value.ParentId
+		for mid == 0 && parentId > 0 {
+			p := c._repo.GlobCatService().GetCategory(parentId)
+			if p == nil {
+				return nil
+			}
+			mid = p.GetValue().ModelId
+			parentId = p.GetValue().ParentId
+		}
+		// 查询模型
+		c._model = c._modelRepo.GetProModel(mid)
+	}
+	return c._model
 }
 
 // GetChildes 获取子栏目的编号
@@ -288,17 +317,21 @@ type categoryManagerImpl struct {
 	readonly       bool
 	repo           product.ICategoryRepo
 	registryRepo   registry.IRegistryRepo
+	_modelRepo      promodel.IProductModelRepo
 	vendorId       int64
 	lastUpdateTime int64
 	categories     []product.ICategory
 }
 
-func NewCategoryManager(mchId int64, rep product.ICategoryRepo,
+func NewCategoryManager(mchId int64,
+	rep product.ICategoryRepo,
+	modelRepo promodel.IProductModelRepo,
 	registryRepo registry.IRegistryRepo) product.IGlobCatService {
 	c := &categoryManagerImpl{
 		repo:         rep,
 		vendorId:     mchId,
 		registryRepo: registryRepo,
+		_modelRepo:    modelRepo,
 	}
 	return c.init()
 }
@@ -333,7 +366,7 @@ func (c *categoryManagerImpl) CreateCategory(v *product.Category) product.ICateg
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
-	return newCategory(c.repo, v)
+	return newCategory(c.repo, c._modelRepo, v)
 }
 
 // 获取分类

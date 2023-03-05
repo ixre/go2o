@@ -138,8 +138,11 @@ func (p *productService) GetCategory(_ context.Context, req *proto.GetCategoryRe
 	v := ic.GetCategory(int(req.CategoryId))
 	if v != nil {
 		cat := p.parseCategoryDto(v.GetValue())
-		if req.Brand {
+		if req.WithBrand {
 			p.appendCategoryBrands(ic, v, cat)
+		}
+		if req.WithModel {
+			cat.Model = p.parseModelDto(v.GetModel())
 		}
 		return cat, nil
 	}
@@ -513,6 +516,9 @@ func (p *productService) SaveItemSaleLabels(mchId, itemId int64, tagIds []int) e
 }
 
 func (p *productService) parseModelDto(v *promodel.ProductModel) *proto.SProductModel {
+	if v == nil {
+		return nil
+	}
 	ret := &proto.SProductModel{
 		Id:      int64(v.Id),
 		Name:    v.Name,

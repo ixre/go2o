@@ -13,7 +13,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	"log"
+	"sort"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	productImpl "github.com/ixre/go2o/core/domain/product"
@@ -21,8 +24,6 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"log"
-	"sort"
 )
 
 var _ product.ICategoryRepo = new(categoryRepo)
@@ -32,15 +33,19 @@ type categoryRepo struct {
 	db.Connector
 	registryRepo registry.IRegistryRepo
 	_globService product.IGlobCatService
+	_modelRepo   promodel.IProductModelRepo
 	o            orm.Orm
 	storage      storage.Interface
 }
 
-func NewCategoryRepo(o orm.Orm, registryRepo registry.IRegistryRepo,
+func NewCategoryRepo(o orm.Orm,
+	modelRepo promodel.IProductModelRepo,
+	registryRepo registry.IRegistryRepo,
 	storage storage.Interface) product.ICategoryRepo {
 	return &categoryRepo{
 		Connector:    o.Connector(),
 		o:            o,
+		_modelRepo:   modelRepo,
 		registryRepo: registryRepo,
 		storage:      storage,
 	}
@@ -48,7 +53,7 @@ func NewCategoryRepo(o orm.Orm, registryRepo registry.IRegistryRepo,
 
 func (c *categoryRepo) GlobCatService() product.IGlobCatService {
 	if c._globService == nil {
-		c._globService = productImpl.NewCategoryManager(0, c, c.registryRepo)
+		c._globService = productImpl.NewCategoryManager(0, c, c._modelRepo, c.registryRepo)
 	}
 	return c._globService
 }
