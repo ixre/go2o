@@ -75,7 +75,7 @@ COMMENT ON COLUMN public.item_snapshot.item_flag
     IS '商品标志';
 
 
-UPDATE item_snapshot SET item_flag = (SELECT item_flag FROM item_info where id=item_id) WHERE item_flag = 0;
+UPDATE item_snapshot SET item_flag =  COALESCE((SELECT item_flag FROM item_info where id=item_id),1) WHERE item_flag = 0;
 
 
 CREATE TABLE public.sys_safeguard
