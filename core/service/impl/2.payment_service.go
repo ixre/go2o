@@ -94,7 +94,7 @@ func (p *paymentService) DiscountByBalance(_ context.Context, r *proto.DiscountB
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
-		err = o.BalanceDiscount(r.Remark)
+		err = o.BalanceDeduct(r.Remark)
 	}
 	return p.result(err), nil
 }

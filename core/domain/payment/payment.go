@@ -309,7 +309,7 @@ func (p *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
 }
 
 // 应用余额支付
-func (p *paymentOrderImpl) getBalanceDiscountAmount(acc member.IAccount) int64 {
+func (p *paymentOrderImpl) getBalanceDeductAmount(acc member.IAccount) int64 {
 	if p.value.FinalAmount <= 0 {
 		return 0
 	}
@@ -319,6 +319,19 @@ func (p *paymentOrderImpl) getBalanceDiscountAmount(acc member.IAccount) int64 {
 	}
 	return acv.Balance
 }
+
+// 获取可用于钱包抵扣的金额
+func (p *paymentOrderImpl) getWalletDeductAmount(acc member.IAccount) int64 {
+	if p.value.FinalAmount <= 0 {
+		return 0
+	}
+	acv := acc.GetValue()
+	if acv.Balance >= p.value.FinalAmount {
+		return p.value.FinalAmount
+	}
+	return acv.Balance
+}
+
 
 func (p *paymentOrderImpl) getPaymentUser() member.IMember {
 	if p.paymentUser == nil && p.value.PayerId > 0 {
@@ -333,7 +346,7 @@ func (p *paymentOrderImpl) andMethod(flag, method int) bool {
 }
 
 // 使用余额抵扣
-func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
+func (p *paymentOrderImpl) BalanceDeduct(remark string) error {
 	if b := p.andMethod(p.value.PayFlag, payment.MBalance); !b { // 检查支付方式
 		return payment.ErrNotSupportPaymentChannel
 	}
@@ -345,7 +358,36 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 		return member.ErrNoSuchMember
 	}
 	acc := pu.GetAccount()
-	amount := p.getBalanceDiscountAmount(acc)
+	amount := p.getBalanceDeductAmount(acc)
+	if amount == 0 {
+		return member.ErrAccountBalanceNotEnough
+	}
+	err := acc.PaymentDiscount(p.value.TradeNo, int(amount), remark)
+	if err == nil {
+		p.value.DeductAmount += amount // 修改抵扣金额
+		p.value.FinalFlag |= payment.MBalance
+		err = p.saveOrder()
+		if err == nil { // 保存支付记录
+			err = p.saveTradeChan(int(amount), payment.MBalance, "", "")
+		}
+	}
+	return err
+}
+
+// 使用余额抵扣
+func (p *paymentOrderImpl) WalletDeduct(remark string) error {
+	if b := p.andMethod(p.value.PayFlag, payment.MWallet); !b { // 检查支付方式
+		return payment.ErrNotSupportPaymentChannel
+	}
+	if err := p.CheckPaymentState(); err != nil { // 检查支付单状态
+		return err
+	}
+	pu := p.getPaymentUser()
+	if pu == nil {
+		return member.ErrNoSuchMember
+	}
+	acc := pu.GetAccount()
+	amount := p.getBalanceDeductAmount(acc)
 	if amount == 0 {
 		return member.ErrAccountBalanceNotEnough
 	}
@@ -466,7 +508,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 	}
 	// 如果余额够支付，则优先余额支付
 	if acc.Balance >= v.FinalAmount {
-		return p.BalanceDiscount(remark)
+		return p.BalanceDeduct(remark)
 	}
 	// 判断是否能钱包支付
 	if !p.andMethod(p.value.PayFlag, payment.MWallet) {
@@ -476,7 +518,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 	if acc.Balance+acc.WalletBalance < v.FinalAmount {
 		return payment.ErrNotEnoughAmount
 	}
-	err := p.BalanceDiscount(remark)
+	err := p.BalanceDeduct(remark)
 	if err == nil {
 		err = p.PaymentByWallet(remark)
 	}

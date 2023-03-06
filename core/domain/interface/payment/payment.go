@@ -136,8 +136,10 @@ type (
 		PaymentFinish(spName string, outTradeNo string) error
 		// CouponDiscount 优惠券抵扣
 		CouponDiscount(coupon promotion.ICouponPromotion) (int, error)
-		// BalanceDiscount 使用会员的余额抵扣
-		BalanceDiscount(remark string) error
+		// BalanceDeduct 使用会员的余额抵扣
+		BalanceDeduct(remark string) error
+		// WalletDeduct 使用会员的钱包抵扣
+		WalletDeduct(remark string) error
 		// IntegralDiscount 使用会员积分抵扣,返回抵扣的金额及错误,ignoreOut:是否忽略超出订单金额的积分
 		IntegralDiscount(integral int, ignoreOut bool) (amount int, err error)
 		// SystemPayment SystemPayment 系统支付金额

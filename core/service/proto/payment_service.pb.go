@@ -655,7 +655,7 @@ type PayGatewayV2Request struct {
 	// * 是否合并支付
 	MergePay bool `protobuf:"varint,2,opt,name=mergePay,proto3" json:"mergePay"`
 	// * 钱包抵扣
-	WalletDiscount bool `protobuf:"varint,3,opt,name=walletDiscount,proto3" json:"walletDiscount"`
+	WalletDeduct bool `protobuf:"varint,3,opt,name=walletDiscount,proto3" json:"walletDiscount"`
 	// * 支付方式
 	PayMethod int32 `protobuf:"varint,4,opt,name=payMethod,proto3" json:"payMethod"`
 	// * 支付SP
@@ -708,9 +708,9 @@ func (x *PayGatewayV2Request) GetMergePay() bool {
 	return false
 }
 
-func (x *PayGatewayV2Request) GetWalletDiscount() bool {
+func (x *PayGatewayV2Request) GetWalletDeduct() bool {
 	if x != nil {
-		return x.WalletDiscount
+		return x.WalletDeduct
 	}
 	return false
 }
