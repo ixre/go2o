@@ -150,7 +150,7 @@ type (
 		PaymentWithCard(cardCode string, amount int) error
 		// HybridPayment 余额钱包混合支付，优先扣除余额。
 		HybridPayment(remark string) error
-		
+
 		// Adjust 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
 		Adjust(amount int) error
 		// Refund 退款
@@ -191,6 +191,8 @@ type (
 		SaveIntegrateApp(v *IntegrateApp) (int, error)
 		// DeleteIntegrateApp Delete 集成支付应用
 		DeleteIntegrateApp(primary interface{}) error
+		// GetAwaitCloseOrders 获取支付超时待关闭的订单
+		GetAwaitCloseOrders(lastId int, size int) []IPaymentOrder
 	}
 
 	// RequestPayData 请求支付数据

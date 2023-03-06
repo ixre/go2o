@@ -259,3 +259,22 @@ func (p *paymentRepoImpl) DeleteIntegrateApp(primary interface{}) error {
 	}
 	return err
 }
+
+// GetAwaitCloseOrders 获取支付超时待关闭的订单
+func (p *paymentRepoImpl) GetAwaitCloseOrders(lastId int, size int) []payment.IPaymentOrder {
+	list := make([]*payment.Order, 0)
+	err := p._orm.Select(&list, `
+		state = 1 AND expires_time < $1 
+		AND id > $2 ORDER BY id LIMIT $3`,
+		time.Now().Unix(),
+		lastId,
+		size)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PaymentOrder")
+	}
+	arr := make([]payment.IPaymentOrder, len(list))
+	for i, v := range list {
+		arr[i] = p.CreatePaymentOrder(v)
+	}
+	return arr
+}

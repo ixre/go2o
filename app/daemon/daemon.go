@@ -146,19 +146,22 @@ func SetLastUnix(key string, unix int64) {
 
 // 运行定时任务
 func startCronTab() {
+
+	// 删除分布式锁,会导致重启一直不执行任务
+	locker.Unlock("/SyncWalletLogToClickHouse")
+	locker.Unlock("/CheckExpiresPaymentOrder")
+	// 注册任务
 	startClickhouseJob(cronTab)
-	cronTab.Start()
-	return
 	//商户每日报表
-	cronTab.AddFunc("0 0 0 * * *", mchDayChart)
+	//cronTab.AddFunc("0 0 0 * * *", mchDayChart)
 	//个人金融结算,每天00:20更新数据
-	cronTab.AddFunc("0 20 0 * * *", personFinanceSettle)
+	//cronTab.AddFunc("0 20 0 * * *", personFinanceSettle)
 	//检查订单过期,1分钟检测一次
-	cronTab.AddFunc("0 * * * * *", detectOrderExpires)
+	cronTab.AddFunc("0 * * * * *", job.CheckExpiresPaymentOrder)
 	//订单自动收货,2分钟检测一次
-	cronTab.AddFunc("0 */2 * * * *", orderAutoReceive)
+	//cronTab.AddFunc("0 */2 * * * *", orderAutoReceive)
 	// 自动解锁会员
-	cronTab.AddFunc("0 * * * * *", memberAutoUnlock)
+	//cronTab.AddFunc("0 * * * * *", memberAutoUnlock)
 	cronTab.Start()
 }
 
@@ -167,8 +170,6 @@ func startClickhouseJob(tab *cron.Cron) {
 	if !clickhouseSupport {
 		return
 	}
-	// 删除分布式锁,会导致重启一直不执行任务
-	locker.Unlock("SyncWalletLogToClickHouse")
 	tab.AddFunc("@every 2s", job.SyncWalletLogToClickHouse)
 }
 
@@ -202,6 +203,7 @@ func (d *defaultService) Name() string {
 
 // 启动服务
 func (d *defaultService) Start(a gof.App) {
+	log.Println("---xx")
 	d.app = a
 	go superviseMemberUpdate(services)
 	go superviseOrder(services)
