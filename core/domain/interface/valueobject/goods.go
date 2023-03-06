@@ -13,7 +13,7 @@ package valueobject
 
 // 完整的商品信息
 type Goods struct {
-	ItemId     int64 `db:"id"`
+	ItemId     int64 `db:"item_id"`
 	ProductId  int64 `db:"product_id"`
 	VendorId   int32 `db:"-"`
 	ShopId     int32 `db:"-"`
