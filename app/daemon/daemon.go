@@ -157,7 +157,7 @@ func startCronTab() {
 	//个人金融结算,每天00:20更新数据
 	//cronTab.AddFunc("0 20 0 * * *", personFinanceSettle)
 	//检查订单过期,1分钟检测一次
-	cronTab.AddFunc("0 * * * * *", job.CheckExpiresPaymentOrder)
+	cronTab.AddFunc("* * * * *", job.CheckExpiresPaymentOrder)
 	//订单自动收货,2分钟检测一次
 	//cronTab.AddFunc("0 */2 * * * *", orderAutoReceive)
 	// 自动解锁会员

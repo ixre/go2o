@@ -128,3 +128,6 @@ COMMENT ON COLUMN public.sys_safeguard.create_time
 
 COMMENT ON COLUMN public.sys_safeguard.update_time
     IS '更新时间';
+
+ALTER TABLE IF EXISTS public.mm_balance_log
+    RENAME audit_state TO review_state;

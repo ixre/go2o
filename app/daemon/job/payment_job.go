@@ -10,7 +10,6 @@ import (
 // 检测已过期的订单并标记
 func CheckExpiresPaymentOrder() {
 	jobName := "/CheckExpiresPaymentOrder"
-	log.Println("取消.1")
 
 	if !locker.Lock(jobName, 600) {
 		return
@@ -28,7 +27,7 @@ func CheckExpiresPaymentOrder() {
 		if l > 0 {
 			lastId = list[len(list)-1].GetAggregateRootId()
 			for _, o := range list {
-				log.Println("取消.", o.GetAggregateRootId())
+				//log.Println("取消.", o.GetAggregateRootId())
 				if err := o.Cancel(); err != nil {
 					log.Println("[ GO2O][ Job]: Cancel expired payment order failed! ", err.Error())
 				}
