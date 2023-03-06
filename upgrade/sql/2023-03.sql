@@ -128,3 +128,23 @@ COMMENT ON COLUMN public.sys_safeguard.create_time
 
 COMMENT ON COLUMN public.sys_safeguard.update_time
     IS '更新时间';
+
+
+CREATE TABLE public.item_affiliate_rate
+(
+    id bigint NOT NULL,
+    item_id bigint NOT NULL,
+    rate_r1 integer NOT NULL,
+    rate_r2 integer NOT NULL,
+    rate_r3 integer,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE IF EXISTS public.item_affiliate_rate
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.item_affiliate_rate.rate_r1
+    IS '上一级比例';
+
+COMMENT ON COLUMN public.item_affiliate_rate.rate_r2
+    IS '上二级比例';
