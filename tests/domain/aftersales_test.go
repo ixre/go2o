@@ -6,13 +6,14 @@
  * description :
  * history :
  */
-package tests
+package domain
 
 import (
+	"testing"
+
 	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/tests/ti"
 	"github.com/ixre/gof/log"
-	"testing"
 )
 
 // 测试退款
@@ -117,11 +118,11 @@ func TestOrderReturn(t *testing.T) {
 
 	//ir := ro.()
 
-	err = ro.ReturnShip("顺风快递", "1000", "")
+	err = ro.GetOrder().Ship(1, "1000")
 	if err != nil {
 		t.Log("快递货物:", err.Error())
 	}
-	err = ro.ReturnReceive()
+	err = ro.GetOrder().BuyerReceived() //.ReturnReceive()
 	if err != nil {
 		t.Log("接收退货:", err.Error())
 	}
@@ -175,11 +176,11 @@ func TestOrderExchange(t *testing.T) {
 		t.Log("确认退货:", err.Error())
 	}
 
-	err = ro.ReturnShip("顺风快递", "10007927972432", "")
+	err = ro.GetOrder().Ship(1, "") //ReturnShip("顺风快递", "10007927972432", "")
 	if err != nil {
 		t.Log("快递货物:", err.Error())
 	}
-	err = ro.ReturnReceive()
+	err = ro.GetOrder().BuyerReceived() //ReturnReceive()
 	if err != nil {
 		t.Log("接收退货:", err.Error())
 	}

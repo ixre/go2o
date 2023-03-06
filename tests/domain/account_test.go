@@ -1,11 +1,12 @@
 package domain
 
 import (
+	"testing"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/tests/ti"
-	"testing"
 )
 
 /**

@@ -92,7 +92,7 @@ var (
 		"member_exists_inviter", "已绑定邀请人")
 
 	ErrInvalidInviteLevel = domain.NewError(
-		"member_invalid_inviter_level", "不合法的邀请人(邀请人为下级)")
+		"member_invalid_inviter_level", "邀请人为下级或邀请关系异常")
 
 	ErrEmptyDeliverAddress = domain.NewError(
 		"err_deliver_address_empty", "详细地址不能为空")
