@@ -66,7 +66,7 @@ func TestQueryPagingFlagGoods(t *testing.T) {
 		Begin:      0,
 		End:        10,
 	}
-	r, _ := impl.QueryService.PagedOnShelvesGoods(context.TODO(),
+	r, _ := impl.QueryService.PagingOnShelvesGoods(context.TODO(),
 		&proto.PagingShopGoodsRequest{
 			ShopId:     0,
 			CategoryId: 0,
@@ -77,7 +77,7 @@ func TestQueryPagingFlagGoods(t *testing.T) {
 }
 
 func TestPagingShopGoodsRequest(t *testing.T) {
-	goods, err := impl.QueryService.PagedOnShelvesGoods(context.TODO(), &proto.PagingShopGoodsRequest{
+	goods, err := impl.QueryService.PagingOnShelvesGoods(context.TODO(), &proto.PagingShopGoodsRequest{
 		ShopId:     0,
 		CategoryId: 2185,
 		Params: &proto.SPagingParams{

@@ -331,8 +331,8 @@ func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.Paging
 	return rs, nil
 }
 
-// PagedOnShelvesGoods 获取分页上架的商品
-func (q *queryService) PagedOnShelvesGoods(_ context.Context, r *proto.PagingShopGoodsRequest) (*proto.PagingShopGoodsResponse, error) {
+// PagingOnShelvesGoods 获取分页上架的商品
+func (q *queryService) PagingOnShelvesGoods(_ context.Context, r *proto.PagingShopGoodsRequest) (*proto.PagingShopGoodsResponse, error) {
 	ret := &proto.PagingShopGoodsResponse{
 		Total: 0,
 		Data:  make([]*proto.SGoods, 0),
@@ -352,7 +352,7 @@ func (q *queryService) PagedOnShelvesGoods(_ context.Context, r *proto.PagingSho
 	if len(strings.TrimSpace(r.Params.SortBy)) == 0 {
 		r.Params.SortBy = "item_info.sort_num DESC,item_info.update_time DESC"
 	}
-	total, list = q.itemQuery.GetPagedOnShelvesGoods(
+	total, list = q.itemQuery.GetPagingOnShelvesGoods(
 		r.ShopId, ids, int(r.Flag),
 		int(r.Params.Begin),
 		int(r.Params.End),
