@@ -14,12 +14,13 @@ import (
 func TestPagingMemberAccountLog(t *testing.T) {
 	s := impl.QueryService
 	ret, _ := s.PagingMemberAccountLog(context.TODO(), &proto.PagingAccountLogRequest{
-		MemberId:    702,
-		ValueFilter: 2,
+		MemberId:    723,
+		ValueFilter: 0,
 		AccountType: int32(member.AccountWallet),
 		Params: &proto.SPagingParams{
-			Begin: 0,
-			End:   10,
+			Begin:  0,
+			End:    10,
+			SortBy: "create_time DESC,id DESC",
 		},
 	})
 	t.Log(typeconv.MustJson(ret))
@@ -65,7 +66,7 @@ func TestQueryPagingFlagGoods(t *testing.T) {
 		Begin:      0,
 		End:        10,
 	}
-	r, _ := impl.QueryService.PagedOnShelvesGoods(context.TODO(),
+	r, _ := impl.QueryService.PagingOnShelvesGoods(context.TODO(),
 		&proto.PagingShopGoodsRequest{
 			ShopId:     0,
 			CategoryId: 0,
@@ -76,7 +77,7 @@ func TestQueryPagingFlagGoods(t *testing.T) {
 }
 
 func TestPagingShopGoodsRequest(t *testing.T) {
-	goods, err := impl.QueryService.PagedOnShelvesGoods(context.TODO(), &proto.PagingShopGoodsRequest{
+	goods, err := impl.QueryService.PagingOnShelvesGoods(context.TODO(), &proto.PagingShopGoodsRequest{
 		ShopId:     0,
 		CategoryId: 2185,
 		Params: &proto.SPagingParams{
@@ -95,9 +96,23 @@ func TestPagingShopGoodsRequest(t *testing.T) {
 }
 
 func TestMemberStatifics(t *testing.T) {
-	var memberId int64 = 723 
+	var memberId int64 = 723
 	mp, _ := impl.QueryService.MemberStatistics(context.TODO(), &proto.MemberStatisticsRequest{
 		MemberId: memberId,
 	})
 	t.Log("未支付订单数", mp.AwaitPaymentOrders)
+}
+
+func TestQuerySearchItem(t *testing.T) {
+	list, err := impl.QueryService.SearchItem(context.TODO(), &proto.SearchItemRequest{
+		ShopId:  0,
+		Keyword: "1",
+		Size:    10,
+	})
+
+	if err != nil {
+		t.Error(err)
+	} else {
+		t.Log(len(list.Value), typeconv.MustJson(list.Value))
+	}
 }

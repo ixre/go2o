@@ -28,7 +28,7 @@ type AccountLogPushEvent struct {
 	// 交易手续费
 	ProcedureFee int
 	// 审核状态
-	AuditState int
+	ReviewState int
 	// 创建时间
 	CreateTime int
 }
@@ -103,7 +103,9 @@ type WithdrawalPushEvent struct {
 	// 手续费
 	ProcedureFee int
 	// 是否为已审核通过的事件
-	IsAuditedEvent bool
+	IsReviewEvent bool
+	// 是否审核通过
+	ReviewResult bool
 	// 提现账号
 	AccountNo string
 	// 提现账户名称

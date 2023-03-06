@@ -44,7 +44,7 @@ var (
 		"member_invalid_session", "异常会话")
 
 	ErrNoSuchAddress = domain.NewError(
-		"member_no_such_deliver_address", "配送地址错误")
+		"member_no_such_deliver_address", "配送地址不存在")
 
 	ErrLevelUsed = domain.NewError(
 		"member_level_used", "此等级已被会员使用")
@@ -94,8 +94,8 @@ var (
 	ErrInvalidInviteLevel = domain.NewError(
 		"member_invalid_inviter_level", "不合法的邀请人(邀请人为下级)")
 
-	ErrDeliverAddressLen = domain.NewError(
-		"err_deliver_address_len", "请填写详细的配送地址")
+	ErrEmptyDeliverAddress = domain.NewError(
+		"err_deliver_address_empty", "详细地址不能为空")
 
 	ErrDeliverContactConsigneeName = domain.NewError(
 		"err_deliver_consignee_name", "收货人不正确")

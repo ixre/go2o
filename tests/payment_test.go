@@ -1,12 +1,13 @@
 package tests
 
 import (
+	"testing"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/tests/ti"
-	"testing"
-	"time"
 )
 
 func TestCreateTradeNo(t *testing.T) {
@@ -40,7 +41,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		t.Error(err)
 		t.Failed()
 	}
-	//err := ip.BalanceDiscount("支付订单")
+	//err := ip.BalanceDeduct("支付订单")
 	//if err != nil{
 	//	t.Error(err)
 	//}

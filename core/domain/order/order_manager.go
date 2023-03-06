@@ -166,8 +166,8 @@ func (t *orderManagerImpl) submitSellerWholesaleOrder(v order.IOrder) error {
 		//todo:???
 		// 余额支付
 		//py := io.GetPaymentOrder()
-		//if useBalanceDiscount {
-		//    py.BalanceDiscount("")
+		//if useBalanceDeduct {
+		//    py.BalanceDeduct("")
 		//}
 	}
 	return err
@@ -293,8 +293,13 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	}
 	// 使用余额抵扣,如果余额抵扣失败,仍然应该继续结算
 	if data.BalanceDeduct {
-		_ = ip.BalanceDiscount("")
+		_ = ip.BalanceDeduct("")
 	}
+	// 使用钱包抵扣
+	if data.WalletDeduct {
+		_ = ip.WalletDeduct("")
+	}
+
 	// 如果全部支付成功
 	if ip.State() > payment.StateAwaitingPayment {
 

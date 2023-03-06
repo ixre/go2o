@@ -1,4 +1,4 @@
-delete FROM registry where key in ('order_disallow_user_cancel',"domain_file_server_prefix");
+delete FROM registry where key in ('order_disallow_user_cancel','domain_file_server_prefix');
 
 /** 2023-02-17 09:50 */
 ALTER TABLE IF EXISTS public.pay_order
@@ -46,3 +46,56 @@ COMMENT ON COLUMN "public".perm_res.component_name IS '组件路径';
 COMMENT ON COLUMN "public".perm_res.cache_ IS '缓存';
 COMMENT ON COLUMN "public".perm_res.depth IS '深度/层级';
 COMMENT ON COLUMN "public".perm_res.is_forbidden IS '是否禁止';
+
+
+ALTER TABLE IF EXISTS public.mm_flag_request
+    RENAME audit_state TO review_state;
+
+ALTER TABLE IF EXISTS public.mm_flag_request
+    RENAME audit_time TO review_time;
+
+ALTER TABLE IF EXISTS public.mm_flag_request
+    RENAME audit_uid TO review_uid;
+
+ALTER TABLE IF EXISTS public.mm_flag_request
+    RENAME audit_remark TO review_remark;
+
+    ALTER TABLE IF EXISTS public.mm_flow_log
+    RENAME audit_state TO review_state;
+
+    ALTER TABLE IF EXISTS public.mm_integral_log
+    RENAME audit_state TO review_state;
+
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME audit_state TO review_state;
+
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME audit_remark TO review_remark;
+
+ALTER TABLE IF EXISTS public.wal_wallet_log
+    RENAME audit_time TO review_time;
+
+ALTER TABLE IF EXISTS public.item_info
+    RENAME audit_state TO review_state;
+
+ALTER TABLE IF EXISTS public.item_info
+    RENAME audit_remark TO review_remark;
+
+delete from perm_res where name	='上架审核';
+delete from perm_res where name	='违规商品';
+delete from perm_res where name	='已下架商品';
+
+/** 添加close_time和payment_time */
+ALTER TABLE "public".sale_sub_order 
+  alter column shop_name set default ''::character varying;
+ALTER TABLE "public".sale_sub_order 
+  ADD COLUMN payment_time int8 DEFAULT 0 NOT NULL;
+ALTER TABLE "public".sale_sub_order 
+  ADD COLUMN close_time int8 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".sale_sub_order.shop_id IS '店铺编号';
+COMMENT ON COLUMN "public".sale_sub_order.item_count IS '商品数量';
+COMMENT ON COLUMN "public".sale_sub_order.is_forbidden IS '是否被用户删除';
+COMMENT ON COLUMN "public".sale_sub_order.shop_name IS '店铺名称';
+COMMENT ON COLUMN "public".sale_sub_order.break_status IS '拆分状态: 0.默认 1:待拆分 2:无需拆分 3:已拆分';
+COMMENT ON COLUMN "public".sale_sub_order.payment_time IS '支付时间';
+COMMENT ON COLUMN "public".sale_sub_order.close_time IS '关闭时间';

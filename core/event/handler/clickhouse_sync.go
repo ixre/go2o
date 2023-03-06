@@ -28,7 +28,7 @@ func (h EventHandler) HandleWalletLogWriteEvent(data interface{}) {
 	`,
 		ld.Subject,
 		ld.OuterNo,
-		int32(ld.AuditState),
+		int32(ld.ReviewState),
 		ld.CreateTime,
 		ld.MemberId,
 		ld.LogId,

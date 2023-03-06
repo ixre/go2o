@@ -3,7 +3,22 @@ syntax = "proto3";
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
-enum PaymentAccountType {
+
+// 支付单状态
+enum EPaymentState{
+    _EPaymentState = 0;
+	// 待支付
+	StateAwaitingPayment = 1;
+	// 已支付
+	StateFinished = 2;
+	// 已关闭
+	StateClosed = 3;
+	// 已退款
+	StateRefunded = 4;
+}
+
+// 支付账户类型
+enum EPaymentAccountType {
     // 余额支付
     PA_BALANCE = 0;
     // 钱包
@@ -14,5 +29,5 @@ enum PaymentAccountType {
 
 message PayPriorityRequest {
     sint64 ownerId = 1;
-    PaymentAccountType account = 2;
+    EPaymentAccountType account = 2;
 }

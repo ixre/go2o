@@ -9,6 +9,8 @@ option java_package = "com.github.go2o.rpc";
 service RbacService {
     // 用户登录
     rpc UserLogin(RbacLoginRequest)returns(RbacLoginResponse) {}
+    // 检查令牌是否有效并返回新的令牌
+    rpc CheckRBACToken(CheckRBACTokenRequest) returns(CheckRBACTokenResponse){}
     // 获取JWT密钥
     rpc GetJwtToken(Empty)returns(String) {}
     // 获取用户的信息
@@ -111,6 +113,29 @@ message RbacLoginResponse {
     repeated int64 roles = 6;
 }
 
+// 检查令牌请求
+message CheckRBACTokenRequest{
+    // 访问令牌
+    string accessToken = 1;
+    // 检测过期时间,在此时间内过期,将生成返回新的令牌
+    int64 checkExpireTime = 2;
+    // 新生成令牌的有效时间
+    int64 renewExpiresTime = 3;
+}
+
+// 检查令牌响应
+message CheckRBACTokenResponse{
+    // 错误信息
+    string error = 1;
+    // 会员编号
+    int64 userId = 2;
+    // 是否过期
+    bool isExpires = 3;
+    // 令牌过期时间
+    int64 tokenExpiresTime = 4;
+    // 重新生成的令牌
+    string renewAccessToken = 5;
+}
 // 用户资源响应,如果无用户则默认为超级管理员
 message RbacUserResourceResponse {
     // 角色编号

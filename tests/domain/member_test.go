@@ -49,6 +49,17 @@ func TestChangeMemberPhone(t *testing.T) {
 	}
 }
 
+// 测试更改用户名
+func TestChangeMemberUsername(t *testing.T) {
+	repo := ti.Factory.GetMemberRepo()
+	m := repo.GetMember(729)
+	err := m.ChangeUsername("哈哈")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}
+
 func TestQueryMemberInviterArray(t *testing.T) {
 	repo := ti.Factory.GetMemberRepo()
 	m := repo.CreateMember(&member.Member{Id: 719})

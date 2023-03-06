@@ -27,7 +27,7 @@ func TestGrantMemberAccessToken(t *testing.T) {
 	}
 	t.Log("token is:", token.AccessToken)
 	now := time.Now().Unix()
-	token.AccessToken = "Bearer "// + token.AccessToken
+	token.AccessToken = "Bearer " // + token.AccessToken
 	accessToken, _ := s.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken:      token.AccessToken,
 		CheckExpireTime:  now + 800,
@@ -40,7 +40,7 @@ func TestGrantMemberAccessToken(t *testing.T) {
 }
 
 func TestCheckMemberAccessToken(t *testing.T) {
-	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI3MDIiLCJleHAiOjE2NzIzMDM4MDIsImlzcyI6ImdvMm8iLCJzdWIiOiJnbzJvLWFwaS1qd3QifQ.Ebx4PcD0KSIftqejzfbyYbUpunm3jEi0gsScipcl-lo"
+	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI3MTAiLCJleHAiOjE2Nzc3NTM5MjAsImlzcyI6ImdvMm8iLCJzdWIiOiJnbzJvLWFwaS1qd3QifQ.Vrd0NuAT5AfKM-C5NespEyhAiyMVDugoKDDgwv5hr_g"
 	ret, _ := impl.MemberService.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken: accessToken,
 	})
@@ -105,8 +105,8 @@ func TestChangeMemberLevel(t *testing.T) {
 }
 func TestChangeUsername(t *testing.T) {
 	ret, _ := impl.MemberService.ChangeUsername(context.TODO(), &proto.ChangeUsernameRequest{
-		MemberId: 702,
-		Username: "18924140900",
+		MemberId: 729,
+		Username: "哈哈",
 	})
 	if ret.ErrCode > 0 {
 		t.Log(ret.ErrMsg)
@@ -141,4 +141,12 @@ func TestCheckUserLogin(t *testing.T) {
 	if ret.ErrCode > 0 {
 		t.Error(ret.ErrMsg)
 	}
+}
+
+func Test_memberService_InviterArray(t *testing.T) {
+	ret, _ := impl.MemberService.InviterArray(context.TODO(), &proto.DepthRequest{
+		MemberId: 710,
+		Depth:    2,
+	})
+	t.Log(ret)
 }

@@ -177,9 +177,9 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, operator
 		OperatorUid:  operatorUid,
 		OperatorName: strings.TrimSpace(operatorName),
 		Remark:       "",
-		AuditState:   wallet.ReviewPass,
-		AuditRemark:  "",
-		AuditTime:    0,
+		ReviewState:  wallet.ReviewPass,
+		ReviewRemark: "",
+		ReviewTime:   0,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -214,7 +214,7 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 			ChangeValue:   int(l.ChangeValue),
 			Balance:       int(l.Balance),
 			ProcedureFee:  l.ProcedureFee,
-			AuditState:    l.AuditState,
+			ReviewState:   l.ReviewState,
 			CreateTime:    int(l.CreateTime),
 		})
 	}
@@ -369,8 +369,8 @@ func (w *WalletImpl) CarryTo(d wallet.OperateData, freeze bool, procedureFee int
 		l := w.createWalletLog(k, d.Amount, d.Title, 0, "")
 		l.OuterNo = d.OuterNo
 		l.ProcedureFee = -procedureFee
-		l.AuditState = wallet.ReviewPass
-		l.AuditTime = time.Now().Unix()
+		l.ReviewState = wallet.ReviewPass
+		l.ReviewTime = time.Now().Unix()
 		l.Balance = w._value.Balance
 		err = w.saveWalletLog(l)
 		if err == nil {
@@ -533,8 +533,8 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 	l := w.createWalletLog(kind, -(amount - tradeFee), title, 0, "")
 	l.ProcedureFee = -tradeFee
 	l.OuterNo = tradeNo
-	l.AuditState = wallet.ReviewAwaiting
-	l.AuditRemark = ""
+	l.ReviewState = wallet.ReviewAwaiting
+	l.ReviewRemark = ""
 	l.BankName = bankName
 	l.AccountNo = accountNo
 	l.AccountName = accountName
@@ -554,15 +554,15 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
 	}
-	if l.AuditState != wallet.ReviewAwaiting {
+	if l.ReviewState != wallet.ReviewAwaiting {
 		return wallet.ErrWithdrawState
 	}
-	l.AuditTime = time.Now().Unix()
+	l.ReviewTime = time.Now().Unix()
 	if pass {
-		l.AuditState = wallet.ReviewPass
+		l.ReviewState = wallet.ReviewPass
 	} else {
-		l.AuditRemark = remark
-		l.AuditState = wallet.ReviewReject
+		l.ReviewRemark = remark
+		l.ReviewState = wallet.ReviewReject
 		err := w.Refund(-(l.ProcedureFee + int(l.ChangeValue)), wallet.KWithdrawRefund, "提现退回",
 			l.OuterNo, 0, "")
 		if err != nil {
@@ -580,11 +580,11 @@ func (w *WalletImpl) FinishWithdrawal(takeId int64, outerNo string) error {
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
 	}
-	if l.AuditState != wallet.ReviewPass {
+	if l.ReviewState != wallet.ReviewPass {
 		return wallet.ErrWithdrawState
 	}
 	l.OuterNo = outerNo
-	l.AuditState = wallet.ReviewConfirm
+	l.ReviewState = wallet.ReviewConfirm
 	l.Remark = "转款凭证:" + outerNo
 	return w.saveWalletLog(l)
 }

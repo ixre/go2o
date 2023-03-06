@@ -147,6 +147,9 @@ type IMemberRepo interface {
 	// 获取下级会员数量
 	GetSubInvitationNum(memberId int64, memberIdArr []int32) map[int32]int
 
+	// GetInvitationCount 获取邀请会员数量
+	GetInvitationCount(memberId int, level int) int
+
 	// 获取推荐我的人
 	GetInvitationMeMember(memberId int64) *Member
 

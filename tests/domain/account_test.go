@@ -105,11 +105,11 @@ func TestMemberRedPack(t *testing.T) {
 }
 
 func TestAccountAdjust(t *testing.T) {
-	var memberId int64 = 7
+	var memberId int64 = 723
 	m := ti.Factory.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
 	err := ic.Adjust(member.AccountWallet, "[KF]客服调整",
-		100,
+		8990,
 		"-",
 		1)
 	if err != nil {

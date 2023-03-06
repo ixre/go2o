@@ -198,10 +198,10 @@ func (r *returnOrderImpl) backAmount(amount int) error {
 	}
 	//原路退回
 	pv := po.Value()
-	if pv.BalanceDiscount > 0 {
+	if pv.BalanceDeduct > 0 {
 		if err := acc.Refund(member.AccountBalance, member.ChargeByRefund, "订单退款",
-			o.OrderNo, pv.BalanceDiscount, member.DefaultRelateUser); err == nil {
-			amount -= pv.BalanceDiscount
+			o.OrderNo, pv.BalanceDeduct, member.DefaultRelateUser); err == nil {
+			amount -= pv.BalanceDeduct
 		}
 	}
 	//退积分

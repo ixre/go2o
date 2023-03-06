@@ -178,41 +178,42 @@ message SItemDataResponse {
   string thumbnail = 10;
   // 图片
   repeated string images = 11;
-  //定价
-  int64 retailPrice = 12;
-  //销售价
-  int64 price = 13;
-  // 促销价
-  int64 promPrice = 14;
+  // 成本价
+  int64 cost = 12;
+  // 建议零售价
+  int64 retailPrice = 13;
+  // 销售价
+  int64 price = 14;
   // 价格区间
   string priceRange = 15;
-  int64 goodsId = 16;
   // SkuId
-  int64 skuId = 17;
+  int64 skuId = 16;
   // 促销标志
-  int32 itemFlag = 18;
+  int32 itemFlag = 17;
   // 库存
-  int32 stockNum = 19;
+  int32 stockNum = 18;
   // 已售件数
-  int32 saleNum = 20;
+  int32 saleNum = 19;
   // 上架状态
-  int32 shelveState = 21;
+  int32 shelveState = 20;
   // 审核状态
-  int32 auditState = 22;
+  int32 reviewState = 21;
   // 审核意见
-  string auditRemark = 23;
+  string reviewRemark = 22;
 
   //todo: 对比SGoods多出的字段
   // 品牌编号
-  int64 brandId = 24;
+  int64 brandId = 23;
   // 商品编码
-  string code = 25;
+  string code = 24;
   // 运费模板
-  int64 expressTid = 26;
+  int64 expressTid = 25;
   // 商品属性
-  repeated SAttr attrArray = 27;
+  repeated SAttr attrArray = 26;
   // Sku数据
-  repeated SSku skuArray = 28;
+  repeated SSku skuArray = 27;
+  // 规格
+  repeated SSpecOption specOptions = 28;
   // 商品标志数据
   SItemFlagData flagData = 29;
   // 会员价
@@ -303,7 +304,7 @@ message SUnifiedViewItem {
   string code = 23;
   int64 expressTid = 24;
   sint32 shelveState = 25;
-  sint32 auditState = 26;
+  sint32 reviewState = 26;
   sint64 updateTime = 27;
   repeated SSku skuArray = 28;
   repeated SLevelPrice levelPrices = 29;
@@ -326,7 +327,7 @@ message SItemViewData {
   string skuJson = 5; //todo: 删除?
 }
 
-
+// 保存商品响应
 message SaveItemResponse {
   // 错误状态码,如为0表示成功
   sint32 errCode = 1;
@@ -334,6 +335,8 @@ message SaveItemResponse {
   string errMsg = 2;
   // 商品编号
   int64 itemId = 3;
+  // 商品标志
+  int32 itemFlag = 4;
 }
 
 
@@ -524,7 +527,6 @@ message SaveLevelPriceRequest {
 }
 
 message ShelveStateRequest {
-  int64 sellerId = 1;
   EItemSalesType itemType = 3;
   int64 itemId = 2;
   bool shelveOn = 4;

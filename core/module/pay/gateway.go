@@ -43,8 +43,8 @@ type wrapperData struct {
 const (
 	// FlagOnlyCheck 仅验证密码
 	FlagOnlyCheck = 1 << iota
-	// FlagBalanceDiscount 余额抵扣
-	FlagBalanceDiscount
+	// FlagBalanceDeduct 余额抵扣
+	FlagBalanceDeduct
 	// FlagIntegralDiscount 积分抵扣
 	FlagIntegralDiscount
 	// FlagWalletPayment 钱包支付
@@ -194,7 +194,7 @@ func (g *Gateway) handlePayment(userId int64, tradeNo string, data wrapperData) 
 		return nil
 	}
 	// 余额抵扣
-	if data.PayFlag&FlagBalanceDiscount != 0 {
+	if data.PayFlag&FlagBalanceDeduct != 0 {
 		//todo:
 	}
 	return nil

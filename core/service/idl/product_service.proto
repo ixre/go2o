@@ -121,7 +121,7 @@ message SProductModel {
     // 规格
     repeated SProductSpec specs = 6;
     // 关联品牌
-    repeated SProductBrand brands = 7;
+    repeated int64 brands = 7;
     // 是否启用
     int32 enabled = 8;
 }
@@ -252,12 +252,14 @@ message SProductCategory {
     bool enabled = 13;
     /** 创建时间 */
     int64 createTime = 14;
-    // 选项参数
-    map<string, string> options = 15;
+    /** 子分类 */
+    repeated SProductCategory children = 15;
     // 关联品牌
     repeated SProductBrand brands = 16;
-    /** 子分类 */
-    repeated SProductCategory children = 17;
+    // 产品模型
+    SProductModel model = 17;
+    // 选项参数
+    map<string, string> options = 19;
 }
 
 // 保存分类请求
@@ -318,7 +320,9 @@ message GetCategoryRequest{
     // 编号
     int64 categoryId = 1;
     // 是否加载品牌
-    bool brand = 2;
+    bool withBrand = 2;
+    // 是否加载产品模型
+    bool withModel = 3;
 }
 
 // 分类树形请求

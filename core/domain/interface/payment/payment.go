@@ -49,10 +49,10 @@ const (
 	StateAwaitingPayment = 1
 	// StateFinished 已支付
 	StateFinished = 2
-	// StateCancelled 已取消
-	StateCancelled = 3
-	// StateAborted 已终止（超时关闭）
-	StateAborted = 4
+	// StateCancelled 已关闭
+	StateClosed = 3
+	// StateRefunded 已退款
+	StateRefunded = 4
 )
 
 var (
@@ -86,7 +86,9 @@ var (
 	ErrOrderPayed = domain.NewError(
 		"err_payment_order_payed", "订单已支付")
 
-	ErrOrderCancelled = domain.NewError("err_payment_order_has_cancel", "订单已经取消")
+	ErrOrderClosed = domain.NewError("err_payment_order_has_closed", "订单已经取消")
+
+	ErrOrderRefunded = domain.NewError("err_payment_order_has_refunded", "订单已退款")
 
 	ErrOrderNotPayed = domain.NewError("err_payment_order_not_payed", "订单未支付")
 
@@ -124,7 +126,7 @@ type (
 		Submit() error
 		// MergePay 合并支付
 		MergePay(orders []IPaymentOrder) (mergeTradeNo string, finalAmount int, err error)
-		// Cancel 取消支付
+		// Cancel 取消支付/退款
 		Cancel() error
 		// OfflineDiscount 线下现金/刷卡支付,cash:现金,bank:刷卡金额,finalZero:是否金额必须为零
 		OfflineDiscount(cash int, bank int, finalZero bool) error
@@ -134,8 +136,10 @@ type (
 		PaymentFinish(spName string, outTradeNo string) error
 		// CouponDiscount 优惠券抵扣
 		CouponDiscount(coupon promotion.ICouponPromotion) (int, error)
-		// BalanceDiscount 使用会员的余额抵扣
-		BalanceDiscount(remark string) error
+		// BalanceDeduct 使用会员的余额抵扣
+		BalanceDeduct(remark string) error
+		// WalletDeduct 使用会员的钱包抵扣
+		WalletDeduct(remark string) error
 		// IntegralDiscount 使用会员积分抵扣,返回抵扣的金额及错误,ignoreOut:是否忽略超出订单金额的积分
 		IntegralDiscount(integral int, ignoreOut bool) (amount int, err error)
 		// SystemPayment SystemPayment 系统支付金额
