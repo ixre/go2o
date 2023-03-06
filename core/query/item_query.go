@@ -175,27 +175,26 @@ func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 	}
 	var list = make([]*valueobject.Goods, 0)
 	s := fmt.Sprintf(`SELECT item_snapshot."item_id",
-		item_snapshot."product_id",
-		item_snapshot."cat_id",
-		item_snapshot."title",
-		item_snapshot."title",
-		item_snapshot."code",
-		item_snapshot."image",
-		item_snapshot."retail_price",
-		item_snapshot."price",
+		item_snapshot."cat_id",item_snapshot."title",
+		item_snapshot."image",item_snapshot."retail_price",item_snapshot."price",
 		item_snapshot."price_range",
-		item_snapshot."sku_id",
 		item_snapshot."item_flag",
-		item_info."stock_num",
-		item_info."sale_num",
-		item_info.intro_video
+		item_info."stock_num",item_info."shop_id"
 		 FROM item_snapshot
 		 LEFT JOIN item_info ON item_snapshot.item_id = item_info.id
 		 WHERE ($1 <= 0 OR item_snapshot.shop_id = $2) 
 		 AND item_info.review_state= $3 
 		 AND item_info.shelve_state= $4
 		  %s ORDER BY %s LIMIT $6 OFFSET $5`, where, orderBy)
-	err := i.o.SelectByQuery(&list, s, shopId, shopId,
+	err := i.Query(s, func(_rows *sql.Rows) {
+		for _rows.Next() {
+			e := valueobject.Goods{}
+			_rows.Scan(&e.ItemId, &e.CategoryId, &e.Title, &e.Image,
+				&e.RetailPrice, &e.Price, &e.PriceRange, &e.ItemFlag,
+				&e.StockNum, &e.ShopId)
+			list = append(list, &e)
+		}
+	}, shopId, shopId,
 		enum.ReviewPass, item.ShelvesOn, start, end-start)
 	if err != nil {
 		log.Println("[ GO2O][ Repo][ Error]:", err.Error(), s)
