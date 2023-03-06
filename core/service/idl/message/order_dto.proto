@@ -250,10 +250,12 @@ message SubmitOrderRequest {
     string affiliateCode = 6;
     // 是否使用余额抵扣
     bool balanceDeduct = 7;
+     // 是否使用钱包抵扣
+     bool walletDeduct = 8; 
     // 其他数据
-    map<string, string> data = 8;
+    map<string, string> data = 9;
     // 交易类订单请求参数
-    TradeOrderRequest tradeOrder = 9;
+    TradeOrderRequest tradeOrder = 10;
 }
 
 

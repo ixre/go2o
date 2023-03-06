@@ -131,6 +131,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 		Subject:       r.Subject,
 		CouponCode:    r.CouponCode,
 		BalanceDeduct: r.BalanceDeduct,
+		WalletDeduct: r.WalletDeduct,
 		AffiliateCode: r.AffiliateCode,
 		PostedData:    iData,
 	})

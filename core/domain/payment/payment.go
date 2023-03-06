@@ -326,12 +326,11 @@ func (p *paymentOrderImpl) getWalletDeductAmount(acc member.IAccount) int64 {
 		return 0
 	}
 	acv := acc.GetValue()
-	if acv.Balance >= p.value.FinalAmount {
+	if acv.WalletBalance >= p.value.FinalAmount {
 		return p.value.FinalAmount
 	}
-	return acv.Balance
+	return acv.WalletBalance
 }
-
 
 func (p *paymentOrderImpl) getPaymentUser() member.IMember {
 	if p.paymentUser == nil && p.value.PayerId > 0 {
@@ -387,17 +386,18 @@ func (p *paymentOrderImpl) WalletDeduct(remark string) error {
 		return member.ErrNoSuchMember
 	}
 	acc := pu.GetAccount()
-	amount := p.getBalanceDeductAmount(acc)
+	amount := p.getWalletDeductAmount(acc)
 	if amount == 0 {
-		return member.ErrAccountBalanceNotEnough
+		return member.ErrAccountNotEnoughAmount
 	}
-	err := acc.PaymentDiscount(p.value.TradeNo, int(amount), remark)
+	err := acc.Discount(member.AccountWallet, "订单抵扣",
+		int(amount), p.value.OutOrderNo, remark)
 	if err == nil {
 		p.value.DeductAmount += amount // 修改抵扣金额
-		p.value.FinalFlag |= payment.MBalance
+		p.value.FinalFlag |= payment.MWallet
 		err = p.saveOrder()
 		if err == nil { // 保存支付记录
-			err = p.saveTradeChan(int(amount), payment.MBalance, "", "")
+			err = p.saveTradeChan(int(amount), payment.MWallet, "", "")
 		}
 	}
 	return err
