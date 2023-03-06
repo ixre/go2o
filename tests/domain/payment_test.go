@@ -22,3 +22,19 @@ func TestPaymentSuccess(t *testing.T) {
 	}
 	time.Sleep(time.Second * 2)
 }
+
+// 测试钱包支付单钱包抵扣
+func TestWalletDeductPaymentOrder(t *testing.T) {
+	orderNo := "1230306000808485"
+	repo := ti.Factory.GetPaymentRepo()
+	ip := repo.GetPaymentOrder(orderNo)
+	if ip == nil {
+		t.Error("no such order")
+		t.FailNow()
+	}
+	err := ip.WalletDeduct("抵扣")
+	if err != nil {
+		t.Log("----", err.Error())
+		t.FailNow()
+	}
+}
