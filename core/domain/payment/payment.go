@@ -272,7 +272,12 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 	p.value.OutTradeNo = outerNo
 	p.value.PaidTime = time.Now().Unix()
 	p.firstFinishPayment = true
-	return p.saveOrder()
+	err := p.saveOrder()
+	// 保存第三方支付记录
+	if err == nil {
+		err = p.saveTradeChan(int(p.value.FinalAmount), payment.MPaySP, spName, outerNo)
+	}
+	return err
 }
 
 // 更新订单状态, 需要注意,防止多次订单更新
@@ -556,15 +561,6 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 // PaymentWithCard 使用会员卡支付,cardCode:会员卡编码,amount:支付金额
 func (p *paymentOrderImpl) PaymentWithCard(cardCode string, amount int) error {
 	return errors.New("not support")
-}
-
-// SetTradeSP 设置支付方式
-func (p *paymentOrderImpl) SetTradeSP(spName string) error {
-	err := p.CheckPaymentState()
-	if err == nil {
-		p.value.OutTradeSp = spName
-	}
-	return nil
 }
 
 func (p *paymentOrderImpl) saveOrder() error {

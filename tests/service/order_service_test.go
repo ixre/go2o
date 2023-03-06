@@ -36,3 +36,5 @@ func TestSubmitOrderSubjectPostgresInsert(t *testing.T) {
 	s3 := s2[:15] + "..."
 	t.Log("----", s3)
 }
+
+
