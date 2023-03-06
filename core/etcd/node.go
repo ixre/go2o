@@ -10,7 +10,10 @@ package etcd
  * history :
  */
 
+// 节点
 type Node struct {
-	Id   uint32 `json:"id"`
+	// Id 编号
+	Id uint32 `json:"id"`
+	// Addr 地址
 	Addr string `json:"addr"`
 }

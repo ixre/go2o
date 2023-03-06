@@ -23,10 +23,6 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
 type SelectAlgorithm int
 
 const AlgRandom SelectAlgorithm = 0
@@ -80,7 +76,8 @@ func (s *serverSelector) Next() (Node, error) {
 	}
 	// 随机算法
 	//i := rand.Int() % len(s.nodes)
-	i := rand.Intn(l)
+	rd := rand.New(rand.NewSource(time.Now().UnixNano()))
+	i := rd.Intn(l)
 	return s.nodes[i], nil
 }
 
@@ -165,9 +162,9 @@ func (s *serverSelector) loadNodes() {
 			continue
 		}
 		s.nodes = append(s.nodes, node)
-		fmt.Sprintf("[ GO2O][ INFO]: found node %s", node.Addr)
+		log.Printf("[ GO2O][ INFO]: found node %s \n", node.Addr)
 	}
 	if len(s.nodes) == 0 {
-		fmt.Sprintf("[ GO2O][ Warning]: no found any nodes")
+		fmt.Printf("[ GO2O][ Warning]: no found any nodes \n")
 	}
 }

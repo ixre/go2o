@@ -30,6 +30,7 @@ type Registry interface {
 	Register(ip string, port int) (clientv3.LeaseID, error)
 	// Revoke 撤销租期/注销节点
 	Revoke(LeaseID int64) error
+	// Stop 停止节点监测
 	Stop()
 }
 
@@ -185,6 +186,6 @@ func (s *registryServer) retryRegister(leaseId clientv3.LeaseID) (clientv3.Lease
 			return 0, err
 		}
 		time.Sleep(time.Second * 15)
-		log.Println(fmt.Sprintf("[ etcd][ info]: retry register node %s:%d the %dth", endpoint.ip, endpoint.port, tryTimes))
+		log.Printf("[ etcd][ info]: retry register node %s:%d the %dth \n", endpoint.ip, endpoint.port, tryTimes)
 	}
 }
