@@ -41,7 +41,7 @@ service QueryService {
     rpc PagingMemberAccountLog (PagingAccountLogRequest) returns (MemberAccountPagingLogResponse) {
     } 
       // 获取店铺分页上架的商品
-    rpc PagedOnShelvesGoods (PagingShopGoodsRequest) returns (PagingShopGoodsResponse) {
+    rpc PagingOnShelvesGoods (PagingShopGoodsRequest) returns (PagingShopGoodsResponse) {
     }
 
     // 查询商品销售记录

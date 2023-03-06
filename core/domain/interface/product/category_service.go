@@ -58,7 +58,7 @@ type (
 		// 保存
 		Save() (int, error)
 		// GetModel 获取产品模型
-		GetModel() *promodel.ProductModel
+		GetModel() promodel.IProductModel
 		// GetChildes 获取子栏目的编号
 		GetChildes() []int
 	}

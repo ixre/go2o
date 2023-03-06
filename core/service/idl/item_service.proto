@@ -52,7 +52,7 @@ service ItemService {
     // }
   
     // 获取上架商品数据（分页）
-    rpc GetPagedOnShelvesItem (PagingGoodsRequest) returns (PagingGoodsResponse) {
+    rpc GetPagingOnShelvesItem (PagingGoodsRequest) returns (PagingGoodsResponse) {
     }
     // 获取上架商品数据
     rpc GetItems (GetItemsRequest) returns (PagingGoodsResponse) {

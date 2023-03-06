@@ -261,7 +261,7 @@ func (i *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDe
 }
 
 // 获取上架商品数据（分页）
-func (i *itemService) GetPagedOnShelvesItem(_ context.Context, r *proto.PagingGoodsRequest) (*proto.PagingGoodsResponse, error) {
+func (i *itemService) GetPagingOnShelvesItem(_ context.Context, r *proto.PagingGoodsRequest) (*proto.PagingGoodsResponse, error) {
 	ret := &proto.PagingGoodsResponse{
 		Total: 0,
 		Data:  make([]*proto.SUnifiedViewItem, 0),
@@ -296,7 +296,7 @@ func (i *itemService) GetPagedOnShelvesItem(_ context.Context, r *proto.PagingGo
 func (i *itemService) getPagedOnShelvesItem(catId int32, start,
 	end int32, where, sortBy string) (int32, []*proto.SUnifiedViewItem) {
 
-	total, list := i.itemQuery.GetPagedOnShelvesItem(catId,
+	total, list := i.itemQuery.GetPagingOnShelvesItem(catId,
 		start, end, where, sortBy)
 	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for i, v := range list {
@@ -309,7 +309,7 @@ func (i *itemService) getPagedOnShelvesItem(catId int32, start,
 func (i *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
 	end int32, where, sortBy string) (int32, []*proto.SUnifiedViewItem) {
 
-	total, list := i.itemQuery.GetPagedOnShelvesItemForWholesale(catId,
+	total, list := i.itemQuery.GetPagingOnShelvesItemForWholesale(catId,
 		start, end, where, sortBy)
 	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for j, v := range list {

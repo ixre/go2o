@@ -444,8 +444,8 @@ func (o *orderImpl) Submit() (string, error) {
 
 		// 记录余额支付记录
 		//todo: 扣减余额
-		//if v.BalanceDiscount > 0 {
-		//	err = acc.PaymentDiscount(v.OrderNo, v.BalanceDiscount)
+		//if v.BalanceDeduct > 0 {
+		//	err = acc.PaymentDiscount(v.OrderNo, v.BalanceDeduct)
 		//}
 	}
 	return v.OrderNo, err
@@ -574,7 +574,7 @@ func (o *orderImpl) applyCouponOnSubmit(v *order.ItemOrder) error {
 }
 
 // 应用余额支付
-func (o *orderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
+func (o *orderImpl) getBalanceDeductFee(acc member.IAccount) float32 {
 	if o.value.FinalAmount <= 0 || math.IsNaN(float64(o.value.FinalAmount)) {
 		return 0
 	}

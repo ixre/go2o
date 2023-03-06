@@ -687,7 +687,7 @@ func (o *normalOrderImpl) applyCouponOnSubmit() error {
 }
 
 // 应用余额支付
-func (o *normalOrderImpl) getBalanceDiscountFee(acc member.IAccount) int64 {
+func (o *normalOrderImpl) getBalanceDeductFee(acc member.IAccount) int64 {
 	if o.baseValue.FinalAmount <= 0 || math.IsNaN(float64(o.baseValue.FinalAmount)) {
 		return 0
 	}

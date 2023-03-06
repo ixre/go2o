@@ -7,6 +7,7 @@ import (
 
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestProductCategoryTree(t *testing.T) {
@@ -46,25 +47,23 @@ func TestSourceCategories(t *testing.T) {
 func TestGetCategoryBrands(t *testing.T) {
 	list, err := impl.ProductService.GetCategory(context.TODO(), &proto.GetCategoryRequest{
 		CategoryId: 2185,
-		Brand:      true,
+		WithBrand:  true,
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	bytes, _ := json.Marshal(list.Brands)
-	t.Log(string(bytes))
+	t.Log(typeconv.MustJson(list))
 }
 
-
-func TestUpdateProductDescription(t *testing.T){
+func TestUpdateProductDescription(t *testing.T) {
 	prod, err := impl.ProductService.GetProduct(context.TODO(), &proto.ProductId{
 		Value: 1,
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	prod.Description = "111"+prod.Description
-	ret,_ := impl.ProductService.SaveProduct(context.TODO(),&proto.SaveProductRequest{
+	prod.Description = "111" + prod.Description
+	ret, _ := impl.ProductService.SaveProduct(context.TODO(), &proto.SaveProductRequest{
 		Id:                prod.Id,
 		CategoryId:        prod.CategoryId,
 		Name:              prod.Name,
@@ -79,8 +78,17 @@ func TestUpdateProductDescription(t *testing.T){
 		Attrs:             prod.Attrs,
 		UpdateDescription: true,
 	})
-	if ret.ErrCode > 0{
+	if ret.ErrCode > 0 {
 		t.Error(ret.ErrMsg)
 		t.FailNow()
 	}
+}
+
+func TestGetProductCategory(t *testing.T) {
+	ret, _ := impl.ProductService.GetCategory(context.TODO(), &proto.GetCategoryRequest{
+		CategoryId: 2095,
+		WithBrand:  true,
+		WithModel:  true,
+	})
+	t.Log(typeconv.MustJson(ret))
 }
