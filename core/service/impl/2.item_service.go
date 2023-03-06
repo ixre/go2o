@@ -275,7 +275,7 @@ func (i *itemService) GetPagingOnShelvesItem(_ context.Context, r *proto.PagingG
 	var list []*proto.SUnifiedViewItem
 	switch r.ItemType {
 	case proto.EItemSalesType_IT_NORMAL:
-		total, list = i.getPagedOnShelvesItem(
+		total, list = i.getPagingOnShelvesItem(
 			int32(r.CategoryId),
 			int32(r.Params.Begin),
 			int32(r.Params.End),
@@ -293,7 +293,7 @@ func (i *itemService) GetPagingOnShelvesItem(_ context.Context, r *proto.PagingG
 	ret.Data = list
 	return ret, nil
 }
-func (i *itemService) getPagedOnShelvesItem(catId int32, start,
+func (i *itemService) getPagingOnShelvesItem(catId int32, start,
 	end int32, where, sortBy string) (int32, []*proto.SUnifiedViewItem) {
 
 	total, list := i.itemQuery.GetPagingOnShelvesItem(catId,

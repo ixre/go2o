@@ -39,8 +39,7 @@ type Goods struct {
 	// 价格区间
 	PriceRange string `db:"price_range"`
 
-	GoodsId int64 `db:"item_info.id"`
-	SkuId   int64 `db:"sku_id"`
+	SkuId int64 `db:"sku_id"`
 
 	// 商品标志
 	ItemFlag int `db:"item_flag"`
