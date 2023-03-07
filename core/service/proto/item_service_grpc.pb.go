@@ -36,7 +36,7 @@ type ItemServiceClient interface {
 	GetSku(ctx context.Context, in *SkuId, opts ...grpc.CallOption) (*SSku, error)
 	// 设置商品货架状态
 	ReviewItem(ctx context.Context, in *ItemReviewRequest, opts ...grpc.CallOption) (*Result, error)
-	// 删除商品
+	// 回收商品
 	RecycleItem(ctx context.Context, in *RecycleItemRequest, opts ...grpc.CallOption) (*Result, error)
 	// 保存商品的会员价
 	SaveLevelPrices(ctx context.Context, in *SaveLevelPriceRequest, opts ...grpc.CallOption) (*Result, error)
@@ -303,7 +303,7 @@ type ItemServiceServer interface {
 	GetSku(context.Context, *SkuId) (*SSku, error)
 	// 设置商品货架状态
 	ReviewItem(context.Context, *ItemReviewRequest) (*Result, error)
-	// 删除商品
+	// 回收商品
 	RecycleItem(context.Context, *RecycleItemRequest) (*Result, error)
 	// 保存商品的会员价
 	SaveLevelPrices(context.Context, *SaveLevelPriceRequest) (*Result, error)

@@ -179,15 +179,19 @@ func (i *itemService) attachUnifiedItem(item item.IGoodsItem, extra bool) *proto
 
 // RecycleItem 回收商品
 func (i *itemService) RecycleItem(_ context.Context, req *proto.RecycleItemRequest) (*proto.Result, error) {
-	it := i.itemRepo.GetItem(req.Value)
+	it := i.itemRepo.GetItem(req.ItemId)
 	var err error
 	if it == nil {
-		item.ErrNoSuchItem = item.ErrNoSuchItem
+		err = item.ErrNoSuchItem
 	} else {
 		if req.IsDestory {
 			err = it.Destroy()
 		} else {
-			err = it.Recycle(req.Recycle)
+			if req.Recycle {
+				err = it.RecycleRevert()
+			} else {
+				err = it.Recycle()
+			}
 		}
 	}
 	return i.error(err), nil

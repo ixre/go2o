@@ -168,3 +168,9 @@ COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_r2
 COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_c
     IS '历史自定义比例';
 
+
+ALTER TABLE IF EXISTS public.item_info
+    ADD COLUMN is_recycle integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.item_info.is_recycle
+    IS '是否回收';

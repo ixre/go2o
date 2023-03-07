@@ -50,7 +50,7 @@ func PriceArrayDto(src []*item.MemberPrice) []*proto.SLevelPrice {
 func LevelPriceDto(src *item.MemberPrice) *proto.SLevelPrice {
 	return &proto.SLevelPrice{
 		Id:        int64(src.Id),
-		Level:     int32(src.Level),
+		Level:     int32(src.LevelId),
 		Price:     src.Price,
 		MaxNumber: int32(src.MaxQuota),
 		Enabled:   src.Enabled == 1,
@@ -60,7 +60,7 @@ func LevelPriceDto(src *item.MemberPrice) *proto.SLevelPrice {
 func ParseLevelPrice(src *proto.SLevelPrice) *item.MemberPrice {
 	return &item.MemberPrice{
 		Id:       int(src.Id),
-		Level:    int(src.Level),
+		LevelId:    int(src.Level),
 		Price:    src.Price,
 		MaxQuota: int(src.MaxNumber),
 		Enabled:  types.ElseInt(src.Enabled, 1, 0),

@@ -545,7 +545,7 @@ func (i *itemImpl) GetPromotions() []promotion.IPromotion {
 func (i *itemImpl) GetLevelPrice(level int) (bool, int64) {
 	lvp := i.GetLevelPrices()
 	for _, v := range lvp {
-		if level == v.Level && v.Price < i.value.Price {
+		if level == v.LevelId && v.Price < i.value.Price {
 			return true, v.Price
 		}
 	}
