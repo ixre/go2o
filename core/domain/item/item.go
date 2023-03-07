@@ -735,8 +735,31 @@ func (i *itemImpl) ReleaseStock(skuId int64, quantity int32) error {
 	return err
 }
 
+// 回收商品
+func (i *itemImpl) Recycle() error {
+	if i.value.IsRecycle == 0 {
+		i.value.IsRecycle = 1
+		_, err := i.Save()
+		return err
+	}
+	return nil
+}
+
+// 从回收站中撤回
+func (i *itemImpl) RecycleRevert() error {
+	if i.value.IsRecycle == 1 {
+		i.value.IsRecycle = 0
+		_, err := i.Save()
+		return err
+	}
+	return nil
+}
+
 // 删除商品
 func (i *itemImpl) Destroy() error {
+	if i.value.IsRecycle == 0 {
+		return errors.New("商品非回收状态，不允许删除")
+	}
 	//i.goodsRepo.
 	return nil
 }

@@ -416,6 +416,8 @@ type (
 		ReviewRemark string `db:"review_remark"`
 		// 排序序号
 		SortNum int32 `db:"sort_num"`
+		// 是否已被回收
+		IsRecycle int `db:"is_recycle"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
