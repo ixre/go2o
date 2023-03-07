@@ -217,7 +217,7 @@ func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 		Price:       gv.Price,
 		PriceRange:  gv.PriceRange,
 		PromPrice:   gv.Price,
-		GoodsId:     i.GetAggregateRootId(),
+		ItemId:      i.GetAggregateRootId(),
 		SkuId:       gv.SkuId,
 		ItemFlag:    gv.ItemFlag,
 		StockNum:    gv.StockNum,

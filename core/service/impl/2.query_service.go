@@ -381,7 +381,6 @@ func (q *queryService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 		Price:       v.Price,
 		PromPrice:   v.PromPrice,
 		PriceRange:  v.PriceRange,
-		GoodsId:     v.GoodsId,
 		SkuId:       v.SkuId,
 		ItemFlag:    int32(v.ItemFlag),
 		StockNum:    v.StockNum,

@@ -75,7 +75,7 @@ COMMENT ON COLUMN public.item_snapshot.item_flag
     IS '商品标志';
 
 
-UPDATE item_snapshot SET item_flag = (SELECT item_flag FROM item_info where id=item_id) WHERE item_flag = 0;
+UPDATE item_snapshot SET item_flag =  COALESCE((SELECT item_flag FROM item_info where id=item_id),1) WHERE item_flag = 0;
 
 
 CREATE TABLE public.sys_safeguard
@@ -130,6 +130,10 @@ COMMENT ON COLUMN public.sys_safeguard.update_time
     IS '更新时间';
 
 
+ALTER TABLE IF EXISTS public.mm_balance_log
+    RENAME audit_state TO review_state;
+
+
 CREATE TABLE public.item_affiliate_rate
 (
     id bigserial NOT NULL,
@@ -163,3 +167,4 @@ COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_r2
 
 COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_c
     IS '历史自定义比例';
+

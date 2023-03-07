@@ -265,11 +265,7 @@ message SPaymentOrder {
     /** 支付时间 */
     sint64 paidTime = 25;
     /** 交易数据 */
-    repeated STradeMethodData tradeData = 26;
-    /** 支付SP(后面会删除) */
-    string outTradeSp = 28;
-    /** 支付SP单号(后面会删除) */
-    string outTradeNo = 29;
+    repeated STradeChanData tradeData = 26;
     /** 编号 */
     sint32 id = 27;
 }
@@ -293,19 +289,17 @@ message SRequestPayData {
 }
 
 /** 交易方式数据 */
-message STradeMethodData {
+message STradeChanData {
     /** 支付途径 */
-    sint32 method = 1;
+    sint32 chanId = 1;
+    // 方式描述
+    string chanName = 2;
     /** 交易代码 */
-    string code = 2;
+    string chanCode = 3;
     /** 支付金额 */
-    int64 amount = 3;
-    /** 是否为内置支付途径 */
-    sint32 internal = 4;
+    int64 amount = 4;
     /** 外部交易单号 */
     string outTradeNo = 5;
-    /** 支付时间 */
-    sint64 payTime = 6;
 }
 
 /** 支付单预交易数据 */

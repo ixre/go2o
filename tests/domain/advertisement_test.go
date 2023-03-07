@@ -1,9 +1,10 @@
-package tests
+package domain
 
 import (
 	"fmt"
-	"github.com/ixre/go2o/tests/ti"
 	"testing"
+
+	"github.com/ixre/go2o/tests/ti"
 )
 
 func TestGetGroups(t *testing.T) {

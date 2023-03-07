@@ -184,44 +184,6 @@ func memberAutoUnlock() {
 	}
 }
 
-// 检测已过期的订单并标记
-func detectOrderExpires() {
-	if appCtx.Debug() {
-		log.Println("[ Order]: detect order time out ...")
-	}
-	conn := core.GetRedisConn()
-	defer conn.Close()
-	tick := getTick(time.Now())
-	key := fmt.Sprintf("%s:*:%s", variable.KvOrderExpiresTime, tick)
-	//key = "go2o:order:timeout:11-0-2:*"
-	//获取标记为等待过期的订单
-	list, err := redis.Strings(conn.Do("KEYS", key))
-	if err == nil {
-		for _, oKey := range list {
-			orderNo, isSub, err := testIdFromRdsKey(oKey)
-			if err == nil && orderNo != "" {
-				trans, cli, _ := service.OrderServiceClient()
-				ret, _ := cli.CancelOrder(context.TODO(),
-					&proto.CancelOrderRequest{
-						OrderNo: orderNo,
-						Sub:     isSub,
-						Reason:  "订单超时,自动取消",
-					})
-				trans.Close()
-				if ret.ErrCode > 0 {
-					err = errors.New(ret.ErrMsg)
-				}
-				//清除待取消记录
-				conn.Do("DEL", oKey)
-				//log.Println("---",orderId,"---",unix, "--", time.Now().Unix(), v, err)
-			}
-		}
-	} else {
-		log.Println("[ Daemon][ Order][ Cancel][ Error]:",
-			err.Error(), "; retry after 10 seconds.")
-		time.Sleep(time.Second * 10)
-	}
-}
 
 // 订单自动收货
 func orderAutoReceive() {

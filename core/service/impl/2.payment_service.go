@@ -45,7 +45,12 @@ func (p *paymentService) GetPaymentOrder(_ context.Context, req *proto.PaymentOr
 		v := po.Get()
 		sp := p.parsePaymentOrderDto(&v)
 		for _, t := range po.TradeMethods() {
-			sp.TradeData = append(sp.TradeData, p.parseTradeMethodDataDto(t))
+			pm := p.parseTradeMethodDataDto(t)
+			pm.ChanName = po.ChanName(t.Method)
+			if len(pm.ChanName) == 0 {
+				pm.ChanName = v.OutTradeSp
+			}
+			sp.TradeData = append(sp.TradeData, pm)
 		}
 		return sp, nil
 	}
@@ -330,21 +335,16 @@ func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymen
 		SubOrder:       src.SubOrder == 1,
 		OrderType:      int32(src.OrderType),
 		OutOrderNo:     src.OutOrderNo,
-
-		OutTradeNo: src.OutTradeNo,
-		OutTradeSp: src.OutTradeSp,
-		TradeData:  make([]*proto.STradeMethodData, 0),
+		TradeData:      make([]*proto.STradeChanData, 0),
 	}
 }
 
-func (p *paymentService) parseTradeMethodDataDto(src *payment.TradeMethodData) *proto.STradeMethodData {
-	return &proto.STradeMethodData{
-		Method:     int32(src.Method),
-		Code:       src.Code,
+func (p *paymentService) parseTradeMethodDataDto(src *payment.TradeMethodData) *proto.STradeChanData {
+	return &proto.STradeChanData{
+		ChanId:     int32(src.Method),
 		Amount:     src.Amount,
-		Internal:   int32(src.Internal),
+		ChanCode:   src.Code,
 		OutTradeNo: src.OutTradeNo,
-		PayTime:    src.PayTime,
 	}
 }
 

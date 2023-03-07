@@ -18,7 +18,7 @@ import (
 var _ member.IInvitationManager = new(invitationManager)
 
 type invitationManager struct {
-	member       *memberImpl
+	member *memberImpl
 }
 
 // 更换邀请人
@@ -135,6 +135,9 @@ func (i *invitationManager) checkInvitation(inviterId int64, id int64) bool {
 	currId := id
 	for {
 		arr := i.InviterArray(currId, 1)
+		if currId == arr[0] {
+			return true
+		}
 		currId = arr[0]
 		if currId == inviterId {
 			return true
