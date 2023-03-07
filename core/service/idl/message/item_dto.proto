@@ -515,6 +515,16 @@ message ItemIllegalRequest {
   string remark = 2;
 }
 
+// 商品回收请求
+message RecycleItemRequest{
+  // 商品编号
+  int64 ItemId = 1;
+  // 是否回收或从回收站中撤销
+  bool Recycle = 2;
+  // 是否销毁
+  bool IsDestory = 3;
+}
+
 message ItemReviewRequest {
   int64 itemId = 1;
   bool pass = 2;

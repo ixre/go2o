@@ -145,7 +145,10 @@ type (
 		//
 		//// 获取最新的快照
 		//GetLatestSnapshot() *goods.GoodsSnapshot
-
+		// 回收商品
+		Recycle() error
+		// 从回收站中撤回
+		RecycleRevert() error
 		// Destroy 删除商品
 		Destroy() error
 	}

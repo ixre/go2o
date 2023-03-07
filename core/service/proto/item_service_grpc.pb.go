@@ -36,6 +36,8 @@ type ItemServiceClient interface {
 	GetSku(ctx context.Context, in *SkuId, opts ...grpc.CallOption) (*SSku, error)
 	// 设置商品货架状态
 	ReviewItem(ctx context.Context, in *ItemReviewRequest, opts ...grpc.CallOption) (*Result, error)
+	// 删除商品
+	RecycleItem(ctx context.Context, in *RecycleItemRequest, opts ...grpc.CallOption) (*Result, error)
 	// 保存商品的会员价
 	SaveLevelPrices(ctx context.Context, in *SaveLevelPriceRequest, opts ...grpc.CallOption) (*Result, error)
 	// 商品标记为违规
@@ -133,6 +135,15 @@ func (c *itemServiceClient) GetSku(ctx context.Context, in *SkuId, opts ...grpc.
 func (c *itemServiceClient) ReviewItem(ctx context.Context, in *ItemReviewRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/ItemService/ReviewItem", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *itemServiceClient) RecycleItem(ctx context.Context, in *RecycleItemRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/ItemService/RecycleItem", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -292,6 +303,8 @@ type ItemServiceServer interface {
 	GetSku(context.Context, *SkuId) (*SSku, error)
 	// 设置商品货架状态
 	ReviewItem(context.Context, *ItemReviewRequest) (*Result, error)
+	// 删除商品
+	RecycleItem(context.Context, *RecycleItemRequest) (*Result, error)
 	// 保存商品的会员价
 	SaveLevelPrices(context.Context, *SaveLevelPriceRequest) (*Result, error)
 	// 商品标记为违规
@@ -349,6 +362,9 @@ func (UnimplementedItemServiceServer) GetSku(context.Context, *SkuId) (*SSku, er
 }
 func (UnimplementedItemServiceServer) ReviewItem(context.Context, *ItemReviewRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewItem not implemented")
+}
+func (UnimplementedItemServiceServer) RecycleItem(context.Context, *RecycleItemRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecycleItem not implemented")
 }
 func (UnimplementedItemServiceServer) SaveLevelPrices(context.Context, *SaveLevelPriceRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveLevelPrices not implemented")
@@ -530,6 +546,24 @@ func _ItemService_ReviewItem_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ItemServiceServer).ReviewItem(ctx, req.(*ItemReviewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ItemService_RecycleItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RecycleItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ItemServiceServer).RecycleItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ItemService/RecycleItem",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ItemServiceServer).RecycleItem(ctx, req.(*RecycleItemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -838,6 +872,10 @@ var ItemService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReviewItem",
 			Handler:    _ItemService_ReviewItem_Handler,
+		},
+		{
+			MethodName: "RecycleItem",
+			Handler:    _ItemService_RecycleItem_Handler,
 		},
 		{
 			MethodName: "SaveLevelPrices",

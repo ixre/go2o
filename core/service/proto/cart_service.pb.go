@@ -26,7 +26,7 @@ type CartItemRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// 买家编号
+	// 购物车编号
 	CartId *ShoppingCartId `protobuf:"bytes,1,opt,name=cartId,proto3" json:"cartId"`
 	// 商品项
 	Items []*RCartItem `protobuf:"bytes,2,rep,name=items,proto3" json:"items"`

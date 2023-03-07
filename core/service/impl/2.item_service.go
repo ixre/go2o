@@ -177,6 +177,22 @@ func (i *itemService) attachUnifiedItem(item item.IGoodsItem, extra bool) *proto
 	return ret
 }
 
+// RecycleItem 回收商品
+func (i *itemService) RecycleItem(_ context.Context, req *proto.RecycleItemRequest) (*proto.Result, error) {
+	it := i.itemRepo.GetItem(req.Value)
+	var err error
+	if it == nil {
+		item.ErrNoSuchItem = item.ErrNoSuchItem
+	} else {
+		if req.IsDestory {
+			err = it.Destroy()
+		} else {
+			err = it.Recycle(req.Recycle)
+		}
+	}
+	return i.error(err), nil
+}
+
 // 根据SKU获取商品
 func (i *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest) (*proto.SUnifiedViewItem, error) {
 	v := i.itemRepo.GetValueGoodsBySku(r.ProductId, r.SkuId)

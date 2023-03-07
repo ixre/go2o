@@ -17,9 +17,10 @@ service CartService {
     // 放入购物车
     rpc PutItems(CartItemRequest) returns (CartItemResponse) {
     }
+    
     // 从购物车里删除指定数量的商品
-    rpc ReduceItems(CartItemRequest) returns (Result) {
-    }
+    rpc ReduceItems(CartItemRequest) returns (Result) {}
+
     // 勾选商品结算
     rpc CheckCart (CheckCartRequest) returns (Result) {
     }
@@ -27,11 +28,12 @@ service CartService {
 
 // 购物车加入商品请求
 message CartItemRequest {
-    // 买家编号
+    // 购物车编号
     ShoppingCartId cartId = 1;
     // 商品项
     repeated RCartItem items = 2;
 }
+
 
 // 商品项请求参数
 message RCartItem{
