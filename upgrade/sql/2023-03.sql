@@ -132,11 +132,14 @@ COMMENT ON COLUMN public.sys_safeguard.update_time
 
 CREATE TABLE public.item_affiliate_rate
 (
-    id bigint NOT NULL,
+    id bigserial NOT NULL,
     item_id bigint NOT NULL,
     rate_r1 integer NOT NULL,
     rate_r2 integer NOT NULL,
-    rate_r3 integer,
+    rate_c integer NOT NULL,
+    origin_rate_r1 integer NOT NULL,
+    origin_rate_r2 integer NOT NULL,
+    origin_rate_c integer NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -148,3 +151,15 @@ COMMENT ON COLUMN public.item_affiliate_rate.rate_r1
 
 COMMENT ON COLUMN public.item_affiliate_rate.rate_r2
     IS '上二级比例';
+
+COMMENT ON COLUMN public.item_affiliate_rate.rate_c
+    IS '自定义比例';
+
+COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_r1
+    IS '历史上一级比例';
+
+COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_r2
+    IS '历史上二级比例';
+
+COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_c
+    IS '历史自定义比例';
