@@ -350,7 +350,7 @@ func (q *queryService) PagingOnShelvesGoods(_ context.Context, r *proto.PagingSh
 
 	}
 	if len(strings.TrimSpace(r.Params.SortBy)) == 0 {
-		r.Params.SortBy = "item_info.sort_num DESC,item_info.update_time DESC"
+		r.Params.SortBy = "item_snapshot.sort_num DESC,item_snapshot.update_time DESC"
 	}
 	total, list = q.itemQuery.GetPagingOnShelvesGoods(
 		r.ShopId, ids, int(r.Flag),

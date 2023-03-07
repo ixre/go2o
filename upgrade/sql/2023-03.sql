@@ -129,5 +129,42 @@ COMMENT ON COLUMN public.sys_safeguard.create_time
 COMMENT ON COLUMN public.sys_safeguard.update_time
     IS '更新时间';
 
+
 ALTER TABLE IF EXISTS public.mm_balance_log
     RENAME audit_state TO review_state;
+
+
+CREATE TABLE public.item_affiliate_rate
+(
+    id bigserial NOT NULL,
+    item_id bigint NOT NULL,
+    rate_r1 integer NOT NULL,
+    rate_r2 integer NOT NULL,
+    rate_c integer NOT NULL,
+    origin_rate_r1 integer NOT NULL,
+    origin_rate_r2 integer NOT NULL,
+    origin_rate_c integer NOT NULL,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE IF EXISTS public.item_affiliate_rate
+    OWNER to postgres;
+
+COMMENT ON COLUMN public.item_affiliate_rate.rate_r1
+    IS '上一级比例';
+
+COMMENT ON COLUMN public.item_affiliate_rate.rate_r2
+    IS '上二级比例';
+
+COMMENT ON COLUMN public.item_affiliate_rate.rate_c
+    IS '自定义比例';
+
+COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_r1
+    IS '历史上一级比例';
+
+COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_r2
+    IS '历史上二级比例';
+
+COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_c
+    IS '历史自定义比例';
+

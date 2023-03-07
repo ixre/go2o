@@ -268,7 +268,7 @@ func (i *itemService) GetPagingOnShelvesItem(_ context.Context, r *proto.PagingG
 	}
 	where := r.Params.Where
 	if wd := strings.TrimSpace(r.Keyword); len(wd) > 0 {
-		where += " AND item_info.title LIKE '%" + r.Keyword + "%'"
+		where += " AND item_snapshot.title LIKE '%" + r.Keyword + "%'"
 	}
 
 	var total int32
