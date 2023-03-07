@@ -159,6 +159,8 @@ type (
 		CouponCode string
 		// 是否余额支付
 		BalanceDeduct bool
+		// 是否钱包抵扣
+		WalletDeduct bool
 		// 返利推广人代码
 		AffiliateCode string
 		// 提交的订单数据

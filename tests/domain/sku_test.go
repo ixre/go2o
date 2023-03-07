@@ -1,4 +1,4 @@
-package tests
+package domain
 
 import (
 	"bytes"
@@ -21,10 +21,10 @@ var (
 func TestSetBrand(t *testing.T) {
 	rep := ti.Factory.GetProModelRepo()
 	brands := rep.SelectProBrand("")
-	list := []int32{}
+	list := []int{}
 	for i, v := range brands {
 		if true || i%2 == 0 || i == 0 {
-			list = append(list, v.ID)
+			list = append(list, int(v.Id))
 		}
 	}
 	if len(list) == 0 {
@@ -35,7 +35,7 @@ func TestSetBrand(t *testing.T) {
 		Enabled: 1,
 	})
 
-	m = rep.GetModel(modelId)
+	m = rep.GetModel(int(modelId))
 	err := m.SetBrands(list)
 	if err == nil {
 		_, err = m.Save()
@@ -50,7 +50,7 @@ func TestSetBrand(t *testing.T) {
 // 测试商品模型添加属性
 func TestModelSaveAttrs(t *testing.T) {
 	rep := ti.Factory.GetProModelRepo()
-	m := rep.GetModel(modelId)
+	m := rep.GetModel(int(modelId))
 	attrs := []*promodel.Attr{
 		{
 			Name:       "材质",
@@ -86,7 +86,7 @@ func TestModelSaveAttrs(t *testing.T) {
 // 测试商品模型添加规格
 func TestModelSaveSpecs(t *testing.T) {
 	rep := ti.Factory.GetProModelRepo()
-	m := rep.GetModel(modelId)
+	m := rep.GetModel(int(modelId))
 	specs := []*promodel.Spec{
 		{
 			Name: "尺寸",
@@ -131,7 +131,7 @@ func TestItemSaveSku(t *testing.T) {
 		t.Errorf("编号为%d的分类不存在", catId)
 	}
 	//生成的规格组合
-	specs := proMRepo.GetModel(int32(cat.ModelId)).Specs()
+	specs := proMRepo.GetModel(int(cat.ModelId)).Specs()
 	//最多只使用2个规格
 	if len(specs) > 2 {
 		specs = specs[:2]

@@ -253,7 +253,7 @@ func (c *wholesaleCartImpl) getSkuItem(itemId, skuId int64) *cart.WsCartItem {
 }
 
 // 添加项
-func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, checkOnly bool) (*cart.WsCartItem, error) {
+func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, reset bool, checkOnly bool) (*cart.WsCartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.WsCartItem{}
@@ -295,10 +295,15 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, checkOnly b
 	// 添加数量
 	for _, v := range c.value.Items {
 		if v.ItemId == itemId && v.SkuId == skuId {
-			if v.Quantity+quantity > stock {
+			// 设置商品数量
+			initial := v.Quantity
+			if reset {
+				initial = 0
+			}
+			if initial+quantity > stock {
 				return v, item.ErrOutOfStock // 库存不足
 			}
-			v.Quantity += quantity
+			v.Quantity = initial + quantity
 			return v, err
 		} else {
 			if checkOnly {
@@ -325,55 +330,50 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, checkOnly b
 	return v, err
 }
 
-// 更新项
-func (c *wholesaleCartImpl) update(itemId, skuId int64, quantity int32) error {
-	if c.value.Items == nil {
-		return cart.ErrEmptyShoppingCart
-	}
-	ci := c.getSkuItem(itemId, skuId)
-	if ci == nil {
-		return cart.ErrItemNoSku
-	}
-	it := c.itemRepo.GetItem(itemId)
-	if it == nil {
-		return item.ErrNoSuchItem // 没有商品
-	}
-	iv := it.GetValue()
-	// 库存,如有SKU，则使用SKU的库存
-	stock := iv.StockNum
-	if quantity > stock {
-		return item.ErrOutOfStock
-	}
-	// 判断商品SkuId
-	if skuId > 0 {
-		var sku *item.Sku
-		sku = it.GetSku(skuId)
-		if sku == nil {
-			return item.ErrNoSuchSku
-		}
-		stock = sku.Stock
-	}
-	// 检查是否已经卖完了
-	if stock == 0 {
-		return item.ErrFullOfStock
-	}
-	// 超出库存
-	if quantity > stock {
-		return item.ErrOutOfStock
-	}
-	ci.Quantity = quantity
-	return nil
-}
+// // 更新项
+// func (c *wholesaleCartImpl) update(itemId, skuId int64, quantity int32) error {
+// 	if c.value.Items == nil {
+// 		return cart.ErrEmptyShoppingCart
+// 	}
+// 	ci := c.getSkuItem(itemId, skuId)
+// 	if ci == nil {
+// 		return cart.ErrItemNoSku
+// 	}
+// 	it := c.itemRepo.GetItem(itemId)
+// 	if it == nil {
+// 		return item.ErrNoSuchItem // 没有商品
+// 	}
+// 	iv := it.GetValue()
+// 	// 库存,如有SKU，则使用SKU的库存
+// 	stock := iv.StockNum
+// 	if quantity > stock {
+// 		return item.ErrOutOfStock
+// 	}
+// 	// 判断商品SkuId
+// 	if skuId > 0 {
+// 		var sku *item.Sku
+// 		sku = it.GetSku(skuId)
+// 		if sku == nil {
+// 			return item.ErrNoSuchSku
+// 		}
+// 		stock = sku.Stock
+// 	}
+// 	// 检查是否已经卖完了
+// 	if stock == 0 {
+// 		return item.ErrFullOfStock
+// 	}
+// 	// 超出库存
+// 	if quantity > stock {
+// 		return item.ErrOutOfStock
+// 	}
+// 	ci.Quantity = quantity
+// 	return nil
+// }
 
 // Put 添加项
-func (c *wholesaleCartImpl) Put(itemId, skuId int64, num int32, checkOnly bool) error {
-	_, err := c.put(itemId, skuId, num, checkOnly)
+func (c *wholesaleCartImpl) Put(itemId, skuId int64, num int32, reset bool, checkOnly bool) error {
+	_, err := c.put(itemId, skuId, num, reset, checkOnly)
 	return err
-}
-
-// Update 更新商品数量，如数量为0，则删除
-func (c *wholesaleCartImpl) Update(itemId, skuId int64, quantity int32) error {
-	return c.update(itemId, skuId, quantity)
 }
 
 // Remove 移出项

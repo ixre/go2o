@@ -16,6 +16,10 @@ service ExpressService {
   // 获取可用的快递公司
   rpc GetProviders (Empty) returns (ExpressProviderListResponse) {
   }
+  // 获取可用的快递公司分组
+  rpc GetProviderGroup (Empty) returns (ExpressProviderGroupResponse) {
+  }
+
   // 保存快递模板
   rpc SaveTemplate (SExpressTemplate) returns (SaveTemplateResponse) {
   }
@@ -49,6 +53,31 @@ service ExpressService {
 message ExpressProviderListResponse {
   repeated SExpressProvider value = 1;
 }
+
+// 快递服务商分组响应
+message ExpressProviderGroupResponse{
+  // 列表
+  repeated SExpressProviderGroup list = 1;
+}
+
+// 快递服务商分组
+message SExpressProviderGroup{
+  // 分组
+  string group = 1;
+  // 快递列表
+  repeated SMinifiyExpressProvider list = 2;
+}
+
+// 快递服务商
+message SMinifiyExpressProvider {
+  // 快递公司编号
+  int64 id = 1;
+  // 快递名称
+  string name = 2;
+  // 首字母，用于索引分组
+  string letter = 3;
+}
+
 // 快递服务商
 message SExpressProvider {
   // 快递公司编号
@@ -66,6 +95,8 @@ message SExpressProvider {
   // 是否启用
   bool enabled = 7;
 }
+
+
 
 // 快递模板
 message SExpressTemplate {

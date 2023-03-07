@@ -15,13 +15,10 @@ service CartService {
     rpc GetShoppingCart (ShoppingCartId) returns (SShoppingCart) {
     }
     // 放入购物车
-    rpc PutInCart(CartItemRequest) returns (CartItemResponse) {
+    rpc PutItems(CartItemRequest) returns (CartItemResponse) {
     }
-    // 更新购物车多件商品
-    rpc UpdateItems(CartUpdateRequest) returns (CartItemResponse) {
-    }
-    // 从购物车里删除指定数量单件商品
-    rpc ReduceCartItem(CartItemRequest) returns (CartItemResponse) {
+    // 从购物车里删除指定数量的商品
+    rpc ReduceItems(CartItemRequest) returns (Result) {
     }
     // 勾选商品结算
     rpc CheckCart (CheckCartRequest) returns (Result) {
@@ -31,21 +28,21 @@ service CartService {
 // 购物车加入商品请求
 message CartItemRequest {
     // 买家编号
-    ShoppingCartId id = 1;
+    ShoppingCartId cartId = 1;
     // 商品项
-    RCartItem item = 2;
+    repeated RCartItem items = 2;
 }
 
 // 商品项请求参数
 message RCartItem{
   //商品编号
-  sint64 itemId = 2;
+  sint64 itemId = 1;
   //SKU编号
-  sint64 skuId = 3;
+  sint64 skuId = 2;
   // 数量
-  int32 quantity = 4;
-  // 是否只勾选当前商品(直接购买)
-  bool checkOnly = 5;
+  int32 quantity = 3;
+  // 是否重置数量
+  bool resetQuantity = 4;
 }
 
 message CheckCartRequest {
@@ -63,10 +60,3 @@ message ShoppingCartId{
     bool isWholesale = 3;
 }
 
-// 购物车商品更新请求
-message CartUpdateRequest{
-    // 购物车编号
-    ShoppingCartId cartId = 1; 
-    // Sku列表
-    repeated RCartItem items = 2;
-}

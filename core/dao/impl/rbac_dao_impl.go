@@ -766,7 +766,7 @@ func (p *rbacDaoImpl) GetRoleResources(roles []int) []*model.PermRes {
 	var arr []*model.PermRes
 	err := p._orm.SelectByQuery(&arr, `SELECT * FROM perm_res 
 			INNER JOIN perm_role_res ON perm_role_res.res_id = perm_res.id
-			WHERE `+where)
+			WHERE is_forbidden <> 1 AND is_hidden <> 1 AND `+where)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRes")
 	}

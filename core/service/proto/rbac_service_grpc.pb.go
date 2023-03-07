@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type RbacServiceClient interface {
 	// 用户登录
 	UserLogin(ctx context.Context, in *RbacLoginRequest, opts ...grpc.CallOption) (*RbacLoginResponse, error)
+	// 检查令牌是否有效并返回新的令牌
+	CheckRBACToken(ctx context.Context, in *CheckRBACTokenRequest, opts ...grpc.CallOption) (*CheckRBACTokenResponse, error)
 	// 获取JWT密钥
 	GetJwtToken(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*String, error)
 	// 获取用户的信息
@@ -89,6 +91,15 @@ func NewRbacServiceClient(cc grpc.ClientConnInterface) RbacServiceClient {
 func (c *rbacServiceClient) UserLogin(ctx context.Context, in *RbacLoginRequest, opts ...grpc.CallOption) (*RbacLoginResponse, error) {
 	out := new(RbacLoginResponse)
 	err := c.cc.Invoke(ctx, "/RbacService/UserLogin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rbacServiceClient) CheckRBACToken(ctx context.Context, in *CheckRBACTokenRequest, opts ...grpc.CallOption) (*CheckRBACTokenResponse, error) {
+	out := new(CheckRBACTokenResponse)
+	err := c.cc.Invoke(ctx, "/RbacService/CheckRBACToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -335,6 +346,8 @@ func (c *rbacServiceClient) DeletePermRes(ctx context.Context, in *PermResId, op
 type RbacServiceServer interface {
 	// 用户登录
 	UserLogin(context.Context, *RbacLoginRequest) (*RbacLoginResponse, error)
+	// 检查令牌是否有效并返回新的令牌
+	CheckRBACToken(context.Context, *CheckRBACTokenRequest) (*CheckRBACTokenResponse, error)
 	// 获取JWT密钥
 	GetJwtToken(context.Context, *Empty) (*String, error)
 	// 获取用户的信息
@@ -396,6 +409,9 @@ type UnimplementedRbacServiceServer struct {
 
 func (UnimplementedRbacServiceServer) UserLogin(context.Context, *RbacLoginRequest) (*RbacLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserLogin not implemented")
+}
+func (UnimplementedRbacServiceServer) CheckRBACToken(context.Context, *CheckRBACTokenRequest) (*CheckRBACTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckRBACToken not implemented")
 }
 func (UnimplementedRbacServiceServer) GetJwtToken(context.Context, *Empty) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJwtToken not implemented")
@@ -502,6 +518,24 @@ func _RbacService_UserLogin_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RbacServiceServer).UserLogin(ctx, req.(*RbacLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RbacService_CheckRBACToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckRBACTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RbacServiceServer).CheckRBACToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/RbacService/CheckRBACToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RbacServiceServer).CheckRBACToken(ctx, req.(*CheckRBACTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -984,6 +1018,10 @@ var RbacService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserLogin",
 			Handler:    _RbacService_UserLogin_Handler,
+		},
+		{
+			MethodName: "CheckRBACToken",
+			Handler:    _RbacService_CheckRBACToken_Handler,
 		},
 		{
 			MethodName: "GetJwtToken",

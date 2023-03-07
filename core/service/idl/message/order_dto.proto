@@ -113,6 +113,7 @@ message SParentOrder {
     sint64 createTime = 15;
 }
 
+// 子订单
 message SSubOrder{
     // 订单号
     string orderNo = 1;
@@ -144,8 +145,12 @@ message SSubOrder{
     int32 status = 14;
     // 商品列表
     repeated SOrderItem items = 15;
+    // 支付时间
+    int64 paymentTime = 16;
+    // 关闭时间
+    int64 closeTime = 17;
     // 状态文本
-    string statusText = 16;
+    string statusText = 18;
 }
 
 // 子订单
@@ -245,10 +250,12 @@ message SubmitOrderRequest {
     string affiliateCode = 6;
     // 是否使用余额抵扣
     bool balanceDeduct = 7;
+     // 是否使用钱包抵扣
+     bool walletDeduct = 8; 
     // 其他数据
-    map<string, string> data = 8;
+    map<string, string> data = 9;
     // 交易类订单请求参数
-    TradeOrderRequest tradeOrder = 9;
+    TradeOrderRequest tradeOrder = 10;
 }
 
 
@@ -374,6 +381,16 @@ message OrderShipmentRequest {
     string shipOrderNo = 4;
 }
 
+// 预生成订单商品项
+message RPrepareOrderItem{
+  //商品编号
+  sint64 itemId = 1;
+  //SKU编号
+  sint64 skuId = 2;
+  // 数量
+  int32 quantity = 3;
+}
+  
 /** 预生成订单请求 */
 message PrepareOrderRequest {
     /** 买家编号 */
@@ -382,12 +399,14 @@ message PrepareOrderRequest {
     string cartCode = 2;
     /** 收货地址 */
     int64 addressId = 3;
+    /** 支付方式 */
+    int32 paymentFlag = 4;
     /** 优惠券 */
     string couponCode = 5;
-    /** 支付方式 */
-    int32 paymentFlag = 6;
-    /** 使用余额 */
-    string subject = 4;
+    // 订单主题(可选) 
+    string subject = 6;
+    // 预生成订单商品,如果传空,则默认使用购物车标记为结算的商品
+    RPrepareOrderItem item = 7;
 }
 /** 预生成订单响应 */
 message PrepareOrderResponse{

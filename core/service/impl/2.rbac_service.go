@@ -14,6 +14,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -73,7 +74,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 			UserId:      0,
 			Permissions: []string{"master", "admin"},
 		}
-		return p.withAccessToken(0, "master", dst, expires)
+		return p.withAccessToken("master", dst, expires)
 	}
 	// 普通系统用户登录
 	usr := p.dao.GetPermUserBy("usr=$1", r.Username)
@@ -100,13 +101,13 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		UserId: usr.Id,
 	}
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(usr.Id)
-	return p.withAccessToken(usr.Id, usr.Usr, dst, expires)
+	return p.withAccessToken(usr.Usr, dst, expires)
 }
 
 // 返回带有令牌的结果
-func (p *rbacServiceImpl) withAccessToken(userId int64, userName string,
+func (p *rbacServiceImpl) withAccessToken(userName string,
 	dst *proto.RbacLoginResponse, expires int) (*proto.RbacLoginResponse, error) {
-	accessToken, err := p.createAccessToken(userId, userName,
+	accessToken, err := p.createAccessToken(dst.UserId, userName,
 		strings.Join(dst.Permissions, ","), expires)
 	dst.AccessToken = accessToken
 	if err != nil {
@@ -124,8 +125,8 @@ func (p *rbacServiceImpl) createAccessToken(userId int64, userName string, perm 
 	var claims = jwt.MapClaims{
 		"exp":    time.Now().Add(time.Second * time.Duration(exp)).Unix(),
 		"aud":    userId,
-		"iss":    "Go2o",
-		"sub":    "Go2o-RBAC-Token",
+		"iss":    "go2o",
+		"sub":    "go2o-rbac-token",
 		"name":   userName,
 		"x-perm": perm,
 	}
@@ -134,6 +135,66 @@ func (p *rbacServiceImpl) createAccessToken(userId int64, userName string, perm 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// Generate encoded token and send it as response.
 	return token.SignedString([]byte(key))
+}
+
+// 检查令牌是否有效并返回新的令牌
+func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.CheckRBACTokenRequest) (*proto.CheckRBACTokenResponse, error) {
+	if len(request.AccessToken) == 0 {
+		return &proto.CheckRBACTokenResponse{Error: "令牌不能为空"}, nil
+	}
+	jwtSecret, err := p.registryRepo.GetValue(registry.SysJWTSecret)
+	if err != nil {
+		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
+		return &proto.CheckRBACTokenResponse{Error: err.Error()}, nil
+	}
+	// 去掉"Bearer "
+	if len(request.AccessToken) > 6 &&
+		strings.HasPrefix(request.AccessToken, "Bearer") {
+		request.AccessToken = request.AccessToken[7:]
+	}
+	// 转换token
+	dstClaims := jwt.MapClaims{} // 可以用实现了Claim接口的自定义结构
+	tk, err := jwt.ParseWithClaims(request.AccessToken, &dstClaims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(jwtSecret), nil
+	})
+	if tk == nil {
+		return &proto.CheckRBACTokenResponse{Error: "令牌无效"}, nil
+	}
+	if !dstClaims.VerifyIssuer("go2o", true) ||
+		dstClaims["sub"] != "go2o-rbac-token" {
+		return &proto.CheckRBACTokenResponse{Error: "未知颁发者的令牌"}, nil
+	}
+	// 令牌过期时间
+	exp := int64(dstClaims["exp"].(float64))
+	// 判断是否有效
+	if !tk.Valid {
+		ve, _ := err.(*jwt.ValidationError)
+		if ve.Errors&jwt.ValidationErrorExpired != 0 {
+			return &proto.CheckRBACTokenResponse{
+				Error:            "令牌已过期",
+				IsExpires:        true,
+				TokenExpiresTime: exp,
+			}, nil
+		}
+		return &proto.CheckRBACTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
+	}
+	aud := int64(typeconv.MustInt(dstClaims["aud"]))
+	// 如果设置了续期参数
+	if exp <= request.CheckExpireTime {
+		exp := int((time.Hour * 24 * 365).Seconds())
+		dstClaims["exp"] = exp
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, dstClaims)
+		accessToken, _ := token.SignedString([]byte(jwtSecret))
+		return &proto.CheckRBACTokenResponse{
+			UserId:           aud,
+			TokenExpiresTime: int64(exp),
+			RenewAccessToken: accessToken,
+		}, nil
+	}
+	return &proto.CheckRBACTokenResponse{
+		UserId:           aud,
+		TokenExpiresTime: exp,
+	}, nil
 }
 
 // 获取JWT密钥
@@ -154,7 +215,7 @@ func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
 	}
 	// 获取角色的权限
 	rolesList := p.dao.SelectPermRole(
-		fmt.Sprintf("id IN (%_s)", util.JoinIntArray(roleList, ",")))
+		fmt.Sprintf("id IN (%s)", util.JoinIntArray(roleList, ",")))
 	permissions := make([]string, len(roles))
 	for i, v := range rolesList {
 		permissions[i] = v.Permission
@@ -196,7 +257,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	if r.UserId <= 0 { // 管理员
 		dst.Roles = []int64{}
 		dst.Permissions = []string{"master", "admin"}
-		resList = p.dao.SelectPermRes("")
+		resList = p.dao.SelectPermRes("is_forbidden <> 1 AND is_hidden <> 1")
 		// 获取管理员
 		for _, v := range resList {
 			v.Permission = "master,admin"
@@ -205,7 +266,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 		dst.Roles, dst.Permissions = p.getUserRolesPerm(r.UserId)
 		usr := p.dao.GetPermUser(r.UserId)
 		if usr == nil {
-			return nil,fmt.Errorf("no such user %v",r.UserId) 
+			return nil, fmt.Errorf("no such user %v", r.UserId)
 		}
 		roleList := make([]int, len(dst.Roles))
 		for i, v := range dst.Roles {
@@ -302,7 +363,7 @@ func (p *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptR
 func (p *rbacServiceImpl) GetPermDept(_ context.Context, id *proto.PermDeptId) (*proto.SPermDept, error) {
 	v := p.dao.GetPermDept(id.Value)
 	if v == nil {
-		return nil,fmt.Errorf("no such dept: %v",id)
+		return nil, fmt.Errorf("no such dept: %v", id)
 	}
 	return p.parsePermDept(v), nil
 }
@@ -488,7 +549,7 @@ func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SPermUser {
 func (p *rbacServiceImpl) GetPermUser(_ context.Context, id *proto.PermUserId) (*proto.SPermUser, error) {
 	v := p.dao.GetPermUser(id.Value)
 	if v == nil {
-		return nil, fmt.Errorf("no such user %v",id.Value) 
+		return nil, fmt.Errorf("no such user %v", id.Value)
 	}
 	dst := p.parsePermUser(v)
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(v.Id)
@@ -783,7 +844,7 @@ func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*p
 
 // 获取PermRes列表
 func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryPermResRequest) (*proto.QueryPermResResponse, error) {
-	var where string = "1=1"
+	var where string = "is_forbidden <> 1"
 	if r.Keyword != "" {
 		where += " AND name LIKE '%" + r.Keyword + "%'"
 	}
@@ -838,18 +899,6 @@ func (p *rbacServiceImpl) queryResChildren(parentId int64, arr []*model.PermRes)
 		list = append(list, c)
 	}
 	return list
-}
-
-func (p *rbacServiceImpl) walkPermRes(root *proto.SPermRes, arr []*model.PermRes) {
-	root.IsLeaf = true // 已经加载子项, 不再懒加载
-	root.Children = []*proto.SPermRes{}
-	for _, v := range arr {
-		if v.Pid == root.Id {
-			c := p.parsePermRes(v)
-			root.Children = append(root.Children, c)
-			p.walkPermRes(c, arr)
-		}
-	}
 }
 
 func (p *rbacServiceImpl) DeletePermRes(_ context.Context, id *proto.PermResId) (*proto.Result, error) {

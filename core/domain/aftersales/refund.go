@@ -197,12 +197,12 @@ func (r *refundOrderImpl) backAmount(amount int) error {
 
 		//原路退回
 		pv := po.Get()
-		if pv.BalanceDiscount > 0 {
+		if pv.BalanceDeduct > 0 {
 			if err := acc.Refund(member.AccountBalance,
 				member.KindRefund,
-				"订单退款", o.OrderNo, pv.BalanceDiscount,
+				"订单退款", o.OrderNo, pv.BalanceDeduct,
 				member.DefaultRelateUser); err == nil {
-				amount -= pv.BalanceDiscount
+				amount -= pv.BalanceDeduct
 			}
 		}
 		//退积分

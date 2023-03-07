@@ -86,6 +86,8 @@ type PermRes struct {
 	IsExternal int16 `db:"is_external"`
 	// 是否隐藏
 	IsHidden int16 `db:"is_hidden"`
+	// 是否禁用
+	IsForbidden int64 `db:"is_forbidden"`
 	// 创建日期
 	CreateTime int64 `db:"create_time"`
 	// 组件名称

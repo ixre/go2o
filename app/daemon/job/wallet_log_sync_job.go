@@ -12,7 +12,7 @@ import (
 )
 
 func SyncWalletLogToClickHouse() {
-	jobName := "SyncWalletLogToClickHouse"
+	jobName := "/SyncWalletLogToClickHouse"
 	if !locker.Lock(jobName, 600) {
 		return
 	}
@@ -55,8 +55,8 @@ func writeWalletLogToClickHouse(list []*wallet.WalletLog) error {
 id,wallet_id,wallet_user,kind,subject,outer_chan,
 outer_no,change_value,balance,procedure_fee,
 opr_uid,opr_name,account_no,
-account_name,bank_name,audit_state,
-audit_remark,audit_time,remark,create_time,
+account_name,bank_name,review_state,
+review_remark,review_time,remark,create_time,
 update_time)`)
 	if err != nil {
 		return err
@@ -76,9 +76,9 @@ update_time)`)
 			l.AccountNo,
 			l.AccountName,
 			l.BankName,
-			int32(l.AuditState),
-			l.AuditRemark,
-			l.AuditTime,
+			int32(l.ReviewState),
+			l.ReviewRemark,
+			l.ReviewTime,
 			l.Remark,
 			l.CreateTime,
 			l.UpdateTime,

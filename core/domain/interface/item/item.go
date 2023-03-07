@@ -408,9 +408,9 @@ type (
 		// 是否上架
 		ShelveState int32 `db:"shelve_state"`
 		// 审核状态
-		AuditState int32 `db:"audit_state"`
+		ReviewState int32 `db:"review_state"`
 		// 审核备注
-		AuditRemark string `db:"audit_remark"`
+		ReviewRemark string `db:"review_remark"`
 		// 排序序号
 		SortNum int32 `db:"sort_num"`
 		// 创建时间
@@ -441,12 +441,36 @@ type (
 
 	// MemberPrice 会员价
 	MemberPrice struct {
-		Id      int   `db:"id" pk:"yes" auto:"yes"`
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 商品编号
 		GoodsId int64 `db:"goods_id"`
-		Level   int   `db:"level"`
-		Price   int64 `db:"price"`
+		// 等级
+		LevelId int `db:"level"`
+		// 价格
+		Price int64 `db:"price"`
 		// 限购数量
 		MaxQuota int `db:"max_quota"`
-		Enabled  int `db:"enabled"`
+		// 是否启用
+		Enabled int `db:"enabled"`
+	}
+
+	AffiliateRate struct {
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 商品编号
+		ItemId int `db:"item_id"`
+		// 上一级比例
+		RateR1 int `db:"rate_r1"`
+		// 上二级比例
+		RateR2 int `db:"rate_r2"`
+		// 自定义比例
+		RateC int `db:"rate_c"`
+		// 历史上一级比例
+		OriginRateR1 int `db:"origin_rate_r1"`
+		// 历史上二级比例
+		OriginRateR2 int `db:"origin_rate_r2"`
+		// 历史自定义比例
+		OriginRateC int `db:"origin_rate_c"`
 	}
 )

@@ -1,11 +1,12 @@
 package domain
 
 import (
+	"testing"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/tests/ti"
-	"testing"
 )
 
 /**
@@ -105,11 +106,11 @@ func TestMemberRedPack(t *testing.T) {
 }
 
 func TestAccountAdjust(t *testing.T) {
-	var memberId int64 = 7
+	var memberId int64 = 723
 	m := ti.Factory.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
 	err := ic.Adjust(member.AccountWallet, "[KF]客服调整",
-		100,
+		8990,
 		"-",
 		1)
 	if err != nil {

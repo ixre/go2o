@@ -324,11 +324,11 @@ type (
 		// 提现银行名称
 		BankName string `db:"bank_name"`
 		// 审核状态
-		AuditState int `db:"audit_state"`
+		ReviewState int `db:"review_state"`
 		// 审核备注
-		AuditRemark string `db:"audit_remark"`
+		ReviewRemark string `db:"review_remark"`
 		// 审核时间
-		AuditTime int64 `db:"audit_time"`
+		ReviewTime int64 `db:"review_time"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间

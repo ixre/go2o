@@ -10,9 +10,10 @@
 package product
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
-	"github.com/ixre/go2o/core/infrastructure/domain"
 	"sort"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 var (
@@ -56,7 +57,9 @@ type (
 		GetOption() domain.IOptionStore
 		// 保存
 		Save() (int, error)
-		// 获取子栏目的编号
+		// GetModel 获取产品模型
+		GetModel() promodel.IProductModel
+		// GetChildes 获取子栏目的编号
 		GetChildes() []int
 	}
 	//分类

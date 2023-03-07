@@ -2,13 +2,14 @@ package item
 
 import (
 	"encoding/json"
+	"strconv"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
-	"strconv"
-	"strings"
 )
 
 var _ item.IWholesaleItem = new(wholesaleItemImpl)
@@ -41,7 +42,7 @@ func (w *wholesaleItemImpl) init() item.IWholesaleItem {
 			Price:       iv.Price,
 			PriceRange:  iv.PriceRange,
 			ShelveState: item.ShelvesInWarehouse,
-			ReviewState: iv.AuditState,
+			ReviewState: iv.ReviewState,
 		}
 		w.repo.SaveWsItem(v, true)
 	}

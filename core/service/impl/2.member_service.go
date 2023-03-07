@@ -352,7 +352,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		Title:       v.Subject,
 		Amount:      float64(v.ChangeValue),
 		TradeFee:    float64(v.ProcedureFee),
-		ReviewState: int32(v.AuditState),
+		ReviewState: int32(v.ReviewState),
 		Remark:      v.Remark,
 		CreateTime:  v.CreateTime,
 		UpdateTime:  v.UpdateTime,
@@ -404,6 +404,8 @@ func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUsernam
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
+		log.Println("222", r.Username)
+
 		if err = m.ChangeUsername(r.Username); err == nil {
 			return s.success(nil), nil
 		}
@@ -565,6 +567,23 @@ func (s *memberService) GetInviter(_ context.Context, id *proto.MemberIdRequest)
 		return ret, nil
 	}
 	return &proto.MemberInviterResponse{}, nil
+}
+
+// GetInviteCount 获取会员邀请数量
+func (s *memberService) GetInviteCount(_ context.Context, req *proto.MemberIdRequest) (*proto.MemberInviteCountResponse, error) {
+	memberId := int(req.MemberId)
+	if memberId > 0 {
+		f := func(level int) int32 {
+			return int32(s.repo.GetInvitationCount(int(req.MemberId), level))
+		}
+		return &proto.MemberInviteCountResponse{
+			FirstLevelCount: f(1),
+			SecondCount:     f(2),
+			ThridCount:      f(3),
+		}, nil
+	}
+	return &proto.MemberInviteCountResponse{}, nil
+
 }
 
 // Active 激活会员
@@ -1168,17 +1187,26 @@ func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressReque
 	ret := &proto.SaveAddressResponse{}
 	if e.Id > 0 {
 		v = m.Profile().GetAddress(e.Id)
+		if v == nil {
+			return &proto.SaveAddressResponse{
+				ErrCode: 1,
+				ErrMsg:  member.ErrNoSuchAddress.Error(),
+			}, nil
+		}
 	} else {
 		v = m.Profile().CreateDeliver(e)
 	}
 	err := v.SetValue(e)
 	if err == nil {
-		ret.AddressId, err = v.Save()
+		err = v.Save()
+		ret.AddressId = v.GetDomainId()
+		log.Println("---address", e.IsDefault)
 		// 设置默认收货地址
 		if e.IsDefault == 1 && err == nil {
 			err = m.Profile().SetDefaultAddress(v.GetDomainId())
 		}
 	}
+
 	if err != nil {
 		ret.ErrCode = 1
 		ret.ErrMsg = err.Error()
@@ -1204,11 +1232,11 @@ func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRe
 	}
 	var accountTid member.AccountType
 	switch r.Account {
-	case proto.PaymentAccountType_PA_BALANCE:
+	case proto.EPaymentAccountType_PA_BALANCE:
 		accountTid = member.AccountBalance
-	case proto.PaymentAccountType_PA_WALLET:
+	case proto.EPaymentAccountType_PA_WALLET:
 		accountTid = member.AccountWallet
-	case proto.PaymentAccountType_PA_QUICK_PAY:
+	case proto.EPaymentAccountType_PA_QUICK_PAY:
 		return s.error(errors.New("暂时不支持")), nil
 	}
 	err := m.GetAccount().SetPriorityPay(accountTid, true)

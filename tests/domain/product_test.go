@@ -34,3 +34,17 @@ func TestSaveProduct(t *testing.T) {
 	}
 	t.Log(typeconv.MustJson(prod.Attr()))
 }
+
+func TestGetModelSortedSpecItems(t *testing.T) {
+	var modelId int = 1
+	repo := ti.Factory.GetProModelRepo()
+	im := repo.GetModel(modelId)
+	for _, spec := range im.Specs() {
+		t.Log(spec.SortNum, spec.Name)
+		//sort.Sort(spec.Items)
+		for _, item := range spec.Items {
+			t.Log("---", item.SortNum, item.Value)
+
+		}
+	}
+}

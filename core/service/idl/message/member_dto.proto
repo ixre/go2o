@@ -648,6 +648,16 @@ message MemberInviterResponse {
   sint64 inviterD3 = 7;
 }
 
+// 邀请数量统计
+message MemberInviteCountResponse{
+  // 邀请下级人数
+  sint32 firstLevelCount = 1;
+  // 邀请二级人数
+  sint32 secondCount = 2;
+  // 邀请三级人数
+  sint32 thridCount = 3;
+}
+
 /** 凭据 */
 enum ECredentials {
   _1 = 0;

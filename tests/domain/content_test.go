@@ -6,11 +6,12 @@
  * description :
  * history :
  */
-package tests
+package domain
 
 import (
-	"github.com/ixre/go2o/tests/ti"
 	"testing"
+
+	"github.com/ixre/go2o/tests/ti"
 )
 
 func TestContentGetAllCategory(t *testing.T) {

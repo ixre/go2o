@@ -127,6 +127,10 @@ type (
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
+		// 支付时间
+		PaymentTime int64 `db:"payment_time"`
+		// 关闭时间
+		CloseTime int64 `db:"close_time"`
 		// 订单项
 		Items []*SubOrderItem `db:"-"`
 	}

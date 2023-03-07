@@ -2,11 +2,12 @@ package repos
 
 import (
 	"database/sql"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	"log"
+
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	pmImpl "github.com/ixre/go2o/core/domain/pro_model"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"log"
 )
 
 var _ promodel.IProductModelRepo = new(proModelRepo)
@@ -34,7 +35,7 @@ func (p *proModelRepo) CreateModel(v *promodel.ProductModel) promodel.IProductMo
 }
 
 // 获取商品模型
-func (p *proModelRepo) GetModel(id int32) promodel.IProductModel {
+func (p *proModelRepo) GetModel(id int) promodel.IProductModel {
 	v := p.GetProModel(id)
 	if v != nil {
 		return p.CreateModel(v)
@@ -58,7 +59,7 @@ func (p *proModelRepo) SpecService() promodel.ISpecService {
 	return p.specService
 }
 
-//获取品牌服务
+// 获取品牌服务
 func (p *proModelRepo) BrandService() promodel.IBrandService {
 	if p.brandService == nil {
 		p.brandService = pmImpl.NewBrandService(p)
@@ -67,7 +68,7 @@ func (p *proModelRepo) BrandService() promodel.IBrandService {
 }
 
 // 获取模型的商品品牌
-func (p *proModelRepo) GetModelBrands(proModel int32) []*promodel.ProductBrand {
+func (p *proModelRepo) GetModelBrands(proModel int) []*promodel.ProductBrand {
 	return p.selectProBrandByQuery(`SELECT * FROM product_brand WHERE id IN (
 	SELECT brand_id FROM product_model_brand WHERE prod_model= $1)`, proModel)
 }
@@ -97,7 +98,7 @@ func (p *proModelRepo) SelectProModel(where string, v ...interface{}) []*promode
 
 // Save ProductModel
 func (p *proModelRepo) SaveProModel(v *promodel.ProductModel) (int, error) {
-	id, err := orm.Save(p.o, v, int(v.ID))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductModel")
 	}
@@ -328,7 +329,7 @@ func (p *proModelRepo) GetProBrand(primary interface{}) *promodel.ProductBrand {
 
 // Save ProductBrand
 func (p *proModelRepo) SaveProBrand(v *promodel.ProductBrand) (int, error) {
-	id, err := orm.Save(p.o, v, int(v.ID))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductBrand")
 	}
@@ -388,7 +389,7 @@ func (p *proModelRepo) GetProModelBrand(primary interface{}) *promodel.ProModelB
 
 // Save ProModelBrand
 func (p *proModelRepo) SaveProModelBrand(v *promodel.ProModelBrand) (int, error) {
-	id, err := orm.Save(p.o, v, int(v.ID))
+	id, err := orm.Save(p.o, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
 	}

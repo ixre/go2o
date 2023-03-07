@@ -10,6 +10,7 @@ import (
 
 	"github.com/ixre/go2o/app/daemon"
 	"github.com/ixre/go2o/core"
+	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/go2o/core/msq"
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/impl"
@@ -105,6 +106,8 @@ func Run(ch chan bool, after func(*clientv3.Config)) {
 	//runGoMicro()
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
+	// 初始化分布式锁
+	etcd.InitializeLocker(&cfg)
 	// 运行RPC服务
 	service.ServeRPC(ch, &cfg, port)
 	service.RegisterServiceDiscovery(&cfg, host, port)

@@ -6,13 +6,14 @@
  * description :
  * history :
  */
-package tests
+package domain
 
 import (
+	"testing"
+
 	expressImpl "github.com/ixre/go2o/core/domain/express"
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/tests/ti"
-	"testing"
 )
 
 func TestExpressTemplateImpl_Save(t *testing.T) {
