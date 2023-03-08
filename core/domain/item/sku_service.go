@@ -12,6 +12,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 var _ item.ISkuService = new(skuServiceImpl)
@@ -124,12 +125,13 @@ func (s *skuServiceImpl) UpgradeBySku(it *item.GoodsItem,
 	it.Price = minPrice
 	it.Cost = list[0].Cost
 	it.RetailPrice = list[0].RetailPrice
+	log.Println(typeconv.MustJson(list[0]))
 	//更新价格区间
 	if minPrice == maxPrice {
-		it.PriceRange = format.FormatIntMoney(int64(minPrice) / 100)
+		it.PriceRange = format.FormatFloat64(float64(minPrice) / 100)
 	} else {
-		it.PriceRange = format.FormatIntMoney(int64(minPrice)/100) +
-			"~" + format.FormatIntMoney(int64(maxPrice)/100)
+		it.PriceRange = format.FormatFloat64(float64(minPrice)/100) +
+			"~" + format.FormatFloat64(float64(maxPrice)/100)
 	}
 	return nil
 }
