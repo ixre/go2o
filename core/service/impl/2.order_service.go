@@ -204,32 +204,33 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 	acc := s.memberRepo.GetMember(r.BuyerId).GetAccount()
 	balance := acc.GetValue().Balance
 	walletBalance := acc.GetValue().WalletBalance
+	var deductAmount int64
 	// 使用余额
 	if fb, fw := domain.TestFlag(int(r.PaymentFlag), payment.MBalance),
 		domain.TestFlag(int(r.PaymentFlag), payment.MWallet); fb || fw {
-
 		// 更新抵扣余额之后的金额
 		if fb {
 			if balance >= ov.FinalAmount {
-				ov.DiscountAmount = ov.FinalAmount
+				deductAmount += ov.FinalAmount
 				ov.FinalAmount = 0
 			} else {
-				ov.DiscountAmount = balance
+				deductAmount += balance
 				ov.FinalAmount -= balance
 			}
 		}
 		// 更新抵扣钱包余额之后的金额
 		if fw {
 			if walletBalance >= ov.FinalAmount {
-				ov.DiscountAmount = ov.FinalAmount
+				deductAmount += ov.FinalAmount
 				ov.FinalAmount = 0
 			} else {
-				ov.DiscountAmount = walletBalance
+				deductAmount += walletBalance
 				ov.FinalAmount -= walletBalance
 			}
 		}
 	}
 	rsp := parser.PrepareOrderDto(ov)
+	rsp.DeductAmount = deductAmount
 	rsp.BuyerBalance = balance
 	rsp.BuyerWallet = walletBalance
 	rsp.BuyerIntegral = int64(acc.GetValue().Integral)

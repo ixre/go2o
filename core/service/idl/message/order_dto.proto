@@ -425,9 +425,9 @@ message PrepareOrderResponse{
     // 优惠金额
     int64 discountAmount = 7;
     // 抵扣金额
-    int32 deductAmount = 8;
+    int64 deductAmount = 8;
     // 调整金额
-    int32 adjustAmount = 9;
+    int64 adjustAmount = 9;
     // 配送费
     int64 expressFee = 10;
     // 包装费
