@@ -82,9 +82,9 @@ CREATE TABLE public.sys_safeguard
 (
     id bigserial NOT NULL,
     bind_type integer NOT NULL,
-    name character varying(20)[] NOT NULL,
-    content character varying(120)[] NOT NULL,
-    class_name character varying(20)[] NOT NULL,
+    name character varying(20) NOT NULL,
+    content character varying(120) NOT NULL,
+    class_name character varying(20) NOT NULL,
     sort_num integer NOT NULL,
     enabled integer NOT NULL,
     is_internal integer NOT NULL,

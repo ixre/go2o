@@ -131,7 +131,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 		Subject:       r.Subject,
 		CouponCode:    r.CouponCode,
 		BalanceDeduct: r.BalanceDeduct,
-		WalletDeduct: r.WalletDeduct,
+		WalletDeduct:  r.WalletDeduct,
 		AffiliateCode: r.AffiliateCode,
 		PostedData:    iData,
 	})
@@ -178,7 +178,17 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		} else {
 			arr := s.memberRepo.GetDeliverAddress(r.BuyerId)
 			if len(arr) > 0 {
-				err = o.SetShipmentAddress(arr[0].Id)
+				var addressId int64 = 0
+				for _, v := range arr {
+					if v.IsDefault == 1 {
+						err = o.SetShipmentAddress(v.Id)
+						addressId = v.Id
+						break
+					}
+				}
+				if addressId == 0 {
+					err = o.SetShipmentAddress(arr[0].Id)
+				}
 			}
 		}
 		// 使用优惠券
