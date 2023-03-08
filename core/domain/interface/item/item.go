@@ -9,6 +9,8 @@
 package item
 
 import (
+	"sort"
+
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
@@ -479,3 +481,23 @@ type (
 		OriginRateC int `db:"origin_rate_c"`
 	}
 )
+
+var _ sort.Interface = SkuList{}
+
+type SkuList []*Sku
+
+func (s SkuList) Len() int {
+	return len(s)
+}
+
+// Less reports whether the element with
+// index i should sort before the element with index j.
+func (s SkuList) Less(i, j int) bool {
+	b := s[i].Price - s[j].Price
+	return b < 0 || b == 0 && s[i].Id < s[j].Id
+}
+
+// Swap swaps the elements with indexes i and j.
+func (s SkuList) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}

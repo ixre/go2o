@@ -103,37 +103,33 @@ func (s *skuServiceImpl) UpgradeBySku(it *item.GoodsItem,
 	arr []*item.Sku) error {
 	//更新SKU数量
 	it.SkuNum = int32(len(arr))
-	//如果包含SKU，则更新库存和价格区间
-	if it.SkuNum > 0 {
-		var minPrice, maxPrice, retailPrice int64
-		var stockNum, saleNum int32
-		for _, v := range arr {
-			stockNum += v.Stock
-			saleNum += v.SaleNum
-			price := v.Price
-			if minPrice == 0 || price < minPrice {
-				minPrice = price
-				retailPrice = v.RetailPrice
-			}
-			if maxPrice == 0 || price > maxPrice {
-				maxPrice = price
-			}
-		}
-
-		//更新库存
-		it.StockNum = 0
-		//更新销售数量
-		it.SaleNum = 0
-		//更新价格
-		it.Price = minPrice
-		it.RetailPrice = retailPrice
-		//更新价格区间
-		if minPrice == maxPrice {
-			it.PriceRange = format.FormatFloat64(float64(minPrice) / 100)
-		} else {
-			it.PriceRange = format.FormatFloat64(float64(minPrice)/100) +
-				"~" + format.FormatFloat64(float64(maxPrice)/100)
-		}
+	if it.SkuNum == 0 {
+		return nil
+	}
+	list := item.SkuList(arr)
+	sort.Sort(list)
+	// 更新库存和销售数量
+	it.SaleNum = 0
+	it.StockNum = 0
+	for _, v := range arr {
+		it.StockNum += v.Stock
+		it.SaleNum += v.SaleNum
+	}
+	// 更新默认的SkuId
+	it.SkuId = list[0].Id
+	// 更新格区间
+	minPrice := list[0].Price
+	maxPrice := list[len(list)-1].Price
+	//更新价格
+	it.Price = minPrice
+	it.Cost = list[0].Cost
+	it.RetailPrice = list[0].RetailPrice
+	//更新价格区间
+	if minPrice == maxPrice {
+		it.PriceRange = format.FormatIntMoney(int64(minPrice) / 100)
+	} else {
+		it.PriceRange = format.FormatIntMoney(int64(minPrice)/100) +
+			"~" + format.FormatIntMoney(int64(maxPrice)/100)
 	}
 	return nil
 }

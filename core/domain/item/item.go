@@ -487,12 +487,17 @@ func (i *itemImpl) Save() (_ int64, err error) {
 			// 保存商品SKU
 			if err == nil {
 				err = i.saveItemSku(&i.value.SkuArray)
-				// 设置默认SKU
-				i.value.SkuId = 0
-				// 如果SKU不为空
-				if l := len(i.value.SkuArray); l > 0 && err == nil {
-					i.value.SkuId = i.value.SkuArray[0].Id
-				}
+				// if err == nil {
+				// 	// 设置默认SKU
+				// 	i.value.SkuId = 0
+				// 	// 按价格排序
+				// 	list := item.SkuList(i.value.SkuArray)
+				// 	sort.Sort(list)
+				// 	// 如果SKU不为空
+				// 	if l := len(i.value.SkuArray); l > 0 && err == nil {
+				// 		i.value.SkuId = i.value.SkuArray[0].Id
+				// 	}
+				// }
 			}
 		}
 		if err != nil {
