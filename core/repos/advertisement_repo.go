@@ -11,13 +11,14 @@ package repos
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"sync"
+
 	adImpl "github.com/ixre/go2o/core/domain/ad"
 	"github.com/ixre/go2o/core/domain/interface/ad"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"log"
-	"sync"
 )
 
 var _ ad.IAdRepo = new(advertisementRepo)
@@ -232,7 +233,7 @@ func (a *advertisementRepo) DeleteSwiperAdImage(adId, imgId int64) error {
 
 // 删除广告
 func (a *advertisementRepo) DeleteAd(userId, adId int64) error {
-	_, err := a.o.Delete(ad.Ad{}, "user_id=$1 AND id=$1", userId, adId)
+	_, err := a.o.Delete(ad.Ad{}, "user_id=$1 AND id=$2", userId, adId)
 	if err == nil {
 		//更新用户的广告缓存
 		PrefixDel(a.storage, fmt.Sprintf("go2o:repo:ad:%d:*", userId))

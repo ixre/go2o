@@ -270,7 +270,7 @@ func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*
 			err = pm.SetSpecs(v.Specs)
 		}
 		// 保存品牌
-		if err == nil && v.BrandArray != nil {
+		if err == nil {
 			err = pm.SetBrands(v.BrandArray)
 		}
 	}

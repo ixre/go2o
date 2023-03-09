@@ -90,7 +90,7 @@ func (m *modelImpl) Brands() []*promodel.ProductBrand {
 
 // 关联品牌
 func (m *modelImpl) SetBrands(brandId []int) error {
-	if brandId == nil {
+	if len(brandId) == 0 {
 		return promodel.ErrEmptyBrandArray
 	}
 	m.value.BrandArray = brandId
