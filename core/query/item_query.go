@@ -227,7 +227,7 @@ func (i *ItemQuery) SearchItem(shopId int, keyword string, size int) (rows []*dt
 	if shopId > 0 {
 		where += fmt.Sprintf(" AND shop_id = %d", shopId)
 	}
-	cmd := fmt.Sprintf(`SELECT id,item_flag, code,title,image,
+	cmd := fmt.Sprintf(`SELECT item_id,item_flag, code,title,image,
 			vendor_id,price_range,stock_num
 			FROM item_snapshot WHERE %s LIMIT $1 `, where)
 	err := i.Query(cmd, func(_rows *sql.Rows) {
