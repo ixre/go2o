@@ -297,7 +297,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly boo
 	c.snapMap = nil
 
 	// 设置商品的相关信息
-	c.setItemInfo(iv, c.getBuyerLevelId())
+	c.setItemInfo(&iv, c.getBuyerLevelId())
 
 	v := &cart.NormalCartItem{
 		CartId:   c.GetAggregateRootId(),

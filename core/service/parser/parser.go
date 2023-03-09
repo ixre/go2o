@@ -19,7 +19,7 @@ import (
 	"github.com/ixre/gof/types"
 )
 
-func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
+func ItemDtoV2(src item.GoodsItem) *proto.SUnifiedViewItem {
 	it := &proto.SUnifiedViewItem{
 		ItemId:    src.Id,
 		ProductId: src.ProductId,
@@ -62,7 +62,7 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 	return it
 }
 
-func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
+func ItemDataDto(src item.GoodsItem) *proto.SItemDataResponse {
 	it := &proto.SItemDataResponse{
 		ItemId:     src.Id,
 		ProductId:  src.ProductId,

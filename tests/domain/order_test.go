@@ -492,7 +492,7 @@ func TestNotifyTradeOrder(t *testing.T) {
 
 // 测试获取子订单的支付单信息
 func TestGetSubPaymentOrder(t *testing.T) {
-	orderId := 676
+	orderId := 678
 	order := ti.Factory.GetOrderRepo().Manager().GetSubOrder(int64(orderId))
 	p := order.ParentOrder().GetPaymentOrder()
 	t.Log(p.Get().Id, p.Get().OutOrderNo)

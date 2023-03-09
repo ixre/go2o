@@ -129,7 +129,7 @@ func TestUpdateItemNoSkuPrice(t *testing.T) {
 	v := it.GetValue()
 	t.Log(v.Price)
 	v.Price += 100
-	err := it.SetValue(v)
+	err := it.SetValue(&v)
 	if err == nil {
 		_, err = it.Save()
 	}
@@ -145,6 +145,23 @@ func TestSaveItemSku(t *testing.T) {
 	repo := ti.Factory.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.SetSku(it.SkuArray())
+	if err == nil {
+		_, err = it.Save()
+	}
+	if err != nil {
+		t.Error(err)
+		t.Failed()
+	}
+}
+
+// 测试保存商品图片
+func TestSaveItemResetReview(t *testing.T) {
+	var itemId int64 = 3268
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	v := it.GetValue()
+	v.Title = v.Title + "-1"
+	err := it.SetValue(&v)
 	if err == nil {
 		_, err = it.Save()
 	}
@@ -195,7 +212,7 @@ func TestSaveItemFreeDeliveryFlag(t *testing.T) {
 	it := repo.GetItem(itemId)
 	iv := it.GetValue()
 	iv.ExpressTid = 0
-	err := it.SetValue(iv)
+	err := it.SetValue(&iv)
 	if err == nil {
 		_, err = it.Save()
 	}

@@ -125,7 +125,6 @@ func (s *skuServiceImpl) UpgradeBySku(it *item.GoodsItem,
 	it.Price = minPrice
 	it.Cost = list[0].Cost
 	it.RetailPrice = list[0].RetailPrice
-	log.Println(typeconv.MustJson(list[0]))
 	//更新价格区间
 	if minPrice == maxPrice {
 		it.PriceRange = format.FormatFloat64(float64(minPrice) / 100)

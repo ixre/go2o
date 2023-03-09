@@ -87,7 +87,7 @@ type (
 		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int64
 		// GetValue 设置值
-		GetValue() *GoodsItem
+		GetValue()GoodsItem
 		// GetPackedValue 获取包装过的商品信息
 		GetPackedValue() *valueobject.Goods
 		// SetValue 设置值

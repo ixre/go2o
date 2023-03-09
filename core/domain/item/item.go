@@ -11,7 +11,6 @@ package item
 import (
 	"errors"
 	"fmt"
-	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -198,8 +197,8 @@ func (i *itemImpl) Wholesale() item.IWholesaleItem {
 }
 
 // GetValue 获取值
-func (i *itemImpl) GetValue() *item.GoodsItem {
-	return i.value
+func (i *itemImpl) GetValue() item.GoodsItem {
+	return *i.value
 }
 
 // GetPackedValue 获取包装过的商品信息
@@ -238,6 +237,7 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		if isp == nil {
 			return shop.ErrNoSuchShop
 		}
+
 		i.value.ShopId = v.ShopId
 		i.value.VendorId = isp.GetValue().VendorId
 		// 创建商品时，设为已下架
@@ -259,6 +259,11 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 				return err
 			}
 		}
+		// 修改图片或标题后，要重新审核
+		if i.value.Image != v.Image || i.value.Title != v.Title {
+			i.resetReview()
+		}
+		// 修改其他信息
 		i.value.ShopCatId = v.ShopCatId
 		i.value.ProductId = v.ProductId
 		i.value.ShopCatId = v.ShopCatId
@@ -289,10 +294,6 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		}
 		if i.value.CreateTime == 0 {
 			i.value.CreateTime = time.Now().Unix()
-		}
-		//修改图片或标题后，要重新审核
-		if i.value.Image != v.Image || i.value.Title != v.Title {
-			i.resetReview()
 		}
 		// 更新包邮标志
 		i.autoSetFlagValues(isp)
@@ -487,17 +488,6 @@ func (i *itemImpl) Save() (_ int64, err error) {
 			// 保存商品SKU
 			if err == nil {
 				err = i.saveItemSku(&i.value.SkuArray)
-				// if err == nil {
-				// 	// 设置默认SKU
-				// 	i.value.SkuId = 0
-				// 	// 按价格排序
-				// 	list := item.SkuList(i.value.SkuArray)
-				// 	sort.Sort(list)
-				// 	// 如果SKU不为空
-				// 	if l := len(i.value.SkuArray); l > 0 && err == nil {
-				// 		i.value.SkuId = i.value.SkuArray[0].Id
-				// 	}
-				// }
 			}
 		}
 		if err != nil {
@@ -506,7 +496,6 @@ func (i *itemImpl) Save() (_ int64, err error) {
 	}
 	// 新增自营商品自动上架(待审核)
 	if i.GetAggregateRootId() == 0 {
-		log.Println("[ GO2O][ LOG]: new item", i.value.ItemFlag)
 		if domain.TestFlag(i.value.ItemFlag, item.FlagSelfSales) {
 			i.value.ShelveState = item.ShelvesOn
 			i.value.ReviewState = enum.ReviewAwaiting

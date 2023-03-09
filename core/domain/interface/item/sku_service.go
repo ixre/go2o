@@ -1,8 +1,6 @@
 package item
 
-import (
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
-)
+import promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 
 type (
 	ISkuService interface {
@@ -106,7 +104,7 @@ type (
 )
 
 // 转换为SKU媒体
-func ParseSkuMedia(it *GoodsItem, sku *Sku) *SkuMedia {
+func ParseSkuMedia(it GoodsItem, sku *Sku) *SkuMedia {
 	media := &SkuMedia{
 		CatId:      it.CategoryId,
 		Price:      it.Price,

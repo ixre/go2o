@@ -321,7 +321,7 @@ func (i *itemService) getPagingOnShelvesItem(catId int32, start,
 	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ItemDtoV2(v)
+		arr[i] = parser.ItemDtoV2(*v)
 	}
 	return total, arr
 }
@@ -334,7 +334,7 @@ func (i *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
 	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for j, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
-		dto := parser.ItemDtoV2(v)
+		dto := parser.ItemDtoV2(*v)
 		i.attachWholesaleItemDataV2(dto)
 		arr[j] = dto
 	}
@@ -385,7 +385,7 @@ func (i *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*pr
 	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ItemDtoV2(v)
+		arr[i] = parser.ItemDtoV2(*v)
 	}
 	return &proto.PagingGoodsResponse{
 		Total: 0,

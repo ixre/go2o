@@ -315,7 +315,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, reset bool,
 	c.snapMap = nil
 
 	// 设置商品的相关信息
-	c.setItemInfo(iv, c.getBuyerLevelId())
+	c.setItemInfo(&iv, c.getBuyerLevelId())
 
 	v := &cart.WsCartItem{
 		CartId:   c.GetAggregateRootId(),
