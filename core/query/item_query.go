@@ -223,13 +223,21 @@ func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (
 }
 
 func (i *ItemQuery) SearchItem(shopId int, keyword string, size int) (rows []*dto.SearchItemResultDto) {
-	where := "title LIKE '%" + keyword + "%'"
+	where := "item_snapshot.title LIKE '%" + keyword + "%'"
 	if shopId > 0 {
-		where += fmt.Sprintf(" AND shop_id = %d", shopId)
+		where += fmt.Sprintf(" AND item_snapshot.shop_id = %d", shopId)
 	}
-	cmd := fmt.Sprintf(`SELECT item_id,item_flag, code,title,image,
-			vendor_id,price_range,stock_num
-			FROM item_snapshot WHERE %s LIMIT $1 `, where)
+	cmd := fmt.Sprintf(`SELECT item_id,
+			item_snapshot.item_flag, 
+			item_snapshot.code,
+			item_snapshot.title,
+			item_snapshot.image,
+			item_snapshot.vendor_id,
+			item_snapshot.price_range,
+			item_info.stock_num
+			FROM item_snapshot
+			LEFT JOIN item_info ON item_info.id = item_snapshot.item_id
+			 WHERE %s LIMIT $1 `, where)
 	err := i.Query(cmd, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := dto.SearchItemResultDto{}
