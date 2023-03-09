@@ -4,11 +4,11 @@ import "github.com/ixre/go2o/core/infrastructure/domain"
 
 var (
 	ErrEmptyAttrArray = domain.NewError(
-		"err_empty_attr_array", "请至少包含一个属性")
+		"err_empty_attr_array", "模型至少包含一个属性")
 	ErrEmptySpecArray = domain.NewError(
-		"err_empty_spec_array", "请至少包含一个规格")
+		"err_empty_spec_array", "模型至少包含一个规格")
 	ErrEmptyBrandArray = domain.NewError(
-		"err_empty_brand_array", "请至少包含一个品牌")
+		"err_empty_brand_array", "模型至少包含一个品牌")
 )
 
 type ProductModel struct {

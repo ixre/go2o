@@ -262,11 +262,11 @@ func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*
 	err := pm.SetValue(v)
 	if err == nil {
 		// 保存属性
-		if v.Attrs != nil {
+		if err == nil{
 			err = pm.SetAttrs(v.Attrs)
 		}
 		// 保存规格
-		if err == nil && v.Specs != nil {
+		if err == nil {
 			err = pm.SetSpecs(v.Specs)
 		}
 		// 保存品牌
