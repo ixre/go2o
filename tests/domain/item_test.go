@@ -156,7 +156,7 @@ func TestSaveItemSku(t *testing.T) {
 
 // 测试保存商品图片
 func TestSaveItemResetReview(t *testing.T) {
-	var itemId int64 = 3268
+	var itemId int64 = 3269
 	repo := ti.Factory.GetItemRepo()
 	it := repo.GetItem(itemId)
 	v := it.GetValue()

@@ -35,23 +35,23 @@ var _ item.IGoodsItem = new(itemImpl)
 
 // 商品实现
 type itemImpl struct {
-	pro             product.IProduct
-	value           *item.GoodsItem
-	wholesale       item.IWholesaleItem
-	snapshot        *item.Snapshot
-	repo            item.IItemRepo
-	catRepo         product.ICategoryRepo
-	productRepo     product.IProductRepo
-	itemWsRepo      item.IItemWholesaleRepo
-	proMRepo        promodel.IProductModelRepo
-	promRepo        promotion.IPromotionRepo
-	levelPrices     []*item.MemberPrice
-	images          []string
-	promDescribes   map[string]string
-	registryRepo    registry.IRegistryRepo
-	expressRepo     express.IExpressRepo
-	shopRepo        shop.IShopRepo
-	awaitSaveImages []*item.Image
+	pro              product.IProduct
+	value            *item.GoodsItem
+	wholesale        item.IWholesaleItem
+	snapshot         *item.Snapshot
+	repo             item.IItemRepo
+	catRepo          product.ICategoryRepo
+	productRepo      product.IProductRepo
+	itemWsRepo       item.IItemWholesaleRepo
+	proMRepo         promodel.IProductModelRepo
+	promRepo         promotion.IPromotionRepo
+	levelPrices      []*item.MemberPrice
+	images           []string
+	promDescribes    map[string]string
+	registryRepo     registry.IRegistryRepo
+	expressRepo      express.IExpressRepo
+	shopRepo         shop.IShopRepo
+	shouldSaveImages []*item.Image
 }
 
 //todo:??? 去掉依赖promotion.IPromotionRepo
@@ -151,7 +151,7 @@ func (i *itemImpl) SetImages(images []string) error {
 	if len(images) > 0 {
 		i.value.Image = images[0]
 	}
-	i.awaitSaveImages = arr
+	i.shouldSaveImages = arr
 
 	// 清除图片数据
 	i.images = nil
@@ -505,16 +505,11 @@ func (i *itemImpl) Save() (_ int64, err error) {
 	// 保存商品
 	i.value.Id, err = i.repo.SaveValueGoods(i.value)
 	if err == nil {
-		i.snapshot = nil
-		// 保存商品快照
-		_, err = i.repo.SnapshotService().GenerateSnapshot(i.value)
-		if err == nil {
-			// 保存商品图片
-			if i.awaitSaveImages != nil {
-				for _, v := range i.awaitSaveImages {
-					v.ItemId = i.GetAggregateRootId()
-					i.repo.SaveItemImage(v)
-				}
+		// 保存商品图片
+		if i.shouldSaveImages != nil {
+			for _, v := range i.shouldSaveImages {
+				v.ItemId = i.GetAggregateRootId()
+				i.repo.SaveItemImage(v)
 			}
 		}
 	}
@@ -649,6 +644,11 @@ func (i *itemImpl) Review(pass bool, remark string) error {
 	}
 	i.value.ReviewRemark = remark
 	_, err := i.Save()
+	if err == nil && pass {
+		// 保存商品快照
+		i.snapshot = nil
+		_, err = i.repo.SnapshotService().GenerateSnapshot(i.value)
+	}
 	return err
 }
 
