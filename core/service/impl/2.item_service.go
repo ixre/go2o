@@ -566,7 +566,7 @@ func (i *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
 		SpecData:    sku.SpecData,
 		SpecWord:    sku.SpecWord,
 		Code:        sku.Code,
-		RetailPrice: sku.RetailPrice,
+		OriginPrice: sku.OriginPrice,
 		Price:       sku.Price,
 		Cost:        sku.Cost,
 		Weight:      sku.Weight,

@@ -34,7 +34,7 @@ func ParseItemSnapshotDto(src *item.Snapshot) *proto.ItemSnapshotResponse {
 		StockNum:    0,
 		SaleNum:     0,
 		Price:       src.Price,
-		RetailPrice: src.RetailPrice,
+		OriginPrice: src.OriginPrice,
 		SkuArray:    nil,
 	}
 }

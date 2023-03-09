@@ -66,7 +66,7 @@ type (
 		// 售价
 		Price int64 `db:"price"`
 		// 零售价
-		RetailPrice int64 `db:"retail_price"`
+		OriginPrice int64 `db:"origin_price"`
 		// 重量(g)
 		Weight int32 `db:"weight"`
 		// 体积(ml)

@@ -174,3 +174,12 @@ ALTER TABLE IF EXISTS public.item_info
 
 COMMENT ON COLUMN public.item_info.is_recycle
     IS '是否回收';
+
+ALTER TABLE IF EXISTS public.item_info
+    RENAME retail_price TO origin_price;
+
+ALTER TABLE IF EXISTS public.item_sku
+    RENAME retail_price TO origin_price;
+
+ALTER TABLE IF EXISTS public.item_snapshot
+    RENAME retail_price TO origin_price;

@@ -43,7 +43,7 @@ type (
 		// 产品编码
 		Code string `db:"code"`
 		// 参考价
-		RetailPrice int64 `db:"retail_price"`
+		OriginPrice int64 `db:"origin_price"`
 		// 价格（分)
 		Price int64 `db:"price"`
 		// 成本（分)
@@ -89,7 +89,7 @@ type (
 		// 产品编码
 		ItemCode string `db:"code"`
 		// 参考价
-		RetailPrice int64 `db:"retail_price"`
+		OriginPrice int64 `db:"origin_price"`
 		// 价格（分)
 		Price int64 `db:"price"`
 		// 重量(克)
@@ -117,7 +117,7 @@ func ParseSkuMedia(it GoodsItem, sku *Sku) *SkuMedia {
 	if sku != nil {
 		media.SpecData = sku.SpecData
 		media.SpecWord = sku.SpecWord
-		media.RetailPrice = sku.RetailPrice
+		media.OriginPrice = sku.OriginPrice
 		media.Price = sku.Price
 		media.Stock = sku.Stock
 		if sku.Image != "" {

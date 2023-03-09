@@ -176,7 +176,7 @@ func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 	var list = make([]*valueobject.Goods, 0)
 	s := fmt.Sprintf(`SELECT item_snapshot."item_id",
 		item_snapshot."cat_id",item_snapshot."title",
-		item_snapshot."image",item_snapshot."retail_price",item_snapshot."price",
+		item_snapshot."image",item_snapshot."origin_price",item_snapshot."price",
 		item_snapshot."price_range",
 		item_snapshot."item_flag",
 		item_info."stock_num",item_info."shop_id"
@@ -190,7 +190,7 @@ func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 		for _rows.Next() {
 			e := valueobject.Goods{}
 			_rows.Scan(&e.ItemId, &e.CategoryId, &e.Title, &e.Image,
-				&e.RetailPrice, &e.Price, &e.PriceRange, &e.ItemFlag,
+				&e.OriginPrice, &e.Price, &e.PriceRange, &e.ItemFlag,
 				&e.StockNum, &e.ShopId)
 			list = append(list, &e)
 		}
@@ -321,7 +321,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		item_info.short_title,item_info.code,item_info.image,
 		ws_item.price_range,item_info.stock_num,
 		item_info.sale_num,item_info.sku_num,item_info.sku_id,item_info.cost,
-		ws_item.price,item_info.retail_price,item_info.weight,item_info.bulk,
+		ws_item.price,item_info.origin_price,item_info.weight,item_info.bulk,
 		item_info.shelve_state,item_info.review_state,item_info.review_remark,
 		item_info.sort_num,item_info.create_time,item_info.update_time
 		 FROM ws_item INNER JOIN item_info ON item_info.id=ws_item.item_id

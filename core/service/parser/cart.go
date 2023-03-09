@@ -28,7 +28,7 @@ func ParseCartItem(item *cart.NormalCartItem) *proto.SShoppingCartItem {
 	}
 	if item.Sku != nil {
 		i.Image = format.GetGoodsImageUrl(item.Sku.Image)
-		i.RetailPrice = math.Round(float64(item.Sku.RetailPrice), 2)
+		i.OriginPrice = math.Round(float64(item.Sku.OriginPrice), 2)
 		i.Price = math.Round(float64(item.Sku.Price), 2)
 		i.SpecWord = item.Sku.SpecWord
 		if i.Title == "" {

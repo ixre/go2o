@@ -94,7 +94,7 @@ func (i *itemImpl) updatePriceBySku(arr []*item.Sku) {
 		stock += sku.Stock
 	}
 	i.value.Price = sku.Price
-	i.value.RetailPrice = sku.RetailPrice
+	i.value.OriginPrice = sku.OriginPrice
 	i.value.StockNum = stock
 }
 
@@ -123,7 +123,7 @@ func (s *skuServiceImpl) UpgradeBySku(it *item.GoodsItem,
 	//更新价格
 	it.Price = minPrice
 	it.Cost = list[0].Cost
-	it.RetailPrice = list[0].RetailPrice
+	it.OriginPrice = list[0].OriginPrice
 	//更新价格区间
 	if minPrice == maxPrice {
 		it.PriceRange = format.FormatFloat64(float64(minPrice) / 100)

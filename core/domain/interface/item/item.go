@@ -87,7 +87,7 @@ type (
 		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int64
 		// GetValue 设置值
-		GetValue()GoodsItem
+		GetValue() GoodsItem
 		// GetPackedValue 获取包装过的商品信息
 		GetPackedValue() *valueobject.Goods
 		// SetValue 设置值
@@ -405,7 +405,7 @@ type (
 		// 销售价
 		Price int64 `db:"price"`
 		// 零售价
-		RetailPrice int64 `db:"retail_price"`
+		OriginPrice int64 `db:"origin_price"`
 		// 重量:克(g)
 		Weight int32 `db:"weight"`
 		// 体积:毫升(ml)

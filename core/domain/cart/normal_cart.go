@@ -192,7 +192,7 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.NormalCartItem) {
 				SpecData:    "",
 				SpecWord:    "",
 				Code:        iv.Code,
-				RetailPrice: iv.RetailPrice,
+				OriginPrice: iv.OriginPrice,
 				Price:       iv.Price,
 				Cost:        iv.Cost,
 				Weight:      iv.Weight,

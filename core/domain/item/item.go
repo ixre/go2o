@@ -212,7 +212,7 @@ func (i *itemImpl) GetPackedValue() *valueobject.Goods {
 		GoodsNo:     gv.Code,
 		Image:       gv.Image,
 		IntroVideo:  gv.IntroVideo,
-		RetailPrice: gv.RetailPrice,
+		OriginPrice: gv.OriginPrice,
 		Price:       gv.Price,
 		PriceRange:  gv.PriceRange,
 		PromPrice:   gv.Price,
@@ -275,15 +275,15 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.SaleNum = v.SaleNum
 		i.value.StockNum = v.StockNum
 		i.value.Cost = v.Cost
-		i.value.RetailPrice = v.RetailPrice
+		i.value.OriginPrice = v.OriginPrice
 		i.value.Price = v.Price
 		i.value.Weight = v.Weight
 		i.value.Bulk = v.Bulk
 		// 更新视频
 		i.value.IntroVideo = v.IntroVideo
 		// 如果零售价和成本未填写,则默认等于价格
-		if i.value.RetailPrice == 0 {
-			i.value.RetailPrice = v.Price
+		if i.value.OriginPrice == 0 {
+			i.value.OriginPrice = v.Price
 		}
 		if i.value.Cost == 0 {
 			i.value.Cost = v.Price
@@ -321,8 +321,8 @@ func (i *itemImpl) autoSetFlagValues(isp shop.IShop) {
 // SetSku 设置SKU
 func (i *itemImpl) SetSku(arr []*item.Sku) error {
 	for _, v := range arr {
-		if v.RetailPrice == 0 {
-			v.RetailPrice = v.Price
+		if v.OriginPrice == 0 {
+			v.OriginPrice = v.Price
 		}
 		if v.Cost == 0 {
 			v.Cost = v.Price

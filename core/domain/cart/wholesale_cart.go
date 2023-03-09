@@ -200,7 +200,7 @@ func (c *wholesaleCartImpl) setAttachGoodsInfo(items []*cart.WsCartItem) {
 				SpecData:    "",
 				SpecWord:    "",
 				Code:        iv.Code,
-				RetailPrice: iv.RetailPrice,
+				OriginPrice: iv.OriginPrice,
 				Price:       iv.Price,
 				Cost:        iv.Cost,
 				Weight:      iv.Weight,
