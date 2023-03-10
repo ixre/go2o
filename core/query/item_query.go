@@ -112,11 +112,10 @@ func (i ItemQuery) GetOnShelvesItem(catIdArr []int, begin, end int,
 	if len(catIdArr) > 0 {
 		catIdStr := format.IntArrStrJoin(catIdArr)
 		sql := fmt.Sprintf(`SELECT * FROM item_snapshot
-		 WHERE item_snapshot.cat_id IN(%s) AND item_snapshot.review_state= $1
-		 AND item_snapshot.shelve_state= $2 %s
-		 ORDER BY item_snapshot.update_time DESC LIMIT $4 OFFSET $3`, catIdStr, where)
+		 WHERE item_snapshot.cat_id IN(%s) %s ORDER BY item_snapshot.update_time DESC
+		   LIMIT $3 OFFSET $2`, catIdStr, where)
 		i.o.SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, begin, end-begin)
+			 begin, end-begin)
 	}
 	return list
 }
@@ -182,10 +181,8 @@ func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 		item_info."stock_num",item_info."shop_id"
 		 FROM item_snapshot
 		 LEFT JOIN item_info ON item_snapshot.item_id = item_info.id
-		 WHERE ($1 <= 0 OR item_snapshot.shop_id = $2) 
-		 AND item_info.review_state= $3 
-		 AND item_info.shelve_state= $4
-		  %s ORDER BY %s LIMIT $6 OFFSET $5`, where, orderBy)
+		 WHERE ($1 <= 0 OR item_snapshot.shop_id = $2)
+		  %s ORDER BY %s LIMIT $4 OFFSET $3`, where, orderBy)
 	err := i.Query(s, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := valueobject.Goods{}
@@ -194,11 +191,11 @@ func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 				&e.StockNum, &e.ShopId)
 			list = append(list, &e)
 		}
-	}, shopId, shopId,
-		enum.ReviewPass, item.ShelvesOn, start, end-start)
+	}, shopId, shopId, start, end-start)
 	if err != nil {
 		log.Println("[ GO2O][ Repo][ Error]:", err.Error(), s)
 	}
+	log.Println("sql=", s)
 	return total, list
 }
 
