@@ -301,9 +301,9 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	}
 
 	// 如果全部支付成功
-	if ip.State() > payment.StateAwaitingPayment {
-
-	}
+	// if ip.State() > payment.StateAwaitingPayment {
+	// 	//...
+	// }
 
 	rd.TradeNo = ipv.TradeNo
 	rd.TradeAmount = ipv.FinalAmount
@@ -446,13 +446,13 @@ func (u *unifiedOrderAdapterImpl) Cancel(buyerCancel bool, reason string) error 
 	if u.sub {
 		return u.subOrder.Cancel(buyerCancel, reason)
 	}
-	return u.cancel(buyerCancel,reason)
+	return u.cancel(buyerCancel, reason)
 }
 
-func (u *unifiedOrderAdapterImpl) cancel(buyerCancel bool,reason string) error {
+func (u *unifiedOrderAdapterImpl) cancel(buyerCancel bool, reason string) error {
 	switch u.bigOrder.Type() {
 	case order.TRetail:
-		return u.bigOrder.(order.INormalOrder).Cancel(buyerCancel,reason)
+		return u.bigOrder.(order.INormalOrder).Cancel(buyerCancel, reason)
 	case order.TWholesale:
 		return u.bigOrder.(order.IWholesaleOrder).Cancel(reason)
 	}

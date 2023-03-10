@@ -255,7 +255,6 @@ func (o *subOrderImpl) syncOrderState() {
 			oi.saveOrderState(order.OrderStatus(o.value.Status))
 		}
 	}
-
 }
 
 // 订单完成支付
@@ -265,7 +264,7 @@ func (o *subOrderImpl) orderFinishPaid() error {
 	}
 	if o.value.Status == order.StatAwaitingPayment {
 		o.value.PaymentTime = time.Now().Unix()
-		o.value.Status = order.StatAwaitingPickup
+		o.value.Status = order.StatAwaitingConfirm
 		// 更新拆分状态
 		if o.value.BreakStatus == order.BreakAwaitBreak {
 			o.value.BreakStatus = order.Breaked
@@ -282,7 +281,11 @@ func (o *subOrderImpl) orderFinishPaid() error {
 
 // 在线支付交易完成
 func (o *subOrderImpl) PaymentFinishByOnlineTrade() error {
-	return o.orderFinishPaid()
+	err := o.orderFinishPaid()
+	if err == nil {
+		return o.Confirm()
+	}
+	return err
 }
 
 // 添加日志
@@ -309,11 +312,6 @@ func (o *subOrderImpl) AppendLog(logType order.LogType, system bool, message str
 
 // 确认订单
 func (o *subOrderImpl) Confirm() (err error) {
-	//todo: 线下交易,自动确认
-	//if o._value.PaymentOpt == enum.PaymentOnlinePay &&
-	//o._value.IsPaid == enum.FALSE {
-	//    return order.ErrOrderNotPayed
-	//}
 	if o.value.Status < order.StatAwaitingConfirm {
 		return order.ErrOrderNotPayed
 	}
