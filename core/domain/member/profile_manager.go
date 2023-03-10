@@ -271,6 +271,7 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 		v.Phone = phone
 		err := p.repo.SaveProfile(&v)
 		if err == nil {
+			p.repo.ResetMemberIdCache("phone", p.member.value.Phone)
 			//todo: phone as user
 			p.member.value.Phone = phone
 			_, err = p.member.Save()
@@ -526,8 +527,8 @@ func (p *profileManagerImpl) SetDefaultAddress(addressId int64) error {
 			vv.IsDefault = 0
 		}
 		if o != vv.IsDefault {
-			_,err := p.repo.SaveDeliverAddress(&vv)
-			if err != nil{
+			_, err := p.repo.SaveDeliverAddress(&vv)
+			if err != nil {
 				return err
 			}
 		}
