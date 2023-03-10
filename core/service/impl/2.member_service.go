@@ -373,16 +373,24 @@ func (s *memberService) getMember(memberId int64) (
 }
 
 // SendCode 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
-func (s *memberService) SendCode(_ context.Context, r *proto.SendCodeRequest) (*proto.Result, error) {
+func (s *memberService) SendCode(_ context.Context, r *proto.SendCodeRequest) (*proto.SendCodeResponse, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return &proto.SendCodeResponse{
+			ErrCode: 2,
+			ErrMsg:  member.ErrNoSuchMember.Error(),
+		}, nil
 	}
 	code, err := m.SendCheckCode(r.Operation, int(r.MsgType))
 	if err != nil {
-		return s.error(err), nil
+		return &proto.SendCodeResponse{
+			ErrCode: 1,
+			ErrMsg:  err.Error(),
+		}, nil
 	}
-	return s.success(map[string]string{"code": code}), nil
+	return &proto.SendCodeResponse{
+		CheckCode: code,
+	}, nil
 }
 
 // CompareCode 比较验证码是否正确

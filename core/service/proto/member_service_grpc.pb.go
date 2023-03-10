@@ -172,7 +172,7 @@ type MemberServiceClient interface {
 	// * 获取会员汇总信息,memberId
 	Complex(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*SComplexMember, error)
 	// * 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
-	SendCode(ctx context.Context, in *SendCodeRequest, opts ...grpc.CallOption) (*Result, error)
+	SendCode(ctx context.Context, in *SendCodeRequest, opts ...grpc.CallOption) (*SendCodeResponse, error)
 	// * 比较验证码是否正确
 	CompareCode(ctx context.Context, in *CompareCodeRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 获取收款码
@@ -534,8 +534,8 @@ func (c *memberServiceClient) Complex(ctx context.Context, in *MemberIdRequest, 
 	return out, nil
 }
 
-func (c *memberServiceClient) SendCode(ctx context.Context, in *SendCodeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) SendCode(ctx context.Context, in *SendCodeRequest, opts ...grpc.CallOption) (*SendCodeResponse, error) {
+	out := new(SendCodeResponse)
 	err := c.cc.Invoke(ctx, MemberService_SendCode_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1098,7 +1098,7 @@ type MemberServiceServer interface {
 	// * 获取会员汇总信息,memberId
 	Complex(context.Context, *MemberIdRequest) (*SComplexMember, error)
 	// * 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
-	SendCode(context.Context, *SendCodeRequest) (*Result, error)
+	SendCode(context.Context, *SendCodeRequest) (*SendCodeResponse, error)
 	// * 比较验证码是否正确
 	CompareCode(context.Context, *CompareCodeRequest) (*Result, error)
 	// * 获取收款码
@@ -1295,7 +1295,7 @@ func (UnimplementedMemberServiceServer) GrantFlag(context.Context, *GrantFlagReq
 func (UnimplementedMemberServiceServer) Complex(context.Context, *MemberIdRequest) (*SComplexMember, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Complex not implemented")
 }
-func (UnimplementedMemberServiceServer) SendCode(context.Context, *SendCodeRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) SendCode(context.Context, *SendCodeRequest) (*SendCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendCode not implemented")
 }
 func (UnimplementedMemberServiceServer) CompareCode(context.Context, *CompareCodeRequest) (*Result, error) {
