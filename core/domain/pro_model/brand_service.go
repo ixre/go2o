@@ -3,7 +3,7 @@ package promodel
 import (
 	"fmt"
 
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 )
 
@@ -26,6 +26,9 @@ func (b *brandServiceImpl) Get(brandId int) *promodel.ProductBrand {
 
 // 保存品牌
 func (b *brandServiceImpl) SaveBrand(v *promodel.ProductBrand) (int, error) {
+	if b.repo.IsExistsBrand(v.Name, int(v.Id)) {
+		return 0, promodel.ErrExistsBrand
+	}
 	return b.repo.SaveProBrand(v)
 }
 

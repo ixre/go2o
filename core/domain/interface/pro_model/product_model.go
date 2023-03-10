@@ -9,6 +9,8 @@ var (
 		"err_empty_spec_array", "模型至少包含一个规格")
 	ErrEmptyBrandArray = domain.NewError(
 		"err_empty_brand_array", "模型至少包含一个品牌")
+	ErrExistsBrand = domain.NewError(
+		"err_exists_brand", "已存在相同名称的品牌")
 )
 
 type ProductModel struct {
@@ -131,6 +133,8 @@ type IProductModelRepo interface {
 	DeleteProBrand(primary interface{}) error
 	// Select ProductBrand
 	SelectProBrand(where string, v ...interface{}) []*ProductBrand
+	// IsExistsBrand 是否存在相同名称的品牌
+	IsExistsBrand(name string, id int) bool
 
 	// Batch Delete ProductBrand
 	BatchDeleteProBrand(where string, v ...interface{}) (int64, error)
