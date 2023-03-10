@@ -259,6 +259,10 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 				return err
 			}
 		}
+		// 不允许直接设置销售数量
+		if v.SaleNum > 0 {
+			return errors.New("不允许直接设置销售数量")
+		}
 		// 修改图片或标题后，要重新审核
 		if i.value.Image != v.Image || i.value.Title != v.Title {
 			i.resetReview()
@@ -272,7 +276,6 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.ItemFlag = v.ItemFlag
 		i.value.ShortTitle = v.ShortTitle
 		i.value.Code = v.Code
-		i.value.SaleNum = v.SaleNum
 		i.value.StockNum = v.StockNum
 		i.value.Cost = v.Cost
 		i.value.OriginPrice = v.OriginPrice
