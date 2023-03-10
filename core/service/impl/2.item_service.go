@@ -177,6 +177,26 @@ func (i *itemService) attachUnifiedItem(item item.IGoodsItem, extra bool) *proto
 	return ret
 }
 
+// RecycleItem 回收商品
+func (i *itemService) RecycleItem(_ context.Context, req *proto.RecycleItemRequest) (*proto.Result, error) {
+	it := i.itemRepo.GetItem(req.ItemId)
+	var err error
+	if it == nil {
+		err = item.ErrNoSuchItem
+	} else {
+		if req.IsDestory {
+			err = it.Destroy()
+		} else {
+			if req.Recycle {
+				err = it.RecycleRevert()
+			} else {
+				err = it.Recycle()
+			}
+		}
+	}
+	return i.error(err), nil
+}
+
 // 根据SKU获取商品
 func (i *itemService) GetItemBySku(_ context.Context, r *proto.ItemBySkuRequest) (*proto.SUnifiedViewItem, error) {
 	v := i.itemRepo.GetValueGoodsBySku(r.ProductId, r.SkuId)
@@ -301,7 +321,7 @@ func (i *itemService) getPagingOnShelvesItem(catId int32, start,
 	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ItemDtoV2(v)
+		arr[i] = parser.ItemDtoV2(*v)
 	}
 	return total, arr
 }
@@ -314,7 +334,7 @@ func (i *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
 	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for j, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
-		dto := parser.ItemDtoV2(v)
+		dto := parser.ItemDtoV2(*v)
 		i.attachWholesaleItemDataV2(dto)
 		arr[j] = dto
 	}
@@ -365,7 +385,7 @@ func (i *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*pr
 	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ItemDtoV2(v)
+		arr[i] = parser.ItemDtoV2(*v)
 	}
 	return &proto.PagingGoodsResponse{
 		Total: 0,
@@ -546,7 +566,7 @@ func (i *itemService) parseSkuDto(sku *item.Sku) *proto.SSku {
 		SpecData:    sku.SpecData,
 		SpecWord:    sku.SpecWord,
 		Code:        sku.Code,
-		RetailPrice: sku.RetailPrice,
+		OriginPrice: sku.OriginPrice,
 		Price:       sku.Price,
 		Cost:        sku.Cost,
 		Weight:      sku.Weight,

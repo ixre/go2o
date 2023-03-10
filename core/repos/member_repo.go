@@ -202,6 +202,13 @@ func (m *MemberRepoImpl) getId(field string, value string) int64 {
 	return int64(id)
 }
 
+// ResetMemberIdCache 重置会员缓存
+func (m *MemberRepoImpl) ResetMemberIdCache(field string, value string) error {
+	key := fmt.Sprintf("go2o:member:id:%s-%s", field, value)
+	_, err := m.storage.DeleteWith(key)
+	return err
+}
+
 // 根据编码获取会员
 func (m *MemberRepoImpl) GetMemberIdByCode(code string) int64 {
 	return m.getId("user_code", code)
@@ -236,12 +243,6 @@ func (m *MemberRepoImpl) getAccountCk(memberId int64) string {
 func (m *MemberRepoImpl) getProfileCk(memberId int64) string {
 	return fmt.Sprintf("go2o:repo:mm:pro:%d", memberId)
 }
-func (m *MemberRepoImpl) getTrustCk(memberId int64) string {
-	return fmt.Sprintf("go2o:repo:mm:trust:%d", memberId)
-}
-func (m *MemberRepoImpl) getGlobLevelsCk() string {
-	return "go2o:repo:mm-lv"
-}
 
 // 获取会员
 func (m *MemberRepoImpl) GetMember(memberId int64) member.IMember {
@@ -270,10 +271,10 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 
 		// 保存会员信息
 		_, _, err := m._orm.Save(v.Id, v)
-
 		if err == nil {
 			// 存储到缓存中
 			err = m.storage.Set(m.getMemberCk(v.Id), *v)
+			m.storage.Delete(m.getProfileCk(v.Id))
 			// 存储到队列
 			//rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
 

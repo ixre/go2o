@@ -16,6 +16,8 @@ type (
 		OnlinePaymentTradeFinish() error
 		// Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
+		// Cancel 取消订单
+		Cancel(buyerCancel bool, reason string) error
 
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
 		//BreakUpByVendor() ([]IOrder, error)

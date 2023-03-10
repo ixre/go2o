@@ -12,6 +12,7 @@ package payment
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"regexp"
 	"strings"
@@ -176,8 +177,9 @@ func (p *paymentOrderImpl) checkOrderFinalAmount() error {
 
 // 取消支付,并退款
 func (p *paymentOrderImpl) Cancel() (err error) {
+	// 如果已取消或订单再次回调到支付单取消, 不做任何处理
 	if p.value.State == payment.StateClosed {
-		return payment.ErrOrderClosed
+		return nil
 	}
 	p.value.State = payment.StateClosed
 	if err = p.saveOrder(); err != nil {
@@ -194,15 +196,34 @@ func (p *paymentOrderImpl) Cancel() (err error) {
 	if v := chanMap[payment.MBalance]; v > 0 {
 		err = acc.Refund(member.AccountBalance,
 			"订单退款", int(v), pv.TradeNo, "")
+		if err != nil {
+			log.Println("[ GO2O][ ERROR]: payment refund balance failed,",
+				err.Error(), "orderNo", p.value.TradeNo)
+		}
 	}
 	//退积分
 	if v := chanMap[payment.MIntegral]; v > 0 {
-		//todo : 退换积分,暂时积分抵扣的不退款
+		err = acc.Refund(member.AccountIntegral,
+			"订单退款", int(v), pv.TradeNo, "")
+		if err != nil {
+			log.Println("[ GO2O][ ERROR]: payment refund integral failed,",
+				err.Error(), "orderNo", p.value.TradeNo)
+		}
 	}
 	// 如果已经支付，则将支付的款项退回到账户
 	if v := chanMap[payment.MWallet]; v > 0 {
-		return acc.Refund(member.AccountWallet,
+		err = acc.Refund(member.AccountWallet,
 			"订单退款", int(v), pv.TradeNo, "")
+		if err != nil {
+			log.Println("[ GO2O][ ERROR]: payment refund wallet failed,",
+				err.Error(), "orderNo", p.value.TradeNo)
+		}
+	}
+	if err == nil {
+		err = p.orderManager.Cancel(p.value.OutOrderNo,
+			false,
+			pv.SubOrder == 1,
+			"超时未付款")
 	}
 	return err
 }

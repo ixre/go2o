@@ -16,7 +16,7 @@ import (
 
 var (
 	ErrNoSuchCart = domain.NewError(
-		"empty_shopping_no_such_cart", "购物车无法使用")
+		"empty_shopping_no_such_cart", "购物车不存在")
 
 	ErrKindNotMatch = domain.NewError(
 		"err_cart_kind_not_match", "购物车类型不匹配")
@@ -183,21 +183,21 @@ type (
 	// NormalCart 购物车
 	NormalCart struct {
 		// 编号
-		Id         int32  `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 购物车代码
-		CartCode   string `db:"code"`
+		CartCode string `db:"code"`
 		// 买家编号
-		BuyerId    int64  `db:"buyer_id"`
+		BuyerId int64 `db:"buyer_id"`
 		// 支付选项
-		PaymentOpt int32  `db:"payment_opt"`
+		PaymentOpt int32 `db:"payment_opt"`
 		//todo: del???
-		DeliverId  int64             `db:"deliver_id"`
+		DeliverId int64 `db:"deliver_id"`
 		// 创建时间
-		CreateTime int64             `db:"create_time"`
+		CreateTime int64 `db:"create_time"`
 		// 更新时间
-		UpdateTime int64             `db:"update_time"`
+		UpdateTime int64 `db:"update_time"`
 		// 商品项目
-		Items      []*NormalCartItem `db:"-"`
+		Items []*NormalCartItem `db:"-"`
 	}
 
 	// NormalCartItem 购物车项

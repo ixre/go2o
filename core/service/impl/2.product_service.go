@@ -2,6 +2,7 @@ package impl
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/ixre/go2o/core/domain/interface/item"
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
@@ -248,7 +249,7 @@ func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfo
 }
 
 // SaveModel 保存产品模型
-func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
+func (p *productService) SaveProductModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
 	var pm promodel.IProductModel
 	v := p.parseProductModel(r)
 	if v.Id > 0 {
@@ -262,15 +263,15 @@ func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*
 	err := pm.SetValue(v)
 	if err == nil {
 		// 保存属性
-		if v.Attrs != nil {
+		if err == nil && len(v.Attrs) > 0 {
 			err = pm.SetAttrs(v.Attrs)
 		}
 		// 保存规格
-		if err == nil && v.Specs != nil {
+		if err == nil && len(v.Specs) > 0 {
 			err = pm.SetSpecs(v.Specs)
 		}
 		// 保存品牌
-		if err == nil && v.BrandArray != nil {
+		if err == nil{
 			err = pm.SetBrands(v.BrandArray)
 		}
 	}
@@ -392,10 +393,12 @@ func (p *productService) lazyLoadChildren(parentId int, categories []product.ICa
 	var arr []*proto.SCategoryTree
 	// 遍历子分类
 	for _, v := range categories {
-		cat := v.GetValue()
-		if cat.ParentId == parentId &&
+		if v.GetValue().Name == "礼品鲜花" {
+			print(fmt.Sprintf("%#v", v.GetValue()))
+		}
+		if cat := v.GetValue(); cat.ParentId == parentId &&
 			p.testWalkCondition(req, cat) {
-			if req.LoadEnabled && cat.Enabled == 0 {
+			if req.OnlyEnabled && cat.Enabled == 0 {
 				continue
 			}
 			cNode := &proto.SCategoryTree{
@@ -413,7 +416,7 @@ func (p *productService) lazyLoadChildren(parentId int, categories []product.ICa
 
 // 排除分类
 func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *product.Category) bool {
-	if req.LoadEnabled && cat.Enabled == 0 {
+	if req.OnlyEnabled && cat.Enabled == 0 {
 		return false
 	}
 	if req.ExcludeIdList == nil {

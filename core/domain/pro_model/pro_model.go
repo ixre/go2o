@@ -59,7 +59,7 @@ func (m *modelImpl) Attrs() []*promodel.Attr {
 
 // 保存属性
 func (m *modelImpl) SetAttrs(a []*promodel.Attr) error {
-	if a == nil {
+	if len(a) == 0 {
 		return promodel.ErrEmptyAttrArray
 	}
 	m.value.Attrs = a
@@ -76,7 +76,7 @@ func (m *modelImpl) Specs() []*promodel.Spec {
 
 // 保存规格
 func (m *modelImpl) SetSpecs(s []*promodel.Spec) error {
-	if s == nil {
+	if len(s) == 0 {
 		return promodel.ErrEmptySpecArray
 	}
 	m.value.Specs = s
@@ -90,7 +90,7 @@ func (m *modelImpl) Brands() []*promodel.ProductBrand {
 
 // 关联品牌
 func (m *modelImpl) SetBrands(brandId []int) error {
-	if brandId == nil {
+	if len(brandId) == 0 {
 		return promodel.ErrEmptyBrandArray
 	}
 	m.value.BrandArray = brandId

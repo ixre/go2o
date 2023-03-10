@@ -35,6 +35,8 @@ type (
 		GetOrderByNo(orderNo string) IOrder
 		// 获取子订单
 		GetSubOrder(id int64) ISubOrder
+		// 取消订单
+		Cancel(orderNo string, subOrder bool, userCancel bool, reason string) error
 	}
 
 	// 订单提交附带的数据, //todo: 改为struct

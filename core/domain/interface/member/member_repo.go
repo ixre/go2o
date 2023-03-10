@@ -53,8 +53,10 @@ type IMemberRepo interface {
 	// 创建会员,仅作为某些操作使用,不保存
 	CreateMemberById(memberId int64) IMember
 
-	// 保存
+	// SaveMember 保存
 	SaveMember(v *Member) (int64, error)
+	// ResetMemberIdCache 重置会员缓存
+	ResetMemberIdCache(field string, value string) error
 
 	// 获取会员最后更新时间
 	GetMemberLatestUpdateTime(id int64) int64

@@ -159,10 +159,24 @@ message GrantFlagRequest {
   sint32 flag = 2;
 }
 
+// 发送验证码请求
 message SendCodeRequest {
+  // 会员编号
   sint64 memberId = 1;
+  // 操作
   string operation = 2;
+  // 消息类型
   int32 msgType = 3;
+}
+
+// 发送验证码响应
+message SendCodeResponse{
+  // 错误码
+  int32 errCode = 1;
+  // 错误消息
+  string errMsg = 2;
+  // 验证码
+  string checkCode = 3;
 }
 
 message CompareCodeRequest {

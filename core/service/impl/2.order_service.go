@@ -131,7 +131,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 		Subject:       r.Subject,
 		CouponCode:    r.CouponCode,
 		BalanceDeduct: r.BalanceDeduct,
-		WalletDeduct: r.WalletDeduct,
+		WalletDeduct:  r.WalletDeduct,
 		AffiliateCode: r.AffiliateCode,
 		PostedData:    iData,
 	})
@@ -153,10 +153,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrderRequest) (*proto.PrepareOrderResponse, error) {
 	ic := s.getShoppingCart(r.BuyerId, r.CartCode)
 	if ic == nil {
-		return &proto.PrepareOrderResponse{
-			ErrCode: 2,
-			ErrMsg:  cart.ErrNoSuchCart.Error(),
-		}, nil
+		ic = s.cartRepo.NewTempNormalCart(int(r.BuyerId), r.CartCode)
 	}
 	if r.Item != nil {
 		err := ic.Put(r.Item.ItemId, r.Item.SkuId, r.Item.Quantity, true, true)
@@ -178,7 +175,17 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		} else {
 			arr := s.memberRepo.GetDeliverAddress(r.BuyerId)
 			if len(arr) > 0 {
-				err = o.SetShipmentAddress(arr[0].Id)
+				var addressId int64 = 0
+				for _, v := range arr {
+					if v.IsDefault == 1 {
+						err = o.SetShipmentAddress(v.Id)
+						addressId = v.Id
+						break
+					}
+				}
+				if addressId == 0 {
+					err = o.SetShipmentAddress(arr[0].Id)
+				}
 			}
 		}
 		// 使用优惠券
@@ -197,32 +204,33 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 	acc := s.memberRepo.GetMember(r.BuyerId).GetAccount()
 	balance := acc.GetValue().Balance
 	walletBalance := acc.GetValue().WalletBalance
+	var deductAmount int64
 	// 使用余额
 	if fb, fw := domain.TestFlag(int(r.PaymentFlag), payment.MBalance),
 		domain.TestFlag(int(r.PaymentFlag), payment.MWallet); fb || fw {
-
 		// 更新抵扣余额之后的金额
 		if fb {
 			if balance >= ov.FinalAmount {
-				ov.DiscountAmount = ov.FinalAmount
+				deductAmount += ov.FinalAmount
 				ov.FinalAmount = 0
 			} else {
-				ov.DiscountAmount = balance
+				deductAmount += balance
 				ov.FinalAmount -= balance
 			}
 		}
 		// 更新抵扣钱包余额之后的金额
 		if fw {
 			if walletBalance >= ov.FinalAmount {
-				ov.DiscountAmount = ov.FinalAmount
+				deductAmount += ov.FinalAmount
 				ov.FinalAmount = 0
 			} else {
-				ov.DiscountAmount = walletBalance
+				deductAmount += walletBalance
 				ov.FinalAmount -= walletBalance
 			}
 		}
 	}
 	rsp := parser.PrepareOrderDto(ov)
+	rsp.DeductAmount = deductAmount
 	rsp.BuyerBalance = balance
 	rsp.BuyerWallet = walletBalance
 	rsp.BuyerIntegral = int64(acc.GetValue().Integral)

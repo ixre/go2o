@@ -182,20 +182,20 @@ func (m *MemberQuery) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember 
 	qp := "%" + key + "%"
 	list := make([]*dto.SimpleMember, 0)
 	var id int
-	var user, name, phone, avatar string
+	var user, name, phone, portrait string
 	m.Query(`SELECT id,user,mm_profile.name,mm_profile.phone,
         mm_profile.avatar FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
         WHERE user LIKE $1 OR mm_profile.name LIKE $2 OR
         mm_profile.phone LIKE $3`, func(rows *sql.Rows) {
 		for rows.Next() {
-			rows.Scan(&id, &user, &name, &phone, &avatar)
+			rows.Scan(&id, &user, &name, &phone, &portrait)
 			list = append(list, &dto.SimpleMember{
 				Id:     id,
 				User:   user,
 				Name:   name,
 				Phone:  phone,
-				Avatar: format.GetFileFullUrl(avatar),
+				Avatar: format.GetFileFullUrl(portrait),
 			})
 		}
 	}, qp, qp, qp)

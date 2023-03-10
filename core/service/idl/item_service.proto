@@ -35,6 +35,9 @@ service ItemService {
     // 设置商品货架状态
     rpc ReviewItem (ItemReviewRequest) returns (Result) {
     }
+    // 回收商品
+    rpc RecycleItem(RecycleItemRequest)returns(Result){}
+
     // 保存商品的会员价
     rpc SaveLevelPrices (SaveLevelPriceRequest) returns (Result) {
     }

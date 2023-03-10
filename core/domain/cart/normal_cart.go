@@ -192,7 +192,7 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.NormalCartItem) {
 				SpecData:    "",
 				SpecWord:    "",
 				Code:        iv.Code,
-				RetailPrice: iv.RetailPrice,
+				OriginPrice: iv.OriginPrice,
 				Price:       iv.Price,
 				Cost:        iv.Cost,
 				Weight:      iv.Weight,
@@ -297,7 +297,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly boo
 	c.snapMap = nil
 
 	// 设置商品的相关信息
-	c.setItemInfo(iv, c.getBuyerLevelId())
+	c.setItemInfo(&iv, c.getBuyerLevelId())
 
 	v := &cart.NormalCartItem{
 		CartId:   c.GetAggregateRootId(),

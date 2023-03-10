@@ -15,3 +15,16 @@ func TestGetItem(t *testing.T) {
 	})
 	t.Log(typeconv.MustJson(goods))
 }
+func TestGetItemSku(t *testing.T) {
+	goods, _ := impl.ItemService.GetSku(context.TODO(), &proto.SkuId{
+		ItemId: 3272,
+		SkuId:  0,
+	})
+	t.Log(typeconv.MustJson(goods))
+
+	goods2, _ := impl.ItemService.GetItemBySku(context.TODO(), &proto.ItemBySkuRequest{
+		ProductId: 3272,
+		SkuId:     0,
+	})
+	t.Log(typeconv.MustJson(goods2))
+}

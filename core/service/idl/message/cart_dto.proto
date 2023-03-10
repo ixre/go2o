@@ -75,7 +75,7 @@ message SShoppingCartItem {
     //商品编码
     string code = 6;
     //零售价
-    double retailPrice = 7;
+    double originPrice = 7;
     //销售价
     double price = 8;
     //数量

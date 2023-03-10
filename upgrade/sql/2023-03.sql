@@ -82,9 +82,9 @@ CREATE TABLE public.sys_safeguard
 (
     id bigserial NOT NULL,
     bind_type integer NOT NULL,
-    name character varying(20)[] NOT NULL,
-    content character varying(120)[] NOT NULL,
-    class_name character varying(20)[] NOT NULL,
+    name character varying(20) NOT NULL,
+    content character varying(120) NOT NULL,
+    class_name character varying(20) NOT NULL,
     sort_num integer NOT NULL,
     enabled integer NOT NULL,
     is_internal integer NOT NULL,
@@ -168,3 +168,18 @@ COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_r2
 COMMENT ON COLUMN public.item_affiliate_rate.origin_rate_c
     IS '历史自定义比例';
 
+
+ALTER TABLE IF EXISTS public.item_info
+    ADD COLUMN is_recycle integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.item_info.is_recycle
+    IS '是否回收';
+
+ALTER TABLE IF EXISTS public.item_info
+    RENAME retail_price TO origin_price;
+
+ALTER TABLE IF EXISTS public.item_sku
+    RENAME retail_price TO origin_price;
+
+ALTER TABLE IF EXISTS public.item_snapshot
+    RENAME retail_price TO origin_price;

@@ -19,7 +19,7 @@ import (
 	"github.com/ixre/gof/types"
 )
 
-func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
+func ItemDtoV2(src item.GoodsItem) *proto.SUnifiedViewItem {
 	it := &proto.SUnifiedViewItem{
 		ItemId:    src.Id,
 		ProductId: src.ProductId,
@@ -42,7 +42,7 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 		Price:      src.Price,
 		PriceRange: src.PriceRange,
 		StockNum:   src.StockNum,
-		//RetailPrice:  float64(src.RetailPrice),
+		//OriginPrice:  float64(src.OriginPrice),
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
 		ShelveState: src.ReviewState,
@@ -62,7 +62,7 @@ func ItemDtoV2(src *item.GoodsItem) *proto.SUnifiedViewItem {
 	return it
 }
 
-func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
+func ItemDataDto(src item.GoodsItem) *proto.SItemDataResponse {
 	it := &proto.SItemDataResponse{
 		ItemId:     src.Id,
 		ProductId:  src.ProductId,
@@ -84,7 +84,7 @@ func ItemDataDto(src *item.GoodsItem) *proto.SItemDataResponse {
 		Price:       src.Price,
 		PriceRange:  src.PriceRange,
 		StockNum:    src.StockNum,
-		RetailPrice: src.RetailPrice,
+		OriginPrice: src.OriginPrice,
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
 		ShelveState:  src.ShelveState,
@@ -166,7 +166,7 @@ func SkuDto(src *item.Sku) *proto.SSku {
 		SpecData:    src.SpecData,
 		SpecWord:    src.SpecWord,
 		Code:        src.Code,
-		RetailPrice: src.RetailPrice,
+		OriginPrice: src.OriginPrice,
 		Price:       src.Price,
 		Cost:        src.Cost,
 		Weight:      src.Weight,
@@ -186,7 +186,7 @@ func Sku(src *proto.SSku) *item.Sku {
 		SpecData:    src.SpecData,
 		SpecWord:    src.SpecWord,
 		Code:        src.Code,
-		RetailPrice: src.RetailPrice,
+		OriginPrice: src.OriginPrice,
 		Price:       src.Price,
 		Cost:        src.Cost,
 		Weight:      src.Weight,

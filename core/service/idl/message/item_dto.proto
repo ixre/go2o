@@ -57,7 +57,7 @@ message SGoods {
   string goodsNo = 8;
   string image = 9;
   //定价
-  int64 retailPrice = 10;
+  int64 originPrice = 10;
   //销售价
   int64 price = 11;
   // 促销价
@@ -102,7 +102,7 @@ message SSku {
   string specData = 6;
   string specWord = 7;
   string code = 8;
-  int64 retailPrice = 9;
+  int64 originPrice = 9;
   int64 price = 10;
   int64 cost = 11;
   int32 weight = 12;
@@ -128,7 +128,7 @@ message SaveItemRequest {
   // 视频介绍
   string introVideo = 10;
   //定价
-  int64 retailPrice = 11;
+  int64 originPrice = 11;
   // 成本
   int64 cost = 12;
   //销售价
@@ -181,7 +181,7 @@ message SItemDataResponse {
   // 成本价
   int64 cost = 12;
   // 建议零售价
-  int64 retailPrice = 13;
+  int64 originPrice = 13;
   // 销售价
   int64 price = 14;
   // 价格区间
@@ -282,7 +282,7 @@ message SUnifiedViewItem {
   // 图片
   repeated string images = 10;
   // 定价
-  int64 retailPrice = 11;
+  int64 originPrice = 11;
   // 销售价
   int64 price = 12;
   // 促销价
@@ -404,7 +404,7 @@ message ItemSnapshotResponse {
   // 售价
   int64 price = 18;
   // 零售价
-  int64 retailPrice = 19;
+  int64 originPrice = 19;
   // 库存数量
   int32 stockNum = 20;
   // 已销售数量
@@ -513,6 +513,16 @@ message ItemBySkuRequest {
 message ItemIllegalRequest {
   int64 itemId = 1;
   string remark = 2;
+}
+
+// 商品回收请求
+message RecycleItemRequest{
+  // 商品编号
+  int64 ItemId = 1;
+  // 是否回收或从回收站中撤销
+  bool Recycle = 2;
+  // 是否销毁
+  bool IsDestory = 3;
 }
 
 message ItemReviewRequest {

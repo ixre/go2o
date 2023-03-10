@@ -200,7 +200,7 @@ func (c *wholesaleCartImpl) setAttachGoodsInfo(items []*cart.WsCartItem) {
 				SpecData:    "",
 				SpecWord:    "",
 				Code:        iv.Code,
-				RetailPrice: iv.RetailPrice,
+				OriginPrice: iv.OriginPrice,
 				Price:       iv.Price,
 				Cost:        iv.Cost,
 				Weight:      iv.Weight,
@@ -315,7 +315,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, reset bool,
 	c.snapMap = nil
 
 	// 设置商品的相关信息
-	c.setItemInfo(iv, c.getBuyerLevelId())
+	c.setItemInfo(&iv, c.getBuyerLevelId())
 
 	v := &cart.WsCartItem{
 		CartId:   c.GetAggregateRootId(),

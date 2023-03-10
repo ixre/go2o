@@ -29,7 +29,7 @@ type Goods struct {
 	// 视频
 	IntroVideo string `db:"intro_video"`
 	//定价
-	RetailPrice int64 `db:"retail_price"`
+	OriginPrice int64 `db:"origin_price"`
 
 	//销售价
 	Price int64 `db:"price"`

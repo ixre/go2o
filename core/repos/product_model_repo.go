@@ -67,6 +67,14 @@ func (p *proModelRepo) BrandService() promodel.IBrandService {
 	return p.brandService
 }
 
+// IsExistsBrand 是否存在相同名称的品牌
+func (p *proModelRepo) IsExistsBrand(name string, id int) bool {
+	var row int
+	p.o.Connector().ExecScalar(`SELECT COUNT(1) FROM product_brand WHERE name = $1 AND id <> $2`,
+		&row, name, id)
+	return row > 0
+}
+
 // 获取模型的商品品牌
 func (p *proModelRepo) GetModelBrands(proModel int) []*promodel.ProductBrand {
 	return p.selectProBrandByQuery(`SELECT * FROM product_brand WHERE id IN (

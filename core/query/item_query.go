@@ -112,11 +112,10 @@ func (i ItemQuery) GetOnShelvesItem(catIdArr []int, begin, end int,
 	if len(catIdArr) > 0 {
 		catIdStr := format.IntArrStrJoin(catIdArr)
 		sql := fmt.Sprintf(`SELECT * FROM item_snapshot
-		 WHERE item_snapshot.cat_id IN(%s) AND item_snapshot.review_state= $1
-		 AND item_snapshot.shelve_state= $2 %s
-		 ORDER BY item_snapshot.update_time DESC LIMIT $4 OFFSET $3`, catIdStr, where)
+		 WHERE item_snapshot.cat_id IN(%s) %s ORDER BY item_snapshot.update_time DESC
+		   LIMIT $3 OFFSET $2`, catIdStr, where)
 		i.o.SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, begin, end-begin)
+			 begin, end-begin)
 	}
 	return list
 }
@@ -176,29 +175,27 @@ func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 	var list = make([]*valueobject.Goods, 0)
 	s := fmt.Sprintf(`SELECT item_snapshot."item_id",
 		item_snapshot."cat_id",item_snapshot."title",
-		item_snapshot."image",item_snapshot."retail_price",item_snapshot."price",
+		item_snapshot."image",item_snapshot."origin_price",item_snapshot."price",
 		item_snapshot."price_range",
 		item_snapshot."item_flag",
 		item_info."stock_num",item_info."shop_id"
 		 FROM item_snapshot
 		 LEFT JOIN item_info ON item_snapshot.item_id = item_info.id
-		 WHERE ($1 <= 0 OR item_snapshot.shop_id = $2) 
-		 AND item_info.review_state= $3 
-		 AND item_info.shelve_state= $4
-		  %s ORDER BY %s LIMIT $6 OFFSET $5`, where, orderBy)
+		 WHERE ($1 <= 0 OR item_snapshot.shop_id = $2)
+		  %s ORDER BY %s LIMIT $4 OFFSET $3`, where, orderBy)
 	err := i.Query(s, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := valueobject.Goods{}
 			_rows.Scan(&e.ItemId, &e.CategoryId, &e.Title, &e.Image,
-				&e.RetailPrice, &e.Price, &e.PriceRange, &e.ItemFlag,
+				&e.OriginPrice, &e.Price, &e.PriceRange, &e.ItemFlag,
 				&e.StockNum, &e.ShopId)
 			list = append(list, &e)
 		}
-	}, shopId, shopId,
-		enum.ReviewPass, item.ShelvesOn, start, end-start)
+	}, shopId, shopId, start, end-start)
 	if err != nil {
 		log.Println("[ GO2O][ Repo][ Error]:", err.Error(), s)
 	}
+	log.Println("sql=", s)
 	return total, list
 }
 
@@ -223,13 +220,21 @@ func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (
 }
 
 func (i *ItemQuery) SearchItem(shopId int, keyword string, size int) (rows []*dto.SearchItemResultDto) {
-	where := "title LIKE '%" + keyword + "%'"
+	where := "item_snapshot.title LIKE '%" + keyword + "%'"
 	if shopId > 0 {
-		where += fmt.Sprintf(" AND shop_id = %d", shopId)
+		where += fmt.Sprintf(" AND item_snapshot.shop_id = %d", shopId)
 	}
-	cmd := fmt.Sprintf(`SELECT id,item_flag, code,title,image,
-			vendor_id,price_range,stock_num
-			FROM item_snapshot WHERE %s LIMIT $1 `, where)
+	cmd := fmt.Sprintf(`SELECT item_id,
+			item_snapshot.item_flag, 
+			item_snapshot.code,
+			item_snapshot.title,
+			item_snapshot.image,
+			item_snapshot.vendor_id,
+			item_snapshot.price_range,
+			item_info.stock_num
+			FROM item_snapshot
+			LEFT JOIN item_info ON item_info.id = item_snapshot.item_id
+			 WHERE %s LIMIT $1 `, where)
 	err := i.Query(cmd, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := dto.SearchItemResultDto{}
@@ -313,7 +318,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		item_info.short_title,item_info.code,item_info.image,
 		ws_item.price_range,item_info.stock_num,
 		item_info.sale_num,item_info.sku_num,item_info.sku_id,item_info.cost,
-		ws_item.price,item_info.retail_price,item_info.weight,item_info.bulk,
+		ws_item.price,item_info.origin_price,item_info.weight,item_info.bulk,
 		item_info.shelve_state,item_info.review_state,item_info.review_remark,
 		item_info.sort_num,item_info.create_time,item_info.update_time
 		 FROM ws_item INNER JOIN item_info ON item_info.id=ws_item.item_id

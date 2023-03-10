@@ -106,7 +106,7 @@ service MemberService {
     rpc Complex (MemberIdRequest) returns (SComplexMember) {
     }
     /** 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取 */
-    rpc SendCode (SendCodeRequest) returns (Result) {
+    rpc SendCode (SendCodeRequest) returns (SendCodeResponse) {
     }
     /** 比较验证码是否正确 */
     rpc CompareCode (CompareCodeRequest) returns (Result) {

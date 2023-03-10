@@ -50,7 +50,7 @@ func PriceArrayDto(src []*item.MemberPrice) []*proto.SLevelPrice {
 func LevelPriceDto(src *item.MemberPrice) *proto.SLevelPrice {
 	return &proto.SLevelPrice{
 		Id:        int64(src.Id),
-		Level:     int32(src.Level),
+		Level:     int32(src.LevelId),
 		Price:     src.Price,
 		MaxNumber: int32(src.MaxQuota),
 		Enabled:   src.Enabled == 1,
@@ -60,7 +60,7 @@ func LevelPriceDto(src *item.MemberPrice) *proto.SLevelPrice {
 func ParseLevelPrice(src *proto.SLevelPrice) *item.MemberPrice {
 	return &item.MemberPrice{
 		Id:       int(src.Id),
-		Level:    int(src.Level),
+		LevelId:  int(src.Level),
 		Price:    src.Price,
 		MaxQuota: int(src.MaxNumber),
 		Enabled:  types.ElseInt(src.Enabled, 1, 0),
@@ -127,28 +127,28 @@ func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
 		image = src.Images[0]
 	}
 	dst := &item.GoodsItem{
-		Id:         src.ItemId,
-		ProductId:  src.ProductId,
-		CategoryId: int32(src.CategoryId),
-		VendorId:   src.VendorId,
-		BrandId:    int32(src.BrandId),
-		ShopId:     src.ShopId,
-		ShopCatId:  0,                     //todo:??
-		ExpressTid: int32(src.ExpressTid), //src.,
-		Title:      src.Title,
-		IntroVideo: src.IntroVideo,
-		ShortTitle: "", //src.Sho,
-		Code:       src.Code,
-		Image:      image,
-		Images:     src.Images,
-		PriceRange: src.PriceRange,
-		StockNum:   src.StockNum,
-		SaleNum:    0,
-		SkuId:      src.SkuId,
-		RetailPrice: src.RetailPrice,
-		Cost:       src.Cost,
-		Price:      src.Price,
-		SkuArray:   make([]*item.Sku, len(src.SkuArray)),
+		Id:          src.ItemId,
+		ProductId:   src.ProductId,
+		CategoryId:  int32(src.CategoryId),
+		VendorId:    src.VendorId,
+		BrandId:     int32(src.BrandId),
+		ShopId:      src.ShopId,
+		ShopCatId:   0,                     //todo:??
+		ExpressTid:  int32(src.ExpressTid), //src.,
+		Title:       src.Title,
+		IntroVideo:  src.IntroVideo,
+		ShortTitle:  "", //src.Sho,
+		Code:        src.Code,
+		Image:       image,
+		Images:      src.Images,
+		PriceRange:  src.PriceRange,
+		StockNum:    src.StockNum,
+		SaleNum:     0,
+		SkuId:       src.SkuId,
+		OriginPrice: src.OriginPrice,
+		Cost:        src.Cost,
+		Price:       src.Price,
+		SkuArray:    make([]*item.Sku, len(src.SkuArray)),
 	}
 	for i, v := range src.SkuArray {
 		dst.SkuArray[i] = Sku(v)

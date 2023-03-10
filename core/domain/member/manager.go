@@ -385,7 +385,7 @@ func (m *levelManagerImpl) checkLevelExp(lv *member.Level) error {
 	if lv.Id <= 0 {
 		max := m.getMaxLevelId()
 		lvMax := m.GetLevelById(max)
-		if lvMax != nil && lv.RequireExp < lvMax.RequireExp {
+		if lvMax != nil && lv.RequireExp <= lvMax.RequireExp {
 			return member.ErrMustMoreThanMaxLevel
 		}
 		return nil

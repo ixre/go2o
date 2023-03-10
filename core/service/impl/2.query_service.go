@@ -350,7 +350,7 @@ func (q *queryService) PagingOnShelvesGoods(_ context.Context, r *proto.PagingSh
 
 	}
 	if len(strings.TrimSpace(r.Params.SortBy)) == 0 {
-		r.Params.SortBy = "item_snapshot.sort_num DESC,item_snapshot.update_time DESC"
+		r.Params.SortBy = "item_snapshot.update_time DESC"
 	}
 	total, list = q.itemQuery.GetPagingOnShelvesGoods(
 		r.ShopId, ids, int(r.Flag),
@@ -377,7 +377,7 @@ func (q *queryService) parseGoods(v *valueobject.Goods) *proto.SGoods {
 		ShortTitle:  v.ShortTitle,
 		GoodsNo:     v.GoodsNo,
 		Image:       v.Image,
-		RetailPrice: v.RetailPrice,
+		OriginPrice: v.OriginPrice,
 		Price:       v.Price,
 		PromPrice:   v.PromPrice,
 		PriceRange:  v.PriceRange,

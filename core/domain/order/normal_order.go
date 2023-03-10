@@ -554,9 +554,19 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 	o._payOrder = o.payRepo.CreatePaymentOrder(po)
 	err := o._payOrder.Submit()
 	if err != nil {
-		orders := o.GetSubOrders()
-		for _, it := range orders {
-			_ = it.Cancel(false, "下单错误自动取消")
+		return o.Cancel(false, "下单错误自动取消")
+	}
+	return err
+}
+
+// Cancel 取消订单
+func (n *normalOrderImpl) Cancel(buyerCancel bool, reason string) error {
+	var err error
+	orders := n.GetSubOrders()
+	for _, it := range orders {
+		err = it.Cancel(buyerCancel, reason)
+		if err != nil {
+			log.Println("[ GO2O][ ERROR]: cancel order failed: ", err, n.OrderNo())
 		}
 	}
 	return err

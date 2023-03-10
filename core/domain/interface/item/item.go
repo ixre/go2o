@@ -9,6 +9,8 @@
 package item
 
 import (
+	"sort"
+
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
@@ -85,7 +87,7 @@ type (
 		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int64
 		// GetValue 设置值
-		GetValue() *GoodsItem
+		GetValue() GoodsItem
 		// GetPackedValue 获取包装过的商品信息
 		GetPackedValue() *valueobject.Goods
 		// SetValue 设置值
@@ -145,7 +147,10 @@ type (
 		//
 		//// 获取最新的快照
 		//GetLatestSnapshot() *goods.GoodsSnapshot
-
+		// 回收商品
+		Recycle() error
+		// 从回收站中撤回
+		RecycleRevert() error
 		// Destroy 删除商品
 		Destroy() error
 	}
@@ -400,7 +405,7 @@ type (
 		// 销售价
 		Price int64 `db:"price"`
 		// 零售价
-		RetailPrice int64 `db:"retail_price"`
+		OriginPrice int64 `db:"origin_price"`
 		// 重量:克(g)
 		Weight int32 `db:"weight"`
 		// 体积:毫升(ml)
@@ -413,6 +418,8 @@ type (
 		ReviewRemark string `db:"review_remark"`
 		// 排序序号
 		SortNum int32 `db:"sort_num"`
+		// 是否已被回收
+		IsRecycle int `db:"is_recycle"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
@@ -474,3 +481,23 @@ type (
 		OriginRateC int `db:"origin_rate_c"`
 	}
 )
+
+var _ sort.Interface = SkuList{}
+
+type SkuList []*Sku
+
+func (s SkuList) Len() int {
+	return len(s)
+}
+
+// Less reports whether the element with
+// index i should sort before the element with index j.
+func (s SkuList) Less(i, j int) bool {
+	b := s[i].Price - s[j].Price
+	return b < 0 || b == 0 && s[i].Id < s[j].Id
+}
+
+// Swap swaps the elements with indexes i and j.
+func (s SkuList) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}

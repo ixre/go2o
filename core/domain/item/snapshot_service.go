@@ -38,7 +38,7 @@ func (s *snapshotServiceImpl) CompareSnapshot(snap *item.Snapshot,
 	latest *item.Snapshot) bool {
 	if latest != nil {
 		return latest.Title != snap.Title || latest.CatId != snap.CatId || latest.Image != snap.Image ||
-			latest.Cost != snap.Cost || latest.RetailPrice != snap.RetailPrice || latest.Price != snap.Price ||
+			latest.Cost != snap.Cost || latest.OriginPrice != snap.OriginPrice || latest.Price != snap.Price ||
 			latest.ExpressTid != snap.ExpressTid || latest.Weight != snap.Weight || latest.Bulk != snap.Bulk ||
 			latest.PriceRange != snap.PriceRange || latest.ShopCatId != snap.ShopCatId ||
 			latest.ShortTitle != snap.ShortTitle || latest.ShopId != snap.ShopId ||
@@ -102,7 +102,7 @@ func (s *snapshotServiceImpl) updateSnapshot(ls *item.Snapshot,
 		PriceRange:  it.PriceRange,
 		Cost:        it.Cost,
 		Price:       it.Price,
-		RetailPrice: it.RetailPrice,
+		OriginPrice: it.OriginPrice,
 		Weight:      it.Weight,
 		Bulk:        it.Bulk,
 		LevelSales:  int32(levelSales),
