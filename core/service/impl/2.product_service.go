@@ -2,6 +2,7 @@ package impl
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/ixre/go2o/core/domain/interface/item"
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
@@ -262,7 +263,7 @@ func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*
 	err := pm.SetValue(v)
 	if err == nil {
 		// 保存属性
-		if err == nil{
+		if err == nil {
 			err = pm.SetAttrs(v.Attrs)
 		}
 		// 保存规格
@@ -392,10 +393,12 @@ func (p *productService) lazyLoadChildren(parentId int, categories []product.ICa
 	var arr []*proto.SCategoryTree
 	// 遍历子分类
 	for _, v := range categories {
-		cat := v.GetValue()
-		if cat.ParentId == parentId &&
+		if v.GetValue().Name == "礼品鲜花" {
+			print(fmt.Sprintf("%#v", v.GetValue()))
+		}
+		if cat := v.GetValue(); cat.ParentId == parentId &&
 			p.testWalkCondition(req, cat) {
-			if req.LoadEnabled && cat.Enabled == 0 {
+			if req.OnlyEnabled && cat.Enabled == 0 {
 				continue
 			}
 			cNode := &proto.SCategoryTree{
@@ -413,7 +416,7 @@ func (p *productService) lazyLoadChildren(parentId int, categories []product.ICa
 
 // 排除分类
 func (p *productService) testWalkCondition(req *proto.CategoryTreeRequest, cat *product.Category) bool {
-	if req.LoadEnabled && cat.Enabled == 0 {
+	if req.OnlyEnabled && cat.Enabled == 0 {
 		return false
 	}
 	if req.ExcludeIdList == nil {

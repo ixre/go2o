@@ -332,7 +332,7 @@ message CategoryTreeRequest {
     // 是否懒加载
     bool lazy = 2;
     // 是否仅返回已经启用的分类
-    bool loadEnabled = 3;
+    bool onlyEnabled = 3;
     // 排除分类编号
     repeated int64 excludeIdList = 4;
 }

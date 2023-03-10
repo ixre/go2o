@@ -127,6 +127,10 @@ func (c *categoryImpl) SetValue(v *product.Category) error {
 		if v.FloorShow == 1 && v.ParentId != 0 {
 			return product.ErrCategoryFloorShow
 		}
+		// 如果parentId小于0,则默认无上级
+		if v.ParentId < 0 {
+			v.ParentId = 0
+		}
 		if val.ParentId != v.ParentId {
 			c.parentIdChanged = true
 		} else {

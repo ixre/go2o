@@ -25,12 +25,12 @@ func TestProductCategoryTree(t *testing.T) {
 func TestCategoryInitialTreeNode(t *testing.T) {
 	list, err := impl.ProductService.GetCategoryTreeNode(context.TODO(), &proto.CategoryTreeRequest{
 		ParentId: 0,
+		Lazy:     true,
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	bytes, _ := json.Marshal(list.Value)
-	t.Log(string(bytes))
+	t.Log(typeconv.MustJson(list.Value))
 }
 
 func TestSourceCategories(t *testing.T) {
