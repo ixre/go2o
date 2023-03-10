@@ -249,7 +249,7 @@ func (p *productService) SaveProductInfo(_ context.Context, r *proto.ProductInfo
 }
 
 // SaveModel 保存产品模型
-func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
+func (p *productService) SaveProductModel(_ context.Context, r *proto.SProductModel) (*proto.Result, error) {
 	var pm promodel.IProductModel
 	v := p.parseProductModel(r)
 	if v.Id > 0 {
@@ -263,15 +263,15 @@ func (p *productService) SaveModel(_ context.Context, r *proto.SProductModel) (*
 	err := pm.SetValue(v)
 	if err == nil {
 		// 保存属性
-		if err == nil {
+		if err == nil && len(v.Attrs) > 0 {
 			err = pm.SetAttrs(v.Attrs)
 		}
 		// 保存规格
-		if err == nil {
+		if err == nil && len(v.Specs) > 0 {
 			err = pm.SetSpecs(v.Specs)
 		}
 		// 保存品牌
-		if err == nil {
+		if err == nil{
 			err = pm.SetBrands(v.BrandArray)
 		}
 	}

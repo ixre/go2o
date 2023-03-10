@@ -21,7 +21,7 @@ service ProductService {
     }
 
     // 保存产品模型
-    rpc SaveModel (SProductModel) returns (Result) {
+    rpc SaveProductModel (SProductModel) returns (Result) {
     }
     // 删除产品模型
     rpc DeleteModel_ (ProductModelId) returns (Result) {
