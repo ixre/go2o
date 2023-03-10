@@ -302,16 +302,22 @@ func (p *profileManagerImpl) ChangeNickname(nickname string, limitTime bool) err
 }
 
 // 设置头像
-func (p *profileManagerImpl) ChangeHeadPortrait(avatar string) error {
-	if avatar == "" {
+func (p *profileManagerImpl) ChangeHeadPortrait(portrait string) error {
+	if portrait == "" {
 		return member.ErrInvalidHeadPortrait
 	}
 	v := p.GetProfile()
 	if p.profile != nil {
-		p.profile.Avatar = avatar
+		p.profile.Avatar = portrait
 	}
-	v.Avatar = avatar
-	return p.repo.SaveProfile(&v)
+	v.Avatar = portrait
+	err := p.repo.SaveProfile(&v)
+	if err == nil {
+		//todo: phone as user
+		p.member.value.Phone = portrait
+		_, err = p.member.Save()
+	}
+	return err
 }
 
 // todo: ?? 重构

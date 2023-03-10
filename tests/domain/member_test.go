@@ -246,3 +246,14 @@ func TestMemberWallet(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestChangeHeadPortrait(t *testing.T) {
+	var memberId int64 = 723
+	portraitUrl := "a/20230310144156396.jpeg"
+	m := ti.Factory.GetMemberRepo().GetMember(memberId)
+	err := m.Profile().ChangeHeadPortrait(portraitUrl)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}
