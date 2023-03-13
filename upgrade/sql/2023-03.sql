@@ -82,6 +82,7 @@ CREATE TABLE public.sys_safeguard
 (
     id bigserial NOT NULL,
     bind_type integer NOT NULL,
+    flag integer NOT NULL DEFAULT 0,
     name character varying(20) NOT NULL,
     content character varying(120) NOT NULL,
     class_name character varying(20) NOT NULL,
@@ -92,6 +93,7 @@ CREATE TABLE public.sys_safeguard
     update_time bigint NOT NULL,
     PRIMARY KEY (id)
 );
+
 
 ALTER TABLE IF EXISTS public.sys_safeguard
     OWNER to postgres;
@@ -104,6 +106,9 @@ COMMENT ON COLUMN public.sys_safeguard.id
 
 COMMENT ON COLUMN public.sys_safeguard.bind_type
     IS '绑定类型:1:店铺 2:商品';
+
+COMMENT ON COLUMN public.sys_safeguard.flag
+    IS '保障标志';
 
 COMMENT ON COLUMN public.sys_safeguard.name
     IS '保障名称';
