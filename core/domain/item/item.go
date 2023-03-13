@@ -274,6 +274,7 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.ExpressTid = v.ExpressTid
 		i.value.Title = v.Title
 		i.value.ItemFlag = v.ItemFlag
+		i.value.SafeguardFlag = v.SafeguardFlag
 		i.value.ShortTitle = v.ShortTitle
 		i.value.Code = v.Code
 		i.value.StockNum = v.StockNum

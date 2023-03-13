@@ -410,6 +410,8 @@ type (
 		Weight int32 `db:"weight"`
 		// 体积:毫升(ml)
 		Bulk int32 `db:"bulk"`
+		// 商品购物保障
+		SafeguardFlag int `db:"safeguard_flag"`
 		// 是否上架
 		ShelveState int32 `db:"shelve_state"`
 		// 审核状态

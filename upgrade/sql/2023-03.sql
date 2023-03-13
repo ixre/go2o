@@ -183,3 +183,15 @@ ALTER TABLE IF EXISTS public.item_sku
 
 ALTER TABLE IF EXISTS public.item_snapshot
     RENAME retail_price TO origin_price;
+
+/* 2023-03-13 */
+
+ALTER TABLE IF EXISTS public.item_info
+    ADD COLUMN safeguard_flag integer NOT NULL DEFAULT 0;
+COMMENT ON COLUMN public.item_info.safeguard_flag
+    IS '购物保障';
+
+ALTER TABLE IF EXISTS public.item_snapshot
+    ADD COLUMN safeguard_flag integer NOT NULL DEFAULT 0;
+COMMENT ON COLUMN public.item_snapshot.safeguard_flag
+    IS '购物保障';

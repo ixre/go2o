@@ -71,6 +71,8 @@ type (
 		Weight int32 `db:"weight"`
 		// 体积(ml)
 		Bulk int32 `db:"bulk"`
+		// 商品购物保障
+		SafeguardFlag int `db:"safeguard_flag"`
 		// 会员价
 		LevelSales int32 `db:"level_sales"`
 		// 上架状态

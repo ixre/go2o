@@ -152,6 +152,9 @@ message SaveItemRequest {
   int64 expressTid = 23;
   repeated SSku skuArray = 24;
   repeated SLevelPrice levelPrices = 25;
+
+  // 商品购物保障
+	int32	safeguardFlag = 26;
 }
 
 // 商品数据响应
@@ -218,6 +221,8 @@ message SItemDataResponse {
   SItemFlagData flagData = 29;
   // 会员价
   repeated SLevelPrice levelPrices = 30;
+  // 商品购物保障
+	int32	safeguardFlag = 31;
 }
 
 // 商品标志枚举
@@ -425,8 +430,10 @@ message ItemSnapshotResponse {
   repeated SLevelPrice levelPrices = 28;
   // 视频介绍
   string introVideo = 29;
+  // 商品购物保障
+	int32	safeguardFlag = 30;
   // 返回Sku-HTML
-  string skuHtml = 30;
+  string skuHtml = 31;
 }
 
 /** 产品属性值(用于展示详情) */
