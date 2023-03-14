@@ -246,7 +246,7 @@ func TestItemShelveDown(t *testing.T) {
 
 // 测试商品回收
 func TestItemRecycle(t *testing.T) {
-	var itemId int64 = 3162
+	var itemId int64 = 1998
 	repo := ti.Factory.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.Recycle()

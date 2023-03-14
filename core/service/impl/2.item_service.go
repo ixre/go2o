@@ -188,9 +188,9 @@ func (i *itemService) RecycleItem(_ context.Context, req *proto.RecycleItemReque
 			err = it.Destroy()
 		} else {
 			if req.Recycle {
-				err = it.RecycleRevert()
-			} else {
 				err = it.Recycle()
+			} else {
+				err = it.RecycleRevert()
 			}
 		}
 	}
