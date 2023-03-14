@@ -205,6 +205,11 @@ var (
 	// 抵扣1元所需要的积分个数
 	IntegralDiscountQuantity = KeyFormat("IntegralDiscountQuantity")
 
+	/** 商品 */
+
+	// 修改商品是否需要审核
+	ItemGenerateSnapshotReviewEnabled = KeyFormat("ItemGenerateSnapshotReviewEnabled")
+
 	/** 订单 */
 	// 是否启用订单返利
 	OrderEnableAffiliateRebate = KeyFormat("OrderEnableAffiliateRebate")

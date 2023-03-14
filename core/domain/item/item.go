@@ -435,7 +435,10 @@ func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 
 // 重置审核状态
 func (i *itemImpl) resetReview() {
-	i.value.ReviewState = enum.ReviewAwaiting
+	ir := i.registryRepo.Get(registry.ItemGenerateSnapshotReviewEnabled)
+	if ir != nil && ir.BoolValue() {
+		i.value.ReviewState = enum.ReviewAwaiting
+	}
 }
 
 // 检查商品数据是否正确
