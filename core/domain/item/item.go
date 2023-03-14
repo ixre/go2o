@@ -620,10 +620,15 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 	i.value.ShelveState = state
 	if i.value.ReviewState != enum.ReviewPass {
 		i.value.ReviewState = enum.ReviewAwaiting
-		i.removeSnapshot()
 	}
 	i.value.ReviewRemark = remark
 	_, err := i.Save()
+	// 下架删除快照
+	if err == nil {
+		if i.value.ShelveState == 0 {
+			i.removeSnapshot()
+		}
+	}
 	return err
 }
 

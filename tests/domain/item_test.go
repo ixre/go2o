@@ -231,3 +231,14 @@ func TestAuditItem(t *testing.T) {
 	it := repo.GetItem(itemId)
 	it.Review(true, "")
 }
+
+func TestItemShelveDown(t *testing.T) {
+	var itemId int64 = 3252
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	err := it.SetShelve(0, "测试下架")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}
