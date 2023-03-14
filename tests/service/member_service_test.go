@@ -150,3 +150,15 @@ func Test_memberService_InviterArray(t *testing.T) {
 	})
 	t.Log(ret)
 }
+
+// 测试绑定邀请人
+func TestSetInviter(t *testing.T) {
+	ret, _ := impl.MemberService.SetInviter(context.TODO(),
+		&proto.SetInviterRequest{
+			MemberId:    771,
+			InviterCode: "f2PWIo",
+			AllowChange: false,
+		})
+	t.Log(ret)
+
+}

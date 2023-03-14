@@ -17,6 +17,9 @@ type (
 		// 获取最新的快照
 		GetLatestSnapshot(itemId int64) *Snapshot
 
+		// RemoveSnapshot 移除快照
+		RemoveSnapshot(itemId int64) error
+
 		// 获取最新的商品销售快照,如果商品有更新,则更新销售快照
 		GetLatestSalesSnapshot(itemId, skuId int64) *TradeSnapshot
 

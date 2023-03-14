@@ -620,6 +620,7 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 	i.value.ShelveState = state
 	if i.value.ReviewState != enum.ReviewPass {
 		i.value.ReviewState = enum.ReviewAwaiting
+		i.removeSnapshot()
 	}
 	i.value.ReviewRemark = remark
 	_, err := i.Save()
@@ -737,8 +738,22 @@ func (i *itemImpl) ReleaseStock(skuId int64, quantity int32) error {
 func (i *itemImpl) Recycle() error {
 	if i.value.IsRecycle == 0 {
 		i.value.IsRecycle = 1
+		i.value.ShelveState = item.ShelvesDown
 		_, err := i.Save()
+		// 删除快照
+		if err == nil {
+			err = i.removeSnapshot()
+		}
 		return err
+	}
+	return nil
+}
+
+// 删除快照
+func (i *itemImpl) removeSnapshot() error {
+	if sn := i.Snapshot(); sn != nil {
+		i.snapshot = nil
+		return i.repo.SnapshotService().RemoveSnapshot(sn.ItemId)
 	}
 	return nil
 }
@@ -747,6 +762,7 @@ func (i *itemImpl) Recycle() error {
 func (i *itemImpl) RecycleRevert() error {
 	if i.value.IsRecycle == 1 {
 		i.value.IsRecycle = 0
+		i.value.ShelveState = item.ShelvesOn
 		_, err := i.Save()
 		return err
 	}
