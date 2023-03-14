@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 )
 
@@ -37,12 +36,22 @@ func (s *snapshotServiceImpl) GetLatestSnapshot(itemId int64) *item.Snapshot {
 func (s *snapshotServiceImpl) CompareSnapshot(snap *item.Snapshot,
 	latest *item.Snapshot) bool {
 	if latest != nil {
-		return latest.Title != snap.Title || latest.CatId != snap.CatId || latest.Image != snap.Image ||
-			latest.Cost != snap.Cost || latest.OriginPrice != snap.OriginPrice || latest.Price != snap.Price ||
-			latest.ExpressTid != snap.ExpressTid || latest.Weight != snap.Weight || latest.Bulk != snap.Bulk ||
-			latest.PriceRange != snap.PriceRange || latest.ShopCatId != snap.ShopCatId ||
-			latest.ShortTitle != snap.ShortTitle || latest.ShopId != snap.ShopId ||
-			latest.ProductId != snap.ProductId
+		return latest.Title != snap.Title ||
+			latest.CatId != snap.CatId ||
+			latest.Image != snap.Image ||
+			latest.Cost != snap.Cost ||
+			latest.OriginPrice != snap.OriginPrice ||
+			latest.Price != snap.Price ||
+			latest.ExpressTid != snap.ExpressTid ||
+			latest.Weight != snap.Weight ||
+			latest.Bulk != snap.Bulk ||
+			latest.PriceRange != snap.PriceRange ||
+			latest.ShopCatId != snap.ShopCatId ||
+			latest.ShortTitle != snap.ShortTitle ||
+			latest.ShopId != snap.ShopId ||
+			latest.ProductId != snap.ProductId ||
+			latest.ItemFlag != snap.ItemFlag ||
+			latest.SafeguardFlag != snap.SafeguardFlag
 	}
 	return true
 }
@@ -68,7 +77,7 @@ func (s *snapshotServiceImpl) GenerateSnapshot(it *item.GoodsItem) (int64, error
 	// 检查快照
 	err := s.checkSnapshot(ls, it)
 	// 审核通过后更新快照
-	if err == nil && it.ReviewState == enum.ReviewPass {
+	if err == nil {
 		return s.updateSnapshot(ls, it)
 	}
 	return 0, err

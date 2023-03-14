@@ -517,6 +517,9 @@ func (i *itemImpl) Save() (_ int64, err error) {
 			}
 		}
 	}
+	if err == nil && i.value.ReviewState == enum.ReviewPass {
+		_, err = i.repo.SnapshotService().GenerateSnapshot(i.value)
+	}
 	return i.value.Id, err
 }
 
