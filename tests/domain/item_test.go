@@ -232,11 +232,24 @@ func TestAuditItem(t *testing.T) {
 	it.Review(true, "")
 }
 
+// 测试商品下架
 func TestItemShelveDown(t *testing.T) {
 	var itemId int64 = 3252
 	repo := ti.Factory.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.SetShelve(0, "测试下架")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}
+
+// 测试商品回收
+func TestItemRecycle(t *testing.T) {
+	var itemId int64 = 3162
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	err := it.Recycle()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
