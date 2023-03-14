@@ -23,13 +23,6 @@ type HyperLinkAdImpl struct {
 func (h *HyperLinkAdImpl) getData() *ad.HyperLink {
 	if h.extValue == nil {
 		h.extValue = h._rep.GetTextAdData(h.GetDomainId())
-
-		//如果不存在,则创建一个新的对象
-		if h.extValue == nil {
-			h.extValue = &ad.HyperLink{
-				AdId: h.GetDomainId(),
-			}
-		}
 	}
 	return h.extValue
 }
