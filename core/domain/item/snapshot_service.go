@@ -84,37 +84,42 @@ func (s *snapshotServiceImpl) updateSnapshot(ls *item.Snapshot,
 	}
 	unix := time.Now().Unix()
 	var snap = &item.Snapshot{
-		ItemId:      it.Id,
-		Key:         fmt.Sprintf("%d-g%d-%d", it.VendorId, it.Id, unix),
-		CatId:       it.CategoryId,
-		ItemFlag:    it.ItemFlag,
-		VendorId:    it.VendorId,
-		BrandId:     it.BrandId,
-		ProductId:   it.ProductId,
-		ShopId:      it.ShopId,
-		ShopCatId:   it.ShopCatId,
-		ExpressTid:  it.ExpressTid,
-		SkuId:       it.SkuId,
-		Title:       it.Title,
-		ShortTitle:  it.ShortTitle,
-		Code:        it.Code,
-		Image:       it.Image,
-		PriceRange:  it.PriceRange,
-		Cost:        it.Cost,
-		Price:       it.Price,
-		OriginPrice: it.OriginPrice,
-		Weight:      it.Weight,
+		ItemId:        it.Id,
+		Key:           fmt.Sprintf("%d-g%d-%d", it.VendorId, it.Id, unix),
+		CatId:         it.CategoryId,
+		ItemFlag:      it.ItemFlag,
+		VendorId:      it.VendorId,
+		BrandId:       it.BrandId,
+		ProductId:     it.ProductId,
+		ShopId:        it.ShopId,
+		ShopCatId:     it.ShopCatId,
+		ExpressTid:    it.ExpressTid,
+		SkuId:         it.SkuId,
+		Title:         it.Title,
+		ShortTitle:    it.ShortTitle,
+		Code:          it.Code,
+		Image:         it.Image,
+		PriceRange:    it.PriceRange,
+		Cost:          it.Cost,
+		Price:         it.Price,
+		OriginPrice:   it.OriginPrice,
+		Weight:        it.Weight,
 		SafeguardFlag: it.SafeguardFlag,
-		Bulk:        it.Bulk,
-		LevelSales:  int32(levelSales),
-		ShelveState: it.ShelveState,
-		UpdateTime:  it.UpdateTime,
+		Bulk:          it.Bulk,
+		LevelSales:    int32(levelSales),
+		ShelveState:   it.ShelveState,
+		UpdateTime:    it.UpdateTime,
 	}
 	// 比较快照,如果为最新则更新快照
 	if s.CompareSnapshot(snap, ls) {
 		return s.itemRepo.SaveSnapshot(snap)
 	}
 	return snap.ItemId, nil
+}
+
+// RemoveSnapshot 移出商品快照
+func (s *snapshotServiceImpl) RemoveSnapshot(itemId int64) error {
+	return s.itemRepo.DeleteSnapshot(itemId)
 }
 
 // GetSaleSnapshotByKey 根据KEY获取已销售商品的快照

@@ -327,9 +327,10 @@ type (
 		// RemoveGoodSMemberLevelPrice 移除会员价
 		RemoveGoodSMemberLevelPrice(id int) error
 
-		// SaveSnapshot 保存快照
+		// SaveSnapshot 保存
 		SaveSnapshot(*Snapshot) (int64, error)
-
+		// DeleteSnapshot 删除商品快照
+		DeleteSnapshot(itemId int64) error
 		// GetSnapshots 根据指定商品快照
 		GetSnapshots(skuIdArr []int64) []Snapshot
 
