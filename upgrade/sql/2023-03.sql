@@ -200,3 +200,23 @@ ALTER TABLE IF EXISTS public.item_snapshot
     ADD COLUMN safeguard_flag integer NOT NULL DEFAULT 0;
 COMMENT ON COLUMN public.item_snapshot.safeguard_flag
     IS '购物保障';
+
+
+/* 2023-03-13 文本广告 */
+DROP TABLE IF EXISTS public.ad_hyperlink;
+CREATE TABLE IF NOT EXISTS public.ad_hyperlink
+(
+    id bigserial NOT NULL,
+    ad_id integer NOT NULL,
+    title character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    link_url character varying(120) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT ad_hyperlink_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+ALTER TABLE IF EXISTS public.ad_hyperlink OWNER to postgres;
+COMMENT ON TABLE public.ad_hyperlink IS '文本广告';
+COMMENT ON COLUMN public.ad_hyperlink.id IS '编号';
+COMMENT ON COLUMN public.ad_hyperlink.ad_id IS '广告编号';
+COMMENT ON COLUMN public.ad_hyperlink.title IS '标题';
+COMMENT ON COLUMN public.ad_hyperlink.link_url IS '链接地址';

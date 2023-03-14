@@ -18,7 +18,7 @@ type (
 
 	//  超链接
 	HyperLink struct {
-		Id      int64  `db:"id"`
+		Id      int64  `db:"id" auto:"yes" pk:"yes"`
 		AdId    int64  `db:"ad_id"`
 		Title   string `db:"title"`
 		LinkUrl string `db:"link_url"`
@@ -32,7 +32,7 @@ type (
 	// 广告图片
 	Image struct {
 		// 图片编号
-		Id int64 `db:"id" auto:"yes" pk:"true"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 
 		// 广告编号
 		AdId int64 `db:"ad_id"`
