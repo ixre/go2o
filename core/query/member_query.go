@@ -397,7 +397,7 @@ func (m *MemberQuery) OrdersQuantity(memberId int64) map[int]int {
 	m.Connector.Query(`
 	SELECT o.status,COUNT(0) as n FROM sale_sub_order o
 	GROUP BY o.status,o.buyer_id,is_forbidden,break_status
-	having is_forbidden = 0 AND break_status <> 0
+	having is_forbidden = 0 AND break_status <> 0cd 
 	 AND o.buyer_id = $1`, func(rows *sql.Rows) {
 		s, n := 0, 0
 		for rows.Next() {
