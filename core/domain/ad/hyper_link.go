@@ -40,6 +40,9 @@ func (h *HyperLinkAdImpl) Save() (int64, error) {
 	id, err := h.adImpl.Save()
 	if err == nil {
 		v := h.getData()
+		if v == nil {
+			v = &ad.HyperLink{}
+		}
 		v.AdId = id
 		_, err = h._rep.SaveTextAdData(v)
 	}

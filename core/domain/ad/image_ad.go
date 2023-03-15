@@ -27,15 +27,6 @@ func (i *ImageAdImpl) getData() *ad.Image {
 		if gallery.Len() > 0 {
 			i.extValue = gallery[0]
 		}
-
-		//如果不存在,则创建一个新的对象
-		if i.extValue == nil {
-			i.extValue = &ad.Image{
-				AdId:     i.GetDomainId(),
-				ImageUrl: format.GetNoPicPath(),
-				Enabled:  1,
-			}
-		}
 	}
 	return i.extValue
 }
@@ -54,6 +45,11 @@ func (i *ImageAdImpl) Save() (int64, error) {
 	id, err := i.adImpl.Save()
 	if err == nil {
 		v := i.getData()
+		if v == nil {
+			v = &ad.Image{
+				ImageUrl: format.GetNoPicPath(),
+			}
+		}
 		v.AdId = id
 		_, err = i._rep.SaveImageAdData(v)
 	}
