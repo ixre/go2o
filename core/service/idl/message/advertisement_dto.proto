@@ -95,7 +95,7 @@ message SAdvertisementDto {
 message STextAdData {
   int64 id = 1;
   string title = 2;
-  string linkURL = 3;
+  string linkUrl = 3;
 }
 
 // 图片广告数据
