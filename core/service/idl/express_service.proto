@@ -120,6 +120,8 @@ message SExpressTemplate {
   int64 addFee = 9;
   // 是否启用
   bool enabled = 10;
+  // 省
+  repeated SExpressAreaTemplate extra;
 }
 
 message ExpressTemplateId {
