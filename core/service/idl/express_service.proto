@@ -21,7 +21,7 @@ service ExpressService {
   }
 
   // 保存快递模板
-  rpc SaveTemplate (SExpressTemplate) returns (SaveTemplateResponse) {
+  rpc SaveExpressTemplate (SExpressTemplate) returns (SaveTemplateResponse) {
   }
   // 获取单个快递模板
   rpc GetTemplate (ExpressTemplateId) returns (SExpressTemplate) {
@@ -35,19 +35,11 @@ service ExpressService {
   // 保存地区快递模板
   rpc SaveAreaTemplate (SaveAreaExpTemplateRequest) returns (Result) {
   }
-  // 删除模板地区设定
-  rpc DeleteAreaTemplate (AreaTemplateId) returns (Result) {
-  }
+ 
   // 根据地区编码获取运费模板
   //rpc GetAreaExpressTemplateByAreaCode(userId int64,
   //	templateId int32, areaCode string) *express.ExpressAreaTemplate
-  // 根据编号获取地区的运费模板
-  //rpc GetAreaExpressTemplate(userId int64,
-  //	templateId int32, id int32) *express.ExpressAreaTemplate
-  //
-  // 获取所有的地区快递模板
-  //rpc GetAllAreaTemplate(userId int64,
-  //	templateId int32) []express.ExpressAreaTemplate
+
 }
 
 message ExpressProviderListResponse {
@@ -120,25 +112,12 @@ message SExpressTemplate {
   int64 addFee = 9;
   // 是否启用
   bool enabled = 10;
-  // 省
-  repeated SExpressAreaTemplate extra;
-}
-
-message ExpressTemplateId {
-  int64 sellerId = 1;
-  int64 templateId = 2;
-}
-message GetTemplatesRequest {
-  int64 sellerId = 1;
-  // 仅返回已启用的模板
-  bool onlyEnabled = 2;
-}
-message ExpressTemplateListResponse {
-  repeated SExpressTemplate value = 1;
+  // 地区模板设置
+  repeated SRegionExpressTemplate regions = 11;
 }
 
 // 快递地区模板
-message SExpressAreaTemplate {
+message SRegionExpressTemplate {
   // 模板编号
   int64 id = 1;
   // 地区编号列表，通常精确到省即可
@@ -155,10 +134,25 @@ message SExpressAreaTemplate {
   int64 addFee = 7;
 }
 
+message ExpressTemplateId {
+  int64 sellerId = 1;
+  int64 templateId = 2;
+}
+message GetTemplatesRequest {
+  int64 sellerId = 1;
+  // 仅返回已启用的模板
+  bool onlyEnabled = 2;
+}
+message ExpressTemplateListResponse {
+  repeated SExpressTemplate value = 1;
+}
+
+
+
 message SaveAreaExpTemplateRequest {
   int64 sellerId = 1;
   int64 templateId = 2;
-  SExpressAreaTemplate value = 3;
+  SRegionExpressTemplate value = 3;
 }
 
 message AreaTemplateId {

@@ -23,12 +23,11 @@ const (
 	ExpressService_SaveExpressProvider_FullMethodName = "/ExpressService/SaveExpressProvider"
 	ExpressService_GetProviders_FullMethodName        = "/ExpressService/GetProviders"
 	ExpressService_GetProviderGroup_FullMethodName    = "/ExpressService/GetProviderGroup"
-	ExpressService_SaveTemplate_FullMethodName        = "/ExpressService/SaveTemplate"
+	ExpressService_SaveExpressTemplate_FullMethodName = "/ExpressService/SaveExpressTemplate"
 	ExpressService_GetTemplate_FullMethodName         = "/ExpressService/GetTemplate"
 	ExpressService_GetTemplates_FullMethodName        = "/ExpressService/GetTemplates"
 	ExpressService_DeleteTemplate_FullMethodName      = "/ExpressService/DeleteTemplate"
 	ExpressService_SaveAreaTemplate_FullMethodName    = "/ExpressService/SaveAreaTemplate"
-	ExpressService_DeleteAreaTemplate_FullMethodName  = "/ExpressService/DeleteAreaTemplate"
 )
 
 // ExpressServiceClient is the client API for ExpressService service.
@@ -44,7 +43,7 @@ type ExpressServiceClient interface {
 	// 获取可用的快递公司分组
 	GetProviderGroup(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ExpressProviderGroupResponse, error)
 	// 保存快递模板
-	SaveTemplate(ctx context.Context, in *SExpressTemplate, opts ...grpc.CallOption) (*SaveTemplateResponse, error)
+	SaveExpressTemplate(ctx context.Context, in *SExpressTemplate, opts ...grpc.CallOption) (*SaveTemplateResponse, error)
 	// 获取单个快递模板
 	GetTemplate(ctx context.Context, in *ExpressTemplateId, opts ...grpc.CallOption) (*SExpressTemplate, error)
 	// 获取卖家的快递模板
@@ -53,8 +52,6 @@ type ExpressServiceClient interface {
 	DeleteTemplate(ctx context.Context, in *ExpressTemplateId, opts ...grpc.CallOption) (*Result, error)
 	// 保存地区快递模板
 	SaveAreaTemplate(ctx context.Context, in *SaveAreaExpTemplateRequest, opts ...grpc.CallOption) (*Result, error)
-	// 删除模板地区设定
-	DeleteAreaTemplate(ctx context.Context, in *AreaTemplateId, opts ...grpc.CallOption) (*Result, error)
 }
 
 type expressServiceClient struct {
@@ -101,9 +98,9 @@ func (c *expressServiceClient) GetProviderGroup(ctx context.Context, in *Empty, 
 	return out, nil
 }
 
-func (c *expressServiceClient) SaveTemplate(ctx context.Context, in *SExpressTemplate, opts ...grpc.CallOption) (*SaveTemplateResponse, error) {
+func (c *expressServiceClient) SaveExpressTemplate(ctx context.Context, in *SExpressTemplate, opts ...grpc.CallOption) (*SaveTemplateResponse, error) {
 	out := new(SaveTemplateResponse)
-	err := c.cc.Invoke(ctx, ExpressService_SaveTemplate_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, ExpressService_SaveExpressTemplate_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -146,15 +143,6 @@ func (c *expressServiceClient) SaveAreaTemplate(ctx context.Context, in *SaveAre
 	return out, nil
 }
 
-func (c *expressServiceClient) DeleteAreaTemplate(ctx context.Context, in *AreaTemplateId, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, ExpressService_DeleteAreaTemplate_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // ExpressServiceServer is the server API for ExpressService service.
 // All implementations must embed UnimplementedExpressServiceServer
 // for forward compatibility
@@ -168,7 +156,7 @@ type ExpressServiceServer interface {
 	// 获取可用的快递公司分组
 	GetProviderGroup(context.Context, *Empty) (*ExpressProviderGroupResponse, error)
 	// 保存快递模板
-	SaveTemplate(context.Context, *SExpressTemplate) (*SaveTemplateResponse, error)
+	SaveExpressTemplate(context.Context, *SExpressTemplate) (*SaveTemplateResponse, error)
 	// 获取单个快递模板
 	GetTemplate(context.Context, *ExpressTemplateId) (*SExpressTemplate, error)
 	// 获取卖家的快递模板
@@ -177,8 +165,6 @@ type ExpressServiceServer interface {
 	DeleteTemplate(context.Context, *ExpressTemplateId) (*Result, error)
 	// 保存地区快递模板
 	SaveAreaTemplate(context.Context, *SaveAreaExpTemplateRequest) (*Result, error)
-	// 删除模板地区设定
-	DeleteAreaTemplate(context.Context, *AreaTemplateId) (*Result, error)
 	mustEmbedUnimplementedExpressServiceServer()
 }
 
@@ -198,8 +184,8 @@ func (UnimplementedExpressServiceServer) GetProviders(context.Context, *Empty) (
 func (UnimplementedExpressServiceServer) GetProviderGroup(context.Context, *Empty) (*ExpressProviderGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProviderGroup not implemented")
 }
-func (UnimplementedExpressServiceServer) SaveTemplate(context.Context, *SExpressTemplate) (*SaveTemplateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveTemplate not implemented")
+func (UnimplementedExpressServiceServer) SaveExpressTemplate(context.Context, *SExpressTemplate) (*SaveTemplateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveExpressTemplate not implemented")
 }
 func (UnimplementedExpressServiceServer) GetTemplate(context.Context, *ExpressTemplateId) (*SExpressTemplate, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTemplate not implemented")
@@ -212,9 +198,6 @@ func (UnimplementedExpressServiceServer) DeleteTemplate(context.Context, *Expres
 }
 func (UnimplementedExpressServiceServer) SaveAreaTemplate(context.Context, *SaveAreaExpTemplateRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveAreaTemplate not implemented")
-}
-func (UnimplementedExpressServiceServer) DeleteAreaTemplate(context.Context, *AreaTemplateId) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteAreaTemplate not implemented")
 }
 func (UnimplementedExpressServiceServer) mustEmbedUnimplementedExpressServiceServer() {}
 
@@ -301,20 +284,20 @@ func _ExpressService_GetProviderGroup_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ExpressService_SaveTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ExpressService_SaveExpressTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SExpressTemplate)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ExpressServiceServer).SaveTemplate(ctx, in)
+		return srv.(ExpressServiceServer).SaveExpressTemplate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ExpressService_SaveTemplate_FullMethodName,
+		FullMethod: ExpressService_SaveExpressTemplate_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExpressServiceServer).SaveTemplate(ctx, req.(*SExpressTemplate))
+		return srv.(ExpressServiceServer).SaveExpressTemplate(ctx, req.(*SExpressTemplate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -391,24 +374,6 @@ func _ExpressService_SaveAreaTemplate_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ExpressService_DeleteAreaTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AreaTemplateId)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ExpressServiceServer).DeleteAreaTemplate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ExpressService_DeleteAreaTemplate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExpressServiceServer).DeleteAreaTemplate(ctx, req.(*AreaTemplateId))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // ExpressService_ServiceDesc is the grpc.ServiceDesc for ExpressService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -433,8 +398,8 @@ var ExpressService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ExpressService_GetProviderGroup_Handler,
 		},
 		{
-			MethodName: "SaveTemplate",
-			Handler:    _ExpressService_SaveTemplate_Handler,
+			MethodName: "SaveExpressTemplate",
+			Handler:    _ExpressService_SaveExpressTemplate_Handler,
 		},
 		{
 			MethodName: "GetTemplate",
@@ -451,10 +416,6 @@ var ExpressService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveAreaTemplate",
 			Handler:    _ExpressService_SaveAreaTemplate_Handler,
-		},
-		{
-			MethodName: "DeleteAreaTemplate",
-			Handler:    _ExpressService_DeleteAreaTemplate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

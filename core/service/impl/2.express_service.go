@@ -18,26 +18,26 @@ import (
 	"github.com/ixre/gof/types"
 )
 
-var _ proto.ExpressServiceServer = new(expressService)
+var _ proto.ExpressServiceServer = new(expressServiceImpl)
 
-type expressService struct {
-	_rep express.IExpressRepo
+type expressServiceImpl struct {
+	_repo express.IExpressRepo
 	serviceUtil
 	proto.UnimplementedExpressServiceServer
 }
 
 // 获取快递服务
-func NewExpressService(rep express.IExpressRepo) *expressService {
-	return &expressService{
-		_rep: rep,
+func NewExpressService(rep express.IExpressRepo) *expressServiceImpl {
+	return &expressServiceImpl{
+		_repo: rep,
 	}
 }
 
 // 获取快递公司
-func (e *expressService) GetExpressProvider(_ context.Context, name *proto.IdOrName) (*proto.SExpressProvider, error) {
+func (e *expressServiceImpl) GetExpressProvider(_ context.Context, name *proto.IdOrName) (*proto.SExpressProvider, error) {
 	var v *express.Provider
 	if name.Id > 0 {
-		v = e._rep.GetExpressProvider(int32(name.Id))
+		v = e._repo.GetExpressProvider(int32(name.Id))
 	} else {
 		//v = e._rep.GetExpressProviderByName(name.Name)
 	}
@@ -47,17 +47,17 @@ func (e *expressService) GetExpressProvider(_ context.Context, name *proto.IdOrN
 	return nil, express.ErrNotSupportProvider
 }
 
-// 保存快递公司
-func (e *expressService) SaveExpressProvider(_ context.Context, r *proto.SExpressProvider) (*proto.Result, error) {
+// SaveExpressProvider 保存快递公司
+func (e *expressServiceImpl) SaveExpressProvider(_ context.Context, r *proto.SExpressProvider) (*proto.Result, error) {
 	v := e.parseProvider(r)
-	_, err := e._rep.SaveExpressProvider(v)
+	_, err := e._repo.SaveExpressProvider(v)
 	return e.error(err), nil
 }
 
-// 获取卖家的快递公司
-func (e *expressService) GetProviders(_ context.Context, _ *proto.Empty) (*proto.ExpressProviderListResponse, error) {
+// GetProviders 获取卖家的快递公司
+func (e *expressServiceImpl) GetProviders(_ context.Context, _ *proto.Empty) (*proto.ExpressProviderListResponse, error) {
 	var arr []*proto.SExpressProvider
-	list := e._rep.GetExpressProviders()
+	list := e._repo.GetExpressProviders()
 	for _, v := range list {
 		if v.Enabled == 1 {
 			arr = append(arr, e.parseProviderDto(v))
@@ -69,8 +69,8 @@ func (e *expressService) GetProviders(_ context.Context, _ *proto.Empty) (*proto
 }
 
 // 获取卖家的快递公司分组
-func (e *expressService) GetProviderGroup(_ context.Context, _ *proto.Empty) (*proto.ExpressProviderGroupResponse, error) {
-	list := e._rep.GetExpressProviders()
+func (e *expressServiceImpl) GetProviderGroup(_ context.Context, _ *proto.Empty) (*proto.ExpressProviderGroupResponse, error) {
+	list := e._repo.GetExpressProviders()
 	for i, v := range list {
 		if v.Enabled == 0 {
 			list = append(list[:i], list[i+1:]...)
@@ -115,8 +115,8 @@ func (e *expressService) GetProviderGroup(_ context.Context, _ *proto.Empty) (*p
 }
 
 // 保存快递模板
-func (e *expressService) SaveTemplate(_ context.Context, r *proto.SExpressTemplate) (*proto.SaveTemplateResponse, error) {
-	u := e._rep.GetUserExpress(int(r.SellerId))
+func (e *expressServiceImpl) SaveExpressTemplate(_ context.Context, r *proto.SExpressTemplate) (*proto.SaveTemplateResponse, error) {
+	u := e._repo.GetUserExpress(int(r.SellerId))
 	v := e.parseExpressTemplate(r)
 	var ie express.IExpressTemplate
 	if r.Id > 0 {
@@ -129,6 +129,7 @@ func (e *expressService) SaveTemplate(_ context.Context, r *proto.SExpressTempla
 	var id int
 	err := ie.Set(v)
 	if err == nil {
+		ie.SetRegionExpress(e.parseRegionsTemplate(r.Regions))
 		id, err = ie.Save()
 	}
 	ret := &proto.SaveTemplateResponse{
@@ -142,19 +143,22 @@ func (e *expressService) SaveTemplate(_ context.Context, r *proto.SExpressTempla
 }
 
 // 获取快递模板
-func (e *expressService) GetTemplate(_ context.Context, id *proto.ExpressTemplateId) (*proto.SExpressTemplate, error) {
-	u := e._rep.GetUserExpress(int(id.SellerId))
+func (e *expressServiceImpl) GetTemplate(_ context.Context, id *proto.ExpressTemplateId) (*proto.SExpressTemplate, error) {
+	u := e._repo.GetUserExpress(int(id.SellerId))
 	t := u.GetTemplate(int(id.TemplateId))
 	if t != nil {
 		v := t.Value()
-		return e.parseExpressTemplateDto(&v), nil
+		v2 := t.RegionExpress()
+		ret := e.parseExpressTemplateDto(&v)
+		ret.Regions = e.parseExpressRegions(&v2)
+		return ret, nil
 	}
 	return nil, express.ErrNoSuchTemplate
 }
 
 // 获取所有的快递模板
-func (e *expressService) GetAllTemplate(userId int32) []*express.ExpressTemplate {
-	u := e._rep.GetUserExpress(int(userId))
+func (e *expressServiceImpl) GetAllTemplate(userId int32) []*express.ExpressTemplate {
+	u := e._repo.GetUserExpress(int(userId))
 	list := u.GetAllTemplate()
 	arr := make([]*express.ExpressTemplate, len(list))
 	for i, v := range list {
@@ -165,8 +169,8 @@ func (e *expressService) GetAllTemplate(userId int32) []*express.ExpressTemplate
 }
 
 // 获取可有的快递模板
-func (e *expressService) GetTemplates(_ context.Context, r *proto.GetTemplatesRequest) (*proto.ExpressTemplateListResponse, error) {
-	u := e._rep.GetUserExpress(int(r.SellerId))
+func (e *expressServiceImpl) GetTemplates(_ context.Context, r *proto.GetTemplatesRequest) (*proto.ExpressTemplateListResponse, error) {
+	u := e._repo.GetUserExpress(int(r.SellerId))
 	list := u.GetAllTemplate()
 	var arr []*proto.SExpressTemplate
 	for _, v := range list {
@@ -181,81 +185,13 @@ func (e *expressService) GetTemplates(_ context.Context, r *proto.GetTemplatesRe
 }
 
 // 删除模板
-func (e *expressService) DeleteTemplate(_ context.Context, id *proto.ExpressTemplateId) (*proto.Result, error) {
-	u := e._rep.GetUserExpress(int(id.SellerId))
+func (e *expressServiceImpl) DeleteTemplate(_ context.Context, id *proto.ExpressTemplateId) (*proto.Result, error) {
+	u := e._repo.GetUserExpress(int(id.SellerId))
 	err := u.DeleteTemplate(int(id.TemplateId))
 	return e.error(err), nil
 }
 
-// 保存地区快递模板
-func (e *expressService) SaveAreaTemplate(_ context.Context, r *proto.SaveAreaExpTemplateRequest) (*proto.Result, error) {
-	u := e._rep.GetUserExpress(int(r.SellerId))
-	t := u.GetTemplate(int(r.TemplateId))
-	var err error
-	if t == nil {
-		err = express.ErrNoSuchTemplate
-	} else {
-		v := e.parseAreaTemplate(r.Value)
-		v.TemplateId = int32(r.TemplateId)
-		_, err = t.SaveAreaTemplate(v)
-	}
-	return e.error(err), nil
-}
-
-// 删除模板地区设定
-func (e *expressService) DeleteAreaTemplate(_ context.Context, id *proto.AreaTemplateId) (*proto.Result, error) {
-	u := e._rep.GetUserExpress(int(id.SellerId))
-	t := u.GetTemplate(int(id.TemplateId))
-	var err error
-	if t == nil {
-		err = express.ErrNoSuchTemplate
-	} else {
-		err = t.DeleteAreaSet(int32(id.AreaTemplateId))
-	}
-	return e.error(err), nil
-}
-
-//// 获取快递费,传入地区编码，根据单位值，如总重量。
-//func (e *expressService) GetExpressFee(userId int32,templateId int32,
-//	areaCode string, basisUnit float32) float32 {
-//	u := e.repo.GetUserExpress(userId)
-//	return u.GetExpressFee(templateId, areaCode, basisUnit)
-//}
-
-// 根据地区编码获取运费模板
-func (e *expressService) GetAreaExpressTemplateByAreaCode(userId int64,
-	templateId int32, areaCode string) *express.ExpressAreaTemplate {
-	u := e._rep.GetUserExpress(int(userId))
-	t := u.GetTemplate(int(templateId))
-	if t != nil {
-		return t.GetAreaExpressTemplateByAreaCode(areaCode)
-	}
-	return nil
-}
-
-// 根据编号获取地区的运费模板
-func (e *expressService) GetAreaExpressTemplate(userId int64,
-	templateId int32, id int32) *express.ExpressAreaTemplate {
-	u := e._rep.GetUserExpress(int(userId))
-	t := u.GetTemplate(int(templateId))
-	if t != nil {
-		return t.GetAreaExpressTemplate(id)
-	}
-	return nil
-}
-
-// 获取所有的地区快递模板
-func (e *expressService) GetAllAreaTemplate(userId int64,
-	templateId int32) []express.ExpressAreaTemplate {
-	u := e._rep.GetUserExpress(int(userId))
-	t := u.GetTemplate(int(templateId))
-	if t != nil {
-		return t.GetAllAreaTemplate()
-	}
-	return []express.ExpressAreaTemplate{}
-}
-
-func (e *expressService) parseProviderDto(v *express.Provider) *proto.SExpressProvider {
+func (e *expressServiceImpl) parseProviderDto(v *express.Provider) *proto.SExpressProvider {
 	return &proto.SExpressProvider{
 		Id:        int64(v.Id),
 		Name:      v.Name,
@@ -267,7 +203,7 @@ func (e *expressService) parseProviderDto(v *express.Provider) *proto.SExpressPr
 	}
 }
 
-func (e *expressService) parseProvider(r *proto.SExpressProvider) *express.Provider {
+func (e *expressServiceImpl) parseProvider(r *proto.SExpressProvider) *express.Provider {
 	return &express.Provider{
 		Id:          int32(r.Id),
 		Name:        r.Name,
@@ -279,7 +215,7 @@ func (e *expressService) parseProvider(r *proto.SExpressProvider) *express.Provi
 	}
 }
 
-func (e *expressService) parseExpressTemplate(r *proto.SExpressTemplate) *express.ExpressTemplate {
+func (e *expressServiceImpl) parseExpressTemplate(r *proto.SExpressTemplate) *express.ExpressTemplate {
 	return &express.ExpressTemplate{
 		Id:        int(r.Id),
 		VendorId:  int(r.SellerId),
@@ -294,7 +230,7 @@ func (e *expressService) parseExpressTemplate(r *proto.SExpressTemplate) *expres
 	}
 }
 
-func (e *expressService) parseExpressTemplateDto(v *express.ExpressTemplate) *proto.SExpressTemplate {
+func (e *expressServiceImpl) parseExpressTemplateDto(v *express.ExpressTemplate) *proto.SExpressTemplate {
 	return &proto.SExpressTemplate{
 		Id:        int64(v.Id),
 		SellerId:  int64(v.VendorId),
@@ -309,14 +245,34 @@ func (e *expressService) parseExpressTemplateDto(v *express.ExpressTemplate) *pr
 	}
 }
 
-func (e *expressService) parseAreaTemplate(v *proto.SExpressAreaTemplate) *express.ExpressAreaTemplate {
-	return &express.ExpressAreaTemplate{
-		Id:        int32(v.Id),
-		CodeList:  v.CodeList,
-		NameList:  v.NameList,
-		FirstUnit: v.FirstUnit,
-		FirstFee:  v.FirstFee,
-		AddUnit:   v.AddUnit,
-		AddFee:    v.AddFee,
+func (e *expressServiceImpl) parseExpressRegions(regions *[]express.RegionExpressTemplate) []*proto.SRegionExpressTemplate {
+	arr := make([]*proto.SRegionExpressTemplate, 0)
+	for _, v := range *regions {
+		arr = append(arr, &proto.SRegionExpressTemplate{
+			Id:        int64(v.Id),
+			CodeList:  v.CodeList,
+			NameList:  v.NameList,
+			FirstUnit: v.FirstUnit,
+			FirstFee:  v.FirstFee,
+			AddUnit:   v.AddUnit,
+			AddFee:    v.AddFee,
+		})
 	}
+	return arr
+}
+
+func (e *expressServiceImpl) parseRegionsTemplate(regions []*proto.SRegionExpressTemplate) *[]express.RegionExpressTemplate {
+	arr := make([]express.RegionExpressTemplate, 0)
+	for _, v := range regions {
+		arr = append(arr, express.RegionExpressTemplate{
+			Id:        int(v.Id),
+			CodeList:  v.CodeList,
+			NameList:  v.NameList,
+			FirstUnit: v.FirstUnit,
+			FirstFee:  v.FirstFee,
+			AddUnit:   v.AddUnit,
+			AddFee:    v.AddFee,
+		})
+	}
+	return &arr
 }

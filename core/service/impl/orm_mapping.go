@@ -14,7 +14,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
-	"github.com/ixre/go2o/core/domain/interface/message"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/personfinance"
@@ -102,7 +102,7 @@ func OrmMapping(orm orm.Orm) {
 	// Express
 	orm.Mapping(express.Provider{}, "express_provider")
 	orm.Mapping(express.ExpressTemplate{}, "mch_express_template")
-	orm.Mapping(express.ExpressAreaTemplate{}, "express_area_set")
+	orm.Mapping(express.RegionExpressTemplate{}, "express_area_set")
 
 	// Shipment
 	orm.Mapping(shipment.ShipmentOrder{}, "ship_order")

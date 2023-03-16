@@ -60,7 +60,7 @@ var (
 	// 消息服务
 	MessageService *messageService
 	// 快递服务
-	ExpressService *expressService
+	ExpressService *expressServiceImpl
 	// 配送服务
 	ShipmentService *shipmentServiceImpl
 	// 内容服务

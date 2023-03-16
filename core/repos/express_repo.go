@@ -9,12 +9,13 @@
 package repos
 
 import (
+	"sync"
+
 	expImpl "github.com/ixre/go2o/core/domain/express"
 	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"sync"
 )
 
 type expressRepo struct {
@@ -92,20 +93,20 @@ func (er *expressRepo) SaveExpressTemplate(v *express.ExpressTemplate) (int, err
 }
 
 // 获取模板的所有地区设置
-func (er *expressRepo) GetExpressTemplateAllAreaSet(templateId int) []express.ExpressAreaTemplate {
-	var list []express.ExpressAreaTemplate
+func (er *expressRepo) GetExpressTemplateAllAreaSet(templateId int) []express.RegionExpressTemplate {
+	var list []express.RegionExpressTemplate
 	er.o.Select(&list, "template_id= $1", templateId)
 	return list
 }
 
 // 保存模板的地区设置
-func (er *expressRepo) SaveExpressTemplateAreaSet(v *express.ExpressAreaTemplate) (int32, error) {
-	return orm.I32(orm.Save(er.o, v, int(v.Id)))
+func (er *expressRepo) SaveExpressTemplateAreaSet(v *express.RegionExpressTemplate) (int, error) {
+	return orm.Save(er.o, v, int(v.Id))
 }
 
 // 删除模板的地区设置
-func (er *expressRepo) DeleteAreaExpressTemplate(templateId int, areaSetId int32) error {
-	_, err := er.o.Delete(express.ExpressAreaTemplate{},
+func (er *expressRepo) DeleteAreaExpressTemplate(templateId int, areaSetId int) error {
+	_, err := er.o.Delete(express.RegionExpressTemplate{},
 		"id= $1 AND template_id = $2", areaSetId, templateId)
 	return err
 }
