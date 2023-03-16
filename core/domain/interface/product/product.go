@@ -22,7 +22,7 @@ var (
 	ErrNoBrand = domain.NewError(
 		"err_product_no_brand", "未设置商品品牌")
 	ErrBrandIsUsed = domain.NewError(
-		"err_product_brand_is_used", "品牌已关联模型%s")
+		"err_product_brand_is_used", "品牌被模型\"%s\"使用,无法删除")
 
 	ErrVendor = domain.NewError(
 		"err_not_be_review", "商品供应商不正确")
