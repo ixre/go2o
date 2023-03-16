@@ -631,7 +631,7 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 	_, err := i.Save()
 	// 下架删除快照
 	if err == nil {
-		if i.value.ShelveState == 0 {
+		if i.value.ShelveState == item.ShelvesDown {
 			i.removeSnapshot()
 		}
 	}

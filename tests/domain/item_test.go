@@ -234,7 +234,7 @@ func TestAuditItem(t *testing.T) {
 
 // 测试商品下架
 func TestItemShelveDown(t *testing.T) {
-	var itemId int64 = 3252
+	var itemId int64 = 3273
 	repo := ti.Factory.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.SetShelve(0, "测试下架")
