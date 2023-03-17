@@ -8,7 +8,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/log"
 )
@@ -21,10 +20,10 @@ type cartImpl struct {
 	rep        cart.ICartRepo
 	goodsRepo  item.IItemRepo
 	memberRepo member.IMemberRepo
-	summary    string
-	shop       shop.IShop
-	deliver    member.IDeliverAddress
-	snapMap    map[int64]*item.Snapshot
+	//summary    string
+	//shop       shop.IShop
+	//deliver    member.IDeliverAddress
+	snapMap map[int64]*item.Snapshot
 }
 
 func NewNormalCart(val *cart.NormalCart, rep cart.ICartRepo,
@@ -71,6 +70,13 @@ func (c *cartImpl) init() cart.ICart {
 	// 初始化购物车的信息
 	if c.value != nil && c.value.Items != nil {
 		c.setAttachGoodsInfo(c.value.Items)
+		arr := c.value.Items
+		c.value.Items = make([]*cart.NormalCartItem, 0)
+		for _, v := range arr {
+			if v.Sku != nil {
+				c.value.Items = append(c.value.Items, v)
+			}
+		}
 	}
 	return c
 }
@@ -184,20 +190,21 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.NormalCartItem) {
 		if v.SkuId > 0 {
 			sku = it.GetSku(v.SkuId)
 		} else {
+			in := list[v.ItemId]
 			iv := it.GetValue()
 			sku = &item.Sku{
-				ProductId:   iv.ProductId,
-				ItemId:      iv.Id,
-				Title:       iv.Title,
-				Image:       iv.Image,
+				ProductId:   in.ProductId,
+				ItemId:      v.ItemId,
+				Title:       in.Title,
+				Image:       in.Image,
 				SpecData:    "",
 				SpecWord:    "",
-				Code:        iv.Code,
-				OriginPrice: iv.OriginPrice,
-				Price:       iv.Price,
-				Cost:        iv.Cost,
-				Weight:      iv.Weight,
-				Bulk:        iv.Bulk,
+				Code:        in.Code,
+				OriginPrice: in.OriginPrice,
+				Price:       in.Price,
+				Cost:        in.Cost,
+				Weight:      in.Weight,
+				Bulk:        in.Bulk,
 				Stock:       iv.StockNum,
 				SaleNum:     iv.SaleNum,
 			}
@@ -421,7 +428,7 @@ func (c *cartImpl) CheckedItems(checked map[int64][]int64) []*cart.ItemPair {
 	if checked != nil {
 		for _, v := range c.value.Items {
 			arr, ok := checked[int64(v.ItemId)]
-			if !ok {
+			if ok {
 				continue
 			}
 			for _, skuId := range arr {

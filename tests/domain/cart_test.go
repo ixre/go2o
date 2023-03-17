@@ -11,6 +11,15 @@ import (
 	"github.com/ixre/gof/types/typeconv"
 )
 
+func TestGetNormalCartItems(t *testing.T) {
+	var cartId = 596
+	repo := ti.Factory.GetCartRepo()
+	c := repo.GetNormalCart(int32(cartId)).(cart.INormalCart)
+	for _, v := range c.Items() {
+		t.Log(v.Id, v.ItemId, v.Sku == nil)
+	}
+}
+
 // 测试普通购物车
 func TestNormalCart(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
