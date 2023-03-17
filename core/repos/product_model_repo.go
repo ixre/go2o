@@ -5,6 +5,7 @@ import (
 	"log"
 
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/product"
 	pmImpl "github.com/ixre/go2o/core/domain/pro_model"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -92,6 +93,22 @@ func (p *proModelRepo) getProModel(primary interface{}) *promodel.ProductModel {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProductModel")
 	}
 	return nil
+}
+
+
+// 获取模块关联的分类
+func (c *proModelRepo) CheckModelIsUsed(modelId int) (bool, string) {
+	var list []*product.Category
+	err := c.o.Select(&list, "model_id=$1", modelId)
+
+	if err == nil {
+		log.Printf("[ Orm][ Error]:%s; Entity:ProdCategory \n", err.Error())
+		return true, "未知分类"
+	}
+	if len(list) > 0 {
+		return true, list[0].Name
+	}
+	return false, ""
 }
 
 // Select ProductModel

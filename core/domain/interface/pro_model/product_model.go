@@ -1,6 +1,8 @@
 package promodel
 
-import "github.com/ixre/go2o/core/infrastructure/domain"
+import (
+	"github.com/ixre/go2o/core/infrastructure/domain"
+)
 
 var (
 	ErrEmptyAttrArray = domain.NewError(
@@ -11,6 +13,8 @@ var (
 		"err_empty_brand_array", "模型至少包含一个品牌")
 	ErrExistsBrand = domain.NewError(
 		"err_exists_brand", "已存在相同名称的品牌")
+	ErrModelIsUsed = domain.NewError(
+		"err_product_model_is_used", "模型已被分类\"%s\"使用")
 )
 
 type ProductModel struct {
@@ -73,6 +77,9 @@ type IProductModelRepo interface {
 	BrandService() IBrandService
 	// 获取模型的商品品牌
 	GetModelBrands(proModel int) []*ProductBrand
+
+	// 检查模块是否关联分类
+	CheckModelIsUsed(modelId int) (bool, string)
 
 	// Select ProductModel
 	SelectProModel(where string, v ...interface{}) []*ProductModel

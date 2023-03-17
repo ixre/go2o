@@ -2,6 +2,7 @@ package promodel
 
 import (
 	"errors"
+	"fmt"
 
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/infrastructure/format"
@@ -10,7 +11,7 @@ import (
 var _ promodel.IProductModel = new(modelImpl)
 
 type modelImpl struct {
-	rep          promodel.IProductModelRepo
+	repo         promodel.IProductModelRepo
 	value        *promodel.ProductModel
 	attrService  promodel.IAttrService
 	specService  promodel.ISpecService
@@ -21,7 +22,7 @@ func NewModel(v *promodel.ProductModel, rep promodel.IProductModelRepo,
 	attrService promodel.IAttrService, specService promodel.ISpecService,
 	brandService promodel.IBrandService) promodel.IProductModel {
 	return &modelImpl{
-		rep:          rep,
+		repo:         rep,
 		value:        v,
 		attrService:  attrService,
 		specService:  specService,
@@ -85,7 +86,7 @@ func (m *modelImpl) SetSpecs(s []*promodel.Spec) error {
 
 // 获取关联的品牌编号
 func (m *modelImpl) Brands() []*promodel.ProductBrand {
-	return m.rep.BrandService().Brands(m.GetAggregateRootId())
+	return m.repo.BrandService().Brands(m.GetAggregateRootId())
 }
 
 // 关联品牌
@@ -102,7 +103,7 @@ func (m *modelImpl) Save() (id int, err error) {
 	var i int
 	// 新增模型
 	if m.GetAggregateRootId() <= 0 {
-		i, err = m.rep.SaveProModel(m.value)
+		i, err = m.repo.SaveProModel(m.value)
 		if err == nil {
 			m.value.Id = i
 		} else {
@@ -137,7 +138,7 @@ func (m *modelImpl) Save() (id int, err error) {
 	}
 	// 保存商品模型
 	if err == nil {
-		i, err = m.rep.SaveProModel(m.value)
+		i, err = m.repo.SaveProModel(m.value)
 		if err == nil {
 			m.value.Id = i
 		}
@@ -149,7 +150,7 @@ func (m *modelImpl) Save() (id int, err error) {
 func (m *modelImpl) saveModelSpecs(specs []*promodel.Spec) (err error) {
 	pk := m.GetAggregateRootId()
 	// 获取存在的项
-	old := m.rep.SelectSpec("prod_model = $1", pk)
+	old := m.repo.SelectSpec("prod_model = $1", pk)
 	// 分析当前项目并加入到MAP中
 	delList := []int{}
 	currMap := make(map[int]*promodel.Spec, len(specs))
@@ -183,7 +184,7 @@ func (m *modelImpl) saveModelSpecs(specs []*promodel.Spec) (err error) {
 func (m *modelImpl) saveModelAttrs(attrs []*promodel.Attr) (err error) {
 	pk := m.GetAggregateRootId()
 	// 获取存在的项
-	old := m.rep.SelectAttr("prod_model = $1", pk)
+	old := m.repo.SelectAttr("prod_model = $1", pk)
 	// 分析当前项目并加入到MAP中
 	delList := []int{}
 	currMap := make(map[int]*promodel.Attr, len(attrs))
@@ -216,11 +217,11 @@ func (m *modelImpl) saveModelAttrs(attrs []*promodel.Attr) (err error) {
 func (m *modelImpl) saveModelBrand(brandIds []int) (err error) {
 	pk := m.GetAggregateRootId()
 	//获取存在的品牌
-	old := m.rep.SelectProModelBrand("prod_model = $1", pk)
+	old := m.repo.SelectProModelBrand("prod_model = $1", pk)
 	//删除不包括的品牌
 	idArrStr := format.IntArrStrJoin(brandIds)
 	if len(old) > 0 {
-		m.rep.BatchDeleteProModelBrand("prod_model = $1"+
+		m.repo.BatchDeleteProModelBrand("prod_model = $1"+
 			" AND brand_id NOT IN("+idArrStr+")", pk)
 	}
 	//写入品牌
@@ -238,7 +239,7 @@ func (m *modelImpl) saveModelBrand(brandIds []int) (err error) {
 				BrandId: v,
 				ModelId: pk,
 			}
-			_, err = m.rep.SaveProModelBrand(e)
+			_, err = m.repo.SaveProModelBrand(e)
 			if err != nil {
 				return err
 			}
@@ -247,7 +248,22 @@ func (m *modelImpl) saveModelBrand(brandIds []int) (err error) {
 	return nil
 }
 
-// Destroy implements promodel.IProductModel
-func (*modelImpl) Destroy() error {
-	panic("unimplemented")
+// Destroy 删除产品模型
+func (m *modelImpl) Destroy() error {
+	b, cat := m.repo.CheckModelIsUsed(m.GetAggregateRootId())
+	if b {
+		return fmt.Errorf(promodel.ErrEmptyAttrArray.Error(), cat)
+	}
+	var err error
+	for _, v := range m.Specs() {
+		if err = m.specService.DeleteSpec(v.Id); err != nil {
+			return err
+		}
+	}
+	for _, v := range m.Attrs() {
+		if err = m.attrService.DeleteAttr(v.Id); err != nil {
+			return err
+		}
+	}
+	return m.repo.DeleteProModel(m.GetAggregateRootId())
 }
