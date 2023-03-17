@@ -3,6 +3,7 @@ package cart
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -129,7 +130,7 @@ func (c *wholesaleCartImpl) check() error {
 			}
 		}
 		if stock == 0 {
-			return item.ErrFullOfStock // 已经卖完了
+			return fmt.Errorf(item.ErrFullOfStock.Error(), it.GetValue().Title) // 已经卖完了
 		}
 		if stock < v.Quantity {
 			return item.ErrOutOfStock // 超出库存
@@ -268,7 +269,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, reset bool,
 	stock := iv.StockNum
 	// 判断是否上架
 	if iv.ShelveState != item.ShelvesOn {
-		return nil, item.ErrNotOnShelves //未上架
+		return nil, fmt.Errorf(item.ErrNotOnShelves.Error(), iv.Title) //未上架
 	}
 	// 验证批发权限
 	wsIt := it.Wholesale()
@@ -290,7 +291,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int64, quantity int32, reset bool,
 	}
 	// 检查是否已经卖完了
 	if stock == 0 {
-		return nil, item.ErrFullOfStock
+		return nil, fmt.Errorf(item.ErrFullOfStock.Error(), it.GetValue().Title) // 已经卖完了
 	}
 	// 添加数量
 	for _, v := range c.value.Items {

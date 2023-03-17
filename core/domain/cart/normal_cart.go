@@ -2,6 +2,7 @@ package cart
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
@@ -120,7 +121,7 @@ func (c *cartImpl) check() error {
 				}
 			}
 			if stock == 0 {
-				return item.ErrFullOfStock // 已经卖完了
+				return fmt.Errorf(item.ErrFullOfStock.Error(), it.GetValue().Title) // 已经卖完了
 			}
 			if stock < v.Quantity {
 				return item.ErrOutOfStock // 超出库存
@@ -247,7 +248,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly boo
 	// 判断是否上架
 
 	if iv.ShelveState != item.ShelvesOn {
-		return nil, item.ErrNotOnShelves //未上架
+		return nil, fmt.Errorf(item.ErrNotOnShelves.Error(), iv.Title) //未上架
 	}
 	// 判断商品SkuId
 	if skuId > 0 {
@@ -261,7 +262,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly boo
 	}
 	// 检查是否已经卖完了
 	if stock == 0 {
-		return nil, item.ErrFullOfStock
+		return nil, fmt.Errorf(item.ErrFullOfStock.Error(), it.GetValue().Title) // 已经卖完了
 	}
 
 	// 添加数量

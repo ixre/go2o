@@ -33,7 +33,7 @@ var (
 		"err_out_of_stock", "库存不足")
 
 	ErrFullOfStock = domain.NewError(
-		"err_full_of_stock", "商品已经售完")
+		"err_full_of_stock", "商品\"%s\"已经售完")
 
 	ErrInternalDisallow = domain.NewError(
 		"err_sale_tag_internal_disallow", "不允许删除内置销售标签！")

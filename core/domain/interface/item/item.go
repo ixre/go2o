@@ -75,7 +75,7 @@ var (
 		"no_such_snapshot", "商品快照不存在")
 
 	ErrNotOnShelves = domain.NewError(
-		"not_on_shelves", "商品已下架")
+		"not_on_shelves", "商品\"%s\"已下架")
 
 	ErrGoodsMinProfitRate = domain.NewError(
 		"err_goods_min_profit_rate", "商品利润率不能低于%s")
