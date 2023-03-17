@@ -252,7 +252,7 @@ func (m *modelImpl) saveModelBrand(brandIds []int) (err error) {
 func (m *modelImpl) Destroy() error {
 	b, cat := m.repo.CheckModelIsUsed(m.GetAggregateRootId())
 	if b {
-		return fmt.Errorf(promodel.ErrEmptyAttrArray.Error(), cat)
+		return fmt.Errorf(promodel.ErrModelIsUsed.Error(), cat)
 	}
 	var err error
 	for _, v := range m.Specs() {

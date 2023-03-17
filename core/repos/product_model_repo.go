@@ -99,7 +99,6 @@ func (p *proModelRepo) getProModel(primary interface{}) *promodel.ProductModel {
 func (c *proModelRepo) CheckModelIsUsed(modelId int) (bool, string) {
 	var list []*product.Category
 	err := c.o.Select(&list, "model_id=$1", modelId)
-
 	if err != nil {
 		log.Printf("[ Orm][ Error]:%s; Entity:ProdCategory \n", err.Error())
 		return true, "未知分类"
