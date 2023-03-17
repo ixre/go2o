@@ -36,7 +36,7 @@ func (p *proModelRepo) CreateModel(v *promodel.ProductModel) promodel.IProductMo
 
 // 获取商品模型
 func (p *proModelRepo) GetModel(id int) promodel.IProductModel {
-	v := p.GetProModel(id)
+	v := p.getProModel(id)
 	if v != nil {
 		return p.CreateModel(v)
 	}
@@ -82,7 +82,7 @@ func (p *proModelRepo) GetModelBrands(proModel int) []*promodel.ProductBrand {
 }
 
 // Get ProductModel
-func (p *proModelRepo) GetProModel(primary interface{}) *promodel.ProductModel {
+func (p *proModelRepo) getProModel(primary interface{}) *promodel.ProductModel {
 	e := promodel.ProductModel{}
 	err := p.o.Get(primary, &e)
 	if err == nil {

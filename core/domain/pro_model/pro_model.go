@@ -246,3 +246,8 @@ func (m *modelImpl) saveModelBrand(brandIds []int) (err error) {
 	}
 	return nil
 }
+
+// Destroy implements promodel.IProductModel
+func (*modelImpl) Destroy() error {
+	panic("unimplemented")
+}

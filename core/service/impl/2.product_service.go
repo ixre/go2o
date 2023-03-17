@@ -284,9 +284,12 @@ func (p *productService) SaveProductModel(_ context.Context, r *proto.SaveProduc
 
 // DeleteModel_ 删除产品模型
 func (p *productService) DeleteModel_(_ context.Context, id *proto.ProductModelId) (*proto.Result, error) {
-	//err := p.pmRepo.DeleteProModel(id)
-	//todo: 暂时不允许删除模型
-	return p.result(errors.New("暂时不允许删除模型")), nil
+	model := p.pmRepo.GetModel(int(id.Value))
+	if model == nil {
+		return p.result(errors.New("商品模型不存在")), nil
+	}
+	err := model.Destroy()
+	return p.result(err), nil
 }
 
 // GetBrand 获取产品品牌

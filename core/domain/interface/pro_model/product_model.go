@@ -54,6 +54,8 @@ type IProductModel interface {
 	SetBrands(brandId []int) error
 	// 保存
 	Save() (int, error)
+	// 删除模型
+	Destroy() error
 }
 
 type IProductModelRepo interface {
@@ -72,8 +74,6 @@ type IProductModelRepo interface {
 	// 获取模型的商品品牌
 	GetModelBrands(proModel int) []*ProductBrand
 
-	// Get ProductModel
-	GetProModel(primary interface{}) *ProductModel
 	// Select ProductModel
 	SelectProModel(where string, v ...interface{}) []*ProductModel
 	// Save ProductModel
