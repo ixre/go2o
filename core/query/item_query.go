@@ -170,8 +170,8 @@ func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 		where += fmt.Sprintf(" AND item_snapshot.cat_id IN (%s)",
 			format.IntArrStrJoin(catIds))
 	}
-	if len(keyword) > 0{
-		where += "item_snapshot.title LIKE '%" + keyword + "%'"
+	if len(keyword) > 0 {
+		where += " AND item_snapshot.title LIKE '%" + keyword + "%'"
 	}
 	if flag > 0 {
 		where += fmt.Sprintf(" AND (item_snapshot.item_flag & %d = %d)", flag, flag)
