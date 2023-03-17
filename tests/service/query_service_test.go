@@ -107,8 +107,8 @@ func TestQuerySearchItem(t *testing.T) {
 	list, err := impl.QueryService.SearchItem(context.TODO(), &proto.SearchItemRequest{
 		ShopId:     0,
 		Keyword:    "1",
-		CategoryId: 0,
-		Begin:      0,
+		//CategoryId: 0,
+		//Begin:      0,
 		Size:       10,
 	})
 
