@@ -183,6 +183,10 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.NormalCartItem) {
 	}
 	var sku *item.Sku
 	for _, v := range items {
+		in := list[v.ItemId]
+		if in == nil {
+			continue
+		}
 		it := c.goodsRepo.GetItem(v.ItemId)
 		if it == nil {
 			continue
@@ -190,7 +194,6 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.NormalCartItem) {
 		if v.SkuId > 0 {
 			sku = it.GetSku(v.SkuId)
 		} else {
-			in := list[v.ItemId]
 			iv := it.GetValue()
 			sku = &item.Sku{
 				ProductId:   in.ProductId,
