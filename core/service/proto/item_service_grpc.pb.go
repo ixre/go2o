@@ -31,7 +31,6 @@ const (
 	ItemService_SignAsIllegal_FullMethodName                  = "/ItemService/SignAsIllegal"
 	ItemService_SetShelveState_FullMethodName                 = "/ItemService/SetShelveState"
 	ItemService_GetItemDetailData_FullMethodName              = "/ItemService/GetItemDetailData"
-	ItemService_GetPagingOnShelvesItem_FullMethodName         = "/ItemService/GetPagingOnShelvesItem"
 	ItemService_GetItems_FullMethodName                       = "/ItemService/GetItems"
 	ItemService_GetWholesalePriceArray_FullMethodName         = "/ItemService/GetWholesalePriceArray"
 	ItemService_SaveWholesalePrice_FullMethodName             = "/ItemService/SaveWholesalePrice"
@@ -72,8 +71,6 @@ type ItemServiceClient interface {
 	SetShelveState(ctx context.Context, in *ShelveStateRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取商品详细数据
 	GetItemDetailData(ctx context.Context, in *ItemDetailRequest, opts ...grpc.CallOption) (*String, error)
-	// 获取上架商品数据（分页）
-	GetPagingOnShelvesItem(ctx context.Context, in *PagingGoodsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error)
 	// 获取上架商品数据
 	GetItems(ctx context.Context, in *GetItemsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error)
 	// 获取批发价格数组
@@ -212,15 +209,6 @@ func (c *itemServiceClient) GetItemDetailData(ctx context.Context, in *ItemDetai
 	return out, nil
 }
 
-func (c *itemServiceClient) GetPagingOnShelvesItem(ctx context.Context, in *PagingGoodsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error) {
-	out := new(PagingGoodsResponse)
-	err := c.cc.Invoke(ctx, ItemService_GetPagingOnShelvesItem_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *itemServiceClient) GetItems(ctx context.Context, in *GetItemsRequest, opts ...grpc.CallOption) (*PagingGoodsResponse, error) {
 	out := new(PagingGoodsResponse)
 	err := c.cc.Invoke(ctx, ItemService_GetItems_FullMethodName, in, out, opts...)
@@ -339,8 +327,6 @@ type ItemServiceServer interface {
 	SetShelveState(context.Context, *ShelveStateRequest) (*Result, error)
 	// 获取商品详细数据
 	GetItemDetailData(context.Context, *ItemDetailRequest) (*String, error)
-	// 获取上架商品数据（分页）
-	GetPagingOnShelvesItem(context.Context, *PagingGoodsRequest) (*PagingGoodsResponse, error)
 	// 获取上架商品数据
 	GetItems(context.Context, *GetItemsRequest) (*PagingGoodsResponse, error)
 	// 获取批发价格数组
@@ -403,9 +389,6 @@ func (UnimplementedItemServiceServer) SetShelveState(context.Context, *ShelveSta
 }
 func (UnimplementedItemServiceServer) GetItemDetailData(context.Context, *ItemDetailRequest) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetItemDetailData not implemented")
-}
-func (UnimplementedItemServiceServer) GetPagingOnShelvesItem(context.Context, *PagingGoodsRequest) (*PagingGoodsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPagingOnShelvesItem not implemented")
 }
 func (UnimplementedItemServiceServer) GetItems(context.Context, *GetItemsRequest) (*PagingGoodsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetItems not implemented")
@@ -666,24 +649,6 @@ func _ItemService_GetItemDetailData_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ItemService_GetPagingOnShelvesItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PagingGoodsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ItemServiceServer).GetPagingOnShelvesItem(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ItemService_GetPagingOnShelvesItem_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ItemServiceServer).GetPagingOnShelvesItem(ctx, req.(*PagingGoodsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ItemService_GetItems_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetItemsRequest)
 	if err := dec(in); err != nil {
@@ -918,10 +883,6 @@ var ItemService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetItemDetailData",
 			Handler:    _ItemService_GetItemDetailData_Handler,
-		},
-		{
-			MethodName: "GetPagingOnShelvesItem",
-			Handler:    _ItemService_GetPagingOnShelvesItem_Handler,
 		},
 		{
 			MethodName: "GetItems",

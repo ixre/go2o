@@ -11,6 +11,7 @@ import (
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
+	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/db/orm"
@@ -337,8 +338,6 @@ func (q *queryService) PagingOnShelvesGoods(_ context.Context, r *proto.PagingSh
 		Total: 0,
 		Data:  make([]*proto.SGoods, 0),
 	}
-	var list []*valueobject.Goods
-	var total int
 	var ids []int
 	if r.CategoryId > 0 {
 		cat := q.catRepo.GlobCatService().GetCategory(int(r.CategoryId))
@@ -352,12 +351,26 @@ func (q *queryService) PagingOnShelvesGoods(_ context.Context, r *proto.PagingSh
 	if len(strings.TrimSpace(r.Params.SortBy)) == 0 {
 		r.Params.SortBy = "item_snapshot.update_time DESC"
 	}
-	total, list = q.itemQuery.GetPagingOnShelvesGoods(
-		r.ShopId, ids, int(r.Flag),
-		int(r.Params.Begin),
-		int(r.Params.End),
-		r.Params.Where,
-		r.Params.SortBy)
+	var total int
+	var list []*valueobject.Goods
+	switch r.ItemType {
+	case proto.EItemSalesType_IT_NORMAL:
+		total, list = q.itemQuery.GetPagingOnShelvesGoods(
+			r.ShopId, ids, int(r.Flag),
+			int(r.Params.Begin),
+			int(r.Params.End),
+			r.Keyword,
+			r.Params.Where,
+			r.Params.SortBy)
+	case proto.EItemSalesType_IT_WHOLESALE:
+		// total, list = q.getPagedOnShelvesItemForWholesale(
+		// 	int32(r.CategoryId),
+		// 	int32(r.Params.Begin),
+		// 	int32(r.Params.End),
+		// 	where,
+		// 	r.Params.SortBy)
+	}
+
 	ret.Total = int64(total)
 	for _, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
@@ -430,4 +443,46 @@ func (q *queryService) SearchItem(_ context.Context, req *proto.SearchItemReques
 		ret.Value = append(ret.Value, dst)
 	}
 	return ret, nil
+}
+
+func (q *queryService) getPagedOnShelvesItemForWholesale(catId int32, start,
+	end int32, where, sortBy string) (int32, []*proto.SUnifiedViewItem) {
+
+	total, list := q.itemQuery.GetPagingOnShelvesItemForWholesale(catId,
+		start, end, where, sortBy)
+	arr := make([]*proto.SUnifiedViewItem, len(list))
+	for j, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		dto := parser.ItemDtoV2(*v)
+		q.attachWholesaleItemDataV2(dto)
+		arr[j] = dto
+	}
+	return total, arr
+}
+
+// 附加批发商品的信息
+func (q *queryService) attachWholesaleItemDataV2(dto *proto.SUnifiedViewItem) {
+	dto.Data = make(map[string]string)
+	// vendor := q.mchRepo.GetMerchant(int(dto.VendorId))
+	// if vendor != nil {
+	// 	vv := vendor.GetValue()
+	// 	pStr := q.valueRepo.GetAreaName(int32(vv.Province))
+	// 	cStr := q.valueRepo.GetAreaName(int32(vv.City))
+	// 	dto.Data["VendorName"] = vv.CompanyName
+	// 	dto.Data["ShipArea"] = pStr + cStr
+	// 	// 认证信息
+	// 	ei := vendor.ProfileManager().GetEnterpriseInfo()
+	// 	if ei != nil && ei.Reviewed == enum.ReviewPass {
+	// 		dto.Data["Authorized"] = "true"
+	// 	} else {
+	// 		dto.Data["Authorized"] = "false"
+	// 	}
+	// 	// 品牌
+	// 	b := q.promRepo.BrandService().Get(int(dto.BrandId))
+	// 	if b != nil {
+	// 		dto.Data["BrandName"] = b.Name
+	// 		dto.Data["BrandImage"] = b.Image
+	// 		dto.Data["BrandId"] = strconv.Itoa(int(b.Id))
+	// 	}
+	// }
 }

@@ -105,9 +105,11 @@ func TestMemberStatifics(t *testing.T) {
 
 func TestQuerySearchItem(t *testing.T) {
 	list, err := impl.QueryService.SearchItem(context.TODO(), &proto.SearchItemRequest{
-		ShopId:  0,
-		Keyword: "1",
-		Size:    10,
+		ShopId:     0,
+		Keyword:    "1",
+		CategoryId: 0,
+		Begin:      0,
+		Size:       10,
 	})
 
 	if err != nil {

@@ -242,14 +242,18 @@ message PagingAccountLogRequest {
 
 // 分页店铺商品请求
 message PagingShopGoodsRequest {
+    // 商品类型
+    EItemSalesType itemType = 1;
     // 店铺编号
-    int64 shopId = 1;
+    int64 shopId = 2;
     // 分类编号
-    int64 categoryId = 2;
+    int64 categoryId = 3;
     // 商品标签
-    int32 flag = 3;
+    int32 flag = 4;
+    // 关键词
+    string keyword = 5;
     // 分页参数
-    SPagingParams params = 4;
+    SPagingParams params = 6;
 }
 
 

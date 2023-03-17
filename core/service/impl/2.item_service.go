@@ -12,10 +12,7 @@ package impl
 import (
 	"context"
 	"errors"
-	"strconv"
-	"strings"
 
-	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
@@ -278,94 +275,6 @@ func (i *itemService) GetItemDetailData(_ context.Context, request *proto.ItemDe
 		return &proto.String{Value: string(data)}, nil
 	}
 	return &proto.String{Value: "不支持的商品类型"}, nil
-}
-
-// 获取上架商品数据（分页）
-func (i *itemService) GetPagingOnShelvesItem(_ context.Context, r *proto.PagingGoodsRequest) (*proto.PagingGoodsResponse, error) {
-	ret := &proto.PagingGoodsResponse{
-		Total: 0,
-		Data:  make([]*proto.SUnifiedViewItem, 0),
-	}
-	where := r.Params.Where
-	if wd := strings.TrimSpace(r.Keyword); len(wd) > 0 {
-		where += " AND item_snapshot.title LIKE '%" + r.Keyword + "%'"
-	}
-
-	var total int32
-	var list []*proto.SUnifiedViewItem
-	switch r.ItemType {
-	case proto.EItemSalesType_IT_NORMAL:
-		total, list = i.getPagingOnShelvesItem(
-			int32(r.CategoryId),
-			int32(r.Params.Begin),
-			int32(r.Params.End),
-			where,
-			r.Params.SortBy)
-	case proto.EItemSalesType_IT_WHOLESALE:
-		total, list = i.getPagedOnShelvesItemForWholesale(
-			int32(r.CategoryId),
-			int32(r.Params.Begin),
-			int32(r.Params.End),
-			where,
-			r.Params.SortBy)
-	}
-	ret.Total = int64(total)
-	ret.Data = list
-	return ret, nil
-}
-func (i *itemService) getPagingOnShelvesItem(catId int32, start,
-	end int32, where, sortBy string) (int32, []*proto.SUnifiedViewItem) {
-
-	total, list := i.itemQuery.GetPagingOnShelvesItem(catId,
-		start, end, where, sortBy)
-	arr := make([]*proto.SUnifiedViewItem, len(list))
-	for i, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ItemDtoV2(*v)
-	}
-	return total, arr
-}
-
-func (i *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
-	end int32, where, sortBy string) (int32, []*proto.SUnifiedViewItem) {
-
-	total, list := i.itemQuery.GetPagingOnShelvesItemForWholesale(catId,
-		start, end, where, sortBy)
-	arr := make([]*proto.SUnifiedViewItem, len(list))
-	for j, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
-		dto := parser.ItemDtoV2(*v)
-		i.attachWholesaleItemDataV2(dto)
-		arr[j] = dto
-	}
-	return total, arr
-}
-
-// 附加批发商品的信息
-func (i *itemService) attachWholesaleItemDataV2(dto *proto.SUnifiedViewItem) {
-	dto.Data = make(map[string]string)
-	vendor := i.mchRepo.GetMerchant(int(dto.VendorId))
-	if vendor != nil {
-		vv := vendor.GetValue()
-		pStr := i.valueRepo.GetAreaName(int32(vv.Province))
-		cStr := i.valueRepo.GetAreaName(int32(vv.City))
-		dto.Data["VendorName"] = vv.CompanyName
-		dto.Data["ShipArea"] = pStr + cStr
-		// 认证信息
-		ei := vendor.ProfileManager().GetEnterpriseInfo()
-		if ei != nil && ei.Reviewed == enum.ReviewPass {
-			dto.Data["Authorized"] = "true"
-		} else {
-			dto.Data["Authorized"] = "false"
-		}
-		// 品牌
-		b := i.promRepo.BrandService().Get(int(dto.BrandId))
-		if b != nil {
-			dto.Data["BrandName"] = b.Name
-			dto.Data["BrandImage"] = b.Image
-			dto.Data["BrandId"] = strconv.Itoa(int(b.Id))
-		}
-	}
 }
 
 // 获取上架商品数据

@@ -54,9 +54,7 @@ service ItemService {
     // rpc GetValueGoodsBySaleLabel (GetItemsByLabelRequest) returns (PagingShopGoodsResponse) {
     // }
   
-    // 获取上架商品数据（分页）
-    rpc GetPagingOnShelvesItem (PagingGoodsRequest) returns (PagingGoodsResponse) {
-    }
+
     // 获取上架商品数据
     rpc GetItems (GetItemsRequest) returns (PagingGoodsResponse) {
     }
@@ -92,15 +90,6 @@ service ItemService {
     }
 }
 
-
-message PagingGoodsRequest {
-    EItemSalesType itemType = 1;
-    int64 sellerId = 2;
-    int64 categoryId = 3;
-    // 关键词
-    string keyword = 4;
-    SPagingParams params = 5;
-}
 
 
 message SaleLabelItemsRequest_ {
