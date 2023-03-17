@@ -2,12 +2,12 @@ package cart
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/log"
 )
@@ -20,10 +20,10 @@ type cartImpl struct {
 	rep        cart.ICartRepo
 	goodsRepo  item.IItemRepo
 	memberRepo member.IMemberRepo
-	summary    string
-	shop       shop.IShop
-	deliver    member.IDeliverAddress
-	snapMap    map[int64]*item.Snapshot
+	//summary    string
+	//shop       shop.IShop
+	//deliver    member.IDeliverAddress
+	snapMap map[int64]*item.Snapshot
 }
 
 func NewNormalCart(val *cart.NormalCart, rep cart.ICartRepo,
@@ -70,6 +70,13 @@ func (c *cartImpl) init() cart.ICart {
 	// 初始化购物车的信息
 	if c.value != nil && c.value.Items != nil {
 		c.setAttachGoodsInfo(c.value.Items)
+		arr := c.value.Items
+		c.value.Items = make([]*cart.NormalCartItem, 0)
+		for _, v := range arr {
+			if v.Sku != nil {
+				c.value.Items = append(c.value.Items, v)
+			}
+		}
 	}
 	return c
 }
@@ -120,7 +127,7 @@ func (c *cartImpl) check() error {
 				}
 			}
 			if stock == 0 {
-				return item.ErrFullOfStock // 已经卖完了
+				return fmt.Errorf(item.ErrFullOfStock.Error(), it.GetValue().Title) // 已经卖完了
 			}
 			if stock < v.Quantity {
 				return item.ErrOutOfStock // 超出库存
@@ -176,6 +183,10 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.NormalCartItem) {
 	}
 	var sku *item.Sku
 	for _, v := range items {
+		in := list[v.ItemId]
+		if in == nil {
+			continue
+		}
 		it := c.goodsRepo.GetItem(v.ItemId)
 		if it == nil {
 			continue
@@ -185,18 +196,18 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.NormalCartItem) {
 		} else {
 			iv := it.GetValue()
 			sku = &item.Sku{
-				ProductId:   iv.ProductId,
-				ItemId:      iv.Id,
-				Title:       iv.Title,
-				Image:       iv.Image,
+				ProductId:   in.ProductId,
+				ItemId:      v.ItemId,
+				Title:       in.Title,
+				Image:       in.Image,
 				SpecData:    "",
 				SpecWord:    "",
-				Code:        iv.Code,
-				OriginPrice: iv.OriginPrice,
-				Price:       iv.Price,
-				Cost:        iv.Cost,
-				Weight:      iv.Weight,
-				Bulk:        iv.Bulk,
+				Code:        in.Code,
+				OriginPrice: in.OriginPrice,
+				Price:       in.Price,
+				Cost:        in.Cost,
+				Weight:      in.Weight,
+				Bulk:        in.Bulk,
 				Stock:       iv.StockNum,
 				SaleNum:     iv.SaleNum,
 			}
@@ -247,7 +258,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly boo
 	// 判断是否上架
 
 	if iv.ShelveState != item.ShelvesOn {
-		return nil, item.ErrNotOnShelves //未上架
+		return nil, fmt.Errorf(item.ErrNotOnShelves.Error(), iv.Title) //未上架
 	}
 	// 判断商品SkuId
 	if skuId > 0 {
@@ -261,7 +272,7 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly boo
 	}
 	// 检查是否已经卖完了
 	if stock == 0 {
-		return nil, item.ErrFullOfStock
+		return nil, fmt.Errorf(item.ErrFullOfStock.Error(), it.GetValue().Title) // 已经卖完了
 	}
 
 	// 添加数量
@@ -420,7 +431,7 @@ func (c *cartImpl) CheckedItems(checked map[int64][]int64) []*cart.ItemPair {
 	if checked != nil {
 		for _, v := range c.value.Items {
 			arr, ok := checked[int64(v.ItemId)]
-			if !ok {
+			if ok {
 				continue
 			}
 			for _, skuId := range arr {

@@ -17,6 +17,9 @@ type (
 		// 获取最新的快照
 		GetLatestSnapshot(itemId int64) *Snapshot
 
+		// RemoveSnapshot 移除快照
+		RemoveSnapshot(itemId int64) error
+
 		// 获取最新的商品销售快照,如果商品有更新,则更新销售快照
 		GetLatestSalesSnapshot(itemId, skuId int64) *TradeSnapshot
 
@@ -71,6 +74,8 @@ type (
 		Weight int32 `db:"weight"`
 		// 体积(ml)
 		Bulk int32 `db:"bulk"`
+		// 商品购物保障
+		SafeguardFlag int `db:"safeguard_flag"`
 		// 会员价
 		LevelSales int32 `db:"level_sales"`
 		// 上架状态

@@ -75,7 +75,7 @@ var (
 		"no_such_snapshot", "商品快照不存在")
 
 	ErrNotOnShelves = domain.NewError(
-		"not_on_shelves", "商品已下架")
+		"not_on_shelves", "商品\"%s\"已下架")
 
 	ErrGoodsMinProfitRate = domain.NewError(
 		"err_goods_min_profit_rate", "商品利润率不能低于%s")
@@ -327,9 +327,10 @@ type (
 		// RemoveGoodSMemberLevelPrice 移除会员价
 		RemoveGoodSMemberLevelPrice(id int) error
 
-		// SaveSnapshot 保存快照
+		// SaveSnapshot 保存
 		SaveSnapshot(*Snapshot) (int64, error)
-
+		// DeleteSnapshot 删除商品快照
+		DeleteSnapshot(itemId int64) error
 		// GetSnapshots 根据指定商品快照
 		GetSnapshots(skuIdArr []int64) []Snapshot
 
@@ -410,6 +411,8 @@ type (
 		Weight int32 `db:"weight"`
 		// 体积:毫升(ml)
 		Bulk int32 `db:"bulk"`
+		// 商品购物保障
+		SafeguardFlag int `db:"safeguard_flag"`
 		// 是否上架
 		ShelveState int32 `db:"shelve_state"`
 		// 审核状态

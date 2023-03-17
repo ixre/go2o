@@ -21,7 +21,7 @@ service ProductService {
     }
 
     // 保存产品模型
-    rpc SaveProductModel (SProductModel) returns (Result) {
+    rpc SaveProductModel (SaveProductModelRequest) returns (Result) {
     }
     // 删除产品模型
     rpc DeleteModel_ (ProductModelId) returns (Result) {
@@ -125,6 +125,26 @@ message SProductModel {
     // 是否启用
     int32 enabled = 8;
 }
+
+
+// 保存产品模型请求
+message SaveProductModelRequest {
+    // 编号
+    int64 id = 1;
+    // 名称
+    string name = 2;
+    // 关联品牌
+    repeated int64 brands = 3;
+    // 属性
+    repeated SProductAttr attrs = 4;
+    // 规格
+    repeated SProductSpec specs = 5;
+    // 是否更新规格和属性,为true时不更新品牌
+    bool updateAttrSpec = 7;
+    // 是否启用
+    int32 enabled = 8;
+}
+
 
 // 产品模型属性
 message SProductAttr {

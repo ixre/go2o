@@ -53,7 +53,7 @@ type ProductServiceClient interface {
 	// 获取属性项
 	GetAttrItem(ctx context.Context, in *ProductAttrItemId, opts ...grpc.CallOption) (*SProductAttrItem, error)
 	// 保存产品模型
-	SaveProductModel(ctx context.Context, in *SProductModel, opts ...grpc.CallOption) (*Result, error)
+	SaveProductModel(ctx context.Context, in *SaveProductModelRequest, opts ...grpc.CallOption) (*Result, error)
 	// 删除产品模型
 	DeleteModel_(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*Result, error)
 	// Get 产品品牌
@@ -130,7 +130,7 @@ func (c *productServiceClient) GetAttrItem(ctx context.Context, in *ProductAttrI
 	return out, nil
 }
 
-func (c *productServiceClient) SaveProductModel(ctx context.Context, in *SProductModel, opts ...grpc.CallOption) (*Result, error) {
+func (c *productServiceClient) SaveProductModel(ctx context.Context, in *SaveProductModelRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, ProductService_SaveProductModel_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -278,7 +278,7 @@ type ProductServiceServer interface {
 	// 获取属性项
 	GetAttrItem(context.Context, *ProductAttrItemId) (*SProductAttrItem, error)
 	// 保存产品模型
-	SaveProductModel(context.Context, *SProductModel) (*Result, error)
+	SaveProductModel(context.Context, *SaveProductModelRequest) (*Result, error)
 	// 删除产品模型
 	DeleteModel_(context.Context, *ProductModelId) (*Result, error)
 	// Get 产品品牌
@@ -328,7 +328,7 @@ func (UnimplementedProductServiceServer) GetAttr(context.Context, *ProductAttrId
 func (UnimplementedProductServiceServer) GetAttrItem(context.Context, *ProductAttrItemId) (*SProductAttrItem, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAttrItem not implemented")
 }
-func (UnimplementedProductServiceServer) SaveProductModel(context.Context, *SProductModel) (*Result, error) {
+func (UnimplementedProductServiceServer) SaveProductModel(context.Context, *SaveProductModelRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveProductModel not implemented")
 }
 func (UnimplementedProductServiceServer) DeleteModel_(context.Context, *ProductModelId) (*Result, error) {
@@ -459,7 +459,7 @@ func _ProductService_GetAttrItem_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _ProductService_SaveProductModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SProductModel)
+	in := new(SaveProductModelRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -471,7 +471,7 @@ func _ProductService_SaveProductModel_Handler(srv interface{}, ctx context.Conte
 		FullMethod: ProductService_SaveProductModel_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).SaveProductModel(ctx, req.(*SProductModel))
+		return srv.(ProductServiceServer).SaveProductModel(ctx, req.(*SaveProductModelRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

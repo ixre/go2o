@@ -135,6 +135,9 @@ func MergeRegistries() []*Registry {
 	mergeAdd("兑换1元所需要的积分(0不兑换)", IntegralExchangeQuantity, "1000", "")
 	mergeAdd("抵扣1元所需要的积分(0不抵扣)", IntegralDiscountQuantity, "1000", "")
 
+	// 商品
+	mergeAdd("修改商品是否需要审核", ItemGenerateSnapshotReviewEnabled, "1", "0:关闭,1:启用")
+
 	// 订单
 	mergeAdd("是否启用订单返利", OrderEnableAffiliateRebate, "0", "")
 	mergeAdd("全局订单返利比例", OrderGlobalAffiliateRebateRate, "0", "")

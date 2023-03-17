@@ -274,6 +274,7 @@ func (i *itemImpl) SetValue(v *item.GoodsItem) error {
 		i.value.ExpressTid = v.ExpressTid
 		i.value.Title = v.Title
 		i.value.ItemFlag = v.ItemFlag
+		i.value.SafeguardFlag = v.SafeguardFlag
 		i.value.ShortTitle = v.ShortTitle
 		i.value.Code = v.Code
 		i.value.StockNum = v.StockNum
@@ -434,7 +435,10 @@ func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 
 // 重置审核状态
 func (i *itemImpl) resetReview() {
-	i.value.ReviewState = enum.ReviewAwaiting
+	ir := i.registryRepo.Get(registry.ItemGenerateSnapshotReviewEnabled)
+	if ir != nil && ir.BoolValue() {
+		i.value.ReviewState = enum.ReviewAwaiting
+	}
 }
 
 // 检查商品数据是否正确
@@ -515,6 +519,9 @@ func (i *itemImpl) Save() (_ int64, err error) {
 				i.repo.SaveItemImage(v)
 			}
 		}
+	}
+	if err == nil && i.value.ReviewState == enum.ReviewPass {
+		_, err = i.repo.SnapshotService().GenerateSnapshot(i.value)
 	}
 	return i.value.Id, err
 }
@@ -622,6 +629,12 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 	}
 	i.value.ReviewRemark = remark
 	_, err := i.Save()
+	// 下架删除快照
+	if err == nil {
+		if i.value.ShelveState == item.ShelvesDown {
+			i.removeSnapshot()
+		}
+	}
 	return err
 }
 
@@ -736,8 +749,22 @@ func (i *itemImpl) ReleaseStock(skuId int64, quantity int32) error {
 func (i *itemImpl) Recycle() error {
 	if i.value.IsRecycle == 0 {
 		i.value.IsRecycle = 1
+		i.value.ShelveState = item.ShelvesDown
 		_, err := i.Save()
+		// 删除快照
+		if err == nil {
+			err = i.removeSnapshot()
+		}
 		return err
+	}
+	return nil
+}
+
+// 删除快照
+func (i *itemImpl) removeSnapshot() error {
+	if sn := i.Snapshot(); sn != nil {
+		i.snapshot = nil
+		return i.repo.SnapshotService().RemoveSnapshot(sn.ItemId)
 	}
 	return nil
 }
@@ -746,6 +773,7 @@ func (i *itemImpl) Recycle() error {
 func (i *itemImpl) RecycleRevert() error {
 	if i.value.IsRecycle == 1 {
 		i.value.IsRecycle = 0
+		i.value.ShelveState = item.ShelvesOn
 		_, err := i.Save()
 		return err
 	}

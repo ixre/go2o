@@ -394,15 +394,19 @@ func (m *MemberQuery) InviteMembersQuantity(memberId int64, where string) int {
 // 获取订单状态及其数量
 func (m *MemberQuery) OrdersQuantity(memberId int64) map[int]int {
 	mp := make(map[int]int, 0)
-	m.Connector.Query(`
+	err := m.Connector.Query(`
 	SELECT o.status,COUNT(0) as n FROM sale_sub_order o
-	GROUP BY o.status,o.buyer_id,is_forbidden
-	having is_forbidden = 0 AND o.buyer_id = $1`, func(rows *sql.Rows) {
+	GROUP BY o.status,o.buyer_id,is_forbidden,break_status
+	having is_forbidden = 0 AND break_status <> 0 
+	 AND o.buyer_id = $1`, func(rows *sql.Rows) {
 		s, n := 0, 0
 		for rows.Next() {
 			rows.Scan(&s, &n)
 			mp[s] = n
 		}
 	}, memberId)
+	if err != nil {
+		log.Println("[ GO2O][ ERROR]: query order quantity failed! ", err.Error())
+	}
 	return mp
 }

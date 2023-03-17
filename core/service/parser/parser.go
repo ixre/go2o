@@ -87,9 +87,10 @@ func ItemDataDto(src item.GoodsItem) *proto.SItemDataResponse {
 		OriginPrice: src.OriginPrice,
 		//Weight:       src.Weight,
 		//Bulk:         src.Bulk,
-		ShelveState:  src.ShelveState,
-		ReviewState:  src.ReviewState,
-		ReviewRemark: src.ReviewRemark,
+		ShelveState:   src.ShelveState,
+		ReviewState:   src.ReviewState,
+		ReviewRemark:  src.ReviewRemark,
+		SafeguardFlag: int32(src.SafeguardFlag),
 		//CreateTime:   src.CreateTime,
 	}
 	if src.SkuArray != nil {

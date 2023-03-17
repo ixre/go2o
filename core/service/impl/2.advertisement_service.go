@@ -44,7 +44,7 @@ func (a *advertisementService) GetPosition(_ context.Context, id *proto.AdPositi
 	if ip != nil {
 		return a.parseAdPositionDto(ip), nil
 	}
-	return nil,ad.ErrNoSuchAdPosition 
+	return nil, ad.ErrNoSuchAdPosition
 }
 
 func (a *advertisementService) SaveAdPosition(_ context.Context, r *proto.SAdPosition) (*proto.Result, error) {
@@ -297,7 +297,7 @@ func (a *advertisementService) parseHyperLinkAd(v *proto.STextAdData) *ad.HyperL
 	return &ad.HyperLink{
 		Id:      v.Id,
 		Title:   v.Title,
-		LinkUrl: v.LinkURL,
+		LinkUrl: v.LinkUrl,
 	}
 }
 
@@ -325,15 +325,21 @@ func (a *advertisementService) parseAdImage(v *proto.SImageAdData) *ad.Image {
 
 func (a *advertisementService) parseTextDto(dto *ad.AdDto) *proto.STextAdData {
 	v := dto.Data.(*ad.HyperLink)
+	if v == nil {
+		return &proto.STextAdData{}
+	}
 	return &proto.STextAdData{
 		Id:      v.Id,
 		Title:   v.Title,
-		LinkURL: v.LinkUrl,
+		LinkUrl: v.LinkUrl,
 	}
 }
 
 func (a *advertisementService) parseImageDto(dto *ad.AdDto) *proto.SImageAdData {
 	v := dto.Data.(*ad.Image)
+	if v == nil {
+		return &proto.SImageAdData{}
+	}
 	return a.parseSingleImageDto(v)
 }
 

@@ -96,7 +96,7 @@ func TestPagingShopGoodsRequest(t *testing.T) {
 }
 
 func TestMemberStatifics(t *testing.T) {
-	var memberId int64 = 723
+	var memberId int64 = 729
 	mp, _ := impl.QueryService.MemberStatistics(context.TODO(), &proto.MemberStatisticsRequest{
 		MemberId: memberId,
 	})
@@ -105,9 +105,11 @@ func TestMemberStatifics(t *testing.T) {
 
 func TestQuerySearchItem(t *testing.T) {
 	list, err := impl.QueryService.SearchItem(context.TODO(), &proto.SearchItemRequest{
-		ShopId:  0,
-		Keyword: "1",
-		Size:    10,
+		ShopId:     0,
+		Keyword:    "1",
+		//CategoryId: 0,
+		//Begin:      0,
+		Size:       10,
 	})
 
 	if err != nil {

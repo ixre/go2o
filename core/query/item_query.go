@@ -115,7 +115,7 @@ func (i ItemQuery) GetOnShelvesItem(catIdArr []int, begin, end int,
 		 WHERE item_snapshot.cat_id IN(%s) %s ORDER BY item_snapshot.update_time DESC
 		   LIMIT $3 OFFSET $2`, catIdStr, where)
 		i.o.SelectByQuery(&list, sql,
-			 begin, end-begin)
+			begin, end-begin)
 	}
 	return list
 }
@@ -163,11 +163,15 @@ func (i ItemQuery) GetRandomItem(catIdArr []int, begin, end int, where string) [
 // GetPagingOnShelvesGoods 获取已上架的商品
 func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 	catIds []int, flag int, start, end int,
+	keyword string,
 	where, orderBy string) (int, []*valueobject.Goods) {
 	total := 0
 	if len(catIds) > 0 {
 		where += fmt.Sprintf(" AND item_snapshot.cat_id IN (%s)",
 			format.IntArrStrJoin(catIds))
+	}
+	if len(keyword) > 0 {
+		where += " AND item_snapshot.title LIKE '%" + keyword + "%'"
 	}
 	if flag > 0 {
 		where += fmt.Sprintf(" AND (item_snapshot.item_flag & %d = %d)", flag, flag)
@@ -195,7 +199,6 @@ func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 	if err != nil {
 		log.Println("[ GO2O][ Repo][ Error]:", err.Error(), s)
 	}
-	log.Println("sql=", s)
 	return total, list
 }
 

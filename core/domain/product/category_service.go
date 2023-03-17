@@ -172,10 +172,7 @@ func (c *categoryImpl) GetModel() promodel.IProductModel {
 			parentId = p.GetValue().ParentId
 		}
 		// 查询模型
-		v := c._modelRepo.GetProModel(mid)
-		if v != nil {
-			c._model = c._modelRepo.CreateModel(v)
-		}
+		c._model = c._modelRepo.GetModel(mid)
 	}
 	return c._model
 }

@@ -48,3 +48,15 @@ func TestGetModelSortedSpecItems(t *testing.T) {
 		}
 	}
 }
+
+// 测试销毁产品模型
+func TestDestoryProductModel(t *testing.T) {
+	var modelId int = 8
+	repo := ti.Factory.GetProModelRepo()
+	im := repo.GetModel(modelId)
+	err := im.Destroy()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}

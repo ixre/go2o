@@ -220,6 +220,12 @@ func (i *itemRepoImpl) SaveSnapshot(v *item.Snapshot) (int64, error) {
 	return v.ItemId, err
 }
 
+// DeleteSnapshot 删除商品快照
+func (i *itemRepoImpl) DeleteSnapshot(itemId int64) error {
+	return i.o.DeleteByPk(&item.Snapshot{}, itemId)
+
+}
+
 // GetLatestSnapshot 获取最新的商品快照
 func (i *itemRepoImpl) GetLatestSnapshot(itemId int64) *item.Snapshot {
 	e := &item.Snapshot{}

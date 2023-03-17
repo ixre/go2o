@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestGetGroups(t *testing.T) {
@@ -32,4 +33,12 @@ func TestQueryAdvertisementData(t *testing.T) {
 	if l := len(advertisement); l == 0 || l == 3 {
 		t.Fail()
 	}
+}
+
+func TestQueryHyperLinkAdvertisementData(t *testing.T) {
+	manager := ti.Factory.GetAdRepo().GetAdManager()
+	iu := manager.GetUserAd(0)
+	ad := iu.GetById(8)
+	v := ad.Dto()
+	t.Log("广告数据:", typeconv.MustJson(v))
 }
