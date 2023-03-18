@@ -22,15 +22,6 @@ service OrderService {
     // 获取子订单,orderId
     rpc GetOrder (OrderNoV2) returns (SSingleOrder) {
     }
-
-    // 获取订单和商品项信息
-    // rpc GetOrderAndItems (GetOrderItemsRequest) returns (SSingleOrder) {
-    // }
-    // 根据订单号获取子订单,orderNo
-    // rpc GetSubOrderByNo (String) returns (SSingleOrder) {}
-    // 获取订单商品项,subOrderId
-    // rpc GetSubOrderItems (Int64) returns (ComplexItemsResponse) {
-    // }~ 
     // 交易单现金支付,orderId
     rpc TradeOrderCashPay (Int64) returns (Result) {
     }
