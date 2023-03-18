@@ -220,3 +220,7 @@ COMMENT ON COLUMN public.ad_hyperlink.id IS '编号';
 COMMENT ON COLUMN public.ad_hyperlink.ad_id IS '广告编号';
 COMMENT ON COLUMN public.ad_hyperlink.title IS '标题';
 COMMENT ON COLUMN public.ad_hyperlink.link_url IS '链接地址';
+
+/** 删除订单抵扣金额 */
+ALTER TABLE IF EXISTS public.order_list
+   DROP deduct_amount;

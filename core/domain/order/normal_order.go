@@ -535,7 +535,6 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		PayerId:        v.BuyerId,
 		ItemAmount:     itemAmount,
 		DiscountAmount: discountAmount,
-		DeductAmount:   0,
 		AdjustAmount:   0,
 		FinalAmount:    finalAmount,
 		TotalAmount:    finalAmount,
