@@ -29,7 +29,7 @@ type OrderServiceClient interface {
 	// 获取订单信息
 	GetParentOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*SParentOrder, error)
 	// 获取子订单,orderId
-	GetOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*SSingleOrder, error)
+	GetOrder(ctx context.Context, in *OrderRequest, opts ...grpc.CallOption) (*SSingleOrder, error)
 	// 交易单现金支付,orderId
 	TradeOrderCashPay(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
 	// 上传交易单发票
@@ -91,7 +91,7 @@ func (c *orderServiceClient) GetParentOrder(ctx context.Context, in *OrderNoV2, 
 	return out, nil
 }
 
-func (c *orderServiceClient) GetOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*SSingleOrder, error) {
+func (c *orderServiceClient) GetOrder(ctx context.Context, in *OrderRequest, opts ...grpc.CallOption) (*SSingleOrder, error) {
 	out := new(SSingleOrder)
 	err := c.cc.Invoke(ctx, "/OrderService/GetOrder", in, out, opts...)
 	if err != nil {
@@ -219,7 +219,7 @@ type OrderServiceServer interface {
 	// 获取订单信息
 	GetParentOrder(context.Context, *OrderNoV2) (*SParentOrder, error)
 	// 获取子订单,orderId
-	GetOrder(context.Context, *OrderNoV2) (*SSingleOrder, error)
+	GetOrder(context.Context, *OrderRequest) (*SSingleOrder, error)
 	// 交易单现金支付,orderId
 	TradeOrderCashPay(context.Context, *Int64) (*Result, error)
 	// 上传交易单发票
@@ -260,7 +260,7 @@ func (UnimplementedOrderServiceServer) PrepareOrder(context.Context, *PrepareOrd
 func (UnimplementedOrderServiceServer) GetParentOrder(context.Context, *OrderNoV2) (*SParentOrder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetParentOrder not implemented")
 }
-func (UnimplementedOrderServiceServer) GetOrder(context.Context, *OrderNoV2) (*SSingleOrder, error) {
+func (UnimplementedOrderServiceServer) GetOrder(context.Context, *OrderRequest) (*SSingleOrder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOrder not implemented")
 }
 func (UnimplementedOrderServiceServer) TradeOrderCashPay(context.Context, *Int64) (*Result, error) {
@@ -367,7 +367,7 @@ func _OrderService_GetParentOrder_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _OrderService_GetOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OrderNoV2)
+	in := new(OrderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -379,7 +379,7 @@ func _OrderService_GetOrder_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/OrderService/GetOrder",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OrderServiceServer).GetOrder(ctx, req.(*OrderNoV2))
+		return srv.(OrderServiceServer).GetOrder(ctx, req.(*OrderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

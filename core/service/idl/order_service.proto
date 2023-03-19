@@ -20,7 +20,7 @@ service OrderService {
     rpc GetParentOrder (OrderNoV2) returns (SParentOrder) {
     }
     // 获取子订单,orderId
-    rpc GetOrder (OrderNoV2) returns (SSingleOrder) {
+    rpc GetOrder (OrderRequest) returns (SSingleOrder) {
     }
     // 交易单现金支付,orderId
     rpc TradeOrderCashPay (Int64) returns (Result) {
@@ -56,4 +56,12 @@ service OrderService {
     /** 获取订单返利列表 */
     rpc QueryRebateListList (QueryRebateListRequest) returns (QueryRebateListResponse) {
     }
+}
+
+// 获取订单请求
+message OrderRequest{
+    // 订单号
+    string orderNo = 1;
+    // 是否返回详细信息
+    bool withDetail = 2;
 }

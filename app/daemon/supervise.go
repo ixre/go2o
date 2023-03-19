@@ -36,8 +36,8 @@ func superviseOrder(ss []Service) {
 		//	OrderNo:  orderNo,
 		//	SubOrder: sub,
 		//})
-		o, _ := cli.GetOrder(context.TODO(), &proto.OrderNoV2{
-			Value: orderNo,
+		o, _ := cli.GetOrder(context.TODO(), &proto.OrderRequest{
+			OrderNo: orderNo,
 		})
 		trans.Close()
 		if o != nil {

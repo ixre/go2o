@@ -313,11 +313,11 @@ func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV
 }
 
 // GetOrder 获取订单和商品项信息
-func (s *orderServiceImpl) GetOrder(_ context.Context, orderNo *proto.OrderNoV2) (*proto.SSingleOrder, error) {
-	if len(orderNo.Value) == 0 {
+func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*proto.SSingleOrder, error) {
+	if len(r.OrderNo) == 0 {
 		return nil, order.ErrNoSuchOrder
 	}
-	c := s.manager.Unified(orderNo.Value, true).Complex()
+	c := s.manager.Unified(r.OrderNo, true).Complex()
 	if c != nil {
 		return parser.OrderDto(c), nil
 	}
