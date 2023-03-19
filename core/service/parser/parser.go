@@ -253,12 +253,10 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 	d := src.Details[0]
 	o := &proto.SSingleOrder{
 		OrderId:       d.Id,
-		ParentOrderId: src.OrderId,
 		OrderType:     src.OrderType,
 		OrderNo:       d.OrderNo,
 		BuyerId:       src.BuyerId,
 		//SellerId:       src.VendorId,
-		ShopId:         d.ShopId,
 		Subject:        src.Subject,
 		ItemAmount:     src.ItemAmount,
 		DiscountAmount: src.DiscountAmount,

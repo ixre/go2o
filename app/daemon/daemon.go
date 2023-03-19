@@ -273,9 +273,9 @@ func (d *defaultService) PaymentOrderObs(order *proto.SPaymentOrder) bool {
 
 // 测试是否为子订单,并返回编号
 func (d *defaultService) testSubId(o *proto.SSingleOrder) (string, bool) {
-	if o.ParentOrderId <= 0 {
-		return o.OrderNo, true
-	}
+	// if o.ParentOrderId <= 0 {
+	// 	return o.OrderNo, true
+	// }
 	return o.OrderNo, false
 }
 
