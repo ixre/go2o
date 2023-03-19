@@ -409,7 +409,7 @@ func (o *OrderQuery) PagingTradeOrderOfBuyer(memberId, begin, size int64, pagina
 	}
 
 	// 查询分页的订单
-	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
+	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,
         ot.order_amount,ot.discount_amount,
         ot.final_amount,ot.cash_pay,ot.ticket_image, o.status,o.create_time
         FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
@@ -420,7 +420,7 @@ func (o *OrderQuery) PagingTradeOrderOfBuyer(memberId, begin, size int64, pagina
 			var ticket string
 			for rs.Next() {
 				e := &proto.SSingleOrder{}
-				rs.Scan(&e.OrderId, &e.OrderNo, &e.SellerId, &e.Subject,
+				rs.Scan(&e.OrderId, &e.OrderNo, &e.SellerId, 
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.Status, &e.SubmitTime)
 				e.Data = map[string]string{

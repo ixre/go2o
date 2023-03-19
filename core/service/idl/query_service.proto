@@ -130,17 +130,17 @@ message SMemberPagingOrder {
     // 商品
     int64 itemCount = 6;
     // 商品总金额
-    int64 itemAmount = 7;
+    sint32 itemAmount = 7;
     // 抵扣金额
-    int64 discountAmount = 8;
+    sint32 discountAmount = 8;
     // 优惠金额
-    int64 deductAmount = 9;
+    sint32 deductAmount = 9;
     // 快递费
-    int64 expressFee = 10;
+    sint32 expressFee = 10;
     // 包装费
-    int64 packageFee = 11;
+    sint32 packageFee = 11;
     // 最终金额
-    int64 finalAmount = 12;
+    sint32 finalAmount = 12;
     // 商品列表
     repeated SOrderItem items = 13;
     // 状态

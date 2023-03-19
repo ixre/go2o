@@ -21,6 +21,8 @@ type (
 		OrderNo string
 		// 购买人编号
 		BuyerId int64
+		// 卖家编号-
+		SellerId int64
 		// 买家用户名
 		BuyerUser string
 		// 订单标题
