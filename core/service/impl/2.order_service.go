@@ -15,6 +15,7 @@ import (
 	"errors"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -22,6 +23,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
@@ -32,15 +34,18 @@ import (
 var _ proto.OrderServiceServer = new(orderServiceImpl)
 
 type orderServiceImpl struct {
-	repo       order.IOrderRepo
-	prodRepo   product.IProductRepo
-	itemRepo   item.IItemRepo
-	cartRepo   cart.ICartRepo
-	mchRepo    merchant.IMerchantRepo
-	shopRepo   shop.IShopRepo
-	manager    order.IOrderManager
-	memberRepo member.IMemberRepo
-	orderQuery *query.OrderQuery
+	repo        order.IOrderRepo
+	prodRepo    product.IProductRepo
+	itemRepo    item.IItemRepo
+	cartRepo    cart.ICartRepo
+	mchRepo     merchant.IMerchantRepo
+	shopRepo    shop.IShopRepo
+	manager     order.IOrderManager
+	memberRepo  member.IMemberRepo
+	payRepo     payment.IPaymentRepo
+	shipRepo    shipment.IShipmentRepo
+	expressRepo express.IExpressRepo
+	orderQuery  *query.OrderQuery
 	serviceUtil
 	proto.UnimplementedOrderServiceServer
 }
@@ -49,6 +54,8 @@ func NewShoppingService(r order.IOrderRepo,
 	cartRepo cart.ICartRepo, memberRepo member.IMemberRepo,
 	prodRepo product.IProductRepo, goodsRepo item.IItemRepo,
 	mchRepo merchant.IMerchantRepo, shopRepo shop.IShopRepo,
+	payRepo payment.IPaymentRepo, shipRepo shipment.IShipmentRepo,
+	expressRepo express.IExpressRepo,
 	orderQuery *query.OrderQuery) *orderServiceImpl {
 	return &orderServiceImpl{
 		repo:       r,
@@ -58,6 +65,7 @@ func NewShoppingService(r order.IOrderRepo,
 		itemRepo:   goodsRepo,
 		mchRepo:    mchRepo,
 		shopRepo:   shopRepo,
+		payRepo:    payRepo,
 		manager:    r.Manager(),
 		orderQuery: orderQuery,
 	}
@@ -319,9 +327,49 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 	}
 	c := s.manager.Unified(r.OrderNo, true).Complex()
 	if c != nil {
-		return parser.OrderDto(c), nil
+		ret := parser.OrderDto(c)
+		if r.WithDetail {
+			// 获取支付单信息
+			po := s.payRepo.GetPaymentOrder(r.OrderNo)
+			if po != nil {
+				pv := po.Get()
+				ret.DeductAmount = int32(pv.DeductAmount)
+				ret.FinalAmount = int32(pv.FinalAmount)
+				ret.ExpiresTime = pv.ExpiresTime
+				ret.PayTime = pv.PaidTime
+				for _, t := range po.TradeMethods() {
+					pm := s.parseTradeMethodDataDto(t)
+					pm.ChanName = po.ChanName(t.Method)
+					if len(pm.ChanName) == 0 {
+						pm.ChanName = pv.OutTradeSp
+					}
+					ret.TradeData = append(ret.TradeData, pm)
+				}
+			}
+			// 获取发货单信息
+			list := s.shipRepo.GetShipOrders(c.OrderId, true)
+			for _, v := range list {
+				// 绑定快递名称
+				ex := s.expressRepo.GetExpressProvider(int32(v.Value().SpId))
+				if ex != nil {
+					ret.ShipExpressName = ex.Name
+				}
+				ret.ShipLogisticCode = v.Value().SpOrder
+				break
+			}
+		}
+		return ret, nil
 	}
 	return nil, order.ErrNoSuchOrder
+}
+
+func (s *orderServiceImpl) parseTradeMethodDataDto(src *payment.TradeMethodData) *proto.SOrderPayChanData {
+	return &proto.SOrderPayChanData{
+		ChanId:     int32(src.Method),
+		Amount:     src.Amount,
+		ChanCode:   src.Code,
+		OutTradeNo: src.OutTradeNo,
+	}
 }
 
 // TradeOrderCashPay 交易单现金支付
