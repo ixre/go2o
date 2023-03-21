@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"log"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/express"
@@ -348,6 +349,7 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 			}
 			// 获取发货单信息
 			if c.Status >= order.StatShipped {
+				log.Println("---", s.shipRepo == nil, c == nil)
 				list := s.shipRepo.GetShipOrders(c.OrderId, true)
 				for _, v := range list {
 					// 绑定快递名称
