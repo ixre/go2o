@@ -347,15 +347,17 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 				}
 			}
 			// 获取发货单信息
-			list := s.shipRepo.GetShipOrders(c.OrderId, true)
-			for _, v := range list {
-				// 绑定快递名称
-				ex := s.expressRepo.GetExpressProvider(int32(v.Value().SpId))
-				if ex != nil {
-					ret.ShipExpressName = ex.Name
+			if c.Status >= order.StatShipped {
+				list := s.shipRepo.GetShipOrders(c.OrderId, true)
+				for _, v := range list {
+					// 绑定快递名称
+					ex := s.expressRepo.GetExpressProvider(int32(v.Value().SpId))
+					if ex != nil {
+						ret.ShipExpressName = ex.Name
+					}
+					ret.ShipLogisticCode = v.Value().SpOrder
+					break
 				}
-				ret.ShipLogisticCode = v.Value().SpOrder
-				break
 			}
 		}
 		return ret, nil
