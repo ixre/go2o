@@ -2,6 +2,7 @@ package order
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 )
 
@@ -16,6 +17,8 @@ type (
 		OnlinePaymentTradeFinish() error
 		// Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
+		// BreakPaymentOrder 拆分支付单
+		BreakPaymentOrder() ([]payment.IPaymentOrder, error)
 		// Cancel 取消订单
 		Cancel(buyerCancel bool, reason string) error
 

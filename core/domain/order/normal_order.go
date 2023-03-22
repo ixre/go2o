@@ -471,6 +471,28 @@ func (o *normalOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
 	return o._payOrder
 }
 
+// BreakPaymentOrder implements order.INormalOrder
+func (o *normalOrderImpl) BreakPaymentOrder() ([]payment.IPaymentOrder, error) {
+	ip := o.GetPaymentOrder()
+	if ip == nil {
+		return nil, errors.New("payment order has been breaked")
+	}
+	subOrders := o.GetSubOrders()
+	if len(subOrders) < 2 {
+		return nil, errors.New("payment order not nesseary break")
+	}
+	ipv := ip.Get()
+	arr := make([]payment.IPaymentOrder, 0)
+	for _, v := range subOrders {
+		sp, err := o.createSubPaymentOrder(&ipv, v)
+		if err != nil {
+			return nil, err
+		}
+		arr = append(arr, sp)
+	}
+	return arr, nil
+}
+
 // BuildCart 通过订单创建购物车
 func (o *normalOrderImpl) BuildCart() cart.ICart {
 	bv := o.baseOrderImpl.baseValue
@@ -868,35 +890,41 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 	return list, nil
 }
 
-// createPaymentSubOrder 生成一个用于合并支付的子订单 //todo: 删除
-func (o *normalOrderImpl) createPaymentSubOrder() (order.ISubOrder, error) {
-	orderNo := o.OrderNo()
-	breakStatus := order.BreakDefault
-	vo := o.baseValue
-	v := &order.NormalSubOrder{
-		OrderNo:   orderNo,
-		BuyerId:   o.baseValue.BuyerId,
-		VendorId:  0,
-		OrderId:   o.GetAggregateRootId(),
-		Subject:   "支付子订单",
-		ShopId:    0,
-		ShopName:  "",
-		ItemCount: vo.ItemCount,
-		// 总金额
-		ItemAmount: vo.ItemAmount,
-		// 减免金额(包含优惠券金额)
-		DiscountAmount: vo.DiscountAmount,
-		ExpressFee:     vo.ExpressFee,
-		PackageFee:     vo.PackageFee,
-		FinalAmount:    vo.FinalAmount,
-		BuyerComment:   "",
-		Remark:         "",
-		Status:         order.StatAwaitingPayment,
-		BreakStatus:    breakStatus,
-		UpdateTime:     o.baseValue.UpdateTime,
+// createSubPaymentOrder 生成一个子订单的支付单
+func (o *normalOrderImpl) createSubPaymentOrder(po *payment.Order, iso order.ISubOrder) (payment.IPaymentOrder, error) {
+	no := o.baseValue
+	so := iso.GetValue()
+	deductAmount := int(math.Round(float64(po.DeductAmount)/100*(float64(so.FinalAmount)/float64(no.FinalAmount))) * 100)
+	v := &payment.Order{
+		Id:             0,
+		SellerId:       int(so.VendorId),
+		TradeType:      "",
+		TradeNo:        so.OrderNo,
+		OrderType:      int(order.TRetail),
+		SubOrder:       1,
+		OutOrderNo:     so.OrderNo,
+		Subject:        "支付单#拆分子订单",
+		BuyerId:        o.baseValue.BuyerId,
+		PayerId:        0,
+		ItemAmount:     so.ItemAmount,
+		DiscountAmount: so.DiscountAmount,
+		AdjustAmount:   0,
+		TotalAmount:    so.ItemAmount,
+		DeductAmount:   int64(deductAmount),
+		ProcedureFee:   0,
+		PaidAmount:     0,
+		PayFlag:        po.PayFlag,
+		FinalFlag:      po.FinalFlag,
+		State:          po.State,
+		SubmitTime:     po.SubmitTime,
+		ExpiresTime:    po.ExpiresTime,
+		UpdateTime:     time.Now().Unix(),
+		TradeMethods:   []*payment.TradeMethodData{},
 	}
-	isp := o.repo.CreateNormalSubOrder(v)
-	_, err := isp.Submit()
+	v.FinalAmount = v.ItemAmount - v.DeductAmount + v.ProcedureFee + v.AdjustAmount
+
+	isp := o.payRepo.CreatePaymentOrder(v)
+	err := isp.Submit()
 	return isp, err
 }
 

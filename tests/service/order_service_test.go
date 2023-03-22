@@ -8,18 +8,20 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/gof/types/typeconv"
 )
 
+// 测试提交普通订单
 func TestSubmitNormalOrder(t *testing.T) {
 	var memberId int64 = 1
 	ret, err := impl.OrderService.SubmitOrder(
 		context.TODO(),
 		&proto.SubmitOrderRequest{
-			BuyerId:         memberId,
-			OrderType:       int32(order.TRetail),
-			AddressId:       1,
-			Subject:         "",
-			CouponCode:      "",
+			BuyerId:       memberId,
+			OrderType:     int32(order.TRetail),
+			AddressId:     1,
+			Subject:       "",
+			CouponCode:    "",
 			BalanceDeduct: false,
 		})
 	if err != nil {
@@ -37,4 +39,12 @@ func TestSubmitOrderSubjectPostgresInsert(t *testing.T) {
 	t.Log("----", s3)
 }
 
-
+// 测试获取子订单
+func TestGetSubOrder(t *testing.T) {
+	orderNo := "1230322007642433"
+	ret, _ := impl.OrderService.GetOrder(context.TODO(), &proto.OrderRequest{
+		OrderNo:    orderNo,
+		WithDetail: false,
+	})
+	t.Log(typeconv.MustJson(ret))
+}

@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"log"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/express"
@@ -332,6 +333,21 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 		if r.WithDetail {
 			// 获取支付单信息
 			po := s.payRepo.GetPaymentOrder(r.OrderNo)
+			// 待支付,且无子订单相关的支付单,则需要拆分支付单
+			if po == nil && ret.Status == order.StatAwaitingPayment {
+				io := s.manager.GetOrderById(c.OrderId)
+				if io != nil {
+					poList, err := io.(order.INormalOrder).BreakPaymentOrder()
+					if err != nil {
+						log.Printf("[ GO2O][ ERROR]: Break payment order failed, orderNo=%s,error=%s \n", r.OrderNo, err.Error())
+					}
+					for _, v := range poList {
+						if v.TradeNo() == r.OrderNo {
+							po = s.payRepo.GetPaymentOrder(r.OrderNo)
+						}
+					}
+				}
+			}
 			if po != nil {
 				pv := po.Get()
 				ret.DeductAmount = int32(pv.DeductAmount)
