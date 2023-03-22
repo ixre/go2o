@@ -835,16 +835,16 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 	i := 0
 	orderId := o.GetAggregateRootId()
 
-	// 生成一个用于支付的子订单
-	if l > 1 {
-		iso, err := o.createPaymentSubOrder()
-		if err != nil {
-			log.Println("生成子订单失败:" + err.Error())
-			return nil, err
-		}
-		list = append(list, iso)
-		//orderId = int(iso.GetDomainId())
-	}
+	// // 生成一个用于支付的子订单
+	// if l > 1 {
+	// 	iso, err := o.createPaymentSubOrder()
+	// 	if err != nil {
+	// 		log.Println("生成子订单失败:" + err.Error())
+	// 		return nil, err
+	// 	}
+	// 	list = append(list, iso)
+	// 	//orderId = int(iso.GetDomainId())
+	// }
 
 	buyerId := o.buyer.GetAggregateRootId()
 	for vendorId, v := range o.vendorItemsMap {
@@ -868,7 +868,7 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 	return list, nil
 }
 
-// createPaymentSubOrder 生成一个用于合并支付的子订单
+// createPaymentSubOrder 生成一个用于合并支付的子订单 //todo: 删除
 func (o *normalOrderImpl) createPaymentSubOrder() (order.ISubOrder, error) {
 	orderNo := o.OrderNo()
 	breakStatus := order.BreakDefault
