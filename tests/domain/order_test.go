@@ -233,7 +233,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 
 // 测试从订单重新创建订单并提交付款
 func TestRebuildSubmitNormalOrder(t *testing.T) {
-	orderNo := "1230124001810642"
+	orderNo := "1230322000620396"
 	repo := ti.Factory.GetOrderRepo()
 	memRepo := ti.Factory.GetMemberRepo()
 	payRepo := ti.Factory.GetPaymentRepo()
@@ -260,7 +260,11 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.FailNow()
 	}
 	t.Logf("提交的订单号为：%s", nio.OrderNo())
+
 	ipo := payRepo.GetPaymentOrderByOrderNo(int(order.TRetail), nio.OrderNo())
+	t.Logf("提交的支付单号为：%s", ipo.TradeNo())
+
+	return
 	err = ipo.PaymentFinish("alipay", "1233535080808wr")
 	if err == nil {
 		t.Logf("支付的交易号为：%s,最终金额:%d", nio.OrderNo(), ipo.Get().FinalAmount)

@@ -305,10 +305,11 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	// 	//...
 	// }
 
-	rd.TradeNo = ipv.TradeNo
+	rd.IsMergePay = len(no.GetSubOrders()) > 1
 	rd.TradeAmount = ipv.FinalAmount
 	rd.OrderNo = ipv.OutOrderNo
-	rd.PaymentOrderNo = o.GetPaymentOrder().TradeNo()
+	rd.PaymentState = ipv.State
+	rd.PaymentOrderNo = ipv.TradeNo
 	return o, rd, err
 	// 剩下单个订单未支付
 

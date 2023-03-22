@@ -314,14 +314,14 @@ message OrderSubmitResponse {
     string errMsg = 2;
     // 订单号，多个订单号，用","分割
     string orderNo = 3;
+    // 是否已支付
+    bool isPayFinish = 4;
     // 合并支付
-    bool mergePay = 4;
-    // 交易号
-    string tradeNo = 5;
-    // 交易金额
-    int64 tradeAmount = 6;
+    bool isMergePay = 5;
     // 支付单号
-    string paymentOrderNo = 7;
+    string paymentOrderNo = 6;
+    // 交易金额
+    int64 tradeAmount = 7;
 }
 
 // 获取订单请求

@@ -150,8 +150,8 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 		ret.ErrMsg = err.Error()
 	} else {
 		ret.OrderNo = rd.OrderNo
-		ret.MergePay = rd.MergePay
-		ret.TradeNo = rd.TradeNo
+		ret.IsMergePay = rd.IsMergePay
+		ret.IsPayFinish = rd.PaymentState == payment.StateFinished
 		ret.TradeAmount = rd.TradeAmount
 		ret.PaymentOrderNo = rd.PaymentOrderNo
 	}
