@@ -134,8 +134,8 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 
 		items := o.queryNormalOrderItems(idList)
 		for _, v := range items {
-			if _, ok := orderMap[v.OrderId]; ok {
-				orderMap[v.OrderId].Items = append(orderMap[v.OrderId].Items, v)
+			if _, ok := orderMap[v.SellerOrderId]; ok {
+				orderMap[v.SellerOrderId].Items = append(orderMap[v.SellerOrderId].Items, v)
 			}
 		}
 	}
@@ -420,7 +420,7 @@ func (o *OrderQuery) PagingTradeOrderOfBuyer(memberId, begin, size int64, pagina
 			var ticket string
 			for rs.Next() {
 				e := &proto.SSingleOrder{}
-				rs.Scan(&e.OrderId, &e.OrderNo, &e.SellerId, 
+				rs.Scan(&e.OrderId, &e.OrderNo, &e.SellerId,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.Status, &e.SubmitTime)
 				e.Data = map[string]string{
@@ -504,23 +504,24 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int64, begin, size int, pa
 
 func (o *OrderQuery) queryNormalOrderItems(idArr []string) []*dto.OrderItem {
 	list := make([]*dto.OrderItem, 0)
+	cmd := fmt.Sprintf(`SELECT si.id,si.seller_order_id,si.snap_id,sn.item_id,sn.sku,sn.sku_id,
+	sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,si.amount,si.final_amount,
+	si.is_shipped FROM sale_order_item si INNER JOIN item_trade_snapshot sn
+	ON sn.id=si.snap_id WHERE si.seller_order_id IN (%s)
+	ORDER BY si.id ASC`, strings.Join(idArr, ","))
+
+	log.Println(cmd)
 	// 查询分页订单的Item
-	_ = o.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku,sn.sku_id,
-            sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,si.amount,si.final_amount,
-            si.is_shipped FROM sale_order_item si INNER JOIN item_trade_snapshot sn
-            ON sn.id=si.snap_id WHERE si.order_id IN (%s)
-            ORDER BY si.id ASC`,
-		strings.Join(idArr, ",")),
-		func(rs *sql.Rows) {
-			for rs.Next() {
-				e := &dto.OrderItem{}
-				_ = rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId,
-					&e.SpecWord, &e.SkuId, &e.ItemTitle,
-					&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
-				e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
-				e.Image = format.GetGoodsImageUrl(e.Image)
-				list = append(list, e)
-			}
-		})
+	_ = o.Query(cmd, func(rs *sql.Rows) {
+		for rs.Next() {
+			e := &dto.OrderItem{}
+			_ = rs.Scan(&e.Id, &e.SellerOrderId, &e.SnapshotId, &e.ItemId,
+				&e.SpecWord, &e.SkuId, &e.ItemTitle,
+				&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
+			e.FinalPrice = int64(float64(e.FinalAmount) / float64(e.Quantity))
+			e.Image = format.GetGoodsImageUrl(e.Image)
+			list = append(list, e)
+		}
+	})
 	return list
 }

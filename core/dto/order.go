@@ -91,6 +91,8 @@ type (
 		Id int `json:"id"`
 		// 订单编号
 		OrderId int64 `json:"orderId"`
+		// 卖家订单编号
+		SellerOrderId int64 `json:"sellerOrderId"`
 		// 商品快照编号
 		SnapshotId int `json:"snapshotId"`
 		// Sku规格

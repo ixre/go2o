@@ -707,23 +707,6 @@ func (o *normalOrderImpl) getBalanceDeductFee(acc member.IAccount) int64 {
 	return acv.Balance
 }
 
-// 获取Json格式的商品数据
-func (o *normalOrderImpl) getJsonItems() []byte {
-	//todo:??? 订单商品JSON表示
-	return []byte("{}")
-	//var goods []*order.OrderGoods = make([]*order.OrderGoods, len(c.value.Items))
-	//for i, v := range c.cart.Items {
-	//	goods[i] = &order.OrderGoods{
-	//		GoodsId:    v.SkuId,
-	//		GoodsImage: v.Sku.Image,
-	//		Quantity:   v.Quantity,
-	//		Name:       v.Sku.Title,
-	//	}
-	//}
-	//d, _ := json.Marshal(goods)
-	//return d
-}
-
 // 释放购物车并销毁
 func (o *normalOrderImpl) destroyCart() error {
 	if o.cart.Release(nil) {
@@ -846,12 +829,13 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 			"订单编号:%d,订单号:%s,vendor len:%d",
 			parentOrderId, o.OrderNo(), len(o.vendorItemsMap))
 	}
-
+	// requireCart后已创建商品与买家的映射
 	l := len(o.vendorItemsMap)
 	list := make([]order.ISubOrder, l)
 	i := 0
+	orderId := o.GetAggregateRootId()
+
 	// 生成一个用于支付的子订单
-	orderId := 0
 	if l > 1 {
 		iso, err := o.createPaymentSubOrder()
 		if err != nil {
@@ -859,12 +843,12 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 			return nil, err
 		}
 		list = append(list, iso)
-		orderId = int(iso.GetDomainId())
+		//orderId = int(iso.GetDomainId())
 	}
 
 	buyerId := o.buyer.GetAggregateRootId()
 	for vendorId, v := range o.vendorItemsMap {
-		// 绑定商品项的订单编号到支付单
+		// 绑定商品项的订单编号到父订单  //支付单
 		for _, it := range v {
 			it.OrderId = int64(orderId)
 		}
