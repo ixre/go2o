@@ -894,8 +894,12 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 
 // createSubPaymentOrder 生成一个子订单的支付单
 func (o *normalOrderImpl) createSubPaymentOrder(po *payment.Order, iso order.ISubOrder) (payment.IPaymentOrder, error) {
-	no := o.baseValue
 	so := iso.GetValue()
+	sp := o.payRepo.GetPaymentOrder(so.OrderNo)
+	if sp != nil {
+		return sp, errors.New("子订单已拆分支付单")
+	}
+	no := o.baseValue
 	deductAmount := int(math.Round(float64(po.DeductAmount) * (float64(so.FinalAmount) / float64(no.FinalAmount))))
 	v := &payment.Order{
 		Id:             0,

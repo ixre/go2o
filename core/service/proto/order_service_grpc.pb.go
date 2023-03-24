@@ -51,7 +51,7 @@ type OrderServiceClient interface {
 	// 获取子订单,orderId
 	GetOrder(ctx context.Context, in *OrderRequest, opts ...grpc.CallOption) (*SSingleOrder, error)
 	// 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
-	BreakPaymentOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*Result, error)
+	BreakPaymentOrder(ctx context.Context, in *BreakPaymentRequest, opts ...grpc.CallOption) (*Result, error)
 	// 交易单现金支付,orderId
 	TradeOrderCashPay(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
 	// 上传交易单发票
@@ -122,7 +122,7 @@ func (c *orderServiceClient) GetOrder(ctx context.Context, in *OrderRequest, opt
 	return out, nil
 }
 
-func (c *orderServiceClient) BreakPaymentOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*Result, error) {
+func (c *orderServiceClient) BreakPaymentOrder(ctx context.Context, in *BreakPaymentRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, OrderService_BreakPaymentOrder_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -252,7 +252,7 @@ type OrderServiceServer interface {
 	// 获取子订单,orderId
 	GetOrder(context.Context, *OrderRequest) (*SSingleOrder, error)
 	// 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
-	BreakPaymentOrder(context.Context, *OrderNoV2) (*Result, error)
+	BreakPaymentOrder(context.Context, *BreakPaymentRequest) (*Result, error)
 	// 交易单现金支付,orderId
 	TradeOrderCashPay(context.Context, *Int64) (*Result, error)
 	// 上传交易单发票
@@ -296,7 +296,7 @@ func (UnimplementedOrderServiceServer) GetParentOrder(context.Context, *OrderNoV
 func (UnimplementedOrderServiceServer) GetOrder(context.Context, *OrderRequest) (*SSingleOrder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOrder not implemented")
 }
-func (UnimplementedOrderServiceServer) BreakPaymentOrder(context.Context, *OrderNoV2) (*Result, error) {
+func (UnimplementedOrderServiceServer) BreakPaymentOrder(context.Context, *BreakPaymentRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BreakPaymentOrder not implemented")
 }
 func (UnimplementedOrderServiceServer) TradeOrderCashPay(context.Context, *Int64) (*Result, error) {
@@ -421,7 +421,7 @@ func _OrderService_GetOrder_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _OrderService_BreakPaymentOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OrderNoV2)
+	in := new(BreakPaymentRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -433,7 +433,7 @@ func _OrderService_BreakPaymentOrder_Handler(srv interface{}, ctx context.Contex
 		FullMethod: OrderService_BreakPaymentOrder_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OrderServiceServer).BreakPaymentOrder(ctx, req.(*OrderNoV2))
+		return srv.(OrderServiceServer).BreakPaymentOrder(ctx, req.(*BreakPaymentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

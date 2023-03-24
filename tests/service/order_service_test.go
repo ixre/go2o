@@ -54,3 +54,12 @@ func TestGetSubOrder(t *testing.T) {
 	})
 	t.Log(typeconv.MustJson(ret))
 }
+
+// 测试拆分支付单
+func TestBreakPaymentOrder(t *testing.T){
+	orderNo := "1230322000642437"
+	ret, _ := impl.OrderService.BreakPaymentOrder(context.TODO(), &proto.BreakPaymentRequest{
+		PaymentOrderNo:    orderNo,
+	})
+	t.Log(typeconv.MustJson(ret))	
+}

@@ -23,7 +23,7 @@ service OrderService {
     rpc GetOrder (OrderRequest) returns (SSingleOrder) {
     }
     // 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
-    rpc BreakPaymentOrder(OrderNoV2)returns(Result){}
+    rpc BreakPaymentOrder(BreakPaymentRequest)returns(Result){}
     // 交易单现金支付,orderId
     rpc TradeOrderCashPay (Int64) returns (Result) {
     }
@@ -66,4 +66,10 @@ message OrderRequest{
     string orderNo = 1;
     // 是否返回详细信息
     bool withDetail = 2;
+}
+
+// 拆分支付单请求
+message BreakPaymentRequest{
+    // 支付单
+    string paymentOrderNo = 1;
 }

@@ -392,20 +392,26 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 }
 
 // BreakPaymentOrder 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
-func (s *orderServiceImpl) BreakPaymentOrder(_ context.Context, r *proto.OrderNoV2) (*proto.Result, error) {
-	iso := s.repo.GetSubOrderByOrderNo(r.Value)
-	if iso == nil {
+func (s *orderServiceImpl) BreakPaymentOrder(_ context.Context, r *proto.BreakPaymentRequest) (*proto.Result, error) {
+	ip := s.payRepo.GetPaymentOrder(r.PaymentOrderNo)
+	if ip == nil {
+		return s.error(payment.ErrNoSuchPaymentOrder), nil
+	}
+	rv := ip.Get()
+	io := s.manager.GetOrderByNo(rv.OutOrderNo)
+	if io == nil {
 		return s.error(order.ErrNoSuchOrder), nil
+	} else {
+		ino := io.(order.INormalOrder)
+		if ino == nil {
+			return &proto.Result{ErrCode: 2, ErrMsg: "订单不支持拆分支付单"}, nil
+		}
+		_, err := ino.BreakPaymentOrder()
+		if err != nil {
+			return s.error(err), nil
+		}
 	}
-	rv := iso.GetValue()
-	ret, _, err := s.breakPaymentOrder(rv.OrderNo, int(rv.Status), int(rv.OrderId))
-	if err != nil {
-		return s.error(err), nil
-	}
-	if !ret {
-		return &proto.Result{ErrCode: 2, ErrMsg: "支付单无需拆分或已拆分"}, nil
-	}
-	return &proto.Result{ErrMsg: "拆分成功"}, nil
+	return &proto.Result{}, nil
 }
 
 func (s *orderServiceImpl) parseTradeMethodDataDto(src *payment.TradeMethodData) *proto.SOrderPayChanData {
