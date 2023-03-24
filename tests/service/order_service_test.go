@@ -47,7 +47,7 @@ func TestGetSubOrder(t *testing.T) {
 	// update pay_order set deduct_amount = deduct_amount+1000,final_amount = final_amount-1000 where id=670
 	// -- 删除已生成的支付单
 	// delete FROM pay_order where out_order_no IN('1230322007642433','1230322001642486')
-	orderNo := "1230322007642433"
+	orderNo := "1230324001307478"
 	ret, _ := impl.OrderService.GetOrder(context.TODO(), &proto.OrderRequest{
 		OrderNo:    orderNo,
 		WithDetail: true,

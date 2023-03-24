@@ -327,7 +327,7 @@ func (s *orderServiceImpl) breakPaymentOrder(orderNo string, state int, parentOr
 	// 获取支付单信息
 	po := s.payRepo.GetPaymentOrder(orderNo)
 	// 待支付,且无子订单相关的支付单,则需要拆分支付单
-	if po == nil && state != order.StatAwaitingPayment {
+	if po == nil && state == order.StatAwaitingPayment {
 		if parentOrderId <= 0 {
 			return false, po, nil
 		}

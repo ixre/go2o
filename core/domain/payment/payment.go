@@ -164,13 +164,12 @@ func (p *paymentOrderImpl) checkOrderFinalAmount() error {
 		p.value.TotalAmount = p.value.ItemAmount - p.value.DiscountAmount + p.value.AdjustAmount
 		// 修正支付单金额
 		p.value.FinalAmount = p.value.ItemAmount - p.value.DeductAmount + p.value.ProcedureFee
-		unix := time.Now().Unix()
 		// 如果支付完成,则更新订单状态
 		if p.value.FinalAmount == 0 {
 			p.value.State = payment.StateFinished
 			p.firstFinishPayment = true
+			p.value.PaidTime = time.Now().Unix()
 		}
-		p.value.PaidTime = unix
 	}
 	return nil
 }
