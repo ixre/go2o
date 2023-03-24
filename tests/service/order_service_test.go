@@ -41,10 +41,16 @@ func TestSubmitOrderSubjectPostgresInsert(t *testing.T) {
 
 // 测试获取子订单
 func TestGetSubOrder(t *testing.T) {
+	// -- 更新状态
+	// update sale_sub_order set status = 1 WHERE order_no IN('1230322007642433','1230322001642486')
+	// -- 更新deductAmount
+	// update pay_order set deduct_amount = deduct_amount+1000,final_amount = final_amount-1000 where id=670
+	// -- 删除已生成的支付单
+	// delete FROM pay_order where out_order_no IN('1230322007642433','1230322001642486')
 	orderNo := "1230322007642433"
 	ret, _ := impl.OrderService.GetOrder(context.TODO(), &proto.OrderRequest{
 		OrderNo:    orderNo,
-		WithDetail: false,
+		WithDetail: true,
 	})
 	t.Log(typeconv.MustJson(ret))
 }

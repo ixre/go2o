@@ -330,9 +330,10 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 	c := s.manager.Unified(r.OrderNo, true).Complex()
 	if c != nil {
 		ret := parser.OrderDto(c)
-		if r.WithDetail {
+		if r.WithDetail {  
 			// 获取支付单信息
 			po := s.payRepo.GetPaymentOrder(r.OrderNo)
+			po = nil
 			// 待支付,且无子订单相关的支付单,则需要拆分支付单
 			if po == nil && ret.Status == order.StatAwaitingPayment {
 				io := s.manager.GetOrderById(c.OrderId)

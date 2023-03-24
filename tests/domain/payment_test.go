@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"math"
 	"testing"
 	"time"
 
@@ -41,8 +42,6 @@ func TestWalletDeductPaymentOrder(t *testing.T) {
 		t.FailNow()
 	}
 }
-
-
 
 func TestCreateTradeNo(t *testing.T) {
 	for i := 0; i < 10; i++ {
@@ -108,5 +107,21 @@ func TestPaymentOrderTradeFinish(t *testing.T) {
 	if err != nil {
 		t.Errorf("支付单%s支付失败：%s", tradeNo, err.Error())
 		t.Failed()
+	}
+}
+
+// 测试拆分支付单均摊抵扣金额
+func TestBreakPaymentOrderAVGDeductAmount(t *testing.T) {
+	finalAmount := 10039
+	deductAmount := 38
+	finalAmount1 := 3021
+	finalAmount2 := 7018
+
+	avgAmount1 := int(math.Round(float64(deductAmount) * (float64(finalAmount1) / float64(finalAmount))))
+	avgAmount2 := int(math.Round(float64(deductAmount) * (float64(finalAmount2) / float64(finalAmount))))
+	t.Log(avgAmount1, avgAmount2)
+
+	if avgAmount1+avgAmount2 != deductAmount {
+		t.FailNow()
 	}
 }

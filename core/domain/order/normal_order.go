@@ -894,7 +894,7 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 func (o *normalOrderImpl) createSubPaymentOrder(po *payment.Order, iso order.ISubOrder) (payment.IPaymentOrder, error) {
 	no := o.baseValue
 	so := iso.GetValue()
-	deductAmount := int(math.Round(float64(po.DeductAmount)/100*(float64(so.FinalAmount)/float64(no.FinalAmount))) * 100)
+	deductAmount := int(math.Round(float64(po.DeductAmount)*(float64(so.FinalAmount)/float64(no.FinalAmount))))
 	v := &payment.Order{
 		Id:             0,
 		SellerId:       int(so.VendorId),
