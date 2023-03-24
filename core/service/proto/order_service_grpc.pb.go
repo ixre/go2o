@@ -23,6 +23,7 @@ const (
 	OrderService_PrepareOrder_FullMethodName            = "/OrderService/PrepareOrder"
 	OrderService_GetParentOrder_FullMethodName          = "/OrderService/GetParentOrder"
 	OrderService_GetOrder_FullMethodName                = "/OrderService/GetOrder"
+	OrderService_BreakPaymentOrder_FullMethodName       = "/OrderService/BreakPaymentOrder"
 	OrderService_TradeOrderCashPay_FullMethodName       = "/OrderService/TradeOrderCashPay"
 	OrderService_TradeOrderUpdateTicket_FullMethodName  = "/OrderService/TradeOrderUpdateTicket"
 	OrderService_PrepareOrderWithCoupon__FullMethodName = "/OrderService/PrepareOrderWithCoupon_"
@@ -49,6 +50,8 @@ type OrderServiceClient interface {
 	GetParentOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*SParentOrder, error)
 	// 获取子订单,orderId
 	GetOrder(ctx context.Context, in *OrderRequest, opts ...grpc.CallOption) (*SSingleOrder, error)
+	// 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
+	BreakPaymentOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*Result, error)
 	// 交易单现金支付,orderId
 	TradeOrderCashPay(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
 	// 上传交易单发票
@@ -113,6 +116,15 @@ func (c *orderServiceClient) GetParentOrder(ctx context.Context, in *OrderNoV2, 
 func (c *orderServiceClient) GetOrder(ctx context.Context, in *OrderRequest, opts ...grpc.CallOption) (*SSingleOrder, error) {
 	out := new(SSingleOrder)
 	err := c.cc.Invoke(ctx, OrderService_GetOrder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *orderServiceClient) BreakPaymentOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, OrderService_BreakPaymentOrder_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -239,6 +251,8 @@ type OrderServiceServer interface {
 	GetParentOrder(context.Context, *OrderNoV2) (*SParentOrder, error)
 	// 获取子订单,orderId
 	GetOrder(context.Context, *OrderRequest) (*SSingleOrder, error)
+	// 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
+	BreakPaymentOrder(context.Context, *OrderNoV2) (*Result, error)
 	// 交易单现金支付,orderId
 	TradeOrderCashPay(context.Context, *Int64) (*Result, error)
 	// 上传交易单发票
@@ -281,6 +295,9 @@ func (UnimplementedOrderServiceServer) GetParentOrder(context.Context, *OrderNoV
 }
 func (UnimplementedOrderServiceServer) GetOrder(context.Context, *OrderRequest) (*SSingleOrder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOrder not implemented")
+}
+func (UnimplementedOrderServiceServer) BreakPaymentOrder(context.Context, *OrderNoV2) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BreakPaymentOrder not implemented")
 }
 func (UnimplementedOrderServiceServer) TradeOrderCashPay(context.Context, *Int64) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TradeOrderCashPay not implemented")
@@ -399,6 +416,24 @@ func _OrderService_GetOrder_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrderServiceServer).GetOrder(ctx, req.(*OrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OrderService_BreakPaymentOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OrderNoV2)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).BreakPaymentOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrderService_BreakPaymentOrder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).BreakPaymentOrder(ctx, req.(*OrderNoV2))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -641,6 +676,10 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetOrder",
 			Handler:    _OrderService_GetOrder_Handler,
+		},
+		{
+			MethodName: "BreakPaymentOrder",
+			Handler:    _OrderService_BreakPaymentOrder_Handler,
 		},
 		{
 			MethodName: "TradeOrderCashPay",

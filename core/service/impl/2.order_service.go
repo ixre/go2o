@@ -322,6 +322,31 @@ func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV
 	return parser.ParentOrderDto(ord), nil
 }
 
+// breakPaymentOrder 拆分支付单,返回拆分结果和子支付单
+func (s *orderServiceImpl) breakPaymentOrder(orderNo string, state int, parentOrderId int) (bool, payment.IPaymentOrder, error) {
+	// 获取支付单信息
+	po := s.payRepo.GetPaymentOrder(orderNo)
+	// 待支付,且无子订单相关的支付单,则需要拆分支付单
+	if po == nil && state != order.StatAwaitingPayment {
+		if parentOrderId <= 0 {
+			return false, po, nil
+		}
+		io := s.manager.GetOrderById(int64(parentOrderId))
+		if io != nil {
+			poList, err := io.(order.INormalOrder).BreakPaymentOrder()
+			if err != nil {
+				log.Printf("[ GO2O][ ERROR]: Break payment order failed, orderNo=%s,error=%s \n", orderNo, err.Error())
+			}
+			for _, v := range poList {
+				if v.TradeNo() == orderNo {
+					return true, v, nil
+				}
+			}
+		}
+	}
+	return false, po, nil
+}
+
 // GetOrder 获取订单和商品项信息
 func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*proto.SSingleOrder, error) {
 	if len(r.OrderNo) == 0 {
@@ -330,25 +355,8 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 	c := s.manager.Unified(r.OrderNo, true).Complex()
 	if c != nil {
 		ret := parser.OrderDto(c)
-		if r.WithDetail {  
-			// 获取支付单信息
-			po := s.payRepo.GetPaymentOrder(r.OrderNo)
-			po = nil
-			// 待支付,且无子订单相关的支付单,则需要拆分支付单
-			if po == nil && ret.Status == order.StatAwaitingPayment {
-				io := s.manager.GetOrderById(c.OrderId)
-				if io != nil {
-					poList, err := io.(order.INormalOrder).BreakPaymentOrder()
-					if err != nil {
-						log.Printf("[ GO2O][ ERROR]: Break payment order failed, orderNo=%s,error=%s \n", r.OrderNo, err.Error())
-					}
-					for _, v := range poList {
-						if v.TradeNo() == r.OrderNo {
-							po = s.payRepo.GetPaymentOrder(r.OrderNo)
-						}
-					}
-				}
-			}
+		if r.WithDetail {
+			_, po, _ := s.breakPaymentOrder(r.OrderNo, int(ret.Status), int(c.OrderId))
 			if po != nil {
 				pv := po.Get()
 				ret.DeductAmount = int32(pv.DeductAmount)
@@ -381,6 +389,23 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 		return ret, nil
 	}
 	return nil, order.ErrNoSuchOrder
+}
+
+// BreakPaymentOrder 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
+func (s *orderServiceImpl) BreakPaymentOrder(_ context.Context, r *proto.OrderNoV2) (*proto.Result, error) {
+	iso := s.repo.GetSubOrderByOrderNo(r.Value)
+	if iso == nil {
+		return s.error(order.ErrNoSuchOrder), nil
+	}
+	rv := iso.GetValue()
+	ret, _, err := s.breakPaymentOrder(rv.OrderNo, int(rv.Status), int(rv.OrderId))
+	if err != nil {
+		return s.error(err), nil
+	}
+	if !ret {
+		return &proto.Result{ErrCode: 2, ErrMsg: "支付单无需拆分或已拆分"}, nil
+	}
+	return &proto.Result{ErrMsg: "拆分成功"}, nil
 }
 
 func (s *orderServiceImpl) parseTradeMethodDataDto(src *payment.TradeMethodData) *proto.SOrderPayChanData {

@@ -163,6 +163,8 @@ type (
 	IPaymentRepo interface {
 		// GetPaymentOrderById 根据编号获取支付单
 		GetPaymentOrderById(id int) IPaymentOrder
+		// DeletePaymentOrder 拆分后删除父支付单
+		DeletePaymentOrder(id int) error
 		// GetPaymentOrder 根据支付单号获取支付单
 		GetPaymentOrder(paymenOrderNo string) IPaymentOrder
 		// GetPaymentBySalesOrderId 根据订单号获取支付单

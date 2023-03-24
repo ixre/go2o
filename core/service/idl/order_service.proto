@@ -22,6 +22,8 @@ service OrderService {
     // 获取子订单,orderId
     rpc GetOrder (OrderRequest) returns (SSingleOrder) {
     }
+    // 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
+    rpc BreakPaymentOrder(OrderNoV2)returns(Result){}
     // 交易单现金支付,orderId
     rpc TradeOrderCashPay (Int64) returns (Result) {
     }

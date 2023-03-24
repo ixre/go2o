@@ -82,6 +82,14 @@ func (p *paymentRepoImpl) getPaymentOrderCkByNo(orderNO string) string {
 	return fmt.Sprintf("go2o:repo:pay:order:%s", orderNO)
 }
 
+
+// DeletePaymentOrder 拆分后删除父支付单
+func (p *paymentRepoImpl) DeletePaymentOrder(id int) error {
+	key := p.getPaymentOrderCk(id)
+	p.Storage.Delete(key)
+	return p._orm.DeleteByPk(payment.Order{}, id)
+}
+
 // 根据编号获取支付单
 func (p *paymentRepoImpl) GetPaymentOrderById(id int) payment.IPaymentOrder {
 	if id <= 0 {

@@ -490,6 +490,8 @@ func (o *normalOrderImpl) BreakPaymentOrder() ([]payment.IPaymentOrder, error) {
 		}
 		arr = append(arr, sp)
 	}
+	o.payRepo.DeletePaymentOrder(ip.GetAggregateRootId())
+	o._payOrder = nil
 	return arr, nil
 }
 
@@ -894,7 +896,7 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 func (o *normalOrderImpl) createSubPaymentOrder(po *payment.Order, iso order.ISubOrder) (payment.IPaymentOrder, error) {
 	no := o.baseValue
 	so := iso.GetValue()
-	deductAmount := int(math.Round(float64(po.DeductAmount)*(float64(so.FinalAmount)/float64(no.FinalAmount))))
+	deductAmount := int(math.Round(float64(po.DeductAmount) * (float64(so.FinalAmount) / float64(no.FinalAmount))))
 	v := &payment.Order{
 		Id:             0,
 		SellerId:       int(so.VendorId),
