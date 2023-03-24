@@ -197,16 +197,6 @@ type (
 		GetAwaitCloseOrders(lastId int, size int) []IPaymentOrder
 	}
 
-	// RequestPayData 请求支付数据
-	RequestPayData struct {
-		// 支付方式
-		method int
-		// 支付方式代码
-		code string
-		// 支付金额
-		amount int
-	}
-
 	// Order 支付单
 	Order struct {
 		// 编号
@@ -229,10 +219,8 @@ type (
 		BuyerId int64 `db:"buyer_id"`
 		// 支付用户编号
 		PayerId int64 `db:"payer_id"`
-		// 商品金额
-		ItemAmount int64 `db:"item_amount"`
-		// 优惠金额
-		DiscountAmount int64 `db:"discount_amount"`
+		// 优惠金额,todo: 删除但目前依赖于优惠券
+		DiscountAmount int64 `db:"-"`
 		// 调整金额
 		AdjustAmount int64 `db:"adjust_amount"`
 		// 共计金额，包含抵扣金额

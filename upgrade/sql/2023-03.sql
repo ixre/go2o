@@ -224,3 +224,7 @@ COMMENT ON COLUMN public.ad_hyperlink.link_url IS '链接地址';
 /** 删除订单抵扣金额 */
 ALTER TABLE IF EXISTS public.order_list
    DROP deduct_amount;
+
+/** 2023-03-24 */
+ALTER TABLE IF EXISTS public.pay_order DROP COLUMN IF EXISTS item_amount;
+ALTER TABLE IF EXISTS public.pay_order DROP COLUMN IF EXISTS discount_amount;

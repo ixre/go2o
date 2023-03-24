@@ -157,13 +157,13 @@ func (p *paymentOrderImpl) CheckPaymentState() error {
 // 检查是否支付完成, 且返回是否为第一次支付成功,
 func (p *paymentOrderImpl) checkOrderFinalAmount() error {
 	if p.value.State == payment.StateAwaitingPayment {
-		if p.value.ItemAmount <= 0 { // 检查支付金额
+		if p.value.TotalAmount <= 0 { // 检查支付金额
 			return payment.ErrItemAmount
 		}
 		// 修正支付单共计金额
-		p.value.TotalAmount = p.value.ItemAmount - p.value.DiscountAmount + p.value.AdjustAmount
+		//p.value.TotalAmount = p.value.ItemAmount - p.value.DiscountAmount + p.value.AdjustAmount
 		// 修正支付单金额
-		p.value.FinalAmount = p.value.ItemAmount - p.value.DeductAmount + p.value.ProcedureFee
+		p.value.FinalAmount = p.value.TotalAmount - p.value.DeductAmount + p.value.ProcedureFee
 		// 如果支付完成,则更新订单状态
 		if p.value.FinalAmount == 0 {
 			p.value.State = payment.StateFinished

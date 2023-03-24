@@ -542,37 +542,35 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 func (o *normalOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.baseValue
 	// 计算订单金额
-	itemAmount := v.ItemAmount + v.ExpressFee + v.PackageFee
+	//itemAmount := v.ItemAmount + v.ExpressFee + v.PackageFee
 	finalAmount := v.FinalAmount
-	discountAmount := v.DiscountAmount
+	//discountAmount := v.DiscountAmount
 	// 计算订单超时时间
 	expiresMiniutes := o.registryRepo.Get(registry.OrderPaymentOverMinutes).IntValue()
 	expiresTime := v.CreateTime + int64(expiresMiniutes)*60
 	po := &payment.Order{
-		SellerId:       0,
-		TradeNo:        v.OrderNo,
-		SubOrder:       0,
-		OrderType:      int(order.TRetail),
-		OutOrderNo:     v.OrderNo,
-		Subject:        v.Subject,
-		BuyerId:        v.BuyerId,
-		PayerId:        v.BuyerId,
-		ItemAmount:     itemAmount,
-		DiscountAmount: discountAmount,
-		AdjustAmount:   0,
-		FinalAmount:    finalAmount,
-		TotalAmount:    finalAmount,
-		PayFlag:        payment.PAllFlag,
-		TradeChannel:   0,
-		ExtraData:      "",
-		OutTradeSp:     "",
-		OutTradeNo:     "",
-		State:          payment.StateAwaitingPayment,
-		SubmitTime:     v.CreateTime,
-		ExpiresTime:    expiresTime,
-		PaidTime:       0,
-		UpdateTime:     v.CreateTime,
-		TradeMethods:   []*payment.TradeMethodData{},
+		SellerId:     0,
+		TradeNo:      v.OrderNo,
+		SubOrder:     0,
+		OrderType:    int(order.TRetail),
+		OutOrderNo:   v.OrderNo,
+		Subject:      v.Subject,
+		BuyerId:      v.BuyerId,
+		PayerId:      v.BuyerId,
+		AdjustAmount: 0,
+		FinalAmount:  finalAmount,
+		TotalAmount:  finalAmount,
+		PayFlag:      payment.PAllFlag,
+		TradeChannel: 0,
+		ExtraData:    "",
+		OutTradeSp:   "",
+		OutTradeNo:   "",
+		State:        payment.StateAwaitingPayment,
+		SubmitTime:   v.CreateTime,
+		ExpiresTime:  expiresTime,
+		PaidTime:     0,
+		UpdateTime:   v.CreateTime,
+		TradeMethods: []*payment.TradeMethodData{},
 	}
 	o._payOrder = o.payRepo.CreatePaymentOrder(po)
 	err := o._payOrder.Submit()
@@ -902,33 +900,30 @@ func (o *normalOrderImpl) createSubPaymentOrder(po *payment.Order, iso order.ISu
 	no := o.baseValue
 	deductAmount := int(math.Round(float64(po.DeductAmount) * (float64(so.FinalAmount) / float64(no.FinalAmount))))
 	v := &payment.Order{
-		Id:             0,
-		SellerId:       int(so.VendorId),
-		TradeType:      "",
-		TradeNo:        so.OrderNo,
-		OrderType:      int(order.TRetail),
-		SubOrder:       1,
-		OutOrderNo:     so.OrderNo,
-		Subject:        "支付单#拆分子订单",
-		BuyerId:        o.baseValue.BuyerId,
-		PayerId:        0,
-		ItemAmount:     so.ItemAmount,
-		DiscountAmount: so.DiscountAmount,
-		AdjustAmount:   0,
-		TotalAmount:    so.ItemAmount,
-		DeductAmount:   int64(deductAmount),
-		ProcedureFee:   0,
-		PaidAmount:     0,
-		PayFlag:        po.PayFlag,
-		FinalFlag:      po.FinalFlag,
-		State:          po.State,
-		SubmitTime:     po.SubmitTime,
-		ExpiresTime:    po.ExpiresTime,
-		UpdateTime:     time.Now().Unix(),
-		TradeMethods:   []*payment.TradeMethodData{},
+		Id:           0,
+		SellerId:     int(so.VendorId),
+		TradeType:    "",
+		TradeNo:      so.OrderNo,
+		OrderType:    int(order.TRetail),
+		SubOrder:     1,
+		OutOrderNo:   so.OrderNo,
+		Subject:      "支付单#拆分子订单",
+		BuyerId:      o.baseValue.BuyerId,
+		PayerId:      0,
+		AdjustAmount: 0,
+		TotalAmount:  so.ItemAmount,
+		DeductAmount: int64(deductAmount),
+		ProcedureFee: 0,
+		PaidAmount:   0,
+		PayFlag:      po.PayFlag,
+		FinalFlag:    po.FinalFlag,
+		State:        po.State,
+		SubmitTime:   po.SubmitTime,
+		ExpiresTime:  po.ExpiresTime,
+		UpdateTime:   time.Now().Unix(),
+		TradeMethods: []*payment.TradeMethodData{},
 	}
-	v.FinalAmount = v.ItemAmount - v.DeductAmount + v.ProcedureFee + v.AdjustAmount
-
+	v.FinalAmount = v.TotalAmount - v.DeductAmount
 	isp := o.payRepo.CreatePaymentOrder(v)
 	err := isp.Submit()
 	return isp, err
