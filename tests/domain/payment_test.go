@@ -62,7 +62,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		Subject:   "充值",
 		BuyerId:   22149,
 		//PayUid:      1,
-		ItemAmount: 1,
+		TotalAmount: 1,
 		PayFlag: domain.MathPaymentMethodFlag([]int{
 			payment.MBankCard, payment.MPaySP, payment.MBalance,
 			payment.MIntegral, payment.MWallet}),
