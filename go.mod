@@ -2,8 +2,6 @@ module github.com/ixre/go2o
 
 go 1.20
 
-replace github.com/ixre/gof => ../github.com/ixre/gof
-
 require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
