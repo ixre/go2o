@@ -127,7 +127,7 @@ func TestBreakPaymentOrderAVGDeductAmount(t *testing.T) {
 }
 
 func TestCancelPaymentOrder(t *testing.T) {
-	orderNo := "1230324007307412"
+	orderNo := "1230326007400338"
 	p := ti.Factory.GetPaymentRepo().GetPaymentOrder(orderNo)
 	if err := p.Cancel(); err != nil {
 		t.Error(err)

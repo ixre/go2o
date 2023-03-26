@@ -228,7 +228,7 @@ func (p *paymentOrderImpl) Cancel() (err error) {
 	}
 	if err == nil {
 		err = p.orderManager.Cancel(p.value.OutOrderNo,
-			false,
+			p.value.SubOrder == 1,
 			pv.SubOrder == 1,
 			"超时未付款")
 	}
