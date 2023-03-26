@@ -494,7 +494,7 @@ func TestNotifyTradeOrder(t *testing.T) {
 	conn.Do("RPUSH", variable.KvOrderBusinessQueue, value)
 }
 
-// 测试获取子订单的支付单信息
+// 测试取消子订单支付单信息
 func TestGetSubPaymentOrder(t *testing.T) {
 	orderId := 678
 	order := ti.Factory.GetOrderRepo().Manager().GetSubOrder(int64(orderId))

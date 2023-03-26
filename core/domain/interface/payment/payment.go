@@ -165,6 +165,8 @@ type (
 		GetPaymentOrderById(id int) IPaymentOrder
 		// DeletePaymentOrder 拆分后删除父支付单
 		DeletePaymentOrder(id int) error
+		// DeletePaymentTradeData 删除支付单的支付数据
+		DeletePaymentTradeData(orderId int)error
 		// GetPaymentOrder 根据支付单号获取支付单
 		GetPaymentOrder(paymenOrderNo string) IPaymentOrder
 		// GetPaymentBySalesOrderId 根据订单号获取支付单
@@ -262,7 +264,7 @@ type (
 	// TradeMethodData 支付单项
 	TradeMethodData struct {
 		// 编号
-		ID int `db:"id" pk:"yes" auto:"yes"`
+		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 交易单号
 		TradeNo string `db:"trade_no"`
 		// 支付途径
@@ -291,25 +293,6 @@ type (
 		SubmitTime int64 `db:"submit_time"`
 	}
 
-	// PaySpTrade SP支付交易
-	PaySpTrade struct {
-		// 编号
-		ID int `db:"id"`
-		// 交易SP
-		TradeSp string `db:"trade_sp"`
-		// 交易号
-		TradeNo string `db:"trade_no"`
-		// 合并的订单号,交易号用"|"分割
-		TradeOrders string `db:"trade_orders"`
-		// 交易状态
-		TradeState int `db:"trade_state"`
-		// 交易结果
-		TradeResult int `db:"trade_result"`
-		// 交易备注
-		TradeRemark string `db:"trade_remark"`
-		// 交易时间
-		TradeTime int `db:"trade_time"`
-	}
 
 	// IntegrateApp 集成支付应用
 	IntegrateApp struct {

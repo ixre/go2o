@@ -116,7 +116,6 @@ TRUNCATE TABLE "ws_cart_item";
 TRUNCATE TABLE "pay_order";
 TRUNCATE TABLE "pay_trade_data";
 TRUNCATE TABLE "pay_merge_order";
-TRUNCATE TABLE "pay_sp_trade";
 
 
 TRUNCATE TABLE "pm_coupon";

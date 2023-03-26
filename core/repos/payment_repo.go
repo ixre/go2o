@@ -82,12 +82,16 @@ func (p *paymentRepoImpl) getPaymentOrderCkByNo(orderNO string) string {
 	return fmt.Sprintf("go2o:repo:pay:order:%s", orderNO)
 }
 
-
 // DeletePaymentOrder 拆分后删除父支付单
 func (p *paymentRepoImpl) DeletePaymentOrder(id int) error {
 	key := p.getPaymentOrderCk(id)
 	p.Storage.Delete(key)
 	return p._orm.DeleteByPk(payment.Order{}, id)
+}
+
+// DeletePaymentTradeData 删除支付单的支付数据
+func (p *paymentRepoImpl) DeletePaymentTradeData(orderId int) error {
+	return p._orm.Delete(payment.TradeMethodData{},"", id)
 }
 
 // 根据编号获取支付单
@@ -176,7 +180,7 @@ func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeM
 
 func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.TradeMethodData) (int, error) {
 	tradeChan.TradeNo = tradeNo
-	id, err := orm.Save(p._orm, tradeChan, tradeChan.ID)
+	id, err := orm.Save(p._orm, tradeChan, tradeChan.Id)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
 	}

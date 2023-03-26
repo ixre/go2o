@@ -261,7 +261,7 @@ func TestChangeHeadPortrait(t *testing.T) {
 
 // 　测试更改等级
 func TestChangeMemberLevel(t *testing.T) {
-	memberId := 818
+	memberId := 821
 	repo := ti.Factory.GetMemberRepo()
 	m := repo.GetMember(int64(memberId))
 	err := m.ChangeLevel(1, 0, false)

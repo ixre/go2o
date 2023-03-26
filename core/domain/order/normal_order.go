@@ -490,9 +490,17 @@ func (o *normalOrderImpl) BreakPaymentOrder() ([]payment.IPaymentOrder, error) {
 		}
 		arr = append(arr, sp)
 	}
-	o.payRepo.DeletePaymentOrder(ip.GetAggregateRootId())
+	o.destoryMergePaymentOrder(ip)
 	o._payOrder = nil
 	return arr, nil
+}
+
+func (o *normalOrderImpl) destoryMergePaymentOrder(ip payment.IPaymentOrder) error {
+	err := o.payRepo.DeletePaymentOrder(ip.GetAggregateRootId())
+	if err == nil {
+		err = o.payRepo.DeletePaymentTradeData(ip.GetAggregateRootId())
+	}
+	return err
 }
 
 // BuildCart 通过订单创建购物车

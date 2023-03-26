@@ -156,7 +156,6 @@ func OrmMapping(orm orm.Orm) {
 	orm.Mapping(payment.Order{}, "pay_order")
 	orm.Mapping(payment.TradeMethodData{}, "pay_trade_data")
 	orm.Mapping(payment.MergeOrder{}, "pay_merge_order")
-	orm.Mapping(payment.PaySpTrade{}, "pay_sp_trade")
 
 	// 促销
 	orm.Mapping(promotion.ValueCoupon{}, "pm_coupon")

@@ -178,7 +178,7 @@ func (p *paymentOrderImpl) checkOrderFinalAmount() error {
 func (p *paymentOrderImpl) Cancel() (err error) {
 	// 如果已取消或订单再次回调到支付单取消, 不做任何处理
 	if p.value.State == payment.StateClosed {
-		return nil
+		//return nil
 	}
 	p.value.State = payment.StateClosed
 	if err = p.saveOrder(); err != nil {
