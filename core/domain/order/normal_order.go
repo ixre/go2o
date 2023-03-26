@@ -471,6 +471,38 @@ func (o *normalOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
 	return o._payOrder
 }
 
+// BreakPaymentOrder implements order.INormalOrder
+func (o *normalOrderImpl) BreakPaymentOrder() ([]payment.IPaymentOrder, error) {
+	ip := o.GetPaymentOrder()
+	if ip == nil {
+		return nil, errors.New("payment order has been breaked")
+	}
+	subOrders := o.GetSubOrders()
+	if len(subOrders) < 2 {
+		return nil, errors.New("payment order not nesseary break")
+	}
+	arr := make([]payment.IPaymentOrder, 0)
+	for _, v := range subOrders {
+		sp, err := o.createSubPaymentOrder(ip, v)
+		if err != nil {
+			return nil, err
+		}
+		arr = append(arr, sp)
+	}
+	o.destoryMergePaymentOrder(ip)
+	o._payOrder = nil
+	return arr, nil
+}
+
+// destoryMergePaymentOrder 销毁合并支付单
+func (o *normalOrderImpl) destoryMergePaymentOrder(ip payment.IPaymentOrder) error {
+	err := o.payRepo.DeletePaymentOrder(ip.GetAggregateRootId())
+	if err == nil {
+		err = o.payRepo.DeletePaymentTradeData(ip.GetAggregateRootId())
+	}
+	return err
+}
+
 // BuildCart 通过订单创建购物车
 func (o *normalOrderImpl) BuildCart() cart.ICart {
 	bv := o.baseOrderImpl.baseValue
@@ -518,38 +550,35 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 func (o *normalOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.baseValue
 	// 计算订单金额
-	itemAmount := v.ItemAmount + v.ExpressFee + v.PackageFee
+	//itemAmount := v.ItemAmount + v.ExpressFee + v.PackageFee
 	finalAmount := v.FinalAmount
-	discountAmount := v.DiscountAmount
+	//discountAmount := v.DiscountAmount
 	// 计算订单超时时间
 	expiresMiniutes := o.registryRepo.Get(registry.OrderPaymentOverMinutes).IntValue()
 	expiresTime := v.CreateTime + int64(expiresMiniutes)*60
 	po := &payment.Order{
-		SellerId:       0,
-		TradeNo:        v.OrderNo,
-		SubOrder:       0,
-		OrderType:      int(order.TRetail),
-		OutOrderNo:     v.OrderNo,
-		Subject:        v.Subject,
-		BuyerId:        v.BuyerId,
-		PayerId:        v.BuyerId,
-		ItemAmount:     itemAmount,
-		DiscountAmount: discountAmount,
-		DeductAmount:   0,
-		AdjustAmount:   0,
-		FinalAmount:    finalAmount,
-		TotalAmount:    finalAmount,
-		PayFlag:        payment.PAllFlag,
-		TradeChannel:   0,
-		ExtraData:      "",
-		OutTradeSp:     "",
-		OutTradeNo:     "",
-		State:          payment.StateAwaitingPayment,
-		SubmitTime:     v.CreateTime,
-		ExpiresTime:    expiresTime,
-		PaidTime:       0,
-		UpdateTime:     v.CreateTime,
-		TradeMethods:   []*payment.TradeMethodData{},
+		SellerId:     0,
+		TradeNo:      v.OrderNo,
+		SubOrder:     0,
+		OrderType:    int(order.TRetail),
+		OutOrderNo:   v.OrderNo,
+		Subject:      v.Subject,
+		BuyerId:      v.BuyerId,
+		PayerId:      v.BuyerId,
+		AdjustAmount: 0,
+		FinalAmount:  finalAmount,
+		TotalAmount:  finalAmount,
+		PayFlag:      payment.PAllFlag,
+		TradeChannel: 0,
+		ExtraData:    "",
+		OutTradeSp:   "",
+		OutTradeNo:   "",
+		State:        payment.StateAwaitingPayment,
+		SubmitTime:   v.CreateTime,
+		ExpiresTime:  expiresTime,
+		PaidTime:     0,
+		UpdateTime:   v.CreateTime,
+		TradeMethods: []*payment.TradeMethodData{},
 	}
 	o._payOrder = o.payRepo.CreatePaymentOrder(po)
 	err := o._payOrder.Submit()
@@ -708,23 +737,6 @@ func (o *normalOrderImpl) getBalanceDeductFee(acc member.IAccount) int64 {
 	return acv.Balance
 }
 
-// 获取Json格式的商品数据
-func (o *normalOrderImpl) getJsonItems() []byte {
-	//todo:??? 订单商品JSON表示
-	return []byte("{}")
-	//var goods []*order.OrderGoods = make([]*order.OrderGoods, len(c.value.Items))
-	//for i, v := range c.cart.Items {
-	//	goods[i] = &order.OrderGoods{
-	//		GoodsId:    v.SkuId,
-	//		GoodsImage: v.Sku.Image,
-	//		Quantity:   v.Quantity,
-	//		Name:       v.Sku.Title,
-	//	}
-	//}
-	//d, _ := json.Marshal(goods)
-	//return d
-}
-
 // 释放购物车并销毁
 func (o *normalOrderImpl) destroyCart() error {
 	if o.cart.Release(nil) {
@@ -847,25 +859,26 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 			"订单编号:%d,订单号:%s,vendor len:%d",
 			parentOrderId, o.OrderNo(), len(o.vendorItemsMap))
 	}
-
+	// requireCart后已创建商品与买家的映射
 	l := len(o.vendorItemsMap)
 	list := make([]order.ISubOrder, l)
 	i := 0
-	// 生成一个用于支付的子订单
-	orderId := 0
-	if l > 1 {
-		iso, err := o.createPaymentSubOrder()
-		if err != nil {
-			log.Println("生成子订单失败:" + err.Error())
-			return nil, err
-		}
-		list = append(list, iso)
-		orderId = int(iso.GetDomainId())
-	}
+	orderId := o.GetAggregateRootId()
+
+	// // 生成一个用于支付的子订单
+	// if l > 1 {
+	// 	iso, err := o.createPaymentSubOrder()
+	// 	if err != nil {
+	// 		log.Println("生成子订单失败:" + err.Error())
+	// 		return nil, err
+	// 	}
+	// 	list = append(list, iso)
+	// 	//orderId = int(iso.GetDomainId())
+	// }
 
 	buyerId := o.buyer.GetAggregateRootId()
 	for vendorId, v := range o.vendorItemsMap {
-		// 绑定商品项的订单编号到支付单
+		// 绑定商品项的订单编号到父订单  //支付单
 		for _, it := range v {
 			it.OrderId = int64(orderId)
 		}
@@ -885,35 +898,58 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 	return list, nil
 }
 
-// createPaymentSubOrder 生成一个用于合并支付的子订单
-func (o *normalOrderImpl) createPaymentSubOrder() (order.ISubOrder, error) {
-	orderNo := o.OrderNo()
-	breakStatus := order.BreakDefault
-	vo := o.baseValue
-	v := &order.NormalSubOrder{
-		OrderNo:   orderNo,
-		BuyerId:   o.baseValue.BuyerId,
-		VendorId:  0,
-		OrderId:   o.GetAggregateRootId(),
-		Subject:   "支付子订单",
-		ShopId:    0,
-		ShopName:  "",
-		ItemCount: vo.ItemCount,
-		// 总金额
-		ItemAmount: vo.ItemAmount,
-		// 减免金额(包含优惠券金额)
-		DiscountAmount: vo.DiscountAmount,
-		ExpressFee:     vo.ExpressFee,
-		PackageFee:     vo.PackageFee,
-		FinalAmount:    vo.FinalAmount,
-		BuyerComment:   "",
-		Remark:         "",
-		Status:         order.StatAwaitingPayment,
-		BreakStatus:    breakStatus,
-		UpdateTime:     o.baseValue.UpdateTime,
+// createSubPaymentOrder 生成一个子订单的支付单
+func (o *normalOrderImpl) createSubPaymentOrder(ip payment.IPaymentOrder, iso order.ISubOrder) (payment.IPaymentOrder, error) {
+	so := iso.GetValue()
+	po := ip.Get()
+	sp := o.payRepo.GetPaymentOrder(so.OrderNo)
+	if sp != nil {
+		return sp, errors.New("子订单已拆分支付单")
 	}
-	isp := o.repo.CreateNormalSubOrder(v)
-	_, err := isp.Submit()
+	no := o.baseValue
+	// 分摊比例
+	rate := float64(so.FinalAmount) / float64(no.FinalAmount)
+	//　分摊金额
+	deductAmount := int(math.Round(float64(po.DeductAmount) * rate))
+	// 生成支付单
+	v := &payment.Order{
+		Id:           0,
+		SellerId:     int(so.VendorId),
+		TradeType:    "",
+		TradeNo:      so.OrderNo,
+		OrderType:    int(order.TRetail),
+		SubOrder:     1,
+		OutOrderNo:   so.OrderNo,
+		Subject:      "支付单#拆分子订单",
+		BuyerId:      o.baseValue.BuyerId,
+		PayerId:      0,
+		AdjustAmount: 0,
+		TotalAmount:  so.ItemAmount,
+		DeductAmount: int64(deductAmount),
+		ProcedureFee: 0,
+		PaidAmount:   0,
+		PayFlag:      po.PayFlag,
+		FinalFlag:    po.FinalFlag,
+		State:        po.State,
+		SubmitTime:   po.SubmitTime,
+		ExpiresTime:  po.ExpiresTime,
+		UpdateTime:   time.Now().Unix(),
+		TradeMethods: []*payment.TradeMethodData{},
+	}
+	// 更新支付方式
+	for _, tv := range ip.TradeMethods() {
+		v.TradeMethods = append(v.TradeMethods, &payment.TradeMethodData{
+			TradeNo:    so.OrderNo,
+			Method:     tv.Method,
+			Code:       tv.Code,
+			Internal:   tv.Internal,
+			Amount:     int64(math.Round(float64(tv.Amount) * rate)),
+			OutTradeNo: tv.OutTradeNo,
+			PayTime:    tv.PayTime,
+		})
+	}
+	isp := o.payRepo.CreatePaymentOrder(v)
+	err := isp.Submit()
 	return isp, err
 }
 

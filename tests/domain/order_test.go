@@ -163,19 +163,15 @@ func TestCancelOrder(t *testing.T) {
 	}
 }
 
+// 测试取消子订单
 func TestCancelSubOrderByOrderNo(t *testing.T) {
-	var orderId int64 = 605
+	var orderId int64 = 838
 	orderRepo := ti.Factory.GetOrderRepo()
-	manager := orderRepo.Manager()
-	is := manager.GetSubOrder(orderId)
+	is := orderRepo.Manager().GetSubOrder(orderId)
 	err := is.Cancel(true, "不想要了")
 	if err != nil {
 		t.Log("取消失败：", err.Error())
 		t.FailNow()
-	}
-	ip := is.ParentOrder().GetPaymentOrder()
-	if ip != nil {
-		t.Log("支付单状态:", ip.Get().State)
 	}
 	time.Sleep(3000)
 }
@@ -233,7 +229,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 
 // 测试从订单重新创建订单并提交付款
 func TestRebuildSubmitNormalOrder(t *testing.T) {
-	orderNo := "1230124001810642"
+	orderNo := "1230326001400310"
 	repo := ti.Factory.GetOrderRepo()
 	memRepo := ti.Factory.GetMemberRepo()
 	payRepo := ti.Factory.GetPaymentRepo()
@@ -251,6 +247,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		AddressId:     addressId,
 		CouponCode:    "",
 		BalanceDeduct: true,
+		WalletDeduct:  true,
 		AffiliateCode: "",
 		PostedData:    nil,
 	}
@@ -260,7 +257,11 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.FailNow()
 	}
 	t.Logf("提交的订单号为：%s", nio.OrderNo())
+
 	ipo := payRepo.GetPaymentOrderByOrderNo(int(order.TRetail), nio.OrderNo())
+	t.Logf("提交的支付单号为：%s", ipo.TradeNo())
+
+	return
 	err = ipo.PaymentFinish("alipay", "1233535080808wr")
 	if err == nil {
 		t.Logf("支付的交易号为：%s,最终金额:%d", nio.OrderNo(), ipo.Get().FinalAmount)
@@ -490,7 +491,7 @@ func TestNotifyTradeOrder(t *testing.T) {
 	conn.Do("RPUSH", variable.KvOrderBusinessQueue, value)
 }
 
-// 测试获取子订单的支付单信息
+// 测试取消子订单支付单信息
 func TestGetSubPaymentOrder(t *testing.T) {
 	orderId := 678
 	order := ti.Factory.GetOrderRepo().Manager().GetSubOrder(int64(orderId))

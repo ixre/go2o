@@ -1,15 +1,4 @@
-CREATE TABLE pay_sp_trade
-(
-    id           int(10) NOT NULL AUTO_INCREMENT,
-    trade_sp     varchar(20)  NOT NULL comment '交易SP',
-    trade_no     varchar(45)  NOT NULL comment '交易号',
-    trade_orders varchar(512) NOT NULL comment '合并的订单号,交易号用"|"分割',
-    trade_state  int(1) NOT NULL comment '交易状态',
-    trade_result int(1) NOT NULL comment '交易结果',
-    trade_remark varchar(200) NOT NULL comment '交易备注',
-    trade_time   int(11) NOT NULL comment '交易时间',
-    PRIMARY KEY (id)
-);
+
 CREATE TABLE pay_merge_order
 (
     id             int(10) NOT NULL AUTO_INCREMENT comment '编号',
@@ -86,7 +75,4 @@ ALTER TABLE pay_merge_order
     modify column merge_trade_no varchar (40) NOT NULL;
 ALTER TABLE pay_merge_order
     modify column order_trade_no varchar (40) NOT NULL;
-ALTER TABLE pay_sp_trade
-    modify column trade_no varchar (40) NOT NULL;
-ALTER TABLE pay_sp_trade
-    modify column sp_trade_no varchar (40) NOT NULL;
+

@@ -157,61 +157,61 @@ message SSubOrder{
 message SSingleOrder {
     // 订单编号
     int64 orderId = 1;
-    // 父订单编号
-    int64 parentOrderId = 2;
+    // 订单类型
+    int32 orderType = 2;
     // 订单号
     string orderNo = 3;
-    // 订单类型
-    int32 orderType = 4;
     // 买家编号
-    int64 buyerId = 5;
+    int64 buyerId = 4;
     // 卖家编号
-    int64 sellerId = 6;
-    // 店铺编号
-    int64 shopId = 7;
-    //int64 SubOrderId = 2;
-    // 订单标题
-    string subject = 8;
+    int64 sellerId = 5;
+    // 卖家名称
+    string sellerName = 6;
+    // 订单商品项
+    repeated SOrderItem items = 7;
     // 商品总金额
-    int64 itemAmount = 9;
+    sint32 itemAmount = 8;
     // 优惠金额
-    int64 discountAmount = 10;
-    // 抵扣金额
-    int32 deductAmount = 11;
-    // 调整金额
-    int32 adjustAmount = 12;
+    sint32 discountAmount = 9;
     // 配送费
-    int64 expressFee = 13;
+    sint32 expressFee = 10;
     // 包装费
-    int64 packageFee = 14;
-    // 手续费
-    int32 procedureFee = 15;
+    sint32 packageFee = 11;
     // 订单总金额
-    int32 totalAmount = 16;
-    // 最终金额
-    int64 finalAmount = 17;
+    sint32 totalAmount = 12;
+    // 抵扣金额
+    sint32 deductAmount = 13;
+    // 手续费
+    sint32 procedureFee = 14;
+    // 调整金额
+    int32 adjustAmount = 15;
+    // 最终金额(订单总金额-抵扣金额+手续费+调整金额)
+    sint32 finalAmount = 16;
+    // 买家留言
+    string buyerComment = 17;
     // 收货人
     SConsigneeInfo consignee = 18;
-    // 收货地址是否已修改
-    bool consigneeModified = 19;
-    // 买家留言
-    string buyerComment = 20;
-    // 是否支付
-    bool isPaid = 21;
-    //sint32 IsBreak = 18;
-    sint32 status = 22;
     // 下单时间
-    sint64 submitTime = 23;
-    // 商品详情
-    repeated SOrderItem items = 24;
-    // 支付交易号
-    string paymentTradeNo = 25;
+    sint64 submitTime = 19;
+    // 订单状态
+    sint32 status = 20;
+    // 订单状态描述
+	string stateDesc = 21;
+
+    // 过期时间
+	sint64 expiresTime = 22;
+	// 支付时间
+	sint64 payTime = 23;
+    // 支付方式
+	repeated SOrderPayChanData tradeData = 24;
+      // 发货时间
+	sint64 shipTime = 25;
+    // 快递单号
+	string shipLogisticCode = 26;
+	// 快递名称
+	string shipExpressName = 27;
     // 扩展信息
-    map<string, string> data = 26;
-    // 更新时间
-    int64 updateTime = 27;
-    // 是否为子订单
-    //bool SubOrder = 27;
+    map<string, string> data = 28;
 }
 
 // 收货人信息
@@ -222,6 +222,23 @@ message SConsigneeInfo {
     string consigneePhone = 2;
     // 配送地址
     string shippingAddress = 3;
+    // 收货人是否已更改
+    bool isModified = 4;
+}
+
+
+/** 交易方式数据 */
+message SOrderPayChanData {
+    /** 支付途径 */
+    sint32 chanId = 1;
+    // 方式描述
+    string chanName = 2;
+    /** 交易代码 */
+    string chanCode = 3;
+    /** 支付金额 */
+    int64 amount = 4;
+    /** 外部交易单号 */
+    string outTradeNo = 5;
 }
 
 // 更改订单收货人请求
@@ -297,14 +314,14 @@ message OrderSubmitResponse {
     string errMsg = 2;
     // 订单号，多个订单号，用","分割
     string orderNo = 3;
+    // 是否已支付
+    bool isPayFinish = 4;
     // 合并支付
-    bool mergePay = 4;
-    // 交易号
-    string tradeNo = 5;
-    // 交易金额
-    int64 tradeAmount = 6;
+    bool isMergePay = 5;
     // 支付单号
-    string paymentOrderNo = 7;
+    string paymentOrderNo = 6;
+    // 交易金额
+    int64 tradeAmount = 7;
 }
 
 // 获取订单请求

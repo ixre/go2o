@@ -254,7 +254,6 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 		PayerId:        buyerId,
 		TotalAmount:    0,
 		DiscountAmount: 0,
-		DeductAmount:   0,
 		AdjustAmount:   0,
 		FinalAmount:    0,
 		PayFlag:        payment.PAllFlag,

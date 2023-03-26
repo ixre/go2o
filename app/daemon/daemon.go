@@ -273,9 +273,9 @@ func (d *defaultService) PaymentOrderObs(order *proto.SPaymentOrder) bool {
 
 // 测试是否为子订单,并返回编号
 func (d *defaultService) testSubId(o *proto.SSingleOrder) (string, bool) {
-	if o.ParentOrderId <= 0 {
-		return o.OrderNo, true
-	}
+	// if o.ParentOrderId <= 0 {
+	// 	return o.OrderNo, true
+	// }
 	return o.OrderNo, false
 }
 
@@ -291,20 +291,20 @@ func (d *defaultService) batchDelKeys(conn redis.Conn, key string) {
 
 // 设置订单过期时间
 func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SSingleOrder) {
-	//订单刚创建时,设置过期时间
-	if o.Status == order.StatAwaitingPayment {
-		trans, cli, _ := service.FoundationServiceClient()
-		defer trans.Close()
-		ss, _ := cli.GetGlobMchSaleConf_(context.TODO(), &proto.Empty{})
-		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
-		t := time.Unix(unix, 0)
-		tk := getTick(t)
-		orderNo, sub := d.testSubId(o)
-		prefix := types.StringCond(sub, "sub!", "")
-		key := fmt.Sprintf("%s:%s%s:%s", variable.KvOrderExpiresTime, prefix, orderNo, tk)
-		//log.Println(" [Daemon][Exprire][ Key]:", key)
-		conn.Do("SET", key, unix)
-	}
+	// //订单刚创建时,设置过期时间
+	// if o.Status == order.StatAwaitingPayment {
+	// 	trans, cli, _ := service.FoundationServiceClient()
+	// 	defer trans.Close()
+	// 	ss, _ := cli.GetGlobMchSaleConf_(context.TODO(), &proto.Empty{})
+	// 	unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
+	// 	t := time.Unix(unix, 0)
+	// 	tk := getTick(t)
+	// 	orderNo, sub := d.testSubId(o)
+	// 	prefix := types.StringCond(sub, "sub!", "")
+	// 	key := fmt.Sprintf("%s:%s%s:%s", variable.KvOrderExpiresTime, prefix, orderNo, tk)
+	// 	//log.Println(" [Daemon][Exprire][ Key]:", key)
+	// 	conn.Do("SET", key, unix)
+	// }
 }
 
 // 取消订单过期时间
@@ -332,19 +332,19 @@ func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *proto.SSingleOrder
 
 // 订单自动收货
 func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SSingleOrder) {
-	if o.Status == order.StatShipped {
-		trans, cli, _ := service.FoundationServiceClient()
-		defer trans.Close()
-		ss, _ := cli.GetGlobMchSaleConf_(context.TODO(), &proto.Empty{})
-		unix := o.UpdateTime + int64(ss.OrderTimeOutReceiveHour)*60*60
-		t := time.Unix(unix, 0)
-		tk := getTick(t)
-		orderNo, sub := d.testSubId(o)
-		prefix := types.StringCond(sub, "sub!", "")
-		key := fmt.Sprintf("%s:%s%s:%s", variable.KvOrderAutoReceive, prefix, orderNo, tk)
-		//log.Println(" [Daemon][AutoReceive][ Key]:", key)
-		conn.Do("SET", key, unix)
-	}
+	// if o.Status == order.StatShipped {
+	// 	trans, cli, _ := service.FoundationServiceClient()
+	// 	defer trans.Close()
+	// 	ss, _ := cli.GetGlobMchSaleConf_(context.TODO(), &proto.Empty{})
+	// 	unix := o.UpdateTime + int64(ss.OrderTimeOutReceiveHour)*60*60
+	// 	t := time.Unix(unix, 0)
+	// 	tk := getTick(t)
+	// 	orderNo, sub := d.testSubId(o)
+	// 	prefix := types.StringCond(sub, "sub!", "")
+	// 	key := fmt.Sprintf("%s:%s%s:%s", variable.KvOrderAutoReceive, prefix, orderNo, tk)
+	// 	//log.Println(" [Daemon][AutoReceive][ Key]:", key)
+	// 	conn.Do("SET", key, unix)
+	// }
 }
 
 // 完成订单自动收货

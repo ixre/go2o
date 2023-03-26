@@ -89,7 +89,15 @@ func (p *paymentOrderImpl) Submit() error {
 	if b := p.repo.CheckTradeNoMatch(p.value.TradeNo, p.GetAggregateRootId()); !b {
 		return payment.ErrExistsTradeNo
 	}
-	return p.saveOrder()
+	err := p.saveOrder()
+	if err == nil {
+		// 保存支付单的支付方式,主要用于拆分子订单提交
+		for _, v := range p.value.TradeMethods {
+			v.OrderId = p.GetAggregateRootId()
+			v.Id, _ = p.repo.SavePaymentTradeChan(p.TradeNo(), v)
+		}
+	}
+	return err
 }
 
 // MergePay 合并支付
@@ -157,20 +165,19 @@ func (p *paymentOrderImpl) CheckPaymentState() error {
 // 检查是否支付完成, 且返回是否为第一次支付成功,
 func (p *paymentOrderImpl) checkOrderFinalAmount() error {
 	if p.value.State == payment.StateAwaitingPayment {
-		if p.value.ItemAmount <= 0 { // 检查支付金额
+		if p.value.TotalAmount <= 0 { // 检查支付金额
 			return payment.ErrItemAmount
 		}
 		// 修正支付单共计金额
-		p.value.TotalAmount = p.value.ItemAmount - p.value.DiscountAmount + p.value.AdjustAmount
+		//p.value.TotalAmount = p.value.ItemAmount - p.value.DiscountAmount + p.value.AdjustAmount
 		// 修正支付单金额
-		p.value.FinalAmount = p.value.ItemAmount - p.value.DeductAmount + p.value.ProcedureFee
-		unix := time.Now().Unix()
+		p.value.FinalAmount = p.value.TotalAmount - p.value.DeductAmount + p.value.ProcedureFee
 		// 如果支付完成,则更新订单状态
 		if p.value.FinalAmount == 0 {
 			p.value.State = payment.StateFinished
 			p.firstFinishPayment = true
+			p.value.PaidTime = time.Now().Unix()
 		}
-		p.value.PaidTime = unix
 	}
 	return nil
 }
@@ -221,7 +228,7 @@ func (p *paymentOrderImpl) Cancel() (err error) {
 	}
 	if err == nil {
 		err = p.orderManager.Cancel(p.value.OutOrderNo,
-			false,
+			p.value.SubOrder == 1,
 			pv.SubOrder == 1,
 			"超时未付款")
 	}
@@ -498,6 +505,7 @@ func (p *paymentOrderImpl) SystemPayment(fee int) error {
 func (p *paymentOrderImpl) saveTradeChan(amount int, method int, code string, outTradeNo string) error {
 	c := &payment.TradeMethodData{
 		TradeNo:    p.TradeNo(),
+		OrderId:    p.GetAggregateRootId(),
 		Method:     method,
 		Internal:   1,
 		Amount:     int64(amount),
@@ -584,6 +592,7 @@ func (p *paymentOrderImpl) PaymentWithCard(cardCode string, amount int) error {
 	return errors.New("not support")
 }
 
+// 保存订单
 func (p *paymentOrderImpl) saveOrder() error {
 	// 检查支付单
 	err := p.checkOrderFinalAmount()

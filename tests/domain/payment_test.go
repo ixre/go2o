@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"math"
 	"testing"
 	"time"
 
@@ -42,8 +43,6 @@ func TestWalletDeductPaymentOrder(t *testing.T) {
 	}
 }
 
-
-
 func TestCreateTradeNo(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		println(domain.NewTradeNo(0, i))
@@ -63,7 +62,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 		Subject:   "充值",
 		BuyerId:   22149,
 		//PayUid:      1,
-		ItemAmount: 1,
+		TotalAmount: 1,
 		PayFlag: domain.MathPaymentMethodFlag([]int{
 			payment.MBankCard, payment.MPaySP, payment.MBalance,
 			payment.MIntegral, payment.MWallet}),
@@ -108,5 +107,30 @@ func TestPaymentOrderTradeFinish(t *testing.T) {
 	if err != nil {
 		t.Errorf("支付单%s支付失败：%s", tradeNo, err.Error())
 		t.Failed()
+	}
+}
+
+// 测试拆分支付单均摊抵扣金额
+func TestBreakPaymentOrderAVGDeductAmount(t *testing.T) {
+	finalAmount := 10039
+	deductAmount := 38
+	finalAmount1 := 3021
+	finalAmount2 := 7018
+
+	avgAmount1 := int(math.Round(float64(deductAmount) * (float64(finalAmount1) / float64(finalAmount))))
+	avgAmount2 := int(math.Round(float64(deductAmount) * (float64(finalAmount2) / float64(finalAmount))))
+	t.Log(avgAmount1, avgAmount2)
+
+	if avgAmount1+avgAmount2 != deductAmount {
+		t.FailNow()
+	}
+}
+
+func TestCancelPaymentOrder(t *testing.T) {
+	orderNo := "1230326007400338"
+	p := ti.Factory.GetPaymentRepo().GetPaymentOrder(orderNo)
+	if err := p.Cancel(); err != nil {
+		t.Error(err)
+		t.FailNow()
 	}
 }

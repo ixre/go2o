@@ -44,6 +44,7 @@ type subOrderImpl struct {
 	valRepo         valueobject.IValueRepo
 	mchRepo         merchant.IMerchantRepo
 	registryRepo    registry.IRegistryRepo
+	_payOrder       payment.IPaymentOrder
 	_stateIsChange  bool // 订单状态是否变更，如果变更后将推送信息
 }
 
@@ -646,7 +647,8 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 // 取消订单
 func (o *subOrderImpl) Cancel(buyerCancel bool, reason string) error {
 	if o.value.Status == order.StatCancelled {
-		return order.ErrOrderCancelled
+		// 取消支付单也会回调取消订单,故当已取消时返回nil
+		return nil
 	}
 	// 已发货订单无法取消
 	if o.value.Status >= order.StatShipped {
@@ -696,13 +698,17 @@ func (o *subOrderImpl) cancelGoods() error {
 	return nil
 }
 
+// GetPaymentOrder 获取支付单
+func (o *subOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
+	if o._payOrder == nil {
+		o._payOrder = o.paymentRepo.GetPaymentOrder(o.value.OrderNo)
+	}
+	return o._payOrder
+}
+
 // 取消支付单
 func (o *subOrderImpl) cancelPaymentOrder() error {
-	od := o.ParentOrder()
-	if od.Type() != order.TRetail {
-		panic("not support order type")
-	}
-	ip := od.GetPaymentOrder()
+	ip := o.GetPaymentOrder()
 	if ip != nil {
 		return ip.Cancel() //todo: there have a bug, when other order has shipmented. all sub order will be cancelled.
 	}

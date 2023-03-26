@@ -13,8 +13,10 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"log"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/core/domain/interface/express"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -22,6 +24,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
@@ -32,15 +35,18 @@ import (
 var _ proto.OrderServiceServer = new(orderServiceImpl)
 
 type orderServiceImpl struct {
-	repo       order.IOrderRepo
-	prodRepo   product.IProductRepo
-	itemRepo   item.IItemRepo
-	cartRepo   cart.ICartRepo
-	mchRepo    merchant.IMerchantRepo
-	shopRepo   shop.IShopRepo
-	manager    order.IOrderManager
-	memberRepo member.IMemberRepo
-	orderQuery *query.OrderQuery
+	repo        order.IOrderRepo
+	prodRepo    product.IProductRepo
+	itemRepo    item.IItemRepo
+	cartRepo    cart.ICartRepo
+	mchRepo     merchant.IMerchantRepo
+	shopRepo    shop.IShopRepo
+	manager     order.IOrderManager
+	memberRepo  member.IMemberRepo
+	payRepo     payment.IPaymentRepo
+	shipRepo    shipment.IShipmentRepo
+	expressRepo express.IExpressRepo
+	orderQuery  *query.OrderQuery
 	serviceUtil
 	proto.UnimplementedOrderServiceServer
 }
@@ -49,6 +55,8 @@ func NewShoppingService(r order.IOrderRepo,
 	cartRepo cart.ICartRepo, memberRepo member.IMemberRepo,
 	prodRepo product.IProductRepo, goodsRepo item.IItemRepo,
 	mchRepo merchant.IMerchantRepo, shopRepo shop.IShopRepo,
+	payRepo payment.IPaymentRepo, shipRepo shipment.IShipmentRepo,
+	expressRepo express.IExpressRepo,
 	orderQuery *query.OrderQuery) *orderServiceImpl {
 	return &orderServiceImpl{
 		repo:       r,
@@ -58,6 +66,8 @@ func NewShoppingService(r order.IOrderRepo,
 		itemRepo:   goodsRepo,
 		mchRepo:    mchRepo,
 		shopRepo:   shopRepo,
+		payRepo:    payRepo,
+		shipRepo:   shipRepo,
 		manager:    r.Manager(),
 		orderQuery: orderQuery,
 	}
@@ -141,8 +151,8 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 		ret.ErrMsg = err.Error()
 	} else {
 		ret.OrderNo = rd.OrderNo
-		ret.MergePay = rd.MergePay
-		ret.TradeNo = rd.TradeNo
+		ret.IsMergePay = rd.IsMergePay
+		ret.IsPayFinish = rd.PaymentState == payment.StateFinished
 		ret.TradeAmount = rd.TradeAmount
 		ret.PaymentOrderNo = rd.PaymentOrderNo
 	}
@@ -312,16 +322,105 @@ func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV
 	return parser.ParentOrderDto(ord), nil
 }
 
+// breakPaymentOrder 拆分支付单,返回拆分结果和子支付单
+func (s *orderServiceImpl) breakPaymentOrder(orderNo string, state int, parentOrderId int) (bool, payment.IPaymentOrder, error) {
+	// 获取支付单信息
+	po := s.payRepo.GetPaymentOrder(orderNo)
+	// 待支付,且无子订单相关的支付单,则需要拆分支付单
+	if po == nil && state == order.StatAwaitingPayment {
+		if parentOrderId <= 0 {
+			return false, po, nil
+		}
+		io := s.manager.GetOrderById(int64(parentOrderId))
+		if io != nil {
+			poList, err := io.(order.INormalOrder).BreakPaymentOrder()
+			if err != nil {
+				log.Printf("[ GO2O][ ERROR]: Break payment order failed, orderNo=%s,error=%s \n", orderNo, err.Error())
+			}
+			for _, v := range poList {
+				if v.TradeNo() == orderNo {
+					return true, v, nil
+				}
+			}
+		}
+	}
+	return false, po, nil
+}
+
 // GetOrder 获取订单和商品项信息
-func (s *orderServiceImpl) GetOrder(_ context.Context, orderNo *proto.OrderNoV2) (*proto.SSingleOrder, error) {
-	if len(orderNo.Value) == 0 {
+func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*proto.SSingleOrder, error) {
+	if len(r.OrderNo) == 0 {
 		return nil, order.ErrNoSuchOrder
 	}
-	c := s.manager.Unified(orderNo.Value, true).Complex()
+	c := s.manager.Unified(r.OrderNo, true).Complex()
 	if c != nil {
-		return parser.OrderDto(c), nil
+		ret := parser.OrderDto(c)
+		if r.WithDetail {
+			_, po, _ := s.breakPaymentOrder(r.OrderNo, int(ret.Status), int(c.OrderId))
+			if po != nil {
+				pv := po.Get()
+				ret.DeductAmount = int32(pv.DeductAmount)
+				ret.FinalAmount = int32(pv.FinalAmount)
+				ret.ExpiresTime = pv.ExpiresTime
+				ret.TotalAmount = int32(pv.TotalAmount)
+				ret.PayTime = pv.PaidTime
+				for _, t := range po.TradeMethods() {
+					pm := s.parseTradeMethodDataDto(t)
+					pm.ChanName = po.ChanName(t.Method)
+					if len(pm.ChanName) == 0 {
+						pm.ChanName = pv.OutTradeSp
+					}
+					ret.TradeData = append(ret.TradeData, pm)
+				}
+			}
+			// 获取发货单信息
+			if c.Status >= order.StatShipped && c.Status <= order.StatCompleted {
+				list := s.shipRepo.GetShipOrders(c.OrderId, true)
+				for _, v := range list {
+					// 绑定快递名称
+					ex := s.expressRepo.GetExpressProvider(int32(v.Value().SpId))
+					if ex != nil {
+						ret.ShipExpressName = ex.Name
+					}
+					ret.ShipLogisticCode = v.Value().SpOrder
+				}
+			}
+		}
+		return ret, nil
 	}
 	return nil, order.ErrNoSuchOrder
+}
+
+// BreakPaymentOrder 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
+func (s *orderServiceImpl) BreakPaymentOrder(_ context.Context, r *proto.BreakPaymentRequest) (*proto.Result, error) {
+	ip := s.payRepo.GetPaymentOrder(r.PaymentOrderNo)
+	if ip == nil {
+		return s.error(payment.ErrNoSuchPaymentOrder), nil
+	}
+	rv := ip.Get()
+	io := s.manager.GetOrderByNo(rv.OutOrderNo)
+	if io == nil {
+		return s.error(order.ErrNoSuchOrder), nil
+	} else {
+		ino := io.(order.INormalOrder)
+		if ino == nil {
+			return &proto.Result{ErrCode: 2, ErrMsg: "订单不支持拆分支付单"}, nil
+		}
+		_, err := ino.BreakPaymentOrder()
+		if err != nil {
+			return s.error(err), nil
+		}
+	}
+	return &proto.Result{}, nil
+}
+
+func (s *orderServiceImpl) parseTradeMethodDataDto(src *payment.TradeMethodData) *proto.SOrderPayChanData {
+	return &proto.SOrderPayChanData{
+		ChanId:     int32(src.Method),
+		Amount:     src.Amount,
+		ChanCode:   src.Code,
+		OutTradeNo: src.OutTradeNo,
+	}
 }
 
 // TradeOrderCashPay 交易单现金支付

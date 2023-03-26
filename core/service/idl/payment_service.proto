@@ -234,10 +234,6 @@ message SPaymentOrder {
     int64 buyerId = 9;
     /** 支付用户编号 */
     int64 payerId = 10;
-    /** 商品金额 */
-    int64 itemAmount = 11;
-    /** 优惠金额  */
-    int64 discountAmount = 12;
     /** 调整金额 */
     int64 adjustAmount = 13;
     /** 抵扣金额  */

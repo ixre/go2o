@@ -247,11 +247,24 @@ func TestMemberWallet(t *testing.T) {
 	}
 }
 
+// 测试更改头像
 func TestChangeHeadPortrait(t *testing.T) {
 	var memberId int64 = 723
 	portraitUrl := "a/20230310144156396.jpeg"
 	m := ti.Factory.GetMemberRepo().GetMember(memberId)
 	err := m.Profile().ChangeHeadPortrait(portraitUrl)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}
+
+// 　测试更改等级
+func TestChangeMemberLevel(t *testing.T) {
+	memberId := 821
+	repo := ti.Factory.GetMemberRepo()
+	m := repo.GetMember(int64(memberId))
+	err := m.ChangeLevel(1, 0, false)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

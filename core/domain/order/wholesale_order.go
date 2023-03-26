@@ -422,7 +422,7 @@ func (o *wholesaleOrderImpl) SetComment(comment string) {
 func (o *wholesaleOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
 	v.SellerId = int(o.value.VendorId)
-	v.ItemAmount = o.baseValue.FinalAmount
+	v.TotalAmount = o.baseValue.FinalAmount
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
 	return o.paymentOrder.Submit()
 }

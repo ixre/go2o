@@ -33,17 +33,17 @@ type (
 		// 商品数量
 		ItemCount int `json:"itemCount"`
 		// 商品总金额
-		ItemAmount int64 `json:"itemAmount"`
+		ItemAmount int32 `json:"itemAmount"`
 		// 抵扣金额
-		DiscountAmount int64 `json:"discountAmount"`
+		DiscountAmount int32 `json:"discountAmount"`
 		// 优惠金额
-		DeductAmount int64 `json:"deductAmount"`
+		DeductAmount int32 `json:"deductAmount"`
 		// 快递费
-		ExpressFee int64 `json:"expressFee"`
+		ExpressFee int32 `json:"expressFee"`
 		// 包装费
-		PackageFee int64 `json:"packageFee"`
+		PackageFee int32 `json:"packageFee"`
 		// 最终金额
-		FinalAmount int64 `json:"finalAmount"`
+		FinalAmount int32 `json:"finalAmount"`
 		// 是否支付
 		IsPaid int32 `json:"isPaid"`
 		// 状态
@@ -91,6 +91,8 @@ type (
 		Id int `json:"id"`
 		// 订单编号
 		OrderId int64 `json:"orderId"`
+		// 卖家订单编号
+		SellerOrderId int64 `json:"sellerOrderId"`
 		// 商品快照编号
 		SnapshotId int `json:"snapshotId"`
 		// Sku规格
