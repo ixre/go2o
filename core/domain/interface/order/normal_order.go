@@ -52,6 +52,8 @@ type (
 		Complex() *ComplexOrder
 		// ParentOrder 获取父订单
 		ParentOrder() IOrder
+		// GetPaymentOrder 获取支付单
+		GetPaymentOrder() payment.IPaymentOrder
 		// Items 获取商品项
 		Items() []*SubOrderItem
 		// 更改收货人信息
