@@ -481,10 +481,9 @@ func (o *normalOrderImpl) BreakPaymentOrder() ([]payment.IPaymentOrder, error) {
 	if len(subOrders) < 2 {
 		return nil, errors.New("payment order not nesseary break")
 	}
-	ipv := ip.Get()
 	arr := make([]payment.IPaymentOrder, 0)
 	for _, v := range subOrders {
-		sp, err := o.createSubPaymentOrder(&ipv, v)
+		sp, err := o.createSubPaymentOrder(ip, v)
 		if err != nil {
 			return nil, err
 		}
@@ -495,6 +494,7 @@ func (o *normalOrderImpl) BreakPaymentOrder() ([]payment.IPaymentOrder, error) {
 	return arr, nil
 }
 
+// destoryMergePaymentOrder 销毁合并支付单
 func (o *normalOrderImpl) destoryMergePaymentOrder(ip payment.IPaymentOrder) error {
 	err := o.payRepo.DeletePaymentOrder(ip.GetAggregateRootId())
 	if err == nil {
@@ -899,14 +899,19 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 }
 
 // createSubPaymentOrder 生成一个子订单的支付单
-func (o *normalOrderImpl) createSubPaymentOrder(po *payment.Order, iso order.ISubOrder) (payment.IPaymentOrder, error) {
+func (o *normalOrderImpl) createSubPaymentOrder(ip payment.IPaymentOrder, iso order.ISubOrder) (payment.IPaymentOrder, error) {
 	so := iso.GetValue()
+	po := ip.Get()
 	sp := o.payRepo.GetPaymentOrder(so.OrderNo)
 	if sp != nil {
 		return sp, errors.New("子订单已拆分支付单")
 	}
 	no := o.baseValue
-	deductAmount := int(math.Round(float64(po.DeductAmount) * (float64(so.FinalAmount) / float64(no.FinalAmount))))
+	// 分摊比例
+	rate := float64(so.FinalAmount) / float64(no.FinalAmount)
+	//　分摊金额
+	deductAmount := int(math.Round(float64(po.DeductAmount) * rate))
+	// 生成支付单
 	v := &payment.Order{
 		Id:           0,
 		SellerId:     int(so.VendorId),
@@ -931,7 +936,18 @@ func (o *normalOrderImpl) createSubPaymentOrder(po *payment.Order, iso order.ISu
 		UpdateTime:   time.Now().Unix(),
 		TradeMethods: []*payment.TradeMethodData{},
 	}
-	v.FinalAmount = v.TotalAmount - v.DeductAmount
+	// 更新支付方式
+	for _, tv := range ip.TradeMethods() {
+		v.TradeMethods = append(v.TradeMethods, &payment.TradeMethodData{
+			TradeNo:    so.OrderNo,
+			Method:     tv.Method,
+			Code:       tv.Code,
+			Internal:   tv.Internal,
+			Amount:     int64(math.Round(float64(tv.Amount) * rate)),
+			OutTradeNo: tv.OutTradeNo,
+			PayTime:    tv.PayTime,
+		})
+	}
 	isp := o.payRepo.CreatePaymentOrder(v)
 	err := isp.Submit()
 	return isp, err

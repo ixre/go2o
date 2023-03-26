@@ -89,7 +89,15 @@ func (p *paymentOrderImpl) Submit() error {
 	if b := p.repo.CheckTradeNoMatch(p.value.TradeNo, p.GetAggregateRootId()); !b {
 		return payment.ErrExistsTradeNo
 	}
-	return p.saveOrder()
+	err := p.saveOrder()
+	if err == nil {
+		// 保存支付单的支付方式,主要用于拆分子订单提交
+		for _, v := range p.value.TradeMethods {
+			v.OrderId = p.GetAggregateRootId()
+			v.Id, _ = p.repo.SavePaymentTradeChan(p.TradeNo(), v)
+		}
+	}
+	return err
 }
 
 // MergePay 合并支付
@@ -497,6 +505,7 @@ func (p *paymentOrderImpl) SystemPayment(fee int) error {
 func (p *paymentOrderImpl) saveTradeChan(amount int, method int, code string, outTradeNo string) error {
 	c := &payment.TradeMethodData{
 		TradeNo:    p.TradeNo(),
+		OrderId:    p.GetAggregateRootId(),
 		Method:     method,
 		Internal:   1,
 		Amount:     int64(amount),
@@ -583,6 +592,7 @@ func (p *paymentOrderImpl) PaymentWithCard(cardCode string, amount int) error {
 	return errors.New("not support")
 }
 
+// 保存订单
 func (p *paymentOrderImpl) saveOrder() error {
 	// 检查支付单
 	err := p.checkOrderFinalAmount()

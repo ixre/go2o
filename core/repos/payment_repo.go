@@ -91,7 +91,8 @@ func (p *paymentRepoImpl) DeletePaymentOrder(id int) error {
 
 // DeletePaymentTradeData 删除支付单的支付数据
 func (p *paymentRepoImpl) DeletePaymentTradeData(orderId int) error {
-	return p._orm.Delete(payment.TradeMethodData{},"", id)
+	_, err := p._orm.Delete(payment.TradeMethodData{}, "order_id=$1", orderId)
+	return err
 }
 
 // 根据编号获取支付单

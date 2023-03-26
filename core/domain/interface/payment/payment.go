@@ -166,7 +166,7 @@ type (
 		// DeletePaymentOrder 拆分后删除父支付单
 		DeletePaymentOrder(id int) error
 		// DeletePaymentTradeData 删除支付单的支付数据
-		DeletePaymentTradeData(orderId int)error
+		DeletePaymentTradeData(orderId int) error
 		// GetPaymentOrder 根据支付单号获取支付单
 		GetPaymentOrder(paymenOrderNo string) IPaymentOrder
 		// GetPaymentBySalesOrderId 根据订单号获取支付单
@@ -265,6 +265,8 @@ type (
 	TradeMethodData struct {
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 支付订单号Id
+		OrderId int `db:"order_id"`
 		// 交易单号
 		TradeNo string `db:"trade_no"`
 		// 支付途径
@@ -292,7 +294,6 @@ type (
 		// 提交时间
 		SubmitTime int64 `db:"submit_time"`
 	}
-
 
 	// IntegrateApp 集成支付应用
 	IntegrateApp struct {

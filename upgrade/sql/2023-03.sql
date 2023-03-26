@@ -228,3 +228,19 @@ ALTER TABLE IF EXISTS public.order_list
 /** 2023-03-24 */
 ALTER TABLE IF EXISTS public.pay_order DROP COLUMN IF EXISTS item_amount;
 ALTER TABLE IF EXISTS public.pay_order DROP COLUMN IF EXISTS discount_amount;
+
+/** 2023-03-26 */
+DROP TABLE IF EXISTS public.pay_sp_trade;
+
+DROP TABLE  IF EXISTS  pay_order_old;
+ALTER TABLE IF EXISTS public.pay_trade_data
+    ADD COLUMN order_id bigint NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.pay_trade_data.order_id
+    IS '支付订单编号';
+
+-- 给order_id赋值
+update pay_trade_data set order_id=COALESCE((
+	SELECT id FROM pay_order WHERE pay_order.trade_no=pay_trade_data.trade_no),0) 
+	WHERE order_id = 0;
+
