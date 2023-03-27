@@ -223,7 +223,6 @@ func (i *itemRepoImpl) SaveSnapshot(v *item.Snapshot) (int64, error) {
 // DeleteSnapshot 删除商品快照
 func (i *itemRepoImpl) DeleteSnapshot(itemId int64) error {
 	return i.o.DeleteByPk(&item.Snapshot{}, itemId)
-
 }
 
 // GetLatestSnapshot 获取最新的商品快照
@@ -305,6 +304,11 @@ func (i *itemRepoImpl) SaveItemSku(v *item.Sku) (int, error) {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")
 	}
 	return id, err
+}
+
+// DeleteItem 删除商品
+func (i *itemRepoImpl) DeleteItem(itemId int) error {
+	return i.o.DeleteByPk(&item.GoodsItem{}, itemId)
 }
 
 // Delete ItemSku
