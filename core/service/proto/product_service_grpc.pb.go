@@ -47,7 +47,7 @@ type ProductServiceClient interface {
 	// 获取产品模型及模型的规格属性
 	GetProductModel(ctx context.Context, in *ProductModelId, opts ...grpc.CallOption) (*SProductModel, error)
 	// 获取产品模型
-	GetModels(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProductModelListResponse, error)
+	GetModels(ctx context.Context, in *GetModelsRequest, opts ...grpc.CallOption) (*ProductModelListResponse, error)
 	// 获取属性
 	GetAttr(ctx context.Context, in *ProductAttrId, opts ...grpc.CallOption) (*SProductAttr, error)
 	// 获取属性项
@@ -103,7 +103,7 @@ func (c *productServiceClient) GetProductModel(ctx context.Context, in *ProductM
 	return out, nil
 }
 
-func (c *productServiceClient) GetModels(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProductModelListResponse, error) {
+func (c *productServiceClient) GetModels(ctx context.Context, in *GetModelsRequest, opts ...grpc.CallOption) (*ProductModelListResponse, error) {
 	out := new(ProductModelListResponse)
 	err := c.cc.Invoke(ctx, ProductService_GetModels_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -272,7 +272,7 @@ type ProductServiceServer interface {
 	// 获取产品模型及模型的规格属性
 	GetProductModel(context.Context, *ProductModelId) (*SProductModel, error)
 	// 获取产品模型
-	GetModels(context.Context, *Empty) (*ProductModelListResponse, error)
+	GetModels(context.Context, *GetModelsRequest) (*ProductModelListResponse, error)
 	// 获取属性
 	GetAttr(context.Context, *ProductAttrId) (*SProductAttr, error)
 	// 获取属性项
@@ -319,7 +319,7 @@ type UnimplementedProductServiceServer struct {
 func (UnimplementedProductServiceServer) GetProductModel(context.Context, *ProductModelId) (*SProductModel, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProductModel not implemented")
 }
-func (UnimplementedProductServiceServer) GetModels(context.Context, *Empty) (*ProductModelListResponse, error) {
+func (UnimplementedProductServiceServer) GetModels(context.Context, *GetModelsRequest) (*ProductModelListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetModels not implemented")
 }
 func (UnimplementedProductServiceServer) GetAttr(context.Context, *ProductAttrId) (*SProductAttr, error) {
@@ -405,7 +405,7 @@ func _ProductService_GetProductModel_Handler(srv interface{}, ctx context.Contex
 }
 
 func _ProductService_GetModels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(GetModelsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -417,7 +417,7 @@ func _ProductService_GetModels_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: ProductService_GetModels_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).GetModels(ctx, req.(*Empty))
+		return srv.(ProductServiceServer).GetModels(ctx, req.(*GetModelsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
