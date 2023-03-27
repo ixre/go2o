@@ -526,7 +526,7 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 			return 0, de.ErrCredential
 		}
 	}
-	if val.State == member.StateStopped {
+	if (val.UserFlag & member.FlagLocked) == member.FlagLocked {
 		return 0, member.ErrMemberLocked
 	}
 	return val.Id, nil

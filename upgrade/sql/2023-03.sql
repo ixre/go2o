@@ -244,3 +244,4 @@ update pay_trade_data set order_id=COALESCE((
 	SELECT id FROM pay_order WHERE pay_order.trade_no=pay_trade_data.trade_no),0) 
 	WHERE order_id = 0;
 
+ALTER TABLE IF EXISTS public.mm_member DROP COLUMN IF EXISTS state;
