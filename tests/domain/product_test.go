@@ -49,6 +49,15 @@ func TestGetModelSortedSpecItems(t *testing.T) {
 	}
 }
 
+// 测试获取产品模型
+func TestGetProductModel(t *testing.T) {
+	var modelId int = 4
+	repo := ti.Factory.GetProModelRepo()
+	im := repo.GetModel(modelId)
+	arr := im.Brands()
+	t.Log(typeconv.MustJson(arr))
+}
+
 // 测试销毁产品模型
 func TestDestoryProductModel(t *testing.T) {
 	var modelId int = 8
