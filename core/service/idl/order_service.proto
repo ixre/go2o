@@ -66,6 +66,8 @@ message OrderRequest{
     string orderNo = 1;
     // 是否返回详细信息
     bool withDetail = 2;
+    // 是否拆分支付单
+    bool breakPayment = 3;
 }
 
 // 拆分支付单请求
