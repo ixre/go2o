@@ -12,7 +12,6 @@ package impl
 import (
 	"bytes"
 	"context"
-	"errors"
 	"log"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
@@ -313,14 +312,14 @@ func (s *orderServiceImpl) PrepareOrderWithCoupon_(_ context.Context, r *proto.P
 }
 
 // GetParentOrder 根据编号获取订单
-func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV2) (*proto.SParentOrder, error) {
-	io := s.manager.GetOrderByNo(req.Value)
-	if io == nil {
-		return nil, errors.New("no such order")
-	}
-	ord := io.Complex()
-	return parser.ParentOrderDto(ord), nil
-}
+// func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV2) (*proto.SParentOrder, error) {
+// 	io := s.manager.GetOrderByNo(req.Value)
+// 	if io == nil {
+// 		return nil, errors.New("no such order")
+// 	}
+// 	ord := io.Complex()
+// 	return parser.ParentOrderDto(ord), nil
+// }
 
 // breakPaymentOrder 拆分支付单,返回拆分结果和子支付单
 func (s *orderServiceImpl) breakPaymentOrder(orderNo string, state int, breakPayment bool, parentOrderId int) (bool, payment.IPaymentOrder, error) {

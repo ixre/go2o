@@ -17,8 +17,8 @@ service OrderService {
     }
     //
     // 获取订单信息
-    rpc GetParentOrder (OrderNoV2) returns (SParentOrder) {
-    }
+    // rpc GetParentOrder (OrderNoV2) returns (SParentOrder) {
+    // }
     // 获取子订单,orderId
     rpc GetOrder (OrderRequest) returns (SSingleOrder) {
     }

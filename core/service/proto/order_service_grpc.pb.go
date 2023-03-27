@@ -21,7 +21,6 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	OrderService_SubmitOrder_FullMethodName             = "/OrderService/SubmitOrder"
 	OrderService_PrepareOrder_FullMethodName            = "/OrderService/PrepareOrder"
-	OrderService_GetParentOrder_FullMethodName          = "/OrderService/GetParentOrder"
 	OrderService_GetOrder_FullMethodName                = "/OrderService/GetOrder"
 	OrderService_BreakPaymentOrder_FullMethodName       = "/OrderService/BreakPaymentOrder"
 	OrderService_TradeOrderCashPay_FullMethodName       = "/OrderService/TradeOrderCashPay"
@@ -47,7 +46,8 @@ type OrderServiceClient interface {
 	// 预生成订单
 	PrepareOrder(ctx context.Context, in *PrepareOrderRequest, opts ...grpc.CallOption) (*PrepareOrderResponse, error)
 	// 获取订单信息
-	GetParentOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*SParentOrder, error)
+	// rpc GetParentOrder (OrderNoV2) returns (SParentOrder) {
+	// }
 	// 获取子订单,orderId
 	GetOrder(ctx context.Context, in *OrderRequest, opts ...grpc.CallOption) (*SSingleOrder, error)
 	// 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
@@ -98,15 +98,6 @@ func (c *orderServiceClient) SubmitOrder(ctx context.Context, in *SubmitOrderReq
 func (c *orderServiceClient) PrepareOrder(ctx context.Context, in *PrepareOrderRequest, opts ...grpc.CallOption) (*PrepareOrderResponse, error) {
 	out := new(PrepareOrderResponse)
 	err := c.cc.Invoke(ctx, OrderService_PrepareOrder_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *orderServiceClient) GetParentOrder(ctx context.Context, in *OrderNoV2, opts ...grpc.CallOption) (*SParentOrder, error) {
-	out := new(SParentOrder)
-	err := c.cc.Invoke(ctx, OrderService_GetParentOrder_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -248,7 +239,8 @@ type OrderServiceServer interface {
 	// 预生成订单
 	PrepareOrder(context.Context, *PrepareOrderRequest) (*PrepareOrderResponse, error)
 	// 获取订单信息
-	GetParentOrder(context.Context, *OrderNoV2) (*SParentOrder, error)
+	// rpc GetParentOrder (OrderNoV2) returns (SParentOrder) {
+	// }
 	// 获取子订单,orderId
 	GetOrder(context.Context, *OrderRequest) (*SSingleOrder, error)
 	// 拆分支付单(多店下单支付未成功时拆分为每个子订单一个支付单)
@@ -289,9 +281,6 @@ func (UnimplementedOrderServiceServer) SubmitOrder(context.Context, *SubmitOrder
 }
 func (UnimplementedOrderServiceServer) PrepareOrder(context.Context, *PrepareOrderRequest) (*PrepareOrderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PrepareOrder not implemented")
-}
-func (UnimplementedOrderServiceServer) GetParentOrder(context.Context, *OrderNoV2) (*SParentOrder, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetParentOrder not implemented")
 }
 func (UnimplementedOrderServiceServer) GetOrder(context.Context, *OrderRequest) (*SSingleOrder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOrder not implemented")
@@ -380,24 +369,6 @@ func _OrderService_PrepareOrder_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrderServiceServer).PrepareOrder(ctx, req.(*PrepareOrderRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _OrderService_GetParentOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OrderNoV2)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OrderServiceServer).GetParentOrder(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: OrderService_GetParentOrder_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OrderServiceServer).GetParentOrder(ctx, req.(*OrderNoV2))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -668,10 +639,6 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PrepareOrder",
 			Handler:    _OrderService_PrepareOrder_Handler,
-		},
-		{
-			MethodName: "GetParentOrder",
-			Handler:    _OrderService_GetParentOrder_Handler,
 		},
 		{
 			MethodName: "GetOrder",
