@@ -294,8 +294,8 @@ message PagingJobList {
     int32 enabled = 3;
     /** 岗位排序 */
     int32 sort = 4;
-    /** 部门ID */
-    int64 deptId = 5;
+    /** 部门名称 */
+    string deptName = 5;
     /** 创建日期 */
     int64 createTime = 6;
 }

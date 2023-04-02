@@ -470,7 +470,7 @@ func (p *rbacServiceImpl) PagingJobList(_ context.Context, r *proto.RbacJobPagin
 			Name:       typeconv.Stringify(v["name"]),
 			Enabled:    int32(typeconv.MustInt(v["enabled"])),
 			Sort:       int32(typeconv.MustInt(v["sort"])),
-			DeptId:     int64(typeconv.MustInt(v["dept_id"])),
+			DeptName:   typeconv.Stringify(v["dept_name"]),
 			CreateTime: int64(typeconv.MustInt(v["create_time"])),
 		}
 	}

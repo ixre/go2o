@@ -45,3 +45,14 @@ func TestGetDepart(t *testing.T) {
 	})
 	t.Log(typeconv.MustJson(ret))
 }
+
+// 测试获取部门
+func TestGetJoinList(t *testing.T) {
+	ret, _ := impl.RbacService.PagingJobList(context.TODO(), &proto.RbacJobPagingRequest{
+		Params: &proto.SPagingParams{
+			Begin: 0,
+			End:   30,
+		},
+	})
+	t.Log(typeconv.MustJson(ret))
+}
