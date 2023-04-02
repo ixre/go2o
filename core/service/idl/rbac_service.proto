@@ -16,7 +16,7 @@ service RbacService {
     // 获取用户的信息
     rpc GetUserResource(GetUserResRequest)returns(RbacUserResourceResponse) {}
     // 获取资源树形数据
-    rpc QueryResList (QueryPermResRequest) returns (QueryPermResResponse) {
+    rpc QueryResList (QueryRbacResRequest) returns (QueryPermResResponse) {
     }
     // 移动资源顺序
     rpc MoveResOrdinal(MoveResOrdinalRequest) returns (Result) {}
@@ -24,44 +24,44 @@ service RbacService {
     // 部门树形数据
     rpc DepartTree(Empty)returns(RbacTree) {}
     // 保存部门
-    rpc SavePermDept (SavePermDeptRequest) returns (SavePermDeptResponse) {
+    rpc SaveDepart (SaveDepartRequest) returns (SaveDepartResponse) {
     }
     // 获取部门
-    rpc GetPermDept (PermDeptId) returns (SPermDept) {
+    rpc GetDepart (RbacDepartId) returns (SPermDept) {
     }
     // 删除部门
-    rpc DeletePermDept (PermDeptId) returns (Result) {
+    rpc DeleteDepart (RbacDepartId) returns (Result) {
     }
     // 保存岗位
-    rpc SavePermJob (SavePermJobRequest) returns (SavePermJobResponse) {
+    rpc SaveJob (SaveJobRequest) returns (SaveJobResponse) {
     }
     // 获取岗位
-    rpc GetPermJob (PermJobId) returns (SPermJob) {
+    rpc GetJob (RbacJobId) returns (SPermJob) {
     }
     // 获取岗位列表
-    rpc QueryPermJobList (QueryPermJobRequest) returns (QueryPermJobResponse) {
+    rpc QueryJobList (QueryJobRequest) returns (QueryJobResponse) {
     }
     // 删除岗位
-    rpc DeletePermJob (PermJobId) returns (Result) {
+    rpc DeleteJob (RbacJobId) returns (Result) {
     }
     // 获取岗位分页数据
-    rpc PagingPermJob (PermJobPagingRequest) returns (PermJobPagingResponse);
+    rpc PagingJobList (RbacJobPagingRequest) returns (PagingRbacJobResponse);
 
     // 保存系统用户
-    rpc SavePermUser (SavePermUserRequest) returns (SavePermUserResponse) {
+    rpc SaveUser (SaveRbacUserRequest) returns (SaveRbacUserResponse) {
     }
     // 获取系统用户
-    rpc GetPermUser (PermUserId) returns (SPermUser) {
+    rpc GetUser (RbacUserId) returns (SRbacUser) {
     }
 
     // 删除系统用户
-    rpc DeletePermUser (PermUserId) returns (Result) {
+    rpc DeleteUser (RbacUserId) returns (Result) {
     }
     // 获取系统用户分页数据
-    rpc PagingPermUser (PermUserPagingRequest) returns (PermUserPagingResponse);
+    rpc PagingUser (PagingRbacUserRequest) returns (PagingRbacUserResponse);
 
     // 保存角色
-    rpc SavePermRole (SavePermRoleRequest) returns (SavePermRoleResponse) {
+    rpc SavePermRole (SaveRbacRoleRequest) returns (SaveRbacRoleResponse) {
     }
     // 保存角色
     rpc UpdateRoleResource (UpdateRoleResRequest) returns (Result) {
@@ -188,7 +188,7 @@ message RbacTree {
     repeated RbacTree children = 3;
 }
 
-message SavePermDeptRequest {
+message SaveDepartRequest {
     /** ID */
     int64 id = 1;
     /** 名称 */
@@ -203,13 +203,13 @@ message SavePermDeptRequest {
     int64 createTime = 6;
 }
 
-message SavePermDeptResponse {
+message SaveDepartResponse {
     int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }
 
-message PermDeptId {
+message RbacDepartId {
     int64 value =  1;
 }
 message SPermDept {
@@ -236,7 +236,7 @@ message QueryPermDeptResponse {
 }
 
 
-message SavePermJobRequest {
+message SaveJobRequest {
     /** ID */
     int64 id = 1;
     /** 岗位名称 */
@@ -251,13 +251,13 @@ message SavePermJobRequest {
     int64 createTime = 6;
 }
 
-message SavePermJobResponse {
+message SaveJobResponse {
     int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }
 
-message PermJobId {
+message RbacJobId {
     int64 value =  1;
 }
 
@@ -276,16 +276,16 @@ message SPermJob {
     int64 createTime = 6;
 }
 
-message QueryPermJobRequest {
+message QueryJobRequest {
     // 部门编号,默认为0. 该部门下的岗位也会查询出来
     int64 departId = 1;
 }
 
-message QueryPermJobResponse {
+message QueryJobResponse {
     repeated SPermJob list = 1;
 }
 
-message PagingPermJob {
+message PagingJobList {
     /** ID */
     int64 id = 1;
     /** 岗位名称 */
@@ -300,19 +300,19 @@ message PagingPermJob {
     int64 createTime = 6;
 }
 
-message PermJobPagingRequest {
+message RbacJobPagingRequest {
     // 分页参数
     SPagingParams params = 1;
 }
 
-message PermJobPagingResponse {
+message PagingRbacJobResponse {
     int64 total = 1;
-    repeated PagingPermJob value =  2;
+    repeated PagingJobList value =  2;
 }
 
 
 
-message SavePermUserRequest {
+message SaveRbacUserRequest {
     /** ID */
     int64 id = 1;
     /** 用户名 */
@@ -345,17 +345,17 @@ message SavePermUserRequest {
     repeated int64 roles = 15;
 }
 
-message SavePermUserResponse {
+message SaveRbacUserResponse {
     int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
 }
 
-message PermUserId {
+message RbacUserId {
     int64 value =  1;
 }
 
-message SPermUser {
+message SRbacUser {
     /** ID */
     int64 id = 1;
     /** 用户名 */
@@ -395,10 +395,10 @@ message QueryPermUserRequest {
 }
 
 message QueryPermUserResponse {
-    repeated SPermUser list = 1;
+    repeated SRbacUser list = 1;
 }
 
-message PagingPermUser {
+message PagingUser {
     /** ID */
     int64 id = 1;
     /** 用户名 */
@@ -429,20 +429,20 @@ message PagingPermUser {
     int64 createTime = 14;
 }
 
-message PermUserPagingRequest {
+message PagingRbacUserRequest {
     // 部门编号,默认为0. 该部门下的用户也会查询出来
     int64 departId = 1;
     // 分页参数
     SPagingParams params = 2;
 }
 
-message PermUserPagingResponse {
+message PagingRbacUserResponse {
     int64 total = 1;
-    repeated PagingPermUser value =  2;
+    repeated PagingUser value =  2;
 }
 
 
-message SavePermRoleRequest {
+message SaveRbacRoleRequest {
     /** ID */
     int64 id = 1;
     /** 名称 */
@@ -464,7 +464,7 @@ message UpdateRoleResRequest {
     int64 roleId = 1;
     repeated int64 resources = 2;
 }
-message SavePermRoleResponse {
+message SaveRbacRoleResponse {
     int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;
@@ -614,7 +614,7 @@ message GetUserResRequest {
     bool onlyMenu = 2;
 }
 
-message QueryPermResRequest {
+message QueryRbacResRequest {
     /** 关键词 */
     string keyword = 1;
     /** 是否只显示菜单 */

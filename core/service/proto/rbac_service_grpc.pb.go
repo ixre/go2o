@@ -26,18 +26,18 @@ const (
 	RbacService_QueryResList_FullMethodName       = "/RbacService/QueryResList"
 	RbacService_MoveResOrdinal_FullMethodName     = "/RbacService/MoveResOrdinal"
 	RbacService_DepartTree_FullMethodName         = "/RbacService/DepartTree"
-	RbacService_SavePermDept_FullMethodName       = "/RbacService/SavePermDept"
-	RbacService_GetPermDept_FullMethodName        = "/RbacService/GetPermDept"
-	RbacService_DeletePermDept_FullMethodName     = "/RbacService/DeletePermDept"
-	RbacService_SavePermJob_FullMethodName        = "/RbacService/SavePermJob"
-	RbacService_GetPermJob_FullMethodName         = "/RbacService/GetPermJob"
-	RbacService_QueryPermJobList_FullMethodName   = "/RbacService/QueryPermJobList"
-	RbacService_DeletePermJob_FullMethodName      = "/RbacService/DeletePermJob"
-	RbacService_PagingPermJob_FullMethodName      = "/RbacService/PagingPermJob"
-	RbacService_SavePermUser_FullMethodName       = "/RbacService/SavePermUser"
-	RbacService_GetPermUser_FullMethodName        = "/RbacService/GetPermUser"
-	RbacService_DeletePermUser_FullMethodName     = "/RbacService/DeletePermUser"
-	RbacService_PagingPermUser_FullMethodName     = "/RbacService/PagingPermUser"
+	RbacService_SaveDepart_FullMethodName         = "/RbacService/SaveDepart"
+	RbacService_GetDepart_FullMethodName          = "/RbacService/GetDepart"
+	RbacService_DeleteDepart_FullMethodName       = "/RbacService/DeleteDepart"
+	RbacService_SaveJob_FullMethodName            = "/RbacService/SaveJob"
+	RbacService_GetJob_FullMethodName             = "/RbacService/GetJob"
+	RbacService_QueryJobList_FullMethodName       = "/RbacService/QueryJobList"
+	RbacService_DeleteJob_FullMethodName          = "/RbacService/DeleteJob"
+	RbacService_PagingJobList_FullMethodName      = "/RbacService/PagingJobList"
+	RbacService_SaveUser_FullMethodName           = "/RbacService/SaveUser"
+	RbacService_GetUser_FullMethodName            = "/RbacService/GetUser"
+	RbacService_DeleteUser_FullMethodName         = "/RbacService/DeleteUser"
+	RbacService_PagingUser_FullMethodName         = "/RbacService/PagingUser"
 	RbacService_SavePermRole_FullMethodName       = "/RbacService/SavePermRole"
 	RbacService_UpdateRoleResource_FullMethodName = "/RbacService/UpdateRoleResource"
 	RbacService_GetPermRole_FullMethodName        = "/RbacService/GetPermRole"
@@ -62,37 +62,37 @@ type RbacServiceClient interface {
 	// 获取用户的信息
 	GetUserResource(ctx context.Context, in *GetUserResRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error)
 	// 获取资源树形数据
-	QueryResList(ctx context.Context, in *QueryPermResRequest, opts ...grpc.CallOption) (*QueryPermResResponse, error)
+	QueryResList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryPermResResponse, error)
 	// 移动资源顺序
 	MoveResOrdinal(ctx context.Context, in *MoveResOrdinalRequest, opts ...grpc.CallOption) (*Result, error)
 	// 部门树形数据
 	DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RbacTree, error)
 	// 保存部门
-	SavePermDept(ctx context.Context, in *SavePermDeptRequest, opts ...grpc.CallOption) (*SavePermDeptResponse, error)
+	SaveDepart(ctx context.Context, in *SaveDepartRequest, opts ...grpc.CallOption) (*SaveDepartResponse, error)
 	// 获取部门
-	GetPermDept(ctx context.Context, in *PermDeptId, opts ...grpc.CallOption) (*SPermDept, error)
+	GetDepart(ctx context.Context, in *RbacDepartId, opts ...grpc.CallOption) (*SPermDept, error)
 	// 删除部门
-	DeletePermDept(ctx context.Context, in *PermDeptId, opts ...grpc.CallOption) (*Result, error)
+	DeleteDepart(ctx context.Context, in *RbacDepartId, opts ...grpc.CallOption) (*Result, error)
 	// 保存岗位
-	SavePermJob(ctx context.Context, in *SavePermJobRequest, opts ...grpc.CallOption) (*SavePermJobResponse, error)
+	SaveJob(ctx context.Context, in *SaveJobRequest, opts ...grpc.CallOption) (*SaveJobResponse, error)
 	// 获取岗位
-	GetPermJob(ctx context.Context, in *PermJobId, opts ...grpc.CallOption) (*SPermJob, error)
+	GetJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*SPermJob, error)
 	// 获取岗位列表
-	QueryPermJobList(ctx context.Context, in *QueryPermJobRequest, opts ...grpc.CallOption) (*QueryPermJobResponse, error)
+	QueryJobList(ctx context.Context, in *QueryJobRequest, opts ...grpc.CallOption) (*QueryJobResponse, error)
 	// 删除岗位
-	DeletePermJob(ctx context.Context, in *PermJobId, opts ...grpc.CallOption) (*Result, error)
+	DeleteJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*Result, error)
 	// 获取岗位分页数据
-	PagingPermJob(ctx context.Context, in *PermJobPagingRequest, opts ...grpc.CallOption) (*PermJobPagingResponse, error)
+	PagingJobList(ctx context.Context, in *RbacJobPagingRequest, opts ...grpc.CallOption) (*PagingRbacJobResponse, error)
 	// 保存系统用户
-	SavePermUser(ctx context.Context, in *SavePermUserRequest, opts ...grpc.CallOption) (*SavePermUserResponse, error)
+	SaveUser(ctx context.Context, in *SaveRbacUserRequest, opts ...grpc.CallOption) (*SaveRbacUserResponse, error)
 	// 获取系统用户
-	GetPermUser(ctx context.Context, in *PermUserId, opts ...grpc.CallOption) (*SPermUser, error)
+	GetUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*SRbacUser, error)
 	// 删除系统用户
-	DeletePermUser(ctx context.Context, in *PermUserId, opts ...grpc.CallOption) (*Result, error)
+	DeleteUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*Result, error)
 	// 获取系统用户分页数据
-	PagingPermUser(ctx context.Context, in *PermUserPagingRequest, opts ...grpc.CallOption) (*PermUserPagingResponse, error)
+	PagingUser(ctx context.Context, in *PagingRbacUserRequest, opts ...grpc.CallOption) (*PagingRbacUserResponse, error)
 	// 保存角色
-	SavePermRole(ctx context.Context, in *SavePermRoleRequest, opts ...grpc.CallOption) (*SavePermRoleResponse, error)
+	SavePermRole(ctx context.Context, in *SaveRbacRoleRequest, opts ...grpc.CallOption) (*SaveRbacRoleResponse, error)
 	// 保存角色
 	UpdateRoleResource(ctx context.Context, in *UpdateRoleResRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取角色
@@ -155,7 +155,7 @@ func (c *rbacServiceClient) GetUserResource(ctx context.Context, in *GetUserResR
 	return out, nil
 }
 
-func (c *rbacServiceClient) QueryResList(ctx context.Context, in *QueryPermResRequest, opts ...grpc.CallOption) (*QueryPermResResponse, error) {
+func (c *rbacServiceClient) QueryResList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryPermResResponse, error) {
 	out := new(QueryPermResResponse)
 	err := c.cc.Invoke(ctx, RbacService_QueryResList_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -182,116 +182,116 @@ func (c *rbacServiceClient) DepartTree(ctx context.Context, in *Empty, opts ...g
 	return out, nil
 }
 
-func (c *rbacServiceClient) SavePermDept(ctx context.Context, in *SavePermDeptRequest, opts ...grpc.CallOption) (*SavePermDeptResponse, error) {
-	out := new(SavePermDeptResponse)
-	err := c.cc.Invoke(ctx, RbacService_SavePermDept_FullMethodName, in, out, opts...)
+func (c *rbacServiceClient) SaveDepart(ctx context.Context, in *SaveDepartRequest, opts ...grpc.CallOption) (*SaveDepartResponse, error) {
+	out := new(SaveDepartResponse)
+	err := c.cc.Invoke(ctx, RbacService_SaveDepart_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) GetPermDept(ctx context.Context, in *PermDeptId, opts ...grpc.CallOption) (*SPermDept, error) {
+func (c *rbacServiceClient) GetDepart(ctx context.Context, in *RbacDepartId, opts ...grpc.CallOption) (*SPermDept, error) {
 	out := new(SPermDept)
-	err := c.cc.Invoke(ctx, RbacService_GetPermDept_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, RbacService_GetDepart_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) DeletePermDept(ctx context.Context, in *PermDeptId, opts ...grpc.CallOption) (*Result, error) {
+func (c *rbacServiceClient) DeleteDepart(ctx context.Context, in *RbacDepartId, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, RbacService_DeletePermDept_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, RbacService_DeleteDepart_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) SavePermJob(ctx context.Context, in *SavePermJobRequest, opts ...grpc.CallOption) (*SavePermJobResponse, error) {
-	out := new(SavePermJobResponse)
-	err := c.cc.Invoke(ctx, RbacService_SavePermJob_FullMethodName, in, out, opts...)
+func (c *rbacServiceClient) SaveJob(ctx context.Context, in *SaveJobRequest, opts ...grpc.CallOption) (*SaveJobResponse, error) {
+	out := new(SaveJobResponse)
+	err := c.cc.Invoke(ctx, RbacService_SaveJob_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) GetPermJob(ctx context.Context, in *PermJobId, opts ...grpc.CallOption) (*SPermJob, error) {
+func (c *rbacServiceClient) GetJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*SPermJob, error) {
 	out := new(SPermJob)
-	err := c.cc.Invoke(ctx, RbacService_GetPermJob_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, RbacService_GetJob_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) QueryPermJobList(ctx context.Context, in *QueryPermJobRequest, opts ...grpc.CallOption) (*QueryPermJobResponse, error) {
-	out := new(QueryPermJobResponse)
-	err := c.cc.Invoke(ctx, RbacService_QueryPermJobList_FullMethodName, in, out, opts...)
+func (c *rbacServiceClient) QueryJobList(ctx context.Context, in *QueryJobRequest, opts ...grpc.CallOption) (*QueryJobResponse, error) {
+	out := new(QueryJobResponse)
+	err := c.cc.Invoke(ctx, RbacService_QueryJobList_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) DeletePermJob(ctx context.Context, in *PermJobId, opts ...grpc.CallOption) (*Result, error) {
+func (c *rbacServiceClient) DeleteJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, RbacService_DeletePermJob_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, RbacService_DeleteJob_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) PagingPermJob(ctx context.Context, in *PermJobPagingRequest, opts ...grpc.CallOption) (*PermJobPagingResponse, error) {
-	out := new(PermJobPagingResponse)
-	err := c.cc.Invoke(ctx, RbacService_PagingPermJob_FullMethodName, in, out, opts...)
+func (c *rbacServiceClient) PagingJobList(ctx context.Context, in *RbacJobPagingRequest, opts ...grpc.CallOption) (*PagingRbacJobResponse, error) {
+	out := new(PagingRbacJobResponse)
+	err := c.cc.Invoke(ctx, RbacService_PagingJobList_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) SavePermUser(ctx context.Context, in *SavePermUserRequest, opts ...grpc.CallOption) (*SavePermUserResponse, error) {
-	out := new(SavePermUserResponse)
-	err := c.cc.Invoke(ctx, RbacService_SavePermUser_FullMethodName, in, out, opts...)
+func (c *rbacServiceClient) SaveUser(ctx context.Context, in *SaveRbacUserRequest, opts ...grpc.CallOption) (*SaveRbacUserResponse, error) {
+	out := new(SaveRbacUserResponse)
+	err := c.cc.Invoke(ctx, RbacService_SaveUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) GetPermUser(ctx context.Context, in *PermUserId, opts ...grpc.CallOption) (*SPermUser, error) {
-	out := new(SPermUser)
-	err := c.cc.Invoke(ctx, RbacService_GetPermUser_FullMethodName, in, out, opts...)
+func (c *rbacServiceClient) GetUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*SRbacUser, error) {
+	out := new(SRbacUser)
+	err := c.cc.Invoke(ctx, RbacService_GetUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) DeletePermUser(ctx context.Context, in *PermUserId, opts ...grpc.CallOption) (*Result, error) {
+func (c *rbacServiceClient) DeleteUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, RbacService_DeletePermUser_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, RbacService_DeleteUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) PagingPermUser(ctx context.Context, in *PermUserPagingRequest, opts ...grpc.CallOption) (*PermUserPagingResponse, error) {
-	out := new(PermUserPagingResponse)
-	err := c.cc.Invoke(ctx, RbacService_PagingPermUser_FullMethodName, in, out, opts...)
+func (c *rbacServiceClient) PagingUser(ctx context.Context, in *PagingRbacUserRequest, opts ...grpc.CallOption) (*PagingRbacUserResponse, error) {
+	out := new(PagingRbacUserResponse)
+	err := c.cc.Invoke(ctx, RbacService_PagingUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) SavePermRole(ctx context.Context, in *SavePermRoleRequest, opts ...grpc.CallOption) (*SavePermRoleResponse, error) {
-	out := new(SavePermRoleResponse)
+func (c *rbacServiceClient) SavePermRole(ctx context.Context, in *SaveRbacRoleRequest, opts ...grpc.CallOption) (*SaveRbacRoleResponse, error) {
+	out := new(SaveRbacRoleResponse)
 	err := c.cc.Invoke(ctx, RbacService_SavePermRole_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -384,37 +384,37 @@ type RbacServiceServer interface {
 	// 获取用户的信息
 	GetUserResource(context.Context, *GetUserResRequest) (*RbacUserResourceResponse, error)
 	// 获取资源树形数据
-	QueryResList(context.Context, *QueryPermResRequest) (*QueryPermResResponse, error)
+	QueryResList(context.Context, *QueryRbacResRequest) (*QueryPermResResponse, error)
 	// 移动资源顺序
 	MoveResOrdinal(context.Context, *MoveResOrdinalRequest) (*Result, error)
 	// 部门树形数据
 	DepartTree(context.Context, *Empty) (*RbacTree, error)
 	// 保存部门
-	SavePermDept(context.Context, *SavePermDeptRequest) (*SavePermDeptResponse, error)
+	SaveDepart(context.Context, *SaveDepartRequest) (*SaveDepartResponse, error)
 	// 获取部门
-	GetPermDept(context.Context, *PermDeptId) (*SPermDept, error)
+	GetDepart(context.Context, *RbacDepartId) (*SPermDept, error)
 	// 删除部门
-	DeletePermDept(context.Context, *PermDeptId) (*Result, error)
+	DeleteDepart(context.Context, *RbacDepartId) (*Result, error)
 	// 保存岗位
-	SavePermJob(context.Context, *SavePermJobRequest) (*SavePermJobResponse, error)
+	SaveJob(context.Context, *SaveJobRequest) (*SaveJobResponse, error)
 	// 获取岗位
-	GetPermJob(context.Context, *PermJobId) (*SPermJob, error)
+	GetJob(context.Context, *RbacJobId) (*SPermJob, error)
 	// 获取岗位列表
-	QueryPermJobList(context.Context, *QueryPermJobRequest) (*QueryPermJobResponse, error)
+	QueryJobList(context.Context, *QueryJobRequest) (*QueryJobResponse, error)
 	// 删除岗位
-	DeletePermJob(context.Context, *PermJobId) (*Result, error)
+	DeleteJob(context.Context, *RbacJobId) (*Result, error)
 	// 获取岗位分页数据
-	PagingPermJob(context.Context, *PermJobPagingRequest) (*PermJobPagingResponse, error)
+	PagingJobList(context.Context, *RbacJobPagingRequest) (*PagingRbacJobResponse, error)
 	// 保存系统用户
-	SavePermUser(context.Context, *SavePermUserRequest) (*SavePermUserResponse, error)
+	SaveUser(context.Context, *SaveRbacUserRequest) (*SaveRbacUserResponse, error)
 	// 获取系统用户
-	GetPermUser(context.Context, *PermUserId) (*SPermUser, error)
+	GetUser(context.Context, *RbacUserId) (*SRbacUser, error)
 	// 删除系统用户
-	DeletePermUser(context.Context, *PermUserId) (*Result, error)
+	DeleteUser(context.Context, *RbacUserId) (*Result, error)
 	// 获取系统用户分页数据
-	PagingPermUser(context.Context, *PermUserPagingRequest) (*PermUserPagingResponse, error)
+	PagingUser(context.Context, *PagingRbacUserRequest) (*PagingRbacUserResponse, error)
 	// 保存角色
-	SavePermRole(context.Context, *SavePermRoleRequest) (*SavePermRoleResponse, error)
+	SavePermRole(context.Context, *SaveRbacRoleRequest) (*SaveRbacRoleResponse, error)
 	// 保存角色
 	UpdateRoleResource(context.Context, *UpdateRoleResRequest) (*Result, error)
 	// 获取角色
@@ -450,7 +450,7 @@ func (UnimplementedRbacServiceServer) GetJwtToken(context.Context, *Empty) (*Str
 func (UnimplementedRbacServiceServer) GetUserResource(context.Context, *GetUserResRequest) (*RbacUserResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserResource not implemented")
 }
-func (UnimplementedRbacServiceServer) QueryResList(context.Context, *QueryPermResRequest) (*QueryPermResResponse, error) {
+func (UnimplementedRbacServiceServer) QueryResList(context.Context, *QueryRbacResRequest) (*QueryPermResResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryResList not implemented")
 }
 func (UnimplementedRbacServiceServer) MoveResOrdinal(context.Context, *MoveResOrdinalRequest) (*Result, error) {
@@ -459,43 +459,43 @@ func (UnimplementedRbacServiceServer) MoveResOrdinal(context.Context, *MoveResOr
 func (UnimplementedRbacServiceServer) DepartTree(context.Context, *Empty) (*RbacTree, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DepartTree not implemented")
 }
-func (UnimplementedRbacServiceServer) SavePermDept(context.Context, *SavePermDeptRequest) (*SavePermDeptResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SavePermDept not implemented")
+func (UnimplementedRbacServiceServer) SaveDepart(context.Context, *SaveDepartRequest) (*SaveDepartResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveDepart not implemented")
 }
-func (UnimplementedRbacServiceServer) GetPermDept(context.Context, *PermDeptId) (*SPermDept, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPermDept not implemented")
+func (UnimplementedRbacServiceServer) GetDepart(context.Context, *RbacDepartId) (*SPermDept, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDepart not implemented")
 }
-func (UnimplementedRbacServiceServer) DeletePermDept(context.Context, *PermDeptId) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeletePermDept not implemented")
+func (UnimplementedRbacServiceServer) DeleteDepart(context.Context, *RbacDepartId) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteDepart not implemented")
 }
-func (UnimplementedRbacServiceServer) SavePermJob(context.Context, *SavePermJobRequest) (*SavePermJobResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SavePermJob not implemented")
+func (UnimplementedRbacServiceServer) SaveJob(context.Context, *SaveJobRequest) (*SaveJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveJob not implemented")
 }
-func (UnimplementedRbacServiceServer) GetPermJob(context.Context, *PermJobId) (*SPermJob, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPermJob not implemented")
+func (UnimplementedRbacServiceServer) GetJob(context.Context, *RbacJobId) (*SPermJob, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJob not implemented")
 }
-func (UnimplementedRbacServiceServer) QueryPermJobList(context.Context, *QueryPermJobRequest) (*QueryPermJobResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryPermJobList not implemented")
+func (UnimplementedRbacServiceServer) QueryJobList(context.Context, *QueryJobRequest) (*QueryJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryJobList not implemented")
 }
-func (UnimplementedRbacServiceServer) DeletePermJob(context.Context, *PermJobId) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeletePermJob not implemented")
+func (UnimplementedRbacServiceServer) DeleteJob(context.Context, *RbacJobId) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteJob not implemented")
 }
-func (UnimplementedRbacServiceServer) PagingPermJob(context.Context, *PermJobPagingRequest) (*PermJobPagingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PagingPermJob not implemented")
+func (UnimplementedRbacServiceServer) PagingJobList(context.Context, *RbacJobPagingRequest) (*PagingRbacJobResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PagingJobList not implemented")
 }
-func (UnimplementedRbacServiceServer) SavePermUser(context.Context, *SavePermUserRequest) (*SavePermUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SavePermUser not implemented")
+func (UnimplementedRbacServiceServer) SaveUser(context.Context, *SaveRbacUserRequest) (*SaveRbacUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveUser not implemented")
 }
-func (UnimplementedRbacServiceServer) GetPermUser(context.Context, *PermUserId) (*SPermUser, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPermUser not implemented")
+func (UnimplementedRbacServiceServer) GetUser(context.Context, *RbacUserId) (*SRbacUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedRbacServiceServer) DeletePermUser(context.Context, *PermUserId) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeletePermUser not implemented")
+func (UnimplementedRbacServiceServer) DeleteUser(context.Context, *RbacUserId) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
-func (UnimplementedRbacServiceServer) PagingPermUser(context.Context, *PermUserPagingRequest) (*PermUserPagingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PagingPermUser not implemented")
+func (UnimplementedRbacServiceServer) PagingUser(context.Context, *PagingRbacUserRequest) (*PagingRbacUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PagingUser not implemented")
 }
-func (UnimplementedRbacServiceServer) SavePermRole(context.Context, *SavePermRoleRequest) (*SavePermRoleResponse, error) {
+func (UnimplementedRbacServiceServer) SavePermRole(context.Context, *SaveRbacRoleRequest) (*SaveRbacRoleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SavePermRole not implemented")
 }
 func (UnimplementedRbacServiceServer) UpdateRoleResource(context.Context, *UpdateRoleResRequest) (*Result, error) {
@@ -608,7 +608,7 @@ func _RbacService_GetUserResource_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _RbacService_QueryResList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryPermResRequest)
+	in := new(QueryRbacResRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -620,7 +620,7 @@ func _RbacService_QueryResList_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: RbacService_QueryResList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).QueryResList(ctx, req.(*QueryPermResRequest))
+		return srv.(RbacServiceServer).QueryResList(ctx, req.(*QueryRbacResRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -661,224 +661,224 @@ func _RbacService_DepartTree_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_SavePermDept_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SavePermDeptRequest)
+func _RbacService_SaveDepart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveDepartRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).SavePermDept(ctx, in)
+		return srv.(RbacServiceServer).SaveDepart(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_SavePermDept_FullMethodName,
+		FullMethod: RbacService_SaveDepart_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).SavePermDept(ctx, req.(*SavePermDeptRequest))
+		return srv.(RbacServiceServer).SaveDepart(ctx, req.(*SaveDepartRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_GetPermDept_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermDeptId)
+func _RbacService_GetDepart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RbacDepartId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).GetPermDept(ctx, in)
+		return srv.(RbacServiceServer).GetDepart(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_GetPermDept_FullMethodName,
+		FullMethod: RbacService_GetDepart_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).GetPermDept(ctx, req.(*PermDeptId))
+		return srv.(RbacServiceServer).GetDepart(ctx, req.(*RbacDepartId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_DeletePermDept_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermDeptId)
+func _RbacService_DeleteDepart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RbacDepartId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).DeletePermDept(ctx, in)
+		return srv.(RbacServiceServer).DeleteDepart(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_DeletePermDept_FullMethodName,
+		FullMethod: RbacService_DeleteDepart_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).DeletePermDept(ctx, req.(*PermDeptId))
+		return srv.(RbacServiceServer).DeleteDepart(ctx, req.(*RbacDepartId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_SavePermJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SavePermJobRequest)
+func _RbacService_SaveJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveJobRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).SavePermJob(ctx, in)
+		return srv.(RbacServiceServer).SaveJob(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_SavePermJob_FullMethodName,
+		FullMethod: RbacService_SaveJob_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).SavePermJob(ctx, req.(*SavePermJobRequest))
+		return srv.(RbacServiceServer).SaveJob(ctx, req.(*SaveJobRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_GetPermJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermJobId)
+func _RbacService_GetJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RbacJobId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).GetPermJob(ctx, in)
+		return srv.(RbacServiceServer).GetJob(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_GetPermJob_FullMethodName,
+		FullMethod: RbacService_GetJob_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).GetPermJob(ctx, req.(*PermJobId))
+		return srv.(RbacServiceServer).GetJob(ctx, req.(*RbacJobId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_QueryPermJobList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryPermJobRequest)
+func _RbacService_QueryJobList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryJobRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).QueryPermJobList(ctx, in)
+		return srv.(RbacServiceServer).QueryJobList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_QueryPermJobList_FullMethodName,
+		FullMethod: RbacService_QueryJobList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).QueryPermJobList(ctx, req.(*QueryPermJobRequest))
+		return srv.(RbacServiceServer).QueryJobList(ctx, req.(*QueryJobRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_DeletePermJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermJobId)
+func _RbacService_DeleteJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RbacJobId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).DeletePermJob(ctx, in)
+		return srv.(RbacServiceServer).DeleteJob(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_DeletePermJob_FullMethodName,
+		FullMethod: RbacService_DeleteJob_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).DeletePermJob(ctx, req.(*PermJobId))
+		return srv.(RbacServiceServer).DeleteJob(ctx, req.(*RbacJobId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_PagingPermJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermJobPagingRequest)
+func _RbacService_PagingJobList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RbacJobPagingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).PagingPermJob(ctx, in)
+		return srv.(RbacServiceServer).PagingJobList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_PagingPermJob_FullMethodName,
+		FullMethod: RbacService_PagingJobList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).PagingPermJob(ctx, req.(*PermJobPagingRequest))
+		return srv.(RbacServiceServer).PagingJobList(ctx, req.(*RbacJobPagingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_SavePermUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SavePermUserRequest)
+func _RbacService_SaveUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveRbacUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).SavePermUser(ctx, in)
+		return srv.(RbacServiceServer).SaveUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_SavePermUser_FullMethodName,
+		FullMethod: RbacService_SaveUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).SavePermUser(ctx, req.(*SavePermUserRequest))
+		return srv.(RbacServiceServer).SaveUser(ctx, req.(*SaveRbacUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_GetPermUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermUserId)
+func _RbacService_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RbacUserId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).GetPermUser(ctx, in)
+		return srv.(RbacServiceServer).GetUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_GetPermUser_FullMethodName,
+		FullMethod: RbacService_GetUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).GetPermUser(ctx, req.(*PermUserId))
+		return srv.(RbacServiceServer).GetUser(ctx, req.(*RbacUserId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_DeletePermUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermUserId)
+func _RbacService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RbacUserId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).DeletePermUser(ctx, in)
+		return srv.(RbacServiceServer).DeleteUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_DeletePermUser_FullMethodName,
+		FullMethod: RbacService_DeleteUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).DeletePermUser(ctx, req.(*PermUserId))
+		return srv.(RbacServiceServer).DeleteUser(ctx, req.(*RbacUserId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_PagingPermUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermUserPagingRequest)
+func _RbacService_PagingUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PagingRbacUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).PagingPermUser(ctx, in)
+		return srv.(RbacServiceServer).PagingUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_PagingPermUser_FullMethodName,
+		FullMethod: RbacService_PagingUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).PagingPermUser(ctx, req.(*PermUserPagingRequest))
+		return srv.(RbacServiceServer).PagingUser(ctx, req.(*PagingRbacUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RbacService_SavePermRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SavePermRoleRequest)
+	in := new(SaveRbacRoleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -890,7 +890,7 @@ func _RbacService_SavePermRole_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: RbacService_SavePermRole_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).SavePermRole(ctx, req.(*SavePermRoleRequest))
+		return srv.(RbacServiceServer).SavePermRole(ctx, req.(*SaveRbacRoleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1075,52 +1075,52 @@ var RbacService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RbacService_DepartTree_Handler,
 		},
 		{
-			MethodName: "SavePermDept",
-			Handler:    _RbacService_SavePermDept_Handler,
+			MethodName: "SaveDepart",
+			Handler:    _RbacService_SaveDepart_Handler,
 		},
 		{
-			MethodName: "GetPermDept",
-			Handler:    _RbacService_GetPermDept_Handler,
+			MethodName: "GetDepart",
+			Handler:    _RbacService_GetDepart_Handler,
 		},
 		{
-			MethodName: "DeletePermDept",
-			Handler:    _RbacService_DeletePermDept_Handler,
+			MethodName: "DeleteDepart",
+			Handler:    _RbacService_DeleteDepart_Handler,
 		},
 		{
-			MethodName: "SavePermJob",
-			Handler:    _RbacService_SavePermJob_Handler,
+			MethodName: "SaveJob",
+			Handler:    _RbacService_SaveJob_Handler,
 		},
 		{
-			MethodName: "GetPermJob",
-			Handler:    _RbacService_GetPermJob_Handler,
+			MethodName: "GetJob",
+			Handler:    _RbacService_GetJob_Handler,
 		},
 		{
-			MethodName: "QueryPermJobList",
-			Handler:    _RbacService_QueryPermJobList_Handler,
+			MethodName: "QueryJobList",
+			Handler:    _RbacService_QueryJobList_Handler,
 		},
 		{
-			MethodName: "DeletePermJob",
-			Handler:    _RbacService_DeletePermJob_Handler,
+			MethodName: "DeleteJob",
+			Handler:    _RbacService_DeleteJob_Handler,
 		},
 		{
-			MethodName: "PagingPermJob",
-			Handler:    _RbacService_PagingPermJob_Handler,
+			MethodName: "PagingJobList",
+			Handler:    _RbacService_PagingJobList_Handler,
 		},
 		{
-			MethodName: "SavePermUser",
-			Handler:    _RbacService_SavePermUser_Handler,
+			MethodName: "SaveUser",
+			Handler:    _RbacService_SaveUser_Handler,
 		},
 		{
-			MethodName: "GetPermUser",
-			Handler:    _RbacService_GetPermUser_Handler,
+			MethodName: "GetUser",
+			Handler:    _RbacService_GetUser_Handler,
 		},
 		{
-			MethodName: "DeletePermUser",
-			Handler:    _RbacService_DeletePermUser_Handler,
+			MethodName: "DeleteUser",
+			Handler:    _RbacService_DeleteUser_Handler,
 		},
 		{
-			MethodName: "PagingPermUser",
-			Handler:    _RbacService_PagingPermUser_Handler,
+			MethodName: "PagingUser",
+			Handler:    _RbacService_PagingUser_Handler,
 		},
 		{
 			MethodName: "SavePermRole",

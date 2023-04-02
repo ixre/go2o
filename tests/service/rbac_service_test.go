@@ -11,7 +11,7 @@ import (
 )
 
 func TestInitialTreeNode(t *testing.T) {
-	list, err := impl.RbacService.QueryResList(context.TODO(), &proto.QueryPermResRequest{
+	list, err := impl.RbacService.QueryResList(context.TODO(), &proto.QueryRbacResRequest{
 		Keyword:   "",
 		OnlyMenu:  true,
 		ParentId:  0,
@@ -36,4 +36,12 @@ func TestCheckRBACToken(t *testing.T) {
 	}
 	t.Log(typeconv.MustJson(ret))
 	t.Log("用户Id", ret.UserId)
+}
+
+// 测试获取部门
+func TestGetDepart(t *testing.T) {
+	ret, _ := impl.RbacService.GetDepart(context.TODO(), &proto.RbacDepartId{
+		Value: 4,
+	})
+	t.Log(typeconv.MustJson(ret))
 }
