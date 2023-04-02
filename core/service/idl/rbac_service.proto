@@ -36,7 +36,7 @@ service RbacService {
     rpc SaveJob (SaveJobRequest) returns (SaveJobResponse) {
     }
     // 获取岗位
-    rpc GetJob (RbacJobId) returns (SPermJob) {
+    rpc GetJob (RbacJobId) returns (SRbacJob) {
     }
     // 获取岗位列表
     rpc QueryJobList (QueryJobRequest) returns (QueryJobResponse) {
@@ -261,7 +261,7 @@ message RbacJobId {
     int64 value =  1;
 }
 
-message SPermJob {
+message SRbacJob {
     /** ID */
     int64 id = 1;
     /** 岗位名称 */
@@ -282,7 +282,7 @@ message QueryJobRequest {
 }
 
 message QueryJobResponse {
-    repeated SPermJob list = 1;
+    repeated SRbacJob list = 1;
 }
 
 message PagingJobList {

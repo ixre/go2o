@@ -76,7 +76,7 @@ type RbacServiceClient interface {
 	// 保存岗位
 	SaveJob(ctx context.Context, in *SaveJobRequest, opts ...grpc.CallOption) (*SaveJobResponse, error)
 	// 获取岗位
-	GetJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*SPermJob, error)
+	GetJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*SRbacJob, error)
 	// 获取岗位列表
 	QueryJobList(ctx context.Context, in *QueryJobRequest, opts ...grpc.CallOption) (*QueryJobResponse, error)
 	// 删除岗位
@@ -218,8 +218,8 @@ func (c *rbacServiceClient) SaveJob(ctx context.Context, in *SaveJobRequest, opt
 	return out, nil
 }
 
-func (c *rbacServiceClient) GetJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*SPermJob, error) {
-	out := new(SPermJob)
+func (c *rbacServiceClient) GetJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*SRbacJob, error) {
+	out := new(SRbacJob)
 	err := c.cc.Invoke(ctx, RbacService_GetJob_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -398,7 +398,7 @@ type RbacServiceServer interface {
 	// 保存岗位
 	SaveJob(context.Context, *SaveJobRequest) (*SaveJobResponse, error)
 	// 获取岗位
-	GetJob(context.Context, *RbacJobId) (*SPermJob, error)
+	GetJob(context.Context, *RbacJobId) (*SRbacJob, error)
 	// 获取岗位列表
 	QueryJobList(context.Context, *QueryJobRequest) (*QueryJobResponse, error)
 	// 删除岗位
@@ -471,7 +471,7 @@ func (UnimplementedRbacServiceServer) DeleteDepart(context.Context, *RbacDepartI
 func (UnimplementedRbacServiceServer) SaveJob(context.Context, *SaveJobRequest) (*SaveJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveJob not implemented")
 }
-func (UnimplementedRbacServiceServer) GetJob(context.Context, *RbacJobId) (*SPermJob, error) {
+func (UnimplementedRbacServiceServer) GetJob(context.Context, *RbacJobId) (*SRbacJob, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJob not implemented")
 }
 func (UnimplementedRbacServiceServer) QueryJobList(context.Context, *QueryJobRequest) (*QueryJobResponse, error) {

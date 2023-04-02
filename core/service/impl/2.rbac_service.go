@@ -410,8 +410,8 @@ func (p *rbacServiceImpl) SaveJob(_ context.Context, r *proto.SaveJobRequest) (*
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) parsePermJob(v *model.PermJob) *proto.SPermJob {
-	return &proto.SPermJob{
+func (p *rbacServiceImpl) parsePermJob(v *model.PermJob) *proto.SRbacJob {
+	return &proto.SRbacJob{
 		Id:         v.Id,
 		Name:       v.Name,
 		Enabled:    int32(v.Enabled),
@@ -422,7 +422,7 @@ func (p *rbacServiceImpl) parsePermJob(v *model.PermJob) *proto.SPermJob {
 }
 
 // 获取岗位
-func (p *rbacServiceImpl) GetJob(_ context.Context, id *proto.RbacJobId) (*proto.SPermJob, error) {
+func (p *rbacServiceImpl) GetJob(_ context.Context, id *proto.RbacJobId) (*proto.SRbacJob, error) {
 	v := p.dao.GetJob(id.Value)
 	if v == nil {
 		return nil, fmt.Errorf("no such job: %v", id.Value)
@@ -442,7 +442,7 @@ func (p *rbacServiceImpl) QueryJobList(_ context.Context, r *proto.QueryJobReque
 	}
 	arr := p.dao.SelectPermJob(where)
 	ret := &proto.QueryJobResponse{
-		List: make([]*proto.SPermJob, len(arr)),
+		List: make([]*proto.SRbacJob, len(arr)),
 	}
 	for i, v := range arr {
 		ret.List[i] = p.parsePermJob(v)
@@ -595,11 +595,11 @@ func (p *rbacServiceImpl) PagingUser(_ context.Context, r *proto.PagingRbacUserR
 	for i, v := range rows {
 		ret.Value[i] = &proto.PagingUser{
 			Id:         int64(typeconv.MustInt(v["id"])),
-			Username:   typeconv.Stringify(v["usr"]),
-			Password:   typeconv.Stringify(v["pwd"]),
+			Username:   typeconv.Stringify(v["username"]),
+			Password:   typeconv.Stringify(v["password"]),
 			Flag:       int32(typeconv.MustInt(v["flag"])),
 			Portrait:   typeconv.Stringify(v["avatar"]),
-			Nickname:   typeconv.Stringify(v["nick_name"]),
+			Nickname:   typeconv.Stringify(v["nickname"]),
 			Gender:     typeconv.Stringify(v["gender"]),
 			Email:      typeconv.Stringify(v["email"]),
 			Phone:      typeconv.Stringify(v["phone"]),
