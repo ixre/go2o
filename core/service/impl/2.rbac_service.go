@@ -750,6 +750,12 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SaveRbacResReq
 			r.Key = strings.Replace(r.Path, "/", ":", -1)
 		}
 	}
+
+	// 如果pid传入小于0,则强制为0,以避免数据无法显示
+	if r.Pid < 0 {
+		r.Pid = 0
+	}
+	// 检测上级
 	if r.Pid > 0 {
 		// 检测上级是否为自己
 		if dst.Id == r.Pid {
