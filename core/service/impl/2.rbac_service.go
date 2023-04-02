@@ -85,7 +85,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		}, nil
 	}
 	decPwd := crypto.Sha1([]byte(r.Password + usr.Salt))
-	if usr.Pwd != decPwd {
+	if usr.Password != decPwd {
 		return &proto.RbacLoginResponse{
 			ErrCode: 3,
 			ErrMsg:  "密码不正确",
@@ -101,7 +101,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		UserId: usr.Id,
 	}
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(usr.Id)
-	return p.withAccessToken(usr.Usr, dst, expires)
+	return p.withAccessToken(usr.Username, dst, expires)
 }
 
 // 返回带有令牌的结果
@@ -500,7 +500,7 @@ func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserReque
 				ErrMsg:  "非32位md5密码",
 			}, nil
 		}
-		dst.Pwd = crypto.Sha1([]byte(r.Password + dst.Salt))
+		dst.Password = crypto.Sha1([]byte(r.Password + dst.Salt))
 	}
 	dst.Flag = int(r.Flag)
 	dst.Avatar = r.Portrait
@@ -529,8 +529,8 @@ func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserReque
 func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SRbacUser {
 	return &proto.SRbacUser{
 		Id:         v.Id,
-		Username:   v.Usr,
-		Password:   v.Pwd,
+		Username:   v.Username,
+		Password:   v.Password,
 		Flag:       int32(v.Flag),
 		Portrait:   v.Avatar,
 		Nickname:   v.Nickname,

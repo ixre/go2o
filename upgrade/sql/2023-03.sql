@@ -245,3 +245,13 @@ update pay_trade_data set order_id=COALESCE((
 	WHERE order_id = 0;
 
 ALTER TABLE IF EXISTS public.mm_member DROP COLUMN IF EXISTS state;
+
+-- 权限系统
+ALTER TABLE IF EXISTS public.perm_user
+    RENAME usr TO username;
+
+ALTER TABLE IF EXISTS public.perm_user
+    RENAME nick_name TO nickname;
+    
+ALTER TABLE IF EXISTS public.perm_user
+    RENAME pwd TO password;
