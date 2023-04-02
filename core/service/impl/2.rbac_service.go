@@ -617,7 +617,7 @@ func (p *rbacServiceImpl) PagingUser(_ context.Context, r *proto.PagingRbacUserR
 func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SaveRbacRoleRequest) (*proto.SaveRbacRoleResponse, error) {
 	var dst *model.PermRole
 	if r.Id > 0 {
-		dst = p.dao.GetPermRole(r.Id)
+		dst = p.dao.GetRole(r.Id)
 	} else {
 		dst = &model.PermRole{}
 		dst.CreateTime = time.Now().Unix()
@@ -667,8 +667,8 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 	return p.error(nil), nil
 }
 
-func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SPermRole {
-	return &proto.SPermRole{
+func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SRbacRole {
+	return &proto.SRbacRole{
 		Id:         v.Id,
 		Name:       v.Name,
 		Level:      int32(v.Level),
@@ -680,8 +680,8 @@ func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SPermRole {
 }
 
 // 获取角色
-func (p *rbacServiceImpl) GetPermRole(_ context.Context, id *proto.PermRoleId) (*proto.SPermRole, error) {
-	v := p.dao.GetPermRole(id.Value)
+func (p *rbacServiceImpl) GetRole(_ context.Context, id *proto.RbacRoleId) (*proto.SRbacRole, error) {
+	v := p.dao.GetRole(id.Value)
 	if v == nil {
 		return nil, fmt.Errorf("no such role: %v", id.Value)
 	}
@@ -692,10 +692,10 @@ func (p *rbacServiceImpl) GetPermRole(_ context.Context, id *proto.PermRoleId) (
 }
 
 // 获取角色列表
-func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryPermRoleRequest) (*proto.QueryPermRoleResponse, error) {
+func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryRbacRoleRequest) (*proto.QueryRbacRoleResponse, error) {
 	arr := p.dao.SelectPermRole("")
-	ret := &proto.QueryPermRoleResponse{
-		List: make([]*proto.SPermRole, len(arr)),
+	ret := &proto.QueryRbacRoleResponse{
+		List: make([]*proto.SRbacRole, len(arr)),
 	}
 	for i, v := range arr {
 		ret.List[i] = p.parsePermRole(v)
@@ -703,7 +703,7 @@ func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryPer
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.PermRoleId) (*proto.Result, error) {
+func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.RbacRoleId) (*proto.Result, error) {
 	err := p.dao.DeletePermRole(id.Value)
 	return p.error(err), nil
 }

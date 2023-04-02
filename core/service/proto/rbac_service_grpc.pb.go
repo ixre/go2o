@@ -40,7 +40,7 @@ const (
 	RbacService_PagingUser_FullMethodName         = "/RbacService/PagingUser"
 	RbacService_SavePermRole_FullMethodName       = "/RbacService/SavePermRole"
 	RbacService_UpdateRoleResource_FullMethodName = "/RbacService/UpdateRoleResource"
-	RbacService_GetPermRole_FullMethodName        = "/RbacService/GetPermRole"
+	RbacService_GetRole_FullMethodName            = "/RbacService/GetRole"
 	RbacService_QueryPermRoleList_FullMethodName  = "/RbacService/QueryPermRoleList"
 	RbacService_DeletePermRole_FullMethodName     = "/RbacService/DeletePermRole"
 	RbacService_PagingPermRole_FullMethodName     = "/RbacService/PagingPermRole"
@@ -96,11 +96,11 @@ type RbacServiceClient interface {
 	// 保存角色
 	UpdateRoleResource(ctx context.Context, in *UpdateRoleResRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取角色
-	GetPermRole(ctx context.Context, in *PermRoleId, opts ...grpc.CallOption) (*SPermRole, error)
+	GetRole(ctx context.Context, in *RbacRoleId, opts ...grpc.CallOption) (*SRbacRole, error)
 	// 获取角色列表
-	QueryPermRoleList(ctx context.Context, in *QueryPermRoleRequest, opts ...grpc.CallOption) (*QueryPermRoleResponse, error)
+	QueryPermRoleList(ctx context.Context, in *QueryRbacRoleRequest, opts ...grpc.CallOption) (*QueryRbacRoleResponse, error)
 	// 删除角色
-	DeletePermRole(ctx context.Context, in *PermRoleId, opts ...grpc.CallOption) (*Result, error)
+	DeletePermRole(ctx context.Context, in *RbacRoleId, opts ...grpc.CallOption) (*Result, error)
 	// 获取角色分页数据
 	PagingPermRole(ctx context.Context, in *PermRolePagingRequest, opts ...grpc.CallOption) (*PermRolePagingResponse, error)
 	// 保存PermRes
@@ -308,17 +308,17 @@ func (c *rbacServiceClient) UpdateRoleResource(ctx context.Context, in *UpdateRo
 	return out, nil
 }
 
-func (c *rbacServiceClient) GetPermRole(ctx context.Context, in *PermRoleId, opts ...grpc.CallOption) (*SPermRole, error) {
-	out := new(SPermRole)
-	err := c.cc.Invoke(ctx, RbacService_GetPermRole_FullMethodName, in, out, opts...)
+func (c *rbacServiceClient) GetRole(ctx context.Context, in *RbacRoleId, opts ...grpc.CallOption) (*SRbacRole, error) {
+	out := new(SRbacRole)
+	err := c.cc.Invoke(ctx, RbacService_GetRole_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *rbacServiceClient) QueryPermRoleList(ctx context.Context, in *QueryPermRoleRequest, opts ...grpc.CallOption) (*QueryPermRoleResponse, error) {
-	out := new(QueryPermRoleResponse)
+func (c *rbacServiceClient) QueryPermRoleList(ctx context.Context, in *QueryRbacRoleRequest, opts ...grpc.CallOption) (*QueryRbacRoleResponse, error) {
+	out := new(QueryRbacRoleResponse)
 	err := c.cc.Invoke(ctx, RbacService_QueryPermRoleList_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -326,7 +326,7 @@ func (c *rbacServiceClient) QueryPermRoleList(ctx context.Context, in *QueryPerm
 	return out, nil
 }
 
-func (c *rbacServiceClient) DeletePermRole(ctx context.Context, in *PermRoleId, opts ...grpc.CallOption) (*Result, error) {
+func (c *rbacServiceClient) DeletePermRole(ctx context.Context, in *RbacRoleId, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, RbacService_DeletePermRole_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -418,11 +418,11 @@ type RbacServiceServer interface {
 	// 保存角色
 	UpdateRoleResource(context.Context, *UpdateRoleResRequest) (*Result, error)
 	// 获取角色
-	GetPermRole(context.Context, *PermRoleId) (*SPermRole, error)
+	GetRole(context.Context, *RbacRoleId) (*SRbacRole, error)
 	// 获取角色列表
-	QueryPermRoleList(context.Context, *QueryPermRoleRequest) (*QueryPermRoleResponse, error)
+	QueryPermRoleList(context.Context, *QueryRbacRoleRequest) (*QueryRbacRoleResponse, error)
 	// 删除角色
-	DeletePermRole(context.Context, *PermRoleId) (*Result, error)
+	DeletePermRole(context.Context, *RbacRoleId) (*Result, error)
 	// 获取角色分页数据
 	PagingPermRole(context.Context, *PermRolePagingRequest) (*PermRolePagingResponse, error)
 	// 保存PermRes
@@ -501,13 +501,13 @@ func (UnimplementedRbacServiceServer) SavePermRole(context.Context, *SaveRbacRol
 func (UnimplementedRbacServiceServer) UpdateRoleResource(context.Context, *UpdateRoleResRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRoleResource not implemented")
 }
-func (UnimplementedRbacServiceServer) GetPermRole(context.Context, *PermRoleId) (*SPermRole, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPermRole not implemented")
+func (UnimplementedRbacServiceServer) GetRole(context.Context, *RbacRoleId) (*SRbacRole, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRole not implemented")
 }
-func (UnimplementedRbacServiceServer) QueryPermRoleList(context.Context, *QueryPermRoleRequest) (*QueryPermRoleResponse, error) {
+func (UnimplementedRbacServiceServer) QueryPermRoleList(context.Context, *QueryRbacRoleRequest) (*QueryRbacRoleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryPermRoleList not implemented")
 }
-func (UnimplementedRbacServiceServer) DeletePermRole(context.Context, *PermRoleId) (*Result, error) {
+func (UnimplementedRbacServiceServer) DeletePermRole(context.Context, *RbacRoleId) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePermRole not implemented")
 }
 func (UnimplementedRbacServiceServer) PagingPermRole(context.Context, *PermRolePagingRequest) (*PermRolePagingResponse, error) {
@@ -913,26 +913,26 @@ func _RbacService_UpdateRoleResource_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_GetPermRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermRoleId)
+func _RbacService_GetRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RbacRoleId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).GetPermRole(ctx, in)
+		return srv.(RbacServiceServer).GetRole(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_GetPermRole_FullMethodName,
+		FullMethod: RbacService_GetRole_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).GetPermRole(ctx, req.(*PermRoleId))
+		return srv.(RbacServiceServer).GetRole(ctx, req.(*RbacRoleId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RbacService_QueryPermRoleList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryPermRoleRequest)
+	in := new(QueryRbacRoleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -944,13 +944,13 @@ func _RbacService_QueryPermRoleList_Handler(srv interface{}, ctx context.Context
 		FullMethod: RbacService_QueryPermRoleList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).QueryPermRoleList(ctx, req.(*QueryPermRoleRequest))
+		return srv.(RbacServiceServer).QueryPermRoleList(ctx, req.(*QueryRbacRoleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RbacService_DeletePermRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PermRoleId)
+	in := new(RbacRoleId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -962,7 +962,7 @@ func _RbacService_DeletePermRole_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: RbacService_DeletePermRole_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).DeletePermRole(ctx, req.(*PermRoleId))
+		return srv.(RbacServiceServer).DeletePermRole(ctx, req.(*RbacRoleId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1131,8 +1131,8 @@ var RbacService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RbacService_UpdateRoleResource_Handler,
 		},
 		{
-			MethodName: "GetPermRole",
-			Handler:    _RbacService_GetPermRole_Handler,
+			MethodName: "GetRole",
+			Handler:    _RbacService_GetRole_Handler,
 		},
 		{
 			MethodName: "QueryPermRoleList",

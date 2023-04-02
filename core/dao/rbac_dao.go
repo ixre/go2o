@@ -56,9 +56,9 @@ type IRbacDao interface {
 	PagingQueryPermUser(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 角色
-	GetPermRole(primary interface{}) *model.PermRole
+	GetRole(primary interface{}) *model.PermRole
 	// GetBy 角色
-	GetPermRoleBy(where string, v ...interface{}) *model.PermRole
+	GetRoleBy(where string, v ...interface{}) *model.PermRole
 	// Count 角色 by condition
 	CountPermRole(where string, v ...interface{}) (int, error)
 	// Select 角色
@@ -107,9 +107,9 @@ type IRbacDao interface {
 	PagingQueryPermUserRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 角色部门关联
-	GetPermRoleDept(primary interface{}) *model.PermRoleDept
+	GetRoleDept(primary interface{}) *model.PermRoleDept
 	// GetBy 角色部门关联
-	GetPermRoleDeptBy(where string, v ...interface{}) *model.PermRoleDept
+	GetRoleDeptBy(where string, v ...interface{}) *model.PermRoleDept
 	// Count 角色部门关联 by condition
 	CountPermRoleDept(where string, v ...interface{}) (int, error)
 	// Select 角色部门关联
@@ -124,9 +124,9 @@ type IRbacDao interface {
 	PagingQueryPermRoleDept(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 角色菜单关联
-	GetPermRoleRes(primary interface{}) *model.PermRoleRes
+	GetRoleRes(primary interface{}) *model.PermRoleRes
 	// GetBy 角色菜单关联
-	GetPermRoleResBy(where string, v ...interface{}) *model.PermRoleRes
+	GetRoleResBy(where string, v ...interface{}) *model.PermRoleRes
 	// Count 角色菜单关联 by condition
 	CountPermRoleRes(where string, v ...interface{}) (int, error)
 	// Select 角色菜单关联

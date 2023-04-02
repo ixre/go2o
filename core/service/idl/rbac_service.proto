@@ -67,13 +67,13 @@ service RbacService {
     rpc UpdateRoleResource (UpdateRoleResRequest) returns (Result) {
     }
     // 获取角色
-    rpc GetPermRole (PermRoleId) returns (SPermRole) {
+    rpc GetRole (RbacRoleId) returns (SRbacRole) {
     }
     // 获取角色列表
-    rpc QueryPermRoleList (QueryPermRoleRequest) returns (QueryPermRoleResponse) {
+    rpc QueryPermRoleList (QueryRbacRoleRequest) returns (QueryRbacRoleResponse) {
     }
     // 删除角色
-    rpc DeletePermRole (PermRoleId) returns (Result) {
+    rpc DeletePermRole (RbacRoleId) returns (Result) {
     }
     // 获取角色分页数据
     rpc PagingPermRole (PermRolePagingRequest) returns (PermRolePagingResponse);
@@ -470,11 +470,11 @@ message SaveRbacRoleResponse {
     int64 id = 3;
 }
 
-message PermRoleId {
+message RbacRoleId {
     int64 value =  1;
 }
 
-message SPermRole {
+message SRbacRole {
     /** ID */
     int64 id = 1;
     /** 名称 */
@@ -493,12 +493,12 @@ message SPermRole {
     repeated int64 relatedResIdList = 8;
 }
 
-message QueryPermRoleRequest {
+message QueryRbacRoleRequest {
     /** 自定义参数 */
 }
 
-message QueryPermRoleResponse {
-    repeated SPermRole list = 1;
+message QueryRbacRoleResponse {
+    repeated SRbacRole list = 1;
 }
 
 message PagingPermRole {

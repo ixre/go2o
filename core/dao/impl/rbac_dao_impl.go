@@ -196,7 +196,8 @@ func (p *rbacDaoImpl) PagingQueryJob(begin, end int, where, orderBy string) (tot
 	s := fmt.Sprintf(`SELECT COUNT(1) FROM perm_job WHERE %s`, where)
 	p._orm.Connector().ExecScalar(s, &total)
 	if total > 0 {
-		s = fmt.Sprintf(`SELECT *,perm_dept as dept_name FROM perm_job LEFT JOIN dept_id = perm_dept.id WHERE %s %s
+		s = fmt.Sprintf(`SELECT *,perm_dept as dept_name FROM perm_job
+			 LEFT JOIN perm_dept ON dept_id = perm_dept.id WHERE %s %s
 	        LIMIT $2 OFFSET $1`,
 			where, orderBy)
 		err := p._orm.Connector().Query(s, func(_rows *sql.Rows) {
@@ -306,7 +307,7 @@ func (p *rbacDaoImpl) PagingQueryPermUser(begin, end int, where, orderBy string)
 }
 
 // Get 角色
-func (p *rbacDaoImpl) GetPermRole(primary interface{}) *model.PermRole {
+func (p *rbacDaoImpl) GetRole(primary interface{}) *model.PermRole {
 	e := model.PermRole{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
@@ -319,7 +320,7 @@ func (p *rbacDaoImpl) GetPermRole(primary interface{}) *model.PermRole {
 }
 
 // GetBy 角色
-func (p *rbacDaoImpl) GetPermRoleBy(where string, v ...interface{}) *model.PermRole {
+func (p *rbacDaoImpl) GetRoleBy(where string, v ...interface{}) *model.PermRole {
 	e := model.PermRole{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
@@ -570,7 +571,7 @@ func (p *rbacDaoImpl) PagingQueryPermUserRole(begin, end int, where, orderBy str
 }
 
 // Get 角色菜单关联
-func (p *rbacDaoImpl) GetPermRoleRes(primary interface{}) *model.PermRoleRes {
+func (p *rbacDaoImpl) GetRoleRes(primary interface{}) *model.PermRoleRes {
 	e := model.PermRoleRes{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
@@ -583,7 +584,7 @@ func (p *rbacDaoImpl) GetPermRoleRes(primary interface{}) *model.PermRoleRes {
 }
 
 // GetBy 角色菜单关联
-func (p *rbacDaoImpl) GetPermRoleResBy(where string, v ...interface{}) *model.PermRoleRes {
+func (p *rbacDaoImpl) GetRoleResBy(where string, v ...interface{}) *model.PermRoleRes {
 	e := model.PermRoleRes{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
@@ -664,7 +665,7 @@ func (p *rbacDaoImpl) PagingQueryPermRoleRes(begin, end int, where, orderBy stri
 }
 
 // Get 角色部门关联
-func (p *rbacDaoImpl) GetPermRoleDept(primary interface{}) *model.PermRoleDept {
+func (p *rbacDaoImpl) GetRoleDept(primary interface{}) *model.PermRoleDept {
 	e := model.PermRoleDept{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
@@ -677,7 +678,7 @@ func (p *rbacDaoImpl) GetPermRoleDept(primary interface{}) *model.PermRoleDept {
 }
 
 // GetBy 角色部门关联
-func (p *rbacDaoImpl) GetPermRoleDeptBy(where string, v ...interface{}) *model.PermRoleDept {
+func (p *rbacDaoImpl) GetRoleDeptBy(where string, v ...interface{}) *model.PermRoleDept {
 	e := model.PermRoleDept{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
