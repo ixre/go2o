@@ -3057,7 +3057,7 @@ func (x *PagingPermRole) GetCreateTime() int64 {
 	return 0
 }
 
-type PermRolePagingRequest struct {
+type RbacRolePagingRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -3066,8 +3066,8 @@ type PermRolePagingRequest struct {
 	Params *SPagingParams `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
 
-func (x *PermRolePagingRequest) Reset() {
-	*x = PermRolePagingRequest{}
+func (x *RbacRolePagingRequest) Reset() {
+	*x = RbacRolePagingRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_rbac_service_proto_msgTypes[41]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3075,13 +3075,13 @@ func (x *PermRolePagingRequest) Reset() {
 	}
 }
 
-func (x *PermRolePagingRequest) String() string {
+func (x *RbacRolePagingRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PermRolePagingRequest) ProtoMessage() {}
+func (*RbacRolePagingRequest) ProtoMessage() {}
 
-func (x *PermRolePagingRequest) ProtoReflect() protoreflect.Message {
+func (x *RbacRolePagingRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_rbac_service_proto_msgTypes[41]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3093,19 +3093,19 @@ func (x *PermRolePagingRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PermRolePagingRequest.ProtoReflect.Descriptor instead.
-func (*PermRolePagingRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use RbacRolePagingRequest.ProtoReflect.Descriptor instead.
+func (*RbacRolePagingRequest) Descriptor() ([]byte, []int) {
 	return file_rbac_service_proto_rawDescGZIP(), []int{41}
 }
 
-func (x *PermRolePagingRequest) GetParams() *SPagingParams {
+func (x *RbacRolePagingRequest) GetParams() *SPagingParams {
 	if x != nil {
 		return x.Params
 	}
 	return nil
 }
 
-type PermRolePagingResponse struct {
+type PagingRbacRoleResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -3114,8 +3114,8 @@ type PermRolePagingResponse struct {
 	Value []*PagingPermRole `protobuf:"bytes,2,rep,name=value,proto3" json:"value"`
 }
 
-func (x *PermRolePagingResponse) Reset() {
-	*x = PermRolePagingResponse{}
+func (x *PagingRbacRoleResponse) Reset() {
+	*x = PagingRbacRoleResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_rbac_service_proto_msgTypes[42]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3123,13 +3123,13 @@ func (x *PermRolePagingResponse) Reset() {
 	}
 }
 
-func (x *PermRolePagingResponse) String() string {
+func (x *PagingRbacRoleResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PermRolePagingResponse) ProtoMessage() {}
+func (*PagingRbacRoleResponse) ProtoMessage() {}
 
-func (x *PermRolePagingResponse) ProtoReflect() protoreflect.Message {
+func (x *PagingRbacRoleResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_rbac_service_proto_msgTypes[42]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3141,26 +3141,26 @@ func (x *PermRolePagingResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PermRolePagingResponse.ProtoReflect.Descriptor instead.
-func (*PermRolePagingResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use PagingRbacRoleResponse.ProtoReflect.Descriptor instead.
+func (*PagingRbacRoleResponse) Descriptor() ([]byte, []int) {
 	return file_rbac_service_proto_rawDescGZIP(), []int{42}
 }
 
-func (x *PermRolePagingResponse) GetTotal() int64 {
+func (x *PagingRbacRoleResponse) GetTotal() int64 {
 	if x != nil {
 		return x.Total
 	}
 	return 0
 }
 
-func (x *PermRolePagingResponse) GetValue() []*PagingPermRole {
+func (x *PagingRbacRoleResponse) GetValue() []*PagingPermRole {
 	if x != nil {
 		return x.Value
 	}
 	return nil
 }
 
-type SavePermResRequest struct {
+type SaveRbacResRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -3195,8 +3195,8 @@ type SavePermResRequest struct {
 	Cache string `protobuf:"bytes,14,opt,name=cache,proto3" json:"cache"`
 }
 
-func (x *SavePermResRequest) Reset() {
-	*x = SavePermResRequest{}
+func (x *SaveRbacResRequest) Reset() {
+	*x = SaveRbacResRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_rbac_service_proto_msgTypes[43]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3204,13 +3204,13 @@ func (x *SavePermResRequest) Reset() {
 	}
 }
 
-func (x *SavePermResRequest) String() string {
+func (x *SaveRbacResRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SavePermResRequest) ProtoMessage() {}
+func (*SaveRbacResRequest) ProtoMessage() {}
 
-func (x *SavePermResRequest) ProtoReflect() protoreflect.Message {
+func (x *SaveRbacResRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_rbac_service_proto_msgTypes[43]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3222,110 +3222,110 @@ func (x *SavePermResRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SavePermResRequest.ProtoReflect.Descriptor instead.
-func (*SavePermResRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use SaveRbacResRequest.ProtoReflect.Descriptor instead.
+func (*SaveRbacResRequest) Descriptor() ([]byte, []int) {
 	return file_rbac_service_proto_rawDescGZIP(), []int{43}
 }
 
-func (x *SavePermResRequest) GetId() int64 {
+func (x *SaveRbacResRequest) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *SavePermResRequest) GetName() string {
+func (x *SaveRbacResRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *SavePermResRequest) GetResType() int32 {
+func (x *SaveRbacResRequest) GetResType() int32 {
 	if x != nil {
 		return x.ResType
 	}
 	return 0
 }
 
-func (x *SavePermResRequest) GetPid() int64 {
+func (x *SaveRbacResRequest) GetPid() int64 {
 	if x != nil {
 		return x.Pid
 	}
 	return 0
 }
 
-func (x *SavePermResRequest) GetKey() string {
+func (x *SaveRbacResRequest) GetKey() string {
 	if x != nil {
 		return x.Key
 	}
 	return ""
 }
 
-func (x *SavePermResRequest) GetPath() string {
+func (x *SaveRbacResRequest) GetPath() string {
 	if x != nil {
 		return x.Path
 	}
 	return ""
 }
 
-func (x *SavePermResRequest) GetIcon() string {
+func (x *SaveRbacResRequest) GetIcon() string {
 	if x != nil {
 		return x.Icon
 	}
 	return ""
 }
 
-func (x *SavePermResRequest) GetPermission() string {
+func (x *SaveRbacResRequest) GetPermission() string {
 	if x != nil {
 		return x.Permission
 	}
 	return ""
 }
 
-func (x *SavePermResRequest) GetSortNum() int32 {
+func (x *SaveRbacResRequest) GetSortNum() int32 {
 	if x != nil {
 		return x.SortNum
 	}
 	return 0
 }
 
-func (x *SavePermResRequest) GetIsExternal() bool {
+func (x *SaveRbacResRequest) GetIsExternal() bool {
 	if x != nil {
 		return x.IsExternal
 	}
 	return false
 }
 
-func (x *SavePermResRequest) GetIsHidden() bool {
+func (x *SaveRbacResRequest) GetIsHidden() bool {
 	if x != nil {
 		return x.IsHidden
 	}
 	return false
 }
 
-func (x *SavePermResRequest) GetCreateTime() int64 {
+func (x *SaveRbacResRequest) GetCreateTime() int64 {
 	if x != nil {
 		return x.CreateTime
 	}
 	return 0
 }
 
-func (x *SavePermResRequest) GetComponentName() string {
+func (x *SaveRbacResRequest) GetComponentName() string {
 	if x != nil {
 		return x.ComponentName
 	}
 	return ""
 }
 
-func (x *SavePermResRequest) GetCache() string {
+func (x *SaveRbacResRequest) GetCache() string {
 	if x != nil {
 		return x.Cache
 	}
 	return ""
 }
 
-type SavePermResResponse struct {
+type SaveRbacResResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -3335,8 +3335,8 @@ type SavePermResResponse struct {
 	Id      int64  `protobuf:"varint,3,opt,name=id,proto3" json:"id"`
 }
 
-func (x *SavePermResResponse) Reset() {
-	*x = SavePermResResponse{}
+func (x *SaveRbacResResponse) Reset() {
+	*x = SaveRbacResResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_rbac_service_proto_msgTypes[44]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3344,13 +3344,13 @@ func (x *SavePermResResponse) Reset() {
 	}
 }
 
-func (x *SavePermResResponse) String() string {
+func (x *SaveRbacResResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SavePermResResponse) ProtoMessage() {}
+func (*SaveRbacResResponse) ProtoMessage() {}
 
-func (x *SavePermResResponse) ProtoReflect() protoreflect.Message {
+func (x *SaveRbacResResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_rbac_service_proto_msgTypes[44]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3362,26 +3362,26 @@ func (x *SavePermResResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SavePermResResponse.ProtoReflect.Descriptor instead.
-func (*SavePermResResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use SaveRbacResResponse.ProtoReflect.Descriptor instead.
+func (*SaveRbacResResponse) Descriptor() ([]byte, []int) {
 	return file_rbac_service_proto_rawDescGZIP(), []int{44}
 }
 
-func (x *SavePermResResponse) GetErrCode() int32 {
+func (x *SaveRbacResResponse) GetErrCode() int32 {
 	if x != nil {
 		return x.ErrCode
 	}
 	return 0
 }
 
-func (x *SavePermResResponse) GetErrMsg() string {
+func (x *SaveRbacResResponse) GetErrMsg() string {
 	if x != nil {
 		return x.ErrMsg
 	}
 	return ""
 }
 
-func (x *SavePermResResponse) GetId() int64 {
+func (x *SaveRbacResResponse) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -4459,17 +4459,17 @@ var file_rbac_service_proto_rawDesc = []byte{
 	0x06, 0x72, 0x65, 0x6d, 0x61, 0x72, 0x6b, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72,
 	0x65, 0x6d, 0x61, 0x72, 0x6b, 0x12, 0x1e, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x54,
 	0x69, 0x6d, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x3f, 0x0a, 0x15, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x6f, 0x6c,
+	0x65, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x3f, 0x0a, 0x15, 0x52, 0x62, 0x61, 0x63, 0x52, 0x6f, 0x6c,
 	0x65, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x26,
 	0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e,
 	0x2e, 0x53, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x67, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x06,
-	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0x55, 0x0a, 0x16, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x6f,
-	0x6c, 0x65, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0x55, 0x0a, 0x16, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x67,
+	0x52, 0x62, 0x61, 0x63, 0x52, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
 	0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52,
 	0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x12, 0x25, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18,
 	0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x67, 0x50, 0x65,
 	0x72, 0x6d, 0x52, 0x6f, 0x6c, 0x65, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xf0, 0x02,
-	0x0a, 0x12, 0x53, 0x61, 0x76, 0x65, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x65, 0x73, 0x52, 0x65, 0x71,
+	0x0a, 0x12, 0x53, 0x61, 0x76, 0x65, 0x52, 0x62, 0x61, 0x63, 0x52, 0x65, 0x73, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03,
 	0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x72, 0x65, 0x73, 0x54,
@@ -4492,7 +4492,7 @@ var file_rbac_service_proto_rawDesc = []byte{
 	0x74, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x63, 0x6f, 0x6d,
 	0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x63, 0x61,
 	0x63, 0x68, 0x65, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x63, 0x61, 0x63, 0x68, 0x65,
-	0x22, 0x57, 0x0a, 0x13, 0x53, 0x61, 0x76, 0x65, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x65, 0x73, 0x52,
+	0x22, 0x57, 0x0a, 0x13, 0x53, 0x61, 0x76, 0x65, 0x52, 0x62, 0x61, 0x63, 0x52, 0x65, 0x73, 0x52,
 	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x65, 0x72, 0x72, 0x43, 0x6f,
 	0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07, 0x65, 0x72, 0x72, 0x43, 0x6f, 0x64,
 	0x65, 0x12, 0x16, 0x0a, 0x06, 0x65, 0x72, 0x72, 0x4d, 0x73, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28,
@@ -4662,13 +4662,13 @@ var file_rbac_service_proto_rawDesc = []byte{
 	0x6c, 0x65, 0x74, 0x65, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x6f, 0x6c, 0x65, 0x12, 0x0b, 0x2e, 0x52,
 	0x62, 0x61, 0x63, 0x52, 0x6f, 0x6c, 0x65, 0x49, 0x64, 0x1a, 0x07, 0x2e, 0x52, 0x65, 0x73, 0x75,
 	0x6c, 0x74, 0x22, 0x00, 0x12, 0x41, 0x0a, 0x0e, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x67, 0x50, 0x65,
-	0x72, 0x6d, 0x52, 0x6f, 0x6c, 0x65, 0x12, 0x16, 0x2e, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x6f, 0x6c,
+	0x72, 0x6d, 0x52, 0x6f, 0x6c, 0x65, 0x12, 0x16, 0x2e, 0x52, 0x62, 0x61, 0x63, 0x52, 0x6f, 0x6c,
 	0x65, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17,
-	0x2e, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x6f, 0x6c, 0x65, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x67, 0x52,
+	0x2e, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x67, 0x52, 0x62, 0x61, 0x63, 0x52, 0x6f, 0x6c, 0x65, 0x52,
 	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3a, 0x0a, 0x0b, 0x53, 0x61, 0x76, 0x65, 0x50,
-	0x65, 0x72, 0x6d, 0x52, 0x65, 0x73, 0x12, 0x13, 0x2e, 0x53, 0x61, 0x76, 0x65, 0x50, 0x65, 0x72,
-	0x6d, 0x52, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x53, 0x61,
-	0x76, 0x65, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x72, 0x6d, 0x52, 0x65, 0x73, 0x12, 0x13, 0x2e, 0x53, 0x61, 0x76, 0x65, 0x52, 0x62, 0x61,
+	0x63, 0x52, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x53, 0x61,
+	0x76, 0x65, 0x52, 0x62, 0x61, 0x63, 0x52, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x22, 0x00, 0x12, 0x25, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x65,
 	0x73, 0x12, 0x0a, 0x2e, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x65, 0x73, 0x49, 0x64, 0x1a, 0x09, 0x2e,
 	0x53, 0x50, 0x65, 0x72, 0x6d, 0x52, 0x65, 0x73, 0x22, 0x00, 0x12, 0x26, 0x0a, 0x0d, 0x44, 0x65,
@@ -4734,10 +4734,10 @@ var file_rbac_service_proto_goTypes = []interface{}{
 	(*QueryRbacRoleRequest)(nil),     // 38: QueryRbacRoleRequest
 	(*QueryRbacRoleResponse)(nil),    // 39: QueryRbacRoleResponse
 	(*PagingPermRole)(nil),           // 40: PagingPermRole
-	(*PermRolePagingRequest)(nil),    // 41: PermRolePagingRequest
-	(*PermRolePagingResponse)(nil),   // 42: PermRolePagingResponse
-	(*SavePermResRequest)(nil),       // 43: SavePermResRequest
-	(*SavePermResResponse)(nil),      // 44: SavePermResResponse
+	(*RbacRolePagingRequest)(nil),    // 41: RbacRolePagingRequest
+	(*PagingRbacRoleResponse)(nil),   // 42: PagingRbacRoleResponse
+	(*SaveRbacResRequest)(nil),       // 43: SaveRbacResRequest
+	(*SaveRbacResResponse)(nil),      // 44: SaveRbacResResponse
 	(*PermResId)(nil),                // 45: PermResId
 	(*SPermRes)(nil),                 // 46: SPermRes
 	(*GetUserResRequest)(nil),        // 47: GetUserResRequest
@@ -4764,8 +4764,8 @@ var file_rbac_service_proto_depIdxs = []int32{
 	54, // 8: PagingRbacUserRequest.params:type_name -> SPagingParams
 	30, // 9: PagingRbacUserResponse.value:type_name -> PagingUser
 	37, // 10: QueryRbacRoleResponse.list:type_name -> SRbacRole
-	54, // 11: PermRolePagingRequest.params:type_name -> SPagingParams
-	40, // 12: PermRolePagingResponse.value:type_name -> PagingPermRole
+	54, // 11: RbacRolePagingRequest.params:type_name -> SPagingParams
+	40, // 12: PagingRbacRoleResponse.value:type_name -> PagingPermRole
 	46, // 13: SPermRes.children:type_name -> SPermRes
 	46, // 14: QueryPermResResponse.list:type_name -> SPermRes
 	54, // 15: PermResPagingRequest.params:type_name -> SPagingParams
@@ -4794,8 +4794,8 @@ var file_rbac_service_proto_depIdxs = []int32{
 	36, // 38: RbacService.GetRole:input_type -> RbacRoleId
 	38, // 39: RbacService.QueryPermRoleList:input_type -> QueryRbacRoleRequest
 	36, // 40: RbacService.DeletePermRole:input_type -> RbacRoleId
-	41, // 41: RbacService.PagingPermRole:input_type -> PermRolePagingRequest
-	43, // 42: RbacService.SavePermRes:input_type -> SavePermResRequest
+	41, // 41: RbacService.PagingPermRole:input_type -> RbacRolePagingRequest
+	43, // 42: RbacService.SavePermRes:input_type -> SaveRbacResRequest
 	45, // 43: RbacService.GetPermRes:input_type -> PermResId
 	45, // 44: RbacService.DeletePermRes:input_type -> PermResId
 	1,  // 45: RbacService.UserLogin:output_type -> RbacLoginResponse
@@ -4822,8 +4822,8 @@ var file_rbac_service_proto_depIdxs = []int32{
 	37, // 66: RbacService.GetRole:output_type -> SRbacRole
 	39, // 67: RbacService.QueryPermRoleList:output_type -> QueryRbacRoleResponse
 	57, // 68: RbacService.DeletePermRole:output_type -> Result
-	42, // 69: RbacService.PagingPermRole:output_type -> PermRolePagingResponse
-	44, // 70: RbacService.SavePermRes:output_type -> SavePermResResponse
+	42, // 69: RbacService.PagingPermRole:output_type -> PagingRbacRoleResponse
+	44, // 70: RbacService.SavePermRes:output_type -> SaveRbacResResponse
 	46, // 71: RbacService.GetPermRes:output_type -> SPermRes
 	57, // 72: RbacService.DeletePermRes:output_type -> Result
 	45, // [45:73] is the sub-list for method output_type
@@ -5333,7 +5333,7 @@ func file_rbac_service_proto_init() {
 			}
 		}
 		file_rbac_service_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PermRolePagingRequest); i {
+			switch v := v.(*RbacRolePagingRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -5345,7 +5345,7 @@ func file_rbac_service_proto_init() {
 			}
 		}
 		file_rbac_service_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PermRolePagingResponse); i {
+			switch v := v.(*PagingRbacRoleResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -5357,7 +5357,7 @@ func file_rbac_service_proto_init() {
 			}
 		}
 		file_rbac_service_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SavePermResRequest); i {
+			switch v := v.(*SaveRbacResRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -5369,7 +5369,7 @@ func file_rbac_service_proto_init() {
 			}
 		}
 		file_rbac_service_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SavePermResResponse); i {
+			switch v := v.(*SaveRbacResResponse); i {
 			case 0:
 				return &v.state
 			case 1:

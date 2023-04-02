@@ -76,10 +76,10 @@ service RbacService {
     rpc DeletePermRole (RbacRoleId) returns (Result) {
     }
     // 获取角色分页数据
-    rpc PagingPermRole (PermRolePagingRequest) returns (PermRolePagingResponse);
+    rpc PagingPermRole (RbacRolePagingRequest) returns (PagingRbacRoleResponse);
 
     // 保存PermRes
-    rpc SavePermRes (SavePermResRequest) returns (SavePermResResponse) {
+    rpc SavePermRes (SaveRbacResRequest) returns (SaveRbacResResponse) {
     }
     // 获取PermRes
     rpc GetPermRes (PermResId) returns (SPermRes) {
@@ -518,18 +518,18 @@ message PagingPermRole {
     int64 createTime = 7;
 }
 
-message PermRolePagingRequest {
+message RbacRolePagingRequest {
     // 分页参数
     SPagingParams params = 1;
 }
 
-message PermRolePagingResponse {
+message PagingRbacRoleResponse {
     int64 total = 1;
     repeated PagingPermRole value =  2;
 }
 
 
-message SavePermResRequest {
+message SaveRbacResRequest {
     /** 资源ID */
     int64 id = 1;
     /** 资源名称 */
@@ -560,7 +560,7 @@ message SavePermResRequest {
     string cache = 14;
 }
 
-message SavePermResResponse {
+message SaveRbacResResponse {
     int32 errCode = 1;
     string errMsg = 2;
     int64 id = 3;

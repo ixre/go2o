@@ -196,9 +196,9 @@ func (p *rbacDaoImpl) PagingQueryJob(begin, end int, where, orderBy string) (tot
 	s := fmt.Sprintf(`SELECT COUNT(1) FROM perm_job WHERE %s`, where)
 	p._orm.Connector().ExecScalar(s, &total)
 	if total > 0 {
-		s = fmt.Sprintf(`SELECT *,perm_dept as dept_name FROM perm_job
-			 LEFT JOIN perm_dept ON dept_id = perm_dept.id WHERE %s %s
-	        LIMIT $2 OFFSET $1`,
+		s = fmt.Sprintf(`SELECT *,
+			(SELECT name FROM perm_dept WHERE id=dept_id) as dept_name
+			 FROM perm_job WHERE %s %s LIMIT $2 OFFSET $1`,
 			where, orderBy)
 		err := p._orm.Connector().Query(s, func(_rows *sql.Rows) {
 			rows = db.RowsToMarshalMap(_rows)

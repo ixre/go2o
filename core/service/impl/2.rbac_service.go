@@ -708,12 +708,12 @@ func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.RbacRoleId
 	return p.error(err), nil
 }
 
-func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.PermRolePagingRequest) (*proto.PermRolePagingResponse, error) {
+func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePagingRequest) (*proto.PagingRbacRoleResponse, error) {
 	total, rows := p.dao.PagingQueryPermRole(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
 		r.Params.SortBy)
-	ret := &proto.PermRolePagingResponse{
+	ret := &proto.PagingRbacRoleResponse{
 		Total: int64(total),
 		Value: make([]*proto.PagingPermRole, len(rows)),
 	}
@@ -732,11 +732,11 @@ func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.PermRolePag
 }
 
 // 保存PermRes
-func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResRequest) (*proto.SavePermResResponse, error) {
+func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SaveRbacResRequest) (*proto.SaveRbacResResponse, error) {
 	var dst *model.PermRes
 	if r.Id > 0 {
 		if dst = p.dao.GetPermRes(r.Id); dst == nil {
-			return &proto.SavePermResResponse{
+			return &proto.SaveRbacResResponse{
 				ErrCode: 2,
 				ErrMsg:  "no such data",
 			}, nil
@@ -753,7 +753,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	if r.Pid > 0 {
 		// 检测上级是否为自己
 		if dst.Id == r.Pid {
-			return &proto.SavePermResResponse{
+			return &proto.SaveRbacResResponse{
 				ErrCode: 2,
 				ErrMsg:  "不能将自己指定为上级资源",
 			}, nil
@@ -764,7 +764,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 			for parent != nil && parent.Pid > 0 {
 				parent = p.dao.GetPermRes(parent.Pid)
 				if parent != nil && parent.Id == r.Id {
-					return &proto.SavePermResResponse{
+					return &proto.SaveRbacResResponse{
 						ErrCode: 2,
 						ErrMsg:  "不能选择下级作为上级资源",
 					}, nil
@@ -773,7 +773,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 		}
 		// 限制下级资源路径不能以'/'开头,以避免无法找到资源的情况
 		if len(r.Path) > 0 && r.Path[0] == '/' {
-			return &proto.SavePermResResponse{
+			return &proto.SaveRbacResResponse{
 				ErrCode: 3,
 				ErrMsg:  "该资源(包含上级资源)路径不能以'/'开头",
 			}, nil
@@ -799,7 +799,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 		dst.SortNum = p.dao.GetMaxResourceSortNum(int(dst.Pid)) + 1
 	}
 	id, err := p.dao.SavePermRes(dst)
-	ret := &proto.SavePermResResponse{
+	ret := &proto.SaveRbacResResponse{
 		Id: int64(id),
 	}
 	if err != nil {
