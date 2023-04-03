@@ -823,7 +823,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SaveRbacResReq
 		}, nil
 	}
 	// 如果新增, 则生成key
-	if r.Id <= 0 {
+	if r.Id <= 0 || len(dst.Key) == 0 {
 		dst.Key = p.GenerateResourceKey(parent)
 	}
 	// 上级是否改变
