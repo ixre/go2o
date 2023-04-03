@@ -735,7 +735,7 @@ func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePag
 }
 
 // 验证上级资源是否合法
-func (p *rbacServiceImpl) checkParentResource(currentPid int, pid int) (model.PermRes, error) {
+func (p *rbacServiceImpl) checkParentResource(id int, currentPid int, pid int) (model.PermRes, error) {
 	var parentRes model.PermRes
 	// 检测上级
 	if pid <= 0 {
@@ -815,7 +815,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SaveRbacResReq
 			}, nil
 		}
 	}
-	parent, err := p.checkParentResource(int(dst.Pid), int(r.Pid))
+	parent, err := p.checkParentResource(int(dst.Id), int(dst.Pid), int(r.Pid))
 	if err != nil {
 		return &proto.SaveRbacResResponse{
 			ErrCode: 2,
