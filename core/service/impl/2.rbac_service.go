@@ -248,8 +248,8 @@ func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveRe
 		sortNum := swapRes.SortNum
 		swapRes.SortNum = res.SortNum
 		res.SortNum = sortNum
-		p.dao.SavePermRes(res)
-		p.dao.SavePermRes(swapRes)
+		p.dao.SaveRbacResource(res)
+		p.dao.SaveRbacResource(swapRes)
 	}
 	return p.success(nil), nil
 }
@@ -787,7 +787,7 @@ func (p *rbacServiceImpl) GenerateResourceKey(parent model.PermRes) string {
 }
 
 // 保存PermRes
-func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SaveRbacResRequest) (*proto.SaveRbacResResponse, error) {
+func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacResRequest) (*proto.SaveRbacResResponse, error) {
 	var dst *model.PermRes
 	if r.Id > 0 {
 		if dst = p.dao.GetPermRes(r.Id); dst == nil {
@@ -843,7 +843,7 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SaveRbacResReq
 	if dst.SortNum <= 0 || parentChanged {
 		dst.SortNum = p.dao.GetMaxResourceSortNum(int(dst.Pid)) + 1
 	}
-	id, err := p.dao.SavePermRes(dst)
+	id, err := p.dao.SaveRbacResource(dst)
 	ret := &proto.SaveRbacResResponse{
 		Id: int64(id),
 	}
@@ -994,7 +994,7 @@ func (p *rbacServiceImpl) getResDepth(pid int64) int {
 // 更新资源及下级资源的深度
 func (p *rbacServiceImpl) updateResDepth(dst *model.PermRes, depth int16) {
 	dst.Depth = depth
-	_, _ = p.dao.SavePermRes(dst)
+	_, _ = p.dao.SaveRbacResource(dst)
 	list := p.dao.SelectPermRes("pid=$1", dst.Id)
 	for _, v := range list {
 		p.updateResDepth(v, depth+1)

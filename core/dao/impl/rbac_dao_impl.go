@@ -459,7 +459,7 @@ func (p *rbacDaoImpl) GetMaxResouceKey(parentId int) string {
 }
 
 // Save PermRes
-func (p *rbacDaoImpl) SavePermRes(v *model.PermRes) (int, error) {
+func (p *rbacDaoImpl) SaveRbacResource(v *model.PermRes) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRes")
