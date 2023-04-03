@@ -785,6 +785,19 @@ func (i *itemImpl) Destroy() error {
 	if i.value.IsRecycle == 0 {
 		return errors.New("商品非回收状态，不允许删除")
 	}
-	//i.goodsRepo.
-	return nil
+	// 删除快照
+	err := i.removeSnapshot()
+	if err == nil {
+		// 删除商品图片
+		for _, v := range i.repo.GetItemImages(i.GetAggregateRootId()) {
+			i.repo.DeleteItemImage(v.Id)
+		}
+		// 删除Sku
+		for _, v := range i.SkuArray() {
+			i.repo.DeleteItemSku(v.Id)
+		}
+		// 删除商品
+		err = i.repo.DeleteItem(int(i.GetAggregateRootId()))
+	}
+	return err
 }

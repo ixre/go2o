@@ -89,11 +89,14 @@ func (p *productService) appendSpecItems(spec *proto.SProductSpec, items promode
 }
 
 // GetModels 获取产品模型
-func (p *productService) GetModels(_ context.Context, _ *proto.Empty) (*proto.ProductModelListResponse, error) {
+func (p *productService) GetModels(_ context.Context, r *proto.GetModelsRequest) (*proto.ProductModelListResponse, error) {
 	list := p.pmRepo.SelectProModel("")
-	arr := make([]*proto.SProductModel, len(list))
-	for i, v := range list {
-		arr[i] = p.parseModelDto(v)
+	arr := make([]*proto.SProductModel, 0)
+	for _, v := range list {
+		if v.Enabled == 0 {
+			continue
+		}
+		arr = append(arr, p.parseModelDto(v))
 	}
 	return &proto.ProductModelListResponse{
 		Value: arr,

@@ -612,7 +612,7 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	expEnabled := o.registryRepo.Get(registry.ExperienceEnabled).BoolValue()
 	if expEnabled {
 		rate := o.registryRepo.Get(registry.ExperienceRateByOrder).FloatValue()
-		if exp := int(float64(amount) * rate); exp > 0 {
+		if exp := int(float64(amount) * rate / 100); exp > 0 {
 			if err = m.AddExp(exp); err != nil {
 				return err
 			}

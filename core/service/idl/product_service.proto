@@ -11,7 +11,7 @@ service ProductService {
     rpc GetProductModel (ProductModelId) returns (SProductModel) {
     }
     // 获取产品模型
-    rpc GetModels (Empty) returns (ProductModelListResponse) {
+    rpc GetModels (GetModelsRequest) returns (ProductModelListResponse) {
     }
     // 获取属性
     rpc GetAttr (ProductAttrId) returns (SProductAttr) {
@@ -100,6 +100,12 @@ message ProductAttrId {
 }
 message ProductAttrItemId {
     int64 value =  1;
+}
+
+// 获取模型请求
+message GetModelsRequest{
+    // 是否仅返回已启用的模型
+    bool onlyEnabled = 1;
 }
 
 message ProductModelListResponse {

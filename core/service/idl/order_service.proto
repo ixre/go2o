@@ -17,8 +17,8 @@ service OrderService {
     }
     //
     // 获取订单信息
-    rpc GetParentOrder (OrderNoV2) returns (SParentOrder) {
-    }
+    // rpc GetParentOrder (OrderNoV2) returns (SParentOrder) {
+    // }
     // 获取子订单,orderId
     rpc GetOrder (OrderRequest) returns (SSingleOrder) {
     }
@@ -66,6 +66,8 @@ message OrderRequest{
     string orderNo = 1;
     // 是否返回详细信息
     bool withDetail = 2;
+    // 是否拆分支付单
+    bool breakPayment = 3;
 }
 
 // 拆分支付单请求

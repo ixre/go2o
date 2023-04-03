@@ -541,7 +541,6 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 	err := m.prepare()
 	if err == nil {
 		unix := time.Now().Unix()
-		v.State = 1
 		v.RegTime = unix
 		v.LastLoginTime = unix
 		v.Level = 1

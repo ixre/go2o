@@ -7,58 +7,58 @@ import (
 type IRbacDao interface {
 	// auto generate by gof
 	// Get 部门
-	GetPermDept(primary interface{}) *model.PermDept
+	GetDepart(primary interface{}) *model.PermDept
 	// GetBy 部门
-	GetPermDeptBy(where string, v ...interface{}) *model.PermDept
+	GetDepartBy(where string, v ...interface{}) *model.PermDept
 	// Count 部门 by condition
 	CountPermDept(where string, v ...interface{}) (int, error)
 	// Select 部门
 	SelectPermDept(where string, v ...interface{}) []*model.PermDept
 	// Save 部门
-	SavePermDept(v *model.PermDept) (int, error)
+	SaveDepart(v *model.PermDept) (int, error)
 	// Delete 部门
-	DeletePermDept(primary interface{}) error
+	DeleteDepart(primary interface{}) error
 	// Batch Delete 部门
-	BatchDeletePermDept(where string, v ...interface{}) (int64, error)
+	BatchDeleteDepart(where string, v ...interface{}) (int64, error)
 
 	// Get 岗位
-	GetPermJob(primary interface{}) *model.PermJob
+	GetJob(primary interface{}) *model.PermJob
 	// GetBy 岗位
-	GetPermJobBy(where string, v ...interface{}) *model.PermJob
+	GetJobBy(where string, v ...interface{}) *model.PermJob
 	// Count 岗位 by condition
 	CountPermJob(where string, v ...interface{}) (int, error)
 	// Select 岗位
 	SelectPermJob(where string, v ...interface{}) []*model.PermJob
 	// Save 岗位
-	SavePermJob(v *model.PermJob) (int, error)
+	SaveJob(v *model.PermJob) (int, error)
 	// Delete 岗位
-	DeletePermJob(primary interface{}) error
+	DeleteJob(primary interface{}) error
 	// Batch Delete 岗位
-	BatchDeletePermJob(where string, v ...interface{}) (int64, error)
+	BatchDeleteJob(where string, v ...interface{}) (int64, error)
 	// Params paging data
-	PagingQueryPermJob(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
+	PagingQueryJob(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 系统用户
-	GetPermUser(primary interface{}) *model.PermUser
+	GetUser(primary interface{}) *model.PermUser
 	// GetBy 系统用户
-	GetPermUserBy(where string, v ...interface{}) *model.PermUser
+	GetUserBy(where string, v ...interface{}) *model.PermUser
 	// Count 系统用户 by condition
 	CountPermUser(where string, v ...interface{}) (int, error)
 	// Select 系统用户
 	SelectPermUser(where string, v ...interface{}) []*model.PermUser
 	// Save 系统用户
-	SavePermUser(v *model.PermUser) (int, error)
+	SaveUser(v *model.PermUser) (int, error)
 	// Delete 系统用户
-	DeletePermUser(primary interface{}) error
+	DeleteUser(primary interface{}) error
 	// Batch Delete 系统用户
-	BatchDeletePermUser(where string, v ...interface{}) (int64, error)
+	BatchDeleteUser(where string, v ...interface{}) (int64, error)
 	// Params paging data
 	PagingQueryPermUser(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 角色
-	GetPermRole(primary interface{}) *model.PermRole
+	GetRole(primary interface{}) *model.PermRole
 	// GetBy 角色
-	GetPermRoleBy(where string, v ...interface{}) *model.PermRole
+	GetRoleBy(where string, v ...interface{}) *model.PermRole
 	// Count 角色 by condition
 	CountPermRole(where string, v ...interface{}) (int, error)
 	// Select 角色
@@ -80,36 +80,38 @@ type IRbacDao interface {
 	CountPermRes(where string, v ...interface{}) (int, error)
 	// Select PermRes
 	SelectPermRes(where string, v ...interface{}) []*model.PermRes
-	// 获取最大的排列序号
+	// GetMaxResourceSortNum 获取最大的排列序号
 	GetMaxResourceSortNum(parentId int) int
+	// GetMaxResourceSortNum 获取最大的Key
+	GetMaxResouceKey(parentId int) string
 	// Save PermRes
-	SavePermRes(v *model.PermRes) (int, error)
+	SaveRbacResource(v *model.PermRes) (int, error)
 	// Delete PermRes
 	DeletePermRes(primary interface{}) error
 	// Batch Delete PermRes
 	BatchDeletePermRes(where string, v ...interface{}) (int64, error)
 
 	// Get 用户角色关联
-	GetPermUserRole(primary interface{}) *model.PermUserRole
+	GetUserRole(primary interface{}) *model.PermUserRole
 	// GetBy 用户角色关联
-	GetPermUserRoleBy(where string, v ...interface{}) *model.PermUserRole
+	GetUserRoleBy(where string, v ...interface{}) *model.PermUserRole
 	// Count 用户角色关联 by condition
 	CountPermUserRole(where string, v ...interface{}) (int, error)
 	// Select 用户角色关联
 	SelectPermUserRole(where string, v ...interface{}) []*model.PermUserRole
 	// Save 用户角色关联
-	SavePermUserRole(v *model.PermUserRole) (int, error)
+	SaveUserRole(v *model.PermUserRole) (int, error)
 	// Delete 用户角色关联
-	DeletePermUserRole(primary interface{}) error
+	DeleteUserRole(primary interface{}) error
 	// Batch Delete 用户角色关联
-	BatchDeletePermUserRole(where string, v ...interface{}) (int64, error)
+	BatchDeleteUserRole(where string, v ...interface{}) (int64, error)
 	// Params paging data
 	PagingQueryPermUserRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 角色部门关联
-	GetPermRoleDept(primary interface{}) *model.PermRoleDept
+	GetRoleDept(primary interface{}) *model.PermRoleDept
 	// GetBy 角色部门关联
-	GetPermRoleDeptBy(where string, v ...interface{}) *model.PermRoleDept
+	GetRoleDeptBy(where string, v ...interface{}) *model.PermRoleDept
 	// Count 角色部门关联 by condition
 	CountPermRoleDept(where string, v ...interface{}) (int, error)
 	// Select 角色部门关联
@@ -124,9 +126,9 @@ type IRbacDao interface {
 	PagingQueryPermRoleDept(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get 角色菜单关联
-	GetPermRoleRes(primary interface{}) *model.PermRoleRes
+	GetRoleRes(primary interface{}) *model.PermRoleRes
 	// GetBy 角色菜单关联
-	GetPermRoleResBy(where string, v ...interface{}) *model.PermRoleRes
+	GetRoleResBy(where string, v ...interface{}) *model.PermRoleRes
 	// Count 角色菜单关联 by condition
 	CountPermRoleRes(where string, v ...interface{}) (int, error)
 	// Select 角色菜单关联

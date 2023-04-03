@@ -435,22 +435,20 @@ message SMember {
   string regIp = 9;
   /** 注册来源 */
   string regFrom = 11;
-  /** 状态 */
-  sint32 state = 12;
   /** 手机号  */
-  string phone = 13;
+  string phone = 12;
   /** 电子邮箱 */
-  string email = 14;
+  string email = 13;
   /** 真实姓名 */
-  string realName = 15;
+  string realName = 14;
   /** 高级用户级别 */
-  sint32 premiumUser = 16;
+  sint32 premiumUser = 15;
   /** 高级用户过期时间 */
-  sint64 premiumExpires = 17;
+  sint64 premiumExpires = 16;
   /** 注册时间 */
-  int64 regTime = 18;
+  int64 regTime = 17;
   /** 最后登录时间 */
-  int64 lastLoginTime = 19;
+  int64 lastLoginTime = 18;
 }
 
 /** 资料 */

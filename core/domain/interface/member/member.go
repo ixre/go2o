@@ -13,12 +13,6 @@ const (
 	// DefaultRelateUser 默认操作用户
 	DefaultRelateUser int64 = 0
 )
-const (
-	StateStopped = 0 //已停用
-	StateOk      = 1 //正常
-	BankNoLock   = 0
-	BankLocked   = 1
-)
 
 const (
 	// FavTypeShop 收藏店铺
@@ -272,8 +266,6 @@ type (
 		CheckExpires int64 `db:"check_expires"`
 		// 会员标志
 		UserFlag int `db:"user_flag"`
-		// 状态
-		State int `db:"state"`
 		// 登录时间
 		LoginTime int64 `db:"login_time"`
 		// 最后登录时间

@@ -288,7 +288,7 @@ func (o *wholesaleOrderImpl) checkBuyer() error {
 	if buyer == nil {
 		return member.ErrNoSuchMember
 	}
-	if buyer.GetValue().State == 0 {
+	if buyer.TestFlag(member.FlagLocked) {
 		return member.ErrMemberLocked
 	}
 	if o.baseValue.ShippingAddress == "" ||
@@ -782,7 +782,7 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	expEnabled := o.registryRepo.Get(registry.ExperienceEnabled).BoolValue()
 	if expEnabled {
 		rate := o.registryRepo.Get(registry.ExperienceRateByWholesaleOrder).FloatValue()
-		if exp := int(float64(amount) * rate); exp > 0 {
+		if exp := int(float64(amount) * rate / 100); exp > 0 {
 			if err = m.AddExp(exp); err != nil {
 				return err
 			}

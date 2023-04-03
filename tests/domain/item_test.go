@@ -255,3 +255,27 @@ func TestItemRecycle(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+// 测试撤销商品回收
+func TestItemRevertRecycle(t *testing.T) {
+	var itemId int64 = 3276
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	err := it.RecycleRevert()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}
+
+// 测试撤销商品回收
+func TestDestoryItem(t *testing.T) {
+	var itemId int64 = 3276
+	repo := ti.Factory.GetItemRepo()
+	it := repo.GetItem(itemId)
+	err := it.Destroy()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}

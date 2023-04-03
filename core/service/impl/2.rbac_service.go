@@ -10,11 +10,14 @@ package impl
  * history :
  */
 
+//todo: 用户可以添加禁用权限
+
 import (
 	"context"
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -77,7 +80,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		return p.withAccessToken("master", dst, expires)
 	}
 	// 普通系统用户登录
-	usr := p.dao.GetPermUserBy("usr=$1", r.Username)
+	usr := p.dao.GetUserBy("usr=$1", r.Username)
 	if usr == nil {
 		return &proto.RbacLoginResponse{
 			ErrCode: 2,
@@ -85,7 +88,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		}, nil
 	}
 	decPwd := crypto.Sha1([]byte(r.Password + usr.Salt))
-	if usr.Pwd != decPwd {
+	if usr.Password != decPwd {
 		return &proto.RbacLoginResponse{
 			ErrCode: 3,
 			ErrMsg:  "密码不正确",
@@ -101,7 +104,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		UserId: usr.Id,
 	}
 	dst.Roles, dst.Permissions = p.getUserRolesPerm(usr.Id)
-	return p.withAccessToken(usr.Usr, dst, expires)
+	return p.withAccessToken(usr.Username, dst, expires)
 }
 
 // 返回带有令牌的结果
@@ -224,7 +227,7 @@ func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
 }
 
 // 移动资源顺序
-func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context, r *proto.MoveResOrdinalRequest) (*proto.Result, error) {
+func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveResourceOrdinalRequest) (*proto.Result, error) {
 	res := p.dao.GetPermRes(r.ResourceId)
 	if res == nil {
 		return p.error(errors.New("no such data")), nil
@@ -245,8 +248,8 @@ func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context, r *proto.MoveResOrdi
 		sortNum := swapRes.SortNum
 		swapRes.SortNum = res.SortNum
 		res.SortNum = sortNum
-		p.dao.SavePermRes(res)
-		p.dao.SavePermRes(swapRes)
+		p.dao.SaveRbacResource(res)
+		p.dao.SaveRbacResource(swapRes)
 	}
 	return p.success(nil), nil
 }
@@ -264,7 +267,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 		}
 	} else {
 		dst.Roles, dst.Permissions = p.getUserRolesPerm(r.UserId)
-		usr := p.dao.GetPermUser(r.UserId)
+		usr := p.dao.GetUser(r.UserId)
 		if usr == nil {
 			return nil, fmt.Errorf("no such user %v", r.UserId)
 		}
@@ -334,10 +337,10 @@ func (p *rbacServiceImpl) DepartTree(_ context.Context, empty *proto.Empty) (*pr
 }
 
 // 保存部门
-func (p *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptRequest) (*proto.SavePermDeptResponse, error) {
+func (p *rbacServiceImpl) SaveDepart(_ context.Context, r *proto.SaveDepartRequest) (*proto.SaveDepartResponse, error) {
 	var dst *model.PermDept
 	if r.Id > 0 {
-		dst = p.dao.GetPermDept(r.Id)
+		dst = p.dao.GetDepart(r.Id)
 	} else {
 		dst = &model.PermDept{}
 		dst.CreateTime = time.Now().Unix()
@@ -348,8 +351,8 @@ func (p *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptR
 	dst.Pid = r.Pid
 	dst.Enabled = int16(r.Enabled)
 
-	id, err := p.dao.SavePermDept(dst)
-	ret := &proto.SavePermDeptResponse{
+	id, err := p.dao.SaveDepart(dst)
+	ret := &proto.SaveDepartResponse{
 		Id: int64(id),
 	}
 	if err != nil {
@@ -360,16 +363,16 @@ func (p *rbacServiceImpl) SavePermDept(_ context.Context, r *proto.SavePermDeptR
 }
 
 // 获取部门
-func (p *rbacServiceImpl) GetPermDept(_ context.Context, id *proto.PermDeptId) (*proto.SPermDept, error) {
-	v := p.dao.GetPermDept(id.Value)
+func (p *rbacServiceImpl) GetDepart(_ context.Context, id *proto.RbacDepartId) (*proto.SPermDept, error) {
+	v := p.dao.GetDepart(id.Value)
 	if v == nil {
 		return nil, fmt.Errorf("no such dept: %v", id)
 	}
 	return p.parsePermDept(v), nil
 }
 
-func (p *rbacServiceImpl) DeletePermDept(_ context.Context, id *proto.PermDeptId) (*proto.Result, error) {
-	err := p.dao.DeletePermDept(id.Value)
+func (p *rbacServiceImpl) DeleteDepart(_ context.Context, id *proto.RbacDepartId) (*proto.Result, error) {
+	err := p.dao.DeleteDepart(id.Value)
 	return p.error(err), nil
 }
 
@@ -385,10 +388,10 @@ func (p *rbacServiceImpl) parsePermDept(v *model.PermDept) *proto.SPermDept {
 }
 
 // 保存岗位
-func (p *rbacServiceImpl) SavePermJob(_ context.Context, r *proto.SavePermJobRequest) (*proto.SavePermJobResponse, error) {
+func (p *rbacServiceImpl) SaveJob(_ context.Context, r *proto.SaveJobRequest) (*proto.SaveJobResponse, error) {
 	var dst *model.PermJob
 	if r.Id > 0 {
-		dst = p.dao.GetPermJob(r.Id)
+		dst = p.dao.GetJob(r.Id)
 	} else {
 		dst = &model.PermJob{}
 		dst.CreateTime = time.Now().Unix()
@@ -399,8 +402,8 @@ func (p *rbacServiceImpl) SavePermJob(_ context.Context, r *proto.SavePermJobReq
 	dst.Sort = int(r.Sort)
 	dst.DeptId = r.DeptId
 
-	id, err := p.dao.SavePermJob(dst)
-	ret := &proto.SavePermJobResponse{
+	id, err := p.dao.SaveJob(dst)
+	ret := &proto.SaveJobResponse{
 		Id: int64(id),
 	}
 	if err != nil {
@@ -410,8 +413,8 @@ func (p *rbacServiceImpl) SavePermJob(_ context.Context, r *proto.SavePermJobReq
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) parsePermJob(v *model.PermJob) *proto.SPermJob {
-	return &proto.SPermJob{
+func (p *rbacServiceImpl) parsePermJob(v *model.PermJob) *proto.SRbacJob {
+	return &proto.SRbacJob{
 		Id:         v.Id,
 		Name:       v.Name,
 		Enabled:    int32(v.Enabled),
@@ -422,8 +425,8 @@ func (p *rbacServiceImpl) parsePermJob(v *model.PermJob) *proto.SPermJob {
 }
 
 // 获取岗位
-func (p *rbacServiceImpl) GetPermJob(_ context.Context, id *proto.PermJobId) (*proto.SPermJob, error) {
-	v := p.dao.GetPermJob(id.Value)
+func (p *rbacServiceImpl) GetJob(_ context.Context, id *proto.RbacJobId) (*proto.SRbacJob, error) {
+	v := p.dao.GetJob(id.Value)
 	if v == nil {
 		return nil, fmt.Errorf("no such job: %v", id.Value)
 	}
@@ -431,7 +434,7 @@ func (p *rbacServiceImpl) GetPermJob(_ context.Context, id *proto.PermJobId) (*p
 }
 
 // 获取岗位列表
-func (p *rbacServiceImpl) QueryPermJobList(_ context.Context, r *proto.QueryPermJobRequest) (*proto.QueryPermJobResponse, error) {
+func (p *rbacServiceImpl) QueryJobList(_ context.Context, r *proto.QueryJobRequest) (*proto.QueryJobResponse, error) {
 	where := ""
 	if r.DepartId > 0 {
 		arr := p.walkDepartArray(int(r.DepartId))
@@ -441,8 +444,8 @@ func (p *rbacServiceImpl) QueryPermJobList(_ context.Context, r *proto.QueryPerm
 		where += " dept_id IN (" + util.JoinIntArray(arr, ",") + ")"
 	}
 	arr := p.dao.SelectPermJob(where)
-	ret := &proto.QueryPermJobResponse{
-		List: make([]*proto.SPermJob, len(arr)),
+	ret := &proto.QueryJobResponse{
+		List: make([]*proto.SRbacJob, len(arr)),
 	}
 	for i, v := range arr {
 		ret.List[i] = p.parsePermJob(v)
@@ -450,27 +453,27 @@ func (p *rbacServiceImpl) QueryPermJobList(_ context.Context, r *proto.QueryPerm
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) DeletePermJob(_ context.Context, id *proto.PermJobId) (*proto.Result, error) {
-	err := p.dao.DeletePermJob(id.Value)
+func (p *rbacServiceImpl) DeleteJob(_ context.Context, id *proto.RbacJobId) (*proto.Result, error) {
+	err := p.dao.DeleteJob(id.Value)
 	return p.error(err), nil
 }
 
-func (p *rbacServiceImpl) PagingPermJob(_ context.Context, r *proto.PermJobPagingRequest) (*proto.PermJobPagingResponse, error) {
-	total, rows := p.dao.PagingQueryPermJob(int(r.Params.Begin),
+func (p *rbacServiceImpl) PagingJobList(_ context.Context, r *proto.RbacJobPagingRequest) (*proto.PagingRbacJobResponse, error) {
+	total, rows := p.dao.PagingQueryJob(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
 		r.Params.SortBy)
-	ret := &proto.PermJobPagingResponse{
+	ret := &proto.PagingRbacJobResponse{
 		Total: int64(total),
-		Value: make([]*proto.PagingPermJob, len(rows)),
+		Value: make([]*proto.PagingJobList, len(rows)),
 	}
 	for i, v := range rows {
-		ret.Value[i] = &proto.PagingPermJob{
+		ret.Value[i] = &proto.PagingJobList{
 			Id:         int64(typeconv.MustInt(v["id"])),
 			Name:       typeconv.Stringify(v["name"]),
 			Enabled:    int32(typeconv.MustInt(v["enabled"])),
 			Sort:       int32(typeconv.MustInt(v["sort"])),
-			DeptId:     int64(typeconv.MustInt(v["dept_id"])),
+			DeptName:   typeconv.Stringify(v["dept_name"]),
 			CreateTime: int64(typeconv.MustInt(v["create_time"])),
 		}
 	}
@@ -478,12 +481,12 @@ func (p *rbacServiceImpl) PagingPermJob(_ context.Context, r *proto.PermJobPagin
 }
 
 // 保存系统用户
-func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserRequest) (*proto.SavePermUserResponse, error) {
+func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserRequest) (*proto.SaveRbacUserResponse, error) {
 	var dst *model.PermUser
 	if r.Id > 0 {
-		dst = p.dao.GetPermUser(r.Id)
+		dst = p.dao.GetUser(r.Id)
 		if dst == nil {
-			return &proto.SavePermUserResponse{
+			return &proto.SaveRbacUserResponse{
 				ErrCode: 2,
 				ErrMsg:  "no such record",
 			}, nil
@@ -495,12 +498,12 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 	}
 	if l := len(r.Password); l > 0 {
 		if l != 32 {
-			return &proto.SavePermUserResponse{
+			return &proto.SaveRbacUserResponse{
 				ErrCode: 1,
 				ErrMsg:  "非32位md5密码",
 			}, nil
 		}
-		dst.Pwd = crypto.Sha1([]byte(r.Password + dst.Salt))
+		dst.Password = crypto.Sha1([]byte(r.Password + dst.Salt))
 	}
 	dst.Flag = int(r.Flag)
 	dst.Avatar = r.Portrait
@@ -512,8 +515,8 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 	dst.JobId = r.JobId
 	dst.Enabled = int16(r.Enabled)
 	dst.LastLogin = r.LastLogin
-	id, err := p.dao.SavePermUser(dst)
-	ret := &proto.SavePermUserResponse{
+	id, err := p.dao.SaveUser(dst)
+	ret := &proto.SaveRbacUserResponse{
 		Id: int64(id),
 	}
 	if err == nil {
@@ -526,11 +529,11 @@ func (p *rbacServiceImpl) SavePermUser(_ context.Context, r *proto.SavePermUserR
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SPermUser {
-	return &proto.SPermUser{
+func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SRbacUser {
+	return &proto.SRbacUser{
 		Id:         v.Id,
-		Username:   v.Usr,
-		Password:   v.Pwd,
+		Username:   v.Username,
+		Password:   v.Password,
 		Flag:       int32(v.Flag),
 		Portrait:   v.Avatar,
 		Nickname:   v.Nickname,
@@ -546,8 +549,8 @@ func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SPermUser {
 }
 
 // 获取系统用户
-func (p *rbacServiceImpl) GetPermUser(_ context.Context, id *proto.PermUserId) (*proto.SPermUser, error) {
-	v := p.dao.GetPermUser(id.Value)
+func (p *rbacServiceImpl) GetUser(_ context.Context, id *proto.RbacUserId) (*proto.SRbacUser, error) {
+	v := p.dao.GetUser(id.Value)
 	if v == nil {
 		return nil, fmt.Errorf("no such user %v", id.Value)
 	}
@@ -556,8 +559,8 @@ func (p *rbacServiceImpl) GetPermUser(_ context.Context, id *proto.PermUserId) (
 	return dst, nil
 }
 
-func (p *rbacServiceImpl) DeletePermUser(_ context.Context, id *proto.PermUserId) (*proto.Result, error) {
-	err := p.dao.DeletePermUser(id.Value)
+func (p *rbacServiceImpl) DeleteUser(_ context.Context, id *proto.RbacUserId) (*proto.Result, error) {
+	err := p.dao.DeleteUser(id.Value)
 	return p.error(err), nil
 }
 
@@ -576,7 +579,7 @@ func (p *rbacServiceImpl) walkDepartArray(pid int) []int {
 	return arr
 }
 
-func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPagingRequest) (*proto.PermUserPagingResponse, error) {
+func (p *rbacServiceImpl) PagingUser(_ context.Context, r *proto.PagingRbacUserRequest) (*proto.PagingRbacUserResponse, error) {
 	if r.DepartId > 0 {
 		arr := p.walkDepartArray(int(r.DepartId))
 		if len(r.Params.Where) > 0 {
@@ -588,18 +591,18 @@ func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPag
 		int(r.Params.End),
 		r.Params.Where,
 		r.Params.SortBy)
-	ret := &proto.PermUserPagingResponse{
+	ret := &proto.PagingRbacUserResponse{
 		Total: int64(total),
-		Value: make([]*proto.PagingPermUser, len(rows)),
+		Value: make([]*proto.PagingUser, len(rows)),
 	}
 	for i, v := range rows {
-		ret.Value[i] = &proto.PagingPermUser{
+		ret.Value[i] = &proto.PagingUser{
 			Id:         int64(typeconv.MustInt(v["id"])),
-			Username:   typeconv.Stringify(v["usr"]),
-			Password:   typeconv.Stringify(v["pwd"]),
+			Username:   typeconv.Stringify(v["username"]),
+			Password:   typeconv.Stringify(v["password"]),
 			Flag:       int32(typeconv.MustInt(v["flag"])),
 			Portrait:   typeconv.Stringify(v["avatar"]),
-			Nickname:   typeconv.Stringify(v["nick_name"]),
+			Nickname:   typeconv.Stringify(v["nickname"]),
 			Gender:     typeconv.Stringify(v["gender"]),
 			Email:      typeconv.Stringify(v["email"]),
 			Phone:      typeconv.Stringify(v["phone"]),
@@ -614,10 +617,10 @@ func (p *rbacServiceImpl) PagingPermUser(_ context.Context, r *proto.PermUserPag
 }
 
 // 保存角色
-func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SavePermRoleRequest) (*proto.SavePermRoleResponse, error) {
+func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SaveRbacRoleRequest) (*proto.SaveRbacRoleResponse, error) {
 	var dst *model.PermRole
 	if r.Id > 0 {
-		dst = p.dao.GetPermRole(r.Id)
+		dst = p.dao.GetRole(r.Id)
 	} else {
 		dst = &model.PermRole{}
 		dst.CreateTime = time.Now().Unix()
@@ -630,7 +633,7 @@ func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SavePermRoleR
 	dst.Remark = r.Remark
 
 	id, err := p.dao.SavePermRole(dst)
-	ret := &proto.SavePermRoleResponse{
+	ret := &proto.SaveRbacRoleResponse{
 		Id: int64(id),
 	}
 	if err != nil {
@@ -667,8 +670,8 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 	return p.error(nil), nil
 }
 
-func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SPermRole {
-	return &proto.SPermRole{
+func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SRbacRole {
+	return &proto.SRbacRole{
 		Id:         v.Id,
 		Name:       v.Name,
 		Level:      int32(v.Level),
@@ -680,8 +683,8 @@ func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SPermRole {
 }
 
 // 获取角色
-func (p *rbacServiceImpl) GetPermRole(_ context.Context, id *proto.PermRoleId) (*proto.SPermRole, error) {
-	v := p.dao.GetPermRole(id.Value)
+func (p *rbacServiceImpl) GetRole(_ context.Context, id *proto.RbacRoleId) (*proto.SRbacRole, error) {
+	v := p.dao.GetRole(id.Value)
 	if v == nil {
 		return nil, fmt.Errorf("no such role: %v", id.Value)
 	}
@@ -692,10 +695,10 @@ func (p *rbacServiceImpl) GetPermRole(_ context.Context, id *proto.PermRoleId) (
 }
 
 // 获取角色列表
-func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryPermRoleRequest) (*proto.QueryPermRoleResponse, error) {
+func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryRbacRoleRequest) (*proto.QueryRbacRoleResponse, error) {
 	arr := p.dao.SelectPermRole("")
-	ret := &proto.QueryPermRoleResponse{
-		List: make([]*proto.SPermRole, len(arr)),
+	ret := &proto.QueryRbacRoleResponse{
+		List: make([]*proto.SRbacRole, len(arr)),
 	}
 	for i, v := range arr {
 		ret.List[i] = p.parsePermRole(v)
@@ -703,17 +706,17 @@ func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryPer
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.PermRoleId) (*proto.Result, error) {
+func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.RbacRoleId) (*proto.Result, error) {
 	err := p.dao.DeletePermRole(id.Value)
 	return p.error(err), nil
 }
 
-func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.PermRolePagingRequest) (*proto.PermRolePagingResponse, error) {
+func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePagingRequest) (*proto.PagingRbacRoleResponse, error) {
 	total, rows := p.dao.PagingQueryPermRole(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
 		r.Params.SortBy)
-	ret := &proto.PermRolePagingResponse{
+	ret := &proto.PagingRbacRoleResponse{
 		Total: int64(total),
 		Value: make([]*proto.PagingPermRole, len(rows)),
 	}
@@ -731,12 +734,64 @@ func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.PermRolePag
 	return ret, nil
 }
 
+// 验证上级资源是否合法
+func (p *rbacServiceImpl) checkParentResource(id int, currentPid int, pid int) (model.PermRes, error) {
+	var parentRes model.PermRes
+	// 检测上级
+	if pid <= 0 {
+		return parentRes, nil
+	}
+	// 检测上级是否为自己
+	if pid == id {
+		return parentRes, errors.New("不能将自己指定为上级资源")
+	}
+	// 检测上级是否为下级
+	if currentPid > 0 {
+		var parent *model.PermRes = p.dao.GetPermRes(pid)
+		// 获取上级的Key,用于获取
+		if parent != nil {
+			parentRes = *parent
+		}
+		for parent != nil && parent.Pid > 0 {
+			parent = p.dao.GetPermRes(parent.Pid)
+			if parent != nil && int(parent.Id) == pid {
+				return parentRes, errors.New("不能选择下级作为上级资源")
+			}
+		}
+	}
+	return parentRes, nil
+}
+
+// 生成资源标识
+func (p *rbacServiceImpl) GenerateResourceKey(parent model.PermRes) string {
+	maxKey := p.dao.GetMaxResouceKey(int(parent.Id))
+	l := len(maxKey)
+	// 一级资源,如果未以字母命名,则启用规则,并依次命名
+	if parent.Id == 0 {
+		if l == 0 || l > 1 {
+			return "A"
+		}
+		return strings.ToUpper(string(rune(maxKey[0]) + 1))
+	}
+	// 下级资源采用数字编号
+	if l == 0 {
+		return fmt.Sprintf("%s01", parent.Key)
+	}
+	// 获取末尾编号,如:05,并进行累加
+	v, _ := strconv.Atoi(maxKey[l-2:])
+	v += 1
+	if v < 10 {
+		return fmt.Sprintf("%s0%d", parent.Key, v)
+	}
+	return fmt.Sprintf("%s%d", parent.Key, v)
+}
+
 // 保存PermRes
-func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResRequest) (*proto.SavePermResResponse, error) {
+func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacResRequest) (*proto.SaveRbacResResponse, error) {
 	var dst *model.PermRes
 	if r.Id > 0 {
 		if dst = p.dao.GetPermRes(r.Id); dst == nil {
-			return &proto.SavePermResResponse{
+			return &proto.SaveRbacResResponse{
 				ErrCode: 2,
 				ErrMsg:  "no such data",
 			}, nil
@@ -745,47 +800,37 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 		dst = &model.PermRes{}
 		dst.CreateTime = time.Now().Unix()
 		dst.Depth = 0
-		// 如果首次没有填写ResKey, 则默认通过Path生成
-		if r.Key == "" {
-			r.Key = strings.Replace(r.Path, "/", ":", -1)
-		}
+	}
+
+	// 如果pid传入小于0,则强制为0,以避免数据无法显示
+	if r.Pid < 0 {
+		r.Pid = 0
 	}
 	if r.Pid > 0 {
-		// 检测上级是否为自己
-		if dst.Id == r.Pid {
-			return &proto.SavePermResResponse{
-				ErrCode: 2,
-				ErrMsg:  "不能将自己指定为上级资源",
-			}, nil
-		}
-		// 检测上级是否为下级
-		if dst.Id > 0 {
-			var parent *model.PermRes = p.dao.GetPermRes(r.Pid)
-			for parent != nil && parent.Pid > 0 {
-				parent = p.dao.GetPermRes(parent.Pid)
-				if parent != nil && parent.Id == r.Id {
-					return &proto.SavePermResResponse{
-						ErrCode: 2,
-						ErrMsg:  "不能选择下级作为上级资源",
-					}, nil
-				}
-			}
-		}
 		// 限制下级资源路径不能以'/'开头,以避免无法找到资源的情况
 		if len(r.Path) > 0 && r.Path[0] == '/' {
-			return &proto.SavePermResResponse{
+			return &proto.SaveRbacResResponse{
 				ErrCode: 3,
 				ErrMsg:  "该资源(包含上级资源)路径不能以'/'开头",
 			}, nil
 		}
 	}
-
+	parent, err := p.checkParentResource(int(dst.Id), int(dst.Pid), int(r.Pid))
+	if err != nil {
+		return &proto.SaveRbacResResponse{
+			ErrCode: 2,
+			ErrMsg:  err.Error(),
+		}, nil
+	}
+	// 如果新增, 则生成key
+	if r.Id <= 0 || len(dst.Key) == 0 {
+		dst.Key = p.GenerateResourceKey(parent)
+	}
 	// 上级是否改变
 	var parentChanged = r.Id > 0 && (dst.Pid != r.Pid || (r.Pid > 0 && dst.Depth == 0))
 	dst.Name = r.Name
 	dst.ResType = int16(r.ResType)
 	dst.Pid = r.Pid
-	dst.Key = r.Key
 	dst.Path = r.Path
 	dst.Icon = r.Icon
 	dst.Permission = r.Permission
@@ -798,8 +843,8 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SavePermResReq
 	if dst.SortNum <= 0 || parentChanged {
 		dst.SortNum = p.dao.GetMaxResourceSortNum(int(dst.Pid)) + 1
 	}
-	id, err := p.dao.SavePermRes(dst)
-	ret := &proto.SavePermResResponse{
+	id, err := p.dao.SaveRbacResource(dst)
+	ret := &proto.SaveRbacResResponse{
 		Id: int64(id),
 	}
 	if err != nil {
@@ -843,7 +888,7 @@ func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*p
 }
 
 // 获取PermRes列表
-func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryPermResRequest) (*proto.QueryPermResResponse, error) {
+func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryRbacResRequest) (*proto.QueryPermResResponse, error) {
 	var where string = "is_forbidden <> 1"
 	if r.Keyword != "" {
 		where += " AND name LIKE '%" + r.Keyword + "%'"
@@ -919,14 +964,14 @@ func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
 	}
 	_, deleted := util.IntArrayDiff(old, arr, func(v int, add bool) {
 		if add {
-			p.dao.SavePermUserRole(&model.PermUserRole{
+			p.dao.SaveUserRole(&model.PermUserRole{
 				RoleId: int64(v),
 				UserId: userId,
 			})
 		}
 	})
 	if len(deleted) > 0 {
-		p.dao.BatchDeletePermUserRole(
+		p.dao.BatchDeleteUserRole(
 			fmt.Sprintf("user_id = %d AND role_id IN (%_s)",
 				userId, util.JoinIntArray(deleted, ",")))
 	}
@@ -949,7 +994,7 @@ func (p *rbacServiceImpl) getResDepth(pid int64) int {
 // 更新资源及下级资源的深度
 func (p *rbacServiceImpl) updateResDepth(dst *model.PermRes, depth int16) {
 	dst.Depth = depth
-	_, _ = p.dao.SavePermRes(dst)
+	_, _ = p.dao.SaveRbacResource(dst)
 	list := p.dao.SelectPermRes("pid=$1", dst.Id)
 	for _, v := range list {
 		p.updateResDepth(v, depth+1)

@@ -346,6 +346,8 @@ type (
 		// GetLatestSalesSnapshot 获取最新的商品销售快照
 		GetLatestSalesSnapshot(itemId int64, skuId int64) *TradeSnapshot
 
+		// DeleteItem 删除商品
+		DeleteItem(itemId int) error
 		// SaveSalesSnapshot 保存商品销售快照
 		SaveSalesSnapshot(*TradeSnapshot) (int64, error)
 

@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestInitialTreeNode(t *testing.T) {
-	list, err := impl.RbacService.QueryResList(context.TODO(), &proto.QueryPermResRequest{
+	list, err := impl.RbacService.QueryResList(context.TODO(), &proto.QueryRbacResRequest{
 		Keyword:   "",
 		OnlyMenu:  true,
 		ParentId:  0,
@@ -36,4 +37,58 @@ func TestCheckRBACToken(t *testing.T) {
 	}
 	t.Log(typeconv.MustJson(ret))
 	t.Log("用户Id", ret.UserId)
+}
+
+// 测试获取部门
+func TestGetDepart(t *testing.T) {
+	ret, _ := impl.RbacService.GetDepart(context.TODO(), &proto.RbacDepartId{
+		Value: 4,
+	})
+	t.Log(typeconv.MustJson(ret))
+}
+
+// 测试获取部门
+func TestGetJoinList(t *testing.T) {
+	ret, _ := impl.RbacService.PagingJobList(context.TODO(), &proto.RbacJobPagingRequest{
+		Params: &proto.SPagingParams{
+			Begin: 0,
+			End:   30,
+		},
+	})
+	t.Log(typeconv.MustJson(ret))
+}
+
+// 测试创建新的资源Key
+func TestGenerateResourceKey(t *testing.T) {
+	gk := impl.RbacService.GenerateResourceKey
+	ret := gk(model.PermRes{Id: 0})
+	t.Log("新建一级:", ret)
+	ret = gk(model.PermRes{Id: 2328, Key: "D"})
+	t.Log("新建商户二级:", ret)
+	ret = gk(model.PermRes{Id: 2383, Key: "D01"})
+	t.Log("新建商户二级:", ret)
+}
+
+func TestSaveRbacResource(t *testing.T) {
+	s := impl.RbacService
+	r, _ := s.GetPermRes(context.TODO(), &proto.PermResId{
+		Value: 2383,
+	})
+	ret, _ := s.SaveRbacResource(context.TODO(), &proto.SaveRbacResRequest{
+		Id:            r.Id,
+		Name:          r.Name,
+		ResType:       r.ResType,
+		Pid:           r.Pid,
+		Key:           r.Key,
+		Path:          r.Path,
+		Icon:          r.Icon,
+		Permission:    r.Permission,
+		SortNum:       r.SortNum,
+		IsExternal:    r.IsExternal,
+		IsHidden:      r.IsHidden,
+		CreateTime:    r.CreateTime,
+		ComponentName: r.ComponentName,
+		Cache:         r.Cache,
+	})
+	t.Logf(typeconv.MustJson(ret))
 }

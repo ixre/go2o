@@ -261,7 +261,6 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	ipo := payRepo.GetPaymentOrderByOrderNo(int(order.TRetail), nio.OrderNo())
 	t.Logf("提交的支付单号为：%s", ipo.TradeNo())
 
-	return
 	err = ipo.PaymentFinish("alipay", "1233535080808wr")
 	if err == nil {
 		t.Logf("支付的交易号为：%s,最终金额:%d", nio.OrderNo(), ipo.Get().FinalAmount)
@@ -269,6 +268,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.Log("支付订单", err.Error())
 		t.FailNow()
 	}
+	return;
 	// 开始完成发货流程并收货\
 	newOrder := repo.Manager().GetOrderById(nio.GetAggregateRootId())
 	ino := newOrder.(order.INormalOrder)

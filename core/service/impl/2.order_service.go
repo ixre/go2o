@@ -12,7 +12,6 @@ package impl
 import (
 	"bytes"
 	"context"
-	"errors"
 	"log"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
@@ -313,21 +312,21 @@ func (s *orderServiceImpl) PrepareOrderWithCoupon_(_ context.Context, r *proto.P
 }
 
 // GetParentOrder 根据编号获取订单
-func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV2) (*proto.SParentOrder, error) {
-	io := s.manager.GetOrderByNo(req.Value)
-	if io == nil {
-		return nil, errors.New("no such order")
-	}
-	ord := io.Complex()
-	return parser.ParentOrderDto(ord), nil
-}
+// func (s *orderServiceImpl) GetParentOrder(c context.Context, req *proto.OrderNoV2) (*proto.SParentOrder, error) {
+// 	io := s.manager.GetOrderByNo(req.Value)
+// 	if io == nil {
+// 		return nil, errors.New("no such order")
+// 	}
+// 	ord := io.Complex()
+// 	return parser.ParentOrderDto(ord), nil
+// }
 
 // breakPaymentOrder 拆分支付单,返回拆分结果和子支付单
-func (s *orderServiceImpl) breakPaymentOrder(orderNo string, state int, parentOrderId int) (bool, payment.IPaymentOrder, error) {
+func (s *orderServiceImpl) breakPaymentOrder(orderNo string, state int, breakPayment bool, parentOrderId int) (bool, payment.IPaymentOrder, error) {
 	// 获取支付单信息
 	po := s.payRepo.GetPaymentOrder(orderNo)
 	// 待支付,且无子订单相关的支付单,则需要拆分支付单
-	if po == nil && state == order.StatAwaitingPayment {
+	if po == nil && state == order.StatAwaitingPayment && breakPayment {
 		if parentOrderId <= 0 {
 			return false, po, nil
 		}
@@ -356,7 +355,7 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 	if c != nil {
 		ret := parser.OrderDto(c)
 		if r.WithDetail {
-			_, po, _ := s.breakPaymentOrder(r.OrderNo, int(ret.Status), int(c.OrderId))
+			_, po, _ := s.breakPaymentOrder(r.OrderNo, int(ret.Status), r.BreakPayment, int(c.OrderId))
 			if po != nil {
 				pv := po.Get()
 				ret.DeductAmount = int32(pv.DeductAmount)
