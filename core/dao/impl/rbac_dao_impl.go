@@ -449,6 +449,15 @@ func (p *rbacDaoImpl) GetMaxResourceSortNum(parentId int) int {
 	return i
 }
 
+// GetMaxResourceSortNum 获取最大的Key
+func (p *rbacDaoImpl) GetMaxResouceKey(parentId int) string {
+	var s string
+	p._orm.Connector().ExecScalar(
+		`SELECT MAX(key) FROM perm_res
+ 		  WHERE pid = $1`, &s, parentId)
+	return s
+}
+
 // Save PermRes
 func (p *rbacDaoImpl) SavePermRes(v *model.PermRes) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))

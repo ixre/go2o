@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
@@ -55,4 +56,15 @@ func TestGetJoinList(t *testing.T) {
 		},
 	})
 	t.Log(typeconv.MustJson(ret))
+}
+
+// 测试创建新的资源Key
+func TestGenerateResourceKey(t *testing.T) {
+	gk := impl.RbacService.GenerateResourceKey
+	ret := gk(model.PermRes{Id: 0})
+	t.Log("新建一级:", ret)
+	ret = gk(model.PermRes{Id: 2328, Key: "D"})
+	t.Log("新建商户二级:", ret)
+	ret = gk(model.PermRes{Id: 2383, Key: "D01"})
+	t.Log("新建商户二级:", ret)
 }

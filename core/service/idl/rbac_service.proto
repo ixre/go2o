@@ -19,7 +19,7 @@ service RbacService {
     rpc QueryResList (QueryRbacResRequest) returns (QueryPermResResponse) {
     }
     // 移动资源顺序
-    rpc MoveResOrdinal(MoveResOrdinalRequest) returns (Result) {}
+    rpc MoveResourceOrdinal(MoveResourceOrdinalRequest) returns (Result) {}
 
     // 部门树形数据
     rpc DepartTree(Empty)returns(RbacTree) {}
@@ -673,7 +673,7 @@ message PermResPagingResponse {
 }
 
 // 移动资源顺序
-message MoveResOrdinalRequest {
+message MoveResourceOrdinalRequest {
     /** 资源编号 */
     int64 resourceId = 1;
     /** 移动方向,0:向上移,1:向下移 */

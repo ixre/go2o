@@ -10,11 +10,14 @@ package impl
  * history :
  */
 
+//todo: 用户可以添加禁用权限
+
 import (
 	"context"
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -224,7 +227,7 @@ func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
 }
 
 // 移动资源顺序
-func (p *rbacServiceImpl) MoveResOrdinal(_ context.Context, r *proto.MoveResOrdinalRequest) (*proto.Result, error) {
+func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveResourceOrdinalRequest) (*proto.Result, error) {
 	res := p.dao.GetPermRes(r.ResourceId)
 	if res == nil {
 		return p.error(errors.New("no such data")), nil
@@ -731,6 +734,58 @@ func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePag
 	return ret, nil
 }
 
+// 验证上级资源是否合法
+func (p *rbacServiceImpl) checkParentResource(currentPid int, pid int) (model.PermRes, error) {
+	var parentRes model.PermRes
+	// 检测上级
+	if pid <= 0 {
+		return parentRes, nil
+	}
+	// 检测上级是否为自己
+	if currentPid == pid {
+		return parentRes, errors.New("不能将自己指定为上级资源")
+	}
+	// 检测上级是否为下级
+	if currentPid > 0 {
+		var parent *model.PermRes = p.dao.GetPermRes(pid)
+		// 获取上级的Key,用于获取
+		if parent != nil {
+			parentRes = *parent
+		}
+		for parent != nil && parent.Pid > 0 {
+			parent = p.dao.GetPermRes(parent.Pid)
+			if parent != nil && int(parent.Id) == pid {
+				return parentRes, errors.New("不能选择下级作为上级资源")
+			}
+		}
+	}
+	return parentRes, nil
+}
+
+// 生成资源标识
+func (p *rbacServiceImpl) GenerateResourceKey(parent model.PermRes) string {
+	maxKey := p.dao.GetMaxResouceKey(int(parent.Id))
+	l := len(maxKey)
+	// 一级资源,如果未以字母命名,则启用规则,并依次命名
+	if parent.Id == 0 {
+		if l == 0 || l > 1 {
+			return "A"
+		}
+		return strings.ToUpper(string(rune(maxKey[0]) + 1))
+	}
+	// 下级资源采用数字编号
+	if l == 0 {
+		return fmt.Sprintf("%s01", parent.Key)
+	}
+	// 获取末尾编号,如:05,并进行累加
+	v, _ := strconv.Atoi(maxKey[l-2:])
+	v += 1
+	if v < 10 {
+		return fmt.Sprintf("%s0%d", parent.Key, v)
+	}
+	return fmt.Sprintf("%s%d", parent.Key, v)
+}
+
 // 保存PermRes
 func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SaveRbacResRequest) (*proto.SaveRbacResResponse, error) {
 	var dst *model.PermRes
@@ -745,38 +800,13 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SaveRbacResReq
 		dst = &model.PermRes{}
 		dst.CreateTime = time.Now().Unix()
 		dst.Depth = 0
-		// 如果首次没有填写ResKey, 则默认通过Path生成
-		if r.Key == "" {
-			r.Key = strings.Replace(r.Path, "/", ":", -1)
-		}
 	}
 
 	// 如果pid传入小于0,则强制为0,以避免数据无法显示
 	if r.Pid < 0 {
 		r.Pid = 0
 	}
-	// 检测上级
 	if r.Pid > 0 {
-		// 检测上级是否为自己
-		if dst.Id == r.Pid {
-			return &proto.SaveRbacResResponse{
-				ErrCode: 2,
-				ErrMsg:  "不能将自己指定为上级资源",
-			}, nil
-		}
-		// 检测上级是否为下级
-		if dst.Id > 0 {
-			var parent *model.PermRes = p.dao.GetPermRes(r.Pid)
-			for parent != nil && parent.Pid > 0 {
-				parent = p.dao.GetPermRes(parent.Pid)
-				if parent != nil && parent.Id == r.Id {
-					return &proto.SaveRbacResResponse{
-						ErrCode: 2,
-						ErrMsg:  "不能选择下级作为上级资源",
-					}, nil
-				}
-			}
-		}
 		// 限制下级资源路径不能以'/'开头,以避免无法找到资源的情况
 		if len(r.Path) > 0 && r.Path[0] == '/' {
 			return &proto.SaveRbacResResponse{
@@ -785,13 +815,22 @@ func (p *rbacServiceImpl) SavePermRes(_ context.Context, r *proto.SaveRbacResReq
 			}, nil
 		}
 	}
-
+	parent, err := p.checkParentResource(int(dst.Pid), int(r.Pid))
+	if err != nil {
+		return &proto.SaveRbacResResponse{
+			ErrCode: 2,
+			ErrMsg:  err.Error(),
+		}, nil
+	}
+	// 如果新增, 则生成key
+	if r.Id <= 0 {
+		dst.Key = p.GenerateResourceKey(parent)
+	}
 	// 上级是否改变
 	var parentChanged = r.Id > 0 && (dst.Pid != r.Pid || (r.Pid > 0 && dst.Depth == 0))
 	dst.Name = r.Name
 	dst.ResType = int16(r.ResType)
 	dst.Pid = r.Pid
-	dst.Key = r.Key
 	dst.Path = r.Path
 	dst.Icon = r.Icon
 	dst.Permission = r.Permission

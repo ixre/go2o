@@ -24,7 +24,7 @@ const (
 	RbacService_GetJwtToken_FullMethodName        = "/RbacService/GetJwtToken"
 	RbacService_GetUserResource_FullMethodName    = "/RbacService/GetUserResource"
 	RbacService_QueryResList_FullMethodName       = "/RbacService/QueryResList"
-	RbacService_MoveResOrdinal_FullMethodName     = "/RbacService/MoveResOrdinal"
+	RbacService_MoveResourceOrdinal_FullMethodName     = "/RbacService/MoveResourceOrdinal"
 	RbacService_DepartTree_FullMethodName         = "/RbacService/DepartTree"
 	RbacService_SaveDepart_FullMethodName         = "/RbacService/SaveDepart"
 	RbacService_GetDepart_FullMethodName          = "/RbacService/GetDepart"
@@ -64,7 +64,7 @@ type RbacServiceClient interface {
 	// 获取资源树形数据
 	QueryResList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryPermResResponse, error)
 	// 移动资源顺序
-	MoveResOrdinal(ctx context.Context, in *MoveResOrdinalRequest, opts ...grpc.CallOption) (*Result, error)
+	MoveResourceOrdinal(ctx context.Context, in *MoveResourceOrdinalRequest, opts ...grpc.CallOption) (*Result, error)
 	// 部门树形数据
 	DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RbacTree, error)
 	// 保存部门
@@ -164,9 +164,9 @@ func (c *rbacServiceClient) QueryResList(ctx context.Context, in *QueryRbacResRe
 	return out, nil
 }
 
-func (c *rbacServiceClient) MoveResOrdinal(ctx context.Context, in *MoveResOrdinalRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *rbacServiceClient) MoveResourceOrdinal(ctx context.Context, in *MoveResourceOrdinalRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, RbacService_MoveResOrdinal_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, RbacService_MoveResourceOrdinal_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -386,7 +386,7 @@ type RbacServiceServer interface {
 	// 获取资源树形数据
 	QueryResList(context.Context, *QueryRbacResRequest) (*QueryPermResResponse, error)
 	// 移动资源顺序
-	MoveResOrdinal(context.Context, *MoveResOrdinalRequest) (*Result, error)
+	MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*Result, error)
 	// 部门树形数据
 	DepartTree(context.Context, *Empty) (*RbacTree, error)
 	// 保存部门
@@ -453,8 +453,8 @@ func (UnimplementedRbacServiceServer) GetUserResource(context.Context, *GetUserR
 func (UnimplementedRbacServiceServer) QueryResList(context.Context, *QueryRbacResRequest) (*QueryPermResResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryResList not implemented")
 }
-func (UnimplementedRbacServiceServer) MoveResOrdinal(context.Context, *MoveResOrdinalRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MoveResOrdinal not implemented")
+func (UnimplementedRbacServiceServer) MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MoveResourceOrdinal not implemented")
 }
 func (UnimplementedRbacServiceServer) DepartTree(context.Context, *Empty) (*RbacTree, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DepartTree not implemented")
@@ -625,20 +625,20 @@ func _RbacService_QueryResList_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_MoveResOrdinal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MoveResOrdinalRequest)
+func _RbacService_MoveResourceOrdinal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MoveResourceOrdinalRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).MoveResOrdinal(ctx, in)
+		return srv.(RbacServiceServer).MoveResourceOrdinal(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_MoveResOrdinal_FullMethodName,
+		FullMethod: RbacService_MoveResourceOrdinal_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).MoveResOrdinal(ctx, req.(*MoveResOrdinalRequest))
+		return srv.(RbacServiceServer).MoveResourceOrdinal(ctx, req.(*MoveResourceOrdinalRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1067,8 +1067,8 @@ var RbacService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RbacService_QueryResList_Handler,
 		},
 		{
-			MethodName: "MoveResOrdinal",
-			Handler:    _RbacService_MoveResOrdinal_Handler,
+			MethodName: "MoveResourceOrdinal",
+			Handler:    _RbacService_MoveResourceOrdinal_Handler,
 		},
 		{
 			MethodName: "DepartTree",

@@ -4084,7 +4084,7 @@ func (x *PermResPagingResponse) GetValue() []*PagingPermRes {
 }
 
 // 移动资源顺序
-type MoveResOrdinalRequest struct {
+type MoveResourceOrdinalRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -4095,8 +4095,8 @@ type MoveResOrdinalRequest struct {
 	Direction int32 `protobuf:"varint,2,opt,name=direction,proto3" json:"direction"`
 }
 
-func (x *MoveResOrdinalRequest) Reset() {
-	*x = MoveResOrdinalRequest{}
+func (x *MoveResourceOrdinalRequest) Reset() {
+	*x = MoveResourceOrdinalRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_rbac_service_proto_msgTypes[53]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4104,13 +4104,13 @@ func (x *MoveResOrdinalRequest) Reset() {
 	}
 }
 
-func (x *MoveResOrdinalRequest) String() string {
+func (x *MoveResourceOrdinalRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MoveResOrdinalRequest) ProtoMessage() {}
+func (*MoveResourceOrdinalRequest) ProtoMessage() {}
 
-func (x *MoveResOrdinalRequest) ProtoReflect() protoreflect.Message {
+func (x *MoveResourceOrdinalRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_rbac_service_proto_msgTypes[53]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4122,19 +4122,19 @@ func (x *MoveResOrdinalRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use MoveResOrdinalRequest.ProtoReflect.Descriptor instead.
-func (*MoveResOrdinalRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use MoveResourceOrdinalRequest.ProtoReflect.Descriptor instead.
+func (*MoveResourceOrdinalRequest) Descriptor() ([]byte, []int) {
 	return file_rbac_service_proto_rawDescGZIP(), []int{53}
 }
 
-func (x *MoveResOrdinalRequest) GetResourceId() int64 {
+func (x *MoveResourceOrdinalRequest) GetResourceId() int64 {
 	if x != nil {
 		return x.ResourceId
 	}
 	return 0
 }
 
-func (x *MoveResOrdinalRequest) GetDirection() int32 {
+func (x *MoveResourceOrdinalRequest) GetDirection() int32 {
 	if x != nil {
 		return x.Direction
 	}
@@ -4746,7 +4746,7 @@ var file_rbac_service_proto_goTypes = []interface{}{
 	(*PagingPermRes)(nil),            // 50: PagingPermRes
 	(*PermResPagingRequest)(nil),     // 51: PermResPagingRequest
 	(*PermResPagingResponse)(nil),    // 52: PermResPagingResponse
-	(*MoveResOrdinalRequest)(nil),    // 53: MoveResOrdinalRequest
+	(*MoveResourceOrdinalRequest)(nil),    // 53: MoveResourceOrdinalRequest
 	(*SPagingParams)(nil),            // 54: SPagingParams
 	(*Empty)(nil),                    // 55: Empty
 	(*String)(nil),                   // 56: String
@@ -4775,7 +4775,7 @@ var file_rbac_service_proto_depIdxs = []int32{
 	55, // 19: RbacService.GetJwtToken:input_type -> Empty
 	47, // 20: RbacService.GetUserResource:input_type -> GetUserResRequest
 	48, // 21: RbacService.QueryResList:input_type -> QueryRbacResRequest
-	53, // 22: RbacService.MoveResOrdinal:input_type -> MoveResOrdinalRequest
+	53, // 22: RbacService.MoveResourceOrdinal:input_type -> MoveResourceOrdinalRequest
 	55, // 23: RbacService.DepartTree:input_type -> Empty
 	9,  // 24: RbacService.SaveDepart:input_type -> SaveDepartRequest
 	11, // 25: RbacService.GetDepart:input_type -> RbacDepartId
@@ -4803,7 +4803,7 @@ var file_rbac_service_proto_depIdxs = []int32{
 	56, // 47: RbacService.GetJwtToken:output_type -> String
 	4,  // 48: RbacService.GetUserResource:output_type -> RbacUserResourceResponse
 	49, // 49: RbacService.QueryResList:output_type -> QueryPermResResponse
-	57, // 50: RbacService.MoveResOrdinal:output_type -> Result
+	57, // 50: RbacService.MoveResourceOrdinal:output_type -> Result
 	8,  // 51: RbacService.DepartTree:output_type -> RbacTree
 	10, // 52: RbacService.SaveDepart:output_type -> SaveDepartResponse
 	12, // 53: RbacService.GetDepart:output_type -> SPermDept
@@ -5477,7 +5477,7 @@ func file_rbac_service_proto_init() {
 			}
 		}
 		file_rbac_service_proto_msgTypes[53].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MoveResOrdinalRequest); i {
+			switch v := v.(*MoveResourceOrdinalRequest); i {
 			case 0:
 				return &v.state
 			case 1:
