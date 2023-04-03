@@ -4795,7 +4795,7 @@ var file_rbac_service_proto_depIdxs = []int32{
 	38, // 39: RbacService.QueryPermRoleList:input_type -> QueryRbacRoleRequest
 	36, // 40: RbacService.DeletePermRole:input_type -> RbacRoleId
 	41, // 41: RbacService.PagingPermRole:input_type -> RbacRolePagingRequest
-	43, // 42: RbacService.SavePermRes:input_type -> SaveRbacResRequest
+	43, // 42: RbacService.SaveRbacResource:input_type -> SaveRbacResRequest
 	45, // 43: RbacService.GetPermRes:input_type -> PermResId
 	45, // 44: RbacService.DeletePermRes:input_type -> PermResId
 	1,  // 45: RbacService.UserLogin:output_type -> RbacLoginResponse
@@ -4823,7 +4823,7 @@ var file_rbac_service_proto_depIdxs = []int32{
 	39, // 67: RbacService.QueryPermRoleList:output_type -> QueryRbacRoleResponse
 	57, // 68: RbacService.DeletePermRole:output_type -> Result
 	42, // 69: RbacService.PagingPermRole:output_type -> PagingRbacRoleResponse
-	44, // 70: RbacService.SavePermRes:output_type -> SaveRbacResResponse
+	44, // 70: RbacService.SaveRbacResource:output_type -> SaveRbacResResponse
 	46, // 71: RbacService.GetPermRes:output_type -> SPermRes
 	57, // 72: RbacService.DeletePermRes:output_type -> Result
 	45, // [45:73] is the sub-list for method output_type

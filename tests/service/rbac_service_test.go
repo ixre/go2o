@@ -68,3 +68,27 @@ func TestGenerateResourceKey(t *testing.T) {
 	ret = gk(model.PermRes{Id: 2383, Key: "D01"})
 	t.Log("新建商户二级:", ret)
 }
+
+func TestSaveRbacResource(t *testing.T) {
+	s := impl.RbacService
+	r, _ := s.GetPermRes(context.TODO(), &proto.PermResId{
+		Value: 2383,
+	})
+	ret, _ := s.SaveRbacResource(context.TODO(), &proto.SaveRbacResRequest{
+		Id:            r.Id,
+		Name:          r.Name,
+		ResType:       r.ResType,
+		Pid:           r.Pid,
+		Key:           r.Key,
+		Path:          r.Path,
+		Icon:          r.Icon,
+		Permission:    r.Permission,
+		SortNum:       r.SortNum,
+		IsExternal:    r.IsExternal,
+		IsHidden:      r.IsHidden,
+		CreateTime:    r.CreateTime,
+		ComponentName: r.ComponentName,
+		Cache:         r.Cache,
+	})
+	t.Logf(typeconv.MustJson(ret))
+}

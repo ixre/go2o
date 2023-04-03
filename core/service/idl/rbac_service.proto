@@ -79,7 +79,7 @@ service RbacService {
     rpc PagingPermRole (RbacRolePagingRequest) returns (PagingRbacRoleResponse);
 
     // 保存PermRes
-    rpc SavePermRes (SaveRbacResRequest) returns (SaveRbacResResponse) {
+    rpc SaveRbacResource (SaveRbacResRequest) returns (SaveRbacResResponse) {
     }
     // 获取PermRes
     rpc GetPermRes (PermResId) returns (SPermRes) {

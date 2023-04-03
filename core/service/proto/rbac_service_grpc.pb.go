@@ -44,7 +44,7 @@ const (
 	RbacService_QueryPermRoleList_FullMethodName  = "/RbacService/QueryPermRoleList"
 	RbacService_DeletePermRole_FullMethodName     = "/RbacService/DeletePermRole"
 	RbacService_PagingPermRole_FullMethodName     = "/RbacService/PagingPermRole"
-	RbacService_SavePermRes_FullMethodName        = "/RbacService/SavePermRes"
+	RbacService_SaveRbacResource_FullMethodName        = "/RbacService/SaveRbacResource"
 	RbacService_GetPermRes_FullMethodName         = "/RbacService/GetPermRes"
 	RbacService_DeletePermRes_FullMethodName      = "/RbacService/DeletePermRes"
 )
@@ -104,7 +104,7 @@ type RbacServiceClient interface {
 	// 获取角色分页数据
 	PagingPermRole(ctx context.Context, in *RbacRolePagingRequest, opts ...grpc.CallOption) (*PagingRbacRoleResponse, error)
 	// 保存PermRes
-	SavePermRes(ctx context.Context, in *SaveRbacResRequest, opts ...grpc.CallOption) (*SaveRbacResResponse, error)
+	SaveRbacResource(ctx context.Context, in *SaveRbacResRequest, opts ...grpc.CallOption) (*SaveRbacResResponse, error)
 	// 获取PermRes
 	GetPermRes(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*SPermRes, error)
 	// 删除PermRes
@@ -344,9 +344,9 @@ func (c *rbacServiceClient) PagingPermRole(ctx context.Context, in *RbacRolePagi
 	return out, nil
 }
 
-func (c *rbacServiceClient) SavePermRes(ctx context.Context, in *SaveRbacResRequest, opts ...grpc.CallOption) (*SaveRbacResResponse, error) {
+func (c *rbacServiceClient) SaveRbacResource(ctx context.Context, in *SaveRbacResRequest, opts ...grpc.CallOption) (*SaveRbacResResponse, error) {
 	out := new(SaveRbacResResponse)
-	err := c.cc.Invoke(ctx, RbacService_SavePermRes_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, RbacService_SaveRbacResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -426,7 +426,7 @@ type RbacServiceServer interface {
 	// 获取角色分页数据
 	PagingPermRole(context.Context, *RbacRolePagingRequest) (*PagingRbacRoleResponse, error)
 	// 保存PermRes
-	SavePermRes(context.Context, *SaveRbacResRequest) (*SaveRbacResResponse, error)
+	SaveRbacResource(context.Context, *SaveRbacResRequest) (*SaveRbacResResponse, error)
 	// 获取PermRes
 	GetPermRes(context.Context, *PermResId) (*SPermRes, error)
 	// 删除PermRes
@@ -513,8 +513,8 @@ func (UnimplementedRbacServiceServer) DeletePermRole(context.Context, *RbacRoleI
 func (UnimplementedRbacServiceServer) PagingPermRole(context.Context, *RbacRolePagingRequest) (*PagingRbacRoleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PagingPermRole not implemented")
 }
-func (UnimplementedRbacServiceServer) SavePermRes(context.Context, *SaveRbacResRequest) (*SaveRbacResResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SavePermRes not implemented")
+func (UnimplementedRbacServiceServer) SaveRbacResource(context.Context, *SaveRbacResRequest) (*SaveRbacResResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveRbacResource not implemented")
 }
 func (UnimplementedRbacServiceServer) GetPermRes(context.Context, *PermResId) (*SPermRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPermRes not implemented")
@@ -985,20 +985,20 @@ func _RbacService_PagingPermRole_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_SavePermRes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RbacService_SaveRbacResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SaveRbacResRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).SavePermRes(ctx, in)
+		return srv.(RbacServiceServer).SaveRbacResource(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_SavePermRes_FullMethodName,
+		FullMethod: RbacService_SaveRbacResource_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).SavePermRes(ctx, req.(*SaveRbacResRequest))
+		return srv.(RbacServiceServer).SaveRbacResource(ctx, req.(*SaveRbacResRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1147,8 +1147,8 @@ var RbacService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RbacService_PagingPermRole_Handler,
 		},
 		{
-			MethodName: "SavePermRes",
-			Handler:    _RbacService_SavePermRes_Handler,
+			MethodName: "SaveRbacResource",
+			Handler:    _RbacService_SaveRbacResource_Handler,
 		},
 		{
 			MethodName: "GetPermRes",

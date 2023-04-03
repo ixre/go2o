@@ -85,7 +85,7 @@ type IRbacDao interface {
 	// GetMaxResourceSortNum 获取最大的Key
 	GetMaxResouceKey(parentId int) string
 	// Save PermRes
-	SavePermRes(v *model.PermRes) (int, error)
+	SaveRbacResource(v *model.PermRes) (int, error)
 	// Delete PermRes
 	DeletePermRes(primary interface{}) error
 	// Batch Delete PermRes
