@@ -742,7 +742,7 @@ func (p *rbacServiceImpl) checkParentResource(id int, currentPid int, pid int) (
 		return parentRes, nil
 	}
 	// 检测上级是否为自己
-	if currentPid == pid {
+	if pid == id {
 		return parentRes, errors.New("不能将自己指定为上级资源")
 	}
 	// 检测上级是否为下级
