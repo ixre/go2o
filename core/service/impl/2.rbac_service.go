@@ -278,7 +278,6 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	wg := sync.WaitGroup{}
 	var f func(*sync.WaitGroup, *proto.SUserRes, []*model.PermRes)
 	f = func(w *sync.WaitGroup, root *proto.SUserRes, arr []*model.PermRes) {
-		w.Add(1)
 		root.Children = []*proto.SUserRes{}
 		for _, v := range arr {
 			if r.OnlyMenu && v.IsMenu == 0 {
@@ -298,11 +297,13 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 				}
 				c.Children = make([]*proto.SUserRes, 0)
 				root.Children = append(root.Children, c)
-				go f(w,c, arr)
+				w.Add(1)
+				go f(w, c, arr)
 			}
 		}
 		w.Done()
 	}
+	wg.Add(1)
 	f(&wg, &root, resList)
 	wg.Wait()
 	dst.Resources = root.Children
