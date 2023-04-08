@@ -255,3 +255,18 @@ ALTER TABLE IF EXISTS public.perm_user
     
 ALTER TABLE IF EXISTS public.perm_user
     RENAME pwd TO password;
+
+/** 2023-04-08 */
+ALTER TABLE IF EXISTS public.perm_res DROP COLUMN IF EXISTS permission;
+
+ALTER TABLE IF EXISTS public.perm_res
+    RENAME is_external TO is_menu;
+
+COMMENT ON COLUMN public.perm_res.is_menu
+    IS '是否显示到菜单中';
+
+ALTER TABLE IF EXISTS public.perm_res
+    RENAME is_hidden TO is_enabled;
+
+COMMENT ON COLUMN public.perm_res.is_enabled
+    IS '是否启用';

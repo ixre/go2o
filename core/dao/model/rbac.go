@@ -66,7 +66,7 @@ type PermRes struct {
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 资源名称
 	Name string `db:"name"`
-	// 资源类型, 0: 目录 1: 资源 2: 菜单 3:  按钮
+	// 资源类型, 1:页面 2:组件 3:资源
 	ResType int16 `db:"res_type"`
 	// 上级菜单ID
 	Pid int64 `db:"pid"`
@@ -78,14 +78,12 @@ type PermRes struct {
 	Path string `db:"path"`
 	// 图标
 	Icon string `db:"icon"`
-	// 权限,多个值用|分隔
-	Permission string `db:"permission"`
 	// 排序
 	SortNum int `db:"sort_num"`
-	// 是否外部
-	IsExternal int16 `db:"is_external"`
-	// 是否隐藏
-	IsHidden int16 `db:"is_hidden"`
+	// 是否显示到菜单
+	IsMenu int16 `db:"is_menu"`
+	// 是否启用
+	IsEnabled int16 `db:"is_enabled"`
 	// 是否禁用
 	IsForbidden int64 `db:"is_forbidden"`
 	// 创建日期
