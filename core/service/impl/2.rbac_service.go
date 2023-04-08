@@ -881,7 +881,7 @@ func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*p
 }
 
 // 获取PermRes列表
-func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryRbacResRequest) (*proto.QueryPermResResponse, error) {
+func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryRbacResRequest) (*proto.QueryRbacResourceResponse, error) {
 	var where string = "is_forbidden <> 1"
 	if r.Keyword != "" {
 		where += " AND name LIKE '%" + r.Keyword + "%'"
@@ -913,7 +913,7 @@ func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryRbacResR
 			pid = id
 		}
 	}
-	ret := &proto.QueryPermResResponse{
+	ret := &proto.QueryRbacResourceResponse{
 		List:        roots,
 		InitialList: initial,
 	}
