@@ -16,7 +16,7 @@ service RbacService {
     // 获取用户的信息
     rpc GetUserResource(GetUserResRequest)returns(RbacUserResourceResponse) {}
     // 获取资源树形数据
-    rpc QueryResList (QueryRbacResRequest) returns (QueryPermResResponse) {
+    rpc QueryRbacResourceList (QueryRbacResRequest) returns (QueryRbacResourceResponse) {
     }
     // 移动资源顺序
     rpc MoveResourceOrdinal(MoveResourceOrdinalRequest) returns (Result) {}
@@ -144,6 +144,8 @@ message RbacUserResourceResponse {
     repeated string permissions = 2;
     // 菜单
     repeated SUserRes resources = 3;
+    // 权限Key数组
+    repeated string keys = 4;
 }
 
 
@@ -154,7 +156,7 @@ message SUserRes {
     string key = 2;
     /** 资源名称 */
     string name = 3;
-    /** 资源类型,0: 目录 1: 资源 2: 菜单 3: 按钮 */
+    // 资源类型 1:页面 2:组件 3:资源
     int32 resType= 4;
     /** 深度/层级 */
     int32 depth = 5;
@@ -162,16 +164,17 @@ message SUserRes {
     string path = 6;
     /** 图标 */
     string icon = 7;
-    /** 权限,多个值用|分隔 */
-    string permission = 8;
+
+    /** 是否显示到菜单 */
+    bool isMenu = 8;
+    /** 是否启用 */
+    bool isEnabled = 9;
     /** 排序 */
-    int32 sortNum = 9;
-    /** 是否隐藏 */
-    bool isHidden = 10;
-    /** 组件名称 */
-    string componentName = 11;
+    int32 sortNum = 10;
     /** 子资源 */
-    repeated SUserRes children = 12;
+    repeated SUserRes children = 11;
+    /** 组件名称 */
+    string componentName = 12;
 }
 
 message RoleId {
@@ -534,7 +537,7 @@ message SaveRbacResRequest {
     int64 id = 1;
     /** 资源名称 */
     string name = 2;
-    /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
+    // 资源类型 1:页面 2:组件 3:资源
     int32 resType= 3;
     /** 上级菜单ID */
     int64 pid = 4;
@@ -544,20 +547,18 @@ message SaveRbacResRequest {
     string path = 6;
     /** 图标 */
     string icon = 7;
-    /** 权限,多个值用|分隔 */
-    string permission = 8;
+    /** 是否显示到菜单 */
+    bool isMenu = 8;
+    /** 是否启用 */
+    bool isEnabled = 9;
     /** 排序 */
-    int32 sortNum = 9;
-    /** 是否外部 */
-    bool isExternal = 10;
-    /** 是否隐藏 */
-    bool isHidden = 11;
+    int32 sortNum = 10;
     /** 创建日期 */
-    int64 createTime = 12;
+    int64 createTime = 11;
     /** 组件名称 */
-    string componentName = 13;
+    string componentName = 12;
     /** 缓存 */
-    string cache = 14;
+    string cache = 13;
 }
 
 message SaveRbacResResponse {
@@ -575,7 +576,7 @@ message SPermRes {
     int64 id = 1;
     /** 资源名称 */
     string name = 2;
-    /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
+    // 资源类型 1:页面 2:组件 3:资源
     int32 resType= 3;
     /** 上级菜单ID */
     int64 pid = 4;
@@ -587,24 +588,22 @@ message SPermRes {
     string path = 7;
     /** 图标 */
     string icon = 8;
-    /** 权限,多个值用|分隔 */
-    string permission = 9;
     /** 排序 */
-    int32 sortNum = 10;
-    /** 是否外部 */
-    bool isExternal = 11;
-    /** 是否隐藏 */
-    bool isHidden = 12;
+    int32 sortNum = 11;
+    /** 是否显示到菜单 */
+    bool isMenu = 9;
+    /** 是否启用 */
+    bool isEnabled = 10;
     /** 创建日期 */
-    int64 createTime = 13;
+    int64 createTime = 12;
     /** 组件名称 */
-    string componentName = 14;
+    string componentName = 13;
     /** 缓存 */
-    string cache = 15;
+    string cache = 16;
     /** 是否为叶子节点 */
-    bool isLeaf = 16;
+    bool isLeaf = 14;
     /** 子资源 */
-    repeated SPermRes children = 17;
+    repeated SPermRes children = 15;
 }
 
 message GetUserResRequest {
@@ -625,52 +624,12 @@ message QueryRbacResRequest {
     int64 initialId = 4;
 }
 
-message QueryPermResResponse {
+message QueryRbacResourceResponse {
     repeated SPermRes list = 1;
     // 返回初始化上级ID列表
     repeated int64 initialList = 2;
 }
 
-message PagingPermRes {
-    /** 资源ID */
-    int64 id = 1;
-    /** 资源名称 */
-    string name = 2;
-    /** 资源类型, 0: 目录 1: 资源 2: 菜单 3: 按钮 */
-    int32 resType= 3;
-    /** 上级菜单ID */
-    int64 pid = 4;
-    /** 资源键 */
-    string key = 5;
-    /** 资源路径 */
-    string path = 6;
-    /** 图标 */
-    string icon = 7;
-    /** 权限,多个值用|分隔 */
-    string permission = 8;
-    /** 排序 */
-    int32 sortNum = 9;
-    /** 是否外部 */
-    bool isExternal = 10;
-    /** 是否隐藏 */
-    bool isHidden = 11;
-    /** 创建日期 */
-    int64 createTime = 12;
-    /** 组件名称 */
-    string componentName = 13;
-    /** 缓存 */
-    string cache = 14;
-}
-
-message PermResPagingRequest {
-    // 分页参数
-    SPagingParams params = 1;
-}
-
-message PermResPagingResponse {
-    int64 total = 1;
-    repeated PagingPermRes value =  2;
-}
 
 // 移动资源顺序
 message MoveResourceOrdinalRequest {

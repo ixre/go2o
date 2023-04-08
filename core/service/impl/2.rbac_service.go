@@ -10,7 +10,7 @@ package impl
  * history :
  */
 
-//todo: 用户可以添加禁用权限
+//todo: 用户可以添加禁用权限, 关联权限时可以选择菜单的增删改查
 
 import (
 	"context"
@@ -19,6 +19,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -260,11 +261,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	if r.UserId <= 0 { // 管理员
 		dst.Roles = []int64{}
 		dst.Permissions = []string{"master", "admin"}
-		resList = p.dao.SelectPermRes("is_forbidden <> 1 AND is_hidden <> 1")
-		// 获取管理员
-		for _, v := range resList {
-			v.Permission = "master,admin"
-		}
+		resList = p.dao.SelectPermRes("is_forbidden <> 1 AND is_enabled = 1")
 	} else {
 		dst.Roles, dst.Permissions = p.getUserRolesPerm(r.UserId)
 		usr := p.dao.GetUser(r.UserId)
@@ -278,11 +275,12 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 		resList = p.dao.GetRoleResources(roleList)
 	}
 	root := proto.SUserRes{}
-	var f func(root *proto.SUserRes, arr []*model.PermRes)
-	f = func(root *proto.SUserRes, arr []*model.PermRes) {
+	wg := sync.WaitGroup{}
+	var f func(*sync.WaitGroup, *proto.SUserRes, []*model.PermRes)
+	f = func(w *sync.WaitGroup, root *proto.SUserRes, arr []*model.PermRes) {
 		root.Children = []*proto.SUserRes{}
 		for _, v := range arr {
-			if r.OnlyMenu && (v.ResType != 0 && v.ResType != 2) {
+			if r.OnlyMenu && v.IsMenu == 0 {
 				continue // 只显示菜单
 			}
 			if v.Pid == root.Id {
@@ -293,19 +291,29 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 					ResType:       int32(v.ResType),
 					Path:          v.Path,
 					Icon:          v.Icon,
-					Permission:    v.Permission,
 					SortNum:       int32(v.SortNum),
-					IsHidden:      v.IsHidden == 1,
+					IsEnabled:     v.IsEnabled == 1,
 					ComponentName: v.ComponentName,
 				}
 				c.Children = make([]*proto.SUserRes, 0)
 				root.Children = append(root.Children, c)
-				f(c, arr)
+				w.Add(1)
+				go f(w, c, arr)
 			}
 		}
+		w.Done()
 	}
-	f(&root, resList)
+	wg.Add(1)
+	f(&wg, &root, resList)
+	wg.Wait()
+	// 资源
 	dst.Resources = root.Children
+	// 权限Keys
+	for _, v := range resList {
+		if len(v.Key) > 0 {
+			dst.Keys = append(dst.Keys, v.Key)
+		}
+	}
 	return dst, nil
 }
 
@@ -664,7 +672,7 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 	})
 	if len(deleted) > 0 {
 		p.dao.BatchDeletePermRoleRes(
-			fmt.Sprintf("role_id = %d AND res_id IN (%_s)",
+			fmt.Sprintf("role_id = %d AND res_id IN (%s)",
 				r.RoleId, util.JoinIntArray(deleted, ",")))
 	}
 	return p.error(nil), nil
@@ -799,6 +807,7 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	} else {
 		dst = &model.PermRes{}
 		dst.CreateTime = time.Now().Unix()
+		dst.Pid = r.Pid // 设置上级,用于生成资源key
 		dst.Depth = 0
 	}
 
@@ -833,10 +842,9 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	dst.Pid = r.Pid
 	dst.Path = r.Path
 	dst.Icon = r.Icon
-	dst.Permission = r.Permission
 	dst.SortNum = int(r.SortNum)
-	dst.IsExternal = int16(types.ElseInt(r.IsExternal, 1, 0))
-	dst.IsHidden = int16(types.ElseInt(r.IsHidden, 1, 0))
+	dst.IsMenu = int16(types.ElseInt(r.IsMenu, 1, 0))
+	dst.IsEnabled = int16(types.ElseInt(r.IsEnabled, 1, 0))
 	dst.ComponentName = r.ComponentName
 	dst.Cache = r.Cache
 	// 如果未设置排列序号,或者更改了上级,则需系统自动编号
@@ -868,10 +876,9 @@ func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
 		Key:           v.Key,
 		Path:          v.Path,
 		Icon:          v.Icon,
-		Permission:    v.Permission,
 		SortNum:       int32(v.SortNum),
-		IsExternal:    v.IsExternal == 1,
-		IsHidden:      v.IsHidden == 1,
+		IsMenu:        v.IsMenu == 1,
+		IsEnabled:     v.IsEnabled == 1,
 		CreateTime:    v.CreateTime,
 		ComponentName: v.ComponentName,
 		Cache:         v.Cache,
@@ -888,13 +895,13 @@ func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*p
 }
 
 // 获取PermRes列表
-func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryRbacResRequest) (*proto.QueryPermResResponse, error) {
+func (p *rbacServiceImpl) QueryRbacResourceList(_ context.Context, r *proto.QueryRbacResRequest) (*proto.QueryRbacResourceResponse, error) {
 	var where string = "is_forbidden <> 1"
 	if r.Keyword != "" {
 		where += " AND name LIKE '%" + r.Keyword + "%'"
 	}
 	if r.OnlyMenu {
-		where += " AND res_type IN(0,2)"
+		where += " AND is_menu = 1"
 	}
 	arr := p.dao.SelectPermRes(where + " ORDER BY sort_num ASC")
 	// 获取第一级分类
@@ -920,7 +927,7 @@ func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryRbacResR
 			pid = id
 		}
 	}
-	ret := &proto.QueryPermResResponse{
+	ret := &proto.QueryRbacResourceResponse{
 		List:        roots,
 		InitialList: initial,
 	}
