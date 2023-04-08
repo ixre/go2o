@@ -63,8 +63,8 @@ func TestGenerateResourceKey(t *testing.T) {
 	t.Log("新建一级:", ret)
 	ret = gk(model.PermRes{Id: 2328, Key: "D"})
 	t.Log("新建商户二级:", ret)
-	ret = gk(model.PermRes{Id: 2383, Key: "D01"})
-	t.Log("新建商户二级:", ret)
+	ret = gk(model.PermRes{Id: 2321, Key: "B0101"})
+	t.Log("新建商户三级:", ret)
 }
 
 // 测试保存资源
@@ -74,11 +74,10 @@ func TestSaveRbacResource(t *testing.T) {
 		Value: 2383,
 	})
 	ret, _ := s.SaveRbacResource(context.TODO(), &proto.SaveRbacResRequest{
-		Id:            r.Id,
+		Id:            0,
 		Name:          r.Name,
 		ResType:       r.ResType,
-		Pid:           r.Pid,
-		Key:           r.Key,
+		Pid:           2321,
 		Path:          r.Path,
 		Icon:          r.Icon,
 		SortNum:       r.SortNum,

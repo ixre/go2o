@@ -800,6 +800,7 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	} else {
 		dst = &model.PermRes{}
 		dst.CreateTime = time.Now().Unix()
+		dst.Pid = r.Pid // 设置上级,用于生成资源key
 		dst.Depth = 0
 	}
 
