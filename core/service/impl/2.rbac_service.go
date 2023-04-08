@@ -278,7 +278,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	f = func(root *proto.SUserRes, arr []*model.PermRes) {
 		root.Children = []*proto.SUserRes{}
 		for _, v := range arr {
-			if r.OnlyMenu && v.IsMenu == 1 {
+			if r.OnlyMenu && v.IsMenu == 0 {
 				continue // 只显示菜单
 			}
 			if v.Pid == root.Id {
