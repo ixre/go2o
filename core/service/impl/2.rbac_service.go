@@ -306,7 +306,14 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	wg.Add(1)
 	f(&wg, &root, resList)
 	wg.Wait()
+	// 资源
 	dst.Resources = root.Children
+	// 权限Keys
+	for _, v := range resList {
+		if len(v.Key) > 0 {
+			dst.Keys = append(dst.Keys, v.Key)
+		}
+	}
 	return dst, nil
 }
 

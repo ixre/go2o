@@ -144,6 +144,8 @@ message RbacUserResourceResponse {
     repeated string permissions = 2;
     // 菜单
     repeated SUserRes resources = 3;
+    // 权限Key数组
+    repeated string keys = 4;
 }
 
 
