@@ -298,7 +298,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 				}
 				c.Children = make([]*proto.SUserRes, 0)
 				root.Children = append(root.Children, c)
-				f(c, arr)
+				go f(c, arr)
 			}
 		}
 		wg.Done()
