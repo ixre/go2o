@@ -4448,7 +4448,7 @@ var file_rbac_service_proto_depIdxs = []int32{
 	2,  // 16: RbacService.CheckRBACToken:input_type -> CheckRBACTokenRequest
 	52, // 17: RbacService.GetJwtToken:input_type -> Empty
 	47, // 18: RbacService.GetUserResource:input_type -> GetUserResRequest
-	48, // 19: RbacService.QueryResList:input_type -> QueryRbacResRequest
+	48, // 19: RbacService.QueryRbacResourceList:input_type -> QueryRbacResRequest
 	50, // 20: RbacService.MoveResourceOrdinal:input_type -> MoveResourceOrdinalRequest
 	52, // 21: RbacService.DepartTree:input_type -> Empty
 	9,  // 22: RbacService.SaveDepart:input_type -> SaveDepartRequest
@@ -4476,7 +4476,7 @@ var file_rbac_service_proto_depIdxs = []int32{
 	3,  // 44: RbacService.CheckRBACToken:output_type -> CheckRBACTokenResponse
 	53, // 45: RbacService.GetJwtToken:output_type -> String
 	4,  // 46: RbacService.GetUserResource:output_type -> RbacUserResourceResponse
-	49, // 47: RbacService.QueryResList:output_type -> QueryRbacResourceResponse
+	49, // 47: RbacService.QueryRbacResourceList:output_type -> QueryRbacResourceResponse
 	54, // 48: RbacService.MoveResourceOrdinal:output_type -> Result
 	8,  // 49: RbacService.DepartTree:output_type -> RbacTree
 	10, // 50: RbacService.SaveDepart:output_type -> SaveDepartResponse

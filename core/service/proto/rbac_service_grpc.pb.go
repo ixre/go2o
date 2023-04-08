@@ -23,7 +23,7 @@ const (
 	RbacService_CheckRBACToken_FullMethodName      = "/RbacService/CheckRBACToken"
 	RbacService_GetJwtToken_FullMethodName         = "/RbacService/GetJwtToken"
 	RbacService_GetUserResource_FullMethodName     = "/RbacService/GetUserResource"
-	RbacService_QueryResList_FullMethodName        = "/RbacService/QueryResList"
+	RbacService_QueryRbacResourceList_FullMethodName        = "/RbacService/QueryRbacResourceList"
 	RbacService_MoveResourceOrdinal_FullMethodName = "/RbacService/MoveResourceOrdinal"
 	RbacService_DepartTree_FullMethodName          = "/RbacService/DepartTree"
 	RbacService_SaveDepart_FullMethodName          = "/RbacService/SaveDepart"
@@ -62,7 +62,7 @@ type RbacServiceClient interface {
 	// 获取用户的信息
 	GetUserResource(ctx context.Context, in *GetUserResRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error)
 	// 获取资源树形数据
-	QueryResList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryRbacResourceResponse, error)
+	QueryRbacResourceList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryRbacResourceResponse, error)
 	// 移动资源顺序
 	MoveResourceOrdinal(ctx context.Context, in *MoveResourceOrdinalRequest, opts ...grpc.CallOption) (*Result, error)
 	// 部门树形数据
@@ -155,9 +155,9 @@ func (c *rbacServiceClient) GetUserResource(ctx context.Context, in *GetUserResR
 	return out, nil
 }
 
-func (c *rbacServiceClient) QueryResList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryRbacResourceResponse, error) {
+func (c *rbacServiceClient) QueryRbacResourceList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryRbacResourceResponse, error) {
 	out := new(QueryRbacResourceResponse)
-	err := c.cc.Invoke(ctx, RbacService_QueryResList_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, RbacService_QueryRbacResourceList_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -384,7 +384,7 @@ type RbacServiceServer interface {
 	// 获取用户的信息
 	GetUserResource(context.Context, *GetUserResRequest) (*RbacUserResourceResponse, error)
 	// 获取资源树形数据
-	QueryResList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error)
+	QueryRbacResourceList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error)
 	// 移动资源顺序
 	MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*Result, error)
 	// 部门树形数据
@@ -450,8 +450,8 @@ func (UnimplementedRbacServiceServer) GetJwtToken(context.Context, *Empty) (*Str
 func (UnimplementedRbacServiceServer) GetUserResource(context.Context, *GetUserResRequest) (*RbacUserResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserResource not implemented")
 }
-func (UnimplementedRbacServiceServer) QueryResList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryResList not implemented")
+func (UnimplementedRbacServiceServer) QueryRbacResourceList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryRbacResourceList not implemented")
 }
 func (UnimplementedRbacServiceServer) MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MoveResourceOrdinal not implemented")
@@ -607,20 +607,20 @@ func _RbacService_GetUserResource_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_QueryResList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RbacService_QueryRbacResourceList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryRbacResRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).QueryResList(ctx, in)
+		return srv.(RbacServiceServer).QueryRbacResourceList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_QueryResList_FullMethodName,
+		FullMethod: RbacService_QueryRbacResourceList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).QueryResList(ctx, req.(*QueryRbacResRequest))
+		return srv.(RbacServiceServer).QueryRbacResourceList(ctx, req.(*QueryRbacResRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1063,8 +1063,8 @@ var RbacService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RbacService_GetUserResource_Handler,
 		},
 		{
-			MethodName: "QueryResList",
-			Handler:    _RbacService_QueryResList_Handler,
+			MethodName: "QueryRbacResourceList",
+			Handler:    _RbacService_QueryRbacResourceList_Handler,
 		},
 		{
 			MethodName: "MoveResourceOrdinal",

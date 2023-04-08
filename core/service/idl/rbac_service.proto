@@ -16,7 +16,7 @@ service RbacService {
     // 获取用户的信息
     rpc GetUserResource(GetUserResRequest)returns(RbacUserResourceResponse) {}
     // 获取资源树形数据
-    rpc QueryResList (QueryRbacResRequest) returns (QueryRbacResourceResponse) {
+    rpc QueryRbacResourceList (QueryRbacResRequest) returns (QueryRbacResourceResponse) {
     }
     // 移动资源顺序
     rpc MoveResourceOrdinal(MoveResourceOrdinalRequest) returns (Result) {}

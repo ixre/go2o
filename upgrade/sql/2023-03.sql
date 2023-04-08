@@ -270,3 +270,5 @@ ALTER TABLE IF EXISTS public.perm_res
 
 COMMENT ON COLUMN public.perm_res.is_enabled
     IS '是否启用';
+    
+delete FROM perm_res where name like '%(接口)%';

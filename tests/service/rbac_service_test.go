@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
 
 	"github.com/ixre/go2o/core/dao/model"
@@ -11,19 +10,18 @@ import (
 	"github.com/ixre/gof/types/typeconv"
 )
 
+// 测试查询树形数据
 func TestInitialTreeNode(t *testing.T) {
-	list, err := impl.RbacService.QueryResList(context.TODO(), &proto.QueryRbacResRequest{
+	list, err := impl.RbacService.QueryRbacResourceList(context.TODO(), &proto.QueryRbacResRequest{
 		Keyword:   "",
-		OnlyMenu:  true,
+		OnlyMenu:  false,
 		ParentId:  0,
 		InitialId: 2654,
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(len(list.List))
-	bytes, _ := json.Marshal(list.List)
-	t.Log(string(bytes))
+	t.Log(typeconv.MustJson(list))
 }
 
 func TestCheckRBACToken(t *testing.T) {
@@ -69,6 +67,7 @@ func TestGenerateResourceKey(t *testing.T) {
 	t.Log("新建商户二级:", ret)
 }
 
+// 测试保存资源
 func TestSaveRbacResource(t *testing.T) {
 	s := impl.RbacService
 	r, _ := s.GetPermRes(context.TODO(), &proto.PermResId{
@@ -82,13 +81,22 @@ func TestSaveRbacResource(t *testing.T) {
 		Key:           r.Key,
 		Path:          r.Path,
 		Icon:          r.Icon,
-		Permission:    r.Permission,
 		SortNum:       r.SortNum,
-		IsExternal:    r.IsExternal,
-		IsHidden:      r.IsHidden,
+		IsMenu:        r.IsMenu,
+		IsEnabled:     r.IsEnabled,
 		CreateTime:    r.CreateTime,
 		ComponentName: r.ComponentName,
 		Cache:         r.Cache,
+	})
+	t.Logf(typeconv.MustJson(ret))
+}
+
+// 测试获取用户资源
+func TestGetUserResources(t *testing.T) {
+	s := impl.RbacService
+	ret, _ := s.GetUserResource(context.TODO(), &proto.GetUserResRequest{
+		UserId:   0,
+		OnlyMenu: true,
 	})
 	t.Logf(typeconv.MustJson(ret))
 }

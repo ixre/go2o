@@ -260,7 +260,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	if r.UserId <= 0 { // 管理员
 		dst.Roles = []int64{}
 		dst.Permissions = []string{"master", "admin"}
-		resList = p.dao.SelectPermRes("is_forbidden <> 1 AND is_hidden <> 1")
+		resList = p.dao.SelectPermRes("is_forbidden <> 1 AND is_enabled = 1")
 	} else {
 		dst.Roles, dst.Permissions = p.getUserRolesPerm(r.UserId)
 		usr := p.dao.GetUser(r.UserId)
@@ -881,7 +881,7 @@ func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*p
 }
 
 // 获取PermRes列表
-func (p *rbacServiceImpl) QueryResList(_ context.Context, r *proto.QueryRbacResRequest) (*proto.QueryRbacResourceResponse, error) {
+func (p *rbacServiceImpl) QueryRbacResourceList(_ context.Context, r *proto.QueryRbacResRequest) (*proto.QueryRbacResourceResponse, error) {
 	var where string = "is_forbidden <> 1"
 	if r.Keyword != "" {
 		where += " AND name LIKE '%" + r.Keyword + "%'"
