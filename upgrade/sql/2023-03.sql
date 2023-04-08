@@ -272,3 +272,7 @@ COMMENT ON COLUMN public.perm_res.is_enabled
     IS '是否启用';
     
 delete FROM perm_res where name like '%(接口)%';
+
+update  perm_res set is_enabled = 1-is_enabled;
+
+update  perm_res set res_type=1,is_menu = 1  where path <>'';

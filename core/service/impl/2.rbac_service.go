@@ -19,6 +19,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -274,8 +275,10 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 		resList = p.dao.GetRoleResources(roleList)
 	}
 	root := proto.SUserRes{}
+	wg := sync.WaitGroup{}
 	var f func(root *proto.SUserRes, arr []*model.PermRes)
 	f = func(root *proto.SUserRes, arr []*model.PermRes) {
+		wg.Add(1)
 		root.Children = []*proto.SUserRes{}
 		for _, v := range arr {
 			if r.OnlyMenu && v.IsMenu == 0 {
@@ -298,8 +301,10 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 				f(c, arr)
 			}
 		}
+		wg.Done()
 	}
 	f(&root, resList)
+	wg.Wait()
 	dst.Resources = root.Children
 	return dst, nil
 }
