@@ -255,3 +255,24 @@ ALTER TABLE IF EXISTS public.perm_user
     
 ALTER TABLE IF EXISTS public.perm_user
     RENAME pwd TO password;
+
+/** 2023-04-08 */
+ALTER TABLE IF EXISTS public.perm_res DROP COLUMN IF EXISTS permission;
+
+ALTER TABLE IF EXISTS public.perm_res
+    RENAME is_external TO is_menu;
+
+COMMENT ON COLUMN public.perm_res.is_menu
+    IS '是否显示到菜单中';
+
+ALTER TABLE IF EXISTS public.perm_res
+    RENAME is_hidden TO is_enabled;
+
+COMMENT ON COLUMN public.perm_res.is_enabled
+    IS '是否启用';
+    
+delete FROM perm_res where name like '%(接口)%';
+
+update  perm_res set is_enabled = 1-is_enabled;
+
+update  perm_res set res_type=1,is_menu = 1  where path <>'';
