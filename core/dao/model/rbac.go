@@ -108,14 +108,14 @@ type PermRoleDept struct {
 type PermRole struct {
 	// Id
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
+	// 角色代码
+	Code string `db:"code"`
 	// 名称
 	Name string `db:"name"`
 	// 角色级别
 	Level int `db:"level"`
 	// 数据权限
 	DataScope string `db:"data_scope"`
-	// 功能权限
-	Permission string `db:"permission"`
 	// 备注
 	Remark string `db:"remark"`
 	// 创建日期

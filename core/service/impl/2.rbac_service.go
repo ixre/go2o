@@ -75,8 +75,8 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 			}, nil
 		}
 		dst := &proto.RbacLoginResponse{
-			UserId:      0,
-			Permissions: []string{"master", "admin"},
+			UserId: 0,
+			Roles:  []string{"admin"},
 		}
 		return p.withAccessToken("master", dst, expires)
 	}
@@ -104,7 +104,10 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 	dst := &proto.RbacLoginResponse{
 		UserId: usr.Id,
 	}
-	dst.Roles, dst.Permissions = p.getUserRolesPerm(usr.Id)
+	_, roles := p.getUserRoles(usr.Id)
+	for _, v := range roles {
+		dst.Roles = append(dst.Roles, v.Code)
+	}
 	return p.withAccessToken(usr.Username, dst, expires)
 }
 
@@ -112,7 +115,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 func (p *rbacServiceImpl) withAccessToken(userName string,
 	dst *proto.RbacLoginResponse, expires int) (*proto.RbacLoginResponse, error) {
 	accessToken, err := p.createAccessToken(dst.UserId, userName,
-		strings.Join(dst.Permissions, ","), expires)
+		strings.Join(dst.Roles, ","), expires)
 	dst.AccessToken = accessToken
 	if err != nil {
 		dst.ErrCode = 2
@@ -208,7 +211,7 @@ func (p *rbacServiceImpl) GetJwtToken(_ context.Context, empty *proto.Empty) (*p
 }
 
 // 获取用户的角色和权限
-func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
+func (p *rbacServiceImpl) getUserRoles(userId int64) ([]int64, []*model.PermRole) {
 	userRoles := p.dao.GetUserRoles(userId)
 	// 绑定角色ID
 	roles := make([]int64, len(userRoles))
@@ -220,11 +223,7 @@ func (p *rbacServiceImpl) getUserRolesPerm(userId int64) ([]int64, []string) {
 	// 获取角色的权限
 	rolesList := p.dao.SelectPermRole(
 		fmt.Sprintf("id IN (%s)", util.JoinIntArray(roleList, ",")))
-	permissions := make([]string, len(roles))
-	for i, v := range rolesList {
-		permissions[i] = v.Permission
-	}
-	return roles, permissions
+	return roles, rolesList
 }
 
 // 移动资源顺序
@@ -259,18 +258,18 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	dst := &proto.RbacUserResourceResponse{}
 	var resList []*model.PermRes
 	if r.UserId <= 0 { // 管理员
-		dst.Roles = []int64{}
-		dst.Permissions = []string{"master", "admin"}
+		dst.Roles = []string{"admin"}
 		resList = p.dao.SelectPermRes("is_forbidden <> 1 AND is_enabled = 1")
 	} else {
-		dst.Roles, dst.Permissions = p.getUserRolesPerm(r.UserId)
 		usr := p.dao.GetUser(r.UserId)
 		if usr == nil {
 			return nil, fmt.Errorf("no such user %v", r.UserId)
 		}
+		_, userRoles := p.getUserRoles(r.UserId)
 		roleList := make([]int, len(dst.Roles))
-		for i, v := range dst.Roles {
-			roleList[i] = int(v)
+		for i, v := range userRoles {
+			roleList[i] = int(v.Id)
+			dst.Roles = append(dst.Roles, v.Code)
 		}
 		resList = p.dao.GetRoleResources(roleList)
 	}
@@ -563,7 +562,7 @@ func (p *rbacServiceImpl) GetUser(_ context.Context, id *proto.RbacUserId) (*pro
 		return nil, fmt.Errorf("no such user %v", id.Value)
 	}
 	dst := p.parsePermUser(v)
-	dst.Roles, dst.Permissions = p.getUserRolesPerm(v.Id)
+	dst.Roles, _ = p.getUserRoles(v.Id)
 	return dst, nil
 }
 
@@ -632,12 +631,11 @@ func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SaveRbacRoleR
 	} else {
 		dst = &model.PermRole{}
 		dst.CreateTime = time.Now().Unix()
+		dst.Code = r.Code
 	}
-
 	dst.Name = r.Name
 	dst.Level = int(r.Level)
 	dst.DataScope = r.DataScope
-	dst.Permission = r.Permission
 	dst.Remark = r.Remark
 
 	id, err := p.dao.SavePermRole(dst)
@@ -681,10 +679,10 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SRbacRole {
 	return &proto.SRbacRole{
 		Id:         v.Id,
+		Code:       v.Code,
 		Name:       v.Name,
 		Level:      int32(v.Level),
 		DataScope:  v.DataScope,
-		Permission: v.Permission,
 		Remark:     v.Remark,
 		CreateTime: v.CreateTime,
 	}

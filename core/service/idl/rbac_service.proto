@@ -107,10 +107,8 @@ message RbacLoginResponse {
     int64 userId =  3;
     // 访问令牌
     string accessToken = 4;
-    // 角色标志
-    repeated string permissions = 5;
     // 角色编号
-    repeated int64 roles = 6;
+    repeated string roles = 5;
 }
 
 // 检查令牌请求
@@ -139,9 +137,7 @@ message CheckRBACTokenResponse{
 // 用户资源响应,如果无用户则默认为超级管理员
 message RbacUserResourceResponse {
     // 角色编号
-    repeated int64 roles = 1;
-    // 权限标志
-    repeated string permissions = 2;
+    repeated string roles = 1;
     // 菜单
     repeated SUserRes resources = 3;
     // 权限Key数组
@@ -389,8 +385,6 @@ message SRbacUser {
     int64 createTime = 14;
     // 用户角色
     repeated int64 roles = 15;
-    // 权限
-    repeated string permissions = 16;
 }
 
 message QueryPermUserRequest {
@@ -444,18 +438,18 @@ message PagingRbacUserResponse {
     repeated PagingUser value =  2;
 }
 
-
+// 保存角色请求
 message SaveRbacRoleRequest {
     /** ID */
     int64 id = 1;
+    /** 角色代码 */
+    string code = 2;
     /** 名称 */
-    string name = 2;
+    string name = 3;
     /** 角色级别 */
-    int32 level = 3;
+    int32 level = 4;
     /** 数据权限 */
-    string dataScope = 4;
-    /** 功能权限 */
-    string permission = 5;
+    string dataScope = 5;
     /** 备注 */
     string remark = 6;
     /** 创建日期 */
@@ -480,14 +474,14 @@ message RbacRoleId {
 message SRbacRole {
     /** ID */
     int64 id = 1;
+    /** 角色代码 */
+    string code = 2;
     /** 名称 */
-    string name = 2;
+    string name = 3;
     /** 角色级别 */
-    int32 level = 3;
+    int32 level = 4;
     /** 数据权限 */
-    string dataScope = 4;
-    /** 功能权限 */
-    string permission = 5;
+    string dataScope = 5;
     /** 备注 */
     string remark = 6;
     /** 创建日期 */
