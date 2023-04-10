@@ -666,16 +666,16 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 		old[i] = int(v.ResId)
 		mp[int(v.ResId)] = v
 	}
-	_, deleted := util.IntArrayDiff(old, arr, func(v int, add bool) {
+	_, deleted := util.IntArrayDiff(old, arr, func(resId int, add bool) {
 		var id int64
 		if !add {
-			id = mp[v].Id
+			id = mp[resId].Id
 		}
 		p.dao.SavePermRoleRes(&model.PermRoleRes{
 			Id:       id,
-			ResId:    int64(v),
+			ResId:    int64(resId),
 			RoleId:   r.RoleId,
-			PermFlag: int(permMap[int(v)]),
+			PermFlag: int(permMap[int(resId)]),
 		})
 	})
 	if len(deleted) > 0 {
