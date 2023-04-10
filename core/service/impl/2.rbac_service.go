@@ -81,7 +81,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		return p.withAccessToken("master", dst, expires)
 	}
 	// 普通系统用户登录
-	usr := p.dao.GetUserBy("usr=$1", r.Username)
+	usr := p.dao.GetUserBy("username = $1", r.Username)
 	if usr == nil {
 		return &proto.RbacLoginResponse{
 			ErrCode: 2,
@@ -769,7 +769,7 @@ func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePag
 			Name:       typeconv.Stringify(v["name"]),
 			Level:      int32(typeconv.MustInt(v["level"])),
 			DataScope:  typeconv.Stringify(v["data_scope"]),
-			Code: typeconv.Stringify(v["code"]),
+			Code:       typeconv.Stringify(v["code"]),
 			Remark:     typeconv.Stringify(v["remark"]),
 			CreateTime: int64(typeconv.MustInt(v["create_time"])),
 		}
