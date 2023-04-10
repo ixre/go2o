@@ -130,6 +130,8 @@ type PermRoleRes struct {
 	ResId int64 `db:"res_id"`
 	// 角色ID
 	RoleId int64 `db:"role_id"`
+	// 权限位值, 1:增加  2:删除 4: 更新
+	PermFlag int `db:"perm_flag"`
 }
 
 // 系统用户

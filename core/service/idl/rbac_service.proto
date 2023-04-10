@@ -458,8 +458,10 @@ message SaveRbacRoleRequest {
 
 // 更新角色资源请求
 message UpdateRoleResRequest {
+    // 角色编号
     int64 roleId = 1;
-    repeated int64 resources = 2;
+    // 资源
+    repeated SRolePermPair resources = 2;
 }
 message SaveRbacRoleResponse {
     int32 errCode = 1;
@@ -469,6 +471,14 @@ message SaveRbacRoleResponse {
 
 message RbacRoleId {
     int64 value =  1;
+}
+
+// 角色权限
+message SRolePermPair{
+    // 资源编号
+    sint64 resId = 1;
+    // 权限值
+    sint32 permFlag = 2;
 }
 
 message SRbacRole {
@@ -486,8 +496,8 @@ message SRbacRole {
     string remark = 6;
     /** 创建日期 */
     int64 createTime = 7;
-    /** 关联的资源ID列表 */
-    repeated int64 relatedResIdList = 8;
+    /** 关联的资源列表 */
+    repeated SRolePermPair resourceList = 8;
 }
 
 message QueryRbacRoleRequest {

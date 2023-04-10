@@ -281,3 +281,9 @@ ALTER TABLE IF EXISTS public.perm_role
  RENAME permission TO code;
 COMMENT ON COLUMN public.perm_role.code
     IS '角色代码';
+
+ALTER TABLE IF EXISTS public.perm_role_res
+    ADD COLUMN perm_flag integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.perm_role_res.perm_flag
+    IS '权限值, 1:增加  2:删除 4: 更新';

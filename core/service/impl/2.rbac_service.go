@@ -651,22 +651,33 @@ func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SaveRbacRoleR
 
 // 更新角色资源
 func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateRoleResRequest) (*proto.Result, error) {
+
+	arr := make([]int, 0)
+	arrMap := make(map[int]int32, 0)
+	for _, v := range r.Resources {
+		arr = append(arr, int(v.ResId))
+		arrMap[int(v.ResId)] = v.PermFlag
+	}
+	// 旧数组
 	dataList := p.dao.SelectPermRoleRes("role_id=$1", r.RoleId)
 	old := make([]int, len(dataList))
-	arr := typeconv.Int64Array(r.Resources)
+	//　更新数组
 	mp := make(map[int]*model.PermRoleRes, 0)
-	// 旧数组
 	for i, v := range dataList {
 		old[i] = int(v.ResId)
 		mp[int(v.ResId)] = v
 	}
 	_, deleted := util.IntArrayDiff(old, arr, func(v int, add bool) {
-		if add {
-			p.dao.SavePermRoleRes(&model.PermRoleRes{
-				ResId:  int64(v),
-				RoleId: r.RoleId,
-			})
+		var id int64
+		if !add {
+			id = mp[v].Id
 		}
+		p.dao.SavePermRoleRes(&model.PermRoleRes{
+			Id:       id,
+			ResId:    int64(v),
+			RoleId:   r.RoleId,
+			PermFlag: int(arrMap[int(r.RoleId)]),
+		})
 	})
 	if len(deleted) > 0 {
 		p.dao.BatchDeletePermRoleRes(
@@ -696,7 +707,14 @@ func (p *rbacServiceImpl) GetRole(_ context.Context, id *proto.RbacRoleId) (*pro
 	}
 	dst := p.parsePermRole(v)
 	// 绑定资源ID
-	dst.RelatedResIdList = p.dao.GetRoleResList(v.Id)
+	res := p.dao.GetRoleResList(v.Id)
+	dst.ResourceList = make([]*proto.SRolePermPair, 0)
+	for _, v := range res {
+		dst.ResourceList = append(dst.ResourceList, &proto.SRolePermPair{
+			ResId:    v.ResId,
+			PermFlag: int32(v.PermFlag),
+		})
+	}
 	return dst, nil
 }
 
