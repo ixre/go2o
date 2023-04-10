@@ -108,14 +108,14 @@ type PermRoleDept struct {
 type PermRole struct {
 	// Id
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
+	// 角色代码
+	Code string `db:"code"`
 	// 名称
 	Name string `db:"name"`
 	// 角色级别
 	Level int `db:"level"`
 	// 数据权限
 	DataScope string `db:"data_scope"`
-	// 功能权限
-	Permission string `db:"permission"`
 	// 备注
 	Remark string `db:"remark"`
 	// 创建日期
@@ -127,9 +127,11 @@ type PermRoleRes struct {
 	// 编号
 	Id int64 `db:"id" pk:"yes" auto:"yes"`
 	// 菜单ID
-	ResId int64 `db:"res_id"`
+	ResId int `db:"res_id"`
 	// 角色ID
-	RoleId int64 `db:"role_id"`
+	RoleId int `db:"role_id"`
+	// 权限位值, 1:增加  2:删除 4: 更新
+	PermFlag int `db:"perm_flag"`
 }
 
 // 系统用户

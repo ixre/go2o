@@ -276,3 +276,14 @@ delete FROM perm_res where name like '%(接口)%';
 update  perm_res set is_enabled = 1-is_enabled;
 
 update  perm_res set res_type=1,is_menu = 1  where path <>'';
+
+ALTER TABLE IF EXISTS public.perm_role
+ RENAME permission TO code;
+COMMENT ON COLUMN public.perm_role.code
+    IS '角色代码';
+
+ALTER TABLE IF EXISTS public.perm_role_res
+    ADD COLUMN perm_flag integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.perm_role_res.perm_flag
+    IS '权限值, 1:增加  2:删除 4: 更新';

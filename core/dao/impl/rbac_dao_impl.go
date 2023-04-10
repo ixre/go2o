@@ -39,14 +39,9 @@ func NewRbacDao(o orm.Orm) dao.IRbacDao {
 	}
 }
 
-func (p *rbacDaoImpl) GetRoleResList(roleId int64) []int64 {
-	// 绑定资源ID
-	roles := p.SelectPermRoleRes("role_id=$1", roleId)
-	arr := make([]int64, len(roles))
-	for i, v := range roles {
-		arr[i] = v.ResId
-	}
-	return arr
+func (p *rbacDaoImpl) GetRoleResList(roles []int) []*model.PermRoleRes {
+	where := fmt.Sprintf("role_id IN (%s)", util.JoinIntArray(roles, ","))
+	return p.SelectPermRoleRes(where)
 }
 
 // Get 部门

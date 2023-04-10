@@ -59,7 +59,7 @@ type RbacServiceClient interface {
 	CheckRBACToken(ctx context.Context, in *CheckRBACTokenRequest, opts ...grpc.CallOption) (*CheckRBACTokenResponse, error)
 	// 获取JWT密钥
 	GetJwtToken(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*String, error)
-	// 获取用户的信息
+	// 获取用户资源
 	GetUserResource(ctx context.Context, in *GetUserResRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error)
 	// 获取资源树形数据
 	QueryRbacResourceList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryRbacResourceResponse, error)
@@ -381,7 +381,7 @@ type RbacServiceServer interface {
 	CheckRBACToken(context.Context, *CheckRBACTokenRequest) (*CheckRBACTokenResponse, error)
 	// 获取JWT密钥
 	GetJwtToken(context.Context, *Empty) (*String, error)
-	// 获取用户的信息
+	// 获取用户资源
 	GetUserResource(context.Context, *GetUserResRequest) (*RbacUserResourceResponse, error)
 	// 获取资源树形数据
 	QueryRbacResourceList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error)
