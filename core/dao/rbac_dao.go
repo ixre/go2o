@@ -143,7 +143,7 @@ type IRbacDao interface {
 	PagingQueryPermRoleRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// 获取角色关联的资源列表
-	GetRoleResList(roleId int64) []int64
+	GetRoleResList(roleId int64) []*model.PermRoleRes
 	// 获取用户的角色
 	GetUserRoles(id int64) []*model.PermUserRole
 	// 获取角色关联系
