@@ -13,7 +13,7 @@ service RbacService {
     rpc CheckRBACToken(CheckRBACTokenRequest) returns(CheckRBACTokenResponse){}
     // 获取JWT密钥
     rpc GetJwtToken(Empty)returns(String) {}
-    // 获取用户的信息
+    // 获取用户资源
     rpc GetUserResource(GetUserResRequest)returns(RbacUserResourceResponse) {}
     // 获取资源树形数据
     rpc QueryRbacResourceList (QueryRbacResRequest) returns (QueryRbacResourceResponse) {

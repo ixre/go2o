@@ -39,8 +39,9 @@ func NewRbacDao(o orm.Orm) dao.IRbacDao {
 	}
 }
 
-func (p *rbacDaoImpl) GetRoleResList(roleId int64) []*model.PermRoleRes {
-	return p.SelectPermRoleRes("role_id=$1", roleId)
+func (p *rbacDaoImpl) GetRoleResList(roles []int) []*model.PermRoleRes {
+	where := fmt.Sprintf("role_id IN (%s)", util.JoinIntArray(roles, ","))
+	return p.SelectPermRoleRes(where)
 }
 
 // Get 部门

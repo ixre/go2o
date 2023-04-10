@@ -257,6 +257,7 @@ func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveRe
 func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserResRequest) (*proto.RbacUserResourceResponse, error) {
 	dst := &proto.RbacUserResourceResponse{}
 	var resList []*model.PermRes
+	rolePermMap := make(map[int]int, 0)
 	if r.UserId <= 0 { // 管理员
 		dst.Roles = []string{"admin"}
 		resList = p.dao.SelectPermRes("is_forbidden <> 1 AND is_enabled = 1")
@@ -272,6 +273,10 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 			dst.Roles = append(dst.Roles, v.Code)
 		}
 		resList = p.dao.GetRoleResources(roleList)
+		roleResList := p.dao.GetRoleResList(roleList)
+		for _, v := range roleResList {
+			rolePermMap[int(v.ResId)] = v.PermFlag
+		}
 	}
 	root := proto.SUserRes{}
 	wg := sync.WaitGroup{}
@@ -307,9 +312,14 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	wg.Wait()
 	// 资源
 	dst.Resources = root.Children
-	// 权限Keys
+	// 权限Keys,格式如:["A0101","A010102+7"]
 	for _, v := range resList {
 		if len(v.Key) > 0 {
+			// 添加权限flag到key中
+			flag := rolePermMap[int(v.Id)]
+			if flag > 0 {
+				v.Key = fmt.Sprintf("%s+%d", v.Key, flag)
+			}
 			dst.Keys = append(dst.Keys, v.Key)
 		}
 	}
@@ -651,6 +661,13 @@ func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SaveRbacRoleR
 
 // 更新角色资源
 func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateRoleResRequest) (*proto.Result, error) {
+	role := p.dao.GetRole(r.RoleId)
+	if role == nil {
+		return p.error(errors.New("角色不存在")), nil
+	}
+	if role.Code == "admin" {
+		return p.error(errors.New("管理员已拥有全部权限")), nil
+	}
 	arr := make([]int, 0)
 	permMap := make(map[int]int32, 0)
 	for _, v := range r.Resources {
@@ -658,7 +675,7 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 		permMap[int(v.ResId)] = v.PermFlag
 	}
 	// 旧数组
-	dataList := p.dao.SelectPermRoleRes("role_id=$1", r.RoleId)
+	dataList := p.dao.GetRoleResList([]int{int(r.RoleId)})
 	old := make([]int, len(dataList))
 	//　更新数组
 	mp := make(map[int]*model.PermRoleRes, 0)
@@ -673,8 +690,8 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 		}
 		p.dao.SavePermRoleRes(&model.PermRoleRes{
 			Id:       id,
-			ResId:    int64(resId),
-			RoleId:   r.RoleId,
+			ResId:    resId,
+			RoleId:   int(r.RoleId),
 			PermFlag: int(permMap[int(resId)]),
 		})
 	})
@@ -706,11 +723,11 @@ func (p *rbacServiceImpl) GetRole(_ context.Context, id *proto.RbacRoleId) (*pro
 	}
 	dst := p.parsePermRole(v)
 	// 绑定资源ID
-	res := p.dao.GetRoleResList(v.Id)
+	res := p.dao.GetRoleResList([]int{int(v.Id)})
 	dst.ResourceList = make([]*proto.SRolePermPair, 0)
 	for _, v := range res {
 		dst.ResourceList = append(dst.ResourceList, &proto.SRolePermPair{
-			ResId:    v.ResId,
+			ResId:    int64(v.ResId),
 			PermFlag: int32(v.PermFlag),
 		})
 	}
@@ -994,7 +1011,7 @@ func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
 	})
 	if len(deleted) > 0 {
 		p.dao.BatchDeleteUserRole(
-			fmt.Sprintf("user_id = %d AND role_id IN (%_s)",
+			fmt.Sprintf("user_id = %d AND role_id IN (%s)",
 				userId, util.JoinIntArray(deleted, ",")))
 	}
 	return nil
@@ -1004,7 +1021,7 @@ func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
 func (p *rbacServiceImpl) getResDepth(pid int64) int {
 	depth := 0
 	for pid > 0 {
-		v := p.dao.GetPermResBy("id=$1", pid)
+		v := p.dao.GetPermResBy("id = $1", pid)
 		if v != nil {
 			pid = v.Pid
 			depth++
