@@ -657,7 +657,6 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 		arr = append(arr, int(v.ResId))
 		permMap[int(v.ResId)] = v.PermFlag
 	}
-	log.Println("---permMap: ", permMap)
 	// 旧数组
 	dataList := p.dao.SelectPermRoleRes("role_id=$1", r.RoleId)
 	old := make([]int, len(dataList))
@@ -676,7 +675,7 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 			Id:       id,
 			ResId:    int64(v),
 			RoleId:   r.RoleId,
-			PermFlag: int(permMap[int(r.RoleId)]),
+			PermFlag: int(permMap[int(v)]),
 		})
 	})
 	if len(deleted) > 0 {
