@@ -268,7 +268,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 			return nil, fmt.Errorf("no such user %v", r.UserId)
 		}
 		_, userRoles := p.getUserRoles(r.UserId)
-		roleList := make([]int, len(dst.Roles))
+		roleList := make([]int, len(userRoles))
 		for i, v := range userRoles {
 			roleList[i] = int(v.Id)
 			dst.Roles = append(dst.Roles, v.Code)
