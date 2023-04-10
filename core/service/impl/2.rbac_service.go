@@ -254,6 +254,7 @@ func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveRe
 	return p.success(nil), nil
 }
 
+// GetUserResource 获取用户的资源
 func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserResRequest) (*proto.RbacUserResourceResponse, error) {
 	dst := &proto.RbacUserResourceResponse{}
 	var resList []*model.PermRes
@@ -312,15 +313,17 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	wg.Wait()
 	// 资源
 	dst.Resources = root.Children
-	// 权限Keys,格式如:["A0101","A010102+7"]
-	for _, v := range resList {
-		if len(v.Key) > 0 {
-			// 添加权限flag到key中
-			flag := rolePermMap[int(v.Id)]
-			if flag > 0 {
-				v.Key = fmt.Sprintf("%s+%d", v.Key, flag)
+	// 普通用户返回权限Keys,格式如:["A0101","A010102+7"]
+	if r.UserId > 0 {
+		for _, v := range resList {
+			if len(v.Key) > 0 {
+				// 添加权限flag到key中
+				flag := rolePermMap[int(v.Id)]
+				if flag > 0 {
+					v.Key = fmt.Sprintf("%s+%d", v.Key, flag)
+				}
+				dst.Keys = append(dst.Keys, v.Key)
 			}
-			dst.Keys = append(dst.Keys, v.Key)
 		}
 	}
 	return dst, nil
@@ -766,7 +769,7 @@ func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePag
 			Name:       typeconv.Stringify(v["name"]),
 			Level:      int32(typeconv.MustInt(v["level"])),
 			DataScope:  typeconv.Stringify(v["data_scope"]),
-			Permission: typeconv.Stringify(v["permission"]),
+			Code: typeconv.Stringify(v["code"]),
 			Remark:     typeconv.Stringify(v["remark"]),
 			CreateTime: int64(typeconv.MustInt(v["create_time"])),
 		}
