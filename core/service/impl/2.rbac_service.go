@@ -279,29 +279,26 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 			rolePermMap[int(v.ResId)] = v.PermFlag
 		}
 	}
-	root := proto.SUserRes{}
+	// 获取菜单
+	root := proto.SUserMenuRes{}
 	wg := sync.WaitGroup{}
-	var f func(*sync.WaitGroup, *proto.SUserRes, []*model.PermRes)
-	f = func(w *sync.WaitGroup, root *proto.SUserRes, arr []*model.PermRes) {
-		root.Children = []*proto.SUserRes{}
+	var f func(*sync.WaitGroup, *proto.SUserMenuRes, []*model.PermRes)
+	f = func(w *sync.WaitGroup, root *proto.SUserMenuRes, arr []*model.PermRes) {
+		root.Children = []*proto.SUserMenuRes{}
 		for _, v := range arr {
-			if r.OnlyMenu && v.IsMenu == 0 {
-				continue // 只显示菜单
+			if v.IsMenu == 0 {
+				continue
 			}
 			if v.Pid == root.Id {
-				c := &proto.SUserRes{
+				c := &proto.SUserMenuRes{
 					Id:            v.Id,
 					Key:           v.Key,
 					Name:          v.Name,
-					ResType:       int32(v.ResType),
 					Path:          v.Path,
 					Icon:          v.Icon,
-					SortNum:       int32(v.SortNum),
-					IsMenu:        v.IsMenu == 1,
-					IsEnabled:     v.IsEnabled == 1,
 					ComponentName: v.ComponentName,
 				}
-				c.Children = make([]*proto.SUserRes, 0)
+				c.Children = make([]*proto.SUserMenuRes, 0)
 				root.Children = append(root.Children, c)
 				w.Add(1)
 				go f(w, c, arr)
@@ -312,8 +309,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	wg.Add(1)
 	f(&wg, &root, resList)
 	wg.Wait()
-	// 资源
-	dst.Resources = root.Children
+	dst.Menu = root.Children
 	// 普通用户返回权限Keys,格式如:["A0101","A010102+7"]
 	if r.UserId > 0 {
 		for _, v := range resList {
