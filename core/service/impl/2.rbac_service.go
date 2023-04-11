@@ -254,6 +254,28 @@ func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveRe
 	return p.success(nil), nil
 }
 
+// 　如果上级菜单未加入,则加入上级菜单
+func (p *rbacServiceImpl) appendParentResource(arr *[]*model.PermRes) {
+	mp := make(map[int]*model.PermRes)
+	for _, v := range *arr {
+		mp[int(v.Id)] = v
+	}
+	for _, v := range *arr {
+		if _, ok := mp[v.Pid]; !ok && v.Pid > 0 {
+			pid := v.Pid
+			for pid > 0 {
+				d := p.dao.GetPermRes(pid)
+				if d == nil {
+					break
+				}
+				mp[pid] = d
+				pid = d.Pid
+				*arr = append(*arr, d)
+			}
+		}
+	}
+}
+
 // GetUserResource 获取用户的资源,在前端处理排序问题
 func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserResRequest) (*proto.RbacUserResourceResponse, error) {
 	dst := &proto.RbacUserResourceResponse{}
@@ -274,6 +296,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 			dst.Roles = append(dst.Roles, v.Code)
 		}
 		resList = p.dao.GetRoleResources(roleList)
+		p.appendParentResource(&resList) //　添加上级资源
 		roleResList := p.dao.GetRoleResList(roleList)
 		for _, v := range roleResList {
 			rolePermMap[int(v.ResId)] = v.PermFlag
@@ -289,9 +312,9 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 			if v.IsMenu == 0 {
 				continue
 			}
-			if v.Pid == root.Id {
+			if v.Pid == int(root.Id) {
 				c := &proto.SUserMenuRes{
-					Id:            v.Id,
+					Id:            int64(v.Id),
 					Key:           v.Key,
 					Name:          v.Name,
 					Path:          v.Path,
@@ -840,7 +863,7 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	} else {
 		dst = &model.PermRes{}
 		dst.CreateTime = time.Now().Unix()
-		dst.Pid = r.Pid // 设置上级,用于生成资源key
+		dst.Pid = int(r.Pid) // 设置上级,用于生成资源key
 		dst.Depth = 0
 	}
 
@@ -869,15 +892,15 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 		dst.Key = p.GenerateResourceKey(parent)
 	}
 	// 上级是否改变
-	var parentChanged = r.Id > 0 && (dst.Pid != r.Pid || (r.Pid > 0 && dst.Depth == 0))
+	var parentChanged = r.Id > 0 && (dst.Pid != int(r.Pid) || (r.Pid > 0 && dst.Depth == 0))
 	dst.Name = r.Name
-	dst.ResType = int16(r.ResType)
-	dst.Pid = r.Pid
+	dst.ResType = int(r.ResType)
+	dst.Pid = int(r.Pid)
 	dst.Path = r.Path
 	dst.Icon = r.Icon
 	dst.SortNum = int(r.SortNum)
-	dst.IsMenu = int16(types.ElseInt(r.IsMenu, 1, 0))
-	dst.IsEnabled = int16(types.ElseInt(r.IsEnabled, 1, 0))
+	dst.IsMenu = types.ElseInt(r.IsMenu, 1, 0)
+	dst.IsEnabled = types.ElseInt(r.IsEnabled, 1, 0)
 	dst.ComponentName = r.ComponentName
 	dst.Cache = r.Cache
 	// 如果未设置排列序号,或者更改了上级,则需系统自动编号
@@ -894,7 +917,7 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	} else {
 		if parentChanged {
 			depth := p.getResDepth(dst.Pid)
-			p.updateResDepth(dst, int16(depth))
+			p.updateResDepth(dst, depth)
 		}
 	}
 	return ret, nil
@@ -902,10 +925,10 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 
 func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
 	return &proto.SPermRes{
-		Id:            v.Id,
+		Id:            int64(v.Id),
 		Name:          v.Name,
 		ResType:       int32(v.ResType),
-		Pid:           v.Pid,
+		Pid:           int64(v.Pid),
 		Key:           v.Key,
 		Path:          v.Path,
 		Icon:          v.Icon,
@@ -938,20 +961,20 @@ func (p *rbacServiceImpl) QueryRbacResourceList(_ context.Context, r *proto.Quer
 	}
 	arr := p.dao.SelectPermRes(where + " ORDER BY sort_num ASC")
 	// 获取第一级分类
-	roots := p.queryResChildren(r.ParentId, arr)
+	roots := p.queryResChildren(int(r.ParentId), arr)
 	initial := make([]int64, 0)
 
 	// 初始化已选择的节点
 	if r.ParentId <= 0 && r.InitialId > 0 {
-		findParent := func(pid int64, arr []*model.PermRes) int64 {
+		findParent := func(pid int, arr []*model.PermRes) int {
 			for _, v := range arr {
 				if v.Id == pid && v.Pid > 0 {
-					return v.Pid
+					return int(v.Pid)
 				}
 			}
 			return pid
 		}
-		for pid := r.InitialId; pid > 0; {
+		for pid := int(r.InitialId); pid > 0; {
 			id := findParent(pid, arr)
 			if id == pid {
 				break
@@ -967,7 +990,7 @@ func (p *rbacServiceImpl) QueryRbacResourceList(_ context.Context, r *proto.Quer
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) queryResChildren(parentId int64, arr []*model.PermRes) []*proto.SPermRes {
+func (p *rbacServiceImpl) queryResChildren(parentId int, arr []*model.PermRes) []*proto.SPermRes {
 	var list []*proto.SPermRes
 	for _, v := range arr {
 		if v.Pid != parentId {
@@ -1019,7 +1042,7 @@ func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
 }
 
 // 获取资源的深度
-func (p *rbacServiceImpl) getResDepth(pid int64) int {
+func (p *rbacServiceImpl) getResDepth(pid int) int {
 	depth := 0
 	for pid > 0 {
 		v := p.dao.GetPermResBy("id = $1", pid)
@@ -1032,7 +1055,7 @@ func (p *rbacServiceImpl) getResDepth(pid int64) int {
 }
 
 // 更新资源及下级资源的深度
-func (p *rbacServiceImpl) updateResDepth(dst *model.PermRes, depth int16) {
+func (p *rbacServiceImpl) updateResDepth(dst *model.PermRes, depth int) {
 	dst.Depth = depth
 	_, _ = p.dao.SaveRbacResource(dst)
 	list := p.dao.SelectPermRes("pid=$1", dst.Id)
