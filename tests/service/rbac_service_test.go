@@ -94,8 +94,8 @@ func TestSaveRbacResource(t *testing.T) {
 func TestGetUserResources(t *testing.T) {
 	s := impl.RbacService
 	ret, _ := s.GetUserResource(context.TODO(), &proto.GetUserResRequest{
-		UserId:   0,
-		OnlyMenu: false,
+		UserId:   1,
+		OnlyMenu: true,
 	})
 	t.Logf(typeconv.MustJson(ret))
 }
