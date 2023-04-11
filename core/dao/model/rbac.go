@@ -63,15 +63,15 @@ type PermJob struct {
 // PermRes
 type PermRes struct {
 	// 资源ID
-	Id int64 `db:"id" pk:"yes" auto:"yes"`
+	Id int `db:"id" pk:"yes" auto:"yes"`
 	// 资源名称
 	Name string `db:"name"`
 	// 资源类型, 1:页面 2:组件 3:资源
-	ResType int16 `db:"res_type"`
+	ResType int `db:"res_type"`
 	// 上级菜单ID
-	Pid int64 `db:"pid"`
+	Pid int `db:"pid"`
 	// 深度/层级
-	Depth int16 `db:"depth"`
+	Depth int `db:"depth"`
 	// 资源键
 	Key string `db:"key"`
 	// 资源路径
@@ -81,11 +81,11 @@ type PermRes struct {
 	// 排序
 	SortNum int `db:"sort_num"`
 	// 是否显示到菜单
-	IsMenu int16 `db:"is_menu"`
+	IsMenu int `db:"is_menu"`
 	// 是否启用
-	IsEnabled int16 `db:"is_enabled"`
+	IsEnabled int `db:"is_enabled"`
 	// 是否禁用
-	IsForbidden int64 `db:"is_forbidden"`
+	IsForbidden int `db:"is_forbidden"`
 	// 创建日期
 	CreateTime int64 `db:"create_time"`
 	// 组件名称
