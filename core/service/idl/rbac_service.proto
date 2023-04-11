@@ -139,38 +139,29 @@ message RbacUserResourceResponse {
     // 角色编号
     repeated string roles = 1;
     // 菜单
-    repeated SUserRes resources = 3;
+    repeated SUserMenuRes menu = 3;
     // 权限Key数组
     repeated string keys = 4;
 }
 
 
-message SUserRes {
-    /** ID */
+message SUserMenuRes {
+    // 编号
     int64 id = 1;
     /** 资源键 */
     string key = 2;
     /** 资源名称 */
     string name = 3;
-    // 资源类型 1:页面 2:组件 3:资源
-    int32 resType= 4;
     /** 深度/层级 */
-    int32 depth = 5;
+    int32 depth = 4;
     /** 资源路径 */
-    string path = 6;
+    string path = 5;
     /** 图标 */
-    string icon = 7;
-
-    /** 是否显示到菜单 */
-    bool isMenu = 8;
-    /** 是否启用 */
-    bool isEnabled = 9;
-    /** 排序 */
-    int32 sortNum = 10;
+    string icon = 6;
     /** 子资源 */
-    repeated SUserRes children = 11;
+    repeated SUserMenuRes children = 7;
     /** 组件名称 */
-    string componentName = 12;
+    string componentName = 8;
 }
 
 message RoleId {
