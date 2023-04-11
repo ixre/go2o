@@ -147,21 +147,23 @@ message RbacUserResourceResponse {
 
 message SUserMenuRes {
     // 编号
-    int64 id = 1;
+    sint64 id = 1;
     /** 资源键 */
     string key = 2;
     /** 资源名称 */
     string name = 3;
     /** 深度/层级 */
-    int32 depth = 4;
+    sint32 depth = 4;
     /** 资源路径 */
     string path = 5;
     /** 图标 */
     string icon = 6;
+    // 序号
+    sint32 sortNum = 7;
     /** 子资源 */
-    repeated SUserMenuRes children = 7;
+    repeated SUserMenuRes children = 8;
     /** 组件名称 */
-    string componentName = 8;
+    string componentName = 9;
 }
 
 message RoleId {

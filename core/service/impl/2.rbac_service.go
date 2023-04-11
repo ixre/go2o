@@ -254,7 +254,7 @@ func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveRe
 	return p.success(nil), nil
 }
 
-// GetUserResource 获取用户的资源
+// GetUserResource 获取用户的资源,在前端处理排序问题
 func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserResRequest) (*proto.RbacUserResourceResponse, error) {
 	dst := &proto.RbacUserResourceResponse{}
 	var resList []*model.PermRes
@@ -296,6 +296,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 					Name:          v.Name,
 					Path:          v.Path,
 					Icon:          v.Icon,
+					SortNum:       int32(v.SortNum),
 					ComponentName: v.ComponentName,
 				}
 				c.Children = make([]*proto.SUserMenuRes, 0)
