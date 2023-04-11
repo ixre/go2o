@@ -297,6 +297,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 					Path:          v.Path,
 					Icon:          v.Icon,
 					SortNum:       int32(v.SortNum),
+					IsMenu:        v.IsMenu == 1,
 					IsEnabled:     v.IsEnabled == 1,
 					ComponentName: v.ComponentName,
 				}
