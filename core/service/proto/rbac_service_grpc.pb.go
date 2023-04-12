@@ -56,17 +56,17 @@ type RbacServiceClient interface {
 	// 用户登录
 	UserLogin(ctx context.Context, in *RbacLoginRequest, opts ...grpc.CallOption) (*RbacLoginResponse, error)
 	// 检查令牌是否有效并返回新的令牌
-	CheckRBACToken(ctx context.Context, in *CheckRBACTokenRequest, opts ...grpc.CallOption) (*CheckRBACTokenResponse, error)
+	CheckRBACToken(ctx context.Context, in *RbacCheckTokenRequest, opts ...grpc.CallOption) (*RbacCheckTokenResponse, error)
 	// 获取JWT密钥
 	GetJwtToken(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*String, error)
 	// 获取用户资源
-	GetUserResource(ctx context.Context, in *GetUserResRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error)
+	GetUserResource(ctx context.Context, in *RbacUserResourceRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error)
 	// 获取资源树形数据
 	QueryRbacResourceList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryRbacResourceResponse, error)
 	// 移动资源顺序
 	MoveResourceOrdinal(ctx context.Context, in *MoveResourceOrdinalRequest, opts ...grpc.CallOption) (*Result, error)
 	// 部门树形数据
-	DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RbacTree, error)
+	DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SRbacTree, error)
 	// 保存部门
 	SaveDepart(ctx context.Context, in *SaveDepartRequest, opts ...grpc.CallOption) (*SaveDepartResponse, error)
 	// 获取部门
@@ -128,8 +128,8 @@ func (c *rbacServiceClient) UserLogin(ctx context.Context, in *RbacLoginRequest,
 	return out, nil
 }
 
-func (c *rbacServiceClient) CheckRBACToken(ctx context.Context, in *CheckRBACTokenRequest, opts ...grpc.CallOption) (*CheckRBACTokenResponse, error) {
-	out := new(CheckRBACTokenResponse)
+func (c *rbacServiceClient) CheckRBACToken(ctx context.Context, in *RbacCheckTokenRequest, opts ...grpc.CallOption) (*RbacCheckTokenResponse, error) {
+	out := new(RbacCheckTokenResponse)
 	err := c.cc.Invoke(ctx, RbacService_CheckRBACToken_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -146,7 +146,7 @@ func (c *rbacServiceClient) GetJwtToken(ctx context.Context, in *Empty, opts ...
 	return out, nil
 }
 
-func (c *rbacServiceClient) GetUserResource(ctx context.Context, in *GetUserResRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error) {
+func (c *rbacServiceClient) GetUserResource(ctx context.Context, in *RbacUserResourceRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error) {
 	out := new(RbacUserResourceResponse)
 	err := c.cc.Invoke(ctx, RbacService_GetUserResource_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -173,8 +173,8 @@ func (c *rbacServiceClient) MoveResourceOrdinal(ctx context.Context, in *MoveRes
 	return out, nil
 }
 
-func (c *rbacServiceClient) DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RbacTree, error) {
-	out := new(RbacTree)
+func (c *rbacServiceClient) DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SRbacTree, error) {
+	out := new(SRbacTree)
 	err := c.cc.Invoke(ctx, RbacService_DepartTree_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -378,17 +378,17 @@ type RbacServiceServer interface {
 	// 用户登录
 	UserLogin(context.Context, *RbacLoginRequest) (*RbacLoginResponse, error)
 	// 检查令牌是否有效并返回新的令牌
-	CheckRBACToken(context.Context, *CheckRBACTokenRequest) (*CheckRBACTokenResponse, error)
+	CheckRBACToken(context.Context, *RbacCheckTokenRequest) (*RbacCheckTokenResponse, error)
 	// 获取JWT密钥
 	GetJwtToken(context.Context, *Empty) (*String, error)
 	// 获取用户资源
-	GetUserResource(context.Context, *GetUserResRequest) (*RbacUserResourceResponse, error)
+	GetUserResource(context.Context, *RbacUserResourceRequest) (*RbacUserResourceResponse, error)
 	// 获取资源树形数据
 	QueryRbacResourceList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error)
 	// 移动资源顺序
 	MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*Result, error)
 	// 部门树形数据
-	DepartTree(context.Context, *Empty) (*RbacTree, error)
+	DepartTree(context.Context, *Empty) (*SRbacTree, error)
 	// 保存部门
 	SaveDepart(context.Context, *SaveDepartRequest) (*SaveDepartResponse, error)
 	// 获取部门
@@ -441,13 +441,13 @@ type UnimplementedRbacServiceServer struct {
 func (UnimplementedRbacServiceServer) UserLogin(context.Context, *RbacLoginRequest) (*RbacLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserLogin not implemented")
 }
-func (UnimplementedRbacServiceServer) CheckRBACToken(context.Context, *CheckRBACTokenRequest) (*CheckRBACTokenResponse, error) {
+func (UnimplementedRbacServiceServer) CheckRBACToken(context.Context, *RbacCheckTokenRequest) (*RbacCheckTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckRBACToken not implemented")
 }
 func (UnimplementedRbacServiceServer) GetJwtToken(context.Context, *Empty) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJwtToken not implemented")
 }
-func (UnimplementedRbacServiceServer) GetUserResource(context.Context, *GetUserResRequest) (*RbacUserResourceResponse, error) {
+func (UnimplementedRbacServiceServer) GetUserResource(context.Context, *RbacUserResourceRequest) (*RbacUserResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserResource not implemented")
 }
 func (UnimplementedRbacServiceServer) QueryRbacResourceList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error) {
@@ -456,7 +456,7 @@ func (UnimplementedRbacServiceServer) QueryRbacResourceList(context.Context, *Qu
 func (UnimplementedRbacServiceServer) MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MoveResourceOrdinal not implemented")
 }
-func (UnimplementedRbacServiceServer) DepartTree(context.Context, *Empty) (*RbacTree, error) {
+func (UnimplementedRbacServiceServer) DepartTree(context.Context, *Empty) (*SRbacTree, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DepartTree not implemented")
 }
 func (UnimplementedRbacServiceServer) SaveDepart(context.Context, *SaveDepartRequest) (*SaveDepartResponse, error) {
@@ -554,7 +554,7 @@ func _RbacService_UserLogin_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _RbacService_CheckRBACToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckRBACTokenRequest)
+	in := new(RbacCheckTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -566,7 +566,7 @@ func _RbacService_CheckRBACToken_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: RbacService_CheckRBACToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).CheckRBACToken(ctx, req.(*CheckRBACTokenRequest))
+		return srv.(RbacServiceServer).CheckRBACToken(ctx, req.(*RbacCheckTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -590,7 +590,7 @@ func _RbacService_GetJwtToken_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _RbacService_GetUserResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserResRequest)
+	in := new(RbacUserResourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -602,7 +602,7 @@ func _RbacService_GetUserResource_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: RbacService_GetUserResource_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).GetUserResource(ctx, req.(*GetUserResRequest))
+		return srv.(RbacServiceServer).GetUserResource(ctx, req.(*RbacUserResourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

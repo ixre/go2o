@@ -10,11 +10,11 @@ service RbacService {
     // 用户登录
     rpc UserLogin(RbacLoginRequest)returns(RbacLoginResponse) {}
     // 检查令牌是否有效并返回新的令牌
-    rpc CheckRBACToken(CheckRBACTokenRequest) returns(CheckRBACTokenResponse){}
+    rpc CheckRBACToken(RbacCheckTokenRequest) returns(RbacCheckTokenResponse){}
     // 获取JWT密钥
     rpc GetJwtToken(Empty)returns(String) {}
     // 获取用户资源
-    rpc GetUserResource(GetUserResRequest)returns(RbacUserResourceResponse) {}
+    rpc GetUserResource(RbacUserResourceRequest)returns(RbacUserResourceResponse) {}
     // 获取资源树形数据
     rpc QueryRbacResourceList (QueryRbacResRequest) returns (QueryRbacResourceResponse) {
     }
@@ -22,7 +22,7 @@ service RbacService {
     rpc MoveResourceOrdinal(MoveResourceOrdinalRequest) returns (Result) {}
 
     // 部门树形数据
-    rpc DepartTree(Empty)returns(RbacTree) {}
+    rpc DepartTree(Empty)returns(SRbacTree) {}
     // 保存部门
     rpc SaveDepart (SaveDepartRequest) returns (SaveDepartResponse) {
     }
@@ -112,7 +112,7 @@ message RbacLoginResponse {
 }
 
 // 检查令牌请求
-message CheckRBACTokenRequest{
+message RbacCheckTokenRequest{
     // 访问令牌
     string accessToken = 1;
     // 检测过期时间,在此时间内过期,将生成返回新的令牌
@@ -122,7 +122,7 @@ message CheckRBACTokenRequest{
 }
 
 // 检查令牌响应
-message CheckRBACTokenResponse{
+message RbacCheckTokenResponse{
     // 错误信息
     string error = 1;
     // 会员编号
@@ -139,13 +139,13 @@ message RbacUserResourceResponse {
     // 角色编号
     repeated string roles = 1;
     // 菜单
-    repeated SUserMenuRes menu = 3;
+    repeated SUserMenu menu = 3;
     // 权限Key数组
     repeated string keys = 4;
 }
 
-
-message SUserMenuRes {
+// 用户菜单
+message SUserMenu {
     // 编号
     sint64 id = 1;
     /** 资源键 */
@@ -161,7 +161,7 @@ message SUserMenuRes {
     // 序号
     sint32 sortNum = 7;
     /** 子资源 */
-    repeated SUserMenuRes children = 8;
+    repeated SUserMenu children = 8;
     /** 组件名称 */
     string componentName = 9;
 }
@@ -174,10 +174,10 @@ message UserId {
 }
 
 
-message RbacTree {
+message SRbacTree {
     int64 id = 1;
     string label = 2;
-    repeated RbacTree children = 3;
+    repeated SRbacTree children = 3;
 }
 
 message SaveDepartRequest {
@@ -195,6 +195,7 @@ message SaveDepartRequest {
     int64 createTime = 6;
 }
 
+// 保存部门结果
 message SaveDepartResponse {
     int32 errCode = 1;
     string errMsg = 2;
@@ -603,11 +604,9 @@ message SPermRes {
     repeated SPermRes children = 15;
 }
 
-message GetUserResRequest {
+message RbacUserResourceRequest {
     /** 用户编号 */
     int64 userId =  1;
-    /** 是否只显示菜单 */
-    bool onlyMenu = 2;
 }
 
 message QueryRbacResRequest {

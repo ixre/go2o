@@ -26,7 +26,7 @@ func TestInitialTreeNode(t *testing.T) {
 
 func TestCheckRBACToken(t *testing.T) {
 	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOi0xLCJleHAiOjE2Nzc2NjMxODYsImlzcyI6ImdvMm8iLCJuYW1lIjoibWFzdGVyIiwic3ViIjoiZ28yby1yYmFjLXRva2VuIiwieC1wZXJtIjoibWFzdGVyLGFkbWluIn0.VMUGah8mgG8fbVicb4K45K83wbvnUZccImWMH9-vehs"
-	ret, _ := impl.RbacService.CheckRBACToken(context.TODO(), &proto.CheckRBACTokenRequest{
+	ret, _ := impl.RbacService.CheckRBACToken(context.TODO(), &proto.RbacCheckTokenRequest{
 		AccessToken: accessToken,
 	})
 	if len(ret.Error) > 0 {
@@ -93,7 +93,7 @@ func TestSaveRbacResource(t *testing.T) {
 // 测试获取用户资源
 func TestGetUserResources(t *testing.T) {
 	s := impl.RbacService
-	ret, _ := s.GetUserResource(context.TODO(), &proto.GetUserResRequest{
+	ret, _ := s.GetUserResource(context.TODO(), &proto.RbacUserResourceRequest{
 		UserId:   1,
 		OnlyMenu: true,
 	})
