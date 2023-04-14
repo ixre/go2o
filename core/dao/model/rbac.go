@@ -68,12 +68,12 @@ type PermRes struct {
 	Name string `db:"name"`
 	// 资源类型, 1:页面 2:组件 3:资源
 	ResType int `db:"res_type"`
+	// 资源键
+	ResKey string `db:"res_key"`
 	// 上级菜单ID
 	Pid int `db:"pid"`
 	// 深度/层级
 	Depth int `db:"depth"`
-	// 资源键
-	Key string `db:"key"`
 	// 资源路径
 	Path string `db:"path"`
 	// 图标

@@ -315,7 +315,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 			if v.Pid == int(root.Id) {
 				c := &proto.SUserMenu{
 					Id:            int64(v.Id),
-					Key:           v.Key,
+					Key:           v.ResKey,
 					Name:          v.Name,
 					Path:          v.Path,
 					Icon:          v.Icon,
@@ -337,13 +337,13 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 	// 普通用户返回权限Keys,格式如:["A0101","A010102+7"]
 	if r.UserId > 0 {
 		for _, v := range resList {
-			if len(v.Key) > 0 {
+			if len(v.ResKey) > 0 {
 				// 添加权限flag到key中
 				flag := rolePermMap[int(v.Id)]
 				if flag > 0 {
-					v.Key = fmt.Sprintf("%s+%d", v.Key, flag)
+					v.ResKey = fmt.Sprintf("%s+%d", v.ResKey, flag)
 				}
-				dst.Keys = append(dst.Keys, v.Key)
+				dst.Keys = append(dst.Keys, v.ResKey)
 			}
 		}
 	}
@@ -839,15 +839,15 @@ func (p *rbacServiceImpl) GenerateResourceKey(parent model.PermRes) string {
 	}
 	// 下级资源采用数字编号
 	if l == 0 {
-		return fmt.Sprintf("%s01", parent.Key)
+		return fmt.Sprintf("%s01", parent.ResKey)
 	}
 	// 获取末尾编号,如:05,并进行累加
 	v, _ := strconv.Atoi(maxKey[l-2:])
 	v += 1
 	if v < 10 {
-		return fmt.Sprintf("%s0%d", parent.Key, v)
+		return fmt.Sprintf("%s0%d", parent.ResKey, v)
 	}
-	return fmt.Sprintf("%s%d", parent.Key, v)
+	return fmt.Sprintf("%s%d", parent.ResKey, v)
 }
 
 // 保存PermRes
@@ -888,8 +888,8 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 		}, nil
 	}
 	// 如果新增, 则生成key
-	if r.Id <= 0 || len(dst.Key) == 0 {
-		dst.Key = p.GenerateResourceKey(parent)
+	if r.Id <= 0 || len(dst.ResKey) == 0 {
+		dst.ResKey = p.GenerateResourceKey(parent)
 	}
 	// 上级是否改变
 	var parentChanged = r.Id > 0 && (dst.Pid != int(r.Pid) || (r.Pid > 0 && dst.Depth == 0))
@@ -929,7 +929,7 @@ func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
 		Name:          v.Name,
 		ResType:       int32(v.ResType),
 		Pid:           int64(v.Pid),
-		Key:           v.Key,
+		Key:           v.ResKey,
 		Path:          v.Path,
 		Icon:          v.Icon,
 		SortNum:       int32(v.SortNum),

@@ -448,7 +448,7 @@ func (p *rbacDaoImpl) GetMaxResourceSortNum(parentId int) int {
 func (p *rbacDaoImpl) GetMaxResouceKey(parentId int) string {
 	var s string
 	p._orm.Connector().ExecScalar(
-		`SELECT MAX(key) FROM perm_res
+		`SELECT MAX(res_key) FROM perm_res
  		  WHERE pid = $1`, &s, parentId)
 	return s
 }

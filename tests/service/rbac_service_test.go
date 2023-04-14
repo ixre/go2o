@@ -61,9 +61,9 @@ func TestGenerateResourceKey(t *testing.T) {
 	gk := impl.RbacService.GenerateResourceKey
 	ret := gk(model.PermRes{Id: 0})
 	t.Log("新建一级:", ret)
-	ret = gk(model.PermRes{Id: 2328, Key: "D"})
+	ret = gk(model.PermRes{Id: 2328, ResKey: "D"})
 	t.Log("新建商户二级:", ret)
-	ret = gk(model.PermRes{Id: 2321, Key: "B0101"})
+	ret = gk(model.PermRes{Id: 2321, ResKey: "B0101"})
 	t.Log("新建商户三级:", ret)
 }
 

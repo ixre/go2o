@@ -287,3 +287,6 @@ ALTER TABLE IF EXISTS public.perm_role_res
 
 COMMENT ON COLUMN public.perm_role_res.perm_flag
     IS '权限值, 1:增加  2:删除 4: 更新';
+
+ALTER TABLE IF EXISTS public.perm_res
+ RENAME key TO res_key;
