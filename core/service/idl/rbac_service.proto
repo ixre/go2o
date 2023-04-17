@@ -141,7 +141,7 @@ message RbacUserResourceResponse {
     // 菜单
     repeated SUserMenu menu = 3;
     // 权限Key数组
-    repeated string keys = 4;
+    repeated string resourceKeys = 4;
 }
 
 // 用户菜单

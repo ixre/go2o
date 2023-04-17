@@ -343,7 +343,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 				if flag > 0 {
 					v.ResKey = fmt.Sprintf("%s+%d", v.ResKey, flag)
 				}
-				dst.Keys = append(dst.Keys, v.ResKey)
+				dst.ResourceKeys = append(dst.ResourceKeys, v.ResKey)
 			}
 		}
 	}
