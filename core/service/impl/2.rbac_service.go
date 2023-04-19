@@ -76,7 +76,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		}
 		dst := &proto.RbacLoginResponse{
 			UserId: 0,
-			Roles:  []string{"admin"},
+			Roles:  []string{"master", "admin"},
 		}
 		return p.withAccessToken("master", dst, expires)
 	}
@@ -281,8 +281,8 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 	dst := &proto.RbacUserResourceResponse{}
 	var resList []*model.PermRes
 	rolePermMap := make(map[int]int, 0)
-	if r.UserId <= 0 { // 管理员
-		dst.Roles = []string{"admin"}
+	if r.UserId <= 0 { // master为超级管理员,拥有权限管理权限,admin为管理员
+		dst.Roles = []string{"master", "admin"}
 		resList = p.dao.SelectPermRes("is_forbidden <> 1 AND is_enabled = 1")
 	} else {
 		usr := p.dao.GetUser(r.UserId)
