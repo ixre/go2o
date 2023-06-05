@@ -777,3 +777,29 @@ func (p *rbacDaoImpl) GetRoleResources(roles []int) []*model.PermRes {
 	}
 	return arr
 }
+
+// PagingQueryLoginLog Query paging data
+func (p *rbacDaoImpl) PagingQueryLoginLog(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+	if orderBy != "" {
+		orderBy = "ORDER BY " + orderBy
+	}
+	if where == "" {
+		where = "1=1"
+	}
+	query := fmt.Sprintf(`SELECT COUNT(1) FROM perm_login_log WHERE %s`, where)
+	_ = p._orm.Connector().ExecScalar(query, &total)
+	if total > 0 {
+		query = fmt.Sprintf(`SELECT * FROM perm_login_log WHERE %s %s
+	        LIMIT $2 OFFSET $1`,
+			where, orderBy)
+		err := p._orm.Connector().Query(query, func(_rows *sql.Rows) {
+			rows = db.RowsToMarshalMap(_rows)
+		}, begin, end-begin)
+		if err != nil {
+			log.Printf("[ Orm][ Error]: %s (table:perm_login_log)\n", err.Error())
+		}
+	} else {
+		rows = make([]map[string]interface{}, 0)
+	}
+	return total, rows
+}

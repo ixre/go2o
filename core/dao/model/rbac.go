@@ -177,3 +177,17 @@ type PermUserRole struct {
 	// 角色ID
 	RoleId int64 `db:"role_id"`
 }
+
+// LoginLog 用户登录日志
+type LoginLog struct {
+	// 编号
+	Id int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
+	// 用户编号
+	UserId int64 `db:"user_id" json:"userId"`
+	// 登录IP地址
+	Ip string `db:"ip" json:"ip"`
+	// 是否成功
+	IsSuccess int `db:"is_success" json:"isSuccess"`
+	// 创建时间
+	CreateTime int64 `db:"create_time" json:"createTime"`
+}

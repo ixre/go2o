@@ -148,4 +148,7 @@ type IRbacDao interface {
 	GetUserRoles(id int64) []*model.PermUserRole
 	// 获取角色拥有的资源
 	GetRoleResources(roles []int) []*model.PermRes
+
+	// PagingQueryLoginLog Query paging data
+	PagingQueryLoginLog(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 }

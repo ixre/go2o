@@ -56,6 +56,10 @@ func NewRbacService(s storage.Interface, o orm.Orm, registryRepo registry.IRegis
 	}
 }
 
+func (p *rbacServiceImpl) createLoginLog(userId int64, ipAddress string, isSuccess int) {
+
+}
+
 func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest) (*proto.RbacLoginResponse, error) {
 	if len(r.Password) != 32 {
 		return &proto.RbacLoginResponse{
@@ -69,6 +73,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		superPwd, _ := p.registryRepo.GetValue(registry.SysSuperLoginToken)
 		encPwd := domain.Sha1Pwd(r.Username+r.Password, "")
 		if superPwd != encPwd {
+			p.createLoginLog(0, r.IpAddress, 1) // 登录失败
 			return &proto.RbacLoginResponse{
 				ErrCode: 3,
 				ErrMsg:  "密码不正确",
@@ -90,17 +95,20 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 	}
 	decPwd := crypto.Sha1([]byte(r.Password + usr.Salt))
 	if usr.Password != decPwd {
+		p.createLoginLog(usr.Id, r.IpAddress, 3) // 登录失败
 		return &proto.RbacLoginResponse{
 			ErrCode: 3,
 			ErrMsg:  "密码不正确",
 		}, nil
 	}
 	if usr.Enabled != 1 {
+		p.createLoginLog(usr.Id, r.IpAddress, 4) // 登录失败
 		return &proto.RbacLoginResponse{
 			ErrCode: 4,
 			ErrMsg:  "用户已停用",
 		}, nil
 	}
+	p.createLoginLog(usr.Id, r.IpAddress, 0) // 登录成功
 	dst := &proto.RbacLoginResponse{
 		UserId: usr.Id,
 	}
@@ -1062,4 +1070,32 @@ func (p *rbacServiceImpl) updateResDepth(dst *model.PermRes, depth int) {
 	for _, v := range list {
 		p.updateResDepth(v, depth+1)
 	}
+}
+
+// PagingLoginLog implements proto.RbacServiceServer.
+func (p *rbacServiceImpl) PagingLoginLog(_ context.Context, r *proto.LoginLogPagingRequest) (*proto.LoginLogPagingResponse, error) {
+	total, rows := p.dao.PagingQueryLoginLog(int(r.Params.Begin),
+		int(r.Params.End),
+		r.Params.Where,
+		r.Params.SortBy)
+	ret := &proto.LoginLogPagingResponse{
+		Total: int64(total),
+		Value: make([]*proto.PagingLoginLog, len(rows)),
+	}
+	for i, v := range rows {
+		ret.Value[i] = &proto.PagingLoginLog{
+			Id:         int64(typeconv.MustInt(v["id"])),
+			UserId:     int64(typeconv.MustInt(v["user_id"])),
+			Username:   typeconv.Stringify(v["username"]),
+			Nickname:   typeconv.Stringify(v["nickname"]),
+			Ip:         typeconv.Stringify(v["ip"]),
+			IsSuccess:  int32(typeconv.MustInt(v["is_success"])),
+			CreateTime: int64(typeconv.MustInt(v["create_time"])),
+		}
+		if r := ret.Value[i]; r.UserId == 0{
+			r.Username = "master"
+			r.Nickname = "超级管理员"
+		}
+	}
+	return ret, nil
 }

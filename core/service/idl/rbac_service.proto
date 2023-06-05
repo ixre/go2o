@@ -87,6 +87,8 @@ service RbacService {
     // 删除PermRes
     rpc DeletePermRes (PermResId) returns (Result) {
     }
+    // 获取用户登录日志分页数据
+    rpc PagingLoginLog (LoginLogPagingRequest) returns (LoginLogPagingResponse);
 }
 
 // 用户登录
@@ -95,6 +97,8 @@ message RbacLoginRequest {
     string username =  1;
     // md5密码
     string password = 2;
+    // IP地址
+    string ipAddress = 3;
 }
 
 // 用户登录响应
@@ -269,27 +273,30 @@ message SRbacJob {
     int64 createTime = 6;
 }
 
+// 查询岗位请求
 message QueryJobRequest {
     // 部门编号,默认为0. 该部门下的岗位也会查询出来
     int64 departId = 1;
 }
 
+// 查询岗位响应
 message QueryJobResponse {
     repeated SRbacJob list = 1;
 }
 
+// 岗位列表
 message PagingJobList {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 岗位名称 */
+    // 岗位名称
     string name = 2;
-    /** 岗位状态 */
+    // 岗位状态
     int32 enabled = 3;
-    /** 岗位排序 */
+    // 岗位排序
     int32 sort = 4;
-    /** 部门名称 */
+    // 部门名称
     string deptName = 5;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 6;
 }
 
@@ -633,4 +640,36 @@ message MoveResourceOrdinalRequest {
     int64 resourceId = 1;
     /** 移动方向,0:向上移,1:向下移 */
     int32 direction = 2;
+}
+
+// 用户登录日志分页数据
+message PagingLoginLog{
+    // 编号
+    int64 id = 1;
+    // 用户编号
+    int64 userId = 2;
+    // 用户名
+    string username = 3;
+    // 昵称
+    string nickname = 4;
+    // 登录IP地址
+    string ip = 5;
+    // 是否成功
+    int32 isSuccess = 6;
+    // 创建时间
+    int64 createTime = 7;
+}
+
+// 用户登录日志分页请求
+message LoginLogPagingRequest{
+    // 分页参数
+    SPagingParams params = 1;
+}
+
+// 用户登录日志分页响应
+message LoginLogPagingResponse {
+   // 总数
+   int64 total = 1;
+   // 数据列表
+   repeated PagingLoginLog value = 2;
 }

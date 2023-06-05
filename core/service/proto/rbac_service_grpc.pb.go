@@ -47,6 +47,7 @@ const (
 	RbacService_SaveRbacResource_FullMethodName      = "/RbacService/SaveRbacResource"
 	RbacService_GetPermRes_FullMethodName            = "/RbacService/GetPermRes"
 	RbacService_DeletePermRes_FullMethodName         = "/RbacService/DeletePermRes"
+	RbacService_PagingLoginLog_FullMethodName        = "/RbacService/PagingLoginLog"
 )
 
 // RbacServiceClient is the client API for RbacService service.
@@ -109,6 +110,8 @@ type RbacServiceClient interface {
 	GetPermRes(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*SPermRes, error)
 	// 删除PermRes
 	DeletePermRes(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*Result, error)
+	// 获取用户登录日志分页数据
+	PagingLoginLog(ctx context.Context, in *LoginLogPagingRequest, opts ...grpc.CallOption) (*LoginLogPagingResponse, error)
 }
 
 type rbacServiceClient struct {
@@ -371,6 +374,15 @@ func (c *rbacServiceClient) DeletePermRes(ctx context.Context, in *PermResId, op
 	return out, nil
 }
 
+func (c *rbacServiceClient) PagingLoginLog(ctx context.Context, in *LoginLogPagingRequest, opts ...grpc.CallOption) (*LoginLogPagingResponse, error) {
+	out := new(LoginLogPagingResponse)
+	err := c.cc.Invoke(ctx, RbacService_PagingLoginLog_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RbacServiceServer is the server API for RbacService service.
 // All implementations must embed UnimplementedRbacServiceServer
 // for forward compatibility
@@ -431,6 +443,8 @@ type RbacServiceServer interface {
 	GetPermRes(context.Context, *PermResId) (*SPermRes, error)
 	// 删除PermRes
 	DeletePermRes(context.Context, *PermResId) (*Result, error)
+	// 获取用户登录日志分页数据
+	PagingLoginLog(context.Context, *LoginLogPagingRequest) (*LoginLogPagingResponse, error)
 	mustEmbedUnimplementedRbacServiceServer()
 }
 
@@ -521,6 +535,9 @@ func (UnimplementedRbacServiceServer) GetPermRes(context.Context, *PermResId) (*
 }
 func (UnimplementedRbacServiceServer) DeletePermRes(context.Context, *PermResId) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePermRes not implemented")
+}
+func (UnimplementedRbacServiceServer) PagingLoginLog(context.Context, *LoginLogPagingRequest) (*LoginLogPagingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PagingLoginLog not implemented")
 }
 func (UnimplementedRbacServiceServer) mustEmbedUnimplementedRbacServiceServer() {}
 
@@ -1039,6 +1056,24 @@ func _RbacService_DeletePermRes_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RbacService_PagingLoginLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginLogPagingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RbacServiceServer).PagingLoginLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RbacService_PagingLoginLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RbacServiceServer).PagingLoginLog(ctx, req.(*LoginLogPagingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RbacService_ServiceDesc is the grpc.ServiceDesc for RbacService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1157,6 +1192,10 @@ var RbacService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeletePermRes",
 			Handler:    _RbacService_DeletePermRes_Handler,
+		},
+		{
+			MethodName: "PagingLoginLog",
+			Handler:    _RbacService_PagingLoginLog_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
