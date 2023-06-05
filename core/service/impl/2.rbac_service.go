@@ -1074,6 +1074,7 @@ func (p *rbacServiceImpl) updateResDepth(dst *model.PermRes, depth int) {
 
 // PagingLoginLog implements proto.RbacServiceServer.
 func (p *rbacServiceImpl) PagingLoginLog(_ context.Context, r *proto.LoginLogPagingRequest) (*proto.LoginLogPagingResponse, error) {
+	//todo:  keyword
 	total, rows := p.dao.PagingQueryLoginLog(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
@@ -1092,7 +1093,7 @@ func (p *rbacServiceImpl) PagingLoginLog(_ context.Context, r *proto.LoginLogPag
 			IsSuccess:  int32(typeconv.MustInt(v["is_success"])),
 			CreateTime: int64(typeconv.MustInt(v["create_time"])),
 		}
-		if r := ret.Value[i]; r.UserId == 0{
+		if r := ret.Value[i]; r.UserId == 0 {
 			r.Username = "master"
 			r.Nickname = "超级管理员"
 		}
