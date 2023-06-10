@@ -778,11 +778,13 @@ func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryRba
 	return ret, nil
 }
 
+// DeletePermRole 删除角色
 func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.RbacRoleId) (*proto.Result, error) {
 	err := p.dao.DeletePermRole(id.Value)
 	return p.error(err), nil
 }
 
+// PagingPermRole 角色分页信息
 func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePagingRequest) (*proto.PagingRbacRoleResponse, error) {
 	total, rows := p.dao.PagingQueryPermRole(int(r.Params.Begin),
 		int(r.Params.End),
@@ -898,7 +900,14 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	// 如果新增, 则生成key
 	if r.Id <= 0 || len(dst.ResKey) == 0 {
 		dst.ResKey = p.GenerateResourceKey(parent)
+		// 新增时设置应用序号
+		dst.AppIndex = int(r.AppIndex)
+		// 如果包含上级,则与上级的应用序号保持一致
+		if parent.Id > 0 {
+			dst.AppIndex = parent.AppIndex
+		}
 	}
+
 	// 上级是否改变
 	var parentChanged = r.Id > 0 && (dst.Pid != int(r.Pid) || (r.Pid > 0 && dst.Depth == 0))
 	dst.Name = r.Name
@@ -910,7 +919,7 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	dst.IsMenu = types.ElseInt(r.IsMenu, 1, 0)
 	dst.IsEnabled = types.ElseInt(r.IsEnabled, 1, 0)
 	dst.ComponentName = r.ComponentName
-	dst.Cache = r.Cache
+	dst.AppIndex = int(r.AppIndex)
 	// 如果未设置排列序号,或者更改了上级,则需系统自动编号
 	if dst.SortNum <= 0 || parentChanged {
 		dst.SortNum = p.dao.GetMaxResourceSortNum(int(dst.Pid)) + 1
@@ -931,7 +940,7 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
+func (p *rbacServiceImpl) parseRbacRes(v *model.PermRes) *proto.SPermRes {
 	return &proto.SPermRes{
 		Id:            int64(v.Id),
 		Name:          v.Name,
@@ -945,17 +954,17 @@ func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
 		IsEnabled:     v.IsEnabled == 1,
 		CreateTime:    v.CreateTime,
 		ComponentName: v.ComponentName,
-		Cache:         v.Cache,
+		AppIndex:      int32(v.AppIndex),
 	}
 }
 
 // 获取PermRes
-func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*proto.SPermRes, error) {
+func (p *rbacServiceImpl) GetRbacRes(_ context.Context, id *proto.PermResId) (*proto.SPermRes, error) {
 	v := p.dao.GetPermRes(id.Value)
 	if v == nil {
 		return nil, fmt.Errorf("no such resource %v", id.Value)
 	}
-	return p.parsePermRes(v), nil
+	return p.parseRbacRes(v), nil
 }
 
 // 获取PermRes列表
@@ -1004,7 +1013,7 @@ func (p *rbacServiceImpl) queryResChildren(parentId int, arr []*model.PermRes) [
 		if v.Pid != parentId {
 			continue
 		}
-		c := p.parsePermRes(v)
+		c := p.parseRbacRes(v)
 		c.IsLeaf = true
 		for _, r := range arr {
 			if r.Pid == v.Id {

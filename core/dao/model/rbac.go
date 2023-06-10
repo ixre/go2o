@@ -90,8 +90,8 @@ type PermRes struct {
 	CreateTime int64 `db:"create_time"`
 	// 组件名称
 	ComponentName string `db:"component_name"`
-	// 缓存
-	Cache string `db:"cache_"`
+	// 应用序号,0代表当前应用
+	AppIndex int `db:"app_index"`
 }
 
 // 角色部门关联

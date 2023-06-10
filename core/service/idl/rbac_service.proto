@@ -82,7 +82,7 @@ service RbacService {
     rpc SaveRbacResource (SaveRbacResRequest) returns (SaveRbacResResponse) {
     }
     // 获取PermRes
-    rpc GetPermRes (PermResId) returns (SPermRes) {
+    rpc GetRbacRes (PermResId) returns (SPermRes) {
     }
     // 删除PermRes
     rpc DeletePermRes (PermResId) returns (Result) {
@@ -562,8 +562,8 @@ message SaveRbacResRequest {
     int64 createTime = 11;
     /** 组件名称 */
     string componentName = 12;
-    /** 缓存 */
-    string cache = 13;
+    /** 应用序号 */
+    int32 appIndex = 13;
 }
 
 message SaveRbacResResponse {
@@ -593,18 +593,18 @@ message SPermRes {
     string path = 7;
     /** 图标 */
     string icon = 8;
-    /** 排序 */
-    int32 sortNum = 11;
     /** 是否显示到菜单 */
     bool isMenu = 9;
     /** 是否启用 */
     bool isEnabled = 10;
+    /** 排序 */
+    int32 sortNum = 11;
     /** 创建日期 */
     int64 createTime = 12;
     /** 组件名称 */
     string componentName = 13;
-    /** 缓存 */
-    string cache = 16;
+    /** 应用序号 */
+    int32 appIndex = 16;
     /** 是否为叶子节点 */
     bool isLeaf = 14;
     /** 子资源 */

@@ -304,3 +304,13 @@ COMMENT ON COLUMN public.perm_login_log.is_success
 
 COMMENT ON COLUMN public.perm_login_log.create_time
     IS '创建时间';
+
+
+/* 2023-06-10 支持多应用 */
+ALTER TABLE IF EXISTS public.perm_res DROP COLUMN IF EXISTS cache_;
+
+ALTER TABLE IF EXISTS public.perm_res
+    ADD COLUMN app_index integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.perm_res.app_index
+    IS '应用(系统)序号';
