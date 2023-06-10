@@ -142,9 +142,9 @@ message RbacCheckTokenResponse{
 message RbacUserResourceResponse {
     // 角色编号
     repeated string roles = 1;
-    // 菜单
+    // 菜单(区分应用)
     repeated SUserMenu menu = 3;
-    // 权限Key数组
+    // 权限Key数组(不用区分应用)
     repeated string resourceKeys = 4;
 }
 
@@ -152,21 +152,21 @@ message RbacUserResourceResponse {
 message SUserMenu {
     // 编号
     sint64 id = 1;
-    /** 资源键 */
+    // 资源键
     string key = 2;
-    /** 资源名称 */
+    // 资源名称
     string name = 3;
-    /** 深度/层级 */
+    // 深度/层级
     sint32 depth = 4;
-    /** 资源路径 */
+    // 资源路径
     string path = 5;
-    /** 图标 */
+    // 图标
     string icon = 6;
     // 序号
     sint32 sortNum = 7;
-    /** 子资源 */
+    // 子资源
     repeated SUserMenu children = 8;
-    /** 组件名称 */
+    // 组件名称
     string componentName = 9;
 }
 
@@ -185,17 +185,17 @@ message SRbacTree {
 }
 
 message SaveDepartRequest {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 名称 */
+    // 名称
     string name = 2;
-    /** 上级部门 */
+    // 上级部门
     int64 pid = 3;
-    /** 部门编码 */
+    // 部门编码
     string code = 4;
-    /** 状态 */
+    // 状态
     int32 enabled = 5;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 6;
 }
 
@@ -210,22 +210,22 @@ message RbacDepartId {
     int64 value =  1;
 }
 message SPermDept {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 名称 */
+    // 名称
     string name = 2;
-    /** 上级部门 */
+    // 上级部门
     int64 pid = 3;
-    /** 部门编码 */;
+    // 部门编码;
     string code = 4;
-    /** 状态 */
+    // 状态
     int32 enabled = 5;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 6;
 }
 
 message QueryPermDeptRequest {
-    /** 自定义参数 */
+    // 自定义参数
 }
 
 message QueryPermDeptResponse {
@@ -234,17 +234,17 @@ message QueryPermDeptResponse {
 
 
 message SaveJobRequest {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 岗位名称 */
+    // 岗位名称
     string name = 2;
-    /** 岗位状态 */
+    // 岗位状态
     int32 enabled = 3;
-    /** 岗位排序 */
+    // 岗位排序
     int32 sort = 4;
-    /** 部门ID */
+    // 部门ID
     int64 deptId = 5;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 6;
 }
 
@@ -259,17 +259,17 @@ message RbacJobId {
 }
 
 message SRbacJob {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 岗位名称 */
+    // 岗位名称
     string name = 2;
-    /** 岗位状态 */
+    // 岗位状态
     int32 enabled = 3;
-    /** 岗位排序 */
+    // 岗位排序
     int32 sort = 4;
-    /** 部门ID */
+    // 部门ID
     int64 deptId = 5;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 6;
 }
 
@@ -313,33 +313,33 @@ message PagingRbacJobResponse {
 
 
 message SaveRbacUserRequest {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 用户名 */
+    // 用户名
     string username = 2;
-    /** 密码 */
+    // 密码
     string password = 3;
-    /** 标志 */
+    // 标志
     int32 flag = 4;
-    /** 头像 */
+    // 头像
     string portrait = 5;
-    /** 昵称 */
+    // 昵称
     string nickname = 6;
-    /** 性别 */
+    // 性别
     string gender = 7;
-    /** 邮箱 */
+    // 邮箱
     string email = 8;
-    /** 手机号码 */
+    // 手机号码
     string phone = 9;
-    /** 部门编号 */
+    // 部门编号
     int64 deptId = 10;
-    /** 岗位编号 */
+    // 岗位编号
     int64 jobId = 11;
-    /** 状态：1启用、0禁用 */
+    // 状态：1启用、0禁用
     int32 enabled = 12;
-    /** 最后登录的日期 */
+    // 最后登录的日期
     int64 lastLogin = 13;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 14;
     // 用户角色
     repeated int64 roles = 15;
@@ -356,40 +356,40 @@ message RbacUserId {
 }
 
 message SRbacUser {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 用户名 */
+    // 用户名
     string username = 2;
-    /** 密码 */
+    // 密码
     string password = 3;
-    /** 标志 */
+    // 标志
     int32 flag = 4;
-    /** 头像 */
+    // 头像
     string portrait = 5;
-    /** Nickname */
+    // Nickname
     string nickname = 6;
-    /** Gender */
+    // Gender
     string gender = 7;
-    /** 邮箱 */
+    // 邮箱
     string email = 8;
-    /** 手机号码 */
+    // 手机号码
     string phone = 9;
-    /** 部门编号 */
+    // 部门编号
     int64 deptId = 10;
-    /** 岗位编号 */
+    // 岗位编号
     int64 jobId = 11;
-    /** 状态：1启用、0禁用 */
+    // 状态：1启用、0禁用
     int32 enabled = 12;
-    /** 最后登录的日期 */
+    // 最后登录的日期
     int64 lastLogin = 13;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 14;
     // 用户角色
     repeated int64 roles = 15;
 }
 
 message QueryPermUserRequest {
-    /** 自定义参数 */
+    // 自定义参数
 }
 
 message QueryPermUserResponse {
@@ -397,33 +397,33 @@ message QueryPermUserResponse {
 }
 
 message PagingUser {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 用户名 */
+    // 用户名
     string username = 2;
-    /** 密码 */
+    // 密码
     string password = 3;
-    /** 标志 */
+    // 标志
     int32 flag = 4;
-    /** 头像 */
+    // 头像
     string portrait = 5;
-    /** 昵称 */
+    // 昵称
     string nickname = 6;
-    /** 性别 */
+    // 性别
     string gender = 7;
-    /** 邮箱 */
+    // 邮箱
     string email = 8;
-    /** 手机号码 */
+    // 手机号码
     string phone = 9;
-    /** 部门编号 */
+    // 部门编号
     int64 deptId = 10;
-    /** 岗位编号 */
+    // 岗位编号
     int64 jobId = 11;
-    /** 状态：1启用、0禁用 */
+    // 状态：1启用、0禁用
     int32 enabled = 12;
-    /** 最后登录的日期 */
+    // 最后登录的日期
     int64 lastLogin = 13;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 14;
 }
 
@@ -441,19 +441,19 @@ message PagingRbacUserResponse {
 
 // 保存角色请求
 message SaveRbacRoleRequest {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 角色代码 */
+    // 角色代码
     string code = 2;
-    /** 名称 */
+    // 名称
     string name = 3;
-    /** 角色级别 */
+    // 角色级别
     int32 level = 4;
-    /** 数据权限 */
+    // 数据权限
     string dataScope = 5;
-    /** 备注 */
+    // 备注
     string remark = 6;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 7;
 }
 
@@ -483,26 +483,26 @@ message SRolePermPair{
 }
 
 message SRbacRole {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 角色代码 */
+    // 角色代码
     string code = 2;
-    /** 名称 */
+    // 名称
     string name = 3;
-    /** 角色级别 */
+    // 角色级别
     int32 level = 4;
-    /** 数据权限 */
+    // 数据权限
     string dataScope = 5;
-    /** 备注 */
+    // 备注
     string remark = 6;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 7;
-    /** 关联的资源列表 */
+    // 关联的资源列表
     repeated SRolePermPair resourceList = 8;
 }
 
 message QueryRbacRoleRequest {
-    /** 自定义参数 */
+    // 自定义参数
 }
 
 message QueryRbacRoleResponse {
@@ -510,19 +510,19 @@ message QueryRbacRoleResponse {
 }
 
 message PagingPermRole {
-    /** ID */
+    // ID
     int64 id = 1;
-    /** 角色代码 */
+    // 角色代码
     string code = 2;
-    /** 名称 */
+    // 名称
     string name = 3;
-    /** 角色级别 */
+    // 角色级别
     int32 level = 4;
-    /** 数据权限 */
+    // 数据权限
     string dataScope = 5;
-    /** 备注 */
+    // 备注
     string remark = 6;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 7;
 }
 
@@ -538,31 +538,31 @@ message PagingRbacRoleResponse {
 
 
 message SaveRbacResRequest {
-    /** 资源ID */
+    // 资源ID
     int64 id = 1;
-    /** 资源名称 */
+    // 资源名称
     string name = 2;
     // 资源类型 1:页面 2:组件 3:资源
     int32 resType= 3;
-    /** 上级菜单ID */
+    // 上级菜单ID
     int64 pid = 4;
-    /** 资源键 */
+    // 资源键
     string key = 5;
-    /** 资源路径 */
+    // 资源路径
     string path = 6;
-    /** 图标 */
+    // 图标
     string icon = 7;
-    /** 是否显示到菜单 */
+    // 是否显示到菜单
     bool isMenu = 8;
-    /** 是否启用 */
+    // 是否启用
     bool isEnabled = 9;
-    /** 排序 */
+    // 排序
     int32 sortNum = 10;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 11;
-    /** 组件名称 */
+    // 组件名称
     string componentName = 12;
-    /** 应用序号 */
+    // 应用序号
     int32 appIndex = 13;
 }
 
@@ -577,53 +577,55 @@ message PermResId {
 }
 
 message SPermRes {
-    /** 资源ID */
+    // 资源ID
     int64 id = 1;
-    /** 资源名称 */
+    // 资源名称
     string name = 2;
     // 资源类型 1:页面 2:组件 3:资源
     int32 resType= 3;
-    /** 上级菜单ID */
+    // 上级菜单ID
     int64 pid = 4;
-    /** 深度/层级 */
+    // 深度/层级
     int32 depth = 5;
-    /** 资源键 */
+    // 资源键
     string key = 6;
-    /** 资源路径 */
+    // 资源路径
     string path = 7;
-    /** 图标 */
+    // 图标
     string icon = 8;
-    /** 是否显示到菜单 */
+    // 是否显示到菜单
     bool isMenu = 9;
-    /** 是否启用 */
+    // 是否启用
     bool isEnabled = 10;
-    /** 排序 */
+    // 排序
     int32 sortNum = 11;
-    /** 创建日期 */
+    // 创建日期
     int64 createTime = 12;
-    /** 组件名称 */
+    // 组件名称
     string componentName = 13;
-    /** 应用序号 */
+    // 应用序号
     int32 appIndex = 16;
-    /** 是否为叶子节点 */
+    // 是否为叶子节点
     bool isLeaf = 14;
-    /** 子资源 */
+    // 子资源
     repeated SPermRes children = 15;
 }
 
 message RbacUserResourceRequest {
-    /** 用户编号 */
+    // 用户编号
     int64 userId =  1;
+    // 应用序号
+    int32 appIndex = 2;
 }
 
 message QueryRbacResRequest {
-    /** 关键词 */
+    // 关键词
     string keyword = 1;
-    /** 是否只显示菜单 */
+    // 是否只显示菜单
     bool onlyMenu = 2;
-    /** 上级编号 */
+    // 上级编号
     int64 parentId = 3;
-    /** 初始化数据ID */
+    // 初始化数据ID
     int64 initialId = 4;
 }
 
@@ -636,9 +638,9 @@ message QueryRbacResourceResponse {
 
 // 移动资源顺序
 message MoveResourceOrdinalRequest {
-    /** 资源编号 */
+    // 资源编号
     int64 resourceId = 1;
-    /** 移动方向,0:向上移,1:向下移 */
+    // 移动方向,0:向上移,1:向下移
     int32 direction = 2;
 }
 

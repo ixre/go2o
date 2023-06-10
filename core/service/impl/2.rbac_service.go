@@ -317,7 +317,12 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 	f = func(w *sync.WaitGroup, root *proto.SUserMenu, arr []*model.PermRes) {
 		root.Children = []*proto.SUserMenu{}
 		for _, v := range arr {
+			if v.AppIndex != int(r.AppIndex) {
+				// 其他应用的资源排除
+				continue
+			}
 			if v.IsMenu == 0 {
+				// 非菜单资源排除
 				continue
 			}
 			if v.Pid == int(root.Id) {
@@ -342,7 +347,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 	f(&wg, &root, resList)
 	wg.Wait()
 	dst.Menu = root.Children
-	// 普通用户返回权限Keys,格式如:["A0101","A010102+7"]
+	// 普通用户返回权限Keys,格式如:["A0101","A010102+7"],不用区分应用
 	if r.UserId > 0 {
 		for _, v := range resList {
 			if len(v.ResKey) > 0 {
