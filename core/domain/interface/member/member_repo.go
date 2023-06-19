@@ -42,16 +42,16 @@ type IMemberRepo interface {
 	GetMemberValueByPhone(phone string) *Member
 
 	// 获取会员
-	GetMember(memberId int64) IMember
+	GetMember(memberId int64) IMemberAggregateRoot
 
 	// 创建会员
-	CreateMember(*Member) IMember
+	CreateMember(*Member) IMemberAggregateRoot
 
 	// 删除会员
 	DeleteMember(memberId int64) error
 
 	// 创建会员,仅作为某些操作使用,不保存
-	CreateMemberById(memberId int64) IMember
+	CreateMemberById(memberId int64) IMemberAggregateRoot
 
 	// SaveMember 保存
 	SaveMember(v *Member) (int64, error)

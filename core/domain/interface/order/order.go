@@ -251,7 +251,7 @@ type (
 		// State 获取订单状态
 		State() OrderStatus
 		// Buyer 获取购买的会员
-		Buyer() member.IMember
+		Buyer() member.IMemberAggregateRoot
 		// SetShipmentAddress 设置配送地址
 		SetShipmentAddress(addressId int64) error
 		// 更改收货人信息

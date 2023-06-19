@@ -36,7 +36,7 @@ import (
 
 // todo: 依赖商户的 MSS 发送通知消息,应去掉
 // todo: 会员升级 应单独来处理
-var _ member.IMember = new(memberImpl)
+var _ member.IMemberAggregateRoot = new(memberImpl)
 
 type memberImpl struct {
 	manager         member.IMemberManager
@@ -62,7 +62,7 @@ func (m *memberImpl) ContainFlag(f int) bool {
 func NewMember(manager member.IMemberManager, val *member.Member,
 	rep member.IMemberRepo, walletRepo wallet.IWalletRepo,
 	mp mss.IMssRepo, valRepo valueobject.IValueRepo,
-	registryRepo registry.IRegistryRepo) member.IMember {
+	registryRepo registry.IRegistryRepo) member.IMemberAggregateRoot {
 	return &memberImpl{
 		manager:      manager,
 		value:        val,

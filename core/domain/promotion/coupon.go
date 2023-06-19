@@ -13,12 +13,13 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/util"
-	"strconv"
-	"time"
 )
 
 var _ promotion.IPromotion = new(Coupon)
@@ -205,7 +206,7 @@ func (c *Coupon) GetCouponFee(orderFee int) int {
 }
 
 // 是否可用
-func (c *Coupon) CanUse(m member.IMember, fee float32) (bool, error) {
+func (c *Coupon) CanUse(m member.IMemberAggregateRoot, fee float32) (bool, error) {
 	mv := m.GetValue()
 	cv := c.GetDetailsValue()
 
@@ -243,17 +244,17 @@ func (c *Coupon) CanUse(m member.IMember, fee float32) (bool, error) {
 
 /********  占用  *********/
 
-//是否允许占用
+// 是否允许占用
 func (c *Coupon) CanTake() bool {
 	return c.detailsValue.NeedBind == 0
 }
 
-//获取占用
+// 获取占用
 func (c *Coupon) GetTake(memberId int64) (*promotion.ValueCouponTake, error) {
 	return c.promRepo.GetCouponTakeByMemberId(c.detailsValue.Id, memberId)
 }
 
-//占用
+// 占用
 func (c *Coupon) Take(memberId int64) error {
 	if c.detailsValue.Amount == 0 {
 		return errors.New("优惠券不足!")
@@ -278,7 +279,7 @@ func (c *Coupon) Take(memberId int64) error {
 	return err
 }
 
-//应用到订单
+// 应用到订单
 func (c *Coupon) ApplyTake(couponTakeId int32) error {
 	valTake := c.promRepo.GetCouponTake(c.detailsValue.Id, couponTakeId)
 	if valTake == nil {
@@ -301,7 +302,7 @@ func (c *Coupon) ApplyTake(couponTakeId int32) error {
 
 /********  绑定  *********/
 
-//绑定
+// 绑定
 func (c *Coupon) Bind(memberId int64) error {
 	if c.detailsValue.Amount == 0 {
 		return errors.New("优惠券不足")
@@ -325,7 +326,7 @@ func (c *Coupon) Bind(memberId int64) error {
 	return err
 }
 
-//获取绑定
+// 获取绑定
 func (c *Coupon) GetBind(memberId int64) (*promotion.ValueCouponBind, error) {
 	return c.promRepo.GetCouponBindByMemberId(c.detailsValue.Id, memberId)
 }
@@ -350,7 +351,7 @@ func (c *Coupon) Binds(memberIds []string) error {
 	return nil
 }
 
-//使用优惠券
+// 使用优惠券
 func (c *Coupon) UseCoupon(couponBindId int32) error {
 	valBind := c.promRepo.GetCouponBind(c.detailsValue.Id, couponBindId)
 

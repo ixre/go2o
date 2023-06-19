@@ -61,7 +61,7 @@ const (
 )
 
 type (
-	IMember interface {
+	IMemberAggregateRoot interface {
 		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int64
 		// Complex 会员汇总信息
