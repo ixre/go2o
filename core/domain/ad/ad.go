@@ -9,10 +9,11 @@
 package ad
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/ad"
-	"github.com/ixre/go2o/core/domain/tmp"
 	"sync"
 	"time"
+
+	"github.com/ixre/go2o/core/domain/interface/ad"
+	"github.com/ixre/go2o/core/domain/tmp"
 )
 
 var _ ad.IUserAd = new(userAdImpl)
@@ -22,7 +23,7 @@ type adManagerImpl struct {
 	rep       ad.IAdRepo
 	defaultAd ad.IUserAd
 	mux       sync.Mutex
-	cache     map[string]ad.IAd
+	cache     map[string]ad.IAdAggregateRoot
 }
 
 // GetGroups 获取广告分组
@@ -53,13 +54,13 @@ func (a *adManagerImpl) GetPositionByKey(key string) *ad.Position {
 }
 
 // 根据广告位KEY获取默认广告
-func (a *adManagerImpl) GetAdByPositionKey(key string) ad.IAd {
+func (a *adManagerImpl) GetAdByPositionKey(key string) ad.IAdAggregateRoot {
 	a.mux.Lock()
 	defer a.mux.Unlock()
 	ok := false
-	var iv ad.IAd
+	var iv ad.IAdAggregateRoot
 	if a.cache == nil {
-		a.cache = make(map[string]ad.IAd)
+		a.cache = make(map[string]ad.IAdAggregateRoot)
 	}
 	//从缓存中获取
 	if iv, ok = a.cache[key]; ok {
@@ -85,7 +86,7 @@ type userAdImpl struct {
 	_rep      ad.IAdRepo
 	_manager  ad.IAdvertisementManager
 	_adUserId int64
-	_cache    map[string]ad.IAd
+	_cache    map[string]ad.IAdAggregateRoot
 	_mux      sync.Mutex
 }
 
@@ -103,7 +104,7 @@ func (a *userAdImpl) GetAggregateRootId() int64 {
 }
 
 // 根据编号获取广告
-func (a *userAdImpl) GetById(id int64) ad.IAd {
+func (a *userAdImpl) GetById(id int64) ad.IAdAggregateRoot {
 	v := a._rep.GetAd(id)
 	if v != nil {
 		return a.CreateAd(v)
@@ -125,13 +126,13 @@ func (a *userAdImpl) GetAdPositionsByAdId(adId int64) []*ad.Position {
 	return list
 }
 
-func (a *userAdImpl) QueryAdvertisement(keys []string) map[string]ad.IAd {
+func (a *userAdImpl) QueryAdvertisement(keys []string) map[string]ad.IAdAggregateRoot {
 	arr := a._rep.GetPositions()
 	keyMap := make(map[string]int, len(keys))
 	for _, v := range keys {
 		keyMap[v] = 0
 	}
-	mp := make(map[string]ad.IAd, 0)
+	mp := make(map[string]ad.IAdAggregateRoot, 0)
 	for _, v := range arr {
 		if _, ok := keyMap[v.Key]; ok {
 			if v.PutAdId <= 0 {
@@ -164,13 +165,13 @@ func (a *userAdImpl) DeleteAd(adId int64) error {
 }
 
 // 根据KEY获取广告
-func (a *userAdImpl) GetByPositionKey(key string) ad.IAd {
+func (a *userAdImpl) GetByPositionKey(key string) ad.IAdAggregateRoot {
 	a._mux.Lock()
 	defer a._mux.Unlock()
 	ok := false
-	var iv ad.IAd
+	var iv ad.IAdAggregateRoot
 	if a._cache == nil {
-		a._cache = make(map[string]ad.IAd)
+		a._cache = make(map[string]ad.IAdAggregateRoot)
 	}
 	//从缓存中获取
 	if iv, ok = a._cache[key]; ok {
@@ -191,7 +192,7 @@ func (a *userAdImpl) GetByPositionKey(key string) ad.IAd {
 }
 
 // 创建广告对象
-func (a *userAdImpl) CreateAd(v *ad.Ad) ad.IAd {
+func (a *userAdImpl) CreateAd(v *ad.Ad) ad.IAdAggregateRoot {
 	adv := &adImpl{
 		_rep:   a._rep,
 		_value: v,
@@ -246,7 +247,7 @@ func (a *userAdImpl) SetAd(posId, adId int64) error {
 	return err
 }
 
-var _ ad.IAd = new(adImpl)
+var _ ad.IAdAggregateRoot = new(adImpl)
 
 type adImpl struct {
 	_rep   ad.IAdRepo

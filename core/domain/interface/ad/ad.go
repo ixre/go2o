@@ -27,7 +27,7 @@ type (
 		// 根据KEY获取广告位
 		GetPositionByKey(key string) *Position
 		// 根据广告位KEY获取默认广告
-		GetAdByPositionKey(key string) IAd
+		GetAdByPositionKey(key string) IAdAggregateRoot
 		// 获取用户的广告管理
 		GetUserAd(adUserId int64) IUserAd
 		// 获取广告分组
@@ -55,18 +55,18 @@ type (
 		//获取广告关联的广告位
 		GetAdPositionsByAdId(adId int64) []*Position
 		// 根据编号获取广告
-		GetById(id int64) IAd
+		GetById(id int64) IAdAggregateRoot
 		// 根据KEY获取广告
-		GetByPositionKey(key string) IAd
+		GetByPositionKey(key string) IAdAggregateRoot
 		// 创建广告对象
-		CreateAd(*Ad) IAd
+		CreateAd(*Ad) IAdAggregateRoot
 		// 设置广告
 		SetAd(posId, adId int64) error
-		QueryAdvertisement(keys []string) map[string]IAd
+		QueryAdvertisement(keys []string) map[string]IAdAggregateRoot
 	}
 
-	// IAd 广告接口
-	IAd interface {
+	// IAdAggregateRoot 广告接口
+	IAdAggregateRoot interface {
 		// 获取领域对象编号
 		GetDomainId() int64
 		// 是否为系统发布的广告
