@@ -9,11 +9,12 @@
 package ad
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/ad"
 	"sort"
+
+	"github.com/ixre/go2o/core/domain/interface/ad"
 )
 
-var _ ad.IAd = new(GalleryAd)
+var _ ad.IAdAggregateRoot = new(GalleryAd)
 var _ ad.IGalleryAd = new(GalleryAd)
 
 type GalleryAd struct {

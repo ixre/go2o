@@ -206,7 +206,7 @@ func (t *orderManagerImpl) GetFreeOrderNo(vendorId int64) string {
 }
 
 // 应用优惠券
-func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
+func (t *orderManagerImpl) applyCoupon(m member.IMemberAggregateRoot, o order.IOrder,
 	py payment.IPaymentOrder, couponCode string) error {
 	if o.Type() != order.TRetail {
 		return errors.New("不支持优惠券")

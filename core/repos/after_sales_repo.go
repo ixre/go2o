@@ -57,12 +57,12 @@ func NewAfterSalesRepo(o orm.Orm, orderRepo order.IOrderRepo,
 }
 
 // 创建售后单
-func (a *afterSalesRepo) CreateAfterSalesOrder(v *afterSales.AfterSalesOrder) afterSales.IAfterSalesOrder {
+func (a *afterSalesRepo) CreateAfterSalesOrder(v *afterSales.AfterSalesOrder) afterSales.IAfterSalesOrderAggregateRoot {
 	return asImpl.NewAfterSalesOrder(v, a, a.orderRepo, a.memberRepo, a.paymentRepo)
 }
 
 // 获取售后单
-func (a *afterSalesRepo) GetAfterSalesOrderById(id int32) afterSales.IAfterSalesOrder {
+func (a *afterSalesRepo) GetAfterSalesOrderById(id int32) afterSales.IAfterSalesOrderAggregateRoot {
 	v := &afterSales.AfterSalesOrder{}
 	if a.o.Get(id, v) == nil {
 		return a.CreateAfterSalesOrder(v)
@@ -71,7 +71,7 @@ func (a *afterSalesRepo) GetAfterSalesOrderById(id int32) afterSales.IAfterSales
 }
 
 // 获取售后单
-func (a *afterSalesRepo) GetAfterSalesOrder(orderNo string) afterSales.IAfterSalesOrder {
+func (a *afterSalesRepo) GetAfterSalesOrder(orderNo string) afterSales.IAfterSalesOrderAggregateRoot {
 	v := &afterSales.AfterSalesOrder{}
 	if a.o.GetBy(v, "order_no = $1", orderNo) == nil {
 		return a.CreateAfterSalesOrder(v)
@@ -80,9 +80,9 @@ func (a *afterSalesRepo) GetAfterSalesOrder(orderNo string) afterSales.IAfterSal
 }
 
 // 获取订单的售后单
-func (a *afterSalesRepo) GetAllOfSaleOrder(orderId int64) []afterSales.IAfterSalesOrder {
+func (a *afterSalesRepo) GetAllOfSaleOrder(orderId int64) []afterSales.IAfterSalesOrderAggregateRoot {
 	list := []*afterSales.AfterSalesOrder{}
-	orders := []afterSales.IAfterSalesOrder{}
+	orders := []afterSales.IAfterSalesOrderAggregateRoot{}
 	if a.o.Select(&list, "order_id= $1", orderId) == nil {
 		for _, v := range list {
 			orders = append(orders, a.CreateAfterSalesOrder(v))

@@ -68,12 +68,12 @@ type PermRes struct {
 	Name string `db:"name"`
 	// 资源类型, 1:页面 2:组件 3:资源
 	ResType int `db:"res_type"`
+	// 资源键
+	ResKey string `db:"res_key"`
 	// 上级菜单ID
 	Pid int `db:"pid"`
 	// 深度/层级
 	Depth int `db:"depth"`
-	// 资源键
-	Key string `db:"key"`
 	// 资源路径
 	Path string `db:"path"`
 	// 图标
@@ -90,8 +90,8 @@ type PermRes struct {
 	CreateTime int64 `db:"create_time"`
 	// 组件名称
 	ComponentName string `db:"component_name"`
-	// 缓存
-	Cache string `db:"cache_"`
+	// 应用序号,0代表当前应用
+	AppIndex int `db:"app_index"`
 }
 
 // 角色部门关联
@@ -176,4 +176,18 @@ type PermUserRole struct {
 	UserId int64 `db:"user_id"`
 	// 角色ID
 	RoleId int64 `db:"role_id"`
+}
+
+// LoginLog 用户登录日志
+type LoginLog struct {
+	// 编号
+	Id int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
+	// 用户编号
+	UserId int64 `db:"user_id" json:"userId"`
+	// 登录IP地址
+	Ip string `db:"ip" json:"ip"`
+	// 是否成功
+	IsSuccess int `db:"is_success" json:"isSuccess"`
+	// 创建时间
+	CreateTime int64 `db:"create_time" json:"createTime"`
 }

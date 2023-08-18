@@ -18,12 +18,12 @@ import (
 	"github.com/ixre/gof/db/orm"
 )
 
-//var _ afterSales.IExchangeOrder = new(exchangeOrderImpl)
-var _ afterSales.IAfterSalesOrder = new(exchangeOrderImpl)
+// var _ afterSales.IExchangeOrder = new(exchangeOrderImpl)
+var _ afterSales.IAfterSalesOrderAggregateRoot = new(exchangeOrderImpl)
 var _ afterSales.IReturnAfterSalesOrder = new(exchangeOrderImpl)
 
 // 换货单
-//todo: 是否也需要限制退货数量
+// todo: 是否也需要限制退货数量
 type exchangeOrderImpl struct {
 	*afterSalesOrderImpl
 	refValue *afterSales.ExchangeOrder

@@ -361,7 +361,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 }
 
 func (s *memberService) getMember(memberId int64) (
-	member.IMember, error) {
+	member.IMemberAggregateRoot, error) {
 	if memberId <= 0 {
 		return nil, member.ErrNoSuchMember
 	}

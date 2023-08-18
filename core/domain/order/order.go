@@ -63,7 +63,7 @@ var _ order.IOrder = new(baseOrderImpl)
 
 type baseOrderImpl struct {
 	baseValue    *order.Order
-	buyer        member.IMember
+	buyer        member.IMemberAggregateRoot
 	repo         order.IOrderRepo
 	memberRepo   member.IMemberRepo
 	itemRepo     item.IItemRepo
@@ -88,7 +88,7 @@ func (o *baseOrderImpl) State() order.OrderStatus {
 }
 
 // Buyer 获取购买的会员
-func (o *baseOrderImpl) Buyer() member.IMember {
+func (o *baseOrderImpl) Buyer() member.IMemberAggregateRoot {
 	if o.buyer == nil {
 		o.buyer = o.memberRepo.GetMember(o.baseValue.BuyerId)
 	}

@@ -273,3 +273,44 @@ CREATE
 INDEX perm_dict_detail_dict_id_idx
     ON "public".perm_dict_detail (dict_id);
 
+/** 2023-06-05 perm_login_log */
+CREATE TABLE public.perm_login_log
+(
+    id bigserial NOT NULL,
+    user_id bigint NOT NULL,
+    ip character varying(20) NOT NULL,
+    is_success integer NOT NULL,
+    create_time bigint NOT NULL,
+    PRIMARY KEY (id)
+);
+
+ALTER TABLE IF EXISTS public.perm_login_log
+    OWNER to postgres;
+
+COMMENT ON TABLE public.perm_login_log
+    IS '用户登录日志';
+
+COMMENT ON COLUMN public.perm_login_log.id
+    IS '编号';
+
+COMMENT ON COLUMN public.perm_login_log.user_id
+    IS '用户编号';
+
+COMMENT ON COLUMN public.perm_login_log.ip
+    IS '登录IP地址';
+
+COMMENT ON COLUMN public.perm_login_log.is_success
+    IS '是否成功';
+
+COMMENT ON COLUMN public.perm_login_log.create_time
+    IS '创建时间';
+
+
+/* 2023-06-10 支持多应用 */
+ALTER TABLE IF EXISTS public.perm_res DROP COLUMN IF EXISTS cache_;
+
+ALTER TABLE IF EXISTS public.perm_res
+    ADD COLUMN app_index integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.perm_res.app_index
+    IS '应用(系统)序号';

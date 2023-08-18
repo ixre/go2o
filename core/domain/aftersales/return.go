@@ -19,7 +19,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 )
 
-var _ afterSales.IAfterSalesOrder = new(returnOrderImpl)
+var _ afterSales.IAfterSalesOrderAggregateRoot = new(returnOrderImpl)
 var _ afterSales.IReturnOrder = new(returnOrderImpl)
 var _ afterSales.IReturnAfterSalesOrder = new(returnOrderImpl)
 

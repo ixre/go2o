@@ -21,7 +21,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 )
 
-var _ afterSales.IAfterSalesOrder = new(afterSalesOrderImpl)
+var _ afterSales.IAfterSalesOrderAggregateRoot = new(afterSalesOrderImpl)
 var _ afterSales.IReturnAfterSalesOrder = new(afterSalesOrderImpl)
 
 type afterSalesOrderImpl struct {
@@ -34,7 +34,7 @@ type afterSalesOrderImpl struct {
 
 func NewAfterSalesOrder(v *afterSales.AfterSalesOrder,
 	rep afterSales.IAfterSalesRepo, orderRepo order.IOrderRepo,
-	memberRepo member.IMemberRepo, paymentRepo payment.IPaymentRepo) afterSales.IAfterSalesOrder {
+	memberRepo member.IMemberRepo, paymentRepo payment.IPaymentRepo) afterSales.IAfterSalesOrderAggregateRoot {
 	as := newAfterSalesOrder(v, rep, orderRepo, paymentRepo)
 	switch v.Type {
 	case afterSales.TypeReturn:

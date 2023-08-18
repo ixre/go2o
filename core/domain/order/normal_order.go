@@ -65,7 +65,7 @@ type normalOrderImpl struct {
 	_subOrders      []order.ISubOrder
 	_payOrder       payment.IPaymentOrder
 	// 返利推荐人
-	_AffiliateMember member.IMember
+	_AffiliateMember member.IMemberAggregateRoot
 }
 
 func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
@@ -1020,7 +1020,7 @@ func (o *normalOrderImpl) takeGoodsStock(itemId, skuId int64, quantity int32) er
 
 // 更新返现到会员账户
 func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
-	m member.IMember, fee int64, unixTime int64) error {
+	m member.IMemberAggregateRoot, fee int64, unixTime int64) error {
 	if fee == 0 {
 		return nil
 	}
@@ -1052,7 +1052,7 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 
 // 处理返现促销
 func (o *normalOrderImpl) handleCashBackPromotions(pt merchant.IMerchant,
-	m member.IMember) error {
+	m member.IMemberAggregateRoot) error {
 	proms := o.GetPromotionBinds()
 	for _, v := range proms {
 		if v.PromotionType == promotion.TypeFlagCashBack {
@@ -1065,7 +1065,7 @@ func (o *normalOrderImpl) handleCashBackPromotions(pt merchant.IMerchant,
 
 // 处理返现促销
 func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
-	m member.IMember,
+	m member.IMemberAggregateRoot,
 	v *order.OrderPromotionBind, pm promotion.IPromotion) error {
 	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)
 

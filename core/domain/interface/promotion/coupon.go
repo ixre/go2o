@@ -40,7 +40,7 @@ type ICouponPromotion interface {
 
 	// 是否可用,传递会员及订单金额
 	// error返回不适用的详细信息
-	CanUse(member.IMember, float32) (bool, error)
+	CanUse(member.IMemberAggregateRoot, float32) (bool, error)
 
 	// 是否允许占用
 	CanTake() bool

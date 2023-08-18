@@ -112,7 +112,7 @@ type (
 	// 开始发货  -》 确认收货       -》 处理售后     -》 完成
 
 	// 售后单
-	IAfterSalesOrder interface {
+	IAfterSalesOrderAggregateRoot interface {
 		// 获取领域编号
 		GetDomainId() int32
 
@@ -161,14 +161,14 @@ type (
 
 	IAfterSalesRepo interface {
 		// 创建售后单
-		CreateAfterSalesOrder(v *AfterSalesOrder) IAfterSalesOrder
+		CreateAfterSalesOrder(v *AfterSalesOrder) IAfterSalesOrderAggregateRoot
 
 		// GetAfterSalesOrderById 获取售后单
-		GetAfterSalesOrderById(id int32) IAfterSalesOrder
+		GetAfterSalesOrderById(id int32) IAfterSalesOrderAggregateRoot
 		// GetAfterSalesOrder 获取售后单
-		GetAfterSalesOrder(orderNo string) IAfterSalesOrder
+		GetAfterSalesOrder(orderNo string) IAfterSalesOrderAggregateRoot
 		// 获取订单的售后单
-		GetAllOfSaleOrder(orderId int64) []IAfterSalesOrder
+		GetAllOfSaleOrder(orderId int64) []IAfterSalesOrderAggregateRoot
 
 		// GetFreeOrderNo 生成一个可用的售后订单号
 		GetFreeOrderNo(orderId int64) string
