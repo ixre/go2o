@@ -1078,7 +1078,7 @@ func (a *accountImpl) walletFreezeExpired(amount int, remark string) error {
 }
 
 // 获取会员名称
-func (a *accountImpl) getMemberName(m member.IMember) string {
+func (a *accountImpl) getMemberName(m member.IMemberAggregateRoot) string {
 	if tr := m.Profile().GetTrustedInfo(); tr.RealName != "" &&
 		tr.ReviewState == int(enum.ReviewPass) {
 		return tr.RealName
@@ -1116,7 +1116,7 @@ func (a *accountImpl) TransferAccount(account member.AccountType, toMember int64
 	return nil
 }
 
-func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
+func (a *accountImpl) transferBalance(tm member.IMemberAggregateRoot, tradeNo string,
 	tradeAmount, tradeFee int, remark string) error {
 	csnFee := tradeFee
 	amount := tradeAmount
@@ -1152,7 +1152,7 @@ func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 	return err
 }
 
-func (a *accountImpl) transferWalletAccount(tm member.IMember, tradeNo string,
+func (a *accountImpl) transferWalletAccount(tm member.IMemberAggregateRoot, tradeNo string,
 	tradeAmount, tradeFee int, remark string) error {
 	csnFee := tradeFee
 	amount := tradeAmount

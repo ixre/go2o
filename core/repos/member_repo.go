@@ -245,7 +245,7 @@ func (m *MemberRepoImpl) getProfileCk(memberId int64) string {
 }
 
 // 获取会员
-func (m *MemberRepoImpl) GetMember(memberId int64) member.IMember {
+func (m *MemberRepoImpl) GetMember(memberId int64) member.IMemberAggregateRoot {
 	e := &member.Member{}
 	key := m.getMemberCk(memberId)
 	if err := m.storage.Get(key, &e); err != nil {
@@ -338,13 +338,13 @@ func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
 }
 
 // 创建会员
-func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMember {
+func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMemberAggregateRoot {
 	return memberImpl.NewMember(m.GetManager(), v, m,
 		m.walletRepo, m.mssRepo, m.valueRepo, m.registryRepo)
 }
 
 // 创建会员,仅作为某些操作使用,不保存
-func (m *MemberRepoImpl) CreateMemberById(memberId int64) member.IMember {
+func (m *MemberRepoImpl) CreateMemberById(memberId int64) member.IMemberAggregateRoot {
 	if memberId <= 0 {
 		return nil
 	}

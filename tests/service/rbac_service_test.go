@@ -26,7 +26,7 @@ func TestInitialTreeNode(t *testing.T) {
 
 func TestCheckRBACToken(t *testing.T) {
 	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOi0xLCJleHAiOjE2Nzc2NjMxODYsImlzcyI6ImdvMm8iLCJuYW1lIjoibWFzdGVyIiwic3ViIjoiZ28yby1yYmFjLXRva2VuIiwieC1wZXJtIjoibWFzdGVyLGFkbWluIn0.VMUGah8mgG8fbVicb4K45K83wbvnUZccImWMH9-vehs"
-	ret, _ := impl.RbacService.CheckRBACToken(context.TODO(), &proto.CheckRBACTokenRequest{
+	ret, _ := impl.RbacService.CheckRBACToken(context.TODO(), &proto.RbacCheckTokenRequest{
 		AccessToken: accessToken,
 	})
 	if len(ret.Error) > 0 {
@@ -61,9 +61,9 @@ func TestGenerateResourceKey(t *testing.T) {
 	gk := impl.RbacService.GenerateResourceKey
 	ret := gk(model.PermRes{Id: 0})
 	t.Log("新建一级:", ret)
-	ret = gk(model.PermRes{Id: 2328, Key: "D"})
+	ret = gk(model.PermRes{Id: 2328, ResKey: "D"})
 	t.Log("新建商户二级:", ret)
-	ret = gk(model.PermRes{Id: 2321, Key: "B0101"})
+	ret = gk(model.PermRes{Id: 2321, ResKey: "B0101"})
 	t.Log("新建商户三级:", ret)
 }
 
@@ -93,7 +93,7 @@ func TestSaveRbacResource(t *testing.T) {
 // 测试获取用户资源
 func TestGetUserResources(t *testing.T) {
 	s := impl.RbacService
-	ret, _ := s.GetUserResource(context.TODO(), &proto.GetUserResRequest{
+	ret, _ := s.GetUserResource(context.TODO(), &proto.RbacUserResourceRequest{
 		UserId:   1,
 		OnlyMenu: true,
 	})

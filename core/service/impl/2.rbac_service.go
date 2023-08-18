@@ -56,6 +56,10 @@ func NewRbacService(s storage.Interface, o orm.Orm, registryRepo registry.IRegis
 	}
 }
 
+func (p *rbacServiceImpl) createLoginLog(userId int64, ipAddress string, isSuccess int) {
+
+}
+
 func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest) (*proto.RbacLoginResponse, error) {
 	if len(r.Password) != 32 {
 		return &proto.RbacLoginResponse{
@@ -69,6 +73,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		superPwd, _ := p.registryRepo.GetValue(registry.SysSuperLoginToken)
 		encPwd := domain.Sha1Pwd(r.Username+r.Password, "")
 		if superPwd != encPwd {
+			p.createLoginLog(0, r.IpAddress, 1) // 登录失败
 			return &proto.RbacLoginResponse{
 				ErrCode: 3,
 				ErrMsg:  "密码不正确",
@@ -76,7 +81,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		}
 		dst := &proto.RbacLoginResponse{
 			UserId: 0,
-			Roles:  []string{"admin"},
+			Roles:  []string{"master", "admin"},
 		}
 		return p.withAccessToken("master", dst, expires)
 	}
@@ -90,17 +95,20 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 	}
 	decPwd := crypto.Sha1([]byte(r.Password + usr.Salt))
 	if usr.Password != decPwd {
+		p.createLoginLog(usr.Id, r.IpAddress, 3) // 登录失败
 		return &proto.RbacLoginResponse{
 			ErrCode: 3,
 			ErrMsg:  "密码不正确",
 		}, nil
 	}
 	if usr.Enabled != 1 {
+		p.createLoginLog(usr.Id, r.IpAddress, 4) // 登录失败
 		return &proto.RbacLoginResponse{
 			ErrCode: 4,
 			ErrMsg:  "用户已停用",
 		}, nil
 	}
+	p.createLoginLog(usr.Id, r.IpAddress, 0) // 登录成功
 	dst := &proto.RbacLoginResponse{
 		UserId: usr.Id,
 	}
@@ -145,14 +153,14 @@ func (p *rbacServiceImpl) createAccessToken(userId int64, userName string, perm 
 }
 
 // 检查令牌是否有效并返回新的令牌
-func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.CheckRBACTokenRequest) (*proto.CheckRBACTokenResponse, error) {
+func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.RbacCheckTokenRequest) (*proto.RbacCheckTokenResponse, error) {
 	if len(request.AccessToken) == 0 {
-		return &proto.CheckRBACTokenResponse{Error: "令牌不能为空"}, nil
+		return &proto.RbacCheckTokenResponse{Error: "令牌不能为空"}, nil
 	}
 	jwtSecret, err := p.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
-		return &proto.CheckRBACTokenResponse{Error: err.Error()}, nil
+		return &proto.RbacCheckTokenResponse{Error: err.Error()}, nil
 	}
 	// 去掉"Bearer "
 	if len(request.AccessToken) > 6 &&
@@ -165,11 +173,11 @@ func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.Check
 		return []byte(jwtSecret), nil
 	})
 	if tk == nil {
-		return &proto.CheckRBACTokenResponse{Error: "令牌无效"}, nil
+		return &proto.RbacCheckTokenResponse{Error: "令牌无效"}, nil
 	}
 	if !dstClaims.VerifyIssuer("go2o", true) ||
 		dstClaims["sub"] != "go2o-rbac-token" {
-		return &proto.CheckRBACTokenResponse{Error: "未知颁发者的令牌"}, nil
+		return &proto.RbacCheckTokenResponse{Error: "未知颁发者的令牌"}, nil
 	}
 	// 令牌过期时间
 	exp := int64(dstClaims["exp"].(float64))
@@ -177,13 +185,13 @@ func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.Check
 	if !tk.Valid {
 		ve, _ := err.(*jwt.ValidationError)
 		if ve.Errors&jwt.ValidationErrorExpired != 0 {
-			return &proto.CheckRBACTokenResponse{
+			return &proto.RbacCheckTokenResponse{
 				Error:            "令牌已过期",
 				IsExpires:        true,
 				TokenExpiresTime: exp,
 			}, nil
 		}
-		return &proto.CheckRBACTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
+		return &proto.RbacCheckTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
 	}
 	aud := int64(typeconv.MustInt(dstClaims["aud"]))
 	// 如果设置了续期参数
@@ -192,13 +200,13 @@ func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.Check
 		dstClaims["exp"] = exp
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, dstClaims)
 		accessToken, _ := token.SignedString([]byte(jwtSecret))
-		return &proto.CheckRBACTokenResponse{
+		return &proto.RbacCheckTokenResponse{
 			UserId:           aud,
 			TokenExpiresTime: int64(exp),
 			RenewAccessToken: accessToken,
 		}, nil
 	}
-	return &proto.CheckRBACTokenResponse{
+	return &proto.RbacCheckTokenResponse{
 		UserId:           aud,
 		TokenExpiresTime: exp,
 	}, nil
@@ -277,12 +285,12 @@ func (p *rbacServiceImpl) appendParentResource(arr *[]*model.PermRes) {
 }
 
 // GetUserResource 获取用户的资源,在前端处理排序问题
-func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserResRequest) (*proto.RbacUserResourceResponse, error) {
+func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserResourceRequest) (*proto.RbacUserResourceResponse, error) {
 	dst := &proto.RbacUserResourceResponse{}
 	var resList []*model.PermRes
 	rolePermMap := make(map[int]int, 0)
-	if r.UserId <= 0 { // 管理员
-		dst.Roles = []string{"admin"}
+	if r.UserId <= 0 { // master为超级管理员,拥有权限管理权限,admin为管理员
+		dst.Roles = []string{"master", "admin"}
 		resList = p.dao.SelectPermRes("is_forbidden <> 1 AND is_enabled = 1")
 	} else {
 		usr := p.dao.GetUser(r.UserId)
@@ -303,26 +311,31 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 		}
 	}
 	// 获取菜单
-	root := proto.SUserMenuRes{}
+	root := proto.SUserMenu{}
 	wg := sync.WaitGroup{}
-	var f func(*sync.WaitGroup, *proto.SUserMenuRes, []*model.PermRes)
-	f = func(w *sync.WaitGroup, root *proto.SUserMenuRes, arr []*model.PermRes) {
-		root.Children = []*proto.SUserMenuRes{}
+	var f func(*sync.WaitGroup, *proto.SUserMenu, []*model.PermRes)
+	f = func(w *sync.WaitGroup, root *proto.SUserMenu, arr []*model.PermRes) {
+		root.Children = []*proto.SUserMenu{}
 		for _, v := range arr {
+			if v.AppIndex != int(r.AppIndex) {
+				// 其他应用的资源排除
+				continue
+			}
 			if v.IsMenu == 0 {
+				// 非菜单资源排除
 				continue
 			}
 			if v.Pid == int(root.Id) {
-				c := &proto.SUserMenuRes{
+				c := &proto.SUserMenu{
 					Id:            int64(v.Id),
-					Key:           v.Key,
+					Key:           v.ResKey,
 					Name:          v.Name,
 					Path:          v.Path,
 					Icon:          v.Icon,
 					SortNum:       int32(v.SortNum),
 					ComponentName: v.ComponentName,
 				}
-				c.Children = make([]*proto.SUserMenuRes, 0)
+				c.Children = make([]*proto.SUserMenu, 0)
 				root.Children = append(root.Children, c)
 				w.Add(1)
 				go f(w, c, arr)
@@ -334,30 +347,30 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.GetUserRes
 	f(&wg, &root, resList)
 	wg.Wait()
 	dst.Menu = root.Children
-	// 普通用户返回权限Keys,格式如:["A0101","A010102+7"]
+	// 普通用户返回权限Keys,格式如:["A0101","A010102+7"],不用区分应用
 	if r.UserId > 0 {
 		for _, v := range resList {
-			if len(v.Key) > 0 {
+			if len(v.ResKey) > 0 {
 				// 添加权限flag到key中
 				flag := rolePermMap[int(v.Id)]
 				if flag > 0 {
-					v.Key = fmt.Sprintf("%s+%d", v.Key, flag)
+					v.ResKey = fmt.Sprintf("%s+%d", v.ResKey, flag)
 				}
-				dst.Keys = append(dst.Keys, v.Key)
+				dst.ResourceKeys = append(dst.ResourceKeys, v.ResKey)
 			}
 		}
 	}
 	return dst, nil
 }
 
-func walkDepartTree(node *proto.RbacTree, nodeList []*model.PermDept) {
-	node.Children = []*proto.RbacTree{}
+func walkDepartTree(node *proto.SRbacTree, nodeList []*model.PermDept) {
+	node.Children = []*proto.SRbacTree{}
 	for _, v := range nodeList {
 		if v.Pid == node.Id {
-			v := &proto.RbacTree{
+			v := &proto.SRbacTree{
 				Id:       v.Id,
 				Label:    v.Name,
-				Children: make([]*proto.RbacTree, 0),
+				Children: make([]*proto.SRbacTree, 0),
 			}
 			node.Children = append(node.Children, v)
 			walkDepartTree(v, nodeList)
@@ -366,11 +379,11 @@ func walkDepartTree(node *proto.RbacTree, nodeList []*model.PermDept) {
 }
 
 // 部门树形数据
-func (p *rbacServiceImpl) DepartTree(_ context.Context, empty *proto.Empty) (*proto.RbacTree, error) {
-	root := &proto.RbacTree{
+func (p *rbacServiceImpl) DepartTree(_ context.Context, empty *proto.Empty) (*proto.SRbacTree, error) {
+	root := &proto.SRbacTree{
 		Id:       0,
 		Label:    "根节点",
-		Children: make([]*proto.RbacTree, 0),
+		Children: make([]*proto.SRbacTree, 0),
 	}
 	list := p.dao.SelectPermDept("")
 	walkDepartTree(root, list)
@@ -770,11 +783,13 @@ func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryRba
 	return ret, nil
 }
 
+// DeletePermRole 删除角色
 func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.RbacRoleId) (*proto.Result, error) {
 	err := p.dao.DeletePermRole(id.Value)
 	return p.error(err), nil
 }
 
+// PagingPermRole 角色分页信息
 func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePagingRequest) (*proto.PagingRbacRoleResponse, error) {
 	total, rows := p.dao.PagingQueryPermRole(int(r.Params.Begin),
 		int(r.Params.End),
@@ -806,7 +821,7 @@ func (p *rbacServiceImpl) checkParentResource(id int, currentPid int, pid int) (
 		return parentRes, nil
 	}
 	// 检测上级是否为自己
-	if pid == id {
+	if pid == id && id > 0 {
 		return parentRes, errors.New("不能将自己指定为上级资源")
 	}
 	// 检测上级是否为下级
@@ -839,15 +854,15 @@ func (p *rbacServiceImpl) GenerateResourceKey(parent model.PermRes) string {
 	}
 	// 下级资源采用数字编号
 	if l == 0 {
-		return fmt.Sprintf("%s01", parent.Key)
+		return fmt.Sprintf("%s01", parent.ResKey)
 	}
 	// 获取末尾编号,如:05,并进行累加
 	v, _ := strconv.Atoi(maxKey[l-2:])
 	v += 1
 	if v < 10 {
-		return fmt.Sprintf("%s0%d", parent.Key, v)
+		return fmt.Sprintf("%s0%d", parent.ResKey, v)
 	}
-	return fmt.Sprintf("%s%d", parent.Key, v)
+	return fmt.Sprintf("%s%d", parent.ResKey, v)
 }
 
 // 保存PermRes
@@ -888,9 +903,16 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 		}, nil
 	}
 	// 如果新增, 则生成key
-	if r.Id <= 0 || len(dst.Key) == 0 {
-		dst.Key = p.GenerateResourceKey(parent)
+	if r.Id <= 0 || len(dst.ResKey) == 0 {
+		dst.ResKey = p.GenerateResourceKey(parent)
+		// 新增时设置应用序号
+		dst.AppIndex = int(r.AppIndex)
+		// 如果包含上级,则与上级的应用序号保持一致
+		if parent.Id > 0 {
+			dst.AppIndex = parent.AppIndex
+		}
 	}
+
 	// 上级是否改变
 	var parentChanged = r.Id > 0 && (dst.Pid != int(r.Pid) || (r.Pid > 0 && dst.Depth == 0))
 	dst.Name = r.Name
@@ -902,7 +924,7 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	dst.IsMenu = types.ElseInt(r.IsMenu, 1, 0)
 	dst.IsEnabled = types.ElseInt(r.IsEnabled, 1, 0)
 	dst.ComponentName = r.ComponentName
-	dst.Cache = r.Cache
+	dst.AppIndex = int(r.AppIndex)
 	// 如果未设置排列序号,或者更改了上级,则需系统自动编号
 	if dst.SortNum <= 0 || parentChanged {
 		dst.SortNum = p.dao.GetMaxResourceSortNum(int(dst.Pid)) + 1
@@ -923,13 +945,13 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
+func (p *rbacServiceImpl) parseRbacRes(v *model.PermRes) *proto.SPermRes {
 	return &proto.SPermRes{
 		Id:            int64(v.Id),
 		Name:          v.Name,
 		ResType:       int32(v.ResType),
 		Pid:           int64(v.Pid),
-		Key:           v.Key,
+		Key:           v.ResKey,
 		Path:          v.Path,
 		Icon:          v.Icon,
 		SortNum:       int32(v.SortNum),
@@ -937,17 +959,17 @@ func (p *rbacServiceImpl) parsePermRes(v *model.PermRes) *proto.SPermRes {
 		IsEnabled:     v.IsEnabled == 1,
 		CreateTime:    v.CreateTime,
 		ComponentName: v.ComponentName,
-		Cache:         v.Cache,
+		AppIndex:      int32(v.AppIndex),
 	}
 }
 
 // 获取PermRes
-func (p *rbacServiceImpl) GetPermRes(_ context.Context, id *proto.PermResId) (*proto.SPermRes, error) {
+func (p *rbacServiceImpl) GetRbacRes(_ context.Context, id *proto.PermResId) (*proto.SPermRes, error) {
 	v := p.dao.GetPermRes(id.Value)
 	if v == nil {
 		return nil, fmt.Errorf("no such resource %v", id.Value)
 	}
-	return p.parsePermRes(v), nil
+	return p.parseRbacRes(v), nil
 }
 
 // 获取PermRes列表
@@ -996,7 +1018,7 @@ func (p *rbacServiceImpl) queryResChildren(parentId int, arr []*model.PermRes) [
 		if v.Pid != parentId {
 			continue
 		}
-		c := p.parsePermRes(v)
+		c := p.parseRbacRes(v)
 		c.IsLeaf = true
 		for _, r := range arr {
 			if r.Pid == v.Id {
@@ -1062,4 +1084,33 @@ func (p *rbacServiceImpl) updateResDepth(dst *model.PermRes, depth int) {
 	for _, v := range list {
 		p.updateResDepth(v, depth+1)
 	}
+}
+
+// PagingLoginLog implements proto.RbacServiceServer.
+func (p *rbacServiceImpl) PagingLoginLog(_ context.Context, r *proto.LoginLogPagingRequest) (*proto.LoginLogPagingResponse, error) {
+	//todo:  keyword
+	total, rows := p.dao.PagingQueryLoginLog(int(r.Params.Begin),
+		int(r.Params.End),
+		r.Params.Where,
+		r.Params.SortBy)
+	ret := &proto.LoginLogPagingResponse{
+		Total: int64(total),
+		Value: make([]*proto.PagingLoginLog, len(rows)),
+	}
+	for i, v := range rows {
+		ret.Value[i] = &proto.PagingLoginLog{
+			Id:         int64(typeconv.MustInt(v["id"])),
+			UserId:     int64(typeconv.MustInt(v["user_id"])),
+			Username:   typeconv.Stringify(v["username"]),
+			Nickname:   typeconv.Stringify(v["nickname"]),
+			Ip:         typeconv.Stringify(v["ip"]),
+			IsSuccess:  int32(typeconv.MustInt(v["is_success"])),
+			CreateTime: int64(typeconv.MustInt(v["create_time"])),
+		}
+		if r := ret.Value[i]; r.UserId == 0 {
+			r.Username = "master"
+			r.Nickname = "超级管理员"
+		}
+	}
+	return ret, nil
 }

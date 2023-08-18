@@ -10,15 +10,16 @@ package order
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
-	"strconv"
-	"strings"
-	"time"
 )
 
 // 获取推荐数组
@@ -76,7 +77,7 @@ func (o *subOrderImpl) handleCashBack() error {
 	return err
 }
 
-func (o *subOrderImpl) updateMemberAccount(m member.IMember,
+func (o *subOrderImpl) updateMemberAccount(m member.IMemberAggregateRoot,
 	ptName, mName string, fee int64, unixTime int64) error {
 	if fee > 0 {
 		//更新账户
@@ -103,7 +104,7 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMember,
 }
 
 // 三级返现
-func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
+func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMemberAggregateRoot,
 	back_fee int64, unixTime int64) (err error) {
 	if back_fee > 0 {
 		i := 0
@@ -137,7 +138,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 	return err
 }
 
-func HandleCashBackDataTag(m member.IMember, o order.IOrder,
+func HandleCashBackDataTag(m member.IMemberAggregateRoot, o order.IOrder,
 	c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 	data := c.GetDataTag()
 	level := 0
@@ -152,7 +153,7 @@ func HandleCashBackDataTag(m member.IMember, o order.IOrder,
 	cashBack3R(level, m, o, c, memberRepo)
 }
 
-func cashBack3R(level int, m member.IMember, o order.IOrder,
+func cashBack3R(level int, m member.IMemberAggregateRoot, o order.IOrder,
 	c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 
 	dt := c.GetDataTag()
@@ -162,7 +163,7 @@ func cashBack3R(level int, m member.IMember, o order.IOrder,
 
 	// fmt.Println("------ START BACK ------")
 
-	var backFunc = func(m member.IMember, parentM member.IMember, fee int) {
+	var backFunc = func(m member.IMemberAggregateRoot, parentM member.IMemberAggregateRoot, fee int) {
 		// fmt.Println("---------[ back ]",parentM.Value().Name,fee)
 		backCashForMember(m, o, fee, parentM.Profile().GetProfile().Name)
 	}
@@ -195,7 +196,7 @@ func cashBack3R(level int, m member.IMember, o order.IOrder,
 	}
 }
 
-func backCashForMember(m member.IMember, o order.IOrder,
+func backCashForMember(m member.IMemberAggregateRoot, o order.IOrder,
 	fee int, refName string) error {
 	//更新账户
 	acc := m.GetAccount()

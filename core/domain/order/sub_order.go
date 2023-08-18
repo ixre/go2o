@@ -32,7 +32,7 @@ var _ order.ISubOrder = new(subOrderImpl)
 type subOrderImpl struct {
 	value           *order.NormalSubOrder
 	parent          order.IOrder
-	buyer           member.IMember
+	buyer           member.IMemberAggregateRoot
 	internalSuspend bool //内部挂起
 	paymentRepo     payment.IPaymentRepo
 	repo            order.IOrderRepo
@@ -176,7 +176,7 @@ func (o *subOrderImpl) ParentOrder() order.IOrder {
 }
 
 // 获取购买的会员
-func (o *subOrderImpl) getBuyer() member.IMember {
+func (o *subOrderImpl) getBuyer() member.IMemberAggregateRoot {
 	return o.ParentOrder().Buyer()
 }
 
@@ -599,7 +599,7 @@ func (o *subOrderImpl) getLogStringByStat(stat int) string {
 }
 
 // 更新账户
-func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
+func (o *subOrderImpl) updateAccountForOrder(m member.IMemberAggregateRoot) error {
 	if o.value.Status != order.StatCompleted {
 		return order.ErrUnusualOrderStat
 	}
@@ -885,7 +885,7 @@ func (o *subOrderImpl) Destory() error {
 
 // 更新返现到会员账户
 func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
-	m member.IMember, fee int64, unixTime int64) error {
+	m member.IMemberAggregateRoot, fee int64, unixTime int64) error {
 	if fee <= 0 || math.IsNaN(float64(fee)) {
 		return nil
 	}

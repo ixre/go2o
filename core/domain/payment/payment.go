@@ -41,8 +41,8 @@ type paymentOrderImpl struct {
 	coupons            []promotion.ICouponPromotion
 	orderManager       order.IOrderManager
 	firstFinishPayment bool //第一次完成支付
-	paymentUser        member.IMember
-	buyer              member.IMember
+	paymentUser        member.IMemberAggregateRoot
+	buyer              member.IMemberAggregateRoot
 }
 
 func (p *paymentOrderImpl) GetAggregateRootId() int {
@@ -365,7 +365,7 @@ func (p *paymentOrderImpl) getWalletDeductAmount(acc member.IAccount) int64 {
 	return acv.WalletBalance
 }
 
-func (p *paymentOrderImpl) getPaymentUser() member.IMember {
+func (p *paymentOrderImpl) getPaymentUser() member.IMemberAggregateRoot {
 	if p.paymentUser == nil && p.value.PayerId > 0 {
 		p.paymentUser = p.memberRepo.GetMember(p.value.PayerId)
 	}
@@ -517,7 +517,7 @@ func (p *paymentOrderImpl) saveTradeChan(amount int, method int, code string, ou
 	return err
 }
 
-func (p *paymentOrderImpl) getBuyer() member.IMember {
+func (p *paymentOrderImpl) getBuyer() member.IMemberAggregateRoot {
 	if p.buyer == nil {
 		p.buyer = p.memberRepo.GetMember(p.value.BuyerId)
 	}

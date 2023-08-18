@@ -45,8 +45,9 @@ const (
 	RbacService_DeletePermRole_FullMethodName        = "/RbacService/DeletePermRole"
 	RbacService_PagingPermRole_FullMethodName        = "/RbacService/PagingPermRole"
 	RbacService_SaveRbacResource_FullMethodName      = "/RbacService/SaveRbacResource"
-	RbacService_GetPermRes_FullMethodName            = "/RbacService/GetPermRes"
+	RbacService_GetRbacRes_FullMethodName            = "/RbacService/GetRbacRes"
 	RbacService_DeletePermRes_FullMethodName         = "/RbacService/DeletePermRes"
+	RbacService_PagingLoginLog_FullMethodName        = "/RbacService/PagingLoginLog"
 )
 
 // RbacServiceClient is the client API for RbacService service.
@@ -56,17 +57,17 @@ type RbacServiceClient interface {
 	// 用户登录
 	UserLogin(ctx context.Context, in *RbacLoginRequest, opts ...grpc.CallOption) (*RbacLoginResponse, error)
 	// 检查令牌是否有效并返回新的令牌
-	CheckRBACToken(ctx context.Context, in *CheckRBACTokenRequest, opts ...grpc.CallOption) (*CheckRBACTokenResponse, error)
+	CheckRBACToken(ctx context.Context, in *RbacCheckTokenRequest, opts ...grpc.CallOption) (*RbacCheckTokenResponse, error)
 	// 获取JWT密钥
 	GetJwtToken(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*String, error)
 	// 获取用户资源
-	GetUserResource(ctx context.Context, in *GetUserResRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error)
+	GetUserResource(ctx context.Context, in *RbacUserResourceRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error)
 	// 获取资源树形数据
 	QueryRbacResourceList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryRbacResourceResponse, error)
 	// 移动资源顺序
 	MoveResourceOrdinal(ctx context.Context, in *MoveResourceOrdinalRequest, opts ...grpc.CallOption) (*Result, error)
 	// 部门树形数据
-	DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RbacTree, error)
+	DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SRbacTree, error)
 	// 保存部门
 	SaveDepart(ctx context.Context, in *SaveDepartRequest, opts ...grpc.CallOption) (*SaveDepartResponse, error)
 	// 获取部门
@@ -106,9 +107,11 @@ type RbacServiceClient interface {
 	// 保存PermRes
 	SaveRbacResource(ctx context.Context, in *SaveRbacResRequest, opts ...grpc.CallOption) (*SaveRbacResResponse, error)
 	// 获取PermRes
-	GetPermRes(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*SPermRes, error)
+	GetRbacRes(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*SPermRes, error)
 	// 删除PermRes
 	DeletePermRes(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*Result, error)
+	// 获取用户登录日志分页数据
+	PagingLoginLog(ctx context.Context, in *LoginLogPagingRequest, opts ...grpc.CallOption) (*LoginLogPagingResponse, error)
 }
 
 type rbacServiceClient struct {
@@ -128,8 +131,8 @@ func (c *rbacServiceClient) UserLogin(ctx context.Context, in *RbacLoginRequest,
 	return out, nil
 }
 
-func (c *rbacServiceClient) CheckRBACToken(ctx context.Context, in *CheckRBACTokenRequest, opts ...grpc.CallOption) (*CheckRBACTokenResponse, error) {
-	out := new(CheckRBACTokenResponse)
+func (c *rbacServiceClient) CheckRBACToken(ctx context.Context, in *RbacCheckTokenRequest, opts ...grpc.CallOption) (*RbacCheckTokenResponse, error) {
+	out := new(RbacCheckTokenResponse)
 	err := c.cc.Invoke(ctx, RbacService_CheckRBACToken_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -146,7 +149,7 @@ func (c *rbacServiceClient) GetJwtToken(ctx context.Context, in *Empty, opts ...
 	return out, nil
 }
 
-func (c *rbacServiceClient) GetUserResource(ctx context.Context, in *GetUserResRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error) {
+func (c *rbacServiceClient) GetUserResource(ctx context.Context, in *RbacUserResourceRequest, opts ...grpc.CallOption) (*RbacUserResourceResponse, error) {
 	out := new(RbacUserResourceResponse)
 	err := c.cc.Invoke(ctx, RbacService_GetUserResource_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -173,8 +176,8 @@ func (c *rbacServiceClient) MoveResourceOrdinal(ctx context.Context, in *MoveRes
 	return out, nil
 }
 
-func (c *rbacServiceClient) DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RbacTree, error) {
-	out := new(RbacTree)
+func (c *rbacServiceClient) DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SRbacTree, error) {
+	out := new(SRbacTree)
 	err := c.cc.Invoke(ctx, RbacService_DepartTree_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -353,9 +356,9 @@ func (c *rbacServiceClient) SaveRbacResource(ctx context.Context, in *SaveRbacRe
 	return out, nil
 }
 
-func (c *rbacServiceClient) GetPermRes(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*SPermRes, error) {
+func (c *rbacServiceClient) GetRbacRes(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*SPermRes, error) {
 	out := new(SPermRes)
-	err := c.cc.Invoke(ctx, RbacService_GetPermRes_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, RbacService_GetRbacRes_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -371,6 +374,15 @@ func (c *rbacServiceClient) DeletePermRes(ctx context.Context, in *PermResId, op
 	return out, nil
 }
 
+func (c *rbacServiceClient) PagingLoginLog(ctx context.Context, in *LoginLogPagingRequest, opts ...grpc.CallOption) (*LoginLogPagingResponse, error) {
+	out := new(LoginLogPagingResponse)
+	err := c.cc.Invoke(ctx, RbacService_PagingLoginLog_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RbacServiceServer is the server API for RbacService service.
 // All implementations must embed UnimplementedRbacServiceServer
 // for forward compatibility
@@ -378,17 +390,17 @@ type RbacServiceServer interface {
 	// 用户登录
 	UserLogin(context.Context, *RbacLoginRequest) (*RbacLoginResponse, error)
 	// 检查令牌是否有效并返回新的令牌
-	CheckRBACToken(context.Context, *CheckRBACTokenRequest) (*CheckRBACTokenResponse, error)
+	CheckRBACToken(context.Context, *RbacCheckTokenRequest) (*RbacCheckTokenResponse, error)
 	// 获取JWT密钥
 	GetJwtToken(context.Context, *Empty) (*String, error)
 	// 获取用户资源
-	GetUserResource(context.Context, *GetUserResRequest) (*RbacUserResourceResponse, error)
+	GetUserResource(context.Context, *RbacUserResourceRequest) (*RbacUserResourceResponse, error)
 	// 获取资源树形数据
 	QueryRbacResourceList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error)
 	// 移动资源顺序
 	MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*Result, error)
 	// 部门树形数据
-	DepartTree(context.Context, *Empty) (*RbacTree, error)
+	DepartTree(context.Context, *Empty) (*SRbacTree, error)
 	// 保存部门
 	SaveDepart(context.Context, *SaveDepartRequest) (*SaveDepartResponse, error)
 	// 获取部门
@@ -428,9 +440,11 @@ type RbacServiceServer interface {
 	// 保存PermRes
 	SaveRbacResource(context.Context, *SaveRbacResRequest) (*SaveRbacResResponse, error)
 	// 获取PermRes
-	GetPermRes(context.Context, *PermResId) (*SPermRes, error)
+	GetRbacRes(context.Context, *PermResId) (*SPermRes, error)
 	// 删除PermRes
 	DeletePermRes(context.Context, *PermResId) (*Result, error)
+	// 获取用户登录日志分页数据
+	PagingLoginLog(context.Context, *LoginLogPagingRequest) (*LoginLogPagingResponse, error)
 	mustEmbedUnimplementedRbacServiceServer()
 }
 
@@ -441,13 +455,13 @@ type UnimplementedRbacServiceServer struct {
 func (UnimplementedRbacServiceServer) UserLogin(context.Context, *RbacLoginRequest) (*RbacLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserLogin not implemented")
 }
-func (UnimplementedRbacServiceServer) CheckRBACToken(context.Context, *CheckRBACTokenRequest) (*CheckRBACTokenResponse, error) {
+func (UnimplementedRbacServiceServer) CheckRBACToken(context.Context, *RbacCheckTokenRequest) (*RbacCheckTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckRBACToken not implemented")
 }
 func (UnimplementedRbacServiceServer) GetJwtToken(context.Context, *Empty) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJwtToken not implemented")
 }
-func (UnimplementedRbacServiceServer) GetUserResource(context.Context, *GetUserResRequest) (*RbacUserResourceResponse, error) {
+func (UnimplementedRbacServiceServer) GetUserResource(context.Context, *RbacUserResourceRequest) (*RbacUserResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserResource not implemented")
 }
 func (UnimplementedRbacServiceServer) QueryRbacResourceList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error) {
@@ -456,7 +470,7 @@ func (UnimplementedRbacServiceServer) QueryRbacResourceList(context.Context, *Qu
 func (UnimplementedRbacServiceServer) MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MoveResourceOrdinal not implemented")
 }
-func (UnimplementedRbacServiceServer) DepartTree(context.Context, *Empty) (*RbacTree, error) {
+func (UnimplementedRbacServiceServer) DepartTree(context.Context, *Empty) (*SRbacTree, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DepartTree not implemented")
 }
 func (UnimplementedRbacServiceServer) SaveDepart(context.Context, *SaveDepartRequest) (*SaveDepartResponse, error) {
@@ -516,11 +530,14 @@ func (UnimplementedRbacServiceServer) PagingPermRole(context.Context, *RbacRoleP
 func (UnimplementedRbacServiceServer) SaveRbacResource(context.Context, *SaveRbacResRequest) (*SaveRbacResResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveRbacResource not implemented")
 }
-func (UnimplementedRbacServiceServer) GetPermRes(context.Context, *PermResId) (*SPermRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPermRes not implemented")
+func (UnimplementedRbacServiceServer) GetRbacRes(context.Context, *PermResId) (*SPermRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRbacRes not implemented")
 }
 func (UnimplementedRbacServiceServer) DeletePermRes(context.Context, *PermResId) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePermRes not implemented")
+}
+func (UnimplementedRbacServiceServer) PagingLoginLog(context.Context, *LoginLogPagingRequest) (*LoginLogPagingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PagingLoginLog not implemented")
 }
 func (UnimplementedRbacServiceServer) mustEmbedUnimplementedRbacServiceServer() {}
 
@@ -554,7 +571,7 @@ func _RbacService_UserLogin_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _RbacService_CheckRBACToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckRBACTokenRequest)
+	in := new(RbacCheckTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -566,7 +583,7 @@ func _RbacService_CheckRBACToken_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: RbacService_CheckRBACToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).CheckRBACToken(ctx, req.(*CheckRBACTokenRequest))
+		return srv.(RbacServiceServer).CheckRBACToken(ctx, req.(*RbacCheckTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -590,7 +607,7 @@ func _RbacService_GetJwtToken_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _RbacService_GetUserResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserResRequest)
+	in := new(RbacUserResourceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -602,7 +619,7 @@ func _RbacService_GetUserResource_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: RbacService_GetUserResource_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).GetUserResource(ctx, req.(*GetUserResRequest))
+		return srv.(RbacServiceServer).GetUserResource(ctx, req.(*RbacUserResourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1003,20 +1020,20 @@ func _RbacService_SaveRbacResource_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RbacService_GetPermRes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RbacService_GetRbacRes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PermResId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RbacServiceServer).GetPermRes(ctx, in)
+		return srv.(RbacServiceServer).GetRbacRes(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RbacService_GetPermRes_FullMethodName,
+		FullMethod: RbacService_GetRbacRes_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).GetPermRes(ctx, req.(*PermResId))
+		return srv.(RbacServiceServer).GetRbacRes(ctx, req.(*PermResId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1035,6 +1052,24 @@ func _RbacService_DeletePermRes_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RbacServiceServer).DeletePermRes(ctx, req.(*PermResId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RbacService_PagingLoginLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginLogPagingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RbacServiceServer).PagingLoginLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RbacService_PagingLoginLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RbacServiceServer).PagingLoginLog(ctx, req.(*LoginLogPagingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1151,12 +1186,16 @@ var RbacService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RbacService_SaveRbacResource_Handler,
 		},
 		{
-			MethodName: "GetPermRes",
-			Handler:    _RbacService_GetPermRes_Handler,
+			MethodName: "GetRbacRes",
+			Handler:    _RbacService_GetRbacRes_Handler,
 		},
 		{
 			MethodName: "DeletePermRes",
 			Handler:    _RbacService_DeletePermRes_Handler,
+		},
+		{
+			MethodName: "PagingLoginLog",
+			Handler:    _RbacService_PagingLoginLog_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -119,7 +119,7 @@ func (a *advertisementService) GetAdvertisement(_ context.Context, r *proto.AdId
 }
 
 // 获取广告数据传输对象
-func (a *advertisementService) getAdvertisementDto(ia ad.IAd) *proto.SAdvertisementDto {
+func (a *advertisementService) getAdvertisementDto(ia ad.IAdAggregateRoot) *proto.SAdvertisementDto {
 	dto := ia.Dto()
 	ret := &proto.SAdvertisementDto{Id: dto.Id, AdType: int32(dto.AdType)}
 	switch dto.AdType {
@@ -152,7 +152,7 @@ func (a *advertisementService) QueryAdvertisementData(_ context.Context, r *prot
 func (a *advertisementService) SaveAd(_ context.Context, r *proto.SaveAdRequest) (*proto.Result, error) {
 	defer a.cleanCache(r.AdUserId)
 	pa := a.getUserAd(r.AdUserId)
-	var adv ad.IAd
+	var adv ad.IAdAggregateRoot
 	v := a.parseAd(r.Value)
 	if v.Id > 0 {
 		adv = pa.GetById(v.Id)
@@ -364,7 +364,7 @@ func (a *advertisementService) parseSwiperDto(dto *ad.AdDto) *proto.SSwiperAdDat
 }
 
 // 更新广告数据
-func (a *advertisementService) updateAdData(ia ad.IAd, data *proto.SAdvertisementDto) error {
+func (a *advertisementService) updateAdData(ia ad.IAdAggregateRoot, data *proto.SAdvertisementDto) error {
 	if data == nil {
 		return nil
 	}
