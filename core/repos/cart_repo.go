@@ -45,7 +45,7 @@ func NewCartRepo(o orm.Orm, memberRepo member.IMemberRepo,
 }
 
 // 获取买家的购物车
-func (c *cartRepo) GetMyCart(buyerId int64, k cart.Kind) cart.ICart {
+func (c *cartRepo) GetMyCart(buyerId int64, k cart.Kind) cart.ICartAggregateRoot {
 	switch k {
 	case cart.KNormal:
 		return c.getMyNormalCart(buyerId)
@@ -56,7 +56,7 @@ func (c *cartRepo) GetMyCart(buyerId int64, k cart.Kind) cart.ICart {
 }
 
 // 获取普通购物车
-func (c *cartRepo) getMyNormalCart(buyerId int64) cart.ICart {
+func (c *cartRepo) getMyNormalCart(buyerId int64) cart.ICartAggregateRoot {
 	v := c.getNormalCart(buyerId)
 	if v != nil {
 		return c.CreateNormalCart(v)
@@ -65,7 +65,7 @@ func (c *cartRepo) getMyNormalCart(buyerId int64) cart.ICart {
 }
 
 // 获取批发购物车
-func (c *cartRepo) getMyWholesaleCart(buyerId int64) cart.ICart {
+func (c *cartRepo) getMyWholesaleCart(buyerId int64) cart.ICartAggregateRoot {
 	v := c.getWholesaleCart(buyerId)
 	if v == nil {
 		unix := time.Now().Unix()
@@ -104,17 +104,17 @@ func (w *cartRepo) getWholesaleCart(buyerId int64) *cart.WsCart {
 }
 
 // 创建购物车对象
-func (c *cartRepo) CreateNormalCart(v *cart.NormalCart) cart.ICart {
+func (c *cartRepo) CreateNormalCart(v *cart.NormalCart) cart.ICartAggregateRoot {
 	return cartImpl.NewNormalCart(v, c, c._memberRepo, c._itemRepo)
 }
 
 // 创建一个购物车
-func (c *cartRepo) NewTempNormalCart(buyerId int, code string) cart.ICart {
+func (c *cartRepo) NewTempNormalCart(buyerId int, code string) cart.ICartAggregateRoot {
 	return cartImpl.CreateTempNormalCart(buyerId, code, c, c._memberRepo, c._itemRepo)
 }
 
 // 获取购物车
-func (c *cartRepo) GetNormalCart(id int32) cart.ICart {
+func (c *cartRepo) GetNormalCart(id int32) cart.ICartAggregateRoot {
 	v := c.getSaleCart(id)
 	if v != nil {
 		return c.CreateNormalCart(v)
@@ -204,7 +204,7 @@ func (s *cartRepo) BatchDeleteNormalCartItem(where string, v ...interface{}) (in
 }
 
 // 获取购物车
-func (c *cartRepo) GetShoppingCartByKey(key string) cart.ICart {
+func (c *cartRepo) GetShoppingCartByKey(key string) cart.ICartAggregateRoot {
 	ca := c.GetShoppingCart(key)
 	if ca != nil {
 		return c.CreateNormalCart(ca)

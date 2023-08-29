@@ -18,7 +18,7 @@ func newWholesaleOrderBreaker(repo order.IOrderRepo) *wholesaleOrderBreaker {
 	}
 }
 
-func (w *wholesaleOrderBreaker) BreakUp(c cart.ICart,
+func (w *wholesaleOrderBreaker) BreakUp(c cart.ICartAggregateRoot,
 	data order.IPostedData) ([]order.IOrder, error) {
 	switch c.Kind() {
 	case cart.KWholesale:
@@ -27,7 +27,7 @@ func (w *wholesaleOrderBreaker) BreakUp(c cart.ICart,
 	return []order.IOrder{}, errors.New("not support cart kind")
 }
 
-func (w *wholesaleOrderBreaker) breakupWholesaleOrder(c cart.ICart,
+func (w *wholesaleOrderBreaker) breakupWholesaleOrder(c cart.ICartAggregateRoot,
 	data order.IPostedData) ([]order.IOrder, error) {
 	checked := data.CheckedData()
 	items := c.CheckedItems(checked)
@@ -40,7 +40,7 @@ func (w *wholesaleOrderBreaker) breakupWholesaleOrder(c cart.ICart,
 		return []order.IOrder{}, cart.ErrNoChecked
 	}
 	var list []order.IOrder
-	cc := c.(cart.ICart)
+	cc := c.(cart.ICartAggregateRoot)
 	buyerId := cc.BuyerId()
 	for sellerId, items := range vendorItemsMap {
 		o := w.createWholesaleOrder(sellerId, buyerId, items, data)

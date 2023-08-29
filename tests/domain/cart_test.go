@@ -67,7 +67,7 @@ func TestCombineCart(t *testing.T) {
 	}
 }
 
-func joinItemsToCart(c cart.ICart, itemId int64) error {
+func joinItemsToCart(c cart.ICartAggregateRoot, itemId int64) error {
 	itemRepo := ti.Factory.GetItemRepo()
 	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
@@ -79,7 +79,7 @@ func joinItemsToCart(c cart.ICart, itemId int64) error {
 }
 
 // 生成购物车全部结算的数据
-func GetCartCheckedData(c cart.ICart) string {
+func GetCartCheckedData(c cart.ICartAggregateRoot) string {
 	mp := make(map[string][]string)
 	if c.Kind() == cart.KWholesale {
 		wc := c.(cart.IWholesaleCart)

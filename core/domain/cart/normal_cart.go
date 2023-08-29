@@ -12,7 +12,7 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/log"
 )
 
-var _ cart.ICart = new(cartImpl)
+var _ cart.ICartAggregateRoot = new(cartImpl)
 var _ cart.INormalCart = new(cartImpl)
 
 type cartImpl struct {
@@ -27,7 +27,7 @@ type cartImpl struct {
 }
 
 func NewNormalCart(val *cart.NormalCart, rep cart.ICartRepo,
-	memberRepo member.IMemberRepo, goodsRepo item.IItemRepo) cart.ICart {
+	memberRepo member.IMemberRepo, goodsRepo item.IItemRepo) cart.ICartAggregateRoot {
 	c := &cartImpl{
 		value:      val,
 		rep:        rep,
@@ -39,7 +39,7 @@ func NewNormalCart(val *cart.NormalCart, rep cart.ICartRepo,
 
 // 创建新的临时购物车
 func CreateTempNormalCart(buyerId int, cartCode string, rep cart.ICartRepo, memberRepo member.IMemberRepo,
-	goodsRepo item.IItemRepo) cart.ICart {
+	goodsRepo item.IItemRepo) cart.ICartAggregateRoot {
 	unix := time.Now().Unix()
 	if cartCode == "" {
 		cartCode = domain.GenerateCartCode(unix, time.Now().Nanosecond())
@@ -56,7 +56,7 @@ func CreateTempNormalCart(buyerId int, cartCode string, rep cart.ICartRepo, memb
 	return NewNormalCart(value, rep, memberRepo, goodsRepo)
 }
 
-func (c *cartImpl) init() cart.ICart {
+func (c *cartImpl) init() cart.ICartAggregateRoot {
 	// 获取购物车项
 	if c.GetAggregateRootId() > 0 {
 		if c.value.Items == nil {
@@ -101,7 +101,7 @@ func (c *cartImpl) Bind(buyerId int) error {
 	return err
 }
 
-func (c *cartImpl) Clone() cart.ICart {
+func (c *cartImpl) Clone() cart.ICartAggregateRoot {
 	panic("implement me")
 }
 
@@ -367,7 +367,7 @@ func (c *cartImpl) Code() string {
 }
 
 // Combine 合并购物车，并返回新的购物车
-func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
+func (c *cartImpl) Combine(ic cart.ICartAggregateRoot) cart.ICartAggregateRoot {
 	if ic.Kind() != cart.KNormal {
 		panic("only retail cart can be combine!")
 	}

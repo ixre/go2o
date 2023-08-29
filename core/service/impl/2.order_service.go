@@ -73,9 +73,9 @@ func NewShoppingService(r order.IOrderRepo,
 }
 
 // 获取购物车
-func (s *orderServiceImpl) getShoppingCart(buyerId int64, cartCode string) cart.ICart {
+func (s *orderServiceImpl) getShoppingCart(buyerId int64, cartCode string) cart.ICartAggregateRoot {
 	// 本地的购物车
-	var ic cart.ICart
+	var ic cart.ICartAggregateRoot
 	if len(cartCode) > 0 {
 		ic = s.cartRepo.GetShoppingCartByKey(cartCode)
 	}
@@ -248,7 +248,7 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 }
 
 // 转换购物车数据
-func (s *orderServiceImpl) parsePrepareItemsFromCart(c cart.ICart) []*proto.SPrepareOrderGroup {
+func (s *orderServiceImpl) parsePrepareItemsFromCart(c cart.ICartAggregateRoot) []*proto.SPrepareOrderGroup {
 	arr := parser.ParsePrepareOrderGroups(c)
 	for _, v := range arr {
 		is := s.shopRepo.GetShop(v.ShopId)

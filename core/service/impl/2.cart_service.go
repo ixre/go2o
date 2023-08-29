@@ -98,7 +98,7 @@ func (s *cartServiceImpl) parseCheckedMap(data string) (m map[int64][]int64) {
 }
 
 // 获取可结算的购物车
-func (s *cartServiceImpl) wsGetCart(c cart.ICart, data map[string]string) (*proto.Result, error) {
+func (s *cartServiceImpl) wsGetCart(c cart.ICartAggregateRoot, data map[string]string) (*proto.Result, error) {
 	//统计checked
 	checked := s.parseCheckedMap(data["checked"])
 	checkout := data["checkout"] == "true"
@@ -115,7 +115,7 @@ func (s *cartServiceImpl) wsGetCart(c cart.ICart, data map[string]string) (*prot
 }
 
 // 获取简易的购物车
-func (s *cartServiceImpl) wsGetSimpleCart(c cart.ICart, data map[string]string) (*proto.Result, error) {
+func (s *cartServiceImpl) wsGetSimpleCart(c cart.ICartAggregateRoot, data map[string]string) (*proto.Result, error) {
 	size, err := strconv.Atoi(data["size"])
 	if err != nil {
 		size = 5
@@ -163,7 +163,7 @@ func (s *cartServiceImpl) createCheckedData(itemId int64, arr []*cart.ItemPair) 
 }
 
 // 放入商品，data["Data"]
-func (s *cartServiceImpl) wsPutItem(c cart.ICart, data map[string]string) (*proto.Result, error) {
+func (s *cartServiceImpl) wsPutItem(c cart.ICartAggregateRoot, data map[string]string) (*proto.Result, error) {
 	aId := c.GetAggregateRootId()
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
@@ -185,7 +185,7 @@ func (s *cartServiceImpl) wsPutItem(c cart.ICart, data map[string]string) (*prot
 	return s.result(err), nil
 }
 
-func (s *cartServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*proto.Result, error) {
+func (s *cartServiceImpl) wsUpdateItem(c cart.ICartAggregateRoot, data map[string]string) (*proto.Result, error) {
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
@@ -201,7 +201,7 @@ func (s *cartServiceImpl) wsUpdateItem(c cart.ICart, data map[string]string) (*p
 }
 
 // 勾选购物车，格式如：1:2;1:5
-func (s *cartServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*proto.Result, error) {
+func (s *cartServiceImpl) wsCheckCart(c cart.ICartAggregateRoot, data map[string]string) (*proto.Result, error) {
 	checked := data["Checked"]
 	var arr []*cart.ItemPair
 	splitArr := strings.Split(checked, ";")
@@ -226,9 +226,9 @@ func (s *cartServiceImpl) wsCheckCart(c cart.ICart, data map[string]string) (*pr
 /*---------------- 普通购物车 ----------------*/
 
 // 获取购物车
-func (s *cartServiceImpl) getShoppingCart(buyerId int64, cartCode string) cart.ICart {
+func (s *cartServiceImpl) getShoppingCart(buyerId int64, cartCode string) cart.ICartAggregateRoot {
 	// 本地的购物车
-	var ic cart.ICart
+	var ic cart.ICartAggregateRoot
 	if len(cartCode) > 0 {
 		ic = s.cartRepo.GetShoppingCartByKey(cartCode)
 	}
@@ -276,7 +276,7 @@ func (s *cartServiceImpl) GetShoppingCart(_ context.Context, r *proto.ShoppingCa
 }
 
 // 转换购物车数据
-func (s *cartServiceImpl) parseCart(c cart.ICart) *proto.SShoppingCart {
+func (s *cartServiceImpl) parseCart(c cart.ICartAggregateRoot) *proto.SShoppingCart {
 	dto := parser.ParseToDtoCart(c)
 	for _, v := range dto.Sellers {
 		is := s.shopRepo.GetShop(v.ShopId)

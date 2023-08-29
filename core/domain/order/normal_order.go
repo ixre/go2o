@@ -42,7 +42,7 @@ var _ order.INormalOrder = new(normalOrderImpl)
 type normalOrderImpl struct {
 	*baseOrderImpl
 	manager         order.IOrderManager
-	cart            cart.ICart //购物车,仅在订单生成时设置
+	cart            cart.ICartAggregateRoot //购物车,仅在订单生成时设置
 	coupons         []promotion.ICouponPromotion
 	availPromotions []promotion.IPromotion
 	orderPbs        []*order.OrderPromotionBind
@@ -213,7 +213,7 @@ func (o *normalOrderImpl) GetBestSavePromotion() (p promotion.IPromotion, saveFe
 //************* 订单提交 ***************//
 
 // RequireCart 读取购物车数据,用于预生成订单
-func (o *normalOrderImpl) RequireCart(c cart.ICart) error {
+func (o *normalOrderImpl) RequireCart(c cart.ICartAggregateRoot) error {
 	if o.GetAggregateRootId() > 0 || o.cart != nil {
 		return order.ErrRequireCart
 	}
@@ -504,7 +504,7 @@ func (o *normalOrderImpl) destoryMergePaymentOrder(ip payment.IPaymentOrder) err
 }
 
 // BuildCart 通过订单创建购物车
-func (o *normalOrderImpl) BuildCart() cart.ICart {
+func (o *normalOrderImpl) BuildCart() cart.ICartAggregateRoot {
 	bv := o.baseOrderImpl.baseValue
 	//v := o.value
 	unix := time.Now().Unix()
@@ -633,7 +633,7 @@ func (o *normalOrderImpl) bindPromotionOnSubmit(orderNo string,
 }
 
 // 应用购物车内商品的促销
-func (o *normalOrderImpl) applyCartPromotionOnSubmit(cart cart.ICart) ([]promotion.IPromotion, int) {
+func (o *normalOrderImpl) applyCartPromotionOnSubmit(cart cart.ICartAggregateRoot) ([]promotion.IPromotion, int) {
 	//todo: 促销
 	var proms = make([]promotion.IPromotion, 0)
 	//var prom promotion.IPromotion

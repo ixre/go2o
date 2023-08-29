@@ -20,9 +20,9 @@ type (
 		// 统一调用
 		Unified(orderNo string, sub bool) IUnifiedOrderAdapter
 		// 预创建普通订单
-		PrepareNormalOrder(c cart.ICart) (IOrder, error)
+		PrepareNormalOrder(c cart.ICartAggregateRoot) (IOrder, error)
 		// 预创建批发订单
-		PrepareWholesaleOrder(c cart.ICart) ([]IOrder, error)
+		PrepareWholesaleOrder(c cart.ICartAggregateRoot) ([]IOrder, error)
 		// 接收在线交易支付的通知，不主动调用
 		NotifyOrderTradeSuccess(orderNo string, subOrder bool) error
 		// 提交订单
