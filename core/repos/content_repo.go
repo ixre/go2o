@@ -31,7 +31,7 @@ func NewContentRepo(o orm.Orm) content.IArchiveRepo {
 }
 
 // 获取内容
-func (c *contentRepo) GetContent(userId int64) content.IContent {
+func (c *contentRepo) GetContent(userId int64) content.IContentAggregateRoot {
 	return contentImpl.NewContent(userId, c)
 }
 

@@ -10,7 +10,7 @@ package content
 
 import "github.com/ixre/go2o/core/domain/interface/content"
 
-var _ content.IContent = new(Content)
+var _ content.IContentAggregateRoot = new(Content)
 
 type Content struct {
 	contentRepo    content.IArchiveRepo
@@ -18,7 +18,7 @@ type Content struct {
 	articleManager content.IArticleManager
 }
 
-func NewContent(userId int64, rep content.IArchiveRepo) content.IContent {
+func NewContent(userId int64, rep content.IArchiveRepo) content.IContentAggregateRoot {
 	return &Content{
 		contentRepo: rep,
 		userId:      userId,
