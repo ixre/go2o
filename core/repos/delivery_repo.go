@@ -30,7 +30,7 @@ func NewDeliverRepo(o orm.Orm) delivery.IDeliveryRepo {
 }
 
 // 获取配送
-func (this *deliveryRepo) GetDelivery(id int32) delivery.IDelivery {
+func (this *deliveryRepo) GetDelivery(id int32) delivery.IDeliveryAggregateRoot {
 	return deliverImpl.NewDelivery(id, this)
 }
 

@@ -10,7 +10,7 @@ package delivery
 
 type IDeliveryRepo interface {
 	// 获取配送
-	GetDelivery(id int32) IDelivery
+	GetDelivery(id int32) IDeliveryAggregateRoot
 
 	// 根据区名获取区域
 	GetAreaByArea(name string) []*AreaValue
