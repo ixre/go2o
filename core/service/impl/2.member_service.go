@@ -34,7 +34,7 @@ import (
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
-	api "github.com/ixre/gof/jwt-api"
+	api "github.com/ixre/gof/ext/jwt-api"
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
