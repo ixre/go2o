@@ -56,14 +56,14 @@ const (
 type (
 	// Kind 购物车类型
 	Kind int
-	// ICart 购物车
-	ICart interface {
+	// ICartAggregateRoot 购物车
+	ICartAggregateRoot interface {
 		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int32
 		// Kind 购物车种类
 		Kind() Kind
 		// Clone 克隆
-		Clone() ICart
+		Clone() ICartAggregateRoot
 		// Code 获取购物车编码
 		Code() string
 		// BuyerId 获取买家编号
@@ -99,7 +99,7 @@ type (
 		// Items 获取商品集合
 		Items() []*NormalCartItem
 		// Combine 合并购物车，并返回新的购物车
-		Combine(ICart) ICart
+		Combine(ICartAggregateRoot) ICartAggregateRoot
 		// GetItem 获取项
 		GetItem(itemId, skuId int64) *NormalCartItem
 	}
@@ -122,16 +122,16 @@ type (
 	// 如果都没有，则创建一个购物车
 	ICartRepo interface {
 		// GetMyCart 获取买家的购物车
-		GetMyCart(buyerId int64, k Kind) ICart
+		GetMyCart(buyerId int64, k Kind) ICartAggregateRoot
 		// NewNormalCart 创建一个临时购物车
-		NewTempNormalCart(buyerId int, code string) ICart
+		NewTempNormalCart(buyerId int, code string) ICartAggregateRoot
 		// CreateNormalCart 创建一个普通购物车
-		CreateNormalCart(r *NormalCart) ICart
+		CreateNormalCart(r *NormalCart) ICartAggregateRoot
 		// GetNormalCart 获取购物车
-		GetNormalCart(id int32) ICart
+		GetNormalCart(id int32) ICartAggregateRoot
 
 		// GetShoppingCartByKey 获取购物车
-		GetShoppingCartByKey(key string) ICart
+		GetShoppingCartByKey(key string) ICartAggregateRoot
 		// GetShoppingCart 获取购物车
 		GetShoppingCart(key string) *NormalCart
 		// GetLatestCart 获取最新的购物车

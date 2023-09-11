@@ -8,7 +8,7 @@
  */
 package delivery
 
-type IDelivery interface {
+type IDeliveryAggregateRoot interface {
 	// 返回聚合编号
 	GetAggregateRootId() int32
 

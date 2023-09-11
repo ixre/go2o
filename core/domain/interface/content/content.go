@@ -49,7 +49,7 @@ const (
 const ()
 
 type (
-	IContent interface {
+	IContentAggregateRoot interface {
 		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int
 		// ArticleManager 文章服务
@@ -77,7 +77,7 @@ type (
 
 	IArchiveRepo interface {
 		// GetContent 获取内容
-		GetContent(userId int64) IContent
+		GetContent(userId int64) IContentAggregateRoot
 		// GetPageById 根据编号获取页面
 		GetPageById(userId, id int32) *Page
 		// GetPageByCode 根据标识获取页面

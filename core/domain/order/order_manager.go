@@ -80,7 +80,7 @@ func (t *orderManagerImpl) Unified(orderNo string, sub bool) order.IUnifiedOrder
 }
 
 // 在下单前检查购物车
-func (t *orderManagerImpl) checkCartForOrder(c cart.ICart) error {
+func (t *orderManagerImpl) checkCartForOrder(c cart.ICartAggregateRoot) error {
 	if c == nil {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -88,7 +88,7 @@ func (t *orderManagerImpl) checkCartForOrder(c cart.ICart) error {
 }
 
 // PrepareNormalOrder 预创建普通订单
-func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error) {
+func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICartAggregateRoot) (order.IOrder, error) {
 	err := t.checkCartForOrder(c)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 }
 
 // PrepareWholesaleOrder 预创建批发订单
-func (t *orderManagerImpl) PrepareWholesaleOrder(c cart.ICart) ([]order.IOrder, error) {
+func (t *orderManagerImpl) PrepareWholesaleOrder(c cart.ICartAggregateRoot) ([]order.IOrder, error) {
 	if c.Kind() != cart.KWholesale {
 		return nil, cart.ErrKindNotMatch
 	}

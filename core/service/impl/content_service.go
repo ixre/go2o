@@ -24,7 +24,7 @@ var _ proto.ContentServiceServer = new(contentService)
 type contentService struct {
 	_contentRepo content.IArchiveRepo
 	_query       *query.ContentQuery
-	_sysContent  content.IContent
+	_sysContent  content.IContentAggregateRoot
 	serviceUtil
 	proto.UnimplementedContentServiceServer
 }

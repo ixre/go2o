@@ -41,7 +41,7 @@ func ParseCartItem(item *cart.NormalCartItem) *proto.SShoppingCartItem {
 	return i
 }
 
-func ParseToDtoCart(ic cart.ICart) *proto.SShoppingCart {
+func ParseToDtoCart(ic cart.ICartAggregateRoot) *proto.SShoppingCart {
 	c := &proto.SShoppingCart{}
 	if ic.Kind() != cart.KNormal {
 		panic("购物车类型非零售")
@@ -76,7 +76,7 @@ func ParseToDtoCart(ic cart.ICart) *proto.SShoppingCart {
 	return c
 }
 
-func ParsePrepareOrderGroups(ic cart.ICart) []*proto.SPrepareOrderGroup {
+func ParsePrepareOrderGroups(ic cart.ICartAggregateRoot) []*proto.SPrepareOrderGroup {
 	arr := make([]*proto.SPrepareOrderGroup, 0)
 	if ic.Kind() != cart.KNormal {
 		panic("购物车类型非零售")

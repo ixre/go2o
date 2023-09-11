@@ -10,7 +10,7 @@ type (
 	// INormalOrder 普通订单
 	INormalOrder interface {
 		// RequireCart 读取购物车数据,用于预生成订单
-		RequireCart(c cart.ICart) error
+		RequireCart(c cart.ICartAggregateRoot) error
 		// GetByVendor 根据运营商获取商品和运费信息,限未生成的订单
 		GetByVendor() (items map[int][]*SubOrderItem, expressFee map[int]int64)
 		// OnlinePaymentTradeFinish 在线支付交易完成

@@ -16,7 +16,7 @@ import (
 	"github.com/ixre/gof/util"
 )
 
-var _ cart.ICart = new(wholesaleCartImpl)
+var _ cart.ICartAggregateRoot = new(wholesaleCartImpl)
 var _ cart.IWholesaleCart = new(wholesaleCartImpl)
 
 type wCartQuickSkuJdo struct {
@@ -52,7 +52,7 @@ type wholesaleCartImpl struct {
 
 func CreateWholesaleCart(val *cart.WsCart, rep cart.ICartRepo,
 	memberRepo member.IMemberRepo, mchRepo merchant.IMerchantRepo,
-	itemRepo item.IItemRepo) cart.ICart {
+	itemRepo item.IItemRepo) cart.ICartAggregateRoot {
 	return (&wholesaleCartImpl{
 		value:      val,
 		repo:       rep,
@@ -61,7 +61,7 @@ func CreateWholesaleCart(val *cart.WsCart, rep cart.ICartRepo,
 	}).init()
 }
 
-func (c *wholesaleCartImpl) init() cart.ICart {
+func (c *wholesaleCartImpl) init() cart.ICartAggregateRoot {
 	// 获取购物车项
 	if c.GetAggregateRootId() > 0 {
 		if c.value.Items == nil {
@@ -99,7 +99,7 @@ func (c *wholesaleCartImpl) Bind(buyerId int) error {
 	return err
 }
 
-func (c *wholesaleCartImpl) Clone() cart.ICart {
+func (c *wholesaleCartImpl) Clone() cart.ICartAggregateRoot {
 	panic("implement me")
 }
 

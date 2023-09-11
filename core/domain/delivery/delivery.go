@@ -13,14 +13,14 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
-var _ delivery.IDelivery = new(Delivery)
+var _ delivery.IDeliveryAggregateRoot = new(Delivery)
 
 type Delivery struct {
 	id  int32
 	rep delivery.IDeliveryRepo
 }
 
-func NewDelivery(id int32, dlvRepo delivery.IDeliveryRepo) delivery.IDelivery {
+func NewDelivery(id int32, dlvRepo delivery.IDeliveryRepo) delivery.IDeliveryAggregateRoot {
 	return &Delivery{
 		id:  id,
 		rep: dlvRepo,

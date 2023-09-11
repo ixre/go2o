@@ -263,7 +263,7 @@ type (
 		// Submit 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
 		// BuildCart 通过订单创建购物车 */
-		BuildCart() cart.ICart
+		BuildCart() cart.ICartAggregateRoot
 		// GetPaymentOrder 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
 	}
