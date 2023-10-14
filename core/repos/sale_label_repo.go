@@ -10,7 +10,6 @@ package repos
 
 import (
 	"errors"
-	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
@@ -117,11 +116,11 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId int64, tagId int32,
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy
 	}
-	t.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_info
+	t.Connector.ExecScalar(`SELECT COUNT(1) FROM item_info
 	    INNER JOIN product ON product.id = item_info.product_id
 		 WHERE product.review_state= $1 AND product.shelve_state= $2 AND product.id IN (
 			SELECT g.item_id FROM product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
-			WHERE t.mch_id= $3 AND t.id= $4)`), &total, enum.ReviewPass,
+			WHERE t.mch_id= $3 AND t.id= $4)`, &total, enum.ReviewPass,
 		item.ShelvesOn, mchId, tagId)
 	var arr []*valueobject.Goods
 	if total > 0 {
