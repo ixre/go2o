@@ -31,7 +31,7 @@ import (
 	"github.com/ixre/gof/util"
 )
 
-var _ item.IGoodsItem = new(itemImpl)
+var _ item.IGoodsItemAggregateRoot = new(itemImpl)
 
 // 商品实现
 type itemImpl struct {
@@ -62,7 +62,7 @@ func NewItem(
 	goodsRepo item.IItemRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	shopRepo shop.IShopRepo,
-	promRepo promotion.IPromotionRepo) item.IGoodsItem {
+	promRepo promotion.IPromotionRepo) item.IGoodsItemAggregateRoot {
 	v := &itemImpl{
 		pro:          pro,
 		value:        value,
@@ -158,7 +158,7 @@ func (i *itemImpl) SetImages(images []string) error {
 	return nil
 }
 
-func (i *itemImpl) init() item.IGoodsItem {
+func (i *itemImpl) init() item.IGoodsItemAggregateRoot {
 	if i.pro != nil {
 		i.value.PromPrice = i.value.Price
 	}

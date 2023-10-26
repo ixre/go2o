@@ -94,7 +94,7 @@ func (i *itemService) getFlagData(flag int) *proto.SItemFlagData {
 
 // SaveItem 保存商品
 func (i *itemService) SaveItem(_ context.Context, r *proto.SaveItemRequest) (*proto.SaveItemResponse, error) {
-	var gi item.IGoodsItem
+	var gi item.IGoodsItemAggregateRoot
 	it := parser.ParseGoodsItem(r)
 	var err error
 	if it.Id > 0 {
@@ -135,7 +135,7 @@ func (i *itemService) SaveItem(_ context.Context, r *proto.SaveItemRequest) (*pr
 }
 
 // 保存商品标志
-func (i *itemService) saveItemFlag(gi item.IGoodsItem, r *proto.SaveItemRequest) {
+func (i *itemService) saveItemFlag(gi item.IGoodsItemAggregateRoot, r *proto.SaveItemRequest) {
 	f := func(flag int, b bool) {
 		if b {
 			gi.GrantFlag(flag)
@@ -154,7 +154,7 @@ func (i *itemService) saveItemFlag(gi item.IGoodsItem, r *proto.SaveItemRequest)
 }
 
 // 附加商品的信息
-func (i *itemService) attachUnifiedItem(item item.IGoodsItem, extra bool) *proto.SUnifiedViewItem {
+func (i *itemService) attachUnifiedItem(item item.IGoodsItemAggregateRoot, extra bool) *proto.SUnifiedViewItem {
 	ret := parser.ItemDtoV2(item.GetValue())
 	skuService := i.itemRepo.SkuService()
 	skuArr := item.SkuArray()

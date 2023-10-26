@@ -82,8 +82,8 @@ var (
 )
 
 type (
-	// IGoodsItem 商品
-	IGoodsItem interface {
+	// IGoodsItemAggregateRoot 商品
+	IGoodsItemAggregateRoot interface {
 		// GetAggregateRootId 获取聚合根编号
 		GetAggregateRootId() int64
 		// GetValue 设置值
@@ -284,10 +284,10 @@ type (
 		SnapshotService() ISnapshotService
 
 		// CreateItem 创建商品
-		CreateItem(v *GoodsItem) IGoodsItem
+		CreateItem(v *GoodsItem) IGoodsItemAggregateRoot
 
 		// GetItem 获取商品
-		GetItem(itemId int64) IGoodsItem
+		GetItem(itemId int64) IGoodsItemAggregateRoot
 
 		// GetValueGoods 获取商品
 		GetValueGoods(itemId, skuId int64) *GoodsItem

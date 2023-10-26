@@ -84,13 +84,13 @@ func (i *itemRepoImpl) SnapshotService() item.ISnapshotService {
 }
 
 // CreateItem 创建商品
-func (i *itemRepoImpl) CreateItem(v *item.GoodsItem) item.IGoodsItem {
+func (i *itemRepoImpl) CreateItem(v *item.GoodsItem) item.IGoodsItemAggregateRoot {
 	return itemImpl.NewItem(i.proRepo, i.catRepo, nil, v, i.registryRepo, i,
 		i.proMRepo, i.itemWsRepo, i.expressRepo, i.shopRepo, nil)
 }
 
 // GetItem 获取商品
-func (i *itemRepoImpl) GetItem(itemId int64) item.IGoodsItem {
+func (i *itemRepoImpl) GetItem(itemId int64) item.IGoodsItemAggregateRoot {
 	v := i.GetValueGoodsById(itemId)
 	if v != nil {
 		return i.CreateItem(v)
