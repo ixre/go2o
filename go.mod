@@ -43,7 +43,7 @@ require (
 	github.com/go-faster/errors v0.6.1 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/klauspost/compress v1.16.7 // indirect
-	github.com/nats-io/nkeys v0.4.4 // indirect
+	github.com/nats-io/nkeys v0.4.6 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/paulmach/orb v0.10.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.18 // indirect
