@@ -6,9 +6,9 @@ steps:
     image: plugins/docker
     pull: if-not-exists
     settings:
-      repo: docker-base.56x.net:5020/go2o
+      repo: uhub.service.ucloud.cn/fze-registry/go2o
       tags: latest
-      registry: docker-base.56x.net:5020
+      registry: uhub.service.ucloud.cn
       insecure: true
       username:
         from_secret: docker_username
@@ -18,4 +18,4 @@ steps:
         - GOPROXY=https://goproxy.io
 trigger:
   branch:
-    - main 
+    - main

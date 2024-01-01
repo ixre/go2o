@@ -48,7 +48,7 @@ services:
 #      - ./clickhouse/config.xml:/etc/clickhouse-server/config.xml
 #      - ./clickhouse/users.xml:/etc/clickhouse-server/users.xml
   go2o:
-    image: docker-base.56x.net:5020/go2o
+    image: uhub.service.ucloud.cn/fze-registry/go2o
     depends_on:
       - "postgres"
       - "nats"
