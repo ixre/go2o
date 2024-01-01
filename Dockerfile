@@ -3,14 +3,14 @@
 # Author : jarrysix(jarrysix@gmail.com)
 # Date : 2019-06-12 13:20
 
-FROM golang:1.19-alpine AS build
+FROM golang:1.21-alpine AS build
 ENV GOPATH=/gobuild
 COPY ./app ./app
 COPY ./core ./core
 COPY ./*.go go.mod LICENSE README.md ./container/app.conf ./
 
 ENV GOPROXY=https://goproxy.cn,direct
-RUN rm -rf go.sum && sed -i 's/replace github.com\/ixre/\/\/replace  github.com\/ixre/g' go.mod && \
+RUN rm -rf go.sum && sed -i 's/\/*replace github.com\/ixre/\/\/replace  github.com\/ixre/g' go.mod && \
     go mod tidy && \
     CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build -o go2o go2o-serve.go && \
     mkdir -p /opt/go2o/dist && \
