@@ -151,7 +151,7 @@ type PermUser struct {
 	// Nickname
 	Nickname string `db:"nickname"`
 	// Gender
-	Gender string `db:"gender"`
+	Gender int `db:"gender"`
 	// 邮箱
 	Email string `db:"email"`
 	// 手机号码

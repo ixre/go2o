@@ -326,7 +326,7 @@ message SaveRbacUserRequest {
     // 昵称
     string nickname = 6;
     // 性别
-    string gender = 7;
+    int32 gender = 7;
     // 邮箱
     string email = 8;
     // 手机号码
@@ -369,7 +369,7 @@ message SRbacUser {
     // Nickname
     string nickname = 6;
     // Gender
-    string gender = 7;
+    int32 gender = 7;
     // 邮箱
     string email = 8;
     // 手机号码

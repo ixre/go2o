@@ -562,7 +562,7 @@ func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserReque
 	dst.Flag = int(r.Flag)
 	dst.Avatar = r.Portrait
 	dst.Nickname = r.Nickname
-	dst.Gender = r.Gender
+	dst.Gender = int(r.Gender)
 	dst.Email = r.Email
 	dst.Phone = r.Phone
 	dst.DeptId = r.DeptId
@@ -591,7 +591,7 @@ func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SRbacUser {
 		Flag:       int32(v.Flag),
 		Portrait:   v.Avatar,
 		Nickname:   v.Nickname,
-		Gender:     v.Gender,
+		Gender:     int32(v.Gender),
 		Email:      v.Email,
 		Phone:      v.Phone,
 		DeptId:     v.DeptId,
