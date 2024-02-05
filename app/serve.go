@@ -66,6 +66,7 @@ func ParseFlags() {
 func Run(ch chan bool, after func(*clientv3.Config)) {
 	if help {
 		flag.Usage()
+		os.Exit(0)
 		return
 	}
 	if showVersion {

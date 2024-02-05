@@ -43,7 +43,6 @@ func main() {
 	app.ParseFlags()
 	ch := make(chan bool)
 	app.Run(ch, nil)
-	<-ch
 }
 
 /*

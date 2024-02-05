@@ -270,7 +270,7 @@ func OrderDto(src *order.ComplexOrder) *proto.SSingleOrder {
 		Status:           int32(d.Status),
 		StateDesc:        "",
 		ExpiresTime:      0,
-		PayTime:          0,
+		PaymentTime:      0,
 		TradeData:        []*proto.SOrderPayChanData{},
 		ShipTime:         0,
 		ShipLogisticCode: "",

@@ -201,7 +201,7 @@ message SSingleOrder {
     // 过期时间
 	sint64 expiresTime = 22;
 	// 支付时间
-	sint64 payTime = 23;
+	sint64 paymentTime = 23;
     // 支付方式
 	repeated SOrderPayChanData tradeData = 24;
       // 发货时间

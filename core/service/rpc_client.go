@@ -69,6 +69,7 @@ func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 		}
 		addr = next.Addr
 	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	conn, err := grpc.DialContext(ctx,
 		addr,
