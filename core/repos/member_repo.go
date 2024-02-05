@@ -789,7 +789,7 @@ func (m *MemberRepoImpl) DeleteLockInfos(memberId int64) error {
 // GetTrustedInfo implements member.IMemberRepo
 func (m *MemberRepoImpl) GetTrustedInfo(memberId int) *member.TrustedInfo {
 	e := member.TrustedInfo{}
-	err := m._orm.Get(&e, memberId)
+	err := m._orm.Get(memberId, &e)
 	if err == nil {
 		return &e
 	}
