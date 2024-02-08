@@ -857,7 +857,11 @@ func (p *rbacServiceImpl) GenerateResourceKey(parent model.PermRes) string {
 		return fmt.Sprintf("%s01", parent.ResKey)
 	}
 	// 获取末尾编号,如:05,并进行累加
-	v, _ := strconv.Atoi(maxKey[l-2:])
+	var v = 0
+	if len(maxKey) >= 2 {
+		// 如果存在一级菜单挪动到二级,则计数会报错
+		v, _ = strconv.Atoi(maxKey[l-2:])
+	}
 	v += 1
 	if v < 10 {
 		return fmt.Sprintf("%s0%d", parent.ResKey, v)
