@@ -138,9 +138,14 @@ func (a *advertisementService) getAdvertisementDto(ia ad.IAdAggregateRoot) *prot
 func (a *advertisementService) QueryAdvertisementData(_ context.Context, r *proto.QueryAdvertisementDataRequest) (*proto.QueryAdvertisementDataResponse, error) {
 	iu := a.getUserAd(r.AdUserId)
 	var list = iu.QueryAdvertisement(r.Keys)
-	arr := make(map[string]*proto.SAdvertisementDto, len(list))
-	for k, v := range list {
-		arr[k] = a.getAdvertisementDto(v)
+	arr := make(map[string]*proto.SAdvertisementDto, len(r.Keys))
+	for _, k := range r.Keys {
+		v := list[k]
+		if v == nil {
+			arr[k] = nil
+		} else {
+			arr[k] = a.getAdvertisementDto(v)
+		}
 	}
 	return &proto.QueryAdvertisementDataResponse{
 		AdUserId: r.AdUserId,
