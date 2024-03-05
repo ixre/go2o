@@ -298,6 +298,9 @@ func (s *cartServiceImpl) PutItems(_ context.Context, r *proto.CartItemRequest) 
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
+	if len(r.Items) == 0 {
+		return &proto.CartItemResponse{ErrCode: 1, ErrMsg: "no any item to put cart"}, nil
+	}
 	rc := c.(cart.INormalCart)
 	items := make([]*proto.SShoppingCartItem, 0)
 	for _, it := range r.Items {

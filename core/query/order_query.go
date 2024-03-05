@@ -510,7 +510,6 @@ func (o *OrderQuery) queryNormalOrderItems(idArr []string) []*dto.OrderItem {
 	ON sn.id=si.snap_id WHERE si.seller_order_id IN (%s)
 	ORDER BY si.id ASC`, strings.Join(idArr, ","))
 
-	log.Println(cmd)
 	// 查询分页订单的Item
 	_ = o.Query(cmd, func(rs *sql.Rows) {
 		for rs.Next() {

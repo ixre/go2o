@@ -2,7 +2,6 @@ package impl
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/ixre/go2o/core/domain/interface/item"
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
@@ -399,9 +398,9 @@ func (p *productService) lazyLoadChildren(parentId int, categories []product.ICa
 	var arr []*proto.SCategoryTree
 	// 遍历子分类
 	for _, v := range categories {
-		if v.GetValue().Name == "礼品鲜花" {
-			print(fmt.Sprintf("%#v", v.GetValue()))
-		}
+		// if v.GetValue().Name == "礼品鲜花" {
+		// 	print(fmt.Sprintf("%#v", v.GetValue()))
+		// }
 		if cat := v.GetValue(); cat.ParentId == parentId &&
 			p.testWalkCondition(req, cat) {
 			if req.OnlyEnabled && cat.Enabled == 0 {
