@@ -168,7 +168,7 @@ func (s *cartServiceImpl) wsPutItem(c cart.ICartAggregateRoot, data map[string]s
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
-		err = c.Put(itemId, v.SkuId, v.Quantity, false, false)
+		err = c.Put(itemId, v.SkuId, v.Quantity, false)
 		if err != nil {
 			break
 		}
@@ -189,7 +189,7 @@ func (s *cartServiceImpl) wsUpdateItem(c cart.ICartAggregateRoot, data map[strin
 	itemId, err := util.I64Err(strconv.Atoi(data["ItemId"]))
 	arr := s.wsParseCartPostedData(data["Data"])
 	for _, v := range arr {
-		err = c.Put(itemId, v.SkuId, v.Quantity, true, false)
+		err = c.ResetQuantity(itemId, v.SkuId, v.Quantity)
 		if err != nil {
 			break
 		}
@@ -285,7 +285,7 @@ func (s *cartServiceImpl) parseCart(c cart.ICartAggregateRoot) *proto.SShoppingC
 			v.ShopName = io.GetShopValue().ShopName
 		} else {
 			for _, it := range v.Items {
-				_ = c.Remove(it.ItemId, it.SkuId, it.Quantity)
+				_ = c.ResetQuantity(it.ItemId, it.SkuId, 0)
 			}
 		}
 	}
@@ -304,7 +304,14 @@ func (s *cartServiceImpl) PutItems(_ context.Context, r *proto.CartItemRequest) 
 	rc := c.(cart.INormalCart)
 	items := make([]*proto.SShoppingCartItem, 0)
 	for _, it := range r.Items {
-		err := c.Put(it.ItemId, it.SkuId, it.Quantity, it.ResetQuantity, false)
+		var err error
+		if it.ResetQuantity {
+			// 更新数量
+			err = c.ResetQuantity(it.ItemId, it.SkuId, it.Quantity)
+		} else {
+			// 加入购物车
+			err = c.Put(it.ItemId, it.SkuId, it.Quantity, r.Checkout)
+		}
 		if err != nil {
 			return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 		}
@@ -326,7 +333,7 @@ func (s *cartServiceImpl) ReduceItems(_ context.Context, r *proto.CartItemReques
 		return s.error(cart.ErrNoSuchCart), nil
 	}
 	for _, it := range r.Items {
-		err := c.Remove(it.ItemId, it.SkuId, it.Quantity)
+		err := c.ResetQuantity(it.ItemId, it.SkuId, it.Quantity)
 		if err != nil {
 			return s.error(err), nil
 		}

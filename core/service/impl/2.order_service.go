@@ -165,7 +165,7 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		ic = s.cartRepo.NewTempNormalCart(int(r.BuyerId), r.CartCode)
 	}
 	if r.Item != nil {
-		err := ic.Put(r.Item.ItemId, r.Item.SkuId, r.Item.Quantity, true, true)
+		err := ic.Put(r.Item.ItemId, r.Item.SkuId, r.Item.Quantity, true)
 		if err == nil {
 			_, err = ic.Save()
 		}
@@ -257,7 +257,7 @@ func (s *orderServiceImpl) parsePrepareItemsFromCart(c cart.ICartAggregateRoot) 
 			v.ShopName = io.GetShopValue().ShopName
 		} else {
 			for _, it := range v.Items {
-				c.Remove(it.ItemId, it.SkuId, it.Quantity)
+				c.ResetQuantity(it.ItemId, it.SkuId, 0)
 			}
 		}
 	}

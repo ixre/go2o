@@ -236,21 +236,18 @@ func (c *cartImpl) getItems() []*cart.NormalCartItem {
 }
 
 // Put 添加项
-func (c *cartImpl) Put(itemId, skuId int64, num int32, reset bool, checkOnly bool) error {
-	_, err := c.put(itemId, skuId, num, reset, checkOnly)
+func (c *cartImpl) Put(itemId, skuId int64, num int32, checkOnly bool) error {
+	_, err := c.put(itemId, skuId, num, checkOnly)
 	return err
 }
 
-// 添加项
-func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly bool) (*cart.NormalCartItem, error) {
-	var err error
-	if c.value.Items == nil {
-		c.value.Items = []*cart.NormalCartItem{}
-	}
+// 检查是否有库存
+func (c *cartImpl) checkItemStock(itemId int64, skuId int64) (*item.GoodsItem, *item.Sku, int32, error) {
 	var sku *item.Sku
+
 	it := c.goodsRepo.GetItem(itemId)
 	if it == nil {
-		return nil, item.ErrNoSuchItem // 没有商品
+		return nil, sku, 0, item.ErrNoSuchItem // 没有商品
 	}
 	iv := it.GetValue()
 	// 库存,如有SKU，则使用SKU的库存
@@ -258,58 +255,62 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly boo
 	// 判断是否上架
 
 	if iv.ShelveState != item.ShelvesOn {
-		return nil, fmt.Errorf(item.ErrNotOnShelves.Error(), iv.Title) //未上架
+		return nil, sku, stock, fmt.Errorf(item.ErrNotOnShelves.Error(), iv.Title) //未上架
 	}
 	// 判断商品SkuId
 	if skuId > 0 {
 		sku = it.GetSku(skuId)
 		if sku == nil {
-			return nil, item.ErrNoSuchSku
+			return &iv, nil, stock, item.ErrNoSuchSku
 		}
 		stock = sku.Stock
 	} else if iv.SkuNum > 0 {
-		return nil, cart.ErrItemNoSku
+		return &iv, sku, stock, cart.ErrItemNoSku
 	}
 	// 检查是否已经卖完了
 	if stock == 0 {
-		return nil, fmt.Errorf(item.ErrFullOfStock.Error(), it.GetValue().Title) // 已经卖完了
+		return &iv, sku, stock, fmt.Errorf(item.ErrFullOfStock.Error(), it.GetValue().Title) // 已经卖完了
 	}
+	return &iv, sku, stock, nil
+}
 
+// 添加项
+func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.NormalCartItem, error) {
+	var err error
+	if c.value.Items == nil {
+		c.value.Items = []*cart.NormalCartItem{}
+	}
+	// 检查库存
+	iv, sku, stock, err := c.checkItemStock(itemId, skuId)
+	var dst *cart.NormalCartItem
 	// 添加数量
 	for _, v := range c.value.Items {
 		if v.ItemId == itemId && v.SkuId == skuId {
-			if checkOnly { // 立即购买
-				if v.Quantity > stock {
-					return v, item.ErrOutOfStock // 库存不足
-				}
-				v.Quantity = num
-				v.Checked = 1
-			} else {
-				// 设置商品数量
-				initial := v.Quantity
-				if reset {
-					initial = 0
-				}
-				if initial+num > stock {
-					return v, item.ErrOutOfStock // 库存不足
-				}
-				v.Quantity = initial + num
+			dst = v
+			finalQuantity := v.Quantity + num
+			if checkOnly {
+				// 立即购买
+				finalQuantity = num
 			}
-			return v, err
+			if finalQuantity > stock {
+				return v, item.ErrOutOfStock // 库存不足
+			}
+			v.Quantity = finalQuantity
 		} else {
 			// 取消掉其他要结算的商品
 			if checkOnly {
 				v.Checked = 0
 			}
 		}
-
 	}
-
+	if dst != nil {
+		// 对现有商品数量进行调整，直接返回
+		return dst, nil
+	}
+	// 向购物车中添加新的商品项
 	c.snapMap = nil
-
 	// 设置商品的相关信息
-	c.setItemInfo(&iv, c.getBuyerLevelId())
-
+	c.setItemInfo(iv, c.getBuyerLevelId())
 	v := &cart.NormalCartItem{
 		CartId:   c.GetAggregateRootId(),
 		VendorId: iv.VendorId,
@@ -317,36 +318,48 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, reset bool, checkOnly boo
 		ItemId:   iv.Id,
 		SkuId:    skuId,
 		Quantity: num,
-		Sku:      item.ParseSkuMedia(iv, sku),
+		Sku:      item.ParseSkuMedia(*iv, sku),
 		Checked:  1,
 	}
 	c.value.Items = append(c.value.Items, v)
 	return v, err
 }
 
-// 移出项
-func (c *cartImpl) Remove(itemId, skuId int64, quantity int32) error {
+// ResetQuantity 重置数量
+func (c *cartImpl) ResetQuantity(itemId, skuId int64, quantity int32) error {
 	if c.value.Items == nil {
 		return cart.ErrEmptyShoppingCart
 	}
-	exists := false
-	// 删除数量
+
+	var dst *cart.NormalCartItem
+	// 查找商品项
 	for _, v := range c.value.Items {
 		if v.ItemId == itemId && v.SkuId == skuId {
-			if newNum := v.Quantity - quantity; newNum <= 0 {
-				v.Quantity = 0
-			} else {
-				v.Quantity = newNum
-			}
-			exists = true
+			dst = v
 			break
 		}
 	}
-	if exists {
-		c.snapMap = nil //clean
-		return nil
+	if dst == nil {
+		// 不包含该商品
+		return cart.ErrNoMatchItem
 	}
-	return cart.ErrNoMatchItem
+	if quantity > dst.Quantity {
+		// 如果商品数量增加，需验证库存
+		_, _, stock, err := c.checkItemStock(itemId, skuId)
+		if err != nil {
+			// 校验库存失败
+			return err
+		}
+		if quantity > stock {
+			// 库存不足
+			return item.ErrOutOfStock
+		}
+	}
+	// 更新数量,如果商品数量为0,则在Save时，删除商品项
+	dst.Quantity = quantity
+	// 清除商品缓存
+	//c.snapMap = nil
+	return nil
 }
 
 // GetItem 获取项
@@ -375,7 +388,7 @@ func (c *cartImpl) Combine(ic cart.ICartAggregateRoot) cart.ICartAggregateRoot {
 		rc := ic.(cart.INormalCart)
 		for _, v := range rc.Items() {
 			if it, err := c.put(v.ItemId,
-				v.SkuId, v.Quantity, false, false); err == nil {
+				v.SkuId, v.Quantity, false); err == nil {
 				if v.Checked == 1 {
 					it.Checked = 1
 				}
@@ -457,11 +470,11 @@ func (c *cartImpl) Release(_checked map[int64][]int64) bool {
 			checked = append(checked, i)
 		}
 	}
-	// 如果为部分结算,则移除商品并返回false
+	// 如果为部分结算,则移除商品(更新数量为0)并返回false
 	if len(checked) < len(c.value.Items) {
 		for _, i := range checked {
 			v := c.value.Items[i]
-			c.Remove(v.ItemId, v.SkuId, v.Quantity)
+			c.ResetQuantity(v.ItemId, v.SkuId, 0)
 		}
 		c.Save()
 		return false

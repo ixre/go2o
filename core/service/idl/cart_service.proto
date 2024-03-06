@@ -32,6 +32,8 @@ message CartItemRequest {
     ShoppingCartId cartId = 1;
     // 商品项
     repeated RCartItem items = 2;
+    // 是否结账(立即购买)
+    bool checkout = 3;
 }
 
 

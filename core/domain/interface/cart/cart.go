@@ -77,13 +77,12 @@ type (
 		// CheckedItems 获取勾选的商品,checked:为商品与商品SKU数据
 		CheckedItems(checked map[int64][]int64) []*ItemPair
 		// Put 添加商品到购物车,如商品没有SKU,则skuId传入0
-		// @reset: 是否重置商品数量,重置后购物车商品数量为quantity,反之在原有数量上增加quantity
 		// @checkOnly: 是否仅结算该商品,在立即购买情况下调用
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
 		// 暂时以店铺区分,2017-02-28考虑单独的购物车或子系统
-		Put(itemId, skuId int64, quantity int32, reset bool, checkOnly bool) error
-		// Remove 移出项
-		Remove(itemId, skuId int64, quantity int32) error
+		Put(itemId, skuId int64, quantity int32, checkOnly bool) error
+		// ResetQuantity 重置数量
+		ResetQuantity(itemId, skuId int64, quantity int32) error
 		// Save 保存购物车
 		Save() (int32, error)
 		// Release 释放购物车,如果购物车的商品全部结算,则返回true
