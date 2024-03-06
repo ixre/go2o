@@ -237,7 +237,7 @@ message SProductBrand {
     // 介绍
     string introduce = 5;
     // 是否审核
-    int32 reviewState = 6;
+    int32 reviewStatus = 6;
     // 审核意见
     string reviewRemark = 7;
     // 是否启用

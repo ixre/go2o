@@ -99,7 +99,7 @@ func (h EventHandler) HandleMemberAccountLogPushEvent(data interface{}) {
 			ChangeValue:   int64(v.ChangeValue),
 			Balance:       int64(v.Balance),
 			ProcedureFee:  int64(v.ProcedureFee),
-			ReviewState:   int32(v.ReviewState),
+			ReviewStatus:  int32(v.ReviewStatus),
 			CreateTime:    int64(v.CreateTime),
 		}
 		msq.PushDelay(msq.MemberAccountLogTopic, typeconv.MustJson(ev), 500)

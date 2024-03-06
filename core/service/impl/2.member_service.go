@@ -345,18 +345,18 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 	m := s.repo.GetMember(r.MemberId)
 	v := m.GetAccount().GetWalletLog(r.LogId)
 	return &proto.WalletLogResponse{
-		LogId:       v.Id,
-		MemberId:    r.MemberId,
-		OuterNo:     v.OuterNo,
-		Kind:        int32(v.Kind),
-		Title:       v.Subject,
-		Amount:      float64(v.ChangeValue),
-		TradeFee:    float64(v.ProcedureFee),
-		ReviewState: int32(v.ReviewState),
-		Remark:      v.Remark,
-		CreateTime:  v.CreateTime,
-		UpdateTime:  v.UpdateTime,
-		RelateUser:  int64(v.OperatorUid),
+		LogId:        v.Id,
+		MemberId:     r.MemberId,
+		OuterNo:      v.OuterNo,
+		Kind:         int32(v.Kind),
+		Title:        v.Subject,
+		Amount:       float64(v.ChangeValue),
+		TradeFee:     float64(v.ProcedureFee),
+		ReviewStatus: int32(v.ReviewStatus),
+		Remark:       v.Remark,
+		CreateTime:   v.CreateTime,
+		UpdateTime:   v.UpdateTime,
+		RelateUser:   int64(v.OperatorUid),
 	}, nil
 }
 
@@ -995,7 +995,7 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 	}
 
 	if trust != "" {
-		buf.WriteString(" AND review_state ")
+		buf.WriteString(" AND review_status ")
 		if trust == "true" {
 			buf.WriteString(" = ")
 		} else {
@@ -1112,7 +1112,7 @@ func (s *memberService) GetTrustInfo(_ context.Context, id *proto.MemberIdReques
 		CardReverseImage: t.CardReverseImage,
 		TrustImage:       t.TrustImage,
 		ManualReview:     int32(t.ManualReview),
-		ReviewState:      int32(t.ReviewState),
+		ReviewStatus:     int32(t.ReviewStatus),
 		ReviewTime:       t.ReviewTime,
 		Remark:           t.Remark,
 	}, nil
@@ -1506,7 +1506,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 		wallet.KWithdrawToBankCard)
 	//if latestApplyInfo != nil {
 	//	var sText string
-	//	switch latestApplyInfo.ReviewState {
+	//	switch latestApplyInfo.ReviewStatus {
 	//	case enum.ReviewAwaiting:
 	//		sText = "已申请"
 	//	case enum.ReviewPass:
@@ -1534,7 +1534,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 			Amount:       latestApplyInfo.Amount,
 			ProcedureFee: latestApplyInfo.ProcedureFee,
 			RelateUser:   latestApplyInfo.RelateUser,
-			ReviewState:  latestApplyInfo.ReviewState,
+			ReviewStatus: latestApplyInfo.ReviewStatus,
 			Remark:       latestApplyInfo.Remark,
 			SubmitTime:   latestApplyInfo.CreateTime,
 			UpdateTime:   latestApplyInfo.UpdateTime,

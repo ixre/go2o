@@ -28,7 +28,7 @@ type AccountLogPushEvent struct {
 	// 交易手续费
 	ProcedureFee int
 	// 审核状态
-	ReviewState int
+	ReviewStatus int
 	// 创建时间
 	CreateTime int
 }

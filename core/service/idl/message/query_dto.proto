@@ -33,7 +33,7 @@ message SMemberAccountLog {
     /** 备注 */
     string remark = 9;
     /** 审核状态 */
-    int32 reviewState = 10;
+    int32 reviewStatus = 10;
     /** 创建时间 */
     int64 createTime = 11;
 }

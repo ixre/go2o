@@ -49,7 +49,7 @@ type (
 		// 批发商评级
 		Rate int `db:"rate"`
 		// 批发商审核状态
-		ReviewState int32 `db:"review_state"`
+		ReviewStatus int32 `db:"review_status"`
 	}
 	// 批发客户分组返点比例设置
 	WsRebateRate struct {

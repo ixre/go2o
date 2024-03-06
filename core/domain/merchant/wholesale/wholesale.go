@@ -41,11 +41,11 @@ func (w *wholesalerImpl) Value() *wholesaler.WsWholesaler {
 
 // 审核批发商
 func (w *wholesalerImpl) Review(pass bool, reason string) error {
-	if w.value.ReviewState == enum.ReviewAwaiting {
+	if w.value.ReviewStatus == enum.ReviewAwaiting {
 		if pass {
-			w.value.ReviewState = enum.ReviewPass
+			w.value.ReviewStatus = enum.ReviewPass
 		} else {
-			w.value.ReviewState = enum.ReviewReject
+			w.value.ReviewStatus = enum.ReviewReject
 		}
 		_, err := w.Save()
 		return err
@@ -55,7 +55,7 @@ func (w *wholesalerImpl) Review(pass bool, reason string) error {
 
 // 停止批发权限
 func (w *wholesalerImpl) Abort() error {
-	w.value.ReviewState = enum.ReviewAbort
+	w.value.ReviewStatus = enum.ReviewAbort
 	_, err := w.Save()
 	return err
 }

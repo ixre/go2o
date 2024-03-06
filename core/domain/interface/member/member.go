@@ -358,7 +358,7 @@ type (
 		// 是否人工审核认证
 		ManualReview int `db:"manual_review"`
 		// 是否审核通过
-		ReviewState int `db:"review_state"`
+		ReviewStatus int `db:"review_status"`
 		// 审核时间
 		ReviewTime int64 `db:"review_time"`
 		// 审核备注
@@ -491,7 +491,7 @@ type (
 		// 支付单编号
 		PaymentId int `db:"payment_id"`
 		// 是否审核及处理
-		ReviewState int `db:"review_state"`
+		ReviewStatus int `db:"review_status"`
 		// 升级方式,1:自动升级 2:客服更改 3:系统升级
 		UpgradeMode int `db:"upgrade_mode"`
 		// 升级时间

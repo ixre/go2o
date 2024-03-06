@@ -19,7 +19,7 @@ func (h EventHandler) HandleWalletLogWriteEvent(data interface{}) {
 		title= $1, 
 		outer_no=$2,
 		
-		review_state = $8,
+		review_status = $8,
 		review_remark = $9,
 		review_time = $10,
 		remark = $11,
@@ -28,7 +28,7 @@ func (h EventHandler) HandleWalletLogWriteEvent(data interface{}) {
 	`,
 		ld.Subject,
 		ld.OuterNo,
-		int32(ld.ReviewState),
+		int32(ld.ReviewStatus),
 		ld.CreateTime,
 		ld.MemberId,
 		ld.LogId,

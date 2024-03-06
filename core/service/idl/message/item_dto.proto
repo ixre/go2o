@@ -200,7 +200,7 @@ message SItemDataResponse {
   // 上架状态
   int32 shelveState = 20;
   // 审核状态
-  int32 reviewState = 21;
+  int32 reviewStatus = 21;
   // 审核意见
   string reviewRemark = 22;
 
@@ -309,7 +309,7 @@ message SUnifiedViewItem {
   string code = 23;
   int64 expressTid = 24;
   sint32 shelveState = 25;
-  sint32 reviewState = 26;
+  sint32 reviewStatus = 26;
   sint64 updateTime = 27;
   repeated SSku skuArray = 28;
   repeated SLevelPrice levelPrices = 29;

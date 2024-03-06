@@ -249,7 +249,7 @@ enum EChargeKind {
 /** 钱包日志种类 */
 enum EWalletLogKind {
     _9 = 0;
-    /** 赠送金额 */
+    /** 赠送/充值 */
     KCharge = 1;
     /** 钱包收入 */
     KCarry = 2;
@@ -257,7 +257,7 @@ enum EWalletLogKind {
     KExpired = 3;
     /** 客服调整 */
     KAdjust = 4;
-    // 消费
+    /** 消费 */
     KConsume = 5;
     /** 扣除 */
     KDiscount = 6;
@@ -278,9 +278,9 @@ enum EWalletLogKind {
     KPaymentOrderRefund = 13;
 
     /** 提现到银行卡(人工提现) */
-    KTakeOutToBankCard = 14;
+    KWithdrawalToBankCard = 14;
     /** 提现到第三方 */
-    KTakeOutToThirdPart = 15;
+    KWithdrawalToThirdPart = 15;
 }
 
 /** 钱包 */
@@ -356,7 +356,7 @@ message SWalletLog {
     /** 备注 */
     string remark = 13;
     /** 审核状态 */
-    sint32 reviewState = 14;
+    sint32 reviewStatus = 14;
     /** 审核备注 */
     string reviewRemark = 15;
     /** 审核时间 */

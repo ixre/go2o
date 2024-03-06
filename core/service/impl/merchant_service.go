@@ -925,7 +925,7 @@ func (m *merchantService) parseMchSignUp(v *proto.SMchSignUp) *merchant.MchSignU
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
 		Remark:       v.Remark,
-		Reviewed:     v.ReviewState,
+		Reviewed:     v.ReviewStatus,
 		SubmitTime:   v.SubmitTime,
 	}
 }
@@ -953,7 +953,7 @@ func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSi
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
 		Remark:       v.Remark,
-		ReviewState:  v.Reviewed,
+		ReviewStatus: v.Reviewed,
 		SubmitTime:   v.SubmitTime,
 	}
 }
@@ -975,7 +975,7 @@ func (m *merchantService) parseEnterpriseInfoDto(v *merchant.EnterpriseInfo) *pr
 		Address:      v.Address,
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
-		ReviewState:  v.Reviewed,
+		ReviewStatus: v.Reviewed,
 		ReviewTime:   v.ReviewTime,
 		ReviewRemark: v.ReviewRemark,
 		UpdateTime:   v.UpdateTime,
@@ -999,7 +999,7 @@ func (m *merchantService) parseEnterpriseInfo(v *proto.SEnterpriseInfo) *merchan
 		Address:      v.Address,
 		CompanyImage: v.CompanyImage,
 		AuthDoc:      v.AuthDoc,
-		Reviewed:     int32(v.ReviewState),
+		Reviewed:     int32(v.ReviewStatus),
 		ReviewTime:   v.ReviewTime,
 		ReviewRemark: v.ReviewRemark,
 		UpdateTime:   v.UpdateTime,

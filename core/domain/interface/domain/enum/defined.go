@@ -17,15 +17,15 @@ const (
 const (
 	// 未设置
 	ReviewNotSet int32 = 0
-	// 等待审核
+	// 待审核
 	ReviewAwaiting int32 = 1
-	// 审核失败
+	// 审核未通过
 	ReviewReject int32 = 2
 	// 审核成功
 	ReviewPass int32 = 3
-	// 已确认
+	// 已复核
 	ReviewConfirm int32 = 4
-	// 审核终止
+	// 审核作废
 	ReviewAbort int32 = 5
 )
 

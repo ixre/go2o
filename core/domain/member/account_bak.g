@@ -83,7 +83,7 @@ func (a *accountImpl) walletRefund_(kind int, title string,
 		Title:       title,
 		OuterNo:     outerNo,
 		Amount:      amount,
-		ReviewState: enum.ReviewPass,
+		ReviewStatus: enum.ReviewPass,
 		RelateUser:  relateUser,
 		CreateTime:  unix,
 		UpdateTime:  unix,
@@ -140,7 +140,7 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	mustTrust, _ := a.registryRepo.GetValue(registry.MemberWithdrawalMustTrust)
 	if mustTrust == "true" {
 		trust := a.member.Profile().GetTrustedInfo()
-		if trust.ReviewState != int(enum.ReviewPass) {
+		if trust.ReviewStatus != int(enum.ReviewPass) {
 			return 0, "", member.ErrTakeOutNotTrust
 		}
 	}
@@ -189,7 +189,7 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 		OuterNo:     tradeNo,
 		Amount:      finalAmount,
 		CsnFee:      csnAmount,
-		ReviewState: enum.ReviewAwaiting,
+		ReviewStatus: enum.ReviewAwaiting,
 		RelateUser:  member.DefaultRelateUser,
 		Remark:      "",
 		CreateTime:  unix,
@@ -199,7 +199,7 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	// 提现至余额
 	if takeKind == wallet.KWithdrawExchange {
 		a.value.Balance += amount
-		v.ReviewState = enum.ReviewPass
+		v.ReviewStatus = enum.ReviewPass
 	}
 	a.value.WalletBalance -= amount
 	_, err := a.Save()
@@ -217,15 +217,15 @@ func (a *accountImpl) ReviewWithdrawal_(id int32, pass bool, remark string) erro
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
 	}
-	if v.ReviewState != enum.ReviewAwaiting {
+	if v.ReviewStatus != enum.ReviewAwaiting {
 		return member.ErrTakeOutState
 	}
 	// todo: 应该先冻结, 再扣除
 	if pass {
-		v.ReviewState = enum.ReviewPass
+		v.ReviewStatus = enum.ReviewPass
 	} else {
 		v.Remark += "失败:" + remark
-		v.ReviewState = enum.ReviewReject
+		v.ReviewStatus = enum.ReviewReject
 		//err := a.Refund(member.AccountWallet,
 		//	member.KindWalletTakeOutRefund,
 		//	"提现退回",  v.CsnFee+(-v.Amount),v.OuterNo,"")
@@ -248,11 +248,11 @@ func (a *accountImpl) FinishWithdrawal_(id int32, tradeNo string) error {
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
 	}
-	if v.ReviewState != enum.ReviewPass {
+	if v.ReviewStatus != enum.ReviewPass {
 		return member.ErrTakeOutState
 	}
 	v.OuterNo = tradeNo
-	v.ReviewState = enum.ReviewConfirm
+	v.ReviewStatus = enum.ReviewConfirm
 	v.Remark = "转款凭证:" + tradeNo
 	_, err := a.rep.SaveWalletAccountLog(v)
 	return err

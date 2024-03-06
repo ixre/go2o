@@ -185,7 +185,7 @@ message EVAccountLogPushEventData  {
 	// 交易手续费
 	int64 procedureFee = 10;
 	// 审核状态
-	int32 reviewState  = 11;
+	int32 reviewStatus  = 11;
 	// 创建时间
 	int64 createTime = 12;
 }

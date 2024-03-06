@@ -228,7 +228,7 @@ func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog
 		OperatorUid:  int32(l.OperatorUid),
 		OperatorName: l.OperatorName,
 		Remark:       l.Remark,
-		ReviewState:  int32(l.ReviewState),
+		ReviewStatus: int32(l.ReviewStatus),
 		ReviewRemark: l.ReviewRemark,
 		ReviewTime:   l.ReviewTime,
 		CreateTime:   l.CreateTime,

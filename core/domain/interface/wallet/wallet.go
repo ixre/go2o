@@ -324,7 +324,7 @@ type (
 		// 提现银行名称
 		BankName string `db:"bank_name"`
 		// 审核状态
-		ReviewState int `db:"review_state"`
+		ReviewStatus int `db:"review_status"`
 		// 审核备注
 		ReviewRemark string `db:"review_remark"`
 		// 审核时间

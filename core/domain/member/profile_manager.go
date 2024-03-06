@@ -454,7 +454,7 @@ func (p *profileManagerImpl) AddBankCard(v *member.BankCard) error {
 		return member.ErrBankCardIsExists
 	}
 	trustInfo := p.GetTrustedInfo()
-	if trustInfo.ReviewState == 0 {
+	if trustInfo.ReviewStatus == 0 {
 		return member.ErrNotTrusted
 	}
 	if v.BankAccount == "" || v.BankName == "" {
@@ -577,8 +577,8 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 func (p *profileManagerImpl) copyTrustedInfo(src member.TrustedInfo, dst *member.TrustedInfo) error {
 	if dst == nil {
 		dst = &member.TrustedInfo{
-			MemberId:    p.memberId,
-			ReviewState: int(enum.ReviewAwaiting),
+			MemberId:     p.memberId,
+			ReviewStatus: int(enum.ReviewAwaiting),
 		}
 	}
 	dst.RealName = src.RealName
@@ -602,7 +602,7 @@ func (p *profileManagerImpl) GetTrustedInfo() *member.TrustedInfo {
 func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 	mId := 0
 	tmp.Db().ExecScalar(`SELECT COUNT(1) FROM mm_trusted_info WHERE 
-			review_state= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1`,
+			review_status= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1`,
 		&mId, enum.ReviewPass, cardId, memberId)
 	return mId == 0
 }
@@ -656,7 +656,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	err = p.copyTrustedInfo(*v, current)
 	if err == nil {
 		p.trustedInfo.Remark = ""
-		p.trustedInfo.ReviewState = int(enum.ReviewAwaiting) //标记为待处理
+		p.trustedInfo.ReviewStatus = int(enum.ReviewAwaiting) //标记为待处理
 		p.trustedInfo.UpdateTime = time.Now().Unix()
 		if isCreate {
 			_, err = p.repo.SaveTrustedInfo(0, p.trustedInfo)
@@ -671,7 +671,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p.GetTrustedInfo()
 	if pass {
-		p.trustedInfo.ReviewState = int(enum.ReviewPass)
+		p.trustedInfo.ReviewStatus = int(enum.ReviewPass)
 		p.member.value.UserFlag |= member.FlagTrusted
 		p.member.value.RealName = p.trustedInfo.RealName
 	} else {
@@ -679,7 +679,7 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 		if remark == "" {
 			return member.ErrEmptyReviewRemark
 		}
-		p.trustedInfo.ReviewState = int(enum.ReviewReject)
+		p.trustedInfo.ReviewStatus = int(enum.ReviewReject)
 		if p.member.ContainFlag(member.FlagTrusted) {
 			p.member.value.UserFlag ^= member.FlagTrusted
 		}

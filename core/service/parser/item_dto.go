@@ -69,21 +69,21 @@ func ParseLevelPrice(src *proto.SLevelPrice) *item.MemberPrice {
 
 func ParseGoodsDto_(src *valueobject.Goods) *proto.SUnifiedViewItem {
 	return &proto.SUnifiedViewItem{
-		ItemId:      src.ItemId,
-		ProductId:   src.ProductId,
-		CategoryId:  int64(src.CategoryId),
-		VendorId:    int64(src.VendorId),
-		BrandId:     0,
-		Title:       src.Title,
-		Code:        "",
-		SkuId:       src.SkuId,
-		Image:       src.Image,
-		Price:       src.Price,
-		PriceRange:  src.PriceRange,
-		StockNum:    src.StockNum,
-		ShelveState: item.ShelvesOn,
-		ReviewState: 0,
-		UpdateTime:  0,
+		ItemId:       src.ItemId,
+		ProductId:    src.ProductId,
+		CategoryId:   int64(src.CategoryId),
+		VendorId:     int64(src.VendorId),
+		BrandId:      0,
+		Title:        src.Title,
+		Code:         "",
+		SkuId:        src.SkuId,
+		Image:        src.Image,
+		Price:        src.Price,
+		PriceRange:   src.PriceRange,
+		StockNum:     src.StockNum,
+		ShelveState:  item.ShelvesOn,
+		ReviewStatus: 0,
+		UpdateTime:   0,
 	}
 }
 

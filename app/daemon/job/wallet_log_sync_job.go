@@ -55,7 +55,7 @@ func writeWalletLogToClickHouse(list []*wallet.WalletLog) error {
 id,wallet_id,wallet_user,kind,subject,outer_chan,
 outer_no,change_value,balance,procedure_fee,
 opr_uid,opr_name,account_no,
-account_name,bank_name,review_state,
+account_name,bank_name,review_status,
 review_remark,review_time,remark,create_time,
 update_time)`)
 	if err != nil {
@@ -76,7 +76,7 @@ update_time)`)
 			l.AccountNo,
 			l.AccountName,
 			l.BankName,
-			int32(l.ReviewState),
+			int32(l.ReviewStatus),
 			l.ReviewRemark,
 			l.ReviewTime,
 			l.Remark,

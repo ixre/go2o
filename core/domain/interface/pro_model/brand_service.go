@@ -14,7 +14,7 @@ type (
 		// 介绍
 		Introduce string `db:"introduce"`
 		// 是否审核
-		ReviewState int32 `db:"review_state"`
+		ReviewStatus int32 `db:"review_status"`
 		// 审核意见
 		ReviewRemark string `db:"review_remark"`
 		// 是否启用

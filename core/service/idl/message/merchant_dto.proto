@@ -190,7 +190,7 @@ message SMchSignUp {
   // 备注
   string remark = 21;
   // 是否通过
-  int32 reviewState = 22;
+  int32 reviewStatus = 22;
   // 提交时间
   int64 submitTime = 23;
 }
@@ -234,7 +234,7 @@ message SEnterpriseInfo {
   // 授权书
   string authDoc = 15;
   //是否已审核
-  int32 reviewState = 16;
+  int32 reviewStatus = 16;
   // 审核时间
   int64 reviewTime = 17;
   // 审核备注

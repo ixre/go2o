@@ -113,7 +113,7 @@ func (m *merchantManagerImpl) CommitSignUpInfo(v *merchant.MchSignUp) (int, erro
 	v.SubmitTime = time.Now().Unix()
 	v.UpdateTime = time.Now().Unix()
 	return m.rep.SaveSignUpInfo(v)
-	
+
 }
 
 // ReviewMchSignUp 审核商户注册信息
@@ -467,10 +467,10 @@ func (m *merchantImpl) EnableWholesale() error {
 
 func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 	v := &wholesaler.WsWholesaler{
-		MchId:       m.GetAggregateRootId(),
-		Rate:        1,
-		ReviewState: enum.ReviewPass,
-		//ReviewState: enum.ReviewAwaiting,
+		MchId:        m.GetAggregateRootId(),
+		Rate:         1,
+		ReviewStatus: enum.ReviewPass,
+		//ReviewStatus: enum.ReviewAwaiting,
 	}
 	_, err := m._wsRepo.SaveWsWholesaler(v, true)
 	return v, err

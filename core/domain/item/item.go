@@ -437,7 +437,7 @@ func (i *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 func (i *itemImpl) resetReview() {
 	ir := i.registryRepo.Get(registry.ItemGenerateSnapshotReviewEnabled)
 	if ir != nil && ir.BoolValue() {
-		i.value.ReviewState = enum.ReviewAwaiting
+		i.value.ReviewStatus = enum.ReviewAwaiting
 	}
 }
 
@@ -505,7 +505,7 @@ func (i *itemImpl) Save() (_ int64, err error) {
 	if i.GetAggregateRootId() == 0 {
 		if domain.TestFlag(i.value.ItemFlag, item.FlagSelfSales) {
 			i.value.ShelveState = item.ShelvesOn
-			i.value.ReviewState = enum.ReviewAwaiting
+			i.value.ReviewStatus = enum.ReviewAwaiting
 		}
 	}
 
@@ -520,7 +520,7 @@ func (i *itemImpl) Save() (_ int64, err error) {
 			}
 		}
 	}
-	if err == nil && i.value.ReviewState == enum.ReviewPass {
+	if err == nil && i.value.ReviewStatus == enum.ReviewPass {
 		_, err = i.repo.SnapshotService().GenerateSnapshot(i.value)
 	}
 	return i.value.Id, err
@@ -624,8 +624,8 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 		return product.ErrNilRejectRemark
 	}
 	i.value.ShelveState = state
-	if i.value.ReviewState != enum.ReviewPass {
-		i.value.ReviewState = enum.ReviewAwaiting
+	if i.value.ReviewStatus != enum.ReviewPass {
+		i.value.ReviewStatus = enum.ReviewAwaiting
 	}
 	i.value.ReviewRemark = remark
 	_, err := i.Save()
@@ -649,14 +649,14 @@ func (i *itemImpl) Incorrect(remark string) error {
 // 审核
 func (i *itemImpl) Review(pass bool, remark string) error {
 	if pass {
-		i.value.ReviewState = enum.ReviewPass
+		i.value.ReviewStatus = enum.ReviewPass
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return item.ErrEmptyReviewRemark
 		}
 		i.value.ShelveState = item.ShelvesDown
-		i.value.ReviewState = enum.ReviewReject
+		i.value.ReviewStatus = enum.ReviewReject
 	}
 	i.value.ReviewRemark = remark
 	_, err := i.Save()

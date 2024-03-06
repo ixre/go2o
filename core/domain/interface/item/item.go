@@ -241,7 +241,7 @@ type (
 		// 上架状态
 		ShelveState int32 `db:"shelve_state"`
 		// 是否审核通过
-		ReviewState int32 `db:"review_state"`
+		ReviewStatus int32 `db:"review_status"`
 		// 审核备注
 		ReviewRemark string `db:"review_remark"`
 	}
@@ -418,7 +418,7 @@ type (
 		// 是否上架
 		ShelveState int32 `db:"shelve_state"`
 		// 审核状态
-		ReviewState int32 `db:"review_state"`
+		ReviewStatus int32 `db:"review_status"`
 		// 审核备注
 		ReviewRemark string `db:"review_remark"`
 		// 排序序号

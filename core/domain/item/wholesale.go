@@ -37,12 +37,12 @@ func (w *wholesaleItemImpl) init() item.IWholesaleItem {
 	if v == nil {
 		iv := w.it.GetValue()
 		v = &item.WsItem{
-			ItemId:      w.itemId,
-			VendorId:    iv.VendorId,
-			Price:       iv.Price,
-			PriceRange:  iv.PriceRange,
-			ShelveState: item.ShelvesInWarehouse,
-			ReviewState: iv.ReviewState,
+			ItemId:       w.itemId,
+			VendorId:     iv.VendorId,
+			Price:        iv.Price,
+			PriceRange:   iv.PriceRange,
+			ShelveState:  item.ShelvesInWarehouse,
+			ReviewStatus: iv.ReviewStatus,
 		}
 		w.repo.SaveWsItem(v, true)
 	}
@@ -57,7 +57,7 @@ func (w *wholesaleItemImpl) GetDomainId() int64 {
 
 // 是否允许批发
 func (w *wholesaleItemImpl) CanWholesale() bool {
-	return w.IsOnShelves() && w.value.ReviewState == enum.ReviewPass
+	return w.IsOnShelves() && w.value.ReviewStatus == enum.ReviewPass
 }
 
 // 保存
@@ -95,14 +95,14 @@ func (w *wholesaleItemImpl) Incorrect(remark string) error {
 // 审核
 func (w *wholesaleItemImpl) Review(pass bool, remark string) error {
 	if pass {
-		w.value.ReviewState = enum.ReviewPass
+		w.value.ReviewStatus = enum.ReviewPass
 
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return item.ErrEmptyReviewRemark
 		}
-		w.value.ReviewState = enum.ReviewReject
+		w.value.ReviewStatus = enum.ReviewReject
 	}
 	w.value.ReviewRemark = remark
 	_, err := w.Save()

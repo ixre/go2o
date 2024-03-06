@@ -68,7 +68,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, valueFilter int32, 
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_balance_log
 			WHERE member_id= $1 %s`, where), &num, memberId)
 	sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,procedure_fee,
-	balance,review_state,create_time FROM mm_balance_log
+	balance,review_status,create_time FROM mm_balance_log
 			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy)
 	err := d.Query(sqlLine, func(_rows *sql.Rows) {
@@ -76,7 +76,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, valueFilter int32, 
 			e := proto.SMemberAccountLog{}
 			_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
 				&e.Value, &e.ProcedureFee, &e.Balance,
-				&e.ReviewState, &e.CreateTime)
+				&e.ReviewStatus, &e.CreateTime)
 			rows = append(rows, &e)
 		}
 	}, memberId, begin, end-begin)
@@ -106,14 +106,14 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, valueFilter int32,
 			orderBy = "ORDER BY " + sortBy
 		}
 		sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,
-		balance,review_state,create_time FROM mm_integral_log 
+		balance,review_status,create_time FROM mm_integral_log 
 			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`, where, orderBy)
 		err := d.Query(sqlLine, func(_rows *sql.Rows) {
 			for _rows.Next() {
 				e := proto.SMemberAccountLog{}
 				_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
 					&e.Value, &e.Balance,
-					&e.ReviewState, &e.CreateTime)
+					&e.ReviewStatus, &e.CreateTime)
 				rows = append(rows, &e)
 			}
 		}, memberId, begin, over-begin)
@@ -148,7 +148,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 
 	if num > 0 {
 		cmd := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,procedure_fee,
-			balance,review_state,create_time FROM wal_wallet_log 
+			balance,review_status,create_time FROM wal_wallet_log 
 			WHERE wallet_id = $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)
 		err := d.Query(cmd, func(_rows *sql.Rows) {
@@ -156,7 +156,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 				e := proto.SMemberAccountLog{}
 				_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
 					&e.Value, &e.ProcedureFee, &e.Balance,
-					&e.ReviewState, &e.CreateTime)
+					&e.ReviewStatus, &e.CreateTime)
 				rows = append(rows, &e)
 			}
 		}, walletId, begin, end-begin)

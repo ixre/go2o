@@ -10,6 +10,7 @@ package repos
 
 import (
 	"errors"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
@@ -102,7 +103,7 @@ func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId int64, tagId int32,
 	arr := []*valueobject.Goods{}
 	t.o.SelectByQuery(&arr, `SELECT * FROM item_info INNER JOIN
 	       product ON product.id = item_info.product_id
-		 WHERE product.review_state= $1 AND product.shelve_state= $2 AND product.id IN (
+		 WHERE product.review_status= $1 AND product.shelve_state= $2 AND product.id IN (
 			SELECT g.item_id FROM product_tag g INNER JOIN gs_sale_label t
 			 ON t.id = g.sale_tag_id WHERE t.mch_id= $3 AND t.id= $4) `+sortBy+`
 			LIMIT $6 OFFSET $5`, enum.ReviewPass, item.ShelvesOn, mchId, tagId, begin, end)
@@ -118,7 +119,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId int64, tagId int32,
 	}
 	t.Connector.ExecScalar(`SELECT COUNT(1) FROM item_info
 	    INNER JOIN product ON product.id = item_info.product_id
-		 WHERE product.review_state= $1 AND product.shelve_state= $2 AND product.id IN (
+		 WHERE product.review_status= $1 AND product.shelve_state= $2 AND product.id IN (
 			SELECT g.item_id FROM product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
 			WHERE t.mch_id= $3 AND t.id= $4)`, &total, enum.ReviewPass,
 		item.ShelvesOn, mchId, tagId)
@@ -126,7 +127,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId int64, tagId int32,
 	if total > 0 {
 		t.o.SelectByQuery(&arr, `SELECT * FROM item_info
          INNER JOIN product ON product.id = item_info.product_id
-		 WHERE product.review_state= $1 AND product.shelve_state= $2 AND product.id IN (
+		 WHERE product.review_status= $1 AND product.shelve_state= $2 AND product.id IN (
 			SELECT g.item_id FROM product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
 			WHERE t.mch_id= $3 AND t.id= $4) `+sortBy+` LIMIT $6 OFFSET $5`,
 			enum.ReviewPass, item.ShelvesOn,

@@ -104,3 +104,4 @@ ALTER TABLE IF EXISTS public.mm_integral_log
     RENAME value TO change_value;
 ALTER TABLE IF EXISTS public.mm_integral_log
     RENAME review_state TO audit_state;
+

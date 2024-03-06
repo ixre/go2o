@@ -14,26 +14,32 @@ service CartService {
     // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
     rpc GetShoppingCart (ShoppingCartId) returns (SShoppingCart) {
     }
-    // 放入购物车
-    rpc PutItems(CartItemRequest) returns (CartItemResponse) {
+    // 购物车商品操作
+    rpc ApplyItem(CartItemOpRequest) returns (CartItemResponse) {
     }
-    
-    // 从购物车里删除指定数量的商品
-    rpc ReduceItems(CartItemRequest) returns (Result) {}
-
+  
     // 勾选商品结算
     rpc CheckCart (CheckCartRequest) returns (Result) {
     }
 }
 
-// 购物车加入商品请求
-message CartItemRequest {
+enum ECartItemOp{
+    /** 加入购物车 */
+    PUT = 0;
+    /** 更改数量 */
+    CHANGE = 1;
+    /** 结账 */
+    CHECKOUT = 2;
+}
+
+// 购物车加入商品操作请求
+message CartItemOpRequest {
     // 购物车编号
     ShoppingCartId cartId = 1;
     // 商品项
-    repeated RCartItem items = 2;
-    // 是否结账(立即购买)
-    bool checkout = 3;
+    RCartItem item = 2;
+    // 操作
+    ECartItemOp op = 3; 
 }
 
 
@@ -45,8 +51,6 @@ message RCartItem{
   sint64 skuId = 2;
   // 数量
   int32 quantity = 3;
-  // 是否重置数量
-  bool resetQuantity = 4;
 }
 
 message CheckCartRequest {

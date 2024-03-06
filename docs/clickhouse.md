@@ -21,7 +21,7 @@ ON CLUSTER cluster1
     `account_no` String COMMENT '提现账号',
     `account_name` String COMMENT '提现银行账户名称',
     `bank_name` String COMMENT '提现银行',
-    `review_state` Int32 COMMENT '审核状态',
+    `review_status` Int32 COMMENT '审核状态',
     `review_remark` String COMMENT '审核备注',
     `review_time` Int64 COMMENT '审核时间',
     `remark` String COMMENT '备注',

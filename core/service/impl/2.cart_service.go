@@ -292,57 +292,41 @@ func (s *cartServiceImpl) parseCart(c cart.ICartAggregateRoot) *proto.SShoppingC
 	return dto
 }
 
-// PutInCart 放入购物车
-func (s *cartServiceImpl) PutItems(_ context.Context, r *proto.CartItemRequest) (*proto.CartItemResponse, error) {
+// ApplyItem 购物车商品操作
+func (s *cartServiceImpl) ApplyItem(_ context.Context, r *proto.CartItemOpRequest) (*proto.CartItemResponse, error) {
 	c := s.getShoppingCart(r.CartId.UserId, r.CartId.CartCode)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
-	if len(r.Items) == 0 {
+	it := r.Item
+	if it == nil {
 		return &proto.CartItemResponse{ErrCode: 1, ErrMsg: "no any item to put cart"}, nil
 	}
 	rc := c.(cart.INormalCart)
 	items := make([]*proto.SShoppingCartItem, 0)
-	for _, it := range r.Items {
-		var err error
-		if it.ResetQuantity {
-			// 更新数量
-			err = c.ResetQuantity(it.ItemId, it.SkuId, it.Quantity)
-		} else {
-			// 加入购物车
-			err = c.Put(it.ItemId, it.SkuId, it.Quantity, r.Checkout)
-		}
-		if err != nil {
-			return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
-		}
-		item := rc.GetItem(it.ItemId, it.SkuId)
-		items = append(items, parser.ParseCartItem(item))
+	var err error
+	if r.Op == proto.ECartItemOp_PUT {
+		// 加入购物车
+		err = c.Put(it.ItemId, it.SkuId, it.Quantity, false)
+	} else if r.Op == proto.ECartItemOp_CHECKOUT {
+		// 立即购买，清空数量并重新加入
+		c.ResetQuantity(it.ItemId, it.SkuId, 0)
+		err = c.Put(it.ItemId, it.SkuId, it.Quantity, true)
+	} else if r.Op == proto.ECartItemOp_CHANGE {
+		// 更新数量
+		err = c.ResetQuantity(it.ItemId, it.SkuId, it.Quantity)
 	}
+	if err != nil {
+		return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+	}
+	item := rc.GetItem(it.ItemId, it.SkuId)
+	items = append(items, parser.ParseCartItem(item))
 	if _, err := c.Save(); err != nil {
 		return &proto.CartItemResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
 	return &proto.CartItemResponse{
 		Items: items,
 	}, nil
-}
-
-// ReduceItem 从购物车里删除指定数量的商品
-func (s *cartServiceImpl) ReduceItems(_ context.Context, r *proto.CartItemRequest) (*proto.Result, error) {
-	c := s.getShoppingCart(r.CartId.UserId, r.CartId.CartCode)
-	if c == nil {
-		return s.error(cart.ErrNoSuchCart), nil
-	}
-	for _, it := range r.Items {
-		err := c.ResetQuantity(it.ItemId, it.SkuId, it.Quantity)
-		if err != nil {
-			return s.error(err), nil
-		}
-	}
-	_, err := c.Save()
-	if err == nil {
-		return s.success(nil), nil
-	}
-	return s.error(err), nil
 }
 
 // CheckCart 勾选商品结算

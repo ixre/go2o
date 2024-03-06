@@ -177,7 +177,7 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, operator
 		OperatorUid:  operatorUid,
 		OperatorName: strings.TrimSpace(operatorName),
 		Remark:       "",
-		ReviewState:  wallet.ReviewPass,
+		ReviewStatus: wallet.ReviewPass,
 		ReviewRemark: "",
 		ReviewTime:   0,
 		CreateTime:   unix,
@@ -214,7 +214,7 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 			ChangeValue:   int(l.ChangeValue),
 			Balance:       int(l.Balance),
 			ProcedureFee:  l.ProcedureFee,
-			ReviewState:   l.ReviewState,
+			ReviewStatus:  l.ReviewStatus,
 			CreateTime:    int(l.CreateTime),
 		})
 	}
@@ -369,7 +369,7 @@ func (w *WalletImpl) CarryTo(d wallet.OperateData, freeze bool, procedureFee int
 		l := w.createWalletLog(k, d.Amount, d.Title, 0, "")
 		l.OuterNo = d.OuterNo
 		l.ProcedureFee = -procedureFee
-		l.ReviewState = wallet.ReviewPass
+		l.ReviewStatus = wallet.ReviewPass
 		l.ReviewTime = time.Now().Unix()
 		l.Balance = w._value.Balance
 		err = w.saveWalletLog(l)
@@ -533,7 +533,7 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 	l := w.createWalletLog(kind, -(amount - tradeFee), title, 0, "")
 	l.ProcedureFee = -tradeFee
 	l.OuterNo = tradeNo
-	l.ReviewState = wallet.ReviewAwaiting
+	l.ReviewStatus = wallet.ReviewAwaiting
 	l.ReviewRemark = ""
 	l.BankName = bankName
 	l.AccountNo = accountNo
@@ -554,15 +554,15 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
 	}
-	if l.ReviewState != wallet.ReviewAwaiting {
+	if l.ReviewStatus != wallet.ReviewAwaiting {
 		return wallet.ErrWithdrawState
 	}
 	l.ReviewTime = time.Now().Unix()
 	if pass {
-		l.ReviewState = wallet.ReviewPass
+		l.ReviewStatus = wallet.ReviewPass
 	} else {
 		l.ReviewRemark = remark
-		l.ReviewState = wallet.ReviewReject
+		l.ReviewStatus = wallet.ReviewReject
 		err := w.Refund(-(l.ProcedureFee + int(l.ChangeValue)), wallet.KWithdrawRefund, "提现退回",
 			l.OuterNo, 0, "")
 		if err != nil {
@@ -580,11 +580,11 @@ func (w *WalletImpl) FinishWithdrawal(takeId int64, outerNo string) error {
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
 	}
-	if l.ReviewState != wallet.ReviewPass {
+	if l.ReviewStatus != wallet.ReviewPass {
 		return wallet.ErrWithdrawState
 	}
 	l.OuterNo = outerNo
-	l.ReviewState = wallet.ReviewConfirm
+	l.ReviewStatus = wallet.ReviewConfirm
 	l.Remark = "转款凭证:" + outerNo
 	return w.saveWalletLog(l)
 }
@@ -598,9 +598,9 @@ func (w *WalletImpl) PagingLog(begin int, over int, opt map[string]string, sort 
 		where.WriteString(")")
 	}
 	// 添加审核状态条件
-	if reviewState, ok := opt["review_state"]; ok {
-		where.WriteString(" AND review_state=")
-		where.WriteString(reviewState)
+	if reviewStatus, ok := opt["review_status"]; ok {
+		where.WriteString(" AND review_status=")
+		where.WriteString(reviewStatus)
 	}
 	// 添加金额
 	minAmount, ok1 := opt["min_amount"]

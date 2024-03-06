@@ -61,7 +61,7 @@ func (s *StatisticsQuery) QuerySummary() *SummaryStatistics {
 		(SELECT COUNT(1) FROM mm_member WHERE last_login_time > $1) as todayLoginMembers,
 		(SELECT COUNT(1) FROM sale_sub_order WHERE create_time > $1) as todayCreateOrders,
 		(SELECT COUNT(1) FROM sale_sub_order WHERE status = $2) as awaitShipmentOrders,
-		(SELECT COUNT(1) FROM wal_wallet_log WHERE review_state = $3 AND kind IN (22,23)) as awaitReviewWithdrawRequests,	
+		(SELECT COUNT(1) FROM wal_wallet_log WHERE review_status = $3 AND kind IN (22,23)) as awaitReviewWithdrawRequests,	
 		`,
 		func(row *sql.Row) error {
 			return row.Scan(

@@ -202,7 +202,7 @@ func (i *itemRepoImpl) GetOnShelvesGoods(mchId int64, start, end int, sortBy str
 	var e []*valueobject.Goods
 	s := fmt.Sprintf(`SELECT * FROM item_info INNER JOIN product ON product.id = item_info.product_id
 		 INNER JOIN product_category ON product.cat_id=product_category.id
-		 WHERE supplier_id= $1 AND product.review_state= $2 AND product.shelve_state= $3
+		 WHERE supplier_id= $1 AND product.review_status= $2 AND product.shelve_state= $3
 		 ORDER BY %s,update_time DESC LIMIT $5 OFFSET $4`,
 		sortBy)
 
