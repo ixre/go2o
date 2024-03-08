@@ -100,10 +100,12 @@ type IMemberRepo interface {
 	SaveReceiptsCode(code *ReceiptsCode, memberId int64) (int, error)
 	// 保存积分记录
 	SaveIntegralLog(*IntegralLog) error
-
+	// 获取积分记录
+	GetIntegralLog(id int) *IntegralLog
 	// 保存余额日志
 	SaveBalanceLog(*BalanceLog) (int32, error)
-
+	// 获取余额日志
+	GetBalanceLog(id int) *BalanceLog
 	// 保存钱包账户日志
 	SaveWalletAccountLog(*WalletAccountLog) (int32, error)
 

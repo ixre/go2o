@@ -120,6 +120,7 @@ var (
 	ErrMoreThanMinTakeAmount         = domain.NewError("err_wallet_more_than_min_take_amount", "超过最大提现金额")
 	ErrNoSuchAccountLog              = domain.NewError("err_wallet_no_such_take_out_log", "钱包记录不存在")
 	ErrWithdrawState                 = domain.NewError("err_wallet_member_take_out_state", "提现申请状态错误")
+	ErrNotSupport                    = domain.NewError("err_wallet_not_support", "不支持该操作")
 )
 
 type (
@@ -178,6 +179,9 @@ type (
 
 		// CarryTo 收入/入账, freeze是否先冻结, procedureFee手续费; 返回日志ID
 		CarryTo(d OperateData, freeze bool, procedureFee int) (int, error)
+
+		// ReviewCarryTo 审核入账
+		ReviewCarryTo(requestId int, pass bool, reason string) error
 
 		// Charge 充值,kind: 业务类型
 		Charge(value int, kind int, title, outerNo string, remark string, operatorUid int, operatorName string) error

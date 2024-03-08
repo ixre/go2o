@@ -469,6 +469,24 @@ func (m *MemberRepoImpl) GetWalletLog(id int32) *member.WalletAccountLog {
 	return &e
 }
 
+// GetBalanceLog implements member.IMemberRepo.
+func (m *MemberRepoImpl) GetBalanceLog(id int) *member.BalanceLog {
+	e := member.BalanceLog{}
+	if err := m._orm.Get(id, &e); err != nil {
+		return nil
+	}
+	return &e
+}
+
+// GetIntegralLog implements member.IMemberRepo.
+func (m *MemberRepoImpl) GetIntegralLog(id int) *member.IntegralLog {
+	e := member.IntegralLog{}
+	if err := m._orm.Get(id, &e); err != nil {
+		return nil
+	}
+	return &e
+}
+
 // 获取会员提现次数键
 func (m *MemberRepoImpl) getMemberTakeOutTimesKey(memberId int64) string {
 	return fmt.Sprintf("sys:go2o:repo:mm:take-out-times:%d", memberId)

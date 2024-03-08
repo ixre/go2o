@@ -155,18 +155,6 @@ func (a *accountImpl) Charge(account member.AccountType, title string,
 		return errors.New("只支持钱包充值")
 	}
 	return a.chargeWallet(title, amount, outerNo, remark)
-	//
-	//switch account {
-	//case member.AccountIntegral:
-	//	return a.carryToIntegral(title, amount, outerNo, remark)
-	//case member.AccountBalance:
-	//	return a.carryToBalance(title, amount, outerNo, remark)
-	//case member.AccountWallet:
-	//	return a.chargeWallet(title, amount, outerNo, remark)
-	//case member.AccountFlow:
-	//	return a.chargeFlow(title, amount, outerNo, remark)
-	//}
-	//return member.ErrNotSupportAccountType
 }
 
 func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperateData, freeze bool, procedureFee int) (int, error) {
@@ -186,6 +174,19 @@ func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperat
 	return 0, member.ErrNotSupportAccountType
 }
 
+// ReviewCarryTo 审核入账
+func (a *accountImpl) ReviewCarryTo(account member.AccountType, requestId int, pass bool, reason string) error {
+	switch account {
+	case member.AccountIntegral:
+		return a.reviewIntegralCarryTo(requestId, pass, reason)
+	case member.AccountBalance:
+		return a.reviewBalanceCarryTo(requestId, pass, reason)
+	case member.AccountWallet:
+		return a.reviewWalletCarryTo(requestId, pass, reason)
+	}
+	return member.ErrNotSupportAccountType
+}
+
 func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, procedureFee int) (int, error) {
 	id, err := a.wallet.CarryTo(wallet.OperateData{
 		Title:   d.Title,
@@ -197,6 +198,14 @@ func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, pr
 		err = a.asyncWallet()
 	}
 	return id, err
+}
+
+func (a *accountImpl) reviewWalletCarryTo(requestId int, pass bool, reason string) error {
+	err := a.wallet.ReviewCarryTo(requestId, pass, reason)
+	if err == nil {
+		err = a.asyncWallet()
+	}
+	return err
 }
 
 func (a *accountImpl) Adjust(account member.AccountType, title string, amount int, remark string, relateUser int64) error {
@@ -365,14 +374,18 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, p
 	if d.Amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
-	k := member.KindCarry
+	if procedureFee > 0 {
+		d.Amount -= procedureFee
+	}
+	l, err := a.createBalanceLog(member.KindCarry, d.Title, d.Amount, d.OuterNo, true)
 	if freeze {
-		k = member.KindFreeze
 		a.value.FreezeBalance += int64(d.Amount)
+		l.ReviewStatus = enum.ReviewAwaiting
+		l.Remark = "待审核"
 	} else {
 		a.value.Balance += int64(d.Amount)
+		l.ReviewStatus = enum.ReviewConfirm
 	}
-	l, err := a.createBalanceLog(k, d.Title, d.Amount, d.OuterNo, true)
 	if err == nil {
 		l.Remark = d.Remark
 		l.ProcedureFee = int64(procedureFee)
@@ -385,19 +398,43 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, p
 	return err
 }
 
+func (a *accountImpl) reviewBalanceCarryTo(requestId int, pass bool, reason string) error {
+	l := a.rep.GetBalanceLog(requestId)
+	if l.ReviewStatus != int32(enum.ReviewAwaiting) {
+		return wallet.ErrNotSupport
+	}
+	a.value.FreezeBalance -= l.Amount
+	l.UpdateTime = time.Now().Unix()
+	if pass {
+		a.value.Balance += l.Amount
+		l.ReviewStatus = int32(enum.ReviewPass)
+		l.Remark = "系统审核通过"
+	} else {
+		l.ReviewStatus = int32(enum.ReviewReject)
+		l.ReviewStatus = int32(enum.ReviewReject)
+		l.Remark = reason
+	}
+	_, err := a.rep.SaveBalanceLog(l)
+	if err == nil {
+		_, err = a.Save()
+	}
+	return err
+}
+
 // 充值积分
 func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) error {
 	if d.Amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
-	k := member.KindCarry
+	l, err := a.createIntegralLog(member.KindCarry, d.Title, d.Amount, d.OuterNo, true)
 	if freeze {
-		k = member.KindFreeze
 		a.value.FreezeIntegral += d.Amount
+		l.ReviewStatus = int16(enum.ReviewAwaiting)
+		l.Remark = "待审核"
 	} else {
 		a.value.Integral += d.Amount
+		l.ReviewStatus = int16(enum.ReviewPass)
 	}
-	l, err := a.createIntegralLog(k, d.Title, d.Amount, d.OuterNo, true)
 	if err == nil {
 		l.Remark = d.Remark
 		l.Balance = a.value.Integral
@@ -406,6 +443,29 @@ func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) 
 		if err == nil {
 			_, err = a.Save()
 		}
+	}
+	return err
+}
+
+func (a *accountImpl) reviewIntegralCarryTo(requestId int, pass bool, reason string) error {
+	l := a.rep.GetIntegralLog(requestId)
+	if l.ReviewStatus != int16(enum.ReviewAwaiting) {
+		return wallet.ErrNotSupport
+	}
+	a.value.FreezeIntegral -= l.Value
+	l.UpdateTime = time.Now().Unix()
+	if pass {
+		a.value.Integral += l.Value
+		l.ReviewStatus = int16(enum.ReviewPass)
+		l.Remark = "系统审核通过"
+	} else {
+		l.ReviewStatus = int16(enum.ReviewReject)
+		l.ReviewStatus = int16(enum.ReviewReject)
+		l.Remark = reason
+	}
+	err := a.rep.SaveIntegralLog(l)
+	if err == nil {
+		_, err = a.Save()
 	}
 	return err
 }
@@ -917,13 +977,13 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 	}
 	// 检测提现金额是否超过限制
 	minAmountStr, _ := a.registryRepo.GetValue(registry.MemberWithdrawMinAmount)
-	minAmount, err := strconv.Atoi(minAmountStr)
+	minAmount, _ := strconv.Atoi(minAmountStr)
 	if amount < minAmount*100 {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrLessTakeAmount.Error(),
 			format.FormatFloat(float32(minAmount))))
 	}
 	maxAmountStr, _ := a.registryRepo.GetValue(registry.MemberWithdrawMaxAmount)
-	maxAmount, err := strconv.Atoi(maxAmountStr)
+	maxAmount, _ := strconv.Atoi(maxAmountStr)
 	if maxAmount > 0 && amount > maxAmount*100 {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrOutTakeAmount.Error(),
 			format.FormatFloat(float32(maxAmount))))
@@ -950,7 +1010,6 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		accountName = bank.AccountName
 		bankName = bank.BankName
 	}
-	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
 	finalAmount := amount - procedureFee
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
@@ -976,17 +1035,17 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 }
 
 // ReviewWithdrawal 确认提现
-func (a *accountImpl) ReviewWithdrawal(id int64, pass bool, remark string) error {
+func (a *accountImpl) ReviewWithdrawal(requestId int64, pass bool, remark string) error {
 	//todo: opr_uid
-	err := a.wallet.ReviewWithdrawal(id, pass, remark, 1, "系统")
+	err := a.wallet.ReviewWithdrawal(requestId, pass, remark, 1, "系统")
 	if err == nil {
 		err = a.asyncWallet()
 		if pass {
-			log := a.wallet.GetLog(id)
+			log := a.wallet.GetLog(requestId)
 			// 推送提现申请事件
 			eventbus.Publish(&events.WithdrawalPushEvent{
 				MemberId:      a.value.MemberId,
-				RequestId:     int(id),
+				RequestId:     int(requestId),
 				Amount:        int(log.ChangeValue),
 				ProcedureFee:  log.ProcedureFee,
 				ReviewResult:  log.ReviewStatus == int(enum.ReviewPass),

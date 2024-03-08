@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -349,27 +351,30 @@ func (w *WalletImpl) FreezeExpired(value int, remark string) error {
 	return err
 }
 
-func (w *WalletImpl) CarryTo(d wallet.OperateData, freeze bool, procedureFee int) (int, error) {
+// CarryTo 入账
+func (w *WalletImpl) CarryTo(d wallet.OperateData, review bool, procedureFee int) (int, error) {
 	err := w.checkValueOpu(d.Amount, false, 0, "")
 	if err == nil {
 		if d.Amount < 0 {
 			d.Amount = -d.Amount
 		}
-		if procedureFee < 0 {
-			procedureFee = -procedureFee
+		procedureFee = int(math.Abs(float64(procedureFee)))
+		if procedureFee > 0 {
+			// 减去手续费
+			d.Amount -= procedureFee
 		}
-		k := wallet.KCarry
-		if freeze {
-			k = wallet.KFreeze
+		l := w.createWalletLog(wallet.KCarry, d.Amount, d.Title, 0, "")
+		if review {
 			w._value.FreezeAmount += d.Amount
+			l.ReviewStatus = wallet.ReviewAwaiting
+			l.ReviewRemark = "待审核"
 		} else {
 			w._value.Balance += int64(d.Amount)
+			l.ReviewStatus = wallet.ReviewPass
 		}
 		// 保存日志
-		l := w.createWalletLog(k, d.Amount, d.Title, 0, "")
 		l.OuterNo = d.OuterNo
 		l.ProcedureFee = -procedureFee
-		l.ReviewStatus = wallet.ReviewPass
 		l.ReviewTime = time.Now().Unix()
 		l.Balance = w._value.Balance
 		err = w.saveWalletLog(l)
@@ -379,6 +384,29 @@ func (w *WalletImpl) CarryTo(d wallet.OperateData, freeze bool, procedureFee int
 		return int(l.Id), err
 	}
 	return 0, err
+}
+
+// ReviewCarryTo 审核入账
+func (w *WalletImpl) ReviewCarryTo(requestId int, pass bool, reason string) error {
+	l := w._repo.GetLog(w.GetAggregateRootId(), int64(requestId))
+	if l.ReviewStatus != int(enum.ReviewAwaiting) {
+		return wallet.ErrNotSupport
+	}
+	w._value.FreezeAmount -= int(l.ChangeValue)
+	l.UpdateTime = time.Now().Unix()
+	if pass {
+		w._value.Balance += l.ChangeValue
+		l.ReviewStatus = int(enum.ReviewPass)
+		l.Remark = "系统审核通过"
+	} else {
+		l.ReviewStatus = int(enum.ReviewReject)
+		l.Remark = reason
+	}
+	err := w.saveWalletLog(l)
+	if err == nil {
+		_, err = w.Save()
+	}
+	return err
 }
 
 func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark string, operatorUid int, operatorName string) error {
@@ -546,13 +574,16 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 	return l.Id, l.OuterNo, err
 }
 
-func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, operatorUid int, operatorName string) error {
+func (w *WalletImpl) ReviewWithdrawal(requestId int64, pass bool, remark string, operatorUid int, operatorName string) error {
 	if err := w.checkValueOpu(1, true, operatorUid, operatorName); err != nil {
 		return err
 	}
-	l := w.getLog(takeId)
+	l := w.getLog(requestId)
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
+	}
+	if l.Kind != wallet.KWithdrawToBankCard && l.Kind != wallet.KWithdrawToThirdPart {
+		return wallet.ErrNotSupport
 	}
 	if l.ReviewStatus != wallet.ReviewAwaiting {
 		return wallet.ErrWithdrawState
@@ -575,8 +606,8 @@ func (w *WalletImpl) ReviewWithdrawal(takeId int64, pass bool, remark string, op
 	return w.saveWalletLog(l)
 }
 
-func (w *WalletImpl) FinishWithdrawal(takeId int64, outerNo string) error {
-	l := w.getLog(takeId)
+func (w *WalletImpl) FinishWithdrawal(requestId int64, outerNo string) error {
+	l := w.getLog(requestId)
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
 	}

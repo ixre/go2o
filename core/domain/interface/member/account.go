@@ -91,8 +91,11 @@ type (
 		// Charge 用户充值,金额放大100倍（应只充值钱包）
 		Charge(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// CarryTo 入账,freeze是否先冻结, procedureFee手续费; 返回日志ID
-		CarryTo(account AccountType, d AccountOperateData, freeze bool, procedureFee int) (int, error)
+		// CarryTo 入账,review是否先冻结审核, procedureFee手续费; 返回日志ID
+		CarryTo(account AccountType, d AccountOperateData, review bool, procedureFee int) (int, error)
+
+		// ReviewCarryTo 审核入账
+		ReviewCarryTo(account AccountType, requestId int, pass bool, reason string) error
 
 		// Consume 消耗
 		Consume(account AccountType, title string, amount int, outerNo string, remark string) error
@@ -121,15 +124,15 @@ type (
 		// GetWalletLog 获取钱包账户日志
 		GetWalletLog(id int64) wallet.WalletLog
 
-		// RequestWithdrawal 申请提现,applyType：提现方式,返回info_id,交易号 及错误
-		RequestWithdrawal(takeKind int, title string, amount int,
+		// RequestWithdrawal 申请提现(只支持钱包),drawType：提现方式,返回info_id,交易号 及错误
+		RequestWithdrawal(drawType int, title string, amount int,
 			tradeFee int, bankAccountNo string) (int64, string, error)
 
-		// ReviewWithdrawal 确认提现
-		ReviewWithdrawal(id int64, pass bool, remark string) error
+		// ReviewWithdrawal 提现审核
+		ReviewWithdrawal(requestId int64, pass bool, reason string) error
 
 		// FinishWithdrawal 完成提现
-		FinishWithdrawal(id int64, tradeNo string) error
+		FinishWithdrawal(requestId int64, tradeNo string) error
 
 		// TransferAccount 转账
 		TransferAccount(account AccountType, toMember int64, amount int,
