@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"time"
 
+	"log"
+
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/infrastructure/log"
 )
 
 var _ cart.ICartAggregateRoot = new(cartImpl)
@@ -253,7 +254,6 @@ func (c *cartImpl) checkItemStock(itemId int64, skuId int64) (*item.GoodsItem, *
 	// 库存,如有SKU，则使用SKU的库存
 	stock := iv.StockNum
 	// 判断是否上架
-
 	if iv.ShelveState != item.ShelvesOn {
 		return nil, sku, stock, fmt.Errorf(item.ErrNotOnShelves.Error(), iv.Title) //未上架
 	}
@@ -282,6 +282,9 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.No
 	}
 	// 检查库存
 	iv, sku, stock, err := c.checkItemStock(itemId, skuId)
+	if err != nil {
+		return nil, err
+	}
 	var dst *cart.NormalCartItem
 	// 添加数量
 	for _, v := range c.value.Items {
