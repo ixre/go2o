@@ -20,7 +20,7 @@ require (
 	google.golang.org/grpc v1.60.1
 )
 
-require google.golang.org/protobuf v1.32.0
+require google.golang.org/protobuf v1.33.0
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.17.1
