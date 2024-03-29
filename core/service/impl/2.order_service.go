@@ -160,6 +160,7 @@ func (s *orderServiceImpl) SubmitOrder(_ context.Context, r *proto.SubmitOrderRe
 
 // PrepareOrder 预生成订单
 func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrderRequest) (*proto.PrepareOrderResponse, error) {
+	addressId := r.AddressId
 	ic := s.getShoppingCart(r.BuyerId, r.CartCode)
 	if ic == nil {
 		ic = s.cartRepo.NewTempNormalCart(int(r.BuyerId), r.CartCode)
@@ -184,7 +185,6 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		} else {
 			arr := s.memberRepo.GetDeliverAddress(r.BuyerId)
 			if len(arr) > 0 {
-				var addressId int64 = 0
 				for _, v := range arr {
 					if v.IsDefault == 1 {
 						err = o.SetShipmentAddress(v.Id)
@@ -194,6 +194,7 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 				}
 				if addressId == 0 {
 					err = o.SetShipmentAddress(arr[0].Id)
+					addressId = arr[0].Id
 				}
 			}
 		}
@@ -239,6 +240,7 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		}
 	}
 	rsp := parser.PrepareOrderDto(ov)
+	rsp.ShipmentAddressId = addressId
 	rsp.DeductAmount = deductAmount
 	rsp.BuyerBalance = balance
 	rsp.BuyerWallet = walletBalance

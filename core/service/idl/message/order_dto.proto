@@ -435,32 +435,34 @@ message PrepareOrderResponse{
     int32 orderType = 3;
     // 订单项目
     repeated SPrepareOrderGroup sellers = 4;
+    // 配送地址编号
+    int64 shipmentAddressId = 5;
     // 收货人
-    SConsigneeInfo consignee = 5;
+    SConsigneeInfo consignee = 6;
     // 商品总金额
-    int64 itemAmount = 6;
+    int64 itemAmount = 7;
     // 优惠金额
-    int64 discountAmount = 7;
+    int64 discountAmount = 8;
     // 抵扣金额
-    int64 deductAmount = 8;
+    int64 deductAmount = 9;
     // 调整金额
-    int64 adjustAmount = 9;
+    int64 adjustAmount = 10;
     // 配送费
-    int64 expressFee = 10;
+    int64 expressFee = 11;
     // 包装费
-    int64 packageFee = 11;
+    int64 packageFee = 12;
     // 手续费
-    int32 procedureFee = 12;
+    int32 procedureFee = 13;
     // 订单总金额
-    int32 totalAmount = 13;
+    int32 totalAmount = 14;
     // 最终金额
-    int64 finalAmount = 14;
+    int64 finalAmount = 15;
 	// 积分
-	sint64 buyerIntegral = 15;
+	sint64 buyerIntegral = 16;
 	// 商城余额
-	sint64 buyerBalance = 16;
+	sint64 buyerBalance = 17;
 	// 钱包余额
-	sint64 buyerWallet = 17;
+	sint64 buyerWallet = 18;
 }
 
 // 预生成订单店铺分组
