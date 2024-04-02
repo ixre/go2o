@@ -1,0 +1,23 @@
+#!/bin/sh
+
+#
+#  Java代码规范自动审查
+#
+#  使用方法: 拷贝此文件到仓库目录".git/hooks"
+#
+
+set -e
+
+#gradle=$($(sh -c '! type gradle > /dev/null') && echo "./gradlew" || echo "gradle")
+
+# Check style for main and test
+#$gradle checkstyleMain checkstyleTest
+go fmt .
+
+# Check the exit status from gradle command
+if [ $? -eq 0 ]; then
+  echo "恭喜您, 代码符合规范!"
+else
+  echo "代码规范审查失败, 请修改后再进行提交!"
+  exit 1
+fi

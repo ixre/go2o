@@ -70,7 +70,7 @@ func TestGenerateResourceKey(t *testing.T) {
 // 测试保存资源
 func TestSaveRbacResource(t *testing.T) {
 	s := impl.RbacService
-	r, _ := s.GetPermRes(context.TODO(), &proto.PermResId{
+	r, _ := s.GetRbacRes(context.TODO(), &proto.PermResId{
 		Value: 2383,
 	})
 	ret, _ := s.SaveRbacResource(context.TODO(), &proto.SaveRbacResRequest{
@@ -85,7 +85,6 @@ func TestSaveRbacResource(t *testing.T) {
 		IsEnabled:     r.IsEnabled,
 		CreateTime:    r.CreateTime,
 		ComponentName: r.ComponentName,
-		Cache:         r.Cache,
 	})
 	t.Logf(typeconv.MustJson(ret))
 }
@@ -95,7 +94,7 @@ func TestGetUserResources(t *testing.T) {
 	s := impl.RbacService
 	ret, _ := s.GetUserResource(context.TODO(), &proto.RbacUserResourceRequest{
 		UserId:   1,
-		OnlyMenu: true,
+		AppIndex: 0,
 	})
 	t.Logf(typeconv.MustJson(ret))
 }

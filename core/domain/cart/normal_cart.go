@@ -288,22 +288,22 @@ func (c *cartImpl) put(itemId, skuId int64, num int32, checkOnly bool) (*cart.No
 	var dst *cart.NormalCartItem
 	// 添加数量
 	for _, v := range c.value.Items {
+		if checkOnly {
+			// 取消掉其他要结算的商品
+			v.Checked = 0
+		}
 		if v.ItemId == itemId && v.SkuId == skuId {
 			dst = v
 			finalQuantity := v.Quantity + num
 			if checkOnly {
 				// 立即购买
 				finalQuantity = num
+				v.Checked = 1
 			}
 			if finalQuantity > stock {
 				return v, item.ErrOutOfStock // 库存不足
 			}
 			v.Quantity = finalQuantity
-		} else {
-			// 取消掉其他要结算的商品
-			if checkOnly {
-				v.Checked = 0
-			}
 		}
 	}
 	if dst != nil {

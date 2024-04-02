@@ -1,0 +1,63 @@
+#!/bin/bash
+
+MSG=`awk '{printf("%s",$0)}' $1`
+
+if [[ $MSG =~ ^.+#.+-.* ]]
+ then
+   echo ''>/dev/null
+ else
+   echo "-------------------------------------------------------------------"
+   echo "提交代码失败! 原因: 提交信息未附上问题编号或问题编号不合法"
+   echo "正确范例:feat: #API-001 新增会员列表接口"
+   echo "-------------------------------------------------------------------"
+   exit 1;
+fi
+
+
+if [ ${#MSG} -lt 10 ]  
+  then
+    echo "-------------------------------------------------------------------"
+    echo "提交代码失败! 原因: 提交信息的长度不能小于10, 当前长度为:${#MSG}"
+    echo "正确范例:feat: #API-001 新增会员列表接口"
+    echo "-------------------------------------------------------------------"
+    exit 1
+fi
+
+
+if [[ $MSG =~ ^feat:[[:blank:]].* ]] || 
+   [[ $MSG =~ ^feat\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^fix:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^fix\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^style:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^style\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^refactor:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^refactor\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^docs:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^docs\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^test:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^test\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^chore:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^chore\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]feat:[[:blank:]].* ]] || 
+   [[ $MSG =~ ^revert:[[:blank:]]feat\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]fix:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]fix\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]style:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]style\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]refactor:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]refactor\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]docs:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]docs\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]test:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]test\(.*\):[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]chore:[[:blank:]].* ]] ||
+   [[ $MSG =~ ^revert:[[:blank:]]chore\(.*\):[[:blank:]].* ]]
+  then
+    exit 0
+  else
+    echo "-------------------------------------------------------------------"
+    echo "提交代码失败! 原因: 提交信息不符合Commit Message规范"
+    echo "正确范例:feat: #API-001 新增会员列表接口"
+    echo "-------------------------------------------------------------------"
+    exit 1
+fi
