@@ -1258,8 +1258,8 @@ func (s *memberService) IsInvitation(c context.Context, r *proto.IsInvitationReq
 	return &proto.Bool{Value: b}, nil
 }
 
-// GetMyPagedInvitationMembers 获取我邀请的会员及会员邀请的人数
-func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.MemberInvitationPagingRequest) (*proto.MemberInvitationPagingResponse, error) {
+// GetPagingInvitationMembers 获取我邀请的会员及会员邀请的人数
+func (s *memberService) GetPagingInvitationMembers(_ context.Context, r *proto.MemberInvitationPagingRequest) (*proto.MemberInvitationPagingResponse, error) {
 	iv := s.repo.CreateMember(&member.Member{Id: r.MemberId}).Invitation()
 	total, rows := iv.GetInvitationMembers(int(r.Begin), int(r.End))
 	ret := &proto.MemberInvitationPagingResponse{

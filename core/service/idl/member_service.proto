@@ -204,7 +204,7 @@ service MemberService {
     rpc QueryInviteArray (InviteQuantityRequest) returns (MemberIdListResponse) {
     }
     // 获取我邀请的会员及会员邀请的人数
-    rpc GetMyPagedInvitationMembers (MemberInvitationPagingRequest) returns (MemberInvitationPagingResponse) {
+    rpc GetPagingInvitationMembers (MemberInvitationPagingRequest) returns (MemberInvitationPagingResponse) {
     }
     // 账户充值,amount精确到分
     rpc AccountCharge (AccountChangeRequest) returns (Result) {

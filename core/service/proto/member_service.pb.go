@@ -606,7 +606,7 @@ var file_member_service_proto_depIdxs = []int32{
 	39, // 56: MemberService.InviteMembersQuantity:input_type -> DepthRequest
 	40, // 57: MemberService.QueryInviteQuantity:input_type -> InviteQuantityRequest
 	40, // 58: MemberService.QueryInviteArray:input_type -> InviteQuantityRequest
-	41, // 59: MemberService.GetMyPagedInvitationMembers:input_type -> MemberInvitationPagingRequest
+	41, // 59: MemberService.GetPagingInvitationMembers:input_type -> MemberInvitationPagingRequest
 	42, // 60: MemberService.AccountCharge:input_type -> AccountChangeRequest
 	43, // 61: MemberService.AccountCarryTo:input_type -> AccountCarryRequest
 	42, // 62: MemberService.AccountConsume:input_type -> AccountChangeRequest
@@ -688,7 +688,7 @@ var file_member_service_proto_depIdxs = []int32{
 	11, // 138: MemberService.InviteMembersQuantity:output_type -> Int32
 	14, // 139: MemberService.QueryInviteQuantity:output_type -> Int64
 	79, // 140: MemberService.QueryInviteArray:output_type -> MemberIdListResponse
-	80, // 141: MemberService.GetMyPagedInvitationMembers:output_type -> MemberInvitationPagingResponse
+	80, // 141: MemberService.GetPagingInvitationMembers:output_type -> MemberInvitationPagingResponse
 	62, // 142: MemberService.AccountCharge:output_type -> Result
 	81, // 143: MemberService.AccountCarryTo:output_type -> AccountCarryResponse
 	62, // 144: MemberService.AccountConsume:output_type -> Result

@@ -78,7 +78,7 @@ const (
 	MemberService_InviteMembersQuantity_FullMethodName       = "/MemberService/InviteMembersQuantity"
 	MemberService_QueryInviteQuantity_FullMethodName         = "/MemberService/QueryInviteQuantity"
 	MemberService_QueryInviteArray_FullMethodName            = "/MemberService/QueryInviteArray"
-	MemberService_GetMyPagedInvitationMembers_FullMethodName = "/MemberService/GetMyPagedInvitationMembers"
+	MemberService_GetPagingInvitationMembers_FullMethodName = "/MemberService/GetPagingInvitationMembers"
 	MemberService_AccountCharge_FullMethodName               = "/MemberService/AccountCharge"
 	MemberService_AccountCarryTo_FullMethodName              = "/MemberService/AccountCarryTo"
 	MemberService_AccountConsume_FullMethodName              = "/MemberService/AccountConsume"
@@ -236,7 +236,7 @@ type MemberServiceClient interface {
 	// 按条件获取荐指定等级会员的列表
 	QueryInviteArray(ctx context.Context, in *InviteQuantityRequest, opts ...grpc.CallOption) (*MemberIdListResponse, error)
 	// 获取我邀请的会员及会员邀请的人数
-	GetMyPagedInvitationMembers(ctx context.Context, in *MemberInvitationPagingRequest, opts ...grpc.CallOption) (*MemberInvitationPagingResponse, error)
+	GetPagingInvitationMembers(ctx context.Context, in *MemberInvitationPagingRequest, opts ...grpc.CallOption) (*MemberInvitationPagingResponse, error)
 	// 账户充值,amount精确到分
 	AccountCharge(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*Result, error)
 	// 账户入账
@@ -822,9 +822,9 @@ func (c *memberServiceClient) QueryInviteArray(ctx context.Context, in *InviteQu
 	return out, nil
 }
 
-func (c *memberServiceClient) GetMyPagedInvitationMembers(ctx context.Context, in *MemberInvitationPagingRequest, opts ...grpc.CallOption) (*MemberInvitationPagingResponse, error) {
+func (c *memberServiceClient) GetPagingInvitationMembers(ctx context.Context, in *MemberInvitationPagingRequest, opts ...grpc.CallOption) (*MemberInvitationPagingResponse, error) {
 	out := new(MemberInvitationPagingResponse)
-	err := c.cc.Invoke(ctx, MemberService_GetMyPagedInvitationMembers_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, MemberService_GetPagingInvitationMembers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1162,7 +1162,7 @@ type MemberServiceServer interface {
 	// 按条件获取荐指定等级会员的列表
 	QueryInviteArray(context.Context, *InviteQuantityRequest) (*MemberIdListResponse, error)
 	// 获取我邀请的会员及会员邀请的人数
-	GetMyPagedInvitationMembers(context.Context, *MemberInvitationPagingRequest) (*MemberInvitationPagingResponse, error)
+	GetPagingInvitationMembers(context.Context, *MemberInvitationPagingRequest) (*MemberInvitationPagingResponse, error)
 	// 账户充值,amount精确到分
 	AccountCharge(context.Context, *AccountChangeRequest) (*Result, error)
 	// 账户入账
@@ -1391,8 +1391,8 @@ func (UnimplementedMemberServiceServer) QueryInviteQuantity(context.Context, *In
 func (UnimplementedMemberServiceServer) QueryInviteArray(context.Context, *InviteQuantityRequest) (*MemberIdListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryInviteArray not implemented")
 }
-func (UnimplementedMemberServiceServer) GetMyPagedInvitationMembers(context.Context, *MemberInvitationPagingRequest) (*MemberInvitationPagingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMyPagedInvitationMembers not implemented")
+func (UnimplementedMemberServiceServer) GetPagingInvitationMembers(context.Context, *MemberInvitationPagingRequest) (*MemberInvitationPagingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPagingInvitationMembers not implemented")
 }
 func (UnimplementedMemberServiceServer) AccountCharge(context.Context, *AccountChangeRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountCharge not implemented")
@@ -2535,20 +2535,20 @@ func _MemberService_QueryInviteArray_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_GetMyPagedInvitationMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MemberService_GetPagingInvitationMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MemberInvitationPagingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).GetMyPagedInvitationMembers(ctx, in)
+		return srv.(MemberServiceServer).GetPagingInvitationMembers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MemberService_GetMyPagedInvitationMembers_FullMethodName,
+		FullMethod: MemberService_GetPagingInvitationMembers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).GetMyPagedInvitationMembers(ctx, req.(*MemberInvitationPagingRequest))
+		return srv.(MemberServiceServer).GetPagingInvitationMembers(ctx, req.(*MemberInvitationPagingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3193,8 +3193,8 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemberService_QueryInviteArray_Handler,
 		},
 		{
-			MethodName: "GetMyPagedInvitationMembers",
-			Handler:    _MemberService_GetMyPagedInvitationMembers_Handler,
+			MethodName: "GetPagingInvitationMembers",
+			Handler:    _MemberService_GetPagingInvitationMembers_Handler,
 		},
 		{
 			MethodName: "AccountCharge",
