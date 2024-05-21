@@ -36,7 +36,7 @@ func RegisterServiceDiscovery(cfg *clientv3.Config, host string, port int) {
 	if err != nil {
 		panic(err)
 	}
-	log.Println(fmt.Sprintf("[ GO2O][ INFO]: service registration discovery succeeded. node: %s:%d", ip, port))
+	log.Println(fmt.Sprintf("[ GO2O][ INFO]: service registration discovery successfully. node: %s:%d", ip, port))
 }
 
 func resolveIp() string {
