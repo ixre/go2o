@@ -234,47 +234,42 @@ type (
 		LastLoginTime int64
 	}
 
-	// 商户
+	// Merchant 商户
 	Merchant struct {
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
 		// 会员编号
-		MemberId int64 `db:"member_id"`
+		MemberId int64 `db:"member_id" json:"memberId" bson:"memberId"`
 		// 登录用户
-		LoginUser string `db:"login_user"`
+		Username string `db:"username" json:"username" bson:"username"`
 		// 登录密码
-		LoginPwd string `db:"login_pwd"`
+		Password string `db:"password" json:"password" bson:"password"`
+		// 邮箱地址
+		MailAddr string `db:"mail_addr" json:"mailAddr" bson:"mailAddr"`
 		// 加密盐
-		Salt string `db:"salt"`
+		Salt string `db:"salt" json:"salt" bson:"salt"`
 		// 名称
-		Name string `db:"name"`
-		// 公司名称
-		CompanyName string `db:"company_name"`
+		MchName string `db:"mch_name" json:"mchName" bson:"mchName"`
 		// 是否自营
-		SelfSales int16 `db:"self_sales"`
+		IsSelf int16 `db:"is_self" json:"isSelf" bson:"isSelf"`
+		// 标志
+		Flag int `db:"flag" json:"flag" bson:"flag"`
 		// 商户等级
-		Level int `db:"level"`
-		// 标志
-		Logo string `db:"logo"`
-		// 省
-		Province int `db:"province"`
-		// 市
-		City int `db:"city"`
-		// 区
-		District int `db:"district"`
-		// 标志
-		Flag int `db:"flag"`
-		// 是否启用
-		Enabled int `db:"enabled"`
-		// 创建时间
-		CreateTime int64 `db:"create_time"`
-		// 过期时间
-		ExpiresTime int64 `db:"expires_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-		// 登录时间
-		LoginTime int64 `db:"login_time"`
+		Level int `db:"level" json:"level" bson:"level"`
+		// 所在省
+		Province int `db:"province" json:"province" bson:"province"`
+		// 所在市
+		City int `db:"city" json:"city" bson:"city"`
+		// 所在区
+		District int `db:"district" json:"district" bson:"district"`
+		// 状态: 0:待开通 1:已开通  2:停用  3: 关闭
+		Status int16 `db:"status" json:"status" bson:"status"`
+		// 审核状态
+		ReviewStatus int `db:"review_status" json:"reviewStatus" bson:"reviewStatus"`
 		// 最后登录时间
-		LastLoginTime int64 `db:"last_login_time"`
+		LastLoginTime int `db:"last_login_time" json:"lastLoginTime" bson:"lastLoginTime"`
+		// 创建时间
+		CreateTime int `db:"create_time" json:"createTime" bson:"createTime"`
 	}
 
 	// 商户账户表

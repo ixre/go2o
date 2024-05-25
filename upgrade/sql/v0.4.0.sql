@@ -1,5 +1,5 @@
 -- 子站,聊天,投诉等
-
+DROP TABLE IF EXISTS chat_conversation;
 CREATE TABLE chat_conversation (
   id             BIGSERIAL NOT NULL, 
   "key"          varchar(20) NOT NULL, 
@@ -21,6 +21,7 @@ COMMENT ON COLUMN chat_conversation.greet_word IS '打招呼内容';
 COMMENT ON COLUMN chat_conversation.create_time IS '创建时间';
 COMMENT ON COLUMN chat_conversation.update_time IS '更新时间';
 COMMENT ON COLUMN chat_conversation.last_chat_time IS '最后聊天时间';
+DROP TABLE IF EXISTS chat_msg;
 CREATE TABLE chat_msg (
   id              BIGSERIAL NOT NULL, 
   conversation_id int8 NOT NULL, 
@@ -42,6 +43,7 @@ COMMENT ON COLUMN chat_msg.starter_msg IS '是否为发起人的消息, 0:否 1:
 COMMENT ON COLUMN chat_msg.is_revert IS '是否撤回 0:否 1:是';
 COMMENT ON COLUMN chat_msg.expires_time IS '过期时间';
 COMMENT ON COLUMN chat_msg.create_time IS '创建时间';
+DROP TABLE IF EXISTS m_block_list;
 CREATE TABLE m_block_list (
   id              BIGSERIAL NOT NULL, 
   member_id       int8 NOT NULL, 
@@ -57,6 +59,7 @@ COMMENT ON COLUMN m_block_list.block_member_id IS '拉黑会员编号';
 COMMENT ON COLUMN m_block_list.block_flag IS '拉黑标志，1: 屏蔽  2: 拉黑';
 COMMENT ON COLUMN m_block_list.remark IS '备注';
 COMMENT ON COLUMN m_block_list.create_time IS '拉黑时间';
+DROP TABLE IF EXISTS m_complain_case;
 CREATE TABLE m_complain_case (
   id               BIGSERIAL NOT NULL, 
   member_id        int8 NOT NULL, 
@@ -95,6 +98,7 @@ COMMENT ON COLUMN m_complain_case.service_rank IS '服务评分';
 COMMENT ON COLUMN m_complain_case.service_apprise IS '服务评价';
 COMMENT ON COLUMN m_complain_case.create_time IS '创建时间';
 COMMENT ON COLUMN m_complain_case.update_time IS '更新时间';
+DROP TABLE IF EXISTS m_complain_details;
 CREATE TABLE m_complain_details (
   id          BIGSERIAL NOT NULL, 
   case_id     int8 NOT NULL, 
@@ -108,6 +112,7 @@ COMMENT ON COLUMN m_complain_details.id IS '编号';
 COMMENT ON COLUMN m_complain_details.case_id IS '案件编号';
 COMMENT ON COLUMN m_complain_details.sender_type IS '发送类型: 1:发起人  2: 投诉对象  3: 平台客服';
 COMMENT ON COLUMN m_complain_details.is_revert IS '是否撤回 0:否 1:是';
+DROP TABLE IF EXISTS mch_agent;
 CREATE TABLE mch_agent (
   id             BIGSERIAL NOT NULL, 
   member_id      int8 NOT NULL, 
@@ -139,6 +144,7 @@ COMMENT ON COLUMN mch_agent.is_certified IS '是否认证 0:否 1:是';
 COMMENT ON COLUMN mch_agent.certified_name IS '认证姓名';
 COMMENT ON COLUMN mch_agent.premium_level IS '高级用户等级';
 COMMENT ON COLUMN mch_agent.create_time IS '创建时间';
+DROP TABLE IF EXISTS mch_agent_extent;
 CREATE TABLE mch_agent_extent (
   id              BIGSERIAL NOT NULL, 
   agent_id        int8 NOT NULL, 
@@ -173,6 +179,7 @@ COMMENT ON COLUMN mch_agent_extent.id_no IS '身份证号码';
 COMMENT ON COLUMN mch_agent_extent.license_pic IS '执业资格图片';
 COMMENT ON COLUMN mch_agent_extent.license_no IS '执业资格证编号';
 COMMENT ON COLUMN mch_agent_extent.update_time IS '更新时间';
+DROP TABLE IF EXISTS mch_agent_revenue;
 CREATE TABLE mch_agent_revenue (
   id              SERIAL NOT NULL, 
   revenue_type    int4 NOT NULL, 
@@ -198,6 +205,7 @@ COMMENT ON COLUMN mch_agent_revenue.review_status IS '1: 待审核  2: 已通过
 COMMENT ON COLUMN mch_agent_revenue.grant_time IS '佣金发放时间';
 COMMENT ON COLUMN mch_agent_revenue.is_granted IS '是否已发放';
 COMMENT ON COLUMN mch_agent_revenue.create_time IS ' 创建时间';
+DROP TABLE IF EXISTS mch_service_order;
 CREATE TABLE mch_service_order (
   id                SERIAL NOT NULL, 
   order_no          int4 NOT NULL, 
@@ -233,6 +241,7 @@ COMMENT ON COLUMN mch_service_order.service_apprise IS '服务评价';
 COMMENT ON COLUMN mch_service_order.status IS '状态: 1: 待服务  2: 服务中   3: 已结束  4: 已关闭';
 COMMENT ON COLUMN mch_service_order.create_time IS '创建时间';
 COMMENT ON COLUMN mch_service_order.update_time IS '更新时间';
+DROP TABLE IF EXISTS sys_general_option;
 CREATE TABLE sys_general_option (
   id          BIGSERIAL NOT NULL, 
   type        varchar(20) NOT NULL, 
@@ -252,6 +261,7 @@ COMMENT ON COLUMN sys_general_option.value IS '值';
 COMMENT ON COLUMN sys_general_option.sort_num IS '排列序号';
 COMMENT ON COLUMN sys_general_option.enabled IS '是否启用';
 COMMENT ON COLUMN sys_general_option.create_time IS '创建时间';
+DROP TABLE IF EXISTS sys_sub_station;
 CREATE TABLE sys_sub_station (
   id          SERIAL NOT NULL, 
   city_code   int4 NOT NULL, 
@@ -264,7 +274,7 @@ COMMENT ON COLUMN sys_sub_station.create_time IS '创建时间';
 
 
 -- 商户
-
+DROP TABLE IF EXISTS mch_merchant;
 CREATE TABLE "public".mch_merchant (
   id              serial NOT NULL, 
   member_id       int8 NOT NULL, 
@@ -305,6 +315,7 @@ COMMENT ON COLUMN "public".mch_merchant.status IS '状态: 0:待开通 1:已开�
 COMMENT ON COLUMN "public".mch_merchant.review_status IS '审核状态';
 COMMENT ON COLUMN "public".mch_merchant.last_login_time IS '最后登录时间';
 COMMENT ON COLUMN "public".mch_merchant.create_time IS '创建时间';
+DROP TABLE IF EXISTS mch_merchant_extent;
 CREATE TABLE "public".mch_merchant_extent (
   id                serial NOT NULL, 
   mch_id            int4 NOT NULL, 
@@ -329,7 +340,7 @@ CREATE TABLE "public".mch_merchant_extent (
   review_remark     varchar(45) NOT NULL, 
   expires_time      int4 NOT NULL, 
   update_time       int4 NOT NULL, 
-  CONSTRAINT mch_enterprise_info_pkey 
+  CONSTRAINT mch_merchant_extent_pkey 
     PRIMARY KEY (id));
 COMMENT ON TABLE "public".mch_merchant_extent IS '商户扩展信息';
 COMMENT ON COLUMN "public".mch_merchant_extent.id IS '编号';
