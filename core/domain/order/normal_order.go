@@ -1038,7 +1038,7 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 	if err == nil {
 		orderNo := o.OrderNo()
 		//给自己返现
-		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.Name, fee)
+		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.MchName, fee)
 		_, err = acc.CarryTo(member.AccountWallet,
 			member.AccountOperateData{
 				Title:   tit,

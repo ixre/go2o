@@ -43,7 +43,7 @@ func TestNormalCart(t *testing.T) {
 func TestCheckOnlyItem(t *testing.T) {
 	repo := ti.Factory.GetCartRepo()
 	ic := repo.NewTempNormalCart(0, "1234")
-	err := ic.Put(1, 7, 1, false, true)
+	err := ic.Put(1, 7, 1, true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -75,7 +75,7 @@ func joinItemsToCart(c cart.ICartAggregateRoot, itemId int64) error {
 	if len(arr) > 0 {
 		skuId = arr[0].Id
 	}
-	return c.Put(itemId, skuId, 1, false, false)
+	return c.Put(itemId, skuId, 1, false)
 }
 
 // 生成购物车全部结算的数据

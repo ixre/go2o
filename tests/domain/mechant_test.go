@@ -2,12 +2,13 @@ package domain
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/tests/ti"
-	"testing"
 )
 
 func TestMerchantPwd2(t *testing.T) {
@@ -19,25 +20,24 @@ func TestMerchantPwd2(t *testing.T) {
 func TestCreateMerchant(t *testing.T) {
 	repo := ti.Factory.GetMerchantRepo()
 	v := &merchant.Merchant{
-		LoginUser:   "zy",
-		LoginPwd:    domain.Md5("123456"),
-		Name:        "天猫",
-		SelfSales:   1,
-		Level:       0,
-		Logo:        "",
-		CompanyName: "天猫",
-		Province:    0,
-		City:        0,
-		District:    0,
+		Username: "zy",
+		MchName:  "天猫",
+		Salt:     "000",
+		IsSelf:   1,
+		Level:    0,
+		Logo:     "",
+		Province: 0,
+		City:     0,
+		District: 0,
 	}
-	v.LoginPwd = domain.MerchantSha1Pwd(v.LoginPwd, v.Salt)
+	v.Password = domain.MerchantSha1Pwd(domain.Md5("123456"), v.Salt)
 	im := repo.CreateMerchant(v)
 	err := im.SetValue(v)
 	if err == nil {
 		_, err = im.Save()
 		if err == nil {
 			o := shop.OnlineShop{
-				ShopName:   v.Name,
+				ShopName:   v.MchName,
 				Logo:       "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
 				Host:       "",
 				Alias:      "zy",
@@ -71,7 +71,7 @@ func TestBindMember(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	if mch.GetValue().MemberId != int64(memberId) {
+	if mch.GetValue().MemberId != memberId {
 		t.Log("now bind member id is ", mch.GetValue().MemberId)
 		t.FailNow()
 	}

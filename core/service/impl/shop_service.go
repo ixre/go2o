@@ -113,7 +113,7 @@ func (si *shopServiceImpl) GetShop(_ context.Context, req *proto.GetShopIdReques
 		// 返回SellerMid
 		im := si.mchRepo.GetMerchant(int(iv.VendorId))
 		if im != nil {
-			ret.SellerMid = im.GetValue().MemberId
+			ret.SellerMid = int64(im.GetValue().MemberId)
 		}
 		return ret, nil
 	}

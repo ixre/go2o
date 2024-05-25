@@ -147,7 +147,7 @@ func (a *accountImpl) getWallet() wallet.IWallet {
 	iw := a.walletRepo.GetWalletByUserId(a.GetValue().MchId, wallet.TMerchant)
 	if iw == nil {
 		iw = a.walletRepo.CreateWallet(a.GetValue().MchId,
-			a.mchImpl._value.LoginUser,
+			a.mchImpl._value.Username,
 			wallet.TMerchant,
 			"MchWallet",
 			wallet.FlagCharge|wallet.FlagDiscount)
@@ -173,7 +173,7 @@ func (a *accountImpl) TransferToMember(amount int) error {
 	if a.mchImpl._value.MemberId <= 0 {
 		return member.ErrNoSuchMember
 	}
-	m := a.memberRepo.GetMember(a.mchImpl._value.MemberId)
+	m := a.memberRepo.GetMember(int64(a.mchImpl._value.MemberId))
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -228,7 +228,7 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 	if a.mchImpl._value.MemberId <= 0 {
 		return member.ErrNoSuchMember
 	}
-	m := a.memberRepo.GetMember(a.mchImpl._value.MemberId)
+	m := a.memberRepo.GetMember(int64(a.mchImpl._value.MemberId))
 	if m == nil {
 		return member.ErrNoSuchMember
 	}

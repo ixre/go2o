@@ -33,7 +33,7 @@ type (
 	//todo: 实现商户等级,商户的品牌
 	IMerchant interface {
 		// GetAggregateRootId 获取编号
-		GetAggregateRootId() int64
+		GetAggregateRootId() int
 		GetValue() Merchant
 		// Complex 获取符合的商家信息
 		Complex() *ComplexMerchant
@@ -239,7 +239,7 @@ type (
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
 		// 会员编号
-		MemberId int64 `db:"member_id" json:"memberId" bson:"memberId"`
+		MemberId int `db:"member_id" json:"memberId" bson:"memberId"`
 		// 登录用户
 		Username string `db:"username" json:"username" bson:"username"`
 		// 登录密码
@@ -262,10 +262,16 @@ type (
 		City int `db:"city" json:"city" bson:"city"`
 		// 所在区
 		District int `db:"district" json:"district" bson:"district"`
-		// 状态: 0:待开通 1:已开通  2:停用  3: 关闭
+		// 公司地址
+		Address string `db:"address" json:"address" bson:"address"`
+		// 标志
+		Logo string `db:"logo" json:"logo" bson:"logo"`
+		// 公司电话
+		Tel string `db:"tel" json:"tel" bson:"tel"`
+		// 状态: 0:待审核 1:已开通  2:停用  3: 关闭
 		Status int16 `db:"status" json:"status" bson:"status"`
-		// 审核状态
-		ReviewStatus int `db:"review_status" json:"reviewStatus" bson:"reviewStatus"`
+		// 过期时间
+		ExpiresTime int `db:"expires_time" json:"expiresTime" bson:"expiresTime"`
 		// 最后登录时间
 		LastLoginTime int `db:"last_login_time" json:"lastLoginTime" bson:"lastLoginTime"`
 		// 创建时间

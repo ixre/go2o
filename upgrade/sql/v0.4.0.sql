@@ -276,7 +276,7 @@ COMMENT ON COLUMN sys_sub_station.create_time IS '创建时间';
 -- 商户
 DROP TABLE IF EXISTS mch_merchant;
 CREATE TABLE "public".mch_merchant (
-  id              serial NOT NULL, 
+  id              BIGSERIAL NOT NULL, 
   member_id       int8 NOT NULL, 
   username        varchar(30) NOT NULL, 
   password        varchar(45) NOT NULL, 
@@ -289,14 +289,15 @@ CREATE TABLE "public".mch_merchant (
   province        int4 NOT NULL, 
   city            int4 NOT NULL, 
   district        int4 NOT NULL, 
+  address         varchar(120) NOT NULL, 
+  logo            varchar(120) NOT NULL, 
+  tel             varchar(20) NOT NULL, 
   status          int2 NOT NULL, 
-  review_status   int4 NOT NULL, 
+  expires_time    int4 NOT NULL, 
   last_login_time int4 NOT NULL, 
   create_time     int4 NOT NULL, 
   CONSTRAINT mch_merchant_pkey 
-    PRIMARY KEY (id), 
-  CONSTRAINT mch_merchant_id_key 
-    UNIQUE (id));
+    PRIMARY KEY (id));
 COMMENT ON TABLE "public".mch_merchant IS '商户';
 COMMENT ON COLUMN "public".mch_merchant.id IS '编号';
 COMMENT ON COLUMN "public".mch_merchant.member_id IS '会员编号';
@@ -311,22 +312,24 @@ COMMENT ON COLUMN "public".mch_merchant.level IS '商户等级';
 COMMENT ON COLUMN "public".mch_merchant.province IS '所在省';
 COMMENT ON COLUMN "public".mch_merchant.city IS '所在市';
 COMMENT ON COLUMN "public".mch_merchant.district IS '所在区';
-COMMENT ON COLUMN "public".mch_merchant.status IS '状态: 0:待开通 1:已开通  2:停用  3: 关闭';
-COMMENT ON COLUMN "public".mch_merchant.review_status IS '审核状态';
+COMMENT ON COLUMN "public".mch_merchant.address IS '公司地址';
+COMMENT ON COLUMN "public".mch_merchant.logo IS '标志';
+COMMENT ON COLUMN "public".mch_merchant.tel IS '公司电话';
+COMMENT ON COLUMN "public".mch_merchant.status IS '状态: 0:待审核 1:已开通  2:停用  3: 关闭';
+COMMENT ON COLUMN "public".mch_merchant.expires_time IS '过期时间';
 COMMENT ON COLUMN "public".mch_merchant.last_login_time IS '最后登录时间';
 COMMENT ON COLUMN "public".mch_merchant.create_time IS '创建时间';
-DROP TABLE IF EXISTS mch_merchant_extent;
-CREATE TABLE "public".mch_merchant_extent (
-  id                serial NOT NULL, 
+
+
+
+DROP TABLE IF EXISTS mch_authenticate;
+CREATE TABLE "public".mch_authenticate (
+  id                BIGSERIAL NOT NULL, 
   mch_id            int4 NOT NULL, 
-  work_city         int4 NOT NULL, 
-  logo              varchar(120) NOT NULL, 
-  tel               varchar(45) NOT NULL, 
-  location          varchar(45) NOT NULL, 
-  address           varchar(120) NOT NULL, 
   org_name          varchar(45) NOT NULL, 
   org_no            varchar(45) NOT NULL, 
   org_pic           varchar(120) NOT NULL, 
+  work_city         int4 NOT NULL, 
   qualification_pic varchar(120) NOT NULL, 
   person_id         varchar(20) NOT NULL, 
   person_name       varchar(10) NOT NULL, 
@@ -337,32 +340,33 @@ CREATE TABLE "public".mch_merchant_extent (
   bank_no           varchar(20) NOT NULL, 
   extra_data        varchar(512) NOT NULL, 
   review_time       int4 NOT NULL, 
+  review_status     int4 NOT NULL, 
   review_remark     varchar(45) NOT NULL, 
-  expires_time      int4 NOT NULL, 
-  update_time       int4 NOT NULL, 
-  CONSTRAINT mch_merchant_extent_pkey 
+  update_time       int8 NOT NULL, 
+  CONSTRAINT mch_authenticate_pkey 
     PRIMARY KEY (id));
-COMMENT ON TABLE "public".mch_merchant_extent IS '商户扩展信息';
-COMMENT ON COLUMN "public".mch_merchant_extent.id IS '编号';
-COMMENT ON COLUMN "public".mch_merchant_extent.mch_id IS '商户编号';
-COMMENT ON COLUMN "public".mch_merchant_extent.work_city IS '办公地';
-COMMENT ON COLUMN "public".mch_merchant_extent.logo IS '标志';
-COMMENT ON COLUMN "public".mch_merchant_extent.tel IS '公司电话';
-COMMENT ON COLUMN "public".mch_merchant_extent.location IS '位置';
-COMMENT ON COLUMN "public".mch_merchant_extent.address IS '公司地址';
-COMMENT ON COLUMN "public".mch_merchant_extent.org_name IS '公司名称';
-COMMENT ON COLUMN "public".mch_merchant_extent.org_no IS '营业执照编号';
-COMMENT ON COLUMN "public".mch_merchant_extent.org_pic IS '营业执照照片';
-COMMENT ON COLUMN "public".mch_merchant_extent.qualification_pic IS '资质图片';
-COMMENT ON COLUMN "public".mch_merchant_extent.person_id IS '法人身份证号';
-COMMENT ON COLUMN "public".mch_merchant_extent.person_name IS '法人姓名';
-COMMENT ON COLUMN "public".mch_merchant_extent.person_pic IS '法人身份证照片';
-COMMENT ON COLUMN "public".mch_merchant_extent.authority_pic IS '授权书';
-COMMENT ON COLUMN "public".mch_merchant_extent.bank_name IS '开户银行';
-COMMENT ON COLUMN "public".mch_merchant_extent.bank_account IS '开户户名';
-COMMENT ON COLUMN "public".mch_merchant_extent.bank_no IS '开户账号';
-COMMENT ON COLUMN "public".mch_merchant_extent.extra_data IS '扩展数据';
-COMMENT ON COLUMN "public".mch_merchant_extent.review_time IS '审核时间';
-COMMENT ON COLUMN "public".mch_merchant_extent.review_remark IS '审核备注';
-COMMENT ON COLUMN "public".mch_merchant_extent.expires_time IS '过期时间';
-COMMENT ON COLUMN "public".mch_merchant_extent.update_time IS '更新时间';
+COMMENT ON TABLE "public".mch_authenticate IS '商户认证信息';
+COMMENT ON COLUMN "public".mch_authenticate.mch_id IS '商户编号';
+COMMENT ON COLUMN "public".mch_authenticate.org_name IS '公司名称';
+COMMENT ON COLUMN "public".mch_authenticate.org_no IS '营业执照编号';
+COMMENT ON COLUMN "public".mch_authenticate.org_pic IS '营业执照照片';
+COMMENT ON COLUMN "public".mch_authenticate.work_city IS '办公地';
+COMMENT ON COLUMN "public".mch_authenticate.qualification_pic IS '资质图片';
+COMMENT ON COLUMN "public".mch_authenticate.person_id IS '法人身份证号';
+COMMENT ON COLUMN "public".mch_authenticate.person_name IS '法人姓名';
+COMMENT ON COLUMN "public".mch_authenticate.person_pic IS '法人身份证照片';
+COMMENT ON COLUMN "public".mch_authenticate.authority_pic IS '授权书';
+COMMENT ON COLUMN "public".mch_authenticate.bank_name IS '开户银行';
+COMMENT ON COLUMN "public".mch_authenticate.bank_account IS '开户户名';
+COMMENT ON COLUMN "public".mch_authenticate.bank_no IS '开户账号';
+COMMENT ON COLUMN "public".mch_authenticate.extra_data IS '扩展数据';
+COMMENT ON COLUMN "public".mch_authenticate.review_time IS '审核时间';
+COMMENT ON COLUMN "public".mch_authenticate.review_status IS '审核状态';
+COMMENT ON COLUMN "public".mch_authenticate.review_remark IS '审核备注';
+COMMENT ON COLUMN "public".mch_authenticate.update_time IS '更新时间';
+
+
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN person_phone varchar(11) NOT NULL;
+COMMENT ON COLUMN "public".mch_authenticate.person_phone IS '联系人手机';
+

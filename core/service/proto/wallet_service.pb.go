@@ -1444,7 +1444,7 @@ type SWallet struct {
 	// * 用户编号
 	UserId int64 `protobuf:"zigzag64,4,opt,name=userId,proto3" json:"userId"`
 	// * 用户名
-	UserName string `protobuf:"bytes,5,opt,name=userName,proto3" json:"userName"`
+	UserName string `protobuf:"bytes,5,opt,name=username,proto3" json:"username"`
 	// 钱包名称
 	WalletName string `protobuf:"bytes,6,opt,name=walletName,proto3" json:"walletName"`
 	// * 钱包类型

@@ -212,7 +212,7 @@ type (
 	// 钱包仓储
 	IWalletRepo interface {
 		// 创建钱包
-		CreateWallet(userId int64, userName string, walletType int, walletName string, flag int) IWallet
+		CreateWallet(userId int64, username string, walletType int, walletName string, flag int) IWallet
 		// 获取钱包账户
 		GetWallet(walletId int64) IWallet
 		// 根据用户编号获取钱包账户

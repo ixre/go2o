@@ -109,7 +109,7 @@ type IMerchantRepo interface {
 	// 验证商户用户名是否存在
 	CheckUserExists(user string, id int) bool
 	// CheckMemberBind 验证会员是否绑定商户
-	CheckMemberBind(memberId int64, mchId int64) bool
+	CheckMemberBind(memberId int, mchId int) bool
 
 	//  //修改线下支付利润
 	//UpdateMechOfflineRate(id int, rate float32, return_rate float32) error
@@ -136,4 +136,7 @@ type IMerchantRepo interface {
 	GetBalanceAccountLog(id int) *BalanceLog
 	// 保存账户日志
 	SaveBalanceAccountLog(*BalanceLog) (int, error)
+
+	// SaveAuthenticate 保存商户认证信息
+	SaveAuthenticate(v *Authenticate) (int, error)
 }

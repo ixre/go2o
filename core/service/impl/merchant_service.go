@@ -121,7 +121,7 @@ func (m *merchantService) RemoveMerchantSignUp(_ context.Context, id *proto.Memb
 func (m *merchantService) GetMerchantIdByMember(_ context.Context, id *proto.MemberId) (*proto.Int64, error) {
 	mch := m._mchRepo.GetManager().GetMerchantByMemberId(int(id.Value))
 	if mch != nil {
-		return &proto.Int64{Value: mch.GetAggregateRootId()}, nil
+		return &proto.Int64{Value: int64(mch.GetAggregateRootId())}, nil
 	}
 	return &proto.Int64{}, nil
 }
@@ -440,18 +440,17 @@ func (m *merchantService) GetAllTradeConf_(_ context.Context, i *proto.Int64) (*
 func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCreateRequest) (*proto.MerchantCreateResponse, error) {
 	mch := r.Mch
 	v := &merchant.Merchant{
-		LoginUser:   mch.LoginUser,
-		LoginPwd:    domain.MerchantSha1Pwd(mch.LoginPwd, ""),
-		Name:        mch.Name,
-		SelfSales:   int16(mch.SelfSales),
-		MemberId:    r.RelMemberId,
+		Username:    mch.LoginUser,
+		Password:    domain.MerchantSha1Pwd(mch.LoginPwd, ""),
+		MchName:     mch.Name,
+		IsSelf:      int16(mch.SelfSales),
+		MemberId:    int(r.RelMemberId),
 		Level:       0,
 		Logo:        "",
-		CompanyName: "",
 		Province:    0,
 		City:        0,
 		District:    0,
-		ExpiresTime: r.ExpiresTime,
+		ExpiresTime: int(r.ExpiresTime),
 	}
 	im := m._mchRepo.CreateMerchant(v)
 	err := im.SetValue(v)
@@ -476,7 +475,7 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCre
 	}
 	rsp := &proto.MerchantCreateResponse{}
 	if err == nil {
-		rsp.Id = im.GetAggregateRootId()
+		rsp.Id = int64(im.GetAggregateRootId())
 	} else {
 		rsp.ErrCode = 1
 		rsp.ErrMsg = err.Error()
@@ -558,7 +557,7 @@ func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMercha
 		return nil, 2, merchant.ErrNoSuchMerchant
 	}
 	mv := mch.GetValue()
-	if pwd := domain.MerchantSha1Pwd(pwd, mch.GetValue().Salt); pwd != mv.LoginPwd {
+	if pwd := domain.MerchantSha1Pwd(pwd, mch.GetValue().Salt); pwd != mv.Password {
 		return nil, 1, de.ErrCredential
 	}
 	return mch, 0, nil
@@ -577,7 +576,7 @@ func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwdReque
 	}
 	shopId := mch.ShopManager().GetOnlineShop().GetDomainId()
 	return &proto.MchLoginResponse{
-		MerchantId: mch.GetAggregateRootId(),
+		MerchantId: int64(mch.GetAggregateRootId()),
 		ShopId:     int64(shopId),
 	}, nil
 }
@@ -597,9 +596,9 @@ func (m *merchantService) SaveMerchant(_ context.Context, r *proto.SaveMerchantR
 		return m.error(merchant.ErrNoSuchMerchant), nil
 	}
 	v := mch.GetValue()
-	v.Name = r.Name
-	v.ExpiresTime = r.ExpiresTime
-	v.SelfSales = int16(r.SelfSales)
+	v.MchName = r.Name
+	v.ExpiresTime = int(r.ExpiresTime)
+	v.IsSelf = int16(r.SelfSales)
 	v.Logo = r.Logo
 	v.Level = int(r.Level)
 	err := mch.SetValue(&v)
