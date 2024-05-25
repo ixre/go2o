@@ -120,9 +120,9 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 }
 
 // 返回带有令牌的结果
-func (p *rbacServiceImpl) withAccessToken(userName string,
+func (p *rbacServiceImpl) withAccessToken(username string,
 	dst *proto.RbacLoginResponse, expires int) (*proto.RbacLoginResponse, error) {
-	accessToken, err := p.createAccessToken(dst.UserId, userName,
+	accessToken, err := p.createAccessToken(dst.UserId, username,
 		strings.Join(dst.Roles, ","), expires)
 	dst.AccessToken = accessToken
 	if err != nil {
@@ -133,7 +133,7 @@ func (p *rbacServiceImpl) withAccessToken(userName string,
 }
 
 // 创建令牌
-func (p *rbacServiceImpl) createAccessToken(userId int64, userName string, perm string, exp int) (string, error) {
+func (p *rbacServiceImpl) createAccessToken(userId int64, username string, perm string, exp int) (string, error) {
 	if exp <= 0 {
 		exp = int((time.Hour * 24 * 365).Seconds())
 	}
@@ -142,7 +142,7 @@ func (p *rbacServiceImpl) createAccessToken(userId int64, userName string, perm 
 		"aud":    userId,
 		"iss":    "go2o",
 		"sub":    "go2o-rbac-token",
-		"name":   userName,
+		"name":   username,
 		"x-perm": perm,
 	}
 	key, _ := p.registryRepo.GetValue(registry.SysJWTSecret)

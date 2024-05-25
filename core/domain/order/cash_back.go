@@ -60,7 +60,7 @@ func (o *subOrderImpl) handleCashBack() error {
 		if saleConf.CashBackPercent > 0 {
 			back_fee = int64(float32(v.FinalAmount) * saleConf.CashBackPercent)
 			//将此次消费记入会员账户
-			err = o.updateShoppingMemberBackFee(mch.GetValue().Name, buyer,
+			err = o.updateShoppingMemberBackFee(mch.GetValue().MchName, buyer,
 				int64(float32(back_fee)*saleConf.CashBackMemberPercent), now)
 			domain.HandleError(err, "domain")
 
@@ -126,7 +126,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMemberAggrega
 				percent = saleConf.CashBackTg1Percent
 			}
 
-			err = o.updateMemberAccount(m, mch.GetValue().Name, mName,
+			err = o.updateMemberAccount(m, mch.GetValue().MchName, mName,
 				int64(float32(back_fee)*percent), unixTime)
 			if err != nil {
 				domain.HandleError(err, "domain")

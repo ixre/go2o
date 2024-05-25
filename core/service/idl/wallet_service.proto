@@ -294,7 +294,7 @@ message SWallet {
     /** 用户编号 */
     sint64 userId =  4;
     /** 用户名 */
-    string userName = 5;
+    string username = 5;
     // 钱包名称
     string walletName = 6;
     /** 钱包类型 */

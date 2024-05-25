@@ -26,11 +26,13 @@ func GrantFlag(field, flag int) (int, error) {
 	if f&(f-1) != 0 {
 		return flag, errors.New("not right flag value")
 	}
-	if flag > 0 { // 添加标志
+	if flag > 0 {
+		// 添加标志
 		if field&f != f {
 			field |= flag
 		}
-	} else { // 去除标志
+	} else {
+		// 去除标志
 		if field&f == f {
 			field ^= f
 		}

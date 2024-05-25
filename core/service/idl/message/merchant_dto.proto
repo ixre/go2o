@@ -3,71 +3,83 @@ syntax = "proto3";
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
-// 商家
-message SMerchant {
-  /** 编号 */
-  int64 id = 1;
-  /** 会员编号 */
+// 保存商户请求
+message SSaveMerchantParams{
+  // 名称
+  string mchName = 1;
+  // 登录密码
+  string password = 2;
+  // 标志
+  int32 flag = 3;
+  // 商户等级
+  int32 level = 4;
+  // 所在省
+  int32 province = 5;
+  // 所在市
+  int32 city = 6;
+  // 所在区
+  int32 district = 7;
+  // 公司地址
+  string address = 8;
+  // 标志
+  string logo = 9;
+  // 公司电话
+  string tel = 10;
+}
+
+// 保存商户认证信息请求
+message SaveAuthenticateRequest{
+  // 商户编号
+  int32 mchId = 1;
+  // 公司名称
+  string orgName = 2;
+  // 营业执照编号
+  string orgNo = 3;
+  // 营业执照照片
+  string orgPic = 4;
+  // 办公地
+  int32 workCity = 5;
+  // 资质图片
+  string qualificationPic = 6;
+  // 法人身份证号
+  string personId = 7;
+  // 法人姓名
+  string personName = 8;
+  // 法人身份证照片
+  string personPic = 9;
+  // 授权书
+  string authorityPic = 10;
+  // 开户银行
+  string bankName = 11;
+  // 开户户名
+  string bankAccount = 12;
+  // 开户账号
+  string bankNo = 13;
+  // 扩展数据
+  string extraData = 14;
+  // 审核时间
+  int32 reviewTime = 15;
+  // 审核状态
+  int32 reviewStatus = 16;
+  // 审核备注
+  string reviewRemark = 17;
+  // 更新时间
+  int64 updateTime = 18;
+  // 联系人手机
+  string personPhone = 19;
+}
+
+
+// 商户注册请求
+message CreateMerchantRequest {
+  // 登录用户
+  string username = 1;
+  // 会员编号
   int64 memberId = 2;
-  /** 登录用户 */
-  string loginUser = 3;
-  /** 登录密码 */
-  string loginPwd = 4;
-  // 盐
-  string salt = 5;
-  /** 名称 */
-  string name = 6;
-  /** 公司名称 */
-  string companyName = 7;
-  /** 是否自营 */
-  int32 selfSales = 8;
-  /** 商户等级 */
-  int32 level = 9;
-  /** 标志 */
-  string logo = 10;
-  /** 省 */
-  int32 province = 11;
-  /** 市 */
-  int32 city = 12;
-  /** 区 */
-  int32 district = 13;
-  /** 标志 */
-  int32 flag = 14;
-  /** 是否启用 */
-  int32 enabled = 15;
-  /** 过期时间 */
-  int64 expiresTime = 16;
-  /** 最后登录时间 */
-  int64 lastLoginTime = 17;
-}
-
-// 商家
-message SMerchantPack {
-  /** 登录用户 */
-  string loginUser = 1;
-  /** 登录密码 */
-  string loginPwd = 2;
-  // 盐
-  string salt = 3;
-  /** 名称 */
-  string name = 4;
-  /** 是否自营 */
-  sint32 selfSales = 5;
-  /** 店铺名称 */
-  string shopName = 6;
-  /** 标志 */
-  string shopLogo = 7;
-  /** 电话 */
-  string telephone = 8;
-  /** 地址 */
-  string addr = 9;
-}
-
-message MerchantCreateRequest {
-  SMerchantPack mch = 1;
-  int64 relMemberId = 2;
-  /** 过期时间,0表示永远不过期 */
-  int64 expiresTime = 3;
+  // 是否自营
+  int32 isSelf = 3;
+  // 商户信息
+  SSaveMerchantParams mch = 4;
 }
 
 message MerchantCreateResponse {
@@ -76,23 +88,96 @@ message MerchantCreateResponse {
   int64 id = 3;
 }
 
+// 保存商户请求
 message SaveMerchantRequest {
-  /** 编号 */
-  int64 id = 1;
-  /** 会员编号 */
-  int64 memberId = 2;
-  /** 名称 */
-  string name = 3;
-  /** 是否自营 */
-  int32 selfSales = 4;
-  /** 商户等级 */
-  int32 level = 5;
-  /** 标志 */
-  string logo = 6;
-  /** 过期时间 */
-  int64 expiresTime = 7;
+ // 商户编号
+ int64 mchId = 1;
+ // 商户信息
+ SSaveMerchantParams mch = 4;
 }
 
+
+// 商户
+message QMerchant{
+  // 编号
+  int64 mchId = 1;
+  // 名称
+  string mchName = 2; 
+  // 会员编号
+  int64 memberId = 3;
+  // 登录用户
+  string username = 4;
+  // 邮箱地址
+  string mailAddr = 5;
+  // 是否自营
+  int32 isSelf = 6;
+  // 标志
+  int32 flag = 7;
+  // 商户等级
+  int32 level = 8;
+  // 所在省
+  int32 province = 9;
+  // 所在市
+  int32 city = 10;
+  // 所在区
+  int32 district = 11;
+  // 公司地址
+  string address = 12;
+  // 标志
+  string logo = 13;
+  // 公司电话
+  string tel = 14;
+  // 状态: 0:待审核 1:已开通  2:停用  3: 关闭
+  int32 status = 15;
+  // 过期时间
+  int64 expiresTime = 16;
+  // 最后登录时间
+  int64 lastLoginTime = 17;
+  // 创建时间
+  int64 createTime = 18;
+  // 商户认证信息
+  QAuthenticate authenticate = 19;
+}
+
+// 商户认证信息
+message QAuthenticate{
+ // 公司名称
+ string orgName = 1;
+ // 营业执照编号
+ string orgNo = 2;
+ // 营业执照照片
+ string orgPic = 3;
+ // 办公地
+ int32 workCity = 6;
+ // 资质图片
+ string qualificationPic = 7;
+ // 法人身份证号
+ string personId = 8;
+ // 法人姓名
+ string personName = 9;
+ // 法人身份证照片
+ string personPic = 10;
+ // 联系人手机
+ string personPhone = 11;
+ // 授权书
+ string authorityPic = 12;
+ // 开户银行
+ string bankName = 13;
+ // 开户户名
+ string bankAccount = 14;
+ // 开户账号
+ string bankNo = 15;
+ // 审核时间
+ int32 reviewTime = 16;
+ // 审核状态
+ int32 reviewStatus = 17;
+ // 审核备注
+ string reviewRemark = 18;
+ // 扩展数据
+ map<string,string> extraData = 19;
+ // 更新时间
+ int64 updateTime = 20;
+}
 
 /** 更换会员绑定请求 */
 message ChangeMemberBindRequest{
@@ -195,59 +280,16 @@ message SMchSignUp {
   int64 submitTime = 23;
 }
 
-message MchReviewRequest {
-  int64 merchantId = 1;
+// 商户审核请求
+message MerchantReviewRequest {
+  // 商户编号
+  int64 mchId = 1;
+  // 是否审核通过
   bool pass = 2;
+  // 备注
   string remark = 3;
 }
 
-// 企业信息
-message SEnterpriseInfo {
-  // 编号
-  int64 id = 1;
-  // 商户编号
-  int64 merchantId = 2;
-  // 公司名称
-  string companyName = 3;
-  // 公司营业执照编号
-  string companyNo = 4;
-  // 法人
-  string personName = 5;
-  // 法人身份证编号
-  string personIdNo = 6;
-  // 身份证验证图片(人捧身份证照相)
-  string personImage = 7;
-  // 公司电话
-  string telephone = 8;
-  // 省
-  int32 province = 9;
-  // 市
-  int32 city = 10;
-  // 区
-  int32 district = 11;
-  // 省+市+区字符串表示
-  string location = 12;
-  // 公司地址
-  string address = 13;
-  // 营业执照图片
-  string companyImage = 14;
-  // 授权书
-  string authDoc = 15;
-  //是否已审核
-  int32 reviewStatus = 16;
-  // 审核时间
-  int64 reviewTime = 17;
-  // 审核备注
-  string reviewRemark = 18;
-  //更新时间
-  int64 updateTime = 19;
-}
-
-message SaveEnterpriseRequest {
-  // 商户编号
-  int64 merchantId = 1;
-  SEnterpriseInfo value = 2;
-}
 
 // 商户账户
 message SMerchantAccount {

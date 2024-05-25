@@ -2,12 +2,13 @@ package domain
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/tests/ti"
-	"testing"
 )
 
 func TestMerchantPwd2(t *testing.T) {
@@ -19,25 +20,25 @@ func TestMerchantPwd2(t *testing.T) {
 func TestCreateMerchant(t *testing.T) {
 	repo := ti.Factory.GetMerchantRepo()
 	v := &merchant.Merchant{
-		LoginUser:   "zy",
-		LoginPwd:    domain.Md5("123456"),
-		Name:        "天猫",
-		SelfSales:   1,
-		Level:       0,
-		Logo:        "",
-		CompanyName: "天猫",
-		Province:    0,
-		City:        0,
-		District:    0,
+		Username: "zy",
+		MchName:  "天猫",
+		Salt:     "000",
+		MemberId: 4,
+		IsSelf:   1,
+		Level:    0,
+		Logo:     "",
+		Province: 0,
+		City:     0,
+		District: 0,
 	}
-	v.LoginPwd = domain.MerchantSha1Pwd(v.LoginPwd, v.Salt)
+	v.Password = domain.MerchantSha1Pwd(domain.Md5("123456"), v.Salt)
 	im := repo.CreateMerchant(v)
 	err := im.SetValue(v)
 	if err == nil {
 		_, err = im.Save()
 		if err == nil {
 			o := shop.OnlineShop{
-				ShopName:   v.Name,
+				ShopName:   v.MchName,
 				Logo:       "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
 				Host:       "",
 				Alias:      "zy",
@@ -52,6 +53,65 @@ func TestCreateMerchant(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
+	}
+}
+
+// 保存商户认证信息
+func TestSaveMerchantAuthenticate(t *testing.T) {
+	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	v := &merchant.Authenticate{
+		OrgName:          "天猫有限公司",
+		OrgNo:            "00000000",
+		OrgPic:           "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		WorkCity:         0,
+		QualificationPic: "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		PersonId:         "513701980102345678",
+		PersonName:       "田猫",
+		PersonPic:        "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		PersonPhone:      "13888888888",
+		AuthorityPic:     "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		BankName:         "花旗银行",
+		BankAccount:      "田猫",
+		BankNo:           "622601345897234",
+	}
+	id, err := mch.ProfileManager().SaveAuthenticate(v)
+	if err != nil {
+		t.Error(err)
+	}
+	t.Logf("id:%d", id)
+}
+
+// 拒绝审核商户认证信息
+func TestRejectMerchantAuthenticateRequest(t *testing.T) {
+	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	err := mch.ProfileManager().ReviewAuthenticate(false, "不通过")
+	if err != nil {
+		t.Error(err)
+	}
+	// 再次审核
+	err = mch.ProfileManager().ReviewAuthenticate(false, "不通过")
+	if err == nil {
+		t.Error(errors.New("再次审核未提示错误"))
+	}
+}
+
+// 测试审核通过商户认证信息
+func TestPassMerchantAuthenticateRequest(t *testing.T) {
+	/**
+	SQL:
+	select * FROM mch_merchant where id=1;
+	select * FROM mch_authenticate WHERE mch_id=1;
+	*/
+	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	err := mch.ProfileManager().ReviewAuthenticate(true, "")
+	if err == nil {
+		// 审核通过
+		err = mch.ProfileManager().ReviewAuthenticate(true, "通过")
+		if err != nil {
+			t.Error(errors.New("审核失败:" + err.Error()))
+		}
+	} else {
+		t.Error(errors.New("审核失败:" + err.Error()))
 	}
 }
 
@@ -71,7 +131,7 @@ func TestBindMember(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	if mch.GetValue().MemberId != int64(memberId) {
+	if mch.GetValue().MemberId != memberId {
 		t.Log("now bind member id is ", mch.GetValue().MemberId)
 		t.FailNow()
 	}
