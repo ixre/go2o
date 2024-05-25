@@ -35,10 +35,11 @@ import (
 )
 
 var _ merchant.IMerchantRepo = new(merchantRepo)
+var mchMerchantDaoImplMapped = false
 
 type merchantRepo struct {
 	db.Connector
-	_orm             orm.Orm
+	_orm          orm.Orm
 	storage       storage.Interface
 	manager       merchant.IMerchantManager
 	_wsRepo       wholesaler.IWholesaleRepo
@@ -59,9 +60,15 @@ func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantRepo {
+	if !mchMerchantDaoImplMapped {
+		// 映射实体
+		o.Mapping(merchant.Merchant{}, "mch_merchant")
+		o.Mapping(merchant.Authenticate{}, "mch_authenticate")
+		mchMerchantDaoImplMapped = true
+	}
 	return &merchantRepo{
 		Connector:     o.Connector(),
-		_orm:             o,
+		_orm:          o,
 		storage:       storage,
 		_wsRepo:       wsRepo,
 		_itemRepo:     itemRepo,
@@ -181,7 +188,7 @@ func (m *merchantRepo) GetMerchantMajorHost(mchId int) string {
 // 验证商户用户名是否存在
 func (m *merchantRepo) CheckUserExists(user string, id int) bool {
 	var row int
-	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mch_merchant WHERE login_user= $1 AND id <> $2 LIMIT 1`,
+	m.Connector.ExecScalar(`SELECT COUNT(*) FROM mch_merchant WHERE login_user= $1 AND id <> $2 LIMIT 1`,
 		&row, user, id)
 	return row > 0
 }
@@ -587,25 +594,24 @@ func (m *merchantRepo) SaveSignUpInfo(v *merchant.MchSignUp) (int, error) {
 	return id, err
 }
 
-
 // SaveAuthenticate Save 商户认证信息
-func (m *merchantRepo) SaveAuthenticate(v *merchant.Authenticate)(int,error){
-    id,err := orm.Save(m._orm,v,int(v.Id))
-    if err != nil && err != sql.ErrNoRows{
-      log.Printf("[ Orm][ Error]: %s; Entity:Authenticate\n",err.Error())
-    }
-    return id,err
+func (m *merchantRepo) SaveAuthenticate(v *merchant.Authenticate) (int, error) {
+	id, err := orm.Save(m._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("[ Orm][ Error]: %s; Entity:Authenticate\n", err.Error())
+	}
+	return id, err
 }
 
 // GetAuthenticateBy GetBy 商户认证信息
-func (m *merchantRepo) GetAuthenticateBy(where string,v ...interface{})*merchant.Authenticate{
-    e := merchant.Authenticate{}
-    err := m._orm.GetBy(&e,where,v...)
-    if err == nil{
-        return &e
-    }
-    if err != sql.ErrNoRows{
-      log.Printf("[ Orm][ Error]: %s; Entity:Authenticate\n",err.Error())
-    }
-    return nil
+func (m *merchantRepo) GetAuthenticateBy(where string, v ...interface{}) *merchant.Authenticate {
+	e := merchant.Authenticate{}
+	err := m._orm.GetBy(&e, where, v...)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Printf("[ Orm][ Error]: %s; Entity:Authenticate\n", err.Error())
+	}
+	return nil
 }

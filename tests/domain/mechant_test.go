@@ -23,6 +23,7 @@ func TestCreateMerchant(t *testing.T) {
 		Username: "zy",
 		MchName:  "天猫",
 		Salt:     "000",
+		MemberId: 4,
 		IsSelf:   1,
 		Level:    0,
 		Logo:     "",

@@ -37,7 +37,7 @@ var (
 		"err_shop_alias_used", "域名已被占用")
 
 	ErrSupportSingleOnlineShop = domain.NewError(
-		"err_shop_support_only_online_shop", "当前商户仅支持1个店铺")
+		"err_shop_support_only_online_shop", "商户已开通店铺")
 )
 
 const (

@@ -163,9 +163,9 @@ func (m *merchantImpl) check(v *merchant.Merchant) error {
 	// if v.CompanyNo == "" {
 	// 	return merchant.ErrMissingCompanyNo
 	// }
-	if v.Address == "" {
-		return merchant.ErrMissingAddress
-	}
+	// if v.Address == "" {
+	// 	return merchant.ErrMissingAddress
+	// }
 	// if v.PersonName == "" {
 	// 	return merchant.ErrMissingPersonName
 	// }
