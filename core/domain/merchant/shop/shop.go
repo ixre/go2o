@@ -152,7 +152,7 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) (err error) {
 		}
 	}
 	// 判断自营
-	if mv.SelfSales == 1 {
+	if mv.IsSelf == 1 {
 		dst.Flag |= shop.FlagSelfSales
 	} else if dst.Flag&shop.FlagSelfSales == shop.FlagSelfSales {
 		dst.Flag ^= shop.FlagSelfSales

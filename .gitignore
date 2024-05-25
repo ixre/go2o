@@ -33,3 +33,4 @@ node_modules
 package.json
 yarn.lock
 bun*
+app-*.conf

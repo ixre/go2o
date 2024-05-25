@@ -10,13 +10,14 @@ package shop
 
 import (
 	"errors"
+	"strings"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
-	"strings"
-	"time"
 )
 
 var _ shop.IShopManager = new(shopManagerImpl)
@@ -40,9 +41,13 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 
 // CreateOnlineShop 创建线上店铺
 func (s *shopManagerImpl) CreateOnlineShop(o *shop.OnlineShop) (shop.IShop, error) {
-	o.VendorId = s.merchant.GetAggregateRootId()
+	mv := s.merchant.GetValue()
+	if err := merchant.CheckMchStatus(int(mv.Status)); err != nil {
+		return nil, err
+	}
+	o.VendorId = int64(s.merchant.GetAggregateRootId())
 	if o.ShopName == "" {
-		o.ShopName = s.merchant.GetValue().Name
+		o.ShopName = s.merchant.GetValue().MchName
 	}
 	var is shop.IShop = &onlineShopImpl{
 		_shopVal:     o,
@@ -62,13 +67,13 @@ func (s *shopManagerImpl) CreateOnlineShop(o *shop.OnlineShop) (shop.IShop, erro
 // CreateShop 新建商店
 func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
-	v.VendorId = s.merchant.GetAggregateRootId()
+	v.VendorId = int64(s.merchant.GetAggregateRootId())
 	return NewStore(v, s.repo, s.valueRepo, s.registryRepo)
 }
 
 // GetShops 获取所有商店
 func (s *shopManagerImpl) GetShops() []shop.IShop {
-	shopList := s.repo.GetShopId(s.merchant.GetAggregateRootId())
+	shopList := s.repo.GetShopId(int64(s.merchant.GetAggregateRootId()))
 	shops := make([]shop.IShop, len(shopList))
 	for i, v := range shopList {
 		shops[i] = s.CreateShop(&v)
@@ -132,9 +137,9 @@ func (s *shopManagerImpl) DeleteShop(shopId int32) error {
 	if sp != nil {
 		switch sp.Type() {
 		case shop.TypeOfflineShop:
-			return s.deleteOfflineShop(mchId, sp)
+			return s.deleteOfflineShop(int64(mchId), sp)
 		case shop.TypeOnlineShop:
-			return s.deleteOnlineShop(mchId, sp)
+			return s.deleteOnlineShop(int64(mchId), sp)
 		}
 	}
 	return nil

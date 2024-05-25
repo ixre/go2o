@@ -2,9 +2,11 @@ package merchant
 
 const (
 	TFlagNormal = 1 << iota
+	// 待认证审核的商户
+	FlagAuthenticate
 	// 免费
 	TFlagFree
-	// 关毕交易权限
+	// 关闭交易权限
 	TFlagNoPerm
 )
 

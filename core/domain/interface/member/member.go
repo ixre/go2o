@@ -88,8 +88,6 @@ type (
 		Lock(minutes int, remark string) error
 		// Unlock 解锁会员
 		Unlock() error
-		// ContainFlag 判断是否包含标志
-		ContainFlag(f int) bool
 		// GetRelation 获取关联的会员
 		GetRelation() *InviteRelation
 		// BindInviter 绑定邀请人,如果已邀请,force为true时更新
@@ -101,6 +99,8 @@ type (
 		// GetLevel 获取等级
 		GetLevel() *Level
 
+		// ContainFlag 判断是否包含标志
+		ContainFlag(f int) bool
 		// GrantFlag 标志赋值, 如果flag小于零, 则异或运算(去除)
 		GrantFlag(flag int) error
 

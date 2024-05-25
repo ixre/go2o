@@ -107,7 +107,7 @@ func (s *cartServiceImpl) wsGetCart(c cart.ICartAggregateRoot, data map[string]s
 		for _, v2 := range v.Seller {
 			mch := s.mchRepo.GetMerchant(int(v2.SellerId))
 			if mch != nil {
-				v2.Data["SellerName"] = mch.GetValue().CompanyName
+				v2.Data["SellerName"] = mch.GetValue().MchName
 			}
 		}
 	}
