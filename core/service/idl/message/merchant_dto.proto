@@ -76,6 +76,101 @@ message SSaveMerchantParams{
   int32 createTime = 20;
 }
 
+// 保存商户认证信息请求
+message SaveAuthenticateRequest{
+  // Id
+  int64 id = 1;
+  // 商户编号
+  int32 mchId = 2;
+  // 公司名称
+  string orgName = 3;
+  // 营业执照编号
+  string orgNo = 4;
+  // 营业执照照片
+  string orgPic = 5;
+  // 办公地
+  int32 workCity = 6;
+  // 资质图片
+  string qualificationPic = 7;
+  // 法人身份证号
+  string personId = 8;
+  // 法人姓名
+  string personName = 9;
+  // 法人身份证照片
+  string personPic = 10;
+  // 授权书
+  string authorityPic = 11;
+  // 开户银行
+  string bankName = 12;
+  // 开户户名
+  string bankAccount = 13;
+  // 开户账号
+  string bankNo = 14;
+  // 扩展数据
+  string extraData = 15;
+  // 审核时间
+  int32 reviewTime = 16;
+  // 审核状态
+  int32 reviewStatus = 17;
+  // 审核备注
+  string reviewRemark = 18;
+  // 更新时间
+  int64 updateTime = 19;
+  // 联系人手机
+  string personPhone = 20;
+}
+
+// 保存商户认证信息响应
+message SaveAuthenticateResponse{
+  int32 errCode = 1;
+  string errMsg = 2;
+  int64 id = 3;
+}
+
+// 商户认证信息
+message SAuthenticate{
+  // Id
+  int64 id = 1;
+  // 商户编号
+  int32 mchId = 2;
+  // 公司名称
+  string orgName = 3;
+  // 营业执照编号
+  string orgNo = 4;
+  // 营业执照照片
+  string orgPic = 5;
+  // 办公地
+  int32 workCity = 6;
+  // 资质图片
+  string qualificationPic = 7;
+  // 法人身份证号
+  string personId = 8;
+  // 法人姓名
+  string personName = 9;
+  // 法人身份证照片
+  string personPic = 10;
+  // 授权书
+  string authorityPic = 11;
+  // 开户银行
+  string bankName = 12;
+  // 开户户名
+  string bankAccount = 13;
+  // 开户账号
+  string bankNo = 14;
+  // 扩展数据
+  string extraData = 15;
+  // 审核时间
+  int32 reviewTime = 16;
+  // 审核状态
+  int32 reviewStatus = 17;
+  // 审核备注
+  string reviewRemark = 18;
+  // 更新时间
+  int64 updateTime = 19;
+  // 联系人手机
+  string personPhone = 20;
+}
+
 // 商家
 message SMerchantPack {
   /** 登录用户 */
