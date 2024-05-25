@@ -437,7 +437,7 @@ func (m *merchantService) GetAllTradeConf_(_ context.Context, i *proto.Int64) (*
 	}, nil
 }
 
-func (m *merchantService) CreateMerchant(_ context.Context, r *proto.MerchantCreateRequest) (*proto.MerchantCreateResponse, error) {
+func (m *merchantService) CreateMerchant(_ context.Context, r *proto.CreateMerchantRequest) (*proto.MerchantCreateResponse, error) {
 	mch := r.Mch
 	v := &merchant.Merchant{
 		Username:    mch.LoginUser,

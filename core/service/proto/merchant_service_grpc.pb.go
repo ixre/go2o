@@ -70,7 +70,7 @@ type MerchantServiceClient interface {
 	// 获取商家的信息,mchId
 	GetMerchant(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*SMerchant, error)
 	// 注册商户并开店
-	CreateMerchant(ctx context.Context, in *MerchantCreateRequest, opts ...grpc.CallOption) (*MerchantCreateResponse, error)
+	CreateMerchant(ctx context.Context, in *CreateMerchantRequest, opts ...grpc.CallOption) (*MerchantCreateResponse, error)
 	// 保存商户
 	SaveMerchant(ctx context.Context, in *SaveMerchantRequest, opts ...grpc.CallOption) (*Result, error)
 	// 验证用户密码,并返回编号。可传入商户或会员的账号密码
@@ -167,7 +167,7 @@ func (c *merchantServiceClient) GetMerchant(ctx context.Context, in *Int64, opts
 	return out, nil
 }
 
-func (c *merchantServiceClient) CreateMerchant(ctx context.Context, in *MerchantCreateRequest, opts ...grpc.CallOption) (*MerchantCreateResponse, error) {
+func (c *merchantServiceClient) CreateMerchant(ctx context.Context, in *CreateMerchantRequest, opts ...grpc.CallOption) (*MerchantCreateResponse, error) {
 	out := new(MerchantCreateResponse)
 	err := c.cc.Invoke(ctx, MerchantService_CreateMerchant_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -543,7 +543,7 @@ type MerchantServiceServer interface {
 	// 获取商家的信息,mchId
 	GetMerchant(context.Context, *Int64) (*SMerchant, error)
 	// 注册商户并开店
-	CreateMerchant(context.Context, *MerchantCreateRequest) (*MerchantCreateResponse, error)
+	CreateMerchant(context.Context, *CreateMerchantRequest) (*MerchantCreateResponse, error)
 	// 保存商户
 	SaveMerchant(context.Context, *SaveMerchantRequest) (*Result, error)
 	// 验证用户密码,并返回编号。可传入商户或会员的账号密码
@@ -631,7 +631,7 @@ type UnimplementedMerchantServiceServer struct {
 func (UnimplementedMerchantServiceServer) GetMerchant(context.Context, *Int64) (*SMerchant, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMerchant not implemented")
 }
-func (UnimplementedMerchantServiceServer) CreateMerchant(context.Context, *MerchantCreateRequest) (*MerchantCreateResponse, error) {
+func (UnimplementedMerchantServiceServer) CreateMerchant(context.Context, *CreateMerchantRequest) (*MerchantCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMerchant not implemented")
 }
 func (UnimplementedMerchantServiceServer) SaveMerchant(context.Context, *SaveMerchantRequest) (*Result, error) {
@@ -786,7 +786,7 @@ func _MerchantService_GetMerchant_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _MerchantService_CreateMerchant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MerchantCreateRequest)
+	in := new(CreateMerchantRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -798,7 +798,7 @@ func _MerchantService_CreateMerchant_Handler(srv interface{}, ctx context.Contex
 		FullMethod: MerchantService_CreateMerchant_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).CreateMerchant(ctx, req.(*MerchantCreateRequest))
+		return srv.(MerchantServiceServer).CreateMerchant(ctx, req.(*CreateMerchantRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

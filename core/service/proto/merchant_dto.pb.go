@@ -334,7 +334,7 @@ func (x *SMerchantPack) GetAddr() string {
 	return ""
 }
 
-type MerchantCreateRequest struct {
+type CreateMerchantRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -345,8 +345,8 @@ type MerchantCreateRequest struct {
 	ExpiresTime int64 `protobuf:"varint,3,opt,name=expiresTime,proto3" json:"expiresTime"`
 }
 
-func (x *MerchantCreateRequest) Reset() {
-	*x = MerchantCreateRequest{}
+func (x *CreateMerchantRequest) Reset() {
+	*x = CreateMerchantRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_message_merchant_dto_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -354,13 +354,13 @@ func (x *MerchantCreateRequest) Reset() {
 	}
 }
 
-func (x *MerchantCreateRequest) String() string {
+func (x *CreateMerchantRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MerchantCreateRequest) ProtoMessage() {}
+func (*CreateMerchantRequest) ProtoMessage() {}
 
-func (x *MerchantCreateRequest) ProtoReflect() protoreflect.Message {
+func (x *CreateMerchantRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_message_merchant_dto_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -372,26 +372,26 @@ func (x *MerchantCreateRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use MerchantCreateRequest.ProtoReflect.Descriptor instead.
-func (*MerchantCreateRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateMerchantRequest.ProtoReflect.Descriptor instead.
+func (*CreateMerchantRequest) Descriptor() ([]byte, []int) {
 	return file_message_merchant_dto_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *MerchantCreateRequest) GetMch() *SMerchantPack {
+func (x *CreateMerchantRequest) GetMch() *SMerchantPack {
 	if x != nil {
 		return x.Mch
 	}
 	return nil
 }
 
-func (x *MerchantCreateRequest) GetRelMemberId() int64 {
+func (x *CreateMerchantRequest) GetRelMemberId() int64 {
 	if x != nil {
 		return x.RelMemberId
 	}
 	return 0
 }
 
-func (x *MerchantCreateRequest) GetExpiresTime() int64 {
+func (x *CreateMerchantRequest) GetExpiresTime() int64 {
 	if x != nil {
 		return x.ExpiresTime
 	}
@@ -3099,7 +3099,7 @@ var file_message_merchant_dto_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
 var file_message_merchant_dto_proto_goTypes = []interface{}{
 	(*SMerchant)(nil),                       // 0: SMerchant
 	(*SMerchantPack)(nil),                   // 1: SMerchantPack
-	(*MerchantCreateRequest)(nil),           // 2: MerchantCreateRequest
+	(*CreateMerchantRequest)(nil),           // 2: CreateMerchantRequest
 	(*MerchantCreateResponse)(nil),          // 3: MerchantCreateResponse
 	(*SaveMerchantRequest)(nil),             // 4: SaveMerchantRequest
 	(*ChangeMemberBindRequest)(nil),         // 5: ChangeMemberBindRequest
@@ -3133,7 +3133,7 @@ var file_message_merchant_dto_proto_goTypes = []interface{}{
 	nil,                                     // 33: SyncWSItemsResponse.ValueEntry
 }
 var file_message_merchant_dto_proto_depIdxs = []int32{
-	1,  // 0: MerchantCreateRequest.mch:type_name -> SMerchantPack
+	1,  // 0: CreateMerchantRequest.mch:type_name -> SMerchantPack
 	33, // 1: SyncWSItemsResponse.value:type_name -> SyncWSItemsResponse.ValueEntry
 	12, // 2: STradeConfListResponse.value:type_name -> STradeConf_
 	12, // 3: TradeConfSaveRequest.arr:type_name -> STradeConf_
@@ -3181,7 +3181,7 @@ func file_message_merchant_dto_proto_init() {
 			}
 		}
 		file_message_merchant_dto_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MerchantCreateRequest); i {
+			switch v := v.(*CreateMerchantRequest); i {
 			case 0:
 				return &v.state
 			case 1:

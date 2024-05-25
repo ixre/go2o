@@ -41,6 +41,41 @@ message SMerchant {
   int64 lastLoginTime = 17;
 }
 
+
+// 保存商户请求
+message SSaveMerchantParams{
+  // 编号
+  int64 id = 1;
+  // 登录密码
+  string password = 4;
+  // 名称
+  string mchName = 7;
+  // 标志
+  int32 flag = 9;
+  // 商户等级
+  int32 level = 10;
+  // 所在省
+  int32 province = 11;
+  // 所在市
+  int32 city = 12;
+  // 所在区
+  int32 district = 13;
+  // 公司地址
+  string address = 14;
+  // 标志
+  string logo = 15;
+  // 公司电话
+  string tel = 16;
+  // 状态: 0:待审核 1:已开通  2:停用  3: 关闭
+  int32 status = 17;
+  // 过期时间
+  int32 expiresTime = 18;
+  // 最后登录时间
+  int32 lastLoginTime = 19;
+  // 创建时间
+  int32 createTime = 20;
+}
+
 // 商家
 message SMerchantPack {
   /** 登录用户 */
@@ -63,9 +98,16 @@ message SMerchantPack {
   string addr = 9;
 }
 
-message MerchantCreateRequest {
-  SMerchantPack mch = 1;
-  int64 relMemberId = 2;
+// 商户注册请求
+message CreateMerchantRequest {
+  // 登录用户
+  string username = 1;
+  // 会员编号
+  int64 memberId = 2;
+  // 是否自营
+  int32 isSelf = 8;
+  // 商户信息
+  SSaveMerchantParams mch = 3;
   /** 过期时间,0表示永远不过期 */
   int64 expiresTime = 3;
 }

@@ -13,7 +13,7 @@ service MerchantService {
     rpc GetMerchant (Int64) returns (SMerchant) {
     }
     // 注册商户并开店
-    rpc CreateMerchant (MerchantCreateRequest) returns (MerchantCreateResponse) {
+    rpc CreateMerchant (CreateMerchantRequest) returns (MerchantCreateResponse) {
     }
     // 保存商户
     rpc SaveMerchant (SaveMerchantRequest) returns (Result) {

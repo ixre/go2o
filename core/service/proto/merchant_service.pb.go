@@ -546,7 +546,7 @@ var file_merchant_service_proto_goTypes = []interface{}{
 	(*SPagingParams)(nil),                   // 4: SPagingParams
 	(*SOrderItem)(nil),                      // 5: SOrderItem
 	(*Int64)(nil),                           // 6: Int64
-	(*MerchantCreateRequest)(nil),           // 7: MerchantCreateRequest
+	(*CreateMerchantRequest)(nil),           // 7: CreateMerchantRequest
 	(*SaveMerchantRequest)(nil),             // 8: SaveMerchantRequest
 	(*MchUserPwdRequest)(nil),               // 9: MchUserPwdRequest
 	(*TradeConfRequest)(nil),                // 10: TradeConfRequest
@@ -588,7 +588,7 @@ var file_merchant_service_proto_depIdxs = []int32{
 	5,  // 2: SMerchantOrder.items:type_name -> SOrderItem
 	3,  // 3: SMerchantOrder.data:type_name -> SMerchantOrder.DataEntry
 	6,  // 4: MerchantService.GetMerchant:input_type -> Int64
-	7,  // 5: MerchantService.CreateMerchant:input_type -> MerchantCreateRequest
+	7,  // 5: MerchantService.CreateMerchant:input_type -> CreateMerchantRequest
 	8,  // 6: MerchantService.SaveMerchant:input_type -> SaveMerchantRequest
 	9,  // 7: MerchantService.CheckLogin:input_type -> MchUserPwdRequest
 	6,  // 8: MerchantService.Stat:input_type -> Int64

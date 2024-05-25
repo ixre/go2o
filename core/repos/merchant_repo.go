@@ -188,8 +188,11 @@ func (m *merchantRepo) GetMerchantMajorHost(mchId int) string {
 // 验证商户用户名是否存在
 func (m *merchantRepo) CheckUserExists(user string, id int) bool {
 	var row int
-	m.Connector.ExecScalar(`SELECT COUNT(*) FROM mch_merchant WHERE login_user= $1 AND id <> $2 LIMIT 1`,
+	err := m.Connector.ExecScalar(`SELECT COUNT(*) FROM mch_merchant WHERE username= $1 AND id <> $2 LIMIT 1`,
 		&row, user, id)
+	if err != nil {
+		panic(err)
+	}
 	return row > 0
 }
 

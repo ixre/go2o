@@ -41,6 +41,10 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 
 // CreateOnlineShop 创建线上店铺
 func (s *shopManagerImpl) CreateOnlineShop(o *shop.OnlineShop) (shop.IShop, error) {
+	mv := s.merchant.GetValue()
+	if err := merchant.CheckMchStatus(int(mv.Status)); err != nil {
+		return nil, err
+	}
 	o.VendorId = int64(s.merchant.GetAggregateRootId())
 	if o.ShopName == "" {
 		o.ShopName = s.merchant.GetValue().MchName
