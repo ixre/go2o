@@ -187,6 +187,20 @@ func (m *merchantImpl) check(v *merchant.Merchant) error {
 	return nil
 }
 
+// GrantFlag 标志赋值, 如果flag小于零, 则异或运算
+func (m *merchantImpl) GrantFlag(flag int) error {
+	v, err := domain.GrantFlag(m._value.Flag, flag)
+	if err == nil {
+		m._value.Flag = v
+	}
+	return err
+}
+
+// ContainFlag implements merchant.IMerchant.
+func (m *merchantImpl) ContainFlag(flag int) bool {
+	return domain.TestFlag(m._value.Flag, flag)
+}
+
 // 绑定会员
 func (m *merchantImpl) BindMember(memberId int) error {
 	if m._value.MemberId == memberId {

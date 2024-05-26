@@ -44,12 +44,14 @@ type (
 		BankNo string `db:"bank_no" json:"bankNo" bson:"bankNo"`
 		// 扩展数据
 		ExtraData string `db:"extra_data" json:"extraData" bson:"extraData"`
-		// 审核时间
-		ReviewTime int `db:"review_time" json:"reviewTime" bson:"reviewTime"`
 		// 审核状态
 		ReviewStatus int `db:"review_status" json:"reviewStatus" bson:"reviewStatus"`
 		// 审核备注
 		ReviewRemark string `db:"review_remark" json:"reviewRemark" bson:"reviewRemark"`
+		// 审核时间
+		ReviewTime int `db:"review_time" json:"reviewTime" bson:"reviewTime"`
+		// 版本号: 0: 待审核 1: 已审核
+		Version int `db:"version" json:"reviewTime" bson:"reviewTime"`
 		// 更新时间
 		UpdateTime int `db:"update_time" json:"updateTime" bson:"updateTime"`
 	}
@@ -101,11 +103,11 @@ type (
 		// 获取企业信息
 		GetEnterpriseInfo() *EnterpriseInfo
 
-		// 保存企业信息
-		SaveEnterpriseInfo(v *EnterpriseInfo) (int32, error)
+		// SaveAuthenticate 保存商户认证信息
+		SaveAuthenticate(v *Authenticate) (int, error)
 
 		// 标记企业为审核通过
-		ReviewEnterpriseInfo(reviewed bool, message string) error
+		ReviewAuthenticate(reviewed bool, message string) error
 
 		// 修改密码
 		ChangePassword(newPassword, oldPwd string) error

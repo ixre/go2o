@@ -195,7 +195,7 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 		HashCode:       v.HashCode,
 		NodeId:         int32(v.NodeId),
 		UserId:         v.UserId,
-		UserName:       v.UserName,
+		Username:       v.Username,
 		WalletType:     int32(v.WalletType),
 		WalletFlag:     int32(v.WalletFlag),
 		WalletName:     v.WalletName,

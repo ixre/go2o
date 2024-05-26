@@ -103,9 +103,9 @@ func (m *merchantManagerImpl) ReviewMchSignUp(id int, pass bool, remark string) 
 	if pass {
 		v.Reviewed = enum.ReviewPass
 		v.Remark = ""
-		if err = m.createNewMerchant(v); err != nil {
-			return err
-		}
+		// if err = m.createNewMerchant(v); err != nil {
+		// 	return err
+		// }
 	} else {
 		v.Reviewed = enum.ReviewReject
 		v.Remark = remark
@@ -115,79 +115,6 @@ func (m *merchantManagerImpl) ReviewMchSignUp(id int, pass bool, remark string) 
 	}
 	v.UpdateTime = time.Now().Unix()
 	_, err = m.rep.SaveSignUpInfo(v)
-	return err
-}
-
-// 创建新商户
-func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
-	unix := time.Now().Unix()
-	panic("implement me")
-	mchVal := &merchant.Merchant{
-		//MemberId: v.MemberId,
-		// // 商户名称
-		// Name: v.MchName,
-		// // 是否自营
-		// SelfSales: 0,
-		// // 商户等级
-		// Level: 1,
-		// // 标志
-		// Logo: "",
-		// // 公司名称
-		// CompanyName: "",
-		// // 省
-		// Province: int(v.Province),
-		// // 市
-		// City: int(v.City),
-		// // 区
-		// District: int(v.District),
-		// // 是否启用
-		// Enabled: 1,
-		// Flag:    1,
-		// // 过期时间
-		// ExpiresTime: time.Now().Add(time.Hour * time.Duration(24*365)).Unix(),
-		// // 注册时间
-		// CreateTime: unix,
-		// // 更新时间
-		// UpdateTime: unix,
-		// // 登录时间
-		// LoginTime: 0,
-		// // 最后登录时间
-		// LastLoginTime: 0,
-	}
-	mch := m.rep.CreateMerchant(mchVal)
-	err := mch.SetValue(mchVal)
-	if err != nil {
-		return err
-	}
-	mchId, err := mch.Save()
-	if err == nil {
-		names := m.valRepo.GetAreaNames([]int32{v.Province, v.City, v.District})
-		location := strings.Join(names, "")
-		ev := &merchant.EnterpriseInfo{
-			MchId:        mchId,
-			CompanyName:  v.CompanyName,
-			CompanyNo:    v.CompanyNo,
-			PersonName:   v.PersonName,
-			PersonIdNo:   v.PersonId,
-			PersonImage:  v.PersonImage,
-			Tel:          v.Phone,
-			Province:     v.Province,
-			City:         v.City,
-			District:     v.District,
-			Location:     location,
-			Address:      v.Address,
-			CompanyImage: v.CompanyImage,
-			AuthDoc:      v.AuthDoc,
-			Reviewed:     v.Reviewed,
-			ReviewTime:   unix,
-			ReviewRemark: "",
-			UpdateTime:   unix,
-		}
-		_, err = mch.ProfileManager().SaveEnterpriseInfo(ev)
-		if err == nil {
-			mch.ProfileManager().ReviewEnterpriseInfo(true, "")
-		}
-	}
 	return err
 }
 

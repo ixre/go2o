@@ -56,6 +56,65 @@ func TestCreateMerchant(t *testing.T) {
 	}
 }
 
+// 保存商户认证信息
+func TestSaveMerchantAuthenticate(t *testing.T) {
+	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	v := &merchant.Authenticate{
+		OrgName:          "天猫有限公司",
+		OrgNo:            "00000000",
+		OrgPic:           "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		WorkCity:         0,
+		QualificationPic: "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		PersonId:         "513701980102345678",
+		PersonName:       "田猫",
+		PersonPic:        "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		PersonPhone:      "13888888888",
+		AuthorityPic:     "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		BankName:         "花旗银行",
+		BankAccount:      "田猫",
+		BankNo:           "622601345897234",
+	}
+	id, err := mch.ProfileManager().SaveAuthenticate(v)
+	if err != nil {
+		t.Error(err)
+	}
+	t.Logf("id:%d", id)
+}
+
+// 拒绝审核商户认证信息
+func TestRejectMerchantAuthenticateRequest(t *testing.T) {
+	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	err := mch.ProfileManager().ReviewAuthenticate(false, "不通过")
+	if err == nil {
+		if err != nil {
+			t.Error(err)
+		}
+		// 再次审核
+		err = mch.ProfileManager().ReviewAuthenticate(false, "不通过")
+		if err == nil {
+			t.Error(errors.New("再次审核未提示错误"))
+		}
+	}
+}
+
+// 测试审核通过商户认证信息
+func TestPassMerchantAuthenticateRequest(t *testing.T) {
+	/**
+	SQL:
+	select * FROM mch_merchant where id=1;
+	select * FROM mch_authenticate WHERE mch_id=1;
+	*/
+	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	err := mch.ProfileManager().ReviewAuthenticate(true, "")
+	if err == nil {
+		// 审核通过
+		err = mch.ProfileManager().ReviewAuthenticate(true, "通过")
+		if err != nil {
+			t.Error(errors.New("审核失败:" + err.Error()))
+		}
+	}
+}
+
 // 测试更改绑定会员
 func TestBindMember(t *testing.T) {
 	var mchId = 1

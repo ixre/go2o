@@ -606,10 +606,10 @@ func (m *merchantRepo) SaveAuthenticate(v *merchant.Authenticate) (int, error) {
 	return id, err
 }
 
-// GetAuthenticateBy GetBy 商户认证信息
-func (m *merchantRepo) GetAuthenticateBy(where string, v ...interface{}) *merchant.Authenticate {
+// GetMerchantAuthenticate implements merchant.IMerchantRepo.
+func (m *merchantRepo) GetMerchantAuthenticate(mchId int, version int) *merchant.Authenticate {
 	e := merchant.Authenticate{}
-	err := m._orm.GetBy(&e, where, v...)
+	err := m._orm.GetBy(&e, "mch_id = $1 AND version= $2", mchId, version)
 	if err == nil {
 		return &e
 	}

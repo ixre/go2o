@@ -13,7 +13,6 @@ package member
 
 import (
 	"errors"
-	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -53,10 +52,6 @@ type memberImpl struct {
 	profileManager  member.IProfileManager
 	favoriteManager member.IFavoriteManager
 	giftCardManager member.IGiftCardManager
-}
-
-func (m *memberImpl) ContainFlag(f int) bool {
-	return m.value.UserFlag&f == f
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member,
@@ -321,34 +316,26 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 	return err
 }
 
+// ContainFlag 是否包含标志
+func (m *memberImpl) ContainFlag(f int) bool {
+	return m.value.UserFlag&f == f
+}
+
 // GrantFlag 标志赋值, 如果flag小于零, 则异或运算
 func (m *memberImpl) GrantFlag(flag int) error {
-	f := int(math.Abs(float64(flag)))
-	if f&(f-1) != 0 {
-		return errors.New("not right flag value")
-	}
-	if f < 128 {
+	if flag < 128 {
 		return errors.New("disallow grant system flag, flag must large than or equals 128")
 	}
-	if flag > 0 { // 添加标志
-		if m.value.UserFlag&f != f {
-			m.value.UserFlag |= flag
-		}
-	} else { // 去除标志
-		if m.value.UserFlag&f == f {
-			m.value.UserFlag ^= f
-		}
+	v, err := domain.GrantFlag(m.value.UserFlag, flag)
+	if err == nil {
+		m.value.UserFlag = v
+		_, err = m.Save()
 	}
-	_, err := m.Save()
 	return err
 }
 
 func (m *memberImpl) TestFlag(flag int) bool {
-	f := int(math.Abs(float64(flag)))
-	if f&(f-1) != 0 {
-		return false
-	}
-	return m.value.UserFlag&f == f
+	return domain.TestFlag(m.value.UserFlag, flag)
 }
 
 // ReviewLevelUp 审核升级请求

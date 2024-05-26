@@ -370,3 +370,8 @@ ALTER TABLE "public".mch_authenticate
   ADD COLUMN person_phone varchar(11) NOT NULL;
 COMMENT ON COLUMN "public".mch_authenticate.person_phone IS '联系人手机';
 
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN version int4 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "public".mch_authenticate.version IS '版本号: 0: 待审核 1: 已审核';
+
+

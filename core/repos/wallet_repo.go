@@ -30,7 +30,7 @@ func (w *WalletRepoImpl) CreateWallet(userId int64,
 	walletName string, flag int) wallet.IWallet {
 	return w.createWallet1(&wallet.Wallet{
 		UserId:     userId,
-		UserName:   username,
+		Username:   username,
 		WalletType: walletType,
 		WalletName: walletName,
 		WalletFlag: flag,

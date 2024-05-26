@@ -35,6 +35,10 @@ type (
 		// GetAggregateRootId 获取编号
 		GetAggregateRootId() int
 		GetValue() Merchant
+		// ContainFlag 判断是否包含标志
+		ContainFlag(f int) bool
+		// GrantFlag 标志赋值, 如果flag小于零, 则异或运算(去除)
+		GrantFlag(flag int) error
 		// Complex 获取符合的商家信息
 		Complex() *ComplexMerchant
 		// SetValue 设置值
@@ -268,7 +272,7 @@ type (
 		Logo string `db:"logo" json:"logo" bson:"logo"`
 		// 公司电话
 		Tel string `db:"tel" json:"tel" bson:"tel"`
-		// 状态: 0:待审核 1:已开通  2:停用  3: 关闭
+		// 状态: 0:待认证 1:已开通  2:停用  3: 关闭
 		Status int16 `db:"status" json:"status" bson:"status"`
 		// 过期时间
 		ExpiresTime int `db:"expires_time" json:"expiresTime" bson:"expiresTime"`
