@@ -52,13 +52,19 @@ func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, er
 	}
 	id, err := p._repo.SaveAuthenticate(v)
 	if err == nil {
-		// 添加待审批标记
-		err = p.merchantImpl.GrantFlag(merchant.FlagAuthenticate)
-		if err == nil {
-			p.merchantImpl.Save()
-		}
+		err = p.applyMerchantInitial()
 	}
 	return id, err
+}
+
+func (p *profileManagerImpl) applyMerchantInitial() error {
+	// 添加待审批标记
+	err := p.merchantImpl.GrantFlag(merchant.FlagAuthenticate)
+	if err == nil {
+		p.merchantImpl.Save()
+	}
+	// 创建账户
+	return err
 }
 
 // 检查企业认证信息
