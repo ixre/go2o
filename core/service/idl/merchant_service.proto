@@ -10,7 +10,7 @@ option java_package = "com.github.go2o.rpc";
 //商家服务
 service MerchantService {
     // 获取商家的信息,mchId
-    rpc GetMerchant (Int64) returns (SMerchant) {
+    rpc GetMerchant (Int64) returns (QMerchant) {
     }
     // 注册商户并开店
     rpc CreateMerchant (CreateMerchantRequest) returns (MerchantCreateResponse) {
@@ -19,7 +19,10 @@ service MerchantService {
     rpc SaveMerchant (SaveMerchantRequest) returns (Result) {
     }
     // 保存商户认证信息
-    rpc SaveAuthenticate (SaveAuthenticateRequest) returns (SaveAuthenticateResponse) {
+    rpc SaveAuthenticate (SaveAuthenticateRequest) returns (Result) {
+    }
+    // 审核商户申请信息
+    rpc ReviewAuthenticate (MerchantReviewRequest) returns (Result) {
     }
     // 验证用户密码,并返回编号。可传入商户或会员的账号密码
     rpc CheckLogin (MchUserPwdRequest) returns (MchLoginResponse) {
@@ -39,44 +42,13 @@ service MerchantService {
     // 保存交易设置
     rpc SaveTradeConf (TradeConfSaveRequest) returns (Result) {
     }
-    // 创建会员申请商户密钥
-    rpc CreateSignUpToken (MemberId) returns (String) {
-    }
-    // 根据商户申请密钥获取会员编号
-    rpc GetMemberFromSignUpToken (String) returns (Int64) {
-    }
-    // 提交注册信息
-    rpc SignUp (SMchSignUp) returns (Result) {
-    }
-    // 获取会员商户申请信息
-    rpc GetMchSignUpId (MemberId) returns (Int64) {
-    }
-    // 根据ID获取商户申请信息
-    rpc GetSignUp (Int64) returns (SMchSignUp) {
-    }
-    // 审核商户申请信息
-    rpc ReviewSignUp (MchReviewRequest) returns (Result) {
-    }
-    // 删除会员的商户申请资料
-    rpc RemoveMerchantSignUp (MemberId) returns (Result) {
-    }
     // 根据会员号获取商户编号
     rpc GetMerchantIdByMember (MemberId) returns (Int64) {
     }
     /** 更换会员绑定 */
     rpc ChangeMemberBind(ChangeMemberBindRequest)returns(Result){
-
     }
-    // 获取企业信息,并返回是否为提交的信息
-    rpc GetEnterpriseInfo (MerchantId) returns (SEnterpriseInfo) {
-    }
-    // 保存企业信息
-    rpc SaveEnterpriseInfo (SaveEnterpriseRequest) returns (Result) {
-    }
-    // 审核企业信息
-    rpc ReviewEnterpriseInfo (MchReviewRequest) returns (Result) {
-    }
-
+  
     rpc GetAccount (MerchantId) returns (SMerchantAccount) {
     }
     // 设置商户启用或停用

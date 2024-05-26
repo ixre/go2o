@@ -105,8 +105,8 @@ func (m *merchantService) GetSignUp(_ context.Context, id *proto.Int64) (*proto.
 	return nil, merchant.ErrNoSuchMerchant
 }
 
-// ReviewSignUp 审核商户申请信息
-func (m *merchantService) ReviewSignUp(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
+// ReviewAuthenticate 审核商户申请信息
+func (m *merchantService) ReviewAuthenticate(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
 	im := m._mchRepo.GetManager()
 	err := im.ReviewMchSignUp(int(r.MerchantId), r.Pass, r.Remark)
 	return m.error(err), nil
