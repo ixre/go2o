@@ -9,7 +9,6 @@
 package merchant
 
 type (
-
 	// Authenticate 商户认证信息
 	Authenticate struct {
 		// Id
@@ -51,51 +50,9 @@ type (
 		// 审核时间
 		ReviewTime int `db:"review_time" json:"reviewTime" bson:"reviewTime"`
 		// 版本号: 0: 待审核 1: 已审核
-		Version int `db:"version" json:"reviewTime" bson:"reviewTime"`
+		Version int `db:"version" json:"version" bson:"version"`
 		// 更新时间
 		UpdateTime int `db:"update_time" json:"updateTime" bson:"updateTime"`
-	}
-
-	// 企业信息
-	EnterpriseInfo struct {
-		// 编号
-		ID int32 `db:"id" pk:"yes" auto:"yes"`
-		// 商户编号
-		MchId int64 `db:"mch_id"`
-		// 公司名称
-		CompanyName string `db:"company_name"`
-		// 公司营业执照编号
-		CompanyNo string `db:"company_no"`
-		// 法人
-		PersonName string `db:"person_name"`
-		// 法人身份证编号
-		PersonIdNo string `db:"person_id"`
-		// 身份证验证图片(人捧身份证照相)
-		PersonImage string `db:"person_image"`
-		// 公司电话
-		Tel string `db:"tel"`
-		// 省
-		Province int32 `db:"province"`
-		// 市
-		City int32 `db:"city"`
-		// 区
-		District int32 `db:"district"`
-		// 省+市+区字符串表示
-		Location string `db:"location"`
-		// 公司地址
-		Address string `db:"address"`
-		// 营业执照图片
-		CompanyImage string `db:"company_image"`
-		// 授权书
-		AuthDoc string `db:"auth_doc"`
-		//是否已审核
-		Reviewed int32 `db:"review_status"`
-		// 审核时间
-		ReviewTime int64 `db:"review_time"`
-		// 审核备注
-		ReviewRemark string `db:"review_remark"`
-		//更新时间
-		UpdateTime int64 `db:"update_time"`
 	}
 
 	// 基本资料管理器
