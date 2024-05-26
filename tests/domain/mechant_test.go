@@ -85,15 +85,13 @@ func TestSaveMerchantAuthenticate(t *testing.T) {
 func TestRejectMerchantAuthenticateRequest(t *testing.T) {
 	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
 	err := mch.ProfileManager().ReviewAuthenticate(false, "不通过")
+	if err != nil {
+		t.Error(err)
+	}
+	// 再次审核
+	err = mch.ProfileManager().ReviewAuthenticate(false, "不通过")
 	if err == nil {
-		if err != nil {
-			t.Error(err)
-		}
-		// 再次审核
-		err = mch.ProfileManager().ReviewAuthenticate(false, "不通过")
-		if err == nil {
-			t.Error(errors.New("再次审核未提示错误"))
-		}
+		t.Error(errors.New("再次审核未提示错误"))
 	}
 }
 
@@ -112,6 +110,8 @@ func TestPassMerchantAuthenticateRequest(t *testing.T) {
 		if err != nil {
 			t.Error(errors.New("审核失败:" + err.Error()))
 		}
+	} else {
+		t.Error(errors.New("审核失败:" + err.Error()))
 	}
 }
 
