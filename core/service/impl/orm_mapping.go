@@ -128,7 +128,6 @@ func OrmMapping(orm orm.Orm) {
 
 	// 商户
 	orm.Mapping(merchant.Merchant{}, "mch_merchant")
-	orm.Mapping(merchant.EnterpriseInfo{}, "mch_enterprise_info")
 	orm.Mapping(merchant.ApiInfo{}, "mch_api_info")
 	orm.Mapping(shop.OnlineShop{}, "mch_online_shop")
 	orm.Mapping(shop.OfflineShop{}, "mch_offline_shop")
