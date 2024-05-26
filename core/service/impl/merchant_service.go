@@ -106,9 +106,9 @@ func (m *merchantService) GetSignUp(_ context.Context, id *proto.Int64) (*proto.
 }
 
 // ReviewAuthenticate 审核商户申请信息
-func (m *merchantService) ReviewAuthenticate(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
+func (m *merchantService) ReviewAuthenticate(_ context.Context, r *proto.MerchantReviewRequest) (*proto.Result, error) {
 	im := m._mchRepo.GetManager()
-	err := im.ReviewMchSignUp(int(r.MerchantId), r.Pass, r.Remark)
+	err := im.ReviewMchSignUp(int(r.MchId), r.Pass, r.Remark)
 	return m.error(err), nil
 }
 
@@ -136,32 +136,6 @@ func (m *merchantService) GetEnterpriseInfo(_ context.Context, id *proto.Merchan
 		}
 	}
 	return nil, fmt.Errorf("no such merchant info")
-}
-
-// SaveEnterpriseInfo 保存企业信息
-func (m *merchantService) SaveEnterpriseInfo(_ context.Context, r *proto.SaveEnterpriseRequest) (*proto.Result, error) {
-	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
-	var err error
-	if mch == nil {
-		err = merchant.ErrNoSuchMerchant
-	} else {
-		_, err = mch.ProfileManager().SaveEnterpriseInfo(
-			m.parseEnterpriseInfo(r.Value))
-	}
-	return m.error(err), nil
-}
-
-// ReviewEnterpriseInfo 审核企业信息
-func (m *merchantService) ReviewEnterpriseInfo(_ context.Context, r *proto.MchReviewRequest) (*proto.Result, error) {
-	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
-	var err error
-	if mch == nil {
-		err = merchant.ErrNoSuchMerchant
-	} else {
-		im := mch.ProfileManager()
-		err = im.ReviewEnterpriseInfo(r.Pass, r.Remark)
-	}
-	return m.error(err), nil
 }
 
 // GetAccount 获取商户账户
@@ -440,29 +414,28 @@ func (m *merchantService) GetAllTradeConf_(_ context.Context, i *proto.Int64) (*
 func (m *merchantService) CreateMerchant(_ context.Context, r *proto.CreateMerchantRequest) (*proto.MerchantCreateResponse, error) {
 	mch := r.Mch
 	v := &merchant.Merchant{
-		Username:    mch.LoginUser,
-		Password:    domain.MerchantSha1Pwd(mch.LoginPwd, ""),
-		MchName:     mch.Name,
-		IsSelf:      int16(mch.SelfSales),
-		MemberId:    int(r.RelMemberId),
-		Level:       0,
-		Logo:        "",
-		Province:    0,
-		City:        0,
-		District:    0,
-		ExpiresTime: int(r.ExpiresTime),
+		Username: r.Username,
+		Password: domain.MerchantSha1Pwd(mch.Password, ""),
+		MchName:  mch.MchName,
+		IsSelf:   int16(r.IsSelf),
+		MemberId: int(r.MemberId),
+		Level:    0,
+		Logo:     "",
+		Province: 0,
+		City:     0,
+		District: 0,
 	}
 	im := m._mchRepo.CreateMerchant(v)
 	err := im.SetValue(v)
-	if err == nil && r.RelMemberId > 0 {
-		err = im.BindMember(int(r.RelMemberId))
+	if err == nil && r.MemberId > 0 {
+		err = im.BindMember(int(r.MemberId))
 	}
 	if err == nil {
 		_, err = im.Save()
 		if err == nil {
 			o := shop.OnlineShop{
-				ShopName:   mch.ShopName,
-				Logo:       mch.ShopLogo,
+				ShopName:   mch.MchName,
+				Logo:       mch.Logo,
 				Host:       "",
 				Alias:      "",
 				Telephone:  "",
@@ -581,7 +554,7 @@ func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwdReque
 	}, nil
 }
 
-func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*proto.SMerchant, error) {
+func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*proto.QMerchant, error) {
 	mch := m._mchRepo.GetMerchant(int(id.Value))
 	if mch != nil {
 		c := mch.Complex()
@@ -591,16 +564,15 @@ func (m *merchantService) GetMerchant(_ context.Context, id *proto.Int64) (*prot
 }
 
 func (m *merchantService) SaveMerchant(_ context.Context, r *proto.SaveMerchantRequest) (*proto.Result, error) {
-	mch := m._mchRepo.GetMerchant(int(r.Id))
+	mch := m._mchRepo.GetMerchant(int(r.MchId))
 	if mch == nil {
 		return m.error(merchant.ErrNoSuchMerchant), nil
 	}
 	v := mch.GetValue()
-	v.MchName = r.Name
-	v.ExpiresTime = int(r.ExpiresTime)
-	v.IsSelf = int16(r.SelfSales)
-	v.Logo = r.Logo
-	v.Level = int(r.Level)
+	d := r.Mch
+	v.MchName = d.MchName
+	v.Logo = d.Logo
+	v.Level = int(d.Level)
 	err := mch.SetValue(&v)
 	if err == nil {
 		_, err = mch.Save()
@@ -858,20 +830,13 @@ func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.I
 }
 
 func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto.SMerchant {
-	return &proto.SMerchant{
-		Id:            int64(src.Id),
+	return &proto.QMerchant{
 		MemberId:      src.MemberId,
-		LoginUser:     src.Usr,
-		LoginPwd:      src.Pwd,
-		Name:          src.Name,
-		SelfSales:     src.SelfSales,
 		Level:         src.Level,
 		Logo:          src.Logo,
-		CompanyName:   src.CompanyName,
 		Province:      src.Province,
 		City:          src.City,
 		District:      src.District,
-		Enabled:       src.Enabled,
 		ExpiresTime:   src.ExpiresTime,
 		LastLoginTime: src.LastLoginTime,
 	}
