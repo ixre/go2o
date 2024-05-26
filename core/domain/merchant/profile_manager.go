@@ -24,8 +24,6 @@ var _ merchant.IProfileManager = new(profileManagerImpl)
 type profileManagerImpl struct {
 	*merchantImpl
 	valRepo valueobject.IValueRepo
-	//企业信息列表
-	ent *merchant.EnterpriseInfo
 }
 
 func newProfileManager(m *merchantImpl, valRepo valueobject.IValueRepo) merchant.IProfileManager {
@@ -33,44 +31,6 @@ func newProfileManager(m *merchantImpl, valRepo valueobject.IValueRepo) merchant
 		merchantImpl: m,
 		valRepo:      valRepo,
 	}
-}
-
-// 获取企业信息
-func (p *profileManagerImpl) GetEnterpriseInfo() *merchant.EnterpriseInfo {
-	if p.ent == nil {
-		p.ent = p._repo.GetMchEnterpriseInfo(int(p.GetAggregateRootId()))
-	}
-	return p.ent
-}
-
-func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
-	dst *merchant.EnterpriseInfo) {
-	// 商户编号
-	dst.MchId = int64(p.GetAggregateRootId())
-	// 公司名称
-	dst.CompanyName = src.CompanyName
-	// 公司营业执照编号
-	dst.CompanyNo = src.CompanyNo
-	// 法人
-	dst.PersonName = src.PersonName
-	// 公司电话
-	dst.Tel = src.Tel
-	// 公司地址
-	dst.Address = src.Address
-
-	dst.Province = src.Province
-
-	dst.City = src.City
-
-	dst.District = src.District
-	// 法人身份证
-	dst.PersonIdNo = src.PersonIdNo
-	// 身份证验证图片(人捧身份证照相)
-	dst.PersonImage = src.PersonImage
-	// 营业执照图片
-	dst.CompanyImage = src.CompanyImage
-	// 授权书
-	dst.AuthDoc = src.AuthDoc
 }
 
 // SaveAuthenticate implements merchant.IProfileManager.
@@ -101,6 +61,7 @@ func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, er
 	return id, err
 }
 
+// 检查企业认证信息
 func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 	if v == nil || len(v.OrgName) < 2 {
 		return errors.New("企业名称不能为空")
@@ -126,7 +87,7 @@ func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 	return nil
 }
 
-// 审核商户企业认证信息
+// ReviewAuthenticate 审核商户企业认证信息
 func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error {
 	var err error
 	e := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 0)
@@ -221,10 +182,5 @@ func (p *profileManagerImpl) ChangePassword(newPwd, oldPwd string) error {
 	}
 	p._value.Password = dm.MerchantSha1Pwd(newPwd, p.merchantImpl.GetValue().Salt)
 	_, err := p.Save()
-	return err
-}
-
-func (p *profileManagerImpl) save(e *merchant.EnterpriseInfo) error {
-	_, err := p._repo.SaveMchEnterpriseInfo(e)
 	return err
 }

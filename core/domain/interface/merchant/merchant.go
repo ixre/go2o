@@ -124,29 +124,8 @@ type (
 	}
 
 	IMerchantManager interface {
-		// CreateSignUpToken 创建会员申请商户密钥
-		CreateSignUpToken(memberId int64) string
-
-		// GetMemberFromSignUpToken 根据商户申请密钥获取会员编号
-		GetMemberFromSignUpToken(token string) int64
-
-		// CommitSignUpInfo 提交商户注册信息
-		CommitSignUpInfo(*MchSignUp) (int, error)
-
-		// ReviewMchSignUp 审核商户注册信息
-		ReviewMchSignUp(id int, pass bool, remark string) error
-
-		// GetSignUpInfo 获取商户申请信息
-		GetSignUpInfo(id int) *MchSignUp
-
-		// GetSignUpInfoByMemberId 获取会员申请的商户信息
-		GetSignUpInfoByMemberId(memberId int) *MchSignUp
-
 		// GetMerchantByMemberId 获取会员关联的商户
 		GetMerchantByMemberId(memberId int) IMerchant
-
-		// RemoveSignUp 删除会员的商户申请资料
-		RemoveSignUp(memberId int) error
 	}
 
 	// MchSignUp 商户申请信息

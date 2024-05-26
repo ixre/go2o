@@ -130,8 +130,7 @@ func (m *merchantService) ReviewAuthenticate(_ context.Context, r *proto.Merchan
 	if mch == nil {
 		return m.error(merchant.ErrNoSuchMerchant), nil
 	}
-	im := m._mchRepo.GetManager()
-	err := im.ReviewMchSignUp(int(r.MchId), r.Pass, r.Remark)
+	err := mch.ProfileManager().ReviewAuthenticate(r.Pass, r.Remark)
 	return m.error(err), nil
 }
 
@@ -840,62 +839,6 @@ func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STr
 		//AmountBasis: int32(conf.AmountBasis),
 		//ProcedureFee:    int32(conf.ProcedureFee),
 		//TradeRate:   int32(conf.TradeRate),
-	}
-}
-
-func (m *merchantService) parseMchSignUp(v *proto.SMchSignUp) *merchant.MchSignUp {
-	return &merchant.MchSignUp{
-		Id:           int32(v.Id),
-		SignNo:       v.SignNo,
-		MemberId:     v.MemberId,
-		Username:     v.Username,
-		Password:     v.Password,
-		Salt:         v.Salt,
-		MchName:      v.MchName,
-		Province:     v.Province,
-		City:         v.City,
-		District:     v.District,
-		Address:      v.Address,
-		ShopName:     v.ShopName,
-		CompanyName:  v.CompanyName,
-		CompanyNo:    v.CompanyNo,
-		PersonName:   v.PersonName,
-		PersonId:     v.PersonId,
-		PersonImage:  v.PersonImage,
-		Phone:        v.Phone,
-		CompanyImage: v.CompanyImage,
-		AuthDoc:      v.AuthDoc,
-		Remark:       v.Remark,
-		Reviewed:     v.ReviewStatus,
-		SubmitTime:   v.SubmitTime,
-	}
-}
-
-func (m *merchantService) parseMchSIgnUpDto(v *merchant.MchSignUp) *proto.SMchSignUp {
-	return &proto.SMchSignUp{
-		Id:           int64(v.Id),
-		SignNo:       v.SignNo,
-		MemberId:     v.MemberId,
-		Username:     v.Username,
-		Password:     v.Password,
-		Salt:         v.Salt,
-		MchName:      v.MchName,
-		Province:     v.Province,
-		City:         v.City,
-		District:     v.District,
-		Address:      v.Address,
-		ShopName:     v.ShopName,
-		CompanyName:  v.CompanyName,
-		CompanyNo:    v.CompanyNo,
-		PersonName:   v.PersonName,
-		PersonId:     v.PersonId,
-		PersonImage:  v.PersonImage,
-		Phone:        v.Phone,
-		CompanyImage: v.CompanyImage,
-		AuthDoc:      v.AuthDoc,
-		Remark:       v.Remark,
-		ReviewStatus: v.Reviewed,
-		SubmitTime:   v.SubmitTime,
 	}
 }
 

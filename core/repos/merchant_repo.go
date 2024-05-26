@@ -402,27 +402,6 @@ func (m *merchantRepo) SaveAccount(v *merchant.Account) (int, error) {
 	return int(v.MchId), err
 }
 
-// Get MchEnterpriseInfo
-func (m *merchantRepo) GetMchEnterpriseInfo(mchId int) *merchant.EnterpriseInfo {
-	e := merchant.EnterpriseInfo{}
-	err := m._orm.GetBy(&e, "mch_id= $1", mchId)
-	if err == nil {
-		return &e
-	}
-	if err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchEnterpriseInfo")
-	}
-	return nil
-}
-
-// Save MchEnterpriseInfo
-func (m *merchantRepo) SaveMchEnterpriseInfo(v *merchant.EnterpriseInfo) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.ID))
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchEnterpriseInfo")
-	}
-	return id, err
-}
 
 // Get MchBuyerGroupSetting
 func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant.MchBuyerGroupSetting {
@@ -553,49 +532,6 @@ func (m *merchantRepo) GetMerchantByMemberId(memberId int) merchant.IMerchant {
 	return nil
 }
 
-// GetMerchantSignUpByMemberId implements merchant.IMerchantRepo
-func (m *merchantRepo) GetMerchantSignUpByMemberId(memberId int) *merchant.MchSignUp {
-	v := merchant.MchSignUp{}
-	err := m._orm.GetBy(&v, "member_id= $1", memberId)
-	if err == nil {
-		return &v
-	}
-	if err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchSignUp")
-	}
-	return nil
-}
-
-// DeleteMerchantSignUpByMemberId implements merchant.IMerchantRepo
-func (m *merchantRepo) DeleteMerchantSignUpByMemberId(memberId int) error {
-	_, err := m._orm.Delete(merchant.MchSignUp{}, "member_id= $1", memberId)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchTradeConf")
-	}
-	return err
-}
-
-// GetMerchantSignUpInfo implements merchant.IMerchantRepo
-func (m *merchantRepo) GetMerchantSignUpInfo(id int) *merchant.MchSignUp {
-	v := merchant.MchSignUp{}
-	err := m._orm.Get(&v, id)
-	if err == nil {
-		return &v
-	}
-	if err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchSignUp")
-	}
-	return nil
-}
-
-// SaveSignUpInfo implements merchant.IMerchantRepo
-func (m *merchantRepo) SaveSignUpInfo(v *merchant.MchSignUp) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.Id))
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchSignUp")
-	}
-	return id, err
-}
 
 // SaveAuthenticate Save 商户认证信息
 func (m *merchantRepo) SaveAuthenticate(v *merchant.Authenticate) (int, error) {

@@ -100,9 +100,6 @@ type (
 
 	// 基本资料管理器
 	IProfileManager interface {
-		// 获取企业信息
-		GetEnterpriseInfo() *EnterpriseInfo
-
 		// SaveAuthenticate 保存商户认证信息
 		SaveAuthenticate(v *Authenticate) (int, error)
 

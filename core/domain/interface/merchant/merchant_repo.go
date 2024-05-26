@@ -83,11 +83,6 @@ type IMerchantRepo interface {
 	// 保存等级
 	SaveMemberLevel(mchId int64, v *MemberLevel) (int32, error)
 
-	// Get MchEnterpriseInfo
-	GetMchEnterpriseInfo(mchId int) *EnterpriseInfo
-	// Save MchEnterpriseInfo
-	SaveMchEnterpriseInfo(v *EnterpriseInfo) (int, error)
-
 	// Get MchBuyerGroupSetting
 	GetMchBuyerGroupByGroupId(mchId, groupId int32) *MchBuyerGroupSetting
 	// Select MchBuyerGroupSetting
@@ -122,14 +117,7 @@ type IMerchantRepo interface {
 	// // 根据外部订单号查找账户日志
 	// GetBalanceLogByOuterNo(outerTradeNo string) *BalanceLog
 
-	// 保存商户申请信息
-	SaveSignUpInfo(*MchSignUp) (int, error)
-	// 获取商户申请记录
-	GetMerchantSignUpInfo(int) *MchSignUp
-	// 根据会员编号获取商户申请记录
-	GetMerchantSignUpByMemberId(memberId int) *MchSignUp
-	// 删除会员申请商户记录
-	DeleteMerchantSignUpByMemberId(memberId int) error
+	
 	// 根据会员编号获取商户
 	GetMerchantByMemberId(memberId int) IMerchant
 	// 查找账户流水
