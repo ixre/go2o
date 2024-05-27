@@ -60,6 +60,19 @@ const (
 	FlagProfileCompleted = 512
 )
 
+const (
+	// 普通用户
+	RoleUser = 1
+	// 商户
+	RoleMerchant = 2
+	// 商户雇员
+	RoleEmployee = 4
+	// 扩展角色1
+	RoleExt1 = 8
+	// 扩展角色2
+	RoleExt2 = 16
+)
+
 type (
 	IMemberAggregateRoot interface {
 		// GetAggregateRootId 获取聚合根编号
@@ -266,6 +279,8 @@ type (
 		CheckExpires int64 `db:"check_expires"`
 		// 会员标志
 		UserFlag int `db:"user_flag"`
+		// 角色标志
+		RoleFlag int `db:"role_flag"`
 		// 登录时间
 		LoginTime int64 `db:"login_time"`
 		// 最后登录时间

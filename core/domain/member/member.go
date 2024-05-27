@@ -523,6 +523,28 @@ func (m *memberImpl) Unlock() error {
 	return err
 }
 
+// 根据注册来源计算会员角色身份
+func (m *memberImpl) getUserRoleFlag(v *member.Member) int {
+	ret := member.RoleUser
+	if len(v.RegFrom) != 0 {
+		// 根据注册来源设置角色
+		v.RegFrom = ""
+		if strings.Contains(v.RegFrom, "EMPLOYEE") {
+			// 商户职员
+			ret |= member.RoleEmployee
+		}
+		if strings.Contains(v.RegFrom, "EXT1") {
+			// 扩展角色1
+			ret |= member.RoleEmployee
+		}
+		if strings.Contains(v.RegFrom, "EXT2") {
+			// 扩展角色2
+			ret |= member.RoleEmployee
+		}
+	}
+	return ret
+}
+
 // 创建会员
 func (m *memberImpl) create(v *member.Member) (int64, error) {
 	err := m.prepare()
@@ -532,13 +554,13 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 		v.LastLoginTime = unix
 		v.Level = 1
 		v.Exp = 0
-		if len(v.RegFrom) == 0 {
-			v.RegFrom = ""
-		}
-		// 添加未设置交易密码的标志
-		if len(v.TradePassword) == 0 {
-			v.UserFlag |= member.FlagNoTradePasswd
-		}
+		// 设置会员角色
+		v.RoleFlag = m.getUserRoleFlag(v)
+
+		// // 添加未设置交易密码的标志
+		// if len(v.TradePassword) == 0 {
+		// 	v.UserFlag |= member.FlagNoTradePasswd
+		// }
 		// 设置VIP用户信息
 		v.PremiumUser = member.PremiumNormal
 		v.PremiumExpires = 0

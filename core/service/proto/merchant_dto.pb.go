@@ -157,7 +157,7 @@ type SaveAuthenticateRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// 商户编号
-	MchId int32 `protobuf:"varint,1,opt,name=mchId,proto3" json:"mchId"`
+	MchId int64 `protobuf:"varint,1,opt,name=mchId,proto3" json:"mchId"`
 	// 公司名称
 	OrgName string `protobuf:"bytes,2,opt,name=orgName,proto3" json:"orgName"`
 	// 营业执照编号
@@ -228,7 +228,7 @@ func (*SaveAuthenticateRequest) Descriptor() ([]byte, []int) {
 	return file_message_merchant_dto_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SaveAuthenticateRequest) GetMchId() int32 {
+func (x *SaveAuthenticateRequest) GetMchId() int64 {
 	if x != nil {
 		return x.MchId
 	}
