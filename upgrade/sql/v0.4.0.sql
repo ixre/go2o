@@ -374,4 +374,23 @@ ALTER TABLE "public".mch_authenticate
   ADD COLUMN version int4 NOT NULL DEFAULT 0;
 COMMENT ON COLUMN "public".mch_authenticate.version IS '版本号: 0: 待审核 1: 已审核';
 
+ALTER TABLE "public".mm_member 
+  ADD COLUMN role_flag int4 DEFAULT 0 NOT NULL;
+ALTER TABLE "public".mm_member 
+  alter column user_code set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column portrait set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column phone set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column email set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column nickname set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column real_name set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column salt set default ''::character varying;
+COMMENT ON COLUMN "public".mm_member.role_flag IS '角色标志';
+
+
 
