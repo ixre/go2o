@@ -555,10 +555,6 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 		v.LastLoginTime = unix
 		v.Level = 1
 		v.Exp = 0
-		// // 添加未设置交易密码的标志
-		// if len(v.TradePassword) == 0 {
-		// 	v.UserFlag |= member.FlagNoTradePasswd
-		// }
 		// 设置VIP用户信息
 		v.PremiumUser = member.PremiumNormal
 		v.PremiumExpires = 0

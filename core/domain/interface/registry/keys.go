@@ -53,6 +53,9 @@ var (
 	// 接口需要的最低版本
 	ApiRequireVersion = KeyFormat("api_require_version")
 
+	/** 应用 */
+	// 是否启用
+	AppEnableNatsSubscription = KeyFormat("AppEnableNatsSubscription")
 	/* 平台 */
 	// 平台名称
 	PlatformName = KeyFormat("PlatformName")

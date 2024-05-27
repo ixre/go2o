@@ -275,11 +275,6 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 			// 存储到缓存中
 			err = m.storage.Set(m.getMemberCk(v.Id), *v)
 			m.storage.Delete(m.getProfileCk(v.Id))
-			// 存储到队列
-			//rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
-
-			// 推送消息
-			//go msq.Push(msq.MemberUpdated, "update|"+strconv.Itoa(int(v.Id)))
 		}
 		return v.Id, err
 	}
@@ -293,18 +288,6 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 		return -1, err
 	}
 	v.Id = id
-	// 推送消息
-	//go msq.Push(msq.MemberUpdated, "create|"+strconv.Itoa(int(v.Id)))
-	//rc := core.GetRedisConn()
-	//defer rc.Close()
-	//rc.Do("RPUSH", variable.KvMemberUpdateQueue,
-	//	fmt.Sprintf("%d-create", v.Id)) // push to queue
-
-	// 更新会员数 todo: 考虑去掉
-	var total = 0
-	m.Connector.ExecScalar("SELECT COUNT(1) FROM mm_member", &total)
-	gof.CurrentApp.Storage().Set(variable.KvTotalMembers, total)
-
 	return v.Id, err
 }
 

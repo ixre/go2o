@@ -11,7 +11,7 @@ import (
 	"github.com/ixre/go2o/app/daemon"
 	"github.com/ixre/go2o/core"
 	"github.com/ixre/go2o/core/etcd"
-	"github.com/ixre/go2o/core/msq"
+	"github.com/ixre/go2o/core/event/msq"
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/gof"
@@ -105,13 +105,13 @@ func Run(ch chan bool, after func(*clientv3.Config)) {
 	go core.SignalNotify(ch, core.AppDispose)
 	impl.Init(newApp)
 	//runGoMicro()
-	// 初始化producer
-	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// 初始化分布式锁
 	etcd.InitializeLocker(&cfg)
 	// 运行RPC服务
 	service.ServeRPC(ch, &cfg, port)
 	service.RegisterServiceDiscovery(&cfg, host, port)
+	// 初始化producer
+	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// initial service client
 	//service.ConfigureClient(&cfg, "")
 	if runDaemon {

@@ -73,6 +73,19 @@ const (
 	RoleExt2 = 16
 )
 
+const (
+	// 普通用户
+	RoleUser = 1
+	// 商户
+	RoleMerchant = 2
+	// 商户雇员
+	RoleEmployee = 4
+	// 扩展角色1
+	RoleExt1 = 8
+	// 扩展角色2
+	RoleExt2 = 16
+)
+
 type (
 	IMemberAggregateRoot interface {
 		// GetAggregateRootId 获取聚合根编号
