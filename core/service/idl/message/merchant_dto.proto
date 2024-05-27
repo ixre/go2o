@@ -30,7 +30,7 @@ message SSaveMerchantParams{
 // 保存商户认证信息请求
 message SaveAuthenticateRequest{
   // 商户编号
-  int32 mchId = 1;
+  int64 mchId = 1;
   // 公司名称
   string orgName = 2;
   // 营业执照编号

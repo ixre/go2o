@@ -33,10 +33,10 @@ message RegisterMemberRequest {
   string phone = 4;
   // 邮箱
   string email = 5;
-  // 用户标志
-  int32 flag = 6;
   // 邀请人代码
-  string inviterCode = 7;
+  string inviterCode = 6;
+  // 用户类型 1: 用户, 2: 商户, 4:商户雇员,8:扩展1,16:扩展2,32:扩展3
+  sint32 userType = 7;
   // 注册IP
   string regIp = 8;
   // 注册来源
@@ -413,67 +413,6 @@ message ChangePortraitRequest {
   string portraitUrl = 2;
 }
 
-/** 会员 */
-message SMember {
-  /** 编号  */
-  sint64 id = 1;
-  /** 会员编码/邀请码  */
-  string userCode = 2;
-  /** 会员标志 */
-  sint32 userFlag = 3;
-  /** 用户名 */
-  string username = 4;
-  /** 经验值 */
-  sint64 exp = 5;
-  /** 等级  */
-  sint32 level = 6;
-  /** 会员头像 */
-  string portrait = 7;
-  /** 昵称 */
-  string nickname = 8;
-  /** 注册IP */
-  string regIp = 9;
-  /** 注册来源 */
-  string regFrom = 11;
-  /** 手机号  */
-  string phone = 12;
-  /** 电子邮箱 */
-  string email = 13;
-  /** 真实姓名 */
-  string realName = 14;
-  /** 高级用户级别 */
-  sint32 premiumUser = 15;
-  /** 高级用户过期时间 */
-  sint64 premiumExpires = 16;
-  /** 注册时间 */
-  int64 regTime = 17;
-  /** 最后登录时间 */
-  int64 lastLoginTime = 18;
-}
-
-/** 资料 */
-message SProfile {
-  sint64 memberId = 1;
-  string nickname = 2;
-  string portrait = 3;
-  sint32 gender = 4;
-  string birthDay = 5;
-  string phone = 6;
-  string address = 7;
-  string im = 8;
-  string email = 9;
-  sint32 province = 10;
-  sint32 city = 11;
-  sint32 district = 12;
-  string remark = 13;
-  string ext1 = 14;
-  string ext2 = 15;
-  string ext3 = 16;
-  string ext4 = 17;
-  string ext5 = 18;
-  string ext6 = 19;
-  sint64 updateTime = 20;
-}
 
 /** 账户 */
 message SAccount {
@@ -517,22 +456,6 @@ message SAccount {
   int32 priorityPay = 19;
   // 更新时间
   int64 updateTime = 20;
-}
-
-message SComplexMember {
-  string nickname = 1;
-  string portrait = 2;
-  string phone = 3;
-  sint32 exp = 4;
-  sint32 level = 5;
-  string levelName = 6;
-  string userCode = 7;
-  sint32 trustAuthState = 8;
-  sint32 premiumUser = 9;
-  sint32 flag = 10;
-  sint64 updateTime = 11;
-  /** 交易密码是否已设置 */
-  bool tradePasswordHasSet = 12;
 }
 
 message SMemberRelation {
