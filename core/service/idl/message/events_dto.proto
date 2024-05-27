@@ -71,28 +71,30 @@ message EVMemberPushEventData{
 	  string userCode = 3;
 	  /** 会员标志 */
 	  sint32 userFlag = 4;
+      // 角色标志,1: 用户, 2: 商户, 4:商户雇员,8:扩展1,16:扩展2,32:扩展3
+      sint32 role = 5;
 	  /** 用户名 */
-	  string username = 5;
+	  string username = 6;
 	  /** 经验值 */
-	  sint64 exp = 6;
+	  sint64 exp = 7;
 	  /** 等级  */
-	  sint32 level = 7;
+	  sint32 level = 8;
 	  /** 昵称 */
 	  string nickname = 9;
 	  /** 会员头像 */
-	  string portrait = 8;
+	  string portrait = 10;
 	  /** 手机号  */
-	  string phone = 10;
+	  string phone = 12;
 	  /** 电子邮箱 */
-	  string email = 11;
+	  string email = 13;
   	  /** 注册来源 */
-  	  string regFrom = 12;
+  	  string regFrom = 14;
 	  /** 真实姓名 */
-	  string realName = 13;
+	  string realName = 15;
 	  // 邀请人
-	  int64 inviterId = 14;
+	  int64 inviterId = 16;
 	  /** 最后登录时间 */
-	  int64 lastLoginTime = 15;
+	  int64 lastLoginTime = 17;
 }
 
 

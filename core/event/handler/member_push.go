@@ -20,6 +20,7 @@ func (h *EventHandler) HandleMemberPushEvent(data interface{}) {
 		IsNewMember:   v.IsCreate,
 		UserCode:      m.UserCode,
 		UserFlag:      int32(m.UserFlag),
+		Role:          int32(m.RoleFlag),
 		Username:      m.Username,
 		Exp:           int64(m.Exp),
 		Level:         int32(m.Level),
