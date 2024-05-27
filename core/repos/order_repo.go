@@ -303,26 +303,6 @@ func (o *OrderRepImpl) GetOrder(where string, arg ...interface{}) *order.Order {
 	return nil
 }
 
-// 加入到订单通知队列,如果为子订单,则带上sub
-func (o *OrderRepImpl) pushOrderQueue(orderNo string, sub bool) {
-	//rc := core.GetRedisConn()
-	//if sub {
-	//	content := fmt.Sprintf("sub!%s", orderNo)
-	//	rc.Do("RPUSH", variable.KvOrderBusinessQueue, content)
-	//} else {
-	//	rc.Do("RPUSH", variable.KvOrderBusinessQueue, orderNo)
-	//}
-	//rc.Close()
-
-	//log.Println("----- order notify ! orderNo:", orderNo, " sub:", sub)
-}
-
-// 推送子订单到消息队列
-func (o *OrderRepImpl) pushSubOrderMessage(order *order.NormalSubOrder) {
-	// bytes, _ := json.Marshal(*order)
-	// go msq.Push(msq.ORDER_NormalOrderStatusChange, string(bytes))
-}
-
 // Save OrderList
 func (o *OrderRepImpl) saveOrder(v *order.Order) (int, error) {
 	id, err := orm.Save(o._orm, v, int(v.Id))
@@ -345,14 +325,12 @@ func (o *OrderRepImpl) SaveOrder(v *order.Order) (int, error) {
 		origin := o.GetOrder("id= $1", v.Id)
 		statusIsChanged = origin.Status != v.Status
 	}
-	// log.Println("--- save order:", v.Id, "; state:",
-	// v.State, ";", statusIsChanged)
 	id, err := o.saveOrder(v)
 	if err == nil {
 		v.Id = int64(id)
 		//如果业务状态已经发生改变,则提交到队列
 		if statusIsChanged {
-			o.pushOrderQueue(v.OrderNo, false)
+			//o.pushOrderQueue(v.OrderNo, false)
 		}
 	}
 	return id, err
@@ -386,10 +364,6 @@ func (o *OrderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
 	id, err := o.saveSubOrder(v)
 	if err == nil {
 		v.Id = int64(id)
-		//如果业务状态已经发生改变,则提交到队列
-		// if statusIsChanged {
-		// 	o.pushSubOrderMessage(v)
-		// }
 	}
 	return id, err
 }

@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/event/events"
-	"github.com/ixre/go2o/core/msq"
+	"github.com/ixre/go2o/core/event/msq"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"

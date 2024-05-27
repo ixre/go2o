@@ -59,6 +59,9 @@ func MergeRegistries() []*Registry {
 	mergeAdd("流动金账户", AccountFlowAlias, "流动金", "")
 	mergeAdd("增利金账户", AccountGrowthAlias, "增利金", "")
 
+	/* 应用 */
+	mergeAdd("启用消息订阅", AppEnableNatsSubscription, "0", "")
+	
 	/* 平台 */
 	mergeAdd("平台名称", PlatformName, "GO2O商城系统", "")
 	mergeAdd("客服客服电话", PlatformServiceTel, "+86-021-66666666", "")

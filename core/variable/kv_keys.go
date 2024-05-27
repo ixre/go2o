@@ -12,7 +12,6 @@ const (
 	KvPaymentOrderFinishQueue     = "go2o:mq:payment_success_notify" //支付单完成通知队列
 	KvOrderBusinessQueue          = "go2o:mq:order_notify"           //订单业务队列(如已创建,已完成等只执行一次)
 	KvNewMailTask                 = "go2o:mq:mail"
-	KvTotalMembers                = "go2o:sys:total_members"
 	KvMemberUpdateTime            = "go2o:mm:uptime_"
 	KvAccountUpdateTime           = "go2o:acc:uptime_"
 	KvMemberUpdateTcpNotifyQueue  = "go2o:mm:queue:t_up_notify"

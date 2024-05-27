@@ -3,7 +3,7 @@ package domain
 import (
 	"testing"
 
-	"github.com/ixre/go2o/core/msq"
+	"github.com/ixre/go2o/core/event/msq"
 	_ "github.com/ixre/go2o/tests/ti"
 )
 

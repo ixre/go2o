@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core"
-	"github.com/ixre/go2o/core/msq"
+	"github.com/ixre/go2o/core/event/msq"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/gof"
