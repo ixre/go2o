@@ -92,8 +92,8 @@ func TestMemberSaveDefaultAddress(t *testing.T) {
 
 func TestCreateNewMember(t *testing.T) {
 	inviteCode := ""
-	phone := "13162222820"
-	inviterId := 22149
+	phone := "13162222821"
+	inviterId := 6
 	repo := ti.Factory.GetMemberRepo()
 	_, err := repo.GetManager().CheckInviteRegister(inviteCode)
 	if err != nil {
@@ -106,7 +106,7 @@ func TestCreateNewMember(t *testing.T) {
 		Portrait: "",
 		Phone:    phone,
 		Email:    "",
-		UserFlag: 0,
+		RoleFlag: member.RoleEmployee,
 	}
 	m := repo.CreateMember(v) //创建会员
 	id, err := m.Save()
