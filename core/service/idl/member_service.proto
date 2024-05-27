@@ -3,6 +3,7 @@ syntax = "proto3";
 import "global.proto";
 import "message/bank_dto.proto";
 import "message/member_dto.proto";
+import "message/member_query_dto.proto";
 import "message/payment_dto.proto";
 
 option go_package = "./;proto";

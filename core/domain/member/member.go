@@ -29,6 +29,7 @@ import (
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/infrastructure/tool/collections"
 	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/util"
 )
@@ -523,6 +524,28 @@ func (m *memberImpl) Unlock() error {
 	return err
 }
 
+// 根据注册来源计算会员角色身份
+func (m *memberImpl) getUserRoleFlag(v *member.Member) int {
+	ret := member.RoleUser
+	if len(v.RegFrom) != 0 {
+		// 根据注册来源设置角色
+		v.RegFrom = ""
+		if strings.Contains(v.RegFrom, "EMPLOYEE") {
+			// 商户职员
+			ret |= member.RoleEmployee
+		}
+		if strings.Contains(v.RegFrom, "EXT1") {
+			// 扩展角色1
+			ret |= member.RoleEmployee
+		}
+		if strings.Contains(v.RegFrom, "EXT2") {
+			// 扩展角色2
+			ret |= member.RoleEmployee
+		}
+	}
+	return ret
+}
+
 // 创建会员
 func (m *memberImpl) create(v *member.Member) (int64, error) {
 	err := m.prepare()
@@ -532,13 +555,10 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 		v.LastLoginTime = unix
 		v.Level = 1
 		v.Exp = 0
-		if len(v.RegFrom) == 0 {
-			v.RegFrom = ""
-		}
-		// 添加未设置交易密码的标志
-		if len(v.TradePassword) == 0 {
-			v.UserFlag |= member.FlagNoTradePasswd
-		}
+		// // 添加未设置交易密码的标志
+		// if len(v.TradePassword) == 0 {
+		// 	v.UserFlag |= member.FlagNoTradePasswd
+		// }
 		// 设置VIP用户信息
 		v.PremiumUser = member.PremiumNormal
 		v.PremiumExpires = 0
@@ -646,9 +666,17 @@ func (m *memberImpl) prepare() (err error) {
 	if len(m.value.Nickname) == 0 {
 		m.value.Nickname = "User" + m.value.Username
 	}
+	// 初始化头像
 	m.value.Portrait = strings.TrimSpace(m.value.Portrait)
 	if len(m.value.Portrait) == 0 {
 		m.value.Portrait = "static/init/avatar.png"
+	}
+	// 验证角色
+	if m.value.RoleFlag != 0 && !collections.InArray([]int{
+		member.RoleMerchant,
+		member.RoleEmployee,
+	}, m.value.RoleFlag) {
+		return errors.New("用户类型不合法")
 	}
 	return err
 }
