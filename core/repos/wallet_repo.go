@@ -26,11 +26,11 @@ type WalletRepoImpl struct {
 }
 
 func (w *WalletRepoImpl) CreateWallet(userId int64,
-	userName string, walletType int,
+	username string, walletType int,
 	walletName string, flag int) wallet.IWallet {
 	return w.createWallet1(&wallet.Wallet{
 		UserId:     userId,
-		UserName:   userName,
+		Username:   username,
 		WalletType: walletType,
 		WalletName: walletName,
 		WalletFlag: flag,

@@ -83,11 +83,6 @@ type IMerchantRepo interface {
 	// 保存等级
 	SaveMemberLevel(mchId int64, v *MemberLevel) (int32, error)
 
-	// Get MchEnterpriseInfo
-	GetMchEnterpriseInfo(mchId int) *EnterpriseInfo
-	// Save MchEnterpriseInfo
-	SaveMchEnterpriseInfo(v *EnterpriseInfo) (int, error)
-
 	// Get MchBuyerGroupSetting
 	GetMchBuyerGroupByGroupId(mchId, groupId int32) *MchBuyerGroupSetting
 	// Select MchBuyerGroupSetting
@@ -109,7 +104,7 @@ type IMerchantRepo interface {
 	// 验证商户用户名是否存在
 	CheckUserExists(user string, id int) bool
 	// CheckMemberBind 验证会员是否绑定商户
-	CheckMemberBind(memberId int64, mchId int64) bool
+	CheckMemberBind(memberId int, mchId int) bool
 
 	//  //修改线下支付利润
 	//UpdateMechOfflineRate(id int, rate float32, return_rate float32) error
@@ -122,18 +117,16 @@ type IMerchantRepo interface {
 	// // 根据外部订单号查找账户日志
 	// GetBalanceLogByOuterNo(outerTradeNo string) *BalanceLog
 
-	// 保存商户申请信息
-	SaveSignUpInfo(*MchSignUp) (int, error)
-	// 获取商户申请记录
-	GetMerchantSignUpInfo(int) *MchSignUp
-	// 根据会员编号获取商户申请记录
-	GetMerchantSignUpByMemberId(memberId int) *MchSignUp
-	// 删除会员申请商户记录
-	DeleteMerchantSignUpByMemberId(memberId int) error
+	
 	// 根据会员编号获取商户
 	GetMerchantByMemberId(memberId int) IMerchant
 	// 查找账户流水
 	GetBalanceAccountLog(id int) *BalanceLog
 	// 保存账户日志
 	SaveBalanceAccountLog(*BalanceLog) (int, error)
+
+	// SaveAuthenticate 保存商户认证信息
+	SaveAuthenticate(v *Authenticate) (int, error)
+	// GetAuthenticateBy 获取商户认证信息
+	GetMerchantAuthenticate(mchId int, version int) *Authenticate
 }

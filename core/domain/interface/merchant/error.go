@@ -10,6 +10,8 @@
 package merchant
 
 import (
+	"errors"
+
 	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
@@ -89,3 +91,16 @@ var (
 	ErrMissingPersonImage = domain.NewError(
 		"err_mch_missing_person_image", "请上传法人身份证复印件")
 )
+
+// CheckMchStatus 检查商户状态
+func CheckMchStatus(status int) error {
+	switch status {
+	case 0:
+		return errors.New("商户未完成审核")
+	case 2:
+		return errors.New("商户已停用")
+	case 3:
+		return errors.New("商户已关闭")
+	}
+	return nil
+}

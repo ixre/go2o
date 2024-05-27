@@ -53,7 +53,7 @@ func init() {
 		DialTimeout: 5 * time.Second,
 	}
 	msq.Configure(msq.NATS, natsEndPoints)
-	confPath := "app.conf"
+	confPath := "app-test.conf"
 	for {
 		_, err := os.Stat(confPath)
 		if err == nil {

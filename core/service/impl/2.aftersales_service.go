@@ -54,7 +54,7 @@ func (a *afterSalesService) SubmitAfterSalesOrder(_ context.Context, r *proto.Su
 		// 上传截图
 		af.ImageUrl = r.Images[0]
 	}
-	if len(af.Reason) < 6 {
+	if len(af.Reason) == 0 {
 		return &proto.SubmitAfterSalesOrderResponse{
 			ErrCode: 1,
 			ErrMsg:  "申请原因不能为空",

@@ -33,8 +33,12 @@ type (
 	//todo: 实现商户等级,商户的品牌
 	IMerchant interface {
 		// GetAggregateRootId 获取编号
-		GetAggregateRootId() int64
+		GetAggregateRootId() int
 		GetValue() Merchant
+		// ContainFlag 判断是否包含标志
+		ContainFlag(f int) bool
+		// GrantFlag 标志赋值, 如果flag小于零, 则异或运算(去除)
+		GrantFlag(flag int) error
 		// Complex 获取符合的商家信息
 		Complex() *ComplexMerchant
 		// SetValue 设置值
@@ -120,29 +124,8 @@ type (
 	}
 
 	IMerchantManager interface {
-		// CreateSignUpToken 创建会员申请商户密钥
-		CreateSignUpToken(memberId int64) string
-
-		// GetMemberFromSignUpToken 根据商户申请密钥获取会员编号
-		GetMemberFromSignUpToken(token string) int64
-
-		// CommitSignUpInfo 提交商户注册信息
-		CommitSignUpInfo(*MchSignUp) (int, error)
-
-		// ReviewMchSignUp 审核商户注册信息
-		ReviewMchSignUp(id int, pass bool, remark string) error
-
-		// GetSignUpInfo 获取商户申请信息
-		GetSignUpInfo(id int) *MchSignUp
-
-		// GetSignUpInfoByMemberId 获取会员申请的商户信息
-		GetSignUpInfoByMemberId(memberId int) *MchSignUp
-
 		// GetMerchantByMemberId 获取会员关联的商户
 		GetMerchantByMemberId(memberId int) IMerchant
-
-		// RemoveSignUp 删除会员的商户申请资料
-		RemoveSignUp(memberId int) error
 	}
 
 	// MchSignUp 商户申请信息
@@ -234,47 +217,48 @@ type (
 		LastLoginTime int64
 	}
 
-	// 商户
+	// Merchant 商户
 	Merchant struct {
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
 		// 会员编号
-		MemberId int64 `db:"member_id"`
+		MemberId int `db:"member_id" json:"memberId" bson:"memberId"`
 		// 登录用户
-		LoginUser string `db:"login_user"`
+		Username string `db:"username" json:"username" bson:"username"`
 		// 登录密码
-		LoginPwd string `db:"login_pwd"`
+		Password string `db:"password" json:"password" bson:"password"`
+		// 邮箱地址
+		MailAddr string `db:"mail_addr" json:"mailAddr" bson:"mailAddr"`
 		// 加密盐
-		Salt string `db:"salt"`
+		Salt string `db:"salt" json:"salt" bson:"salt"`
 		// 名称
-		Name string `db:"name"`
-		// 公司名称
-		CompanyName string `db:"company_name"`
+		MchName string `db:"mch_name" json:"mchName" bson:"mchName"`
 		// 是否自营
-		SelfSales int16 `db:"self_sales"`
+		IsSelf int16 `db:"is_self" json:"isSelf" bson:"isSelf"`
+		// 标志
+		Flag int `db:"flag" json:"flag" bson:"flag"`
 		// 商户等级
-		Level int `db:"level"`
+		Level int `db:"level" json:"level" bson:"level"`
+		// 所在省
+		Province int `db:"province" json:"province" bson:"province"`
+		// 所在市
+		City int `db:"city" json:"city" bson:"city"`
+		// 所在区
+		District int `db:"district" json:"district" bson:"district"`
+		// 公司地址
+		Address string `db:"address" json:"address" bson:"address"`
 		// 标志
-		Logo string `db:"logo"`
-		// 省
-		Province int `db:"province"`
-		// 市
-		City int `db:"city"`
-		// 区
-		District int `db:"district"`
-		// 标志
-		Flag int `db:"flag"`
-		// 是否启用
-		Enabled int `db:"enabled"`
-		// 创建时间
-		CreateTime int64 `db:"create_time"`
+		Logo string `db:"logo" json:"logo" bson:"logo"`
+		// 公司电话
+		Tel string `db:"tel" json:"tel" bson:"tel"`
+		// 状态: 0:待认证 1:已开通  2:停用  3: 关闭
+		Status int16 `db:"status" json:"status" bson:"status"`
 		// 过期时间
-		ExpiresTime int64 `db:"expires_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-		// 登录时间
-		LoginTime int64 `db:"login_time"`
+		ExpiresTime int `db:"expires_time" json:"expiresTime" bson:"expiresTime"`
 		// 最后登录时间
-		LastLoginTime int64 `db:"last_login_time"`
+		LastLoginTime int `db:"last_login_time" json:"lastLoginTime" bson:"lastLoginTime"`
+		// 创建时间
+		CreateTime int `db:"create_time" json:"createTime" bson:"createTime"`
 	}
 
 	// 商户账户表

@@ -48,16 +48,29 @@ const (
 	FlagLocked = 2
 	// FlagTrusted 已实名认证的(4)
 	FlagTrusted = 4
-	// FlagTempPassword 密码为临时密码,需要重置
-	FlagTempPassword = 32
 	// FlagSeller 商户(64)
-	FlagSeller = 64
-	// FlagNoTradePasswd 交易密码未设置(64)
-	FlagNoTradePasswd = 128
+	FlagSeller = 8
+	// FlagNoTradePasswd 交易密码未设置(16)
+	FlagNoTradePasswd = 16
 	// FlagStopRebate 禁用返利权限的(8)
-	FlagAffiliateDisabled = 256
+	FlagAffiliateDisabled = 32
+	// FlagTempPassword 密码为临时密码,需要重置
+	FlagTempPassword = 64
 	// FlagProfileCompleted 已完善的资料(16)
-	FlagProfileCompleted = 512
+	FlagProfileCompleted = 128
+)
+
+const (
+	// 普通用户
+	RoleUser = 1
+	// 商户
+	RoleMerchant = 2
+	// 商户雇员
+	RoleEmployee = 4
+	// 扩展角色1
+	RoleExt1 = 8
+	// 扩展角色2
+	RoleExt2 = 16
 )
 
 type (
@@ -88,8 +101,6 @@ type (
 		Lock(minutes int, remark string) error
 		// Unlock 解锁会员
 		Unlock() error
-		// ContainFlag 判断是否包含标志
-		ContainFlag(f int) bool
 		// GetRelation 获取关联的会员
 		GetRelation() *InviteRelation
 		// BindInviter 绑定邀请人,如果已邀请,force为true时更新
@@ -101,6 +112,8 @@ type (
 		// GetLevel 获取等级
 		GetLevel() *Level
 
+		// ContainFlag 判断是否包含标志
+		ContainFlag(f int) bool
 		// GrantFlag 标志赋值, 如果flag小于零, 则异或运算(去除)
 		GrantFlag(flag int) error
 
@@ -266,6 +279,8 @@ type (
 		CheckExpires int64 `db:"check_expires"`
 		// 会员标志
 		UserFlag int `db:"user_flag"`
+		// 角色标志
+		RoleFlag int `db:"role_flag"`
 		// 登录时间
 		LoginTime int64 `db:"login_time"`
 		// 最后登录时间

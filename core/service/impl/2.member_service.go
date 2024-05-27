@@ -515,11 +515,11 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		Nickname: r.Nickname,
 		RealName: "",
 		Portrait: "", //todo: default avatar
+		RoleFlag: int(r.UserType),
 		Phone:    r.Phone,
 		Email:    r.Email,
 		RegFrom:  r.RegFrom,
 		RegIp:    r.RegIp,
-		UserFlag: int(r.Flag),
 	}
 	// 验证邀请码
 	inviterId, err := s.repo.GetManager().CheckInviteRegister(r.InviterCode)
@@ -1258,8 +1258,8 @@ func (s *memberService) IsInvitation(c context.Context, r *proto.IsInvitationReq
 	return &proto.Bool{Value: b}, nil
 }
 
-// GetMyPagedInvitationMembers 获取我邀请的会员及会员邀请的人数
-func (s *memberService) GetMyPagedInvitationMembers(_ context.Context, r *proto.MemberInvitationPagingRequest) (*proto.MemberInvitationPagingResponse, error) {
+// GetPagingInvitationMembers 获取我邀请的会员及会员邀请的人数
+func (s *memberService) GetPagingInvitationMembers(_ context.Context, r *proto.MemberInvitationPagingRequest) (*proto.MemberInvitationPagingResponse, error) {
 	iv := s.repo.CreateMember(&member.Member{Id: r.MemberId}).Invitation()
 	total, rows := iv.GetInvitationMembers(int(r.Begin), int(r.End))
 	ret := &proto.MemberInvitationPagingResponse{
@@ -1659,6 +1659,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegIp:          src.RegIp,
 		RegFrom:        src.RegFrom,
 		UserFlag:       int32(src.UserFlag),
+		Role:       int32(src.RoleFlag),
 		Portrait:       src.Portrait,
 		Phone:          src.Phone,
 		Email:          src.Email,

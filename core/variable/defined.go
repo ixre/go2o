@@ -10,8 +10,8 @@ package variable
 
 var (
 	AliasCommission             = "手续费"
-	AliasBalanceAccount         = "余额"
-	AliasWalletAccount          = "钱包"
+	AliasBalanceAccount         = "账户余额"
+	AliasWalletAccount          = "个人钱包"
 	AliasRisePersonFinance      = "余额宝"
 	AliasGrowthAccount          = "理财"
 	AliasFlowAccount            = "流通金"
