@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/repos"
 )
 
 var (
@@ -35,10 +38,19 @@ func Configure(mqType int, address []string) error {
 	return fmt.Errorf("not implement mq type %d", mqType)
 }
 
+// 检查是否开启推送
+func checkNatsSubs() bool {
+	repo := repos.Repo.GetRegistryRepo()
+	v, _ := repo.GetValue(registry.AppEnableNatsSubscription)
+	return v == "1" || v == "true"
+}
+
 // Push 推送消息
 func Push(topic string, message string) error {
 	if producer != nil {
-		return producer.Push(topic, message)
+		if checkNatsSubs() {
+			return producer.Push(topic, message)
+		}
 	}
 	log.Println("[ GO2O][ WARNING]: nats producer not available")
 	return nil

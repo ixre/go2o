@@ -4,7 +4,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/gof/domain/eventbus"
 )
 
 func TestWalletLogUpdate(t *testing.T) {
@@ -18,4 +21,15 @@ func TestWalletLogUpdate(t *testing.T) {
 		t.FailNow()
 	}
 	time.Sleep(time.Second * 2)
+}
+
+func TestPushMemberRegisterEvent(t *testing.T) {
+	ti.GetApp()
+	eventbus.Publish(&events.MemberPushEvent{
+		IsCreate:  false,
+		Member:    &member.Member{},
+		InviterId: 0,
+	})
+	time.Sleep(100 * time.Second)
+	t.Log("test finished...")
 }
