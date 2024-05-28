@@ -265,11 +265,13 @@ DROP TABLE IF EXISTS sys_sub_station;
 CREATE TABLE sys_sub_station (
   id          SERIAL NOT NULL, 
   city_code   int4 NOT NULL, 
+  status      int4 NOT NULL, 
   create_time int8 NOT NULL, 
   PRIMARY KEY (id));
 COMMENT ON TABLE sys_sub_station IS '地区子站';
 COMMENT ON COLUMN sys_sub_station.id IS '编号';
 COMMENT ON COLUMN sys_sub_station.city_code IS '城市代码';
+COMMENT ON COLUMN sys_sub_station.status IS '状态: 0: 待开通  1: 已开通  2: 已关闭';
 COMMENT ON COLUMN sys_sub_station.create_time IS '创建时间';
 
 
