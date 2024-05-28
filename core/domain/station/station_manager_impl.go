@@ -14,5 +14,6 @@ type StationManagerImpl struct {
 
 // SyncStations implements station.IStationManager.
 func (s *StationManagerImpl) SyncStations() error {
-	s.deliveryRepo.GetAllCities()
+	arr := s.deliveryRepo.GetAllCities()
+	stations := s.repo.GetStations()
 }

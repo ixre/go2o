@@ -15,6 +15,8 @@ type IStationManager interface {
 type IStationRepo interface {
 	// GetStation 获取站点
 	GetStation(id int) IStationAggregateRoot
+	// 获取所有的站点
+	GetStations() []*Station
 	// SaveStation 保存站点
 	SaveStation(s *Station) (int, error)
 }
