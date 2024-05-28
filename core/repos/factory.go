@@ -2,7 +2,7 @@ package repos
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/ad"
-	"github.com/ixre/go2o/core/domain/interface/aftersales"
+	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/content"
 	"github.com/ixre/go2o/core/domain/interface/delivery"
@@ -14,16 +14,17 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
-	"github.com/ixre/go2o/core/domain/interface/message"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/personfinance"
-	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/shipment"
+	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/gof/db/orm"
@@ -52,6 +53,7 @@ type RepoFactory struct {
 	tagSaleRepo item.ISaleLabelRepo
 	promRepo    promotion.IPromotionRepo
 
+	stationRepo       station.IStationRepo
 	shopRepo          shop.IShopRepo
 	wholesaleRepo     wholesaler.IWholesaleRepo
 	mchRepo           merchant.IMerchantRepo
@@ -86,7 +88,7 @@ func (r *RepoFactory) Init(o orm.Orm, sto storage.Interface) *RepoFactory {
 	r.memberRepo = NewMemberRepo(sto, o, r.walletRepo, r.mssRepo, r.valueRepo, r.registryRepo)
 	r.productRepo = NewProductRepo(o, r.proMRepo, r.valueRepo)
 	r.itemWsRepo = NewItemWholesaleRepo(o)
-	r.catRepo = NewCategoryRepo(o, r.proMRepo,r.registryRepo, sto)
+	r.catRepo = NewCategoryRepo(o, r.proMRepo, r.registryRepo, sto)
 	r.shopRepo = NewShopRepo(o, sto, r.valueRepo, r.registryRepo)
 	r.itemRepo = NewGoodsItemRepo(o, r.catRepo, r.productRepo,
 		r.proMRepo, r.itemWsRepo, r.expressRepo, r.registryRepo, r.shopRepo)
@@ -94,6 +96,7 @@ func (r *RepoFactory) Init(o orm.Orm, sto storage.Interface) *RepoFactory {
 	r.promRepo = NewPromotionRepo(o, r.itemRepo, r.memberRepo)
 
 	//afterSalesRepo := repository.NewAfterSalesRepo(_orm)
+	r.stationRepo = NewStationRepo(o)
 	r.wholesaleRepo = NewWholesaleRepo(o)
 	r.mchRepo = NewMerchantRepo(o, sto, r.wholesaleRepo,
 		r.itemRepo, r.shopRepo, r.userRepo, r.memberRepo, r.mssRepo, r.walletRepo, r.valueRepo, r.registryRepo)
@@ -169,6 +172,11 @@ func (r *RepoFactory) GetShopRepo() shop.IShopRepo {
 func (r *RepoFactory) GetWholesaleRepo() wholesaler.IWholesaleRepo {
 	return r.wholesaleRepo
 }
+
+func (r *RepoFactory) GetStationRepo() station.IStationRepo {
+	return r.stationRepo
+}
+
 func (r *RepoFactory) GetMerchantRepo() merchant.IMerchantRepo {
 	return r.mchRepo
 }

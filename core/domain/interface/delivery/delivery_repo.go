@@ -12,8 +12,6 @@ type IDeliveryRepo interface {
 	// 获取配送
 	GetDelivery(id int32) IDeliveryAggregateRoot
 
-	// GetAllCities 获取所有城市
-	GetAllCities() []*AreaValue
 	// 根据区名获取区域
 	GetAreaByArea(name string) []*AreaValue
 
