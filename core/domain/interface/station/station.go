@@ -16,15 +16,33 @@ type IStationRepo interface {
 	// GetStation 获取站点
 	GetStation(id int) IStationAggregateRoot
 	// 获取所有的站点
-	GetStations() []*Station
+	GetStations() []*SubStation
 	// SaveStation 保存站点
-	SaveStation(s *Station) (int, error)
+	SaveStation(s *SubStation) (int, error)
+	// GetAllCities 获取所有城市
+	GetAllCities() []*Area
+	// GetAreaList 获取区域信息
+	GetAreaList(parentId int) []*Area
 }
 
-// 站点
-type Station struct {
+// SubStation 地区子站
+type SubStation struct {
 	// 编号
-	Id int `db:"id" pk:"yes" auto:"yes"`
-	// 城市编码
-	CityCode int `db:"city_code"`
+	Id int `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
+	// 城市代码
+	CityCode int `db:"city_code" json:"cityCode" bson:"cityCode"`
+	// 状态: 0: 待开通  1: 已开通  2: 已关闭
+	Status int `db:"status" json:"status" bson:"status"`
+	// 创建时间
+	CreateTime int64 `db:"create_time" json:"createTime" bson:"createTime"`
+}
+
+// Area ChinaArea
+type Area struct {
+	// Code
+	Code int `db:"code" pk:"yes" json:"code" bson:"code"`
+	// Name
+	Name string `db:"name" json:"name" bson:"name"`
+	// Parent
+	Parent int `db:"parent" json:"parent" bson:"parent"`
 }

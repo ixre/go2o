@@ -5,8 +5,16 @@ import "github.com/ixre/go2o/core/domain/interface/station"
 var _ station.IStationAggregateRoot = new(StationImpl)
 
 type StationImpl struct {
-	value *station.Station
+	value *station.SubStation
 	repo  station.IStationRepo
+}
+
+// NewStation returns a station aggregate root.
+func NewStation(value *station.SubStation, repo station.IStationRepo) *StationImpl {
+	return &StationImpl{
+		value: nil,
+		repo:  repo,
+	}
 }
 
 // GetAggregateRootId implements station.IStationAggregateRoot.
