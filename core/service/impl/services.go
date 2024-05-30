@@ -35,7 +35,7 @@ var (
 	StatusService *StatusServiceImpl
 	// 注册表服务
 	RegistryService *registryService
-	PromService     *promotionService
+	PromService     *PromotionService
 	// 基础服务
 	FoundationService *foundationService
 	// 会员服务

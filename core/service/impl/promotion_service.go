@@ -17,18 +17,18 @@ import (
 	promImpl "github.com/ixre/go2o/core/domain/promotion"
 )
 
-type promotionService struct {
+type PromotionService struct {
 	_rep promotion.IPromotionRepo
 }
 
-func NewPromotionService(rep promotion.IPromotionRepo) *promotionService {
-	return &promotionService{
+func NewPromotionService(rep promotion.IPromotionRepo) *PromotionService {
+	return &PromotionService{
 		_rep: rep,
 	}
 }
 
 // 获取促销
-func (p *promotionService) GetPromotion(id int32) (*promotion.PromotionInfo, interface{}) {
+func (p *PromotionService) GetPromotion(id int32) (*promotion.PromotionInfo, interface{}) {
 	var prom = p._rep.GetPromotion(id)
 	if prom != nil {
 		return prom.GetValue(), prom.GetRelationValue()
@@ -37,7 +37,7 @@ func (p *promotionService) GetPromotion(id int32) (*promotion.PromotionInfo, int
 }
 
 // 保存促销
-func (p *promotionService) SavePromotion(v *promotion.PromotionInfo) (int32, error) {
+func (p *PromotionService) SavePromotion(v *promotion.PromotionInfo) (int32, error) {
 	var prom promotion.IPromotion
 	if v.Id > 0 {
 		prom = p._rep.GetPromotion(v.Id)
@@ -52,7 +52,7 @@ func (p *promotionService) SavePromotion(v *promotion.PromotionInfo) (int32, err
 }
 
 // 删除促销
-func (p *promotionService) DelPromotion(mchId int64, promId int32) error {
+func (p *PromotionService) DelPromotion(mchId int64, promId int32) error {
 	prom := p._rep.GetPromotion(promId)
 	if prom == nil {
 		return promotion.ErrNoSuchPromotion
@@ -64,7 +64,7 @@ func (p *promotionService) DelPromotion(mchId int64, promId int32) error {
 	return promImpl.DeletePromotion(prom)
 }
 
-func (p *promotionService) SaveCashBackPromotion(mchId int64,
+func (p *PromotionService) SaveCashBackPromotion(mchId int64,
 	v *promotion.PromotionInfo, v1 *promotion.ValueCashBack) (int32, error) {
 	var prom promotion.IPromotion
 	var err error
@@ -90,7 +90,7 @@ func (p *promotionService) SaveCashBackPromotion(mchId int64,
 }
 
 /**************   Coupon ************/
-func (p *promotionService) SaveCoupon(mchId int64, v *promotion.PromotionInfo,
+func (p *PromotionService) SaveCoupon(mchId int64, v *promotion.PromotionInfo,
 	v1 *promotion.ValueCoupon) (int32, error) {
 	var prom promotion.IPromotion
 	var err error
@@ -115,7 +115,7 @@ func (p *promotionService) SaveCoupon(mchId int64, v *promotion.PromotionInfo,
 	return prom.Save()
 }
 
-func (p *promotionService) BindCoupons(mchId int64, id int32, members []string) error {
+func (p *PromotionService) BindCoupons(mchId int64, id int32, members []string) error {
 	coupon := p._rep.GetPromotion(id).(promotion.ICouponPromotion)
 	return coupon.Binds(members)
 }

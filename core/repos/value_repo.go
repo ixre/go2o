@@ -55,11 +55,6 @@ type valueRepo struct {
 }
 
 func NewValueRepo(o orm.Orm, storage storage.Interface) valueobject.IValueRepo {
-	//confRegistry, err := gof.NewRegistry(confPath, ":")
-	//if err != nil {
-	//	log.Println("[ GO2O][ Crash]: can't load registry,", err.Error())
-	//	os.Exit(1)
-	//}
 	return &valueRepo{
 		Connector: o.Connector(),
 		o:         o,
