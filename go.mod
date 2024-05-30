@@ -30,6 +30,7 @@ require (
 )
 
 require (
+	github.com/google/wire v0.6.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240521202816-d264139d666e // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240521202816-d264139d666e // indirect
 )

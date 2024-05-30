@@ -28,6 +28,10 @@ import (
 )
 
 var (
+	DB  db.Connector
+	ORM orm.Orm
+)
+var (
 	Repos *repos.RepoFactory
 
 	// 状态服务
@@ -97,12 +101,18 @@ func handleError(err error) error {
 	//return err
 }
 
+// 返回orm实例
+func GetOrmInstance() orm.Orm {
+	return ORM
+}
+
 func Init(ctx gof.App) {
 	Context := ctx
 	db := Context.Db()
 	sto := Context.Storage()
 	o := orm.NewOrm(db.Driver(), db.Raw())
 	tmp.SetORM(o)
+	ORM = o
 	orm.CacheProxy(o, sto)
 	// 初始化clickhouse
 	initializeClickhouse(ctx)
