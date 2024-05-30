@@ -23,9 +23,9 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
-	"github.com/ixre/go2o/core/domain/tmp"
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
+	"github.com/ixre/go2o/core/initial/provide"
 )
 
 var _ member.IProfileManager = new(profileManagerImpl)
@@ -599,7 +599,8 @@ func (p *profileManagerImpl) GetTrustedInfo() *member.TrustedInfo {
 
 func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 	mId := 0
-	tmp.Db().ExecScalar(`SELECT COUNT(1) FROM mm_trusted_info WHERE 
+	_db := provide.GetDb()
+	_db.ExecScalar(`SELECT COUNT(1) FROM mm_trusted_info WHERE 
 			review_status= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1`,
 		&mId, enum.ReviewPass, cardId, memberId)
 	return mId == 0

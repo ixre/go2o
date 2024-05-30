@@ -34,8 +34,8 @@ import (
 )
 
 var provideSets = wire.NewSet(
-	repos.GetOrmInstance,
-	repos.GetStorageInstance,
+	initial.GetOrmInstance,
+	initial.GetStorageInstance,
 	repos.NewRegistryRepo,
 	repos.NewProModelRepo,
 	repos.NewValueRepo,
@@ -66,7 +66,6 @@ var provideSets = wire.NewSet(
 	repos.NewAdvertisementRepo,
 	repos.NewJobRepository,
 )
-
 
 // 解决依赖
 //r.orderRepo.(*OrderRepImpl).SetPaymentRepo(r.paymentRepo)

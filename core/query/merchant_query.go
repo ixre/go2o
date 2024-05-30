@@ -9,12 +9,13 @@
 package query
 
 import (
-	"github.com/ixre/go2o/core/infrastructure"
+	"regexp"
+
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/storage"
-	"regexp"
 )
 
 type MerchantQuery struct {
@@ -35,8 +36,9 @@ var (
 
 func getHostRegexp() *regexp.Regexp {
 	if commHostRegexp == nil {
+		cfg := provide.GetApp().Config()
 		commHostRegexp = regexp.MustCompile("([^\\.]+)." +
-			infrastructure.GetApp().Config().GetString(variable.ServerDomain))
+			cfg.GetString(variable.ServerDomain))
 	}
 	return commHostRegexp
 }
@@ -58,7 +60,7 @@ func (m *MerchantQuery) QueryMerchantIdByHost(host string) int64 {
                      WHERE host= $1`, &mchId, host)
 	}
 	if err != nil {
-		gof.CurrentApp.Log().Error(err)
+		//gof.CurrentApp.Log().Error(err)
 	}
 	return mchId
 }

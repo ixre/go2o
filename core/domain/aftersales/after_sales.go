@@ -17,7 +17,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
-	"github.com/ixre/go2o/core/domain/tmp"
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/gof/db/orm"
 )
 
@@ -79,7 +79,8 @@ func (a *afterSalesOrderImpl) saveAfterSalesOrder() error {
 		a.value.OrderNo = a.repo.GetFreeOrderNo(a.value.OrderId)
 	}
 	a.value.UpdateTime = time.Now().Unix()
-	id, err := orm.I32(orm.Save(tmp.Orm, a.value, int(a.GetDomainId())))
+	_orm := provide.GetOrmInstance()
+	id, err := orm.I32(orm.Save(_orm, a.value, int(a.GetDomainId())))
 	if err == nil {
 		a.value.Id = id
 	}

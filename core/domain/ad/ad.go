@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/ad"
-	"github.com/ixre/go2o/core/domain/tmp"
+	"github.com/ixre/go2o/core/initial/provide"
 )
 
 var _ ad.IUserAd = new(userAdImpl)
@@ -220,7 +220,8 @@ func (a *userAdImpl) CreateAd(v *ad.Ad) ad.IAdAggregateRoot {
 // 检测广告位是否可以被绑定
 func (a *userAdImpl) checkPositionBind(posId int64, adId int64) bool {
 	total := 0
-	tmp.Db().ExecScalar("SELECT COUNT(1) FROM ad_userset WHERE user_id= $1 AND pos_id= $2 AND ad_id <> $3",
+	_db := provide.GetDb()
+	_db.ExecScalar("SELECT COUNT(1) FROM ad_userset WHERE user_id= $1 AND pos_id= $2 AND ad_id <> $3",
 		&total, a._adUserId, posId, adId)
 	return total == 0
 }

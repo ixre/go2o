@@ -5,10 +5,10 @@ import (
 	"net"
 	"strconv"
 
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/inject"
 	grpc2 "github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
-	"github.com/ixre/gof"
 	"github.com/ixre/gof/log"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
@@ -25,8 +25,9 @@ import (
  */
 
 func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
+	app := provide.GetApp()
 	// 初始化RPC服务
-	prepareRpcServer(gof.CurrentApp, inject.GetRegistryRepo())
+	prepareRpcServer(app, inject.GetRegistryRepo())
 	// 初始化数据
 	sysInit(inject.GetRegistryRepo())
 	// 启动RPC服务

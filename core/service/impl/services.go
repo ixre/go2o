@@ -14,8 +14,6 @@ import (
 	"strings"
 
 	"github.com/ixre/go2o/core/dao/impl"
-	"github.com/ixre/go2o/core/domain/tmp"
-	"github.com/ixre/go2o/core/event"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/repos/clickhouse"
@@ -96,32 +94,6 @@ func handleError(err error) error {
 	//	gof.CurrentApp.Log().Println("[ GO2O][ Repo][ Error] -", err.Error())
 	//}
 	//return err
-}
-
-func Init(ctx gof.App) {
-	Context := ctx
-	db := Context.Db()
-	sto := Context.Storage()
-	o := orm.NewOrm(db.Driver(), db.Raw())
-	tmp.SetORM(o)
-	orm.CacheProxy(o, sto)
-	// 初始化clickhouse
-	initializeClickhouse(ctx)
-	// 初始化服务
-	initService(ctx, db, o, sto)
-	// 初始化事件
-	event.InitEvent()
-	// 初始化数据
-	InitData(o)
-}
-
-// InitTestService 初始化测试服务
-func InitTestService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
-	initService(ctx, db, orm, sto)
-	// 初始化clickhouse
-	initializeClickhouse(ctx)
-	// 初始化事件
-	event.InitEvent()
 }
 
 // InitializeClickhouse 初始化clickhouse查询连接

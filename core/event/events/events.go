@@ -5,6 +5,10 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/order"
 )
 
+// 应用初始化事件
+type AppInitialEvent struct {
+}
+
 // 账户日志推送事件
 type AccountLogPushEvent struct {
 	// 账户类型

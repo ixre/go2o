@@ -9,9 +9,10 @@ import (
 	"github.com/ixre/gof/db/orm"
 )
 
-func InitData(o orm.Orm) {
+func InitData(o orm.Orm, repo content.IArchiveRepo) {
 	(&dataInitializer{
-		o: o,
+		o:    o,
+		repo: repo,
 	}).init()
 }
 

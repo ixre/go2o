@@ -12,9 +12,8 @@ import (
 	"github.com/ixre/go2o/core"
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/go2o/core/event/msq"
+	"github.com/ixre/go2o/core/initial"
 	"github.com/ixre/go2o/core/service"
-	"github.com/ixre/go2o/core/service/impl"
-	"github.com/ixre/gof"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
@@ -30,7 +29,7 @@ var (
 	runDaemon   bool // 运行daemon
 	help        bool
 	showVersion bool
-	newApp      *core.AppImpl
+	newApp      *initial.AppImpl
 )
 
 func getNatsAddress() string {
@@ -94,16 +93,15 @@ func Run(ch chan bool, after func(*clientv3.Config)) {
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
 	}
-	newApp = core.NewApp(confFile, &cfg)
+	newApp = initial.NewApp(confFile, &cfg)
 	if debug {
 		go AutoInstall()
 	}
-	gof.CurrentApp = newApp
-	if !core.Init(newApp, debug, trace) {
+	if !initial.Init1(newApp, debug, trace) {
 		os.Exit(1)
 	}
-	go core.SignalNotify(ch, core.AppDispose)
-	impl.Init(newApp)
+	go core.SignalNotify(ch, initial.AppDispose)
+	//impl.Init(newApp)
 	//runGoMicro()
 	// 初始化分布式锁
 	etcd.InitializeLocker(&cfg)

@@ -11,10 +11,11 @@ package mss
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/ixre/go2o/core/variable"
-	"github.com/ixre/gof"
 	"net/smtp"
 	"strings"
+
+	"github.com/ixre/go2o/core/initial/provide"
+	"github.com/ixre/go2o/core/variable"
 )
 
 var (
@@ -48,7 +49,7 @@ func SendMail(server, host, user, pwd, from string, subject string, to []string,
 // 使用默认的配置发送邮件
 func SendMailWithDefaultConfig(subject string, to []string, body []byte) error {
 	if !loaded {
-		cfg := gof.CurrentApp.Config()
+		cfg := provide.GetApp().Config()
 		EMAIL_HOST = cfg.GetString(variable.SmtpHost)
 		EMAIL_SERVER = fmt.Sprintf("%s:%d", EMAIL_HOST, cfg.GetInt(variable.SmtpPort))
 		EMAIL_CREDENTIAL_USR = cfg.GetString(variable.SmtpCreUser)

@@ -27,8 +27,8 @@ import (
 	si "github.com/ixre/go2o/core/domain/merchant/shop"
 	userImpl "github.com/ixre/go2o/core/domain/merchant/user"
 	wsImpl "github.com/ixre/go2o/core/domain/merchant/wholesale"
-	"github.com/ixre/go2o/core/infrastructure"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/variable"
 )
 
@@ -398,8 +398,8 @@ func (m *merchantImpl) GetMajorHost() string {
 	if len(m._host) == 0 {
 		host := m._repo.GetMerchantMajorHost(int(m.GetAggregateRootId()))
 		if len(host) == 0 {
-			host = fmt.Sprintf("%s.%s", m._value.Username, infrastructure.GetApp().
-				Config().GetString(variable.ServerDomain))
+			cfg := provide.GetApp().Config()
+			host = fmt.Sprintf("%s.%s", m._value.Username, cfg.GetString(variable.ServerDomain))
 		}
 		m._host = host
 	}

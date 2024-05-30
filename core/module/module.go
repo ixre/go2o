@@ -10,9 +10,11 @@ package module
 
 import (
 	"errors"
+	"sync"
+
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/log"
-	"sync"
 )
 
 var (
@@ -47,7 +49,7 @@ func Register(name string, m Module) error {
 
 // 初始化模块
 func initModule() {
-	app := gof.CurrentApp
+	app := provide.GetApp()
 	moduleMap = map[string]Module{}
 	if app != nil {
 		registerInternal() //注册内置的模块

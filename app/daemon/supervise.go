@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/ixre/go2o/core"
+	"github.com/ixre/go2o/core/initial"
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
@@ -49,7 +49,7 @@ func superviseOrder(ss []Service) {
 		}
 	}
 	// 监听队列
-	conn := core.GetRedisConn()
+	conn := initial.GetRedisConn()
 	defer conn.Close()
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
@@ -87,7 +87,7 @@ func superviseMemberUpdate(ss []Service) {
 		}
 	}
 	id := 0
-	conn := core.GetRedisConn()
+	conn := initial.GetRedisConn()
 	defer conn.Close()
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
@@ -123,7 +123,7 @@ func supervisePaymentOrderFinish(ss []Service) {
 		// }
 	}
 	id := 0
-	conn := core.GetRedisConn()
+	conn := initial.GetRedisConn()
 	defer conn.Close()
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
@@ -159,7 +159,7 @@ func memberAutoUnlock() {
 	if appCtx.Debug() {
 		log.Println("[ Order]: execute member unlock job ...")
 	}
-	conn := core.GetRedisConn()
+	conn := initial.GetRedisConn()
 	defer conn.Close()
 	tick := util.GetMinuteSlice(time.Now(), 1)
 	key := fmt.Sprintf("%s:%s:*", variable.KvMemberAutoUnlock, tick)
@@ -184,13 +184,12 @@ func memberAutoUnlock() {
 	}
 }
 
-
 // 订单自动收货
 func orderAutoReceive() {
 	if appCtx.Debug() {
 		log.Println("[ Order]: order auto receive ...")
 	}
-	conn := core.GetRedisConn()
+	conn := initial.GetRedisConn()
 	defer conn.Close()
 	tick := getTick(time.Now())
 	key := fmt.Sprintf("%s:*:%s", variable.KvOrderAutoReceive, tick)

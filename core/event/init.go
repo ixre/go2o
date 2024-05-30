@@ -7,8 +7,19 @@ import (
 	"github.com/ixre/gof/domain/eventbus"
 )
 
-func InitEvent() {
-	h := &handler.EventHandler{}
+type EventSource struct {
+	handler.EventHandler
+}
+
+func NewEventSource(h handler.EventHandler) *EventSource {
+	return &EventSource{
+		EventHandler: h,
+	}
+}
+
+func (e *EventSource) Init() {
+	h := e.EventHandler
+	eventbus.SubscribeAsync(events.AppInitialEvent{}, h.HandleAppInitialEvent)
 	eventbus.SubscribeAsync(registry.RegistryPushEvent{}, h.HandleRegistryPushEvent)
 	eventbus.SubscribeAsync(events.AccountLogPushEvent{}, h.HandleMemberAccountLogPushEvent)
 	eventbus.SubscribeAsync(events.OrderAffiliateRebateEvent{}, h.HandleOrderAffiliateRebateEvent)

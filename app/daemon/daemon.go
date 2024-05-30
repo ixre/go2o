@@ -20,10 +20,10 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/app/daemon/job"
-	"github.com/ixre/go2o/core"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/infrastructure/locker"
+	"github.com/ixre/go2o/core/initial"
 	"github.com/ixre/go2o/core/repos/clickhouse"
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/proto"
@@ -55,7 +55,7 @@ type Service interface {
 }
 
 var (
-	appCtx           *core.AppImpl
+	appCtx           *initial.AppImpl
 	conn             db.Connector
 	_orm             orm.Orm
 	services         []Service
@@ -118,7 +118,7 @@ func startTicker() {
 
 // 判断是否处理
 func isHandled(key string, unix int64) bool {
-	conn := core.GetRedisConn()
+	conn := initial.GetRedisConn()
 	defer conn.Close()
 	unix2, err := redis.Int(conn.Do("GET", key))
 	if err != nil {
@@ -129,7 +129,7 @@ func isHandled(key string, unix int64) bool {
 
 // 标记最后处理时间
 func signHandled(key string, unix int64) {
-	conn := core.GetRedisConn()
+	conn := initial.GetRedisConn()
 	defer conn.Close()
 	conn.Do("SET", key, unix)
 }
@@ -228,7 +228,7 @@ func (d *defaultService) OrderObs(o *proto.SSingleOrder) bool {
 		d.app.Log().Println("-- 订单", o.OrderNo, "状态:", o.Status)
 	}
 	if d.sOrder {
-		conn := core.GetRedisConn()
+		conn := initial.GetRedisConn()
 		defer conn.Close()
 		defer Recover()
 
@@ -370,9 +370,9 @@ func (d *defaultService) HandleMailQueue(list []*mss.MailTask) bool {
 // 运行
 func Run(ctx gof.App) {
 	if ctx != nil {
-		appCtx = ctx.(*core.AppImpl)
+		appCtx = ctx.(*initial.AppImpl)
 	} else {
-		appCtx = core.NewApp("app.conf", nil)
+		appCtx = initial.NewApp("app.conf", nil)
 	}
 	conn = appCtx.Db()
 	//sMail := true // appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
@@ -402,9 +402,8 @@ func FlagRun() {
 
 	flag.Parse()
 
-	appCtx = core.NewApp(conf, nil)
-	core.Init(appCtx, debug, trace)
-	gof.CurrentApp = appCtx
+	appCtx = initial.NewApp(conf, nil)
+	initial.Init1(appCtx, debug, trace)
 
 	conn = appCtx.Db()
 

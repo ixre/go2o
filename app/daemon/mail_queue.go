@@ -9,13 +9,14 @@
 package daemon
 
 import (
-	"github.com/gomodule/redigo/redis"
-	"github.com/ixre/go2o/core"
-	"github.com/ixre/go2o/core/domain/interface/message"
-	mssIns "github.com/ixre/go2o/core/infrastructure/mss"
-	"github.com/ixre/go2o/core/variable"
 	"strconv"
 	"time"
+
+	"github.com/gomodule/redigo/redis"
+	"github.com/ixre/go2o/core/domain/interface/message"
+	mssIns "github.com/ixre/go2o/core/infrastructure/mss"
+	"github.com/ixre/go2o/core/initial"
+	"github.com/ixre/go2o/core/variable"
 )
 
 var (
@@ -24,7 +25,7 @@ var (
 
 // 邮件队列
 func startMailQueue(ss []Service) {
-	conn := core.GetRedisConn()
+	conn := initial.GetRedisConn()
 	defer conn.Close()
 	//var id int
 	for {

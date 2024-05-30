@@ -1,9 +1,10 @@
-//#go:build wireinject
+//go:build wireinject
 
 package inject
 
 import (
 	"github.com/google/wire"
+	"github.com/ixre/go2o/core/event"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 )
@@ -24,6 +25,9 @@ var serviceProvideSets = wire.NewSet(provideSets,
 	//impl.NewOrderService,
 	impl.NewCartService,
 	impl.NewAfterSalesService,
+	// 事件
+	event.NewEventSource,
+	event.NewEventHandler
 )
 
 // 状态服务

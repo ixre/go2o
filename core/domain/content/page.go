@@ -9,9 +9,10 @@
 package content
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/content"
-	"github.com/ixre/go2o/core/domain/tmp"
 	"time"
+
+	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/initial/provide"
 )
 
 var _ content.IPage = new(pageImpl)
@@ -44,7 +45,8 @@ func (p *pageImpl) GetValue() *content.Page {
 // 检测别名是否可用
 func (p *pageImpl) checkAliasExists(alias string) bool {
 	total := 0
-	tmp.Db().ExecScalar("SELECT COUNT(1) FROM arc_page WHERE user_id= $1 AND str_indent= $2 AND id <> $3",
+	_db := provide.GetDb()
+	_db.ExecScalar("SELECT COUNT(1) FROM arc_page WHERE user_id= $1 AND str_indent= $2 AND id <> $3",
 		&total, p.userId, alias, p.GetDomainId())
 	return total == 0
 }

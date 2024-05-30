@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package core
+package initial
 
 import (
 	"fmt"
@@ -14,6 +14,7 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/core/infrastructure"
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/log"
@@ -167,7 +168,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 // GetRedisPool 获取Redis连接池,will be remove
 func GetRedisPool() *redis.Pool {
 	if redisPool == nil {
-		app := gof.CurrentApp
+		app := provide.GetApp()
 		if app == nil {
 			panic("gobal serve not initialize!")
 		}

@@ -16,7 +16,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ixre/gof"
+	"github.com/ixre/go2o/core/initial/provide"
 )
 
 type (
@@ -105,7 +105,7 @@ func (this *OptionStoreWrapper) Stat() error {
 }
 
 func (this *OptionStoreWrapper) load() error {
-	sto := gof.CurrentApp.Storage()
+	sto := provide.GetStorageInstance()
 	this._data = make(map[string]*Option)
 	rdKey := this.getRdKey()
 	if sto.Get(rdKey, &this._data) != nil {
@@ -155,7 +155,7 @@ func (this *OptionStoreWrapper) Set(key string, v *Option) {
 		this._data = make(map[string]*Option)
 	}
 	this._data[key] = v
-	gof.CurrentApp.Storage().Delete(this.getRdKey()) // clean cache
+	provide.GetStorageInstance().Delete(this.getRdKey()) // clean cache
 }
 
 // flush to file

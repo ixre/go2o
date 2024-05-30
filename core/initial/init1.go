@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package core
+package initial
 
 import (
 	"context"
@@ -24,6 +24,7 @@ import (
 	"github.com/ixre/go2o/core/event/msq"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/locker"
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/module/express/kdniao"
 	"github.com/ixre/go2o/core/service"
@@ -70,7 +71,8 @@ func init2() {
 	gob.Register(ad.Image{})
 }
 
-func Init(a *AppImpl, debug, trace bool) bool {
+func Init1(a *AppImpl, debug, trace bool) bool {
+	provide.Configure(a)
 	a._debugMode = debug
 	// 初始化并发锁
 	locker.Configure(a.Storage())

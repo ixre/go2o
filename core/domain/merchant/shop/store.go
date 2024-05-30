@@ -17,8 +17,8 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
-	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/go2o/core/infrastructure/lbs"
+	"github.com/ixre/go2o/core/initial/provide"
 )
 
 var _ shop.IOfflineShop = new(offlineShopImpl)
@@ -81,7 +81,8 @@ func (s *shopImpl) check(v *shop.Shop) error {
 
 func (s *shopImpl) checkNameExists(v *shop.Shop) bool {
 	i := 0
-	tmp.Db().ExecScalar("SELECT COUNT(1) FROM mch_shop WHERE name= $1 AND id <> $2", &i,
+	_db := provide.GetDb()
+	_db.ExecScalar("SELECT COUNT(1) FROM mch_shop WHERE name= $1 AND id <> $2", &i,
 		v.Name, v.Id)
 	return i > 0
 }
