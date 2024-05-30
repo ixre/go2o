@@ -24,6 +24,7 @@ require google.golang.org/protobuf v1.34.1
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.24.0
+	github.com/google/wire v0.6.0
 	github.com/labstack/echo/v4 v4.12.0
 	go.etcd.io/etcd/client/v3 v3.5.13
 	go.mongodb.org/mongo-driver v1.11.4

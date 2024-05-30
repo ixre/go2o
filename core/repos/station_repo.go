@@ -17,7 +17,10 @@ package repos
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"strconv"
+	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/station"
 	si "github.com/ixre/go2o/core/domain/station"
@@ -29,7 +32,8 @@ var _ station.IStationRepo = new(stationRepoImpl)
 
 // 站点仓储
 type stationRepoImpl struct {
-	_orm orm.Orm
+	_orm     orm.Orm
+	_manager station.IStationManager
 }
 
 var modelIsMapped = false
@@ -41,9 +45,24 @@ func NewStationRepo(o orm.Orm) station.IStationRepo {
 		_ = o.Mapping(station.Area{}, "china_area")
 		modelIsMapped = true
 	}
-	return &stationRepoImpl{
+	r := &stationRepoImpl{
 		_orm: o,
 	}
+	go r.GetManager().SyncStations()
+	return r
+}
+
+// CreateStation implements station.IStationRepo.
+func (s *stationRepoImpl) CreateStation(v *station.SubStation) station.IStationAggregateRoot {
+	return si.NewStation(v, s)
+}
+
+// GetManager implements station.IStationRepo.
+func (s *stationRepoImpl) GetManager() station.IStationManager {
+	if s._manager == nil {
+		s._manager = si.NewStationManager(s)
+	}
+	return s._manager
 }
 
 // GetSubStation Get 地区子站
@@ -51,7 +70,7 @@ func (s *stationRepoImpl) GetStation(id int) station.IStationAggregateRoot {
 	e := station.SubStation{}
 	err := s._orm.Get(id, &e)
 	if err == nil {
-		return si.NewStation(&e, s)
+		return s.CreateStation(&e)
 	}
 	if err != sql.ErrNoRows {
 		log.Printf("[ Orm][ Error]: %s; Entity:SubStation\n", err.Error())
@@ -71,10 +90,18 @@ func (s *stationRepoImpl) GetAreaList(parentId int) []*station.Area {
 
 // GetAllCities implements station.IStationRepo.
 func (s *stationRepoImpl) GetAllCities() []*station.Area {
-	province := s.GetAreaList(0)
-	provinceIdList := collections.MapList(province, func(v *station.Area) int {
-		return v.Code
+	list := make([]*station.Area, 0)
+	_ = s._orm.Select(&list, "parent = 0 and code <> 0")
+	provinceIdList := collections.MapList(list, func(v *station.Area) string {
+		return strconv.Itoa(v.Code)
 	})
+	list = make([]*station.Area, 0)
+	err := s._orm.Select(&list, fmt.Sprintf("parent IN (%s)",
+		strings.Join(provinceIdList, ",")))
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("[ Orm][ Error]: %s; Entity:Area\n", err.Error())
+	}
+	return list
 }
 
 // GetStations implements station.IStationRepo.

@@ -83,7 +83,7 @@ func Run(ch chan bool, after func(*clientv3.Config)) {
 	// appFlag = appFlag | FlagRpcServe
 	// setting log flags
 	log.SetOutput(os.Stdout)
-	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
+	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate)
 
 	etcdEndPoints := strings.Split(etcdEndPoints, ",")
 	if len(etcdEndPoints) == 0 {

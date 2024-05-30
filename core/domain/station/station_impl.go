@@ -1,6 +1,10 @@
 package station
 
-import "github.com/ixre/go2o/core/domain/interface/station"
+import (
+	"errors"
+
+	"github.com/ixre/go2o/core/domain/interface/station"
+)
 
 var _ station.IStationAggregateRoot = new(StationImpl)
 
@@ -12,7 +16,7 @@ type StationImpl struct {
 // NewStation returns a station aggregate root.
 func NewStation(value *station.SubStation, repo station.IStationRepo) *StationImpl {
 	return &StationImpl{
-		value: nil,
+		value: value,
 		repo:  repo,
 	}
 }
@@ -23,6 +27,17 @@ func (s *StationImpl) GetAggregateRootId() int {
 		return s.value.Id
 	}
 	return 0
+}
+
+// SetValue implements station.IStationAggregateRoot.
+func (s *StationImpl) SetValue(v station.SubStation) error {
+	if s.GetAggregateRootId() <= 0 {
+		if v.CityCode <= 0 {
+			return errors.New("invalid city code")
+		}
+	}
+	s.value.Status = v.Status
+	return nil
 }
 
 // Save implements station.IStationAggregateRoot.

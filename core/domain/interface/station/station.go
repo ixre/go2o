@@ -1,8 +1,11 @@
 package station
 
+// 站点聚合根
 type IStationAggregateRoot interface {
 	// 获取聚合根编号
 	GetAggregateRootId() int
+	// 设置值
+	SetValue(v SubStation) error
 	// 保存站点
 	Save() error
 }
@@ -12,7 +15,12 @@ type IStationManager interface {
 	SyncStations() error
 }
 
+// 站点仓库
 type IStationRepo interface {
+	// 获取站点管理器
+	GetManager() IStationManager
+	// CreateStation 创建站点
+	CreateStation(v *SubStation) IStationAggregateRoot
 	// GetStation 获取站点
 	GetStation(id int) IStationAggregateRoot
 	// 获取所有的站点
