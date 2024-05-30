@@ -16,3 +16,7 @@ func NewStationQuery(o orm.Orm) *StationQuery {
 		o:         o,
 	}
 }
+
+func (s *StationQuery) QueryStations(status int) interface{} {
+	return nil
+}

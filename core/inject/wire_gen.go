@@ -36,6 +36,8 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/service/proto"
 )
 
 // Injectors from query.go:
@@ -369,6 +371,28 @@ func GetJobRepo() job.IJobRepo {
 	return iJobRepo
 }
 
+// Injectors from service.go:
+
+// 状态服务
+func GetStatusService() proto.StatusServiceServer {
+	statusServiceServer := impl.NewStatusService()
+	return statusServiceServer
+}
+
+// 注册表服务
+func GetRegistryService() proto.RegistryServiceServer {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	registryServiceServer := impl.NewRegistryService(iValueRepo, iRegistryRepo)
+	return registryServiceServer
+}
+
 // repo.go:
 
 var provideSets = wire.NewSet(repos.GetOrmInstance, repos.GetStorageInstance, repos.NewRegistryRepo, repos.NewProModelRepo, repos.NewValueRepo, repos.NewUserRepo, repos.NewWalletRepo, repos.NewNotifyRepo, repos.NewMssRepo, repos.NewExpressRepo, repos.NewShipmentRepo, repos.NewMemberRepo, repos.NewProductRepo, repos.NewItemWholesaleRepo, repos.NewCategoryRepo, repos.NewShopRepo, repos.NewGoodsItemRepo, repos.NewAfterSalesRepo, repos.NewCartRepo, repos.NewContentRepo, repos.NewMerchantRepo, repos.NewOrderRepo, repos.NewPaymentRepo, repos.NewPromotionRepo, repos.NewStationRepo, repos.NewTagSaleRepo, repos.NewWholesaleRepo, repos.NewPersonFinanceRepository, repos.NewDeliverRepo, repos.NewAdvertisementRepo, repos.NewJobRepository)
+
+// service.go:
+
+var serviceProvideSets = wire.NewSet(provideSets, impl.NewStatusService, impl.NewRegistryService)

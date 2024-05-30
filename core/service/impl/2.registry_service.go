@@ -34,7 +34,7 @@ func (s *registryService) GetGroups(c context.Context, empty *proto.Empty) (*pro
 	return &proto.RegistryGroupResponse{Value: arr}, nil
 }
 
-func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *registryService {
+func NewRegistryService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo) proto.RegistryServiceServer {
 	return &registryService{
 		_rep:         rep,
 		registryRepo: registryRepo,

@@ -17,7 +17,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
 	"github.com/ixre/go2o/core/infrastructure/format"
-	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/module/bank"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/storage"
@@ -43,9 +42,9 @@ func (b *Bank4E) SetApp(app gof.App) {
 }
 
 func (b *Bank4E) Init() {
-	b.memberRepo = inject.GetMemberRepo()
-	b.valueRepo = inject.GetValueRepo()
-	b.registryRepo = inject.GetRegistryRepo()
+	// b.memberRepo = inject.GetMemberRepo()
+	// b.valueRepo = inject.GetValueRepo()
+	// b.registryRepo = inject.GetRegistryRepo()
 	v, _ := b.registryRepo.GetValue(keys[0])
 	v2, _ := b.registryRepo.GetValue(keys[1])
 	b.open = v == "1" || v == "true"

@@ -7,7 +7,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/event/msq"
-	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
 )
@@ -18,7 +17,8 @@ func (h EventHandler) HandleSubOrderPushEvent(data interface{}) {
 	if v == nil {
 		return
 	}
-	r := inject.GetRegistryRepo()
+	var r registry.IRegistryRepo
+	//r := inject.GetRegistryRepo()
 	isPush := r.Get(registry.OrderSubOrderPushEnabled).BoolValue()
 	if isPush {
 		ev := &proto.EVSubOrderPushEventData{
@@ -43,7 +43,8 @@ func (h EventHandler) HandleOrderAffiliateRebateEvent(data interface{}) {
 	if v == nil {
 		return
 	}
-	r := inject.GetRegistryRepo()
+	var r registry.IRegistryRepo
+	//r := inject.GetRegistryRepo()
 	s, _ := r.GetValue(registry.OrderAffiliatePushEnabled)
 	pushValue, _ := strconv.Atoi(s)
 	//todo: 系统内处理分销，不推送分销事件

@@ -7,7 +7,6 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/util"
 )
@@ -22,8 +21,7 @@ import (
  * history :
  */
 
-func sysInit() {
-	repo := inject.GetRegistryRepo()
+func sysInit(repo registry.IRegistryRepo) {
 	initJWTSecret(repo)
 	initSuperLoginToken(repo)
 }

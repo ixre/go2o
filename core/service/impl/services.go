@@ -17,8 +17,6 @@ import (
 	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/go2o/core/event"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/inject"
-	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/repos/clickhouse"
 	"github.com/ixre/go2o/core/service/proto"
@@ -34,7 +32,7 @@ var (
 var (
 
 	// 状态服务
-	StatusService *statusServiceImpl
+	StatusService *StatusServiceImpl
 	// 注册表服务
 	RegistryService *registryService
 	PromService     *promotionService
@@ -141,75 +139,75 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	OrmMapping(orm)
 	//[]string{"127.0.0.1:9000"}
 	repos.Initial(orm, sto)
-	registryRepo := inject.GetRegistryRepo()
-	proMRepo := inject.GetProModelRepo()
-	valueRepo := inject.GetValueRepo()
-	mssRepo := inject.GetMssRepo()
-	expressRepo := inject.GetExpressRepo()
-	shipRepo := inject.GetShipmentRepo()
-	memberRepo := inject.GetMemberRepo()
-	productRepo := inject.GetProductRepo()
-	catRepo := inject.GetCategoryRepo()
-	itemRepo := inject.GetItemRepo()
-	tagSaleRepo := inject.GetSaleLabelRepo()
-	promRepo := inject.GetPromotionRepo()
+	// registryRepo := inject.GetRegistryRepo()
+	// proMRepo := inject.GetProModelRepo()
+	// valueRepo := inject.GetValueRepo()
+	// mssRepo := inject.GetMssRepo()
+	// expressRepo := inject.GetExpressRepo()
+	// shipRepo := inject.GetShipmentRepo()
+	// memberRepo := inject.GetMemberRepo()
+	// productRepo := inject.GetProductRepo()
+	// catRepo := inject.GetCategoryRepo()
+	// itemRepo := inject.GetItemRepo()
+	// tagSaleRepo := inject.GetSaleLabelRepo()
+	// promRepo := inject.GetPromotionRepo()
 
-	shopRepo := inject.GetShopRepo()
-	mchRepo := inject.GetMerchantRepo()
-	cartRepo := inject.GetCartRepo()
-	personFinanceRepo := inject.GetPersonFinanceRepository()
-	deliveryRepo := inject.GetDeliveryRepo()
-	contentRepo := inject.GetContentRepo()
-	adRepo := inject.GetAdRepo()
-	orderRepo := inject.GetOrderRepo()
-	paymentRepo := inject.GetPaymentRepo()
-	asRepo := inject.GetAfterSalesRepo()
-	notifyRepo := inject.GetNotifyRepo()
-	jobRepo := inject.GetJobRepo()
+	// shopRepo := inject.GetShopRepo()
+	// mchRepo := inject.GetMerchantRepo()
+	// cartRepo := inject.GetCartRepo()
+	// personFinanceRepo := inject.GetPersonFinanceRepository()
+	// deliveryRepo := inject.GetDeliveryRepo()
+	// contentRepo := inject.GetContentRepo()
+	// adRepo := inject.GetAdRepo()
+	// orderRepo := inject.GetOrderRepo()
+	// paymentRepo := inject.GetPaymentRepo()
+	// asRepo := inject.GetAfterSalesRepo()
+	// notifyRepo := inject.GetNotifyRepo()
+	// jobRepo := inject.GetJobRepo()
 
 	/** Params **/
-	memberQue := query.NewMemberQuery(orm)
-	mchQuery := query.NewMerchantQuery(ctx)
-	contentQue := query.NewContentQuery(orm)
-	goodsQuery := query.NewItemQuery(orm)
-	shopQuery := query.NewShopQuery(orm, sto)
-	orderQuery := query.NewOrderQuery(orm)
-	afterSalesQuery := query.NewAfterSalesQuery(db)
+	// memberQue := query.NewMemberQuery(orm)
+	// mchQuery := query.NewMerchantQuery(ctx)
+	// contentQue := query.NewContentQuery(orm)
+	// goodsQuery := query.NewItemQuery(orm)
+	// shopQuery := query.NewShopQuery(orm, sto)
+	// orderQuery := query.NewOrderQuery(orm)
+	// afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
-	StatusService = NewStatusService()
-	RegistryService = NewRegistryService(valueRepo, registryRepo)
-	ProductService = NewProductService(proMRepo, catRepo, productRepo)
-	FoundationService = NewFoundationService(valueRepo, registryRepo, sto, notifyRepo)
-	PromService = NewPromotionService(promRepo)
-	OrderService = NewShoppingService(orderRepo, cartRepo, memberRepo,
-		productRepo, itemRepo, mchRepo, shopRepo,
-		paymentRepo, shipRepo, expressRepo, orderQuery)
-	CartService = NewCartService(cartRepo, itemRepo, mchRepo, shopRepo)
-	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, orderRepo)
-	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
-	ShopService = NewShopService(shopRepo, mchRepo, shopRepo, registryRepo, shopQuery)
-	MemberService = NewMemberService(MerchantService, memberRepo, registryRepo, memberQue, orderQuery, valueRepo)
-	ItemService = NewSaleService(sto, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
-	PaymentService = NewPaymentService(paymentRepo, orderRepo, memberRepo)
-	QuickPayService = NewQuickPayService(sto, registryRepo)
-	MessageService = NewMessageService(mssRepo)
-	ExpressService = NewExpressService(expressRepo)
-	ShipmentService = NewShipmentService(shipRepo, deliveryRepo, expressRepo)
-	ContentService = NewContentService(contentRepo, contentQue)
-	AdService = NewAdvertisementService(adRepo, sto)
-	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
+	// StatusService = NewStatusService()
+	// RegistryService = NewRegistryService(valueRepo, registryRepo)
+	// ProductService = NewProductService(proMRepo, catRepo, productRepo)
+	// FoundationService = NewFoundationService(valueRepo, registryRepo, sto, notifyRepo)
+	// PromService = NewPromotionService(promRepo)
+	// OrderService = NewShoppingService(orderRepo, cartRepo, memberRepo,
+	// 	productRepo, itemRepo, mchRepo, shopRepo,
+	// 	paymentRepo, shipRepo, expressRepo, orderQuery)
+	// CartService = NewCartService(cartRepo, itemRepo, mchRepo, shopRepo)
+	// AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, orderRepo)
+	// MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
+	// ShopService = NewShopService(shopRepo, mchRepo, shopRepo, registryRepo, shopQuery)
+	// MemberService = NewMemberService(MerchantService, memberRepo, registryRepo, memberQue, orderQuery, valueRepo)
+	// ItemService = NewSaleService(sto, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
+	// PaymentService = NewPaymentService(paymentRepo, orderRepo, memberRepo)
+	// QuickPayService = NewQuickPayService(sto, registryRepo)
+	// MessageService = NewMessageService(mssRepo)
+	// ExpressService = NewExpressService(expressRepo)
+	// ShipmentService = NewShipmentService(shipRepo, deliveryRepo, expressRepo)
+	// ContentService = NewContentService(contentRepo, contentQue)
+	// AdService = NewAdvertisementService(adRepo, sto)
+	// PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
 
-	WalletService = NewWalletService(inject.GetWalletRepo())
-	ExecuteService = NewExecDataService(sto, jobRepo)
+	// WalletService = NewWalletService(inject.GetWalletRepo())
+	// ExecuteService = NewExecDataService(sto, jobRepo)
 
-	CommonDao = impl.NewCommDao(orm, sto, adRepo, catRepo)
-	portalDao := impl.NewPortalDao(orm)
-	PortalService = NewPortalService(orm, CommonDao, portalDao)
-	QueryService = NewQueryService(orm, sto, catRepo)
-	AppService = NewAppService(sto, orm)
-	RbacService = NewRbacService(sto, orm, registryRepo)
-	CodeService = NewCodeService(sto, orm)
+	// CommonDao = impl.NewCommDao(orm, sto, adRepo, catRepo)
+	// portalDao := impl.NewPortalDao(orm)
+	// PortalService = NewPortalService(orm, CommonDao, portalDao)
+	// QueryService = NewQueryService(orm, sto, catRepo)
+	// AppService = NewAppService(sto, orm)
+	// RbacService = NewRbacService(sto, orm, registryRepo)
+	// CodeService = NewCodeService(sto, orm)
 }
 
 // 服务工具类，实现的服务组合此类,可直接调用其方法

@@ -6,7 +6,6 @@ import (
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/go2o/core/domain/interface/content"
-	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/gof/db/orm"
 )
 
@@ -17,7 +16,8 @@ func InitData(o orm.Orm) {
 }
 
 type dataInitializer struct {
-	o orm.Orm
+	o    orm.Orm
+	repo content.IArchiveRepo
 }
 
 func (i dataInitializer) init() {
@@ -112,8 +112,7 @@ func (i dataInitializer) initPortalNavGroup() {
 
 // 初始化内置页面
 func (i dataInitializer) initPages() {
-	repo := inject.GetContentRepo()
-	ip := repo.GetPageByCode(0, "privacy")
+	ip := i.repo.GetPageByCode(0, "privacy")
 	if ip == nil {
 		pages := []*content.Page{
 			{
@@ -143,7 +142,7 @@ func (i dataInitializer) initPages() {
 			v.Flag |= content.FlagInternal
 			v.Enabled = 1
 			v.UpdateTime = time.Now().Unix()
-			repo.SavePage(0, v)
+			i.repo.SavePage(0, v)
 		}
 	}
 }

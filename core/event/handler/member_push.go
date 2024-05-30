@@ -4,8 +4,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/event/msq"
-	"github.com/ixre/go2o/core/inject"
-	"github.com/ixre/go2o/core/service/proto"
+		"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
 )
 
@@ -42,7 +41,9 @@ func (h *EventHandler) HandleMemberAccountPushEvent(data interface{}) {
 	if v == nil {
 		return
 	}
-	r := inject.GetRegistryRepo()
+	var r registry.IRegistryRepo
+
+	//r := inject.GetRegistryRepo()
 	pushEnabled := r.Get(registry.MemberAccountPushEnabled).BoolValue()
 	if pushEnabled {
 		ev := &proto.EVMemberAccountEventData{
@@ -66,7 +67,8 @@ func (h EventHandler) HandleWithdrawalPushEvent(data interface{}) {
 	if v == nil {
 		return
 	}
-	r := inject.GetRegistryRepo()
+	var r registry.IRegistryRepo
+	//r := inject.GetRegistryRepo()
 	isPush := r.Get(registry.MemberWithdrawalPushEnabled).BoolValue()
 	if isPush {
 		ev := &proto.EVMemberWithdrawalPushEventData{
@@ -86,7 +88,9 @@ func (h EventHandler) HandleMemberAccountLogPushEvent(data interface{}) {
 	if v == nil {
 		return
 	}
-	r := inject.GetRegistryRepo()
+	var r registry.IRegistryRepo
+
+	//r := inject.GetRegistryRepo()
 	isPush := r.Get(registry.MemberAccountLogPushEnabled).BoolValue()
 	if isPush {
 		ev := &proto.EVAccountLogPushEventData{

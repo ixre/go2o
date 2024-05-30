@@ -67,6 +67,7 @@ var provideSets = wire.NewSet(
 	repos.NewJobRepository,
 )
 
+
 // 解决依赖
 //r.orderRepo.(*OrderRepImpl).SetPaymentRepo(r.paymentRepo)
 // 初始化数据

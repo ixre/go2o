@@ -2,19 +2,20 @@ package impl
 
 import (
 	"context"
+
 	"github.com/ixre/go2o/core/service/proto"
 )
 
-var _ proto.StatusServiceServer = new(statusServiceImpl)
+var _ proto.StatusServiceServer = new(StatusServiceImpl)
 
-type statusServiceImpl struct {
+type StatusServiceImpl struct {
 	proto.UnimplementedStatusServiceServer
 }
 
-func NewStatusService() *statusServiceImpl {
-	return &statusServiceImpl{}
+func NewStatusService() proto.StatusServiceServer {
+	return &StatusServiceImpl{}
 }
 
-func (s *statusServiceImpl) Ping(_ context.Context, empty *proto.Empty) (*proto.String, error) {
+func (s *StatusServiceImpl) Ping(_ context.Context, empty *proto.Empty) (*proto.String, error) {
 	return &proto.String{Value: "pong"}, nil
 }
