@@ -37,7 +37,7 @@ type foundationService struct {
 	proto.UnimplementedFoundationServiceServer
 }
 
-func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, s storage.Interface, notifyRepo notify.INotifyRepo) *foundationService {
+func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, s storage.Interface, notifyRepo notify.INotifyRepo)proto.FoundationServiceServer {
 	return &foundationService{
 		_rep:         rep,
 		_s:           s,

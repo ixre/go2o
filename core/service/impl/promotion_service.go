@@ -18,18 +18,18 @@ import (
 )
 
 type PromotionService struct {
-	_rep promotion.IPromotionRepo
+	_repo promotion.IPromotionRepo
 }
 
 func NewPromotionService(rep promotion.IPromotionRepo) *PromotionService {
 	return &PromotionService{
-		_rep: rep,
+		_repo: rep,
 	}
 }
 
 // 获取促销
 func (p *PromotionService) GetPromotion(id int32) (*promotion.PromotionInfo, interface{}) {
-	var prom = p._rep.GetPromotion(id)
+	var prom = p._repo.GetPromotion(id)
 	if prom != nil {
 		return prom.GetValue(), prom.GetRelationValue()
 	}
@@ -40,20 +40,20 @@ func (p *PromotionService) GetPromotion(id int32) (*promotion.PromotionInfo, int
 func (p *PromotionService) SavePromotion(v *promotion.PromotionInfo) (int32, error) {
 	var prom promotion.IPromotion
 	if v.Id > 0 {
-		prom = p._rep.GetPromotion(v.Id)
+		prom = p._repo.GetPromotion(v.Id)
 		err := prom.SetValue(v)
 		if err != nil {
 			return v.Id, err
 		}
 	} else {
-		prom = p._rep.CreatePromotion(v)
+		prom = p._repo.CreatePromotion(v)
 	}
 	return prom.Save()
 }
 
 // 删除促销
 func (p *PromotionService) DelPromotion(mchId int64, promId int32) error {
-	prom := p._rep.GetPromotion(promId)
+	prom := p._repo.GetPromotion(promId)
 	if prom == nil {
 		return promotion.ErrNoSuchPromotion
 	}
@@ -69,12 +69,12 @@ func (p *PromotionService) SaveCashBackPromotion(mchId int64,
 	var prom promotion.IPromotion
 	var err error
 	if v.Id > 0 {
-		prom = p._rep.GetPromotion(v.Id)
+		prom = p._repo.GetPromotion(v.Id)
 		if int64(prom.GetValue().MerchantId) != mchId {
 			return -1, merchant.ErrMerchantNotMatch
 		}
 	} else {
-		prom = p._rep.CreatePromotion(v)
+		prom = p._repo.CreatePromotion(v)
 	}
 
 	if err = prom.SetValue(v); err == nil {
@@ -95,12 +95,12 @@ func (p *PromotionService) SaveCoupon(mchId int64, v *promotion.PromotionInfo,
 	var prom promotion.IPromotion
 	var err error
 	if v.Id > 0 {
-		prom = p._rep.GetPromotion(v.Id)
+		prom = p._repo.GetPromotion(v.Id)
 		if int64(prom.GetValue().MerchantId) != mchId {
 			return -1, merchant.ErrMerchantNotMatch
 		}
 	} else {
-		prom = p._rep.CreatePromotion(v)
+		prom = p._repo.CreatePromotion(v)
 	}
 
 	if err = prom.SetValue(v); err == nil {
@@ -116,6 +116,6 @@ func (p *PromotionService) SaveCoupon(mchId int64, v *promotion.PromotionInfo,
 }
 
 func (p *PromotionService) BindCoupons(mchId int64, id int32, members []string) error {
-	coupon := p._rep.GetPromotion(id).(promotion.ICouponPromotion)
+	coupon := p._repo.GetPromotion(id).(promotion.ICouponPromotion)
 	return coupon.Binds(members)
 }

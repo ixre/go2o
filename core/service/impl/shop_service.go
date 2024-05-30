@@ -25,7 +25,6 @@ var _ proto.ShopServiceServer = new(shopServiceImpl)
 type shopServiceImpl struct {
 	repo         shop.IShopRepo
 	mchRepo      merchant.IMerchantRepo
-	shopRepo     shop.IShopRepo
 	query        *query.ShopQuery
 	registryRepo registry.IRegistryRepo
 	serviceUtil
@@ -33,12 +32,11 @@ type shopServiceImpl struct {
 }
 
 func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
-	shopRepo shop.IShopRepo, registryRepo registry.IRegistryRepo, query *query.ShopQuery) *shopServiceImpl {
+	registryRepo registry.IRegistryRepo, query *query.ShopQuery) proto.ShopServiceServer {
 	return &shopServiceImpl{
 		repo:         rep,
 		mchRepo:      mchRepo,
 		registryRepo: registryRepo,
-		shopRepo:     shopRepo,
 		query:        query,
 	}
 }
@@ -74,7 +72,7 @@ func (si *shopServiceImpl) SaveOfflineShop(_ context.Context, r *proto.SStore) (
 
 // * 查询自营店铺
 func (si *shopServiceImpl) GetSelfSupportShops(_ context.Context, r *proto.SelfSupportShopRequest) (*proto.ShopListResponse, error) {
-	shops := si.shopRepo.QuerySelfSupportShops()
+	shops := si.repo.QuerySelfSupportShops()
 	rsp := &proto.ShopListResponse{
 		List: []*proto.SShop{},
 	}
@@ -95,12 +93,12 @@ func (si *shopServiceImpl) DeleteStore(_ context.Context, id *proto.StoreId) (*p
 }
 
 func (si *shopServiceImpl) QueryShopId(c context2.Context, req *proto.ShopAliasRequest) (*proto.Int64, error) {
-	shopId := si.shopRepo.GetShopIdByAlias(req.ShopAlias)
+	shopId := si.repo.GetShopIdByAlias(req.ShopAlias)
 	return &proto.Int64{Value: shopId}, nil
 }
 
 func (si *shopServiceImpl) GetShop(_ context.Context, req *proto.GetShopIdRequest) (*proto.SShop, error) {
-	is := si.shopRepo.GetShop(req.ShopId)
+	is := si.repo.GetShop(req.ShopId)
 	if is != nil {
 		iop := is.(shop.IOnlineShop)
 		iv := iop.GetShopValue()
@@ -122,7 +120,7 @@ func (si *shopServiceImpl) GetShop(_ context.Context, req *proto.GetShopIdReques
 
 // CheckMerchantShopState 检查商户是否开通店铺
 func (si *shopServiceImpl) CheckMerchantShopState(_ context.Context, id *proto.MerchantId) (*proto.CheckShopResponse, error) {
-	sp := si.shopRepo.GetOnlineShopOfMerchant(int(id.Value))
+	sp := si.repo.GetOnlineShopOfMerchant(int(id.Value))
 	ret := &proto.CheckShopResponse{}
 	if sp != nil {
 		ret.Status = 1
@@ -153,7 +151,7 @@ func (si *shopServiceImpl) QueryShopByHost(_ context.Context, host *proto.String
 
 // GetStore 获取门店
 func (si *shopServiceImpl) GetStore(_ context.Context, storeId *proto.StoreId) (*proto.SStore, error) {
-	sp := si.shopRepo.GetStore(storeId.Value)
+	sp := si.repo.GetStore(storeId.Value)
 	if sp != nil {
 		v := sp.GetValue()
 		ifv := sp.(shop.IOfflineShop)

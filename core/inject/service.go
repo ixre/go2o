@@ -5,6 +5,7 @@ package inject
 import (
 	"github.com/google/wire"
 	"github.com/ixre/go2o/core/event"
+	"github.com/ixre/go2o/core/event/handler"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 )
@@ -12,13 +13,10 @@ import (
 var serviceProvideSets = wire.NewSet(provideSets,
 	impl.NewStatusService,
 	impl.NewRegistryService,
-	impl.NewPromotionService,
 	impl.NewMerchantService,
-	impl.NewRegistryService,
 	impl.NewPromotionService,
 	impl.NewFoundationService,
 	impl.NewMemberService,
-	impl.NewMerchantService,
 	impl.NewShopService,
 	impl.NewProductService,
 	//impl.NewItemService,
@@ -27,7 +25,7 @@ var serviceProvideSets = wire.NewSet(provideSets,
 	impl.NewAfterSalesService,
 	// 事件
 	event.NewEventSource,
-	event.NewEventHandler
+	handler.NewEventHandler,
 )
 
 // 状态服务

@@ -30,12 +30,13 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/repos"
 )
 
 var provideSets = wire.NewSet(
-	initial.GetOrmInstance,
-	initial.GetStorageInstance,
+	provide.GetOrmInstance,
+	provide.GetStorageInstance,
 	repos.NewRegistryRepo,
 	repos.NewProModelRepo,
 	repos.NewValueRepo,

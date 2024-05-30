@@ -5,12 +5,14 @@ package inject
 import (
 	"github.com/google/wire"
 	"github.com/ixre/go2o/core/query"
-	"github.com/ixre/go2o/core/repos"
+)
+
+var queryProvideSets = wire.NewSet(serviceProvideSets,
+	query.NewStationQuery,
+	query.NewMerchantQuery,
+	query.NewOrderQuery,
 )
 
 func GetStationQueryService() *query.StationQuery {
-	panic(wire.Build(
-		query.NewStationQuery,
-		repos.GetOrmInstance,
-	))
+	panic(wire.Build(queryProvideSets))
 }
