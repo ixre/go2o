@@ -7,7 +7,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/tests/ti"
 )
 
@@ -98,7 +98,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 // 测试支付单交易完成
 func TestPaymentOrderTradeFinish(t *testing.T) {
 	tradeNo := "IC6180515221155668"
-	ic := repos.Repo.GetPaymentRepo().GetPaymentOrder(tradeNo)
+	ic := inject.GetPaymentRepo().GetPaymentOrder(tradeNo)
 	if ic == nil {
 		t.Errorf("支付单:%s不存在", tradeNo)
 		t.Failed()

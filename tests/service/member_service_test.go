@@ -8,11 +8,8 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
-	"github.com/ixre/go2o/tests/ti"
 	"github.com/ixre/gof/types/typeconv"
 )
-
-var _ = ti.Factory.GetAdRepo()
 
 func TestGrantMemberAccessToken(t *testing.T) {
 	var memberId int64 = 1

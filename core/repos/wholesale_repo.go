@@ -2,10 +2,11 @@ package repos
 
 import (
 	"database/sql"
+	"log"
+
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"log"
 )
 
 var _ wholesaler.IWholesaleRepo = new(wholesaleRepo)
@@ -16,7 +17,7 @@ type wholesaleRepo struct {
 }
 
 // Create new WsWholesalerRepo
-func NewWholesaleRepo(o orm.Orm) *wholesaleRepo {
+func NewWholesaleRepo(o orm.Orm) wholesaler.IWholesaleRepo {
 	return &wholesaleRepo{
 		o:     o,
 		_conn: o.Connector(),

@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/ixre/go2o/core/infrastructure/locker"
-	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/go2o/core/inject"
 )
 
 // 检测已过期的订单并标记
@@ -15,7 +15,7 @@ func CheckExpiresPaymentOrder() {
 		return
 	}
 	defer locker.Unlock(jobName)
-	repo := repos.Repo.GetPaymentRepo()
+	repo := inject.GetPaymentRepo()
 	//log.Println("[ job]: start sync wallet log to clickhouse..")
 	// job := getJob(jobName)
 	// lastId := job.GetValue().LastExecIndex

@@ -24,8 +24,8 @@ import (
 	"github.com/ixre/go2o/core/event/msq"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/locker"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/module/express/kdniao"
-	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
@@ -99,7 +99,7 @@ func InitialModules() {
 
 func initSSOModule() {
 	// 初始化静态文件服务器地址
-	format.GlobalFileServerPath, _ = repos.Repo.GetRegistryRepo().GetValue(registry.FileServerPath)
+	format.GlobalFileServerPath, _ = inject.GetRegistryRepo().GetValue(registry.FileServerPath)
 
 	//domain := variable.Domain
 	trans, _, err := service.RegistryServiceClient()

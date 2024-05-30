@@ -54,7 +54,7 @@ type valueRepo struct {
 	confRegistry *gof.Registry
 }
 
-func NewValueRepo(confPath string, o orm.Orm, storage storage.Interface) valueobject.IValueRepo {
+func NewValueRepo(o orm.Orm, storage storage.Interface) valueobject.IValueRepo {
 	//confRegistry, err := gof.NewRegistry(confPath, ":")
 	//if err != nil {
 	//	log.Println("[ GO2O][ Crash]: can't load registry,", err.Error())

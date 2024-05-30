@@ -1,12 +1,13 @@
 package impl
 
 import (
+	"time"
+
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/go2o/core/domain/interface/content"
-	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/gof/db/orm"
-	"time"
 )
 
 func InitData(o orm.Orm) {
@@ -111,7 +112,7 @@ func (i dataInitializer) initPortalNavGroup() {
 
 // 初始化内置页面
 func (i dataInitializer) initPages() {
-	repo := repos.Repo.GetContentRepo()
+	repo := inject.GetContentRepo()
 	ip := repo.GetPageByCode(0, "privacy")
 	if ip == nil {
 		pages := []*content.Page{

@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
@@ -38,7 +38,7 @@ func (s *SSOModule) SetApp(app gof.App) {
 // 初始化模块
 func (s *SSOModule) Init() {
 	s.appMap = make(map[string]*proto.SSsoApp)
-	s.registryRepo = repos.Repo.GetRegistryRepo()
+	s.registryRepo = inject.GetRegistryRepo()
 }
 
 func (s *SSOModule) Register(app *proto.SSsoApp) (token string, err error) {

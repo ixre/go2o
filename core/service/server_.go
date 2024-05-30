@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/gof"
 )
 
@@ -25,7 +25,7 @@ func prepareRpcServer(ctx gof.App) {
 	//if ssl == "true" || ssl == "1" {
 	//	prefix = "https://"
 	//}
-	repo := impl.Repos.GetRegistryRepo()
+	repo := inject.GetRegistryRepo()
 	update := repo.UpdateValue
 	update(registry.ApiRequireVersion, gf("api_require_version"))
 

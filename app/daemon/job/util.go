@@ -1,14 +1,15 @@
 package job
 
 import (
+	"log"
+
 	"github.com/ixre/go2o/core/domain/interface/job"
 	"github.com/ixre/go2o/core/infrastructure/locker"
-	"github.com/ixre/go2o/core/repos"
-	"log"
+	"github.com/ixre/go2o/core/inject"
 )
 
 func getJob(jobName string) job.IJobAggregate {
-	jobRepo := repos.Repo.GetJobRepo()
+	jobRepo := inject.GetJobRepo()
 	j := jobRepo.GetJobByName(jobName)
 	if j == nil {
 		key := "CreateTable_" + jobName

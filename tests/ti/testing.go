@@ -23,9 +23,8 @@ import (
 )
 
 var (
-	Factory *repos.RepoFactory
-	_conn   db.Connector
-	_orm    orm.Orm
+	_conn db.Connector
+	_orm  orm.Orm
 )
 var (
 	REDIS_DB = "1"
@@ -68,5 +67,5 @@ func init() {
 	sto := app.Storage()
 	_orm = orm.NewOrm(_conn.Driver(), _conn.Raw())
 	impl.InitTestService(app, _conn, _orm, sto)
-	Factory = (&repos.RepoFactory{}).Init(_orm, sto)
+	repos.Initial(_orm, sto)
 }

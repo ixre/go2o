@@ -53,7 +53,7 @@ var memberRepoImplMapped = false
 
 func NewMemberRepo(sto storage.Interface, o orm.Orm,
 	walletRepo wallet.IWalletRepo, mssRepo mss.IMssRepo,
-	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) *MemberRepoImpl {
+	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMemberRepo {
 	if !memberRepoImplMapped {
 		_ = o.Mapping(member.OAuthAccount{}, "mm_app_account")
 		memberRepoImplMapped = true

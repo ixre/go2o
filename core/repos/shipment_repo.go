@@ -24,7 +24,7 @@ type shipmentRepo struct {
 	o orm.Orm
 }
 
-func NewShipmentRepo(o orm.Orm, expRepo express.IExpressRepo) *shipmentRepo {
+func NewShipmentRepo(o orm.Orm, expRepo express.IExpressRepo) shipment.IShipmentRepo {
 	return &shipmentRepo{
 		Connector: o.Connector(),
 		o:         o,

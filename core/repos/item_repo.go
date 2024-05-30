@@ -49,7 +49,7 @@ var ormMapped = false
 func NewGoodsItemRepo(o orm.Orm, catRepo product.ICategoryRepo,
 	proRepo product.IProductRepo, proMRepo promodel.IProductModelRepo,
 	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
-	registryRepo registry.IRegistryRepo, shopRepo shop.IShopRepo) *itemRepoImpl {
+	registryRepo registry.IRegistryRepo, shopRepo shop.IShopRepo)item.IItemRepo {
 	if !ormMapped {
 		_ = o.Mapping(item.Image{}, "item_image")
 		ormMapped = true

@@ -7,14 +7,368 @@
 package inject
 
 import (
+	"github.com/google/wire"
+	"github.com/ixre/go2o/core/domain/interface/ad"
+	"github.com/ixre/go2o/core/domain/interface/aftersales"
+	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/domain/interface/delivery"
+	"github.com/ixre/go2o/core/domain/interface/express"
+	"github.com/ixre/go2o/core/domain/interface/item"
+	"github.com/ixre/go2o/core/domain/interface/job"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/merchant/user"
+	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
+	"github.com/ixre/go2o/core/domain/interface/message"
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
+	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/domain/interface/payment"
+	"github.com/ixre/go2o/core/domain/interface/personfinance"
+	"github.com/ixre/go2o/core/domain/interface/pro_model"
+	"github.com/ixre/go2o/core/domain/interface/product"
+	"github.com/ixre/go2o/core/domain/interface/promotion"
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/shipment"
+	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/query"
-	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/repos"
 )
 
-// Injectors from wire.go:
+// Injectors from query.go:
 
 func GetStationQueryService() *query.StationQuery {
-	orm := impl.GetOrmInstance()
+	orm := repos.GetOrmInstance()
 	stationQuery := query.NewStationQuery(orm)
 	return stationQuery
 }
+
+// Injectors from repo.go:
+
+func GetProModelRepo() promodel.IProductModelRepo {
+	orm := repos.GetOrmInstance()
+	iProductModelRepo := repos.NewProModelRepo(orm)
+	return iProductModelRepo
+}
+
+func GetValueRepo() valueobject.IValueRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	return iValueRepo
+}
+
+func GetUserRepo() user.IUserRepo {
+	orm := repos.GetOrmInstance()
+	iUserRepo := repos.NewUserRepo(orm)
+	return iUserRepo
+}
+
+func GetNotifyRepo() notify.INotifyRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	return iNotifyRepo
+}
+
+func GetMssRepo() mss.IMssRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	return iMssRepo
+}
+
+func GetExpressRepo() express.IExpressRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
+	return iExpressRepo
+}
+
+func GetShipmentRepo() shipment.IShipmentRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
+	iShipmentRepo := repos.NewShipmentRepo(orm, iExpressRepo)
+	return iShipmentRepo
+}
+
+func GetMemberRepo() member.IMemberRepo {
+	storageInterface := repos.GetStorageInstance()
+	orm := repos.GetOrmInstance()
+	iWalletRepo := repos.NewWalletRepo(orm)
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
+	return iMemberRepo
+}
+
+func GetProductRepo() product.IProductRepo {
+	orm := repos.GetOrmInstance()
+	iProductModelRepo := repos.NewProModelRepo(orm)
+	storageInterface := repos.GetStorageInstance()
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iProductRepo := repos.NewProductRepo(orm, iProductModelRepo, iValueRepo)
+	return iProductRepo
+}
+
+func GetItemWholesaleRepo() item.IItemWholesaleRepo {
+	orm := repos.GetOrmInstance()
+	iItemWholesaleRepo := repos.NewItemWholesaleRepo(orm)
+	return iItemWholesaleRepo
+}
+
+func GetCategoryRepo() product.ICategoryRepo {
+	orm := repos.GetOrmInstance()
+	iProductModelRepo := repos.NewProModelRepo(orm)
+	storageInterface := repos.GetStorageInstance()
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
+	return iCategoryRepo
+}
+
+func GetItemRepo() item.IItemRepo {
+	orm := repos.GetOrmInstance()
+	iProductModelRepo := repos.NewProModelRepo(orm)
+	storageInterface := repos.GetStorageInstance()
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iProductRepo := repos.NewProductRepo(orm, iProductModelRepo, iValueRepo)
+	iItemWholesaleRepo := repos.NewItemWholesaleRepo(orm)
+	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
+	iShopRepo := repos.NewShopRepo(orm, storageInterface, iValueRepo, iRegistryRepo)
+	iItemRepo := repos.NewGoodsItemRepo(orm, iCategoryRepo, iProductRepo, iProductModelRepo, iItemWholesaleRepo, iExpressRepo, iRegistryRepo, iShopRepo)
+	return iItemRepo
+}
+
+func GetSaleLabelRepo() item.ISaleLabelRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iSaleLabelRepo := repos.NewTagSaleRepo(orm, iValueRepo)
+	return iSaleLabelRepo
+}
+
+func GetPromotionRepo() promotion.IPromotionRepo {
+	orm := repos.GetOrmInstance()
+	iProductModelRepo := repos.NewProModelRepo(orm)
+	storageInterface := repos.GetStorageInstance()
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iProductRepo := repos.NewProductRepo(orm, iProductModelRepo, iValueRepo)
+	iItemWholesaleRepo := repos.NewItemWholesaleRepo(orm)
+	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
+	iShopRepo := repos.NewShopRepo(orm, storageInterface, iValueRepo, iRegistryRepo)
+	iItemRepo := repos.NewGoodsItemRepo(orm, iCategoryRepo, iProductRepo, iProductModelRepo, iItemWholesaleRepo, iExpressRepo, iRegistryRepo, iShopRepo)
+	iWalletRepo := repos.NewWalletRepo(orm)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
+	iPromotionRepo := repos.NewPromotionRepo(orm, iItemRepo, iMemberRepo)
+	return iPromotionRepo
+}
+
+func GetShopRepo() shop.IShopRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iShopRepo := repos.NewShopRepo(orm, storageInterface, iValueRepo, iRegistryRepo)
+	return iShopRepo
+}
+
+func GetWholesaleRepo() wholesaler.IWholesaleRepo {
+	orm := repos.GetOrmInstance()
+	iWholesaleRepo := repos.NewWholesaleRepo(orm)
+	return iWholesaleRepo
+}
+
+func GetStationRepo() station.IStationRepo {
+	orm := repos.GetOrmInstance()
+	iStationRepo := repos.NewStationRepo(orm)
+	return iStationRepo
+}
+
+func GetMerchantRepo() merchant.IMerchantRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iWholesaleRepo := repos.NewWholesaleRepo(orm)
+	iProductModelRepo := repos.NewProModelRepo(orm)
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iProductRepo := repos.NewProductRepo(orm, iProductModelRepo, iValueRepo)
+	iItemWholesaleRepo := repos.NewItemWholesaleRepo(orm)
+	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
+	iShopRepo := repos.NewShopRepo(orm, storageInterface, iValueRepo, iRegistryRepo)
+	iItemRepo := repos.NewGoodsItemRepo(orm, iCategoryRepo, iProductRepo, iProductModelRepo, iItemWholesaleRepo, iExpressRepo, iRegistryRepo, iShopRepo)
+	iUserRepo := repos.NewUserRepo(orm)
+	iWalletRepo := repos.NewWalletRepo(orm)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
+	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iMemberRepo, iMssRepo, iWalletRepo, iValueRepo, iRegistryRepo)
+	return iMerchantRepo
+}
+
+func GetCartRepo() cart.ICartRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iWalletRepo := repos.NewWalletRepo(orm)
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
+	iWholesaleRepo := repos.NewWholesaleRepo(orm)
+	iProductModelRepo := repos.NewProModelRepo(orm)
+	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
+	iProductRepo := repos.NewProductRepo(orm, iProductModelRepo, iValueRepo)
+	iItemWholesaleRepo := repos.NewItemWholesaleRepo(orm)
+	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
+	iShopRepo := repos.NewShopRepo(orm, storageInterface, iValueRepo, iRegistryRepo)
+	iItemRepo := repos.NewGoodsItemRepo(orm, iCategoryRepo, iProductRepo, iProductModelRepo, iItemWholesaleRepo, iExpressRepo, iRegistryRepo, iShopRepo)
+	iUserRepo := repos.NewUserRepo(orm)
+	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iMemberRepo, iMssRepo, iWalletRepo, iValueRepo, iRegistryRepo)
+	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
+	return iCartRepo
+}
+
+func GetPersonFinanceRepository() personfinance.IPersonFinanceRepository {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iWalletRepo := repos.NewWalletRepo(orm)
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
+	iPersonFinanceRepository := repos.NewPersonFinanceRepository(orm, iMemberRepo)
+	return iPersonFinanceRepository
+}
+
+func GetDeliveryRepo() delivery.IDeliveryRepo {
+	orm := repos.GetOrmInstance()
+	iDeliveryRepo := repos.NewDeliverRepo(orm)
+	return iDeliveryRepo
+}
+
+func GetContentRepo() content.IArchiveRepo {
+	orm := repos.GetOrmInstance()
+	iArchiveRepo := repos.NewContentRepo(orm)
+	return iArchiveRepo
+}
+
+func GetAdRepo() ad.IAdRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iAdRepo := repos.NewAdvertisementRepo(orm, storageInterface)
+	return iAdRepo
+}
+
+func GetOrderRepo() order.IOrderRepo {
+	storageInterface := repos.GetStorageInstance()
+	orm := repos.GetOrmInstance()
+	iWholesaleRepo := repos.NewWholesaleRepo(orm)
+	iProductModelRepo := repos.NewProModelRepo(orm)
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iProductRepo := repos.NewProductRepo(orm, iProductModelRepo, iValueRepo)
+	iItemWholesaleRepo := repos.NewItemWholesaleRepo(orm)
+	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
+	iShopRepo := repos.NewShopRepo(orm, storageInterface, iValueRepo, iRegistryRepo)
+	iItemRepo := repos.NewGoodsItemRepo(orm, iCategoryRepo, iProductRepo, iProductModelRepo, iItemWholesaleRepo, iExpressRepo, iRegistryRepo, iShopRepo)
+	iUserRepo := repos.NewUserRepo(orm)
+	iWalletRepo := repos.NewWalletRepo(orm)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
+	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iMemberRepo, iMssRepo, iWalletRepo, iValueRepo, iRegistryRepo)
+	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, iMemberRepo, iRegistryRepo)
+	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
+	iPromotionRepo := repos.NewPromotionRepo(orm, iItemRepo, iMemberRepo)
+	iDeliveryRepo := repos.NewDeliverRepo(orm)
+	iShipmentRepo := repos.NewShipmentRepo(orm, iExpressRepo)
+	iOrderRepo := repos.NewOrderRepo(storageInterface, orm, iMerchantRepo, iPaymentRepo, iProductRepo, iCartRepo, iItemRepo, iPromotionRepo, iMemberRepo, iDeliveryRepo, iExpressRepo, iShipmentRepo, iShopRepo, iValueRepo, iRegistryRepo)
+	return iOrderRepo
+}
+
+func GetPaymentRepo() payment.IPaymentRepo {
+	storageInterface := repos.GetStorageInstance()
+	orm := repos.GetOrmInstance()
+	iWalletRepo := repos.NewWalletRepo(orm)
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
+	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, iMemberRepo, iRegistryRepo)
+	return iPaymentRepo
+}
+
+func GetAfterSalesRepo() afterSales.IAfterSalesRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iWholesaleRepo := repos.NewWholesaleRepo(orm)
+	iProductModelRepo := repos.NewProModelRepo(orm)
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iProductRepo := repos.NewProductRepo(orm, iProductModelRepo, iValueRepo)
+	iItemWholesaleRepo := repos.NewItemWholesaleRepo(orm)
+	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
+	iShopRepo := repos.NewShopRepo(orm, storageInterface, iValueRepo, iRegistryRepo)
+	iItemRepo := repos.NewGoodsItemRepo(orm, iCategoryRepo, iProductRepo, iProductModelRepo, iItemWholesaleRepo, iExpressRepo, iRegistryRepo, iShopRepo)
+	iUserRepo := repos.NewUserRepo(orm)
+	iWalletRepo := repos.NewWalletRepo(orm)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
+	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iMemberRepo, iMssRepo, iWalletRepo, iValueRepo, iRegistryRepo)
+	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, iMemberRepo, iRegistryRepo)
+	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
+	iPromotionRepo := repos.NewPromotionRepo(orm, iItemRepo, iMemberRepo)
+	iDeliveryRepo := repos.NewDeliverRepo(orm)
+	iShipmentRepo := repos.NewShipmentRepo(orm, iExpressRepo)
+	iOrderRepo := repos.NewOrderRepo(storageInterface, orm, iMerchantRepo, iPaymentRepo, iProductRepo, iCartRepo, iItemRepo, iPromotionRepo, iMemberRepo, iDeliveryRepo, iExpressRepo, iShipmentRepo, iShopRepo, iValueRepo, iRegistryRepo)
+	iAfterSalesRepo := repos.NewAfterSalesRepo(orm, iOrderRepo, iMemberRepo, iPaymentRepo)
+	return iAfterSalesRepo
+}
+
+func GetWalletRepo() wallet.IWalletRepo {
+	orm := repos.GetOrmInstance()
+	iWalletRepo := repos.NewWalletRepo(orm)
+	return iWalletRepo
+}
+
+func GetRegistryRepo() registry.IRegistryRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	return iRegistryRepo
+}
+
+func GetJobRepo() job.IJobRepo {
+	orm := repos.GetOrmInstance()
+	storageInterface := repos.GetStorageInstance()
+	iJobRepo := repos.NewJobRepository(orm, storageInterface)
+	return iJobRepo
+}
+
+// repo.go:
+
+var provideSets = wire.NewSet(repos.GetOrmInstance, repos.GetStorageInstance, repos.NewRegistryRepo, repos.NewProModelRepo, repos.NewValueRepo, repos.NewUserRepo, repos.NewWalletRepo, repos.NewNotifyRepo, repos.NewMssRepo, repos.NewExpressRepo, repos.NewShipmentRepo, repos.NewMemberRepo, repos.NewProductRepo, repos.NewItemWholesaleRepo, repos.NewCategoryRepo, repos.NewShopRepo, repos.NewGoodsItemRepo, repos.NewAfterSalesRepo, repos.NewCartRepo, repos.NewContentRepo, repos.NewMerchantRepo, repos.NewOrderRepo, repos.NewPaymentRepo, repos.NewPromotionRepo, repos.NewStationRepo, repos.NewTagSaleRepo, repos.NewWholesaleRepo, repos.NewPersonFinanceRepository, repos.NewDeliverRepo, repos.NewAdvertisementRepo, repos.NewJobRepository)

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/repos"
+	"github.com/ixre/go2o/core/inject"
 )
 
 var (
@@ -40,7 +40,7 @@ func Configure(mqType int, address []string) error {
 
 // 检查是否开启推送
 func checkNatsSubs() bool {
-	repo := repos.Repo.GetRegistryRepo()
+	repo := inject.GetRegistryRepo()
 	v, _ := repo.GetValue(registry.AppEnableNatsSubscription)
 	return v == "1" || v == "true"
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/ixre/go2o/core/domain/tmp"
 	"github.com/ixre/go2o/core/event"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/repos/clickhouse"
@@ -28,11 +29,9 @@ import (
 )
 
 var (
-	DB  db.Connector
-	ORM orm.Orm
+	DB db.Connector
 )
 var (
-	Repos *repos.RepoFactory
 
 	// 状态服务
 	StatusService *statusServiceImpl
@@ -101,18 +100,12 @@ func handleError(err error) error {
 	//return err
 }
 
-// 返回orm实例
-func GetOrmInstance() orm.Orm {
-	return ORM
-}
-
 func Init(ctx gof.App) {
 	Context := ctx
 	db := Context.Db()
 	sto := Context.Storage()
 	o := orm.NewOrm(db.Driver(), db.Raw())
 	tmp.SetORM(o)
-	ORM = o
 	orm.CacheProxy(o, sto)
 	// 初始化clickhouse
 	initializeClickhouse(ctx)
@@ -147,32 +140,32 @@ func initializeClickhouse(app gof.App) {
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 	OrmMapping(orm)
 	//[]string{"127.0.0.1:9000"}
-	Repos = (&repos.RepoFactory{}).Init(orm, sto)
-	registryRepo := Repos.GetRegistryRepo()
-	proMRepo := Repos.GetProModelRepo()
-	valueRepo := Repos.GetValueRepo()
-	mssRepo := Repos.GetMssRepo()
-	expressRepo := Repos.GetExpressRepo()
-	shipRepo := Repos.GetShipmentRepo()
-	memberRepo := Repos.GetMemberRepo()
-	productRepo := Repos.GetProductRepo()
-	catRepo := Repos.GetCategoryRepo()
-	itemRepo := Repos.GetItemRepo()
-	tagSaleRepo := Repos.GetSaleLabelRepo()
-	promRepo := Repos.GetPromotionRepo()
+	repos.Initial(orm, sto)
+	registryRepo := inject.GetRegistryRepo()
+	proMRepo := inject.GetProModelRepo()
+	valueRepo := inject.GetValueRepo()
+	mssRepo := inject.GetMssRepo()
+	expressRepo := inject.GetExpressRepo()
+	shipRepo := inject.GetShipmentRepo()
+	memberRepo := inject.GetMemberRepo()
+	productRepo := inject.GetProductRepo()
+	catRepo := inject.GetCategoryRepo()
+	itemRepo := inject.GetItemRepo()
+	tagSaleRepo := inject.GetSaleLabelRepo()
+	promRepo := inject.GetPromotionRepo()
 
-	shopRepo := Repos.GetShopRepo()
-	mchRepo := Repos.GetMerchantRepo()
-	cartRepo := Repos.GetCartRepo()
-	personFinanceRepo := Repos.GetPersonFinanceRepository()
-	deliveryRepo := Repos.GetDeliveryRepo()
-	contentRepo := Repos.GetContentRepo()
-	adRepo := Repos.GetAdRepo()
-	orderRepo := Repos.GetOrderRepo()
-	paymentRepo := Repos.GetPaymentRepo()
-	asRepo := Repos.GetAfterSalesRepo()
-	notifyRepo := Repos.GetNotifyRepo()
-	jobRepo := Repos.GetJobRepo()
+	shopRepo := inject.GetShopRepo()
+	mchRepo := inject.GetMerchantRepo()
+	cartRepo := inject.GetCartRepo()
+	personFinanceRepo := inject.GetPersonFinanceRepository()
+	deliveryRepo := inject.GetDeliveryRepo()
+	contentRepo := inject.GetContentRepo()
+	adRepo := inject.GetAdRepo()
+	orderRepo := inject.GetOrderRepo()
+	paymentRepo := inject.GetPaymentRepo()
+	asRepo := inject.GetAfterSalesRepo()
+	notifyRepo := inject.GetNotifyRepo()
+	jobRepo := inject.GetJobRepo()
 
 	/** Params **/
 	memberQue := query.NewMemberQuery(orm)
@@ -207,7 +200,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	AdService = NewAdvertisementService(adRepo, sto)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
 
-	WalletService = NewWalletService(Repos.GetWalletRepo())
+	WalletService = NewWalletService(inject.GetWalletRepo())
 	ExecuteService = NewExecDataService(sto, jobRepo)
 
 	CommonDao = impl.NewCommDao(orm, sto, adRepo, catRepo)
