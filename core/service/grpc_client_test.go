@@ -1,16 +1,3 @@
-package service
-
-import (
-	"context"
-	"github.com/ixre/go2o/core/etcd"
-	"github.com/ixre/go2o/core/service/proto"
-	"go.etcd.io/etcd/client/v3"
-	"google.golang.org/grpc"
-	"log"
-	"testing"
-	"time"
-)
-
 /**
  * Copyright (C) 2007-2020 56X.NET,All rights reserved.
  *
@@ -21,8 +8,22 @@ import (
  * history :
  */
 
-//var service = "Go2oService"
-//var ttl int64 = 3
+package service
+
+import (
+	"context"
+	"log"
+	"testing"
+	"time"
+
+	"github.com/ixre/go2o/core/etcd"
+	"github.com/ixre/go2o/core/service/proto"
+	clientv3 "go.etcd.io/etcd/client/v3"
+	"google.golang.org/grpc"
+)
+
+// var service = "Go2oService"
+// var ttl int64 = 3
 var cfg = clientv3.Config{
 	Endpoints:   []string{"http://localhost:2379/"},
 	DialTimeout: 5 * time.Second,

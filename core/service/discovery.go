@@ -1,3 +1,12 @@
+/**
+ * Copyright (C) 2007-2020 56X.NET,All rights reserved.
+ *
+ * name : discovery.go
+ * author : jarrysix (jarrysix#gmail.com)
+ * date : 2020-09-08 07:02
+ * description :
+ * history :
+ */
 package service
 
 import (
@@ -8,16 +17,6 @@ import (
 	"github.com/ixre/gof/log"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
-
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : discovery.go
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2020-09-08 07:02
- * description :
- * history :
- */
 
 var service = "Go2oService"
 var ttl int64 = 10

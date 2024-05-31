@@ -1,7 +1,8 @@
 package msq
 
 import (
-	"github.com/ixre/gof/log"
+	"log"
+
 	"github.com/nats-io/nats.go"
 )
 
@@ -13,12 +14,12 @@ type natsProducer struct {
 }
 
 func newNatsProducer(address string) (Producer, error) {
-	log.Println("[ GO2O][ INFO]: start nats producer...")
 	nc, err := nats.Connect(address)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: can't connect nats server!", err.Error())
 		return nil, err
 	}
+	log.Println("[ GO2O][ INFO]: start nats producer success")
 	return &natsProducer{
 		address: address,
 		nc:      nc,

@@ -203,7 +203,6 @@ func (d *defaultService) Name() string {
 
 // 启动服务
 func (d *defaultService) Start(a gof.App) {
-	log.Println("---xx")
 	d.app = a
 	go superviseMemberUpdate(services)
 	go superviseOrder(services)

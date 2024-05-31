@@ -119,7 +119,6 @@ func (o *OrderQuery) QueryPagingNormalOrder(memberId, begin, size int64, paginat
 			}
 			_ = rs.Close()
 		}, begin, size)
-	//log.Println(cmd)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]:query order error", err.Error())
 	}

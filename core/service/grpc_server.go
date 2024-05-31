@@ -22,6 +22,7 @@ import (
  * history :
  */
 
+// 启动RPC服务
 func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	log.Println("[ GO2O][ INFO]: start grpc server")
 	// 启动RPC服务

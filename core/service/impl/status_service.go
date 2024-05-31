@@ -19,3 +19,9 @@ func NewStatusService() proto.StatusServiceServer {
 func (s *StatusServiceImpl) Ping(_ context.Context, empty *proto.Empty) (*proto.String, error) {
 	return &proto.String{Value: "pong"}, nil
 }
+
+func (t *StatusServiceImpl) Hello(_ context.Context, user *proto.String) (response *proto.String, err error) {
+	return &proto.String{
+		Value: "hello " + user.Value,
+	}, nil
+}

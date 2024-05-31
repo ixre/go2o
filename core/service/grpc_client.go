@@ -9,14 +9,13 @@
 package service
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"time"
 
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/go2o/core/service/proto"
-	"github.com/ixre/gof/log"
+	"log"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -30,13 +29,15 @@ var selector etcd.Selector
 func ConfigureClient(c *clientv3.Config, defaultAddr string) {
 	staticAddr = defaultAddr
 	if c != nil && len(staticAddr) == 0 {
-		log.Println("[ GO2O][ INFO]: connecting go2o rpc server...")
+		log.Println("[ 1GO2O][ INFO]: connecting go2o rpc server...")
 		s, err := etcd.NewSelector(service, *c, etcd.AlgRoundRobin)
 		if err != nil {
 			log.Println("[ GO2O][ ERROR]: can't connect go2o rpc server! ", err.Error())
 			os.Exit(1)
 		}
 		selector = s
+		log.Println("[ 2GO2O][ INFO]: connecting go2o rpc server...")
+
 	} else if len(staticAddr) > 0 {
 		log.Printf("[ GO2O][ INFO]: connecting static rpc server (node:%s)...\n", staticAddr)
 	}
@@ -50,6 +51,9 @@ func tryConnect(retryTimes int) {
 		if err == nil {
 			trans.Close()
 			break
+		}
+		if i > 0{
+			log.Printf("[ GO2O][ INFO]: the %dth retry connecting rpc server \n",i)
 		}
 		time.Sleep(time.Second)
 		if i >= retryTimes-1 {
@@ -70,16 +74,15 @@ func getConn(selector etcd.Selector) (*grpc.ClientConn, error) {
 		addr = next.Addr
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	conn, err := grpc.DialContext(ctx,
-		addr,
+	//ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	conn, err := grpc.NewClient(addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
+		//grpc.WithBlock(),
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{
 			Time:                10 * time.Second,
 			Timeout:             5 * time.Second,
 			PermitWithoutStream: true}))
-	defer cancel()
+	//defer cancel()
 	if err != nil {
 		log.Printf("[ GO2O][ ERROR]: %s addr:%s \n", err.Error(), addr)
 		return conn, fmt.Errorf("%s addr:%s", err.Error(), addr)

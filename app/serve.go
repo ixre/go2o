@@ -14,6 +14,9 @@ import (
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/event/msq"
 	"github.com/ixre/go2o/core/initial"
+	"github.com/ixre/go2o/core/initial/provide"
+
+	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service"
 	"github.com/ixre/gof/domain/eventbus"
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -77,20 +80,12 @@ func Run(ch chan bool, after func(*clientv3.Config)) {
 	if len(host) == 0 {
 		host = os.Getenv("GO2O_SERVER_HOST")
 	}
-	//confFile = "./app_dev.conf"
-	// if runDaemon {
-	// 	appFlag = appFlag | FlagDaemon
-	// }
-	// appFlag = appFlag | FlagRpcServe
-	// setting log flags
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate)
-
 	etcdEndPoints := strings.Split(etcdEndPoints, ",")
 	if len(etcdEndPoints) == 0 {
 		log.Fatalln("etcd endpoints not specified")
 	}
-
 	cfg := clientv3.Config{
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
@@ -103,19 +98,18 @@ func Run(ch chan bool, after func(*clientv3.Config)) {
 		os.Exit(1)
 	}
 	go core.SignalNotify(ch, initial.AppDispose)
-	//impl.Init(newApp)
-	//runGoMicro()
 	// 初始化分布式锁
 	etcd.InitializeLocker(&cfg)
+	repos.OrmMapping(provide.GetOrmInstance())
 	// 运行RPC服务
 	service.ServeRPC(ch, &cfg, port)
+	// 注册服务发现
 	service.RegisterServiceDiscovery(&cfg, host, port)
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
-	// initial service client
-	service.ConfigureClient(&cfg, "")
 	// 发布应用初始化事件
 	eventbus.Publish(events.AppInitialEvent{})
+	InitialModules()
 	if runDaemon {
 		go daemon.Run(newApp)
 	}

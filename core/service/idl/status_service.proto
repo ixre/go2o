@@ -7,7 +7,10 @@ option java_package = "com.github.go2o.rpc";
 
 /** 状态服务 */
 service StatusService {
-    /** 尝试连接 */
+    // 发送心跳
     rpc Ping (Empty) returns (String) {
+    } 
+    // 打招呼
+    rpc Hello (String) returns (String) {
     }
 }

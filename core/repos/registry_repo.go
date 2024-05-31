@@ -42,12 +42,14 @@ func (r *registryRepo) CreateUserKey(key string, value string, desc string) erro
 }
 
 func NewRegistryRepo(conn orm.Orm, s storage.Interface) registry.IRegistryRepo {
-	return (&registryRepo{
+	r := (&registryRepo{
 		conn:  conn.Connector(),
 		_orm:  conn,
 		store: s,
 		data:  make(map[string]registry.IRegistry),
-	}).init()
+	})
+	go r.init()
+	return r
 }
 
 func (r *registryRepo) init() registry.IRegistryRepo {
@@ -68,7 +70,7 @@ func (r *registryRepo) init() registry.IRegistryRepo {
 	// 清理不再使用的注册表
 	_ = r.truncUnused(registries)
 	// 全部输出到缓存中
-	go r.flushToStorage(list)
+	r.flushToStorage(list)
 	return r
 }
 
@@ -156,7 +158,7 @@ func (r *registryRepo) Save(registry registry.IRegistry) (err error) {
 
 // Merge 合并Registry
 func (r *registryRepo) Merge(registries []*registry.Registry) error {
-	if registries == nil || len(registries) == 0 {
+	if len(registries) == 0 {
 		return nil
 	}
 	for _, v := range registries {

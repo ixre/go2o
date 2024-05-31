@@ -92,19 +92,19 @@ func (s *serverSelector) Watch() {
 				case clientv3.EventTypePut:
 					node, err := s.GetVal(e.Kv.Value)
 					if err != nil {
-						log.Printf("[EventTypePut] err : %s", err.Error())
+						log.Printf("[EventTypePut] err : %s\n", err.Error())
 						continue
 					}
 					s.AddNode(node)
 				case clientv3.EventTypeDelete:
 					keyArray := strings.Split(string(e.Kv.Key), "/")
 					if len(keyArray) == 0 {
-						println("[ Etcd][ Event]: delete node key is empty")
+						log.Println("[ Etcd][ Event]: delete node key is empty")
 						return
 					}
 					nodeId, err := strconv.Atoi(keyArray[len(keyArray)-1])
 					if err != nil {
-						log.Printf("[EventTypePut] key Atoi : %s", err.Error())
+						log.Printf("[EventTypePut] key Atoi : %s\n", err.Error())
 						continue
 					}
 					s.DelNode(uint32(nodeId))
@@ -152,7 +152,7 @@ func (s *serverSelector) GetVal(val []byte) (Node, error) {
 func (s *serverSelector) loadNodes() {
 	res, err := s.cli.Get(context.TODO(), s.GetKey(), clientv3.WithPrefix(), clientv3.WithSerializable())
 	if err != nil {
-		log.Printf("[ Watch] err : %s", err.Error())
+		log.Printf("[ Watch] err : %s\n", err.Error())
 		return
 	}
 	for _, kv := range res.Kvs {
@@ -165,6 +165,6 @@ func (s *serverSelector) loadNodes() {
 		log.Printf("[ GO2O][ INFO]: found node %s \n", node.Addr)
 	}
 	if len(s.nodes) == 0 {
-		fmt.Printf("[ GO2O][ Warning]: no found any nodes \n")
+		log.Printf("[ GO2O][ Warning]: no found any nodes \n")
 	}
 }
