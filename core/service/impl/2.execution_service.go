@@ -27,7 +27,7 @@ type executionServiceImpl struct {
 	proto.UnimplementedExecutionServiceServer
 }
 
-func NewExecDataService(s storage.Interface, repo job.IJobRepo) *executionServiceImpl {
+func NewExecutionService(s storage.Interface, repo job.IJobRepo) proto.ExecutionServiceServer {
 	return &executionServiceImpl{
 		s:    s,
 		repo: repo,

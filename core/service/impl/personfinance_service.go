@@ -31,7 +31,7 @@ type personFinanceService struct {
 }
 
 func NewPersonFinanceService(rep personfinance.IPersonFinanceRepository,
-	accRepo member.IMemberRepo) *personFinanceService {
+	accRepo member.IMemberRepo) proto.FinanceServiceServer {
 	return &personFinanceService{
 		repo:    rep,
 		memRepo: accRepo,

@@ -7,7 +7,6 @@ import (
 
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/inject"
-	grpc2 "github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/log"
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -32,34 +31,33 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	sysInit(inject.GetRegistryRepo())
 	// 启动RPC服务
 	s := grpc.NewServer()
-	proto.RegisterGreeterServiceServer(s, &grpc2.TestServiceImpl{})
-	proto.RegisterStatusServiceServer(s, grpc2.StatusService)
-	proto.RegisterRegistryServiceServer(s, grpc2.RegistryService)
-	proto.RegisterMerchantServiceServer(s, grpc2.MerchantService)
-	proto.RegisterMemberServiceServer(s, grpc2.MemberService)
-	proto.RegisterFoundationServiceServer(s, grpc2.FoundationService)
-	proto.RegisterMessageServiceServer(s, grpc2.MessageService)
-	proto.RegisterContentServiceServer(s, grpc2.ContentService)
-	proto.RegisterPaymentServiceServer(s, grpc2.PaymentService)
-	proto.RegisterWalletServiceServer(s, grpc2.WalletService)
-	proto.RegisterCartServiceServer(s, grpc2.CartService)
-	proto.RegisterOrderServiceServer(s, grpc2.OrderService)
-	proto.RegisterShopServiceServer(s, grpc2.ShopService)
-	proto.RegisterShipmentServiceServer(s, grpc2.ShipmentService)
-	proto.RegisterItemServiceServer(s, grpc2.ItemService)
-	proto.RegisterFinanceServiceServer(s, grpc2.PersonFinanceService)
-	proto.RegisterQueryServiceServer(s, grpc2.QueryService)
-	proto.RegisterProductServiceServer(s, grpc2.ProductService)
-	proto.RegisterAfterSalesServiceServer(s, grpc2.AfterSalesService)
-	proto.RegisterExpressServiceServer(s, grpc2.ExpressService)
-	proto.RegisterAdvertisementServiceServer(s, grpc2.AdService)
-	proto.RegisterPortalServiceServer(s, grpc2.PortalService)
-	proto.RegisterExecutionServiceServer(s, grpc2.ExecuteService)
+	proto.RegisterStatusServiceServer(s, inject.GetStatusService())
+	proto.RegisterRegistryServiceServer(s, inject.GetRegistryService())
+	proto.RegisterMerchantServiceServer(s, inject.GetMerchantService())
+	proto.RegisterMemberServiceServer(s, inject.GetMemberService())
+	proto.RegisterFoundationServiceServer(s, inject.GetFoundationService())
+	proto.RegisterMessageServiceServer(s, inject.GetMessageService())
+	proto.RegisterContentServiceServer(s, inject.GetContentService())
+	proto.RegisterPaymentServiceServer(s, inject.GetPaymentService())
+	proto.RegisterWalletServiceServer(s, inject.GetWalletService())
+	proto.RegisterCartServiceServer(s, inject.GetCartService())
+	proto.RegisterOrderServiceServer(s, inject.GetOrderService())
+	proto.RegisterShopServiceServer(s, inject.GetShopService())
+	proto.RegisterShipmentServiceServer(s, inject.GetShipmentService())
+	proto.RegisterItemServiceServer(s, inject.GetItemService())
+	proto.RegisterFinanceServiceServer(s, inject.GetPersonFinanceService())
+	proto.RegisterQueryServiceServer(s, inject.GetQueryService())
+	proto.RegisterProductServiceServer(s, inject.GetProductService())
+	proto.RegisterAfterSalesServiceServer(s, inject.GetAfterSalesService())
+	proto.RegisterExpressServiceServer(s, inject.GetExpressService())
+	proto.RegisterAdvertisementServiceServer(s, inject.GetAdService())
+	proto.RegisterPortalServiceServer(s, inject.GetPortalService())
+	proto.RegisterExecutionServiceServer(s, inject.GetExecuteService())
 
 	// standalone service
-	proto.RegisterQuickPayServiceServer(s, grpc2.QuickPayService)
-	proto.RegisterAppServiceServer(s, grpc2.AppService)
-	proto.RegisterRbacServiceServer(s, grpc2.RbacService)
+	proto.RegisterQuickPayServiceServer(s, inject.GetQuickPayService())
+	proto.RegisterAppServiceServer(s, inject.GetAppService())
+	proto.RegisterRbacServiceServer(s, inject.GetRbacService())
 	go serveRPC(ch, s, port)
 }
 

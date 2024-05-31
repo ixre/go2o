@@ -22,7 +22,7 @@ type portalService struct {
 	proto.UnimplementedPortalServiceServer
 }
 
-func NewPortalService(o orm.Orm, d *impl.CommonDao, portalDao dao.IPortalDao) *portalService {
+func NewPortalService(o orm.Orm, d *impl.CommonDao, portalDao dao.IPortalDao) proto.PortalServiceServer {
 	return &portalService{
 		repo:          d,
 		dao:           portalDao,

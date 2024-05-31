@@ -25,7 +25,7 @@ type productService struct {
 
 func NewProductService(pmRepo promodel.IProductModelRepo,
 	catRepo product.ICategoryRepo,
-	proRepo product.IProductRepo) *productService {
+	proRepo product.IProductRepo) proto.ProductServiceServer {
 	return &productService{
 		pmRepo:      pmRepo,
 		catRepo:     catRepo,

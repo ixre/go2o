@@ -2,16 +2,21 @@ package impl
 
 import (
 	"context"
+
 	"github.com/ixre/go2o/core/service/proto"
 )
 
-var _ proto.GreeterServiceServer = new(TestServiceImpl)
+var _ proto.GreeterServiceServer = new(testServiceImpl)
 
-type TestServiceImpl struct {
+type testServiceImpl struct {
 	proto.UnsafeGreeterServiceServer
 }
 
-func (t *TestServiceImpl) Hello(_ context.Context, user *proto.User1) (response *proto.UserResponse, err error) {
+func NewGreeterService() proto.GreeterServiceServer {
+	return &testServiceImpl{}
+}
+
+func (t *testServiceImpl) Hello(_ context.Context, user *proto.User1) (response *proto.UserResponse, err error) {
 	rsp := &proto.UserResponse{
 		Name:  user.Name,
 		State: proto.EState_Normal,

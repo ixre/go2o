@@ -15,7 +15,6 @@ import (
 
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/repos/clickhouse"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof"
@@ -108,9 +107,7 @@ func initializeClickhouse(app gof.App) {
 
 // 初始化服务
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
-	OrmMapping(orm)
-	//[]string{"127.0.0.1:9000"}
-	repos.Initial(orm, sto)
+
 	// registryRepo := inject.GetRegistryRepo()
 	// proMRepo := inject.GetProModelRepo()
 	// valueRepo := inject.GetValueRepo()

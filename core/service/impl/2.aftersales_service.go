@@ -32,7 +32,7 @@ type afterSalesService struct {
 }
 
 func NewAfterSalesService(rep afterSales.IAfterSalesRepo,
-	q *query.AfterSalesQuery, orderRepo order.IOrderRepo) *afterSalesService {
+	q *query.AfterSalesQuery, orderRepo order.IOrderRepo) proto.AfterSalesServiceServer {
 	return &afterSalesService{
 		_rep:       rep,
 		_orderRepo: orderRepo,

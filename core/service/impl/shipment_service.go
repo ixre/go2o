@@ -32,7 +32,7 @@ type shipmentServiceImpl struct {
 
 // 获取快递服务
 func NewShipmentService(rep shipment.IShipmentRepo,
-	deliveryRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo) *shipmentServiceImpl {
+	deliveryRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo) proto.ShipmentServiceServer {
 	return &shipmentServiceImpl{
 		repo:         rep,
 		deliveryRepo: deliveryRepo,

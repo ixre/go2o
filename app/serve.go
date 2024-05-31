@@ -97,7 +97,7 @@ func Run(ch chan bool, after func(*clientv3.Config)) {
 	if debug {
 		go AutoInstall()
 	}
-	if !initial.Init1(newApp, debug, trace) {
+	if !initial.Init(newApp, debug, trace) {
 		os.Exit(1)
 	}
 	go core.SignalNotify(ch, initial.AppDispose)

@@ -30,42 +30,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
-	"github.com/ixre/go2o/core/initial/provide"
-	"github.com/ixre/go2o/core/repos"
-)
-
-var provideSets = wire.NewSet(
-	provide.GetOrmInstance,
-	provide.GetStorageInstance,
-	repos.NewRegistryRepo,
-	repos.NewProModelRepo,
-	repos.NewValueRepo,
-	repos.NewUserRepo,
-	repos.NewWalletRepo,
-	repos.NewNotifyRepo,
-	repos.NewMssRepo,
-	repos.NewExpressRepo,
-	repos.NewShipmentRepo,
-	repos.NewMemberRepo,
-	repos.NewProductRepo,
-	repos.NewItemWholesaleRepo,
-	repos.NewCategoryRepo,
-	repos.NewShopRepo,
-	repos.NewGoodsItemRepo,
-	repos.NewAfterSalesRepo,
-	repos.NewCartRepo,
-	repos.NewContentRepo,
-	repos.NewMerchantRepo,
-	repos.NewOrderRepo,
-	repos.NewPaymentRepo,
-	repos.NewPromotionRepo,
-	repos.NewStationRepo,
-	repos.NewTagSaleRepo,
-	repos.NewWholesaleRepo,
-	repos.NewPersonFinanceRepository,
-	repos.NewDeliverRepo,
-	repos.NewAdvertisementRepo,
-	repos.NewJobRepository,
 )
 
 // 解决依赖

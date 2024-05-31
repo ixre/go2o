@@ -27,7 +27,7 @@ type messageService struct {
 	proto.UnimplementedMessageServiceServer
 }
 
-func NewMessageService(rep mss.IMssRepo) *messageService {
+func NewMessageService(rep mss.IMssRepo) proto.MessageServiceServer {
 	return &messageService{
 		_rep: rep,
 	}

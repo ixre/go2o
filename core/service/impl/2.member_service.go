@@ -45,7 +45,6 @@ var _ proto.MemberServiceServer = new(memberService)
 type memberService struct {
 	repo         member.IMemberRepo
 	registryRepo registry.IRegistryRepo
-	mchService   *merchantService
 	query        *query.MemberQuery
 	orderQuery   *query.OrderQuery
 	valRepo      valueobject.IValueRepo
@@ -53,15 +52,14 @@ type memberService struct {
 	proto.UnimplementedMemberServiceServer
 }
 
-func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
+func NewMemberService(repo member.IMemberRepo,
 	registryRepo registry.IRegistryRepo,
 	q *query.MemberQuery, oq *query.OrderQuery,
-	valRepo valueobject.IValueRepo) *memberService {
+	valRepo valueobject.IValueRepo) proto.MemberServiceServer {
 	s := &memberService{
 		repo:         repo,
 		registryRepo: registryRepo,
 		query:        q,
-		mchService:   mchService,
 		orderQuery:   oq,
 		valRepo:      valRepo,
 	}
@@ -1659,7 +1657,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegIp:          src.RegIp,
 		RegFrom:        src.RegFrom,
 		UserFlag:       int32(src.UserFlag),
-		Role:       int32(src.RoleFlag),
+		Role:           int32(src.RoleFlag),
 		Portrait:       src.Portrait,
 		Phone:          src.Phone,
 		Email:          src.Email,

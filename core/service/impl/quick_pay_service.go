@@ -34,7 +34,7 @@ type quickPayServiceImpl struct {
 }
 
 func NewQuickPayService(s storage.Interface,
-	registryRepo registry.IRegistryRepo) *quickPayServiceImpl {
+	registryRepo registry.IRegistryRepo) proto.QuickPayServiceServer {
 	initQPayConfig(registryRepo)
 	qp := hfb.NewHfb(s)
 	return &quickPayServiceImpl{

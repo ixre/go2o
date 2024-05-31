@@ -403,7 +403,7 @@ func FlagRun() {
 	flag.Parse()
 
 	appCtx = initial.NewApp(conf, nil)
-	initial.Init1(appCtx, debug, trace)
+	initial.Init(appCtx, debug, trace)
 
 	conn = appCtx.Db()
 

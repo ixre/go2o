@@ -21,7 +21,7 @@ type codeServiceImpl struct {
 	proto.UnimplementedCodeServiceServer
 }
 
-func NewCodeService(sto storage.Interface, o orm.Orm) *codeServiceImpl {
+func NewCodeService(sto storage.Interface, o orm.Orm) proto.CodeServiceServer {
 	return &codeServiceImpl{
 		dao: impl.NewCommQrTemplateDao(o, sto),
 		s:   sto,

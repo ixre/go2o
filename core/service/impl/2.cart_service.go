@@ -42,7 +42,7 @@ type cartServiceImpl struct {
 func NewCartService(cartRepo cart.ICartRepo,
 	goodsRepo proItem.IItemRepo,
 	mchRepo merchant.IMerchantRepo,
-	shopRepo shop.IShopRepo) *cartServiceImpl {
+	shopRepo shop.IShopRepo) proto.CartServiceServer {
 	return &cartServiceImpl{
 		cartRepo: cartRepo,
 		itemRepo: goodsRepo,

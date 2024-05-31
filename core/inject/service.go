@@ -4,29 +4,7 @@ package inject
 
 import (
 	"github.com/google/wire"
-	"github.com/ixre/go2o/core/event"
-	"github.com/ixre/go2o/core/event/handler"
-	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
-)
-
-var serviceProvideSets = wire.NewSet(provideSets,
-	impl.NewStatusService,
-	impl.NewRegistryService,
-	impl.NewMerchantService,
-	impl.NewPromotionService,
-	impl.NewFoundationService,
-	impl.NewMemberService,
-	impl.NewShopService,
-	impl.NewProductService,
-	//impl.NewItemService,
-	//impl.NewOrderService,
-	impl.NewCartService,
-	impl.NewAfterSalesService,
-	impl.NewAdvertisementService,
-	// 事件
-	event.NewEventSource,
-	handler.NewEventHandler,
 )
 
 // 状态服务
@@ -39,9 +17,9 @@ func GetRegistryService() proto.RegistryServiceServer {
 	panic(wire.Build(serviceProvideSets))
 }
 
-func GetPromService() impl.PromotionService {
-	panic(wire.Build(serviceProvideSets))
-}
+// func GetPromService() impl.PromotionService {
+// 	panic(wire.Build(serviceProvideSets))
+// }
 
 // 基础服务
 func GetFoundationService() proto.FoundationServiceServer {
@@ -128,41 +106,41 @@ func GetWalletService() proto.WalletServiceServer {
 	panic(wire.Build(serviceProvideSets))
 }
 
-// // 个人金融服务
-// func GetPersonFinanceService() personFinanceService {
-// 	panic(wire.Build(serviceProvideSets))
-// }
+// 个人金融服务
+func GetPersonFinanceService() proto.FinanceServiceServer {
+	panic(wire.Build(serviceProvideSets))
+}
 
-// // 门户数据服务
-// func GetPortalService() portalService {
-// 	panic(wire.Build(serviceProvideSets))
-// }
+// 门户数据服务
+func GetPortalService() proto.PortalServiceServer {
+	panic(wire.Build(serviceProvideSets))
+}
 
-// // 查询服务
-// func GetQueryService() proto.QueryServiceServer {
-// 	panic(wire.Build(serviceProvideSets))
-// }
+// 查询服务
+func GetQueryService() proto.QueryServiceServer {
+	panic(wire.Build(serviceProvideSets))
+}
 
-// // ExecuteService 执行任务服务
-// func GetExecuteService() executionServiceImpl {
-// 	panic(wire.Build(serviceProvideSets))
-// }
+// ExecuteService 执行任务服务
+func GetExecuteService() proto.ExecutionServiceServer {
+	panic(wire.Build(serviceProvideSets))
+}
 
 // func GetCommonDao() impl.CommonDao {
 // 	panic(wire.Build(serviceProvideSets))
 // }
 
-// // AppService APP服务
-// func GetAppService() appServiceImpl {
-// 	panic(wire.Build(serviceProvideSets))
-// }
+// AppService APP服务
+func GetAppService() proto.AppServiceServer {
+	panic(wire.Build(serviceProvideSets))
+}
 
-// // RbacService 权限服务
-// func GetRbacService() rbacServiceImpl {
-// 	panic(wire.Build(serviceProvideSets))
-// }
+// RbacService 权限服务
+func GetRbacService() proto.RbacServiceServer {
+	panic(wire.Build(serviceProvideSets))
+}
 
-// // CodeService 条码服务
-// func GetCodeService() codeServiceImpl {
-// 	panic(wire.Build(serviceProvideSets))
-// }
+// CodeService 条码服务
+func GetCodeService() proto.CodeServiceServer {
+	panic(wire.Build(serviceProvideSets))
+}

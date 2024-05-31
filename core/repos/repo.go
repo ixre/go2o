@@ -12,8 +12,6 @@ import (
 	"sync"
 
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/gof/db"
-	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/storage"
 )
@@ -39,30 +37,4 @@ func PrefixDel(sto storage.Interface, prefix string) error {
 		log.Println("[ Cache][ Clean]: clean by prefix ", prefix, " error:", err)
 	}
 	return err
-}
-
-
-var (
-	DB  db.Connector
-	ORM orm.Orm
-	STO storage.Interface
-)
-
-func Initial(o orm.Orm, sto storage.Interface) {
-	ORM = o
-	STO = sto
-	DB = o.Connector()
-	// // 解决依赖
-	// r.orderRepo.(*OrderRepoImpl).SetPaymentRepo(r.paymentRepo)
-	// // 初始化数据
-	// r.memberRepo.GetManager().GetAllBuyerGroups()
-}
-
-// 返回orm实例
-func GetOrmInstance() orm.Orm {
-	return ORM
-}
-
-func GetStorageInstance() storage.Interface {
-	return STO
 }

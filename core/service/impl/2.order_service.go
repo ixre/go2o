@@ -56,7 +56,7 @@ func NewShoppingService(r order.IOrderRepo,
 	mchRepo merchant.IMerchantRepo, shopRepo shop.IShopRepo,
 	payRepo payment.IPaymentRepo, shipRepo shipment.IShipmentRepo,
 	expressRepo express.IExpressRepo,
-	orderQuery *query.OrderQuery) *orderServiceImpl {
+	orderQuery *query.OrderQuery) proto.OrderServiceServer {
 	return &orderServiceImpl{
 		repo:       r,
 		prodRepo:   prodRepo,

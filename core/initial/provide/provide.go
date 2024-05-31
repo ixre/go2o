@@ -8,14 +8,16 @@ import (
 )
 
 // 应用当前的上下文
-var currentApp gof.App
 var (
+	_app gof.App
+
 	_db      db.Connector
 	_orm     orm.Orm
 	_storage storage.Interface
 )
 
 func Configure(a gof.App) {
+	_app = a
 	_db = a.Db()
 	_orm = orm.NewOrm(_db.Driver(), _db.Raw())
 	_storage = a.Storage()
@@ -23,7 +25,7 @@ func Configure(a gof.App) {
 
 // 获取应用
 func GetApp() gof.App {
-	return currentApp
+	return _app
 }
 
 // 返回orm实例

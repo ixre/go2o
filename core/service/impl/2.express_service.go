@@ -27,7 +27,7 @@ type expressServiceImpl struct {
 }
 
 // 获取快递服务
-func NewExpressService(rep express.IExpressRepo) *expressServiceImpl {
+func NewExpressService(rep express.IExpressRepo) proto.ExpressServiceServer {
 	return &expressServiceImpl{
 		_repo: rep,
 	}

@@ -48,7 +48,7 @@ type rbacServiceImpl struct {
 	proto.UnimplementedRbacServiceServer
 }
 
-func NewRbacService(s storage.Interface, o orm.Orm, registryRepo registry.IRegistryRepo) *rbacServiceImpl {
+func NewRbacService(s storage.Interface, o orm.Orm, registryRepo registry.IRegistryRepo) proto.RbacServiceServer {
 	return &rbacServiceImpl{
 		s:            s,
 		registryRepo: registryRepo,

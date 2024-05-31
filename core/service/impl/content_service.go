@@ -29,7 +29,7 @@ type contentService struct {
 	proto.UnimplementedContentServiceServer
 }
 
-func NewContentService(rep content.IArchiveRepo, q *query.ContentQuery) *contentService {
+func NewContentService(rep content.IArchiveRepo, q *query.ContentQuery) proto.ContentServiceServer {
 	return &contentService{
 		_contentRepo: rep,
 		_query:       q,
