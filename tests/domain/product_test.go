@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/ixre/go2o/core/domain/interface/product"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestSaveProduct(t *testing.T) {
 	var productId int64 = 1
-	repo := ti.Factory.GetProductRepo()
+	repo := inject.GetProductRepo()
 	prod := repo.GetProduct(productId)
 	if prod == nil {
 		t.Error(product.ErrNoSuchProduct)
@@ -37,7 +37,7 @@ func TestSaveProduct(t *testing.T) {
 
 func TestGetModelSortedSpecItems(t *testing.T) {
 	var modelId int = 1
-	repo := ti.Factory.GetProModelRepo()
+	repo := inject.GetProModelRepo()
 	im := repo.GetModel(modelId)
 	for _, spec := range im.Specs() {
 		t.Log(spec.SortNum, spec.Name)
@@ -52,7 +52,7 @@ func TestGetModelSortedSpecItems(t *testing.T) {
 // 测试获取产品模型
 func TestGetProductModel(t *testing.T) {
 	var modelId int = 4
-	repo := ti.Factory.GetProModelRepo()
+	repo := inject.GetProModelRepo()
 	im := repo.GetModel(modelId)
 	arr := im.Brands()
 	t.Log(typeconv.MustJson(arr))
@@ -61,7 +61,7 @@ func TestGetProductModel(t *testing.T) {
 // 测试销毁产品模型
 func TestDestoryProductModel(t *testing.T) {
 	var modelId int = 8
-	repo := ti.Factory.GetProModelRepo()
+	repo := inject.GetProModelRepo()
 	im := repo.GetModel(modelId)
 	err := im.Destroy()
 	if err != nil {

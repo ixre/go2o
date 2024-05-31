@@ -8,12 +8,11 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/inject"
-	"github.com/ixre/go2o/tests/ti"
 )
 
 func TestPaymentSuccess(t *testing.T) {
 	orderNo := "1220607000313450"
-	repo := ti.Factory.GetPaymentRepo()
+	repo := inject.GetPaymentRepo()
 	ip := repo.GetPaymentOrder(orderNo)
 	if ip == nil {
 		t.Error("no such order")
@@ -30,7 +29,7 @@ func TestPaymentSuccess(t *testing.T) {
 // 测试钱包支付单钱包抵扣
 func TestWalletDeductPaymentOrder(t *testing.T) {
 	orderNo := "1230306000808485"
-	repo := ti.Factory.GetPaymentRepo()
+	repo := inject.GetPaymentRepo()
 	ip := repo.GetPaymentOrder(orderNo)
 	if ip == nil {
 		t.Error("no such order")
@@ -51,7 +50,7 @@ func TestCreateTradeNo(t *testing.T) {
 
 // 测试充值订单
 func TestCreateChargePaymentOrder(t *testing.T) {
-	repo := ti.Factory.GetPaymentRepo()
+	repo := inject.GetPaymentRepo()
 	unix := time.Now().Unix()
 	tradeNo := domain.NewTradeNo(0, 0)
 	ip := repo.CreatePaymentOrder(&payment.Order{
@@ -128,7 +127,7 @@ func TestBreakPaymentOrderAVGDeductAmount(t *testing.T) {
 
 func TestCancelPaymentOrder(t *testing.T) {
 	orderNo := "1230326007400338"
-	p := ti.Factory.GetPaymentRepo().GetPaymentOrder(orderNo)
+	p := inject.GetPaymentRepo().GetPaymentOrder(orderNo)
 	if err := p.Cancel(); err != nil {
 		t.Error(err)
 		t.FailNow()

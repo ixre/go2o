@@ -2,9 +2,10 @@ package service
 
 import (
 	"context"
-	"github.com/ixre/go2o/core/service/impl"
-	"github.com/ixre/go2o/core/service/proto"
 	"testing"
+
+	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/go2o/core/service/proto"
 )
 
 /**
@@ -18,7 +19,7 @@ import (
  */
 
 func TestCheckSensitive(t *testing.T) {
-	ret, _ := impl.FoundationService.ReplaceSensitive(context.TODO(),
+	ret, _ := inject.GetFoundationService().ReplaceSensitive(context.TODO(),
 		&proto.ReplaceSensitiveRequest{
 			Text:        "我自愿加入中国共产党,坚持党的领导,守护我们的长城",
 			Replacement: "*",

@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestProductCategoryTree(t *testing.T) {
 	parentId := 33
-	node, err := impl.ProductService.GetCategoryTreeNode(context.TODO(), &proto.CategoryTreeRequest{
+	node, err := inject.GetProductService().GetCategoryTreeNode(context.TODO(), &proto.CategoryTreeRequest{
 		ParentId:      int64(parentId),
 		ExcludeIdList: nil,
 	})
@@ -23,7 +23,7 @@ func TestProductCategoryTree(t *testing.T) {
 }
 
 func TestCategoryInitialTreeNode(t *testing.T) {
-	list, err := impl.ProductService.GetCategoryTreeNode(context.TODO(), &proto.CategoryTreeRequest{
+	list, err := inject.GetProductService().GetCategoryTreeNode(context.TODO(), &proto.CategoryTreeRequest{
 		ParentId: 0,
 		Lazy:     true,
 	})
@@ -34,7 +34,7 @@ func TestCategoryInitialTreeNode(t *testing.T) {
 }
 
 func TestSourceCategories(t *testing.T) {
-	list, err := impl.ProductService.FindParentCategory(context.TODO(), &proto.CategoryIdRequest{
+	list, err := inject.GetProductService().FindParentCategory(context.TODO(), &proto.CategoryIdRequest{
 		CategoryId: 2041,
 	})
 	if err != nil {
@@ -45,7 +45,7 @@ func TestSourceCategories(t *testing.T) {
 }
 
 func TestGetCategoryBrands(t *testing.T) {
-	list, err := impl.ProductService.GetCategory(context.TODO(), &proto.GetCategoryRequest{
+	list, err := inject.GetProductService().GetCategory(context.TODO(), &proto.GetCategoryRequest{
 		CategoryId: 2185,
 		WithBrand:  true,
 	})
@@ -56,14 +56,14 @@ func TestGetCategoryBrands(t *testing.T) {
 }
 
 func TestUpdateProductDescription(t *testing.T) {
-	prod, err := impl.ProductService.GetProduct(context.TODO(), &proto.ProductId{
+	prod, err := inject.GetProductService().GetProduct(context.TODO(), &proto.ProductId{
 		Value: 1,
 	})
 	if err != nil {
 		t.Error(err)
 	}
 	prod.Description = "111" + prod.Description
-	ret, _ := impl.ProductService.SaveProduct(context.TODO(), &proto.SaveProductRequest{
+	ret, _ := inject.GetProductService().SaveProduct(context.TODO(), &proto.SaveProductRequest{
 		Id:                prod.Id,
 		CategoryId:        prod.CategoryId,
 		Name:              prod.Name,
@@ -85,7 +85,7 @@ func TestUpdateProductDescription(t *testing.T) {
 }
 
 func TestGetProductCategory(t *testing.T) {
-	ret, _ := impl.ProductService.GetCategory(context.TODO(), &proto.GetCategoryRequest{
+	ret, _ := inject.GetProductService().GetCategory(context.TODO(), &proto.GetCategoryRequest{
 		CategoryId: 2095,
 		WithBrand:  true,
 		WithModel:  true,

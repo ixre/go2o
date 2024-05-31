@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service"
-	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
 )
@@ -15,7 +15,7 @@ func TestRegistryUpateValueMap(t *testing.T) {
 		"order_push_sub_order_enabled":    "0",
 		"member_withdrawal_push_enabled1": "1",
 	}
-	ret, _ := impl.RegistryService.UpdateValues(context.TODO(), &proto.StringMap{
+	ret, _ := inject.GetRegistryService().UpdateValues(context.TODO(), &proto.StringMap{
 		Value: mp,
 	})
 	if ret.ErrCode > 0 {

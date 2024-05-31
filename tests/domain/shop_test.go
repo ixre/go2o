@@ -3,7 +3,7 @@ package domain
 import (
 	"testing"
 
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 )
 
 /**
@@ -17,7 +17,7 @@ import (
  */
 
 func TestGetShop(t *testing.T) {
-	repo := ti.Factory.GetShopRepo()
+	repo := inject.GetShopRepo()
 	isp := repo.GetShop(1)
 	if isp == nil {
 		t.FailNow()

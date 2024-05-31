@@ -19,10 +19,11 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
+	"github.com/ixre/go2o/core/initial/provide"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
-	"github.com/ixre/go2o/tests/ti"
 	"github.com/ixre/gof/storage"
 )
 
@@ -59,7 +60,7 @@ func logState(t *testing.T, err error, o order.IOrder) {
 
 func TestOrderSetup(t *testing.T) {
 	orderNo := "1230301000215829"
-	orderRepo := ti.Factory.GetOrderRepo()
+	orderRepo := inject.GetOrderRepo()
 	orderId := orderRepo.GetOrderId(orderNo, true)
 	o := orderRepo.Manager().GetSubOrder(orderId)
 
@@ -101,7 +102,7 @@ func TestOrderSetup(t *testing.T) {
 }
 
 func TestCancelOrder(t *testing.T) {
-	repo := ti.Factory.GetCartRepo()
+	repo := inject.GetCartRepo()
 	var buyerId int64 = 1
 	c := repo.GetMyCart(buyerId, cart.KNormal)
 	_ = joinItemsToCart(c, 1)
@@ -117,8 +118,8 @@ func TestCancelOrder(t *testing.T) {
 		t.Error("保存购物车失败:", err.Error())
 		t.FailNow()
 	}
-	orderRepo := ti.Factory.GetOrderRepo()
-	mmRepo := ti.Factory.GetMemberRepo()
+	orderRepo := inject.GetOrderRepo()
+	mmRepo := inject.GetMemberRepo()
 	manager := orderRepo.Manager()
 	m := mmRepo.GetMember(buyerId)
 	addressId := m.Profile().GetDefaultAddress().GetDomainId()
@@ -166,7 +167,7 @@ func TestCancelOrder(t *testing.T) {
 // 测试取消子订单
 func TestCancelSubOrderByOrderNo(t *testing.T) {
 	var orderId int64 = 838
-	orderRepo := ti.Factory.GetOrderRepo()
+	orderRepo := inject.GetOrderRepo()
 	is := orderRepo.Manager().GetSubOrder(orderId)
 	err := is.Cancel(true, "不想要了")
 	if err != nil {
@@ -179,7 +180,7 @@ func TestCancelSubOrderByOrderNo(t *testing.T) {
 // 测试提交普通订单,并完成付款
 func TestSubmitNormalOrder(t *testing.T) {
 	var buyerId int64 = 1
-	cartRepo := ti.Factory.GetCartRepo()
+	cartRepo := inject.GetCartRepo()
 	c := cartRepo.GetMyCart(buyerId, cart.KNormal)
 	_ = joinItemsToCart(c, 47)
 	err := joinItemsToCart(c, 51)
@@ -201,9 +202,9 @@ func TestSubmitNormalOrder(t *testing.T) {
 		t.Error("保存购物车失败:", err.Error())
 		t.Fail()
 	}
-	orderRepo := ti.Factory.GetOrderRepo()
+	orderRepo := inject.GetOrderRepo()
 	manager := orderRepo.Manager()
-	buyer := ti.Factory.GetMemberRepo().GetMember(buyerId)
+	buyer := inject.GetMemberRepo().GetMember(buyerId)
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
 
 	data := order.SubmitOrderData{
@@ -230,9 +231,9 @@ func TestSubmitNormalOrder(t *testing.T) {
 // 测试从订单重新创建订单并提交付款
 func TestRebuildSubmitNormalOrder(t *testing.T) {
 	orderNo := "1230326001400310"
-	repo := ti.Factory.GetOrderRepo()
-	memRepo := ti.Factory.GetMemberRepo()
-	payRepo := ti.Factory.GetPaymentRepo()
+	repo := inject.GetOrderRepo()
+	memRepo := inject.GetMemberRepo()
+	payRepo := inject.GetPaymentRepo()
 	so := repo.GetSubOrderByOrderNo(orderNo)
 	io := so.ParentOrder()
 	ic := io.BuildCart()
@@ -268,7 +269,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 		t.Log("支付订单", err.Error())
 		t.FailNow()
 	}
-	return;
+	return
 	// 开始完成发货流程并收货\
 	newOrder := repo.Manager().GetOrderById(nio.GetAggregateRootId())
 	ino := newOrder.(order.INormalOrder)
@@ -290,7 +291,7 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 }
 
 func TestFinishSubOrder(t *testing.T) {
-	repo := ti.Factory.GetOrderRepo()
+	repo := inject.GetOrderRepo()
 	io := repo.GetSubOrderByOrderNo("1230115001702364")
 	err := io.BuyerReceived()
 	if err != nil {
@@ -303,7 +304,7 @@ func TestFinishSubOrder(t *testing.T) {
 }
 
 func TestFinishNormalOrder(t *testing.T) {
-	repo := ti.Factory.GetOrderRepo()
+	repo := inject.GetOrderRepo()
 	io := repo.Manager().GetOrderByNo("1230115001702364")
 	subOrders := io.(order.INormalOrder).GetSubOrders()
 	for _, o := range subOrders {
@@ -321,7 +322,7 @@ func TestFinishNormalOrder(t *testing.T) {
 // 测试批发订单,并完成付款
 func TestWholesaleOrder(t *testing.T) {
 	var buyerId int64 = 1
-	cartRepo := ti.Factory.GetCartRepo()
+	cartRepo := inject.GetCartRepo()
 	c := cartRepo.GetMyCart(buyerId, cart.KWholesale)
 	_ = joinItemsToCart(c, 1)
 	rc := c.(cart.IWholesaleCart)
@@ -339,10 +340,10 @@ func TestWholesaleOrder(t *testing.T) {
 		t.Fail()
 	}
 
-	orderRepo := ti.Factory.GetOrderRepo()
+	orderRepo := inject.GetOrderRepo()
 	manager := orderRepo.Manager()
 
-	buyer := ti.Factory.GetMemberRepo().GetMember(buyerId)
+	buyer := inject.GetMemberRepo().GetMember(buyerId)
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
 
 	data := map[string]string{
@@ -392,7 +393,7 @@ func TestWholesaleOrder(t *testing.T) {
 func TestTradeOrder(t *testing.T) {
 	var rate = 0.8 // 结算给商家80%
 	var storeId = 1
-	repo := ti.Factory.GetOrderRepo()
+	repo := inject.GetOrderRepo()
 	manager := repo.Manager()
 	cashPay := true
 	requireTicket := true
@@ -452,8 +453,8 @@ func TestTradeOrder(t *testing.T) {
 }
 
 func TestMergePaymentOrder(t *testing.T) {
-	repo := ti.Factory.GetOrderRepo()
-	memRepo := ti.Factory.GetMemberRepo()
+	repo := inject.GetOrderRepo()
+	memRepo := inject.GetMemberRepo()
 	io := repo.Manager().GetOrderByNo("1180517000262166")
 	ic := io.BuildCart()
 	ic.Save()
@@ -481,7 +482,7 @@ func TestMergePaymentOrder(t *testing.T) {
 func TestNotifyTradeOrder(t *testing.T) {
 	orderNo := "1180518115439092"
 	sub := true
-	rds := ti.GetApp().Storage().(storage.IRedisStorage)
+	rds := provide.GetStorageInstance().(storage.IRedisStorage)
 	conn := rds.GetConn()
 	defer conn.Close()
 	value := orderNo
@@ -494,7 +495,7 @@ func TestNotifyTradeOrder(t *testing.T) {
 // 测试取消子订单支付单信息
 func TestGetSubPaymentOrder(t *testing.T) {
 	orderId := 678
-	order := ti.Factory.GetOrderRepo().Manager().GetSubOrder(int64(orderId))
+	order := inject.GetOrderRepo().Manager().GetSubOrder(int64(orderId))
 	p := order.ParentOrder().GetPaymentOrder()
 	t.Log(p.Get().Id, p.Get().OutOrderNo)
 	err := p.Cancel()

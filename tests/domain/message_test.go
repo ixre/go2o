@@ -8,13 +8,13 @@ import (
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 )
 
 // 测试配置短信服务商参数
 func TestConfigureSms(t *testing.T) {
 	provider := mss.CHUANGLAN
-	manager := ti.Factory.GetMssRepo().NotifyManager()
+	manager := inject.GetMssRepo().NotifyManager()
 	err := manager.SaveSmsApiPerm(&notify.SmsApiPerm{
 		Provider:   int(provider),
 		Key:        "N42622266620",
@@ -26,7 +26,7 @@ func TestConfigureSms(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	repo := ti.Factory.GetRegistryRepo()
+	repo := inject.GetRegistryRepo()
 	ir := repo.Get(registry.SmsDefaultProvider)
 	err = ir.Update(strconv.Itoa(int(provider)))
 	if err == nil {
@@ -45,7 +45,7 @@ func TestConfigureSms(t *testing.T) {
 // 测试发送短信
 func TestSendPhoneMessage(t *testing.T) {
 	templatId := ""
-	manager := ti.Factory.GetMssRepo().NotifyManager()
+	manager := inject.GetMssRepo().NotifyManager()
 
 	err := manager.SendPhoneMessage("13162222872",
 		notify.PhoneMessage("测试短信:你本次进行{action}的验证码为{1},有效期为:{minites}"),

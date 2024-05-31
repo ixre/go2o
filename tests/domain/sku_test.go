@@ -7,7 +7,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/item"
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/gof/algorithm"
 	"github.com/ixre/gof/log"
 )
@@ -19,7 +19,7 @@ var (
 
 // 测试商品模型设置品牌
 func TestSetBrand(t *testing.T) {
-	rep := ti.Factory.GetProModelRepo()
+	rep := inject.GetProModelRepo()
 	brands := rep.SelectProBrand("")
 	list := []int{}
 	for i, v := range brands {
@@ -49,7 +49,7 @@ func TestSetBrand(t *testing.T) {
 
 // 测试商品模型添加属性
 func TestModelSaveAttrs(t *testing.T) {
-	rep := ti.Factory.GetProModelRepo()
+	rep := inject.GetProModelRepo()
 	m := rep.GetModel(int(modelId))
 	attrs := []*promodel.Attr{
 		{
@@ -85,7 +85,7 @@ func TestModelSaveAttrs(t *testing.T) {
 
 // 测试商品模型添加规格
 func TestModelSaveSpecs(t *testing.T) {
-	rep := ti.Factory.GetProModelRepo()
+	rep := inject.GetProModelRepo()
 	m := rep.GetModel(int(modelId))
 	specs := []*promodel.Spec{
 		{
@@ -117,9 +117,9 @@ func TestModelSaveSpecs(t *testing.T) {
 // 测试商品保存SKU
 func TestItemSaveSku(t *testing.T) {
 	var itemId int64 = 25
-	itemRepo := ti.Factory.GetItemRepo()
-	catRepo := ti.Factory.GetCategoryRepo()
-	proMRepo := ti.Factory.GetProModelRepo()
+	itemRepo := inject.GetItemRepo()
+	catRepo := inject.GetCategoryRepo()
+	proMRepo := inject.GetProModelRepo()
 	it := itemRepo.GetItem(itemId)
 	if it == nil {
 		t.Errorf("编号为%d的商品不存在", itemId)

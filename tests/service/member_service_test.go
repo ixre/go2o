@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestGrantMemberAccessToken(t *testing.T) {
 	var memberId int64 = 1
-	s := impl.MemberService
+	s := inject.GetMemberService()
 	token, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
 		MemberId:    memberId,
 		ExpiresTime: time.Now().Unix() + 720,
@@ -38,7 +38,7 @@ func TestGrantMemberAccessToken(t *testing.T) {
 
 func TestCheckMemberAccessToken(t *testing.T) {
 	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI3MTAiLCJleHAiOjE2Nzc3NTM5MjAsImlzcyI6ImdvMm8iLCJzdWIiOiJnbzJvLWFwaS1qd3QifQ.Vrd0NuAT5AfKM-C5NespEyhAiyMVDugoKDDgwv5hr_g"
-	ret, _ := impl.MemberService.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
+	ret, _ := inject.GetMemberService().CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken: accessToken,
 	})
 	if len(ret.Error) > 0 {
@@ -53,14 +53,14 @@ func TestCheckMemberAccessToken(t *testing.T) {
 func TestCheckTradePassword(t *testing.T) {
 	memberId := 1
 	pwd := domain.Md5("123456")
-	r2, _ := impl.MemberService.ChangeTradePassword(context.TODO(),
+	r2, _ := inject.GetMemberService().ChangeTradePassword(context.TODO(),
 		&proto.ChangePasswordRequest{
 			MemberId:    int64(memberId),
 			NewPassword: pwd,
 		})
 	t.Logf("%#v", r2)
 
-	r, _ := impl.MemberService.VerifyTradePassword(context.TODO(),
+	r, _ := inject.GetMemberService().VerifyTradePassword(context.TODO(),
 		&proto.VerifyPasswordRequest{
 			MemberId: int64(memberId),
 			Password: pwd,
@@ -70,12 +70,12 @@ func TestCheckTradePassword(t *testing.T) {
 
 func TestGetMember(t *testing.T) {
 	memberId := 22149
-	r, _ := impl.MemberService.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: int64(memberId)})
+	r, _ := inject.GetMemberService().GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: int64(memberId)})
 	t.Logf("%#v", r)
 }
 
 func TestChangeHeadPortrait(t *testing.T) {
-	r, _ := impl.MemberService.ChangeHeadPortrait(context.TODO(),
+	r, _ := inject.GetMemberService().ChangeHeadPortrait(context.TODO(),
 		&proto.ChangePortraitRequest{
 			MemberId:    702,
 			PortraitUrl: "",
@@ -87,7 +87,7 @@ func TestChangeHeadPortrait(t *testing.T) {
 }
 
 func TestChangeMemberLevel(t *testing.T) {
-	r, _ := impl.MemberService.ChangeLevel(context.TODO(),
+	r, _ := inject.GetMemberService().ChangeLevel(context.TODO(),
 		&proto.ChangeLevelRequest{
 			MemberId:       702,
 			Level:          0,
@@ -101,7 +101,7 @@ func TestChangeMemberLevel(t *testing.T) {
 	}
 }
 func TestChangeUsername(t *testing.T) {
-	ret, _ := impl.MemberService.ChangeUsername(context.TODO(), &proto.ChangeUsernameRequest{
+	ret, _ := inject.GetMemberService().ChangeUsername(context.TODO(), &proto.ChangeUsernameRequest{
 		MemberId: 729,
 		Username: "哈哈",
 	})
@@ -113,7 +113,7 @@ func TestChangeUsername(t *testing.T) {
 func TestChangePasswordAndCheckLogin(t *testing.T) {
 	pwd := domain.Md5("123456")
 	t.Log("md5=", pwd)
-	r, _ := impl.MemberService.ChangePassword(context.TODO(),
+	r, _ := inject.GetMemberService().ChangePassword(context.TODO(),
 		&proto.ChangePasswordRequest{
 			MemberId:    1,
 			NewPassword: pwd,
@@ -121,7 +121,7 @@ func TestChangePasswordAndCheckLogin(t *testing.T) {
 	if r.ErrCode > 0 {
 		t.Error(r.ErrMsg)
 	}
-	ret, _ := impl.MemberService.CheckLogin(context.TODO(), &proto.LoginRequest{
+	ret, _ := inject.GetMemberService().CheckLogin(context.TODO(), &proto.LoginRequest{
 		Username: "13162222872",
 		Password: pwd,
 	})
@@ -131,7 +131,7 @@ func TestChangePasswordAndCheckLogin(t *testing.T) {
 }
 
 func TestCheckUserLogin(t *testing.T) {
-	ret, _ := impl.MemberService.CheckLogin(context.TODO(), &proto.LoginRequest{
+	ret, _ := inject.GetMemberService().CheckLogin(context.TODO(), &proto.LoginRequest{
 		Username: "13162222872",
 		Password: "14e1b600b1fd579f47433b88e8d85291",
 	})
@@ -141,7 +141,7 @@ func TestCheckUserLogin(t *testing.T) {
 }
 
 func Test_memberService_InviterArray(t *testing.T) {
-	ret, _ := impl.MemberService.InviterArray(context.TODO(), &proto.DepthRequest{
+	ret, _ := inject.GetMemberService().InviterArray(context.TODO(), &proto.DepthRequest{
 		MemberId: 710,
 		Depth:    2,
 	})
@@ -150,7 +150,7 @@ func Test_memberService_InviterArray(t *testing.T) {
 
 // 测试绑定邀请人
 func TestSetInviter(t *testing.T) {
-	ret, _ := impl.MemberService.SetInviter(context.TODO(),
+	ret, _ := inject.GetMemberService().SetInviter(context.TODO(),
 		&proto.SetInviterRequest{
 			MemberId:    771,
 			InviterCode: "f2PWIo",

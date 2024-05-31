@@ -6,13 +6,14 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/event/events"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
+	_ "github.com/ixre/go2o/tests"
 	"github.com/ixre/gof/domain/eventbus"
 )
 
 func TestWalletLogUpdate(t *testing.T) {
 	id := 158113
-	repo := ti.Factory.GetWalletRepo()
+	repo := inject.GetWalletRepo()
 	l := repo.GetWalletLog_(id)
 	l.Subject = l.Subject + "_1"
 	_, err := repo.SaveWalletLog_(l)
@@ -24,7 +25,6 @@ func TestWalletLogUpdate(t *testing.T) {
 }
 
 func TestPushMemberRegisterEvent(t *testing.T) {
-	ti.GetApp()
 	eventbus.Publish(&events.MemberPushEvent{
 		IsCreate:  false,
 		Member:    &member.Member{},

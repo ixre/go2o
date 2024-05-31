@@ -11,11 +11,11 @@ package domain
 import (
 	"testing"
 
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 )
 
 func TestContentGetAllCategory(t *testing.T) {
-	rep := ti.Factory.GetContentRepo()
+	rep := inject.GetContentRepo()
 	u := rep.GetContent(0)
 	list := u.ArticleManager().GetAllCategory()
 	for i, c := range list {

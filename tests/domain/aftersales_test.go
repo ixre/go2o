@@ -12,15 +12,15 @@ import (
 	"testing"
 
 	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/gof/log"
 )
 
 // 测试退款
 func TestOrderRefund(t *testing.T) {
 	subOrderNo := "100000160304"
-	orderRepo := ti.Factory.GetOrderRepo()
-	rep := ti.Factory.GetAfterSalesRepo()
+	orderRepo := inject.GetOrderRepo()
+	rep := inject.GetAfterSalesRepo()
 	orderId := orderRepo.GetOrderId(subOrderNo, true)
 	od := orderRepo.Manager().GetSubOrder(orderId)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
@@ -77,8 +77,8 @@ func TestOrderRefund(t *testing.T) {
 // 测试退货
 func TestOrderReturn(t *testing.T) {
 	subOrderNo := "100000160304"
-	orderRepo := ti.Factory.GetOrderRepo()
-	rep := ti.Factory.GetAfterSalesRepo()
+	orderRepo := inject.GetOrderRepo()
+	rep := inject.GetAfterSalesRepo()
 	orderId := orderRepo.GetOrderId(subOrderNo, true)
 	od := orderRepo.Manager().GetSubOrder(orderId)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
@@ -137,8 +137,8 @@ func TestOrderReturn(t *testing.T) {
 // 测试换货
 func TestOrderExchange(t *testing.T) {
 	subOrderNo := "100000160304"
-	orderRepo := ti.Factory.GetOrderRepo()
-	rep := ti.Factory.GetAfterSalesRepo()
+	orderRepo := inject.GetOrderRepo()
+	rep := inject.GetAfterSalesRepo()
 	orderId := orderRepo.GetOrderId(subOrderNo, true)
 	od := orderRepo.Manager().GetSubOrder(orderId)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{

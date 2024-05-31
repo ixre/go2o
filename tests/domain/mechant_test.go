@@ -8,7 +8,8 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
+	_ "github.com/ixre/go2o/tests"
 )
 
 func TestMerchantPwd2(t *testing.T) {
@@ -18,7 +19,7 @@ func TestMerchantPwd2(t *testing.T) {
 
 // 测试创建商户
 func TestCreateMerchant(t *testing.T) {
-	repo := ti.Factory.GetMerchantRepo()
+	repo := inject.GetMerchantRepo()
 	v := &merchant.Merchant{
 		Username: "zy",
 		MchName:  "天猫",
@@ -58,7 +59,7 @@ func TestCreateMerchant(t *testing.T) {
 
 // 保存商户认证信息
 func TestSaveMerchantAuthenticate(t *testing.T) {
-	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	mch := inject.GetMerchantRepo().GetMerchant(1)
 	v := &merchant.Authenticate{
 		OrgName:          "天猫有限公司",
 		OrgNo:            "00000000",
@@ -83,7 +84,7 @@ func TestSaveMerchantAuthenticate(t *testing.T) {
 
 // 拒绝审核商户认证信息
 func TestRejectMerchantAuthenticateRequest(t *testing.T) {
-	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	mch := inject.GetMerchantRepo().GetMerchant(1)
 	err := mch.ProfileManager().ReviewAuthenticate(false, "不通过")
 	if err != nil {
 		t.Error(err)
@@ -102,7 +103,7 @@ func TestPassMerchantAuthenticateRequest(t *testing.T) {
 	select * FROM mch_merchant where id=1;
 	select * FROM mch_authenticate WHERE mch_id=1;
 	*/
-	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	mch := inject.GetMerchantRepo().GetMerchant(1)
 	err := mch.ProfileManager().ReviewAuthenticate(true, "")
 	if err == nil {
 		// 审核通过
@@ -119,7 +120,7 @@ func TestPassMerchantAuthenticateRequest(t *testing.T) {
 func TestBindMember(t *testing.T) {
 	var mchId = 1
 	var memberId = 4
-	mch := ti.Factory.GetMerchantRepo().GetMerchant(mchId)
+	mch := inject.GetMerchantRepo().GetMerchant(mchId)
 	err := mch.BindMember(memberId)
 	if err == nil {
 		err = mch.BindMember(memberId + 1)
@@ -139,7 +140,7 @@ func TestBindMember(t *testing.T) {
 
 // 测试商家分组设置
 func TestMchBuyerGroupSet(t *testing.T) {
-	repo := ti.Factory.GetMerchantRepo()
+	repo := inject.GetMerchantRepo()
 	conf := repo.GetMerchant(1).ConfManager()
 	g := conf.GetGroupByGroupId(2)
 	g.Alias = "VIP1"
@@ -162,7 +163,7 @@ func TestMchBuyerGroupSet(t *testing.T) {
 
 // 测试成为批发商
 func TestStartMchWholesale(t *testing.T) {
-	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	mch := inject.GetMerchantRepo().GetMerchant(1)
 	err := mch.EnableWholesale()
 	if err == nil {
 		ws := mch.Wholesaler()
@@ -179,9 +180,9 @@ func TestStartMchWholesale(t *testing.T) {
 
 // 测试设置返点比例
 func TestGroupRebateRate(t *testing.T) {
-	mmRepo := ti.Factory.GetMemberRepo()
+	mmRepo := inject.GetMemberRepo()
 	groups := mmRepo.GetManager().GetAllBuyerGroups()
-	mch := ti.Factory.GetMerchantRepo().GetMerchant(1)
+	mch := inject.GetMerchantRepo().GetMerchant(1)
 	ws := mch.Wholesaler()
 	if ws == nil {
 		t.Error("merchant is not a wholesaler!")
@@ -225,7 +226,7 @@ func TestGroupRebateRate(t *testing.T) {
 
 // 测试结算订单到账户中
 func TestMchSettleOrder(t *testing.T) {
-	repo := ti.Factory.GetMerchantRepo()
+	repo := inject.GetMerchantRepo()
 	mch := repo.GetMerchant(111)
 	err := mch.Account().SettleOrder("123", 1000, 20, 0, "零售订单结算")
 	if err != nil {

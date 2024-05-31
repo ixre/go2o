@@ -5,14 +5,14 @@ import (
 	"testing"
 
 	"github.com/ixre/go2o/core/domain/interface/item"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 )
 
 // 检查商品库存
 func TestItemSkuStock(t *testing.T) {
 	var itemId int64 = 66
 	var skuId int64 = 454
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	if it == nil {
 		t.Error(item.ErrNoSuchItem)
@@ -27,7 +27,7 @@ func TestItemSkuStock(t *testing.T) {
 
 // 测试同步批发商品
 func TestSyncWholesaleItem(t *testing.T) {
-	venRepo := ti.Factory.GetMerchantRepo()
+	venRepo := inject.GetMerchantRepo()
 	vd := venRepo.GetMerchant(1)
 	mp := vd.Wholesaler().SyncItems(true)
 	t.Logf("sync finished, add:%d,del:%d", mp["add"], mp["del"])
@@ -35,8 +35,8 @@ func TestSyncWholesaleItem(t *testing.T) {
 
 // 测试批发折扣
 func TestItemWholesaleDiscount(t *testing.T) {
-	repo := ti.Factory.GetItemRepo()
-	mmRepo := ti.Factory.GetMemberRepo()
+	repo := inject.GetItemRepo()
+	mmRepo := inject.GetMemberRepo()
 	var itemId int64 = 6     //商品编号
 	var disRate = 0.9        //折扣率
 	var disAmount int32 = 50 //折扣金额下限
@@ -72,7 +72,7 @@ func TestItemWholesaleDiscount(t *testing.T) {
 
 // 测试批发SKU价格
 func TestItemWholesaleSkuPrice(t *testing.T) {
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	var itemId int64 = 6 //商品编号
 	it := repo.GetItem(itemId)
 	wsIt := it.Wholesale()
@@ -120,7 +120,7 @@ func TestItemWholesaleSkuPrice(t *testing.T) {
 // 测试修改非SKU商品价格
 func TestUpdateItemNoSkuPrice(t *testing.T) {
 	var itemId int64 = 50
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	if it == nil {
 		t.Error(item.ErrNoSuchItem)
@@ -142,7 +142,7 @@ func TestUpdateItemNoSkuPrice(t *testing.T) {
 // 测试保存SKU
 func TestSaveItemSku(t *testing.T) {
 	var itemId int64 = 50
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.SetSku(it.SkuArray())
 	if err == nil {
@@ -157,7 +157,7 @@ func TestSaveItemSku(t *testing.T) {
 // 测试保存商品图片
 func TestSaveItemResetReview(t *testing.T) {
 	var itemId int64 = 3269
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	v := it.GetValue()
 	v.Title = v.Title + "-1"
@@ -174,7 +174,7 @@ func TestSaveItemResetReview(t *testing.T) {
 // 测试保存商品图片
 func TestSaveItemImages(t *testing.T) {
 	var itemId int64 = 50
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	println(fmt.Sprintf("%#v", it.Images()))
 	images := make([]string, 0)
@@ -195,7 +195,7 @@ func TestSaveItemImages(t *testing.T) {
 
 func TestSaveAffiliateItemFlag(t *testing.T) {
 	var itemId int64 = 47
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.GrantFlag(item.FlagAffiliate)
 	if err == nil {
@@ -208,7 +208,7 @@ func TestSaveAffiliateItemFlag(t *testing.T) {
 }
 func TestSaveItemFreeDeliveryFlag(t *testing.T) {
 	var itemId int64 = 1
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	iv := it.GetValue()
 	iv.ExpressTid = 0
@@ -227,7 +227,7 @@ func TestCheckContainerItemFlag(t *testing.T) {
 
 func TestAuditItem(t *testing.T) {
 	var itemId int64 = 1
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	it.Review(true, "")
 }
@@ -235,7 +235,7 @@ func TestAuditItem(t *testing.T) {
 // 测试商品下架
 func TestItemShelveDown(t *testing.T) {
 	var itemId int64 = 3273
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.SetShelve(0, "测试下架")
 	if err != nil {
@@ -247,7 +247,7 @@ func TestItemShelveDown(t *testing.T) {
 // 测试商品回收
 func TestItemRecycle(t *testing.T) {
 	var itemId int64 = 1998
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.Recycle()
 	if err != nil {
@@ -259,7 +259,7 @@ func TestItemRecycle(t *testing.T) {
 // 测试撤销商品回收
 func TestItemRevertRecycle(t *testing.T) {
 	var itemId int64 = 3276
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.RecycleRevert()
 	if err != nil {
@@ -271,7 +271,7 @@ func TestItemRevertRecycle(t *testing.T) {
 // 测试撤销商品回收
 func TestDestoryItem(t *testing.T) {
 	var itemId int64 = 3276
-	repo := ti.Factory.GetItemRepo()
+	repo := inject.GetItemRepo()
 	it := repo.GetItem(itemId)
 	err := it.Destroy()
 	if err != nil {

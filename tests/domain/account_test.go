@@ -6,7 +6,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 )
 
 /**
@@ -19,7 +19,7 @@ import (
  */
 
 func TestFlowAccount(t *testing.T) {
-	repo := ti.Factory.GetMemberRepo()
+	repo := inject.GetMemberRepo()
 	m := repo.GetMember(1)
 	acc := m.GetAccount()
 	balance := acc.GetValue().FlowBalance
@@ -43,8 +43,8 @@ func TestFlowAccount(t *testing.T) {
 
 func TestMemberWalletOperate(t *testing.T) {
 	var memberId int64 = 1
-	ti.Factory.GetRegistryRepo().UpdateValue(registry.MemberWithdrawalMustVerification, "false")
-	m := ti.Factory.GetMemberRepo().GetMember(memberId)
+	inject.GetRegistryRepo().UpdateValue(registry.MemberWithdrawalMustVerification, "false")
+	m := inject.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
 	iw := ic.Wallet()
 	amount := iw.Get().Balance
@@ -72,7 +72,7 @@ func TestMemberWalletOperate(t *testing.T) {
 
 func TestMemberFreeWallet(t *testing.T) {
 	var memberId int64 = 1
-	m := ti.Factory.GetMemberRepo().GetMember(memberId)
+	m := inject.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
 	_, err := ic.CarryTo(member.AccountWallet, member.AccountOperateData{
 		Title:   "测试冻结1元",
@@ -96,7 +96,7 @@ func TestMemberFreeWallet(t *testing.T) {
 
 func TestMemberRedPack(t *testing.T) {
 	//var memberId int64 = 1
-	//m := ti.Factory.GetMemberRepo().GetMember(memberId)
+	//m := inject.GetMemberRepo().GetMember(memberId)
 	//ic := m.GetAccount()
 	//iw := ic.Wallet()
 	//amount := iw.Get().Balance
@@ -107,7 +107,7 @@ func TestMemberRedPack(t *testing.T) {
 
 func TestAccountAdjust(t *testing.T) {
 	var memberId int64 = 723
-	m := ti.Factory.GetMemberRepo().GetMember(memberId)
+	m := inject.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
 	err := ic.Adjust(member.AccountWallet, "[KF]客服调整",
 		8990,

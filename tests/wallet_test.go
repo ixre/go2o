@@ -2,16 +2,17 @@
 package tests
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/wallet"
-	"github.com/ixre/go2o/tests/ti"
 	"testing"
+
+	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/inject"
 )
 
 const walletId int64 = 1
 
 // 测试创建钱包
 func TestCreateWallet(t *testing.T) {
-	repo := ti.Factory.GetWalletRepo()
+	repo := inject.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	if wlt == nil {
 		wlt = repo.CreateWallet(1, "", wallet.TMerchant, "商户钱包", wallet.FlagCharge|wallet.FlagDiscount)
@@ -26,7 +27,7 @@ func TestCreateWallet(t *testing.T) {
 
 // 测试充值钱包
 func TestChargeWallet(t *testing.T) {
-	repo := ti.Factory.GetWalletRepo()
+	repo := inject.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	totalCharge := wlt.Get().TotalCharge
 	err := wlt.Charge(100000, wallet.CServiceAgentCharge,
@@ -50,7 +51,7 @@ func TestChargeWallet(t *testing.T) {
 
 // 测试钱包支付和退款
 func TestDiscountRefundWallet(t *testing.T) {
-	repo := ti.Factory.GetWalletRepo()
+	repo := inject.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	var value = 10000
 	var tradeNo = "02af1208xa209sl2"
@@ -74,7 +75,7 @@ func TestDiscountRefundWallet(t *testing.T) {
 
 // 测试冻结钱包
 func TestFreezeWallet(t *testing.T) {
-	repo := ti.Factory.GetWalletRepo()
+	repo := inject.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	var value = 10000
 	var freeze = wlt.Get().FreezeAmount
@@ -107,7 +108,7 @@ func TestFreezeWallet(t *testing.T) {
 
 // 测试调整钱包金额
 func TestAdjustWallet(t *testing.T) {
-	repo := ti.Factory.GetWalletRepo()
+	repo := inject.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	adjust := wlt.Get().AdjustAmount
 	err := wlt.Adjust(1000, "客服调整",
@@ -130,7 +131,7 @@ func TestAdjustWallet(t *testing.T) {
 
 // 测试提现失败
 func TestTakeOutWalletFail(t *testing.T) {
-	repo := ti.Factory.GetWalletRepo()
+	repo := inject.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	var amount = 10000
 	balance := wlt.Get().Balance
@@ -158,7 +159,7 @@ func TestTakeOutWalletFail(t *testing.T) {
 
 // 测试提现失败
 func TestTakeOutWalletSuccess(t *testing.T) {
-	repo := ti.Factory.GetWalletRepo()
+	repo := inject.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	var amount = 10000
 	balance := wlt.Get().Balance
@@ -187,7 +188,7 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 
 // 测试转账
 func TestTransferWallet(t *testing.T) {
-	repo := ti.Factory.GetWalletRepo()
+	repo := inject.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	var amount = 10000
 	var tradeFee = 1000

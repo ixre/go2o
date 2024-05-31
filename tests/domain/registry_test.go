@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/gof/util"
 )
 
@@ -19,7 +19,7 @@ func TestGenerateAppId(t *testing.T) {
 }
 
 func TestUpdateRegistryValue(t *testing.T) {
-	repo := ti.Factory.GetRegistryRepo()
+	repo := inject.GetRegistryRepo()
 	ir := repo.Get(registry.OrderAffiliatePushEnabled)
 	if ir != nil {
 		err := ir.Update("2")

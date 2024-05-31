@@ -13,12 +13,12 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 )
 
 func TestMssSendSms(t *testing.T) {
-	nRepo := ti.Factory.GetNotifyRepo()
-	registryRepo := ti.Factory.GetRegistryRepo()
+	nRepo := inject.GetNotifyRepo()
+	registryRepo := inject.GetRegistryRepo()
 	nm := nRepo.Manager()
 	re := registryRepo.Get(registry.SmsDefaultProvider)
 	re.Update("http")

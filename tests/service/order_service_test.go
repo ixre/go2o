@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/ixre/go2o/core/domain/interface/order"
-	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
 )
@@ -14,7 +14,7 @@ import (
 // 测试提交普通订单
 func TestSubmitNormalOrder(t *testing.T) {
 	var memberId int64 = 1
-	ret, err := impl.OrderService.SubmitOrder(
+	ret, err := inject.GetOrderService().SubmitOrder(
 		context.TODO(),
 		&proto.SubmitOrderRequest{
 			BuyerId:       memberId,
@@ -48,7 +48,7 @@ func TestGetSubOrder(t *testing.T) {
 	// -- 删除已生成的支付单
 	// delete FROM pay_order where out_order_no IN('1230322007642433','1230322001642486')
 	orderNo := "1230324001307478"
-	ret, _ := impl.OrderService.GetOrder(context.TODO(), &proto.OrderRequest{
+	ret, _ := inject.GetOrderService().GetOrder(context.TODO(), &proto.OrderRequest{
 		OrderNo:    orderNo,
 		WithDetail: true,
 	})
@@ -56,10 +56,10 @@ func TestGetSubOrder(t *testing.T) {
 }
 
 // 测试拆分支付单
-func TestBreakPaymentOrder(t *testing.T){
+func TestBreakPaymentOrder(t *testing.T) {
 	orderNo := "1230322000642437"
-	ret, _ := impl.OrderService.BreakPaymentOrder(context.TODO(), &proto.BreakPaymentRequest{
-		PaymentOrderNo:    orderNo,
+	ret, _ := inject.GetOrderService().BreakPaymentOrder(context.TODO(), &proto.BreakPaymentRequest{
+		PaymentOrderNo: orderNo,
 	})
-	t.Log(typeconv.MustJson(ret))	
+	t.Log(typeconv.MustJson(ret))
 }

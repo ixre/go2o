@@ -6,40 +6,33 @@
  * description :
  * history :
  */
-package ti
+package tests
 
 import (
 	"os"
 	"time"
 
-	"github.com/ixre/go2o/core"
+	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/go2o/core/event/msq"
+	"github.com/ixre/go2o/core/initial"
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/repos"
-	"github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
-var (
-	_conn db.Connector
-	_orm  orm.Orm
-)
-var (
-	REDIS_DB = "1"
-)
-
 func GetApp() gof.App {
-	return gof.CurrentApp
+	return provide.GetApp()
 }
 
 func GetOrm() orm.Orm {
-	return _orm
+	return provide.GetOrmInstance()
 }
 
 func GetConnector() db.Connector {
-	return _conn
+	return provide.GetDb()
 }
 
 func init() {
@@ -60,12 +53,10 @@ func init() {
 		}
 		confPath = "../" + confPath
 	}
-	app := core.NewApp(confPath, &cfg)
-	gof.CurrentApp = app
-	core.Init(app, false, false)
-	_conn = app.Db()
-	sto := app.Storage()
-	_orm = orm.NewOrm(_conn.Driver(), _conn.Raw())
-	impl.InitTestService(app, _conn, _orm, sto)
-	repos.Initial(_orm, sto)
+	app := initial.NewApp(confPath, &cfg)
+	initial.Init(app, false, false)
+
+	// 初始化分布式锁
+	etcd.InitializeLocker(&cfg)
+	repos.OrmMapping(provide.GetOrmInstance())
 }

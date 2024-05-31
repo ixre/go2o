@@ -6,13 +6,13 @@ import (
 	"testing"
 
 	"github.com/ixre/go2o/core/domain/interface/order"
-	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
 )
 
 func Test_merchantService_PagedNormalOrderOfVendor(t *testing.T) {
-	ret, _ := impl.MerchantService.PagedNormalOrderOfVendor(context.TODO(), &proto.MerchantOrderRequest{
+	ret, _ := inject.GetMerchantService().PagedNormalOrderOfVendor(context.TODO(), &proto.MerchantOrderRequest{
 		MerchantId: 1,
 		Pagination: false,
 		Params: &proto.SPagingParams{

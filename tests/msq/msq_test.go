@@ -2,6 +2,7 @@ package msq
 
 import (
 	"github.com/ixre/go2o/core/event/msq"
+	_ "github.com/ixre/go2o/tests"
 )
 
 const id = 1

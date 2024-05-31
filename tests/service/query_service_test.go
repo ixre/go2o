@@ -6,13 +6,13 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestPagingMemberAccountLog(t *testing.T) {
-	s := impl.QueryService
+	s := inject.GetQueryService()
 	ret, _ := s.PagingMemberAccountLog(context.TODO(), &proto.PagingAccountLogRequest{
 		MemberId:    723,
 		ValueFilter: 0,
@@ -33,7 +33,7 @@ func TestPagingIntegralLog(t *testing.T) {
 		Begin:      0,
 		End:        10,
 	}
-	r, _ := impl.QueryService.PagingMemberAccountLog(context.TODO(),
+	r, _ := inject.GetQueryService().PagingMemberAccountLog(context.TODO(),
 		&proto.PagingAccountLogRequest{
 			MemberId:    1,
 			AccountType: int32(member.AccountIntegral),
@@ -50,7 +50,7 @@ func TestPagingBalanceLog(t *testing.T) {
 		Begin:      0,
 		End:        10,
 	}
-	r, _ := impl.QueryService.PagingMemberAccountLog(context.TODO(),
+	r, _ := inject.GetQueryService().PagingMemberAccountLog(context.TODO(),
 		&proto.PagingAccountLogRequest{
 			MemberId:    int64(memberId),
 			AccountType: int32(member.AccountBalance),
@@ -66,7 +66,7 @@ func TestQueryPagingFlagGoods(t *testing.T) {
 		Begin:      0,
 		End:        10,
 	}
-	r, _ := impl.QueryService.PagingOnShelvesGoods(context.TODO(),
+	r, _ := inject.GetQueryService().PagingOnShelvesGoods(context.TODO(),
 		&proto.PagingShopGoodsRequest{
 			ShopId:     0,
 			CategoryId: 0,
@@ -77,7 +77,7 @@ func TestQueryPagingFlagGoods(t *testing.T) {
 }
 
 func TestPagingShopGoodsRequest(t *testing.T) {
-	goods, err := impl.QueryService.PagingOnShelvesGoods(context.TODO(), &proto.PagingShopGoodsRequest{
+	goods, err := inject.GetQueryService().PagingOnShelvesGoods(context.TODO(), &proto.PagingShopGoodsRequest{
 		ShopId:     0,
 		CategoryId: 2185,
 		Params: &proto.SPagingParams{
@@ -97,19 +97,19 @@ func TestPagingShopGoodsRequest(t *testing.T) {
 
 func TestMemberStatifics(t *testing.T) {
 	var memberId int64 = 729
-	mp, _ := impl.QueryService.MemberStatistics(context.TODO(), &proto.MemberStatisticsRequest{
+	mp, _ := inject.GetQueryService().MemberStatistics(context.TODO(), &proto.MemberStatisticsRequest{
 		MemberId: memberId,
 	})
 	t.Log("未支付订单数", mp.AwaitPaymentOrders)
 }
 
 func TestQuerySearchItem(t *testing.T) {
-	list, err := impl.QueryService.SearchItem(context.TODO(), &proto.SearchItemRequest{
-		ShopId:     0,
-		Keyword:    "1",
+	list, err := inject.GetQueryService().SearchItem(context.TODO(), &proto.SearchItemRequest{
+		ShopId:  0,
+		Keyword: "1",
 		//CategoryId: 0,
 		//Begin:      0,
-		Size:       10,
+		Size: 10,
 	})
 
 	if err != nil {

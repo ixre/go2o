@@ -7,13 +7,13 @@ import (
 	"testing"
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
-	"github.com/ixre/go2o/tests/ti"
+	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/gof/types/typeconv"
 )
 
 func TestGetNormalCartItems(t *testing.T) {
 	var cartId = 596
-	repo := ti.Factory.GetCartRepo()
+	repo := inject.GetCartRepo()
 	c := repo.GetNormalCart(int32(cartId)).(cart.INormalCart)
 	for _, v := range c.Items() {
 		t.Log(v.Id, v.ItemId, v.Sku == nil)
@@ -22,7 +22,7 @@ func TestGetNormalCartItems(t *testing.T) {
 
 // 测试普通购物车
 func TestNormalCart(t *testing.T) {
-	repo := ti.Factory.GetCartRepo()
+	repo := inject.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KNormal)
 	_ = joinItemsToCart(c, 1)
 	//_ = joinItemsToCart(c, 51)
@@ -41,7 +41,7 @@ func TestNormalCart(t *testing.T) {
 }
 
 func TestCheckOnlyItem(t *testing.T) {
-	repo := ti.Factory.GetCartRepo()
+	repo := inject.GetCartRepo()
 	ic := repo.NewTempNormalCart(0, "1234")
 	err := ic.Put(1, 7, 1, true)
 	if err != nil {
@@ -54,7 +54,7 @@ func TestCheckOnlyItem(t *testing.T) {
 
 // 测试合并购物车
 func TestCombineCart(t *testing.T) {
-	repo := ti.Factory.GetCartRepo()
+	repo := inject.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KNormal)
 	//c2 := repo.NewNormalCart()
 
@@ -68,7 +68,7 @@ func TestCombineCart(t *testing.T) {
 }
 
 func joinItemsToCart(c cart.ICartAggregateRoot, itemId int64) error {
-	itemRepo := ti.Factory.GetItemRepo()
+	itemRepo := inject.GetItemRepo()
 	gs := itemRepo.GetItem(itemId)
 	arr := gs.SkuArray()
 	var skuId int64 = 0
@@ -109,7 +109,7 @@ func GetCartCheckedData(c cart.ICartAggregateRoot) string {
 
 // 测试批发购物车
 func TestWholesaleCart(t *testing.T) {
-	repo := ti.Factory.GetCartRepo()
+	repo := inject.GetCartRepo()
 	c := repo.GetMyCart(1, cart.KWholesale)
 	_ = joinItemsToCart(c, 1)
 	if c.Kind() == cart.KWholesale {
