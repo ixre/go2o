@@ -10,7 +10,7 @@ import (
 
 var _ proto.WalletServiceServer = new(walletServiceImpl)
 
-func NewWalletService(repo wallet.IWalletRepo) *walletServiceImpl {
+func NewWalletService(repo wallet.IWalletRepo) proto.WalletServiceServer {
 	return &walletServiceImpl{
 		_repo: repo,
 	}

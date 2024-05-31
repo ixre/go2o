@@ -41,7 +41,7 @@ type merchantService struct {
 }
 
 func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
-	q *query.MerchantQuery, orderQuery *query.OrderQuery) proto.MerchantServiceServer {
+	q *query.MerchantQuery, orderQuery query.OrderQuery) proto.MerchantServiceServer {
 	return &merchantService{
 		_mchRepo:    r,
 		_memberRepo: memberRepo,

@@ -23,6 +23,7 @@ var serviceProvideSets = wire.NewSet(provideSets,
 	//impl.NewOrderService,
 	impl.NewCartService,
 	impl.NewAfterSalesService,
+	impl.NewAdvertisementService,
 	// 事件
 	event.NewEventSource,
 	handler.NewEventHandler,
