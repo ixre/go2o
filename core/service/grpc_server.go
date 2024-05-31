@@ -5,7 +5,6 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/log"
@@ -24,11 +23,7 @@ import (
  */
 
 func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
-	app := provide.GetApp()
-	// 初始化RPC服务
-	prepareRpcServer(app, inject.GetRegistryRepo())
-	// 初始化数据
-	sysInit(inject.GetRegistryRepo())
+	log.Println("[ GO2O][ INFO]: start grpc server")
 	// 启动RPC服务
 	s := grpc.NewServer()
 	proto.RegisterStatusServiceServer(s, inject.GetStatusService())

@@ -57,6 +57,7 @@ func NewMemberRepo(sto storage.Interface, o orm.Orm,
 	if !memberRepoImplMapped {
 		_ = o.Mapping(member.OAuthAccount{}, "mm_app_account")
 		memberRepoImplMapped = true
+		OrmMapping(o)
 	}
 	return &MemberRepoImpl{
 		storage:      sto,

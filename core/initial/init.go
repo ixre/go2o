@@ -76,7 +76,6 @@ func Init(a *AppImpl, debug, trace bool) bool {
 	a._debugMode = debug
 	// 初始化并发锁
 	locker.Configure(a.Storage())
-	//OrmMapping(orm)
 	// 初始化变量
 	variable.Domain = a.Config().GetString(variable.ServerDomain)
 	a.Loaded = true

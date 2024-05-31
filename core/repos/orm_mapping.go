@@ -1,6 +1,9 @@
-package impl
+package repos
 
 import (
+	"log"
+	"sync"
+
 	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/go2o/core/domain/interface/ad"
 	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
@@ -25,7 +28,9 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/gof/storage"
 )
 
 /**
@@ -37,6 +42,29 @@ import (
  * description :
  * history :
  */
+
+var (
+	mux                 sync.Mutex
+	DefaultCacheSeconds int64 = 3600
+)
+
+// 处理错误
+func handleError(err error) error {
+	return domain.HandleError(err, "rep")
+	//if err != nil && gof.CurrentApp.Debug() {
+	//	gof.CurrentApp.Log().Println("[ GO2O][ Repo][ Error] -", err.Error())
+	//}
+	//return err
+}
+
+// 删除指定前缀的缓存
+func PrefixDel(sto storage.Interface, prefix string) error {
+	_, err := sto.DeleteWith(prefix)
+	if err != nil {
+		log.Println("[ Cache][ Clean]: clean by prefix ", prefix, " error:", err)
+	}
+	return err
+}
 
 func OrmMapping(orm orm.Orm) {
 	//table mapping

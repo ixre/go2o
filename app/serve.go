@@ -11,9 +11,11 @@ import (
 	"github.com/ixre/go2o/app/daemon"
 	"github.com/ixre/go2o/core"
 	"github.com/ixre/go2o/core/etcd"
+	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/event/msq"
 	"github.com/ixre/go2o/core/initial"
 	"github.com/ixre/go2o/core/service"
+	"github.com/ixre/gof/domain/eventbus"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
@@ -48,7 +50,7 @@ func getEtcdAddress() string {
 }
 
 func ParseFlags() {
-	flag.StringVar(&confFile, "conf", "app.conf", "")
+	flag.StringVar(&confFile, "conf", "../go2o/app-test.conf", "")
 	flag.StringVar(&etcdEndPoints, "endpoint", getEtcdAddress(), "etcd endpoints")
 	flag.StringVar(&mqAddr, "mqs", getNatsAddress(),
 		"nats cluster address, like: 192.168.1.1:4222,192.168.1.2:4222")
@@ -111,7 +113,9 @@ func Run(ch chan bool, after func(*clientv3.Config)) {
 	// 初始化producer
 	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
 	// initial service client
-	//service.ConfigureClient(&cfg, "")
+	service.ConfigureClient(&cfg, "")
+	// 发布应用初始化事件
+	eventbus.Publish(events.AppInitialEvent{})
 	if runDaemon {
 		go daemon.Run(newApp)
 	}
