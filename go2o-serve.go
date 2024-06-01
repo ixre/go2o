@@ -11,6 +11,8 @@ package main
 
 import (
 	"github.com/ixre/go2o/app"
+	"github.com/ixre/gof/shell"
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 var _ = `
@@ -42,7 +44,12 @@ Email: jarrysix#gmail.com
 func main() {
 	app.ParseFlags()
 	ch := make(chan bool)
-	app.Run(ch, nil)
+	app.Run(ch, func(_ *clientv3.Config, debug bool) {
+		if debug {
+			// build inject when run with -debug flag
+			shell.Run("~/go/bin/wire ./core/inject", true)
+		}
+	})
 }
 
 /*

@@ -29,15 +29,13 @@ var selector etcd.Selector
 func ConfigureClient(c *clientv3.Config, defaultAddr string) {
 	staticAddr = defaultAddr
 	if c != nil && len(staticAddr) == 0 {
-		log.Println("[ 1GO2O][ INFO]: connecting go2o rpc server...")
+		log.Println("[ GO2O][ INFO]: connecting go2o rpc server...")
 		s, err := etcd.NewSelector(service, *c, etcd.AlgRoundRobin)
 		if err != nil {
 			log.Println("[ GO2O][ ERROR]: can't connect go2o rpc server! ", err.Error())
 			os.Exit(1)
 		}
 		selector = s
-		log.Println("[ 2GO2O][ INFO]: connecting go2o rpc server...")
-
 	} else if len(staticAddr) > 0 {
 		log.Printf("[ GO2O][ INFO]: connecting static rpc server (node:%s)...\n", staticAddr)
 	}

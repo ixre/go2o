@@ -23,16 +23,15 @@ func initSSOModule() {
 	//domain := variable.Domain
 	//service := inject.GetRegistryService()
 
-	keys := []string{
-		registry.DomainPrefixPortal,
-		registry.DomainPrefixWholesalePortal,
-		registry.DomainPrefixHApi,
-		registry.DomainPrefixMember,
-		registry.DomainPrefixMobileMember,
-		registry.DomainPrefixMobilePortal,
-	}
+	// keys := []string{
+	// 	registry.DomainPrefixPortal,
+	// 	registry.DomainPrefixWholesalePortal,
+	// 	registry.DomainPrefixHApi,
+	// 	registry.DomainPrefixMember,
+	// 	registry.DomainPrefixMobileMember,
+	// 	registry.DomainPrefixMobilePortal,
+	// }
 
-	println(len(keys))
 	//todo: to etcd
 	/*
 		registries, _ := cli.GetValues(context.TODO(),&proto.StringArray{Value:  keys})

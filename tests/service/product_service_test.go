@@ -19,7 +19,7 @@ func TestProductCategoryTree(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	println(len(node.Value))
+	t.Log(len(node.Value))
 }
 
 func TestCategoryInitialTreeNode(t *testing.T) {
