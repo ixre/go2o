@@ -10,6 +10,7 @@ import (
 
 var (
 	producer Producer
+	repo     registry.IRegistryRepo
 )
 
 const NATS = 1
@@ -24,7 +25,8 @@ type Producer interface {
 }
 
 // Configure 设置
-func Configure(mqType int, address []string) error {
+func Configure(mqType int, address []string, registryRepo registry.IRegistryRepo) error {
+	repo = registryRepo
 	if mqType == KAFKA {
 		panic("if you want to use kafka as mq server. please uncomment blow line")
 		//producer = newKafkaProducer(address)
@@ -39,8 +41,9 @@ func Configure(mqType int, address []string) error {
 
 // 检查是否开启推送
 func checkNatsSubs() bool {
-	var repo registry.IRegistryRepo
-	//repo := inject.GetRegistryRepo()
+	if repo == nil {
+		panic("Nats repositoy not set")
+	}
 	v, _ := repo.GetValue(registry.AppEnableNatsSubscription)
 	return v == "1" || v == "true"
 }

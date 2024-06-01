@@ -8,10 +8,10 @@ import (
 )
 
 type EventSource struct {
-	handler.EventHandler
+	*handler.EventHandler
 }
 
-func NewEventSource(h handler.EventHandler) *EventSource {
+func NewEventSource(h *handler.EventHandler) *EventSource {
 	return &EventSource{
 		EventHandler: h,
 	}

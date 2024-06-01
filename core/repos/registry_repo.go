@@ -42,14 +42,12 @@ func (r *registryRepo) CreateUserKey(key string, value string, desc string) erro
 }
 
 func NewRegistryRepo(conn orm.Orm, s storage.Interface) registry.IRegistryRepo {
-	r := (&registryRepo{
+	return (&registryRepo{
 		conn:  conn.Connector(),
 		_orm:  conn,
 		store: s,
 		data:  make(map[string]registry.IRegistry),
-	})
-	go r.init()
-	return r
+	}).init()
 }
 
 func (r *registryRepo) init() registry.IRegistryRepo {
@@ -214,7 +212,7 @@ func (r *registryRepo) truncUnused(registries []*registry.Registry) error {
 
 func (r *registryRepo) flushToStorage(list []*registry.Registry) {
 	for _, v := range list {
-		r.store.Set(r.getStorageKey(v.Key), v.Value)
+		go r.store.Set(r.getStorageKey(v.Key), v.Value)
 	}
 }
 

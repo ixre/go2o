@@ -4,13 +4,13 @@ package inject
 
 import (
 	"github.com/google/wire"
+	impl2 "github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/event"
 	"github.com/ixre/go2o/core/event/handler"
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service/impl"
-	impl2 "github.com/ixre/go2o/core/dao/impl"
 )
 
 var provideSets = wire.NewSet(

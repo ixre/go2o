@@ -15,6 +15,7 @@ import (
 	"github.com/ixre/go2o/core/event/msq"
 	"github.com/ixre/go2o/core/initial"
 	"github.com/ixre/go2o/core/initial/provide"
+	"github.com/ixre/go2o/core/inject"
 
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service"
@@ -106,9 +107,14 @@ func Run(ch chan bool, after func(*clientv3.Config)) {
 	// 注册服务发现
 	service.RegisterServiceDiscovery(&cfg, host, port)
 	// 初始化producer
-	_ = msq.Configure(msq.NATS, strings.Split(mqAddr, ","))
+	_ = msq.Configure(msq.NATS,
+		strings.Split(mqAddr, ","),
+		inject.GetRegistryRepo(),
+	)
+	// 初始化事件
+	inject.GetEventSource().Init()
 	// 发布应用初始化事件
-	eventbus.Publish(events.AppInitialEvent{})
+	eventbus.Publish(&events.AppInitialEvent{})
 	InitialModules()
 	if runDaemon {
 		go daemon.Run(newApp)

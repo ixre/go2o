@@ -22,6 +22,15 @@ func TestGetMember(t *testing.T) {
 	t.Logf("%#v", m.GetValue())
 }
 
+// 测试修改用户信息
+func TestModifyMemberProfile(t *testing.T) {
+	m := inject.GetMemberRepo().GetMember(1)
+	v := m.GetValue()
+	v.Nickname = "哈哈"
+	m.Save()
+	time.Sleep(30 * time.Second)
+}
+
 func TestModifyMemberPwd(t *testing.T) {
 	m := inject.GetMemberRepo().GetMember(702)
 	md5 := crypto.Md5([]byte("1234567"))

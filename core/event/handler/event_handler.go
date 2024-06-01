@@ -8,16 +8,17 @@ import (
 
 type EventHandler struct {
 	registryRepo registry.IRegistryRepo
-	archiveRepo content.IArchiveRepo
-	portalDao dao.IPortalDao
+	archiveRepo  content.IArchiveRepo
+	portalDao    dao.IPortalDao
 }
 
 func NewEventHandler(repo registry.IRegistryRepo,
 	archiveRepo content.IArchiveRepo,
 	portalDao dao.IPortalDao,
-	) *EventHandler {
+) *EventHandler {
 	return &EventHandler{
 		registryRepo: repo,
-		portalDao:portalDao,
+		portalDao:    portalDao,
+		archiveRepo:  archiveRepo,
 	}
 }

@@ -2,8 +2,6 @@ package domain
 
 import (
 	"testing"
-
-	"github.com/ixre/go2o/core/event/msq"
 )
 
 /**
@@ -21,8 +19,4 @@ func assertError(t *testing.T, err error) {
 		t.Error(err)
 		t.FailNow()
 	}
-}
-
-func init() {
-	msq.Configure(msq.NATS, []string{"go2o.dev:4222"})
 }

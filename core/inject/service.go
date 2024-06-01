@@ -5,7 +5,12 @@ package inject
 import (
 	"github.com/google/wire"
 	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/go2o/core/event"
 )
+
+func GetEventSource() *event.EventSource {
+	panic(wire.Build(serviceProvideSets))
+}
 
 // 状态服务
 func GetStatusService() proto.StatusServiceServer {

@@ -8,7 +8,7 @@ package inject
 
 import (
 	"github.com/google/wire"
-	impl2 "github.com/ixre/go2o/core/dao/impl"
+	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/domain/interface/ad"
 	"github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/domain/interface/cart"
@@ -40,7 +40,7 @@ import (
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/repos"
-	"github.com/ixre/go2o/core/service/impl"
+	impl2 "github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
 )
 
@@ -383,9 +383,20 @@ func GetJobRepo() job.IJobRepo {
 
 // Injectors from service.go:
 
+func GetEventSource() *event.EventSource {
+	orm := provide.GetOrmInstance()
+	storageInterface := provide.GetStorageInstance()
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iArchiveRepo := repos.NewContentRepo(orm)
+	iPortalDao := impl.NewPortalDao(orm)
+	eventHandler := handler.NewEventHandler(iRegistryRepo, iArchiveRepo, iPortalDao)
+	eventSource := event.NewEventSource(eventHandler)
+	return eventSource
+}
+
 // 状态服务
 func GetStatusService() proto.StatusServiceServer {
-	statusServiceServer := impl.NewStatusService()
+	statusServiceServer := impl2.NewStatusService()
 	return statusServiceServer
 }
 
@@ -395,7 +406,7 @@ func GetRegistryService() proto.RegistryServiceServer {
 	storageInterface := provide.GetStorageInstance()
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
-	registryServiceServer := impl.NewRegistryService(iValueRepo, iRegistryRepo)
+	registryServiceServer := impl2.NewRegistryService(iValueRepo, iRegistryRepo)
 	return registryServiceServer
 }
 
@@ -406,7 +417,7 @@ func GetFoundationService() proto.FoundationServiceServer {
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
-	foundationServiceServer := impl.NewFoundationService(iValueRepo, iRegistryRepo, storageInterface, iNotifyRepo)
+	foundationServiceServer := impl2.NewFoundationService(iValueRepo, iRegistryRepo, storageInterface, iNotifyRepo)
 	return foundationServiceServer
 }
 
@@ -422,7 +433,7 @@ func GetMemberService() proto.MemberServiceServer {
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
 	memberQuery := query.NewMemberQuery(orm)
 	orderQuery := query.NewOrderQuery(orm)
-	memberServiceServer := impl.NewMemberService(iMemberRepo, iRegistryRepo, memberQuery, orderQuery, iValueRepo)
+	memberServiceServer := impl2.NewMemberService(iMemberRepo, iRegistryRepo, memberQuery, orderQuery, iValueRepo)
 	return memberServiceServer
 }
 
@@ -449,7 +460,7 @@ func GetMerchantService() proto.MerchantServiceServer {
 	app := provide.GetApp()
 	merchantQuery := query.NewMerchantQuery(app)
 	orderQuery := query.NewOrderQuery(orm)
-	merchantServiceServer := impl.NewMerchantService(iMerchantRepo, iMemberRepo, merchantQuery, orderQuery)
+	merchantServiceServer := impl2.NewMerchantService(iMerchantRepo, iMemberRepo, merchantQuery, orderQuery)
 	return merchantServiceServer
 }
 
@@ -474,7 +485,7 @@ func GetShopService() proto.ShopServiceServer {
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iMemberRepo, iMssRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	shopQuery := query.NewShopQuery(orm, storageInterface)
-	shopServiceServer := impl.NewShopService(iShopRepo, iMerchantRepo, iRegistryRepo, shopQuery)
+	shopServiceServer := impl2.NewShopService(iShopRepo, iMerchantRepo, iRegistryRepo, shopQuery)
 	return shopServiceServer
 }
 
@@ -487,7 +498,7 @@ func GetProductService() proto.ProductServiceServer {
 	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iProductRepo := repos.NewProductRepo(orm, iProductModelRepo, iValueRepo)
-	productServiceServer := impl.NewProductService(iProductModelRepo, iCategoryRepo, iProductRepo)
+	productServiceServer := impl2.NewProductService(iProductModelRepo, iCategoryRepo, iProductRepo)
 	return productServiceServer
 }
 
@@ -513,7 +524,7 @@ func GetItemService() proto.ItemServiceServer {
 	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iMemberRepo, iMssRepo, iWalletRepo, iValueRepo, iRegistryRepo)
-	itemServiceServer := impl.NewItemService(storageInterface, iCategoryRepo, iItemRepo, itemQuery, iSaleLabelRepo, iProductModelRepo, iMerchantRepo, iValueRepo)
+	itemServiceServer := impl2.NewItemService(storageInterface, iCategoryRepo, iItemRepo, itemQuery, iSaleLabelRepo, iProductModelRepo, iMerchantRepo, iValueRepo)
 	return itemServiceServer
 }
 
@@ -544,7 +555,7 @@ func GetOrderService() proto.OrderServiceServer {
 	iShipmentRepo := repos.NewShipmentRepo(orm, iExpressRepo)
 	iOrderRepo := repos.NewOrderRepo(storageInterface, orm, iMerchantRepo, iPaymentRepo, iProductRepo, iCartRepo, iItemRepo, iPromotionRepo, iMemberRepo, iDeliveryRepo, iExpressRepo, iShipmentRepo, iShopRepo, iValueRepo, iRegistryRepo)
 	orderQuery := query.NewOrderQuery(orm)
-	orderServiceServer := impl.NewShoppingService(iOrderRepo, iCartRepo, iMemberRepo, iProductRepo, iItemRepo, iMerchantRepo, iShopRepo, iPaymentRepo, iShipmentRepo, iExpressRepo, orderQuery)
+	orderServiceServer := impl2.NewShoppingService(iOrderRepo, iCartRepo, iMemberRepo, iProductRepo, iItemRepo, iMerchantRepo, iShopRepo, iPaymentRepo, iShipmentRepo, iExpressRepo, orderQuery)
 	return orderServiceServer
 }
 
@@ -569,7 +580,7 @@ func GetCartService() proto.CartServiceServer {
 	iUserRepo := repos.NewUserRepo(orm)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iMemberRepo, iMssRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
-	cartServiceServer := impl.NewCartService(iCartRepo, iItemRepo, iMerchantRepo, iShopRepo)
+	cartServiceServer := impl2.NewCartService(iCartRepo, iItemRepo, iMerchantRepo, iShopRepo)
 	return cartServiceServer
 }
 
@@ -602,7 +613,7 @@ func GetAfterSalesService() proto.AfterSalesServiceServer {
 	iAfterSalesRepo := repos.NewAfterSalesRepo(orm, iOrderRepo, iMemberRepo, iPaymentRepo)
 	connector := provide.GetDb()
 	afterSalesQuery := query.NewAfterSalesQuery(connector)
-	afterSalesServiceServer := impl.NewAfterSalesService(iAfterSalesRepo, afterSalesQuery, iOrderRepo)
+	afterSalesServiceServer := impl2.NewAfterSalesService(iAfterSalesRepo, afterSalesQuery, iOrderRepo)
 	return afterSalesServiceServer
 }
 
@@ -632,7 +643,7 @@ func GetPaymentService() proto.PaymentServiceServer {
 	iDeliveryRepo := repos.NewDeliverRepo(orm)
 	iShipmentRepo := repos.NewShipmentRepo(orm, iExpressRepo)
 	iOrderRepo := repos.NewOrderRepo(storageInterface, orm, iMerchantRepo, iPaymentRepo, iProductRepo, iCartRepo, iItemRepo, iPromotionRepo, iMemberRepo, iDeliveryRepo, iExpressRepo, iShipmentRepo, iShopRepo, iValueRepo, iRegistryRepo)
-	paymentServiceServer := impl.NewPaymentService(iPaymentRepo, iOrderRepo, iMemberRepo)
+	paymentServiceServer := impl2.NewPaymentService(iPaymentRepo, iOrderRepo, iMemberRepo)
 	return paymentServiceServer
 }
 
@@ -641,7 +652,7 @@ func GetQuickPayService() proto.QuickPayServiceServer {
 	storageInterface := provide.GetStorageInstance()
 	orm := provide.GetOrmInstance()
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
-	quickPayServiceServer := impl.NewQuickPayService(storageInterface, iRegistryRepo)
+	quickPayServiceServer := impl2.NewQuickPayService(storageInterface, iRegistryRepo)
 	return quickPayServiceServer
 }
 
@@ -653,7 +664,7 @@ func GetMessageService() proto.MessageServiceServer {
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
-	messageServiceServer := impl.NewMessageService(iMssRepo)
+	messageServiceServer := impl2.NewMessageService(iMssRepo)
 	return messageServiceServer
 }
 
@@ -663,7 +674,7 @@ func GetExpressService() proto.ExpressServiceServer {
 	storageInterface := provide.GetStorageInstance()
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
-	expressServiceServer := impl.NewExpressService(iExpressRepo)
+	expressServiceServer := impl2.NewExpressService(iExpressRepo)
 	return expressServiceServer
 }
 
@@ -675,7 +686,7 @@ func GetShipmentService() proto.ShipmentServiceServer {
 	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
 	iShipmentRepo := repos.NewShipmentRepo(orm, iExpressRepo)
 	iDeliveryRepo := repos.NewDeliverRepo(orm)
-	shipmentServiceServer := impl.NewShipmentService(iShipmentRepo, iDeliveryRepo, iExpressRepo)
+	shipmentServiceServer := impl2.NewShipmentService(iShipmentRepo, iDeliveryRepo, iExpressRepo)
 	return shipmentServiceServer
 }
 
@@ -684,7 +695,7 @@ func GetContentService() proto.ContentServiceServer {
 	orm := provide.GetOrmInstance()
 	iArchiveRepo := repos.NewContentRepo(orm)
 	contentQuery := query.NewContentQuery(orm)
-	contentServiceServer := impl.NewContentService(iArchiveRepo, contentQuery)
+	contentServiceServer := impl2.NewContentService(iArchiveRepo, contentQuery)
 	return contentServiceServer
 }
 
@@ -693,7 +704,7 @@ func GetAdService() proto.AdvertisementServiceServer {
 	orm := provide.GetOrmInstance()
 	storageInterface := provide.GetStorageInstance()
 	iAdRepo := repos.NewAdvertisementRepo(orm, storageInterface)
-	advertisementServiceServer := impl.NewAdvertisementService(iAdRepo, storageInterface)
+	advertisementServiceServer := impl2.NewAdvertisementService(iAdRepo, storageInterface)
 	return advertisementServiceServer
 }
 
@@ -701,7 +712,7 @@ func GetAdService() proto.AdvertisementServiceServer {
 func GetWalletService() proto.WalletServiceServer {
 	orm := provide.GetOrmInstance()
 	iWalletRepo := repos.NewWalletRepo(orm)
-	walletServiceServer := impl.NewWalletService(iWalletRepo)
+	walletServiceServer := impl2.NewWalletService(iWalletRepo)
 	return walletServiceServer
 }
 
@@ -716,7 +727,7 @@ func GetPersonFinanceService() proto.FinanceServiceServer {
 	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
 	iPersonFinanceRepository := repos.NewPersonFinanceRepository(orm, iMemberRepo)
-	financeServiceServer := impl.NewPersonFinanceService(iPersonFinanceRepository, iMemberRepo)
+	financeServiceServer := impl2.NewPersonFinanceService(iPersonFinanceRepository, iMemberRepo)
 	return financeServiceServer
 }
 
@@ -728,9 +739,9 @@ func GetPortalService() proto.PortalServiceServer {
 	iProductModelRepo := repos.NewProModelRepo(orm)
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
 	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
-	commonDao := impl2.NewCommDao(orm, storageInterface, iAdRepo, iCategoryRepo)
-	iPortalDao := impl2.NewPortalDao(orm)
-	portalServiceServer := impl.NewPortalService(orm, commonDao, iPortalDao)
+	commonDao := impl.NewCommDao(orm, storageInterface, iAdRepo, iCategoryRepo)
+	iPortalDao := impl.NewPortalDao(orm)
+	portalServiceServer := impl2.NewPortalService(orm, commonDao, iPortalDao)
 	return portalServiceServer
 }
 
@@ -741,7 +752,7 @@ func GetQueryService() proto.QueryServiceServer {
 	iProductModelRepo := repos.NewProModelRepo(orm)
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
 	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
-	queryServiceServer := impl.NewQueryService(orm, storageInterface, iCategoryRepo)
+	queryServiceServer := impl2.NewQueryService(orm, storageInterface, iCategoryRepo)
 	return queryServiceServer
 }
 
@@ -750,7 +761,7 @@ func GetExecuteService() proto.ExecutionServiceServer {
 	storageInterface := provide.GetStorageInstance()
 	orm := provide.GetOrmInstance()
 	iJobRepo := repos.NewJobRepository(orm, storageInterface)
-	executionServiceServer := impl.NewExecutionService(storageInterface, iJobRepo)
+	executionServiceServer := impl2.NewExecutionService(storageInterface, iJobRepo)
 	return executionServiceServer
 }
 
@@ -758,7 +769,7 @@ func GetExecuteService() proto.ExecutionServiceServer {
 func GetAppService() proto.AppServiceServer {
 	storageInterface := provide.GetStorageInstance()
 	orm := provide.GetOrmInstance()
-	appServiceServer := impl.NewAppService(storageInterface, orm)
+	appServiceServer := impl2.NewAppService(storageInterface, orm)
 	return appServiceServer
 }
 
@@ -767,7 +778,7 @@ func GetRbacService() proto.RbacServiceServer {
 	storageInterface := provide.GetStorageInstance()
 	orm := provide.GetOrmInstance()
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
-	rbacServiceServer := impl.NewRbacService(storageInterface, orm, iRegistryRepo)
+	rbacServiceServer := impl2.NewRbacService(storageInterface, orm, iRegistryRepo)
 	return rbacServiceServer
 }
 
@@ -775,7 +786,7 @@ func GetRbacService() proto.RbacServiceServer {
 func GetCodeService() proto.CodeServiceServer {
 	storageInterface := provide.GetStorageInstance()
 	orm := provide.GetOrmInstance()
-	codeServiceServer := impl.NewCodeService(storageInterface, orm)
+	codeServiceServer := impl2.NewCodeService(storageInterface, orm)
 	return codeServiceServer
 }
 
@@ -788,9 +799,9 @@ var queryProvideSets = wire.NewSet(
 )
 
 var daoProvideSets = wire.NewSet(
-	queryProvideSets, impl2.NewCommDao, impl2.NewPortalDao,
+	queryProvideSets, impl.NewCommDao, impl.NewPortalDao,
 )
 
 var serviceProvideSets = wire.NewSet(
-	daoProvideSets, impl.NewStatusService, impl.NewRegistryService, impl.NewMerchantService, impl.NewPromotionService, impl.NewFoundationService, impl.NewMemberService, impl.NewShopService, impl.NewProductService, impl.NewItemService, impl.NewShoppingService, impl.NewCartService, impl.NewAfterSalesService, impl.NewAdvertisementService, impl.NewPaymentService, impl.NewQuickPayService, impl.NewMessageService, impl.NewExpressService, impl.NewShipmentService, impl.NewContentService, impl.NewWalletService, impl.NewCodeService, impl.NewQueryService, impl.NewRbacService, impl.NewAppService, impl.NewPortalService, impl.NewPersonFinanceService, impl.NewExecutionService, event.NewEventSource, handler.NewEventHandler,
+	daoProvideSets, impl2.NewStatusService, impl2.NewRegistryService, impl2.NewMerchantService, impl2.NewPromotionService, impl2.NewFoundationService, impl2.NewMemberService, impl2.NewShopService, impl2.NewProductService, impl2.NewItemService, impl2.NewShoppingService, impl2.NewCartService, impl2.NewAfterSalesService, impl2.NewAdvertisementService, impl2.NewPaymentService, impl2.NewQuickPayService, impl2.NewMessageService, impl2.NewExpressService, impl2.NewShipmentService, impl2.NewContentService, impl2.NewWalletService, impl2.NewCodeService, impl2.NewQueryService, impl2.NewRbacService, impl2.NewAppService, impl2.NewPortalService, impl2.NewPersonFinanceService, impl2.NewExecutionService, event.NewEventSource, handler.NewEventHandler,
 )
