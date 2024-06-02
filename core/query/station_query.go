@@ -36,6 +36,10 @@ type SubStation struct {
 	Name string `db:"name" json:"name" bson:"name"`
 	// 状态: 0: 待开通  1: 已开通  2: 已关闭
 	Status int `db:"status" json:"status" bson:"status"`
+	// 首字母
+	Letter string `db:"letter" json:"letter" bson:"letter"`
+	// 是否热门
+	IsHot int `db:"is_hot" json:"isHot" bson:"isHot"`
 	// 上级
 	Parent int `db:"parent" json:"-" bson:"-"`
 }
@@ -66,7 +70,7 @@ func (s *StationQuery) QueryStations(status int) []*StationArea {
 	})
 	cities := make([]*SubStation, 0)
 	err := s._orm.SelectByQuery(&cities, fmt.Sprintf(`
-		SELECT s.id,a.name,s.status,a.parent FROM sys_sub_station s
+		SELECT s.id,a.name,s.status,s.letter,s.is_hot,a.parent FROM sys_sub_station s
 		INNER JOIN china_area a ON a.code = s.city_code
 		WHERE a.parent IN (%s)`,
 		strings.Join(provinceIdList, ",")))
