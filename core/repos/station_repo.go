@@ -24,7 +24,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/station"
 	si "github.com/ixre/go2o/core/domain/station"
-	"github.com/ixre/go2o/core/infrastructure/tool/collections"
+	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/db/orm"
 )
 
@@ -45,11 +45,9 @@ func NewStationRepo(o orm.Orm) station.IStationRepo {
 		_ = o.Mapping(station.Area{}, "china_area")
 		modelIsMapped = true
 	}
-	r := &stationRepoImpl{
+	return &stationRepoImpl{
 		_orm: o,
 	}
-	go r.GetManager().SyncStations()
-	return r
 }
 
 // CreateStation implements station.IStationRepo.

@@ -15,7 +15,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
-	"github.com/ixre/go2o/core/infrastructure/tool"
+	tool "github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"

@@ -18,7 +18,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
-	"github.com/ixre/go2o/core/infrastructure/tool/sensitive"
+	"github.com/ixre/go2o/core/infrastructure/util/sensitive"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/module/bank"
 	"github.com/ixre/go2o/core/service/proto"
@@ -37,7 +37,7 @@ type foundationService struct {
 	proto.UnimplementedFoundationServiceServer
 }
 
-func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, s storage.Interface, notifyRepo notify.INotifyRepo)proto.FoundationServiceServer {
+func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, s storage.Interface, notifyRepo notify.INotifyRepo) proto.FoundationServiceServer {
 	return &foundationService{
 		_rep:         rep,
 		_s:           s,
@@ -84,10 +84,10 @@ func (s *foundationService) SaveSmsSetting(_ context.Context, r *proto.SSmsProvi
 		Signature:  r.Signature,
 		TemplateId: r.TemplateId,
 		Extra: &notify.SmsExtraSetting{
-			ApiUrl:  r.HttpExtra.ApiUrl,
-			Params:  r.HttpExtra.Params,
-			Method:  r.HttpExtra.Method,
-			Charset: r.HttpExtra.Charset,
+			ApiUrl:       r.HttpExtra.ApiUrl,
+			Params:       r.HttpExtra.Params,
+			Method:       r.HttpExtra.Method,
+			Charset:      r.HttpExtra.Charset,
 			SuccessChars: r.HttpExtra.SuccessChars,
 		},
 	}

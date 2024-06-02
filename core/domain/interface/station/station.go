@@ -41,6 +41,10 @@ type SubStation struct {
 	CityCode int `db:"city_code" json:"cityCode" bson:"cityCode"`
 	// 状态: 0: 待开通  1: 已开通  2: 已关闭
 	Status int `db:"status" json:"status" bson:"status"`
+	// 首字母
+	Letter string `db:"letter" json:"letter" bson:"letter"`
+	// 是否热门
+	IsHot int `db:"is_hot" json:"isHot" bson:"isHot"`
 	// 创建时间
 	CreateTime int64 `db:"create_time" json:"createTime" bson:"createTime"`
 }

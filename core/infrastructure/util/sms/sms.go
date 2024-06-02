@@ -17,8 +17,8 @@ import (
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/message/notify"
-	"github.com/ixre/go2o/core/infrastructure/tool/sms/aliyu"
-	"github.com/ixre/go2o/core/infrastructure/tool/sms/cl253"
+	"github.com/ixre/go2o/core/infrastructure/util/sms/aliyu"
+	"github.com/ixre/go2o/core/infrastructure/util/sms/cl253"
 )
 
 // 短信接口

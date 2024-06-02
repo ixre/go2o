@@ -11,13 +11,14 @@ package daemon
 
 import (
 	"database/sql"
-	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/order"
-	"github.com/ixre/go2o/core/infrastructure/tool"
-	"github.com/ixre/gof/db/orm"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/order"
+	tool "github.com/ixre/go2o/core/infrastructure/util"
+	"github.com/ixre/gof/db/orm"
 )
 
 var (

@@ -11,14 +11,15 @@ package daemon
 import (
 	"context"
 	"database/sql"
-	"github.com/ixre/go2o/core/domain/interface/personfinance"
-	"github.com/ixre/go2o/core/infrastructure/tool"
-	"github.com/ixre/go2o/core/service"
-	"github.com/ixre/go2o/core/service/proto"
 	"log"
 	"math"
 	"sync"
 	"time"
+
+	"github.com/ixre/go2o/core/domain/interface/personfinance"
+	"github.com/ixre/go2o/core/infrastructure/util"
+	"github.com/ixre/go2o/core/service"
+	"github.com/ixre/go2o/core/service/proto"
 )
 
 var (
@@ -28,7 +29,7 @@ var (
 func personFinanceSettle() {
 	now := time.Now()
 	//invokeSettle(now.Add(time.Hour * -24))
-	unix := tool.GetStartDate(time.Now()).Unix()
+	unix := util.GetStartDate(time.Now()).Unix()
 	// 今日是否结算
 	if CompareLastUnix(settleUnixKey, unix) {
 		log.Println("[ PersonFinance][ Settle][ Info]:Today is settled!")
@@ -53,7 +54,7 @@ func invokeSettle(t time.Time) {
 // 采用按ID分段,通过传入ID区间用多个gorouting进行处理.
 func confirmTransferIn(t time.Time) {
 	settleTime := t.AddDate(0, 0, -personfinance.RiseSettleTValue) // 倒推结算日
-	unixDate := tool.GetStartDate(settleTime).Unix()
+	unixDate := util.GetStartDate(settleTime).Unix()
 	begin := 0
 	size := 20
 	for {
@@ -121,7 +122,7 @@ func confirmTransferInByCursor(unixDate int64, logId int32) {
 // 结算增利数据,t为结算日
 // 采用按ID分段,通过传入ID区间用多个gorouting进行处理.
 func settleRiseData(settleDate time.Time) {
-	settleUnix := tool.GetStartDate(settleDate).Unix() //结算日期
+	settleUnix := util.GetStartDate(settleDate).Unix() //结算日期
 	begin := 0
 	size := 20
 	for {

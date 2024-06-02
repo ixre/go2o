@@ -18,7 +18,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/event/events"
-	"github.com/ixre/go2o/core/infrastructure/tool/sms"
+	"github.com/ixre/go2o/core/infrastructure/util/sms"
 	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/log"
 )

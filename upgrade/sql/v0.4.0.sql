@@ -395,4 +395,10 @@ ALTER TABLE "public".mm_member
 COMMENT ON COLUMN "public".mm_member.role_flag IS '角色标志';
 
 
+ALTER TABLE sys_sub_station 
+  ADD COLUMN letter varchar(2) DEFAULT '' NOT NULL;
+ALTER TABLE sys_sub_station 
+  ADD COLUMN is_hot int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN sys_sub_station.letter IS '首字母';
+COMMENT ON COLUMN sys_sub_station.is_hot IS '是否热门';
 

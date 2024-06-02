@@ -29,7 +29,7 @@ import (
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
-	"github.com/ixre/go2o/core/infrastructure/tool/collections"
+	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/util"
 )

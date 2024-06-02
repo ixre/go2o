@@ -26,6 +26,8 @@ func (h EventHandler) HandleAppInitialEvent(data interface{}) {
 	initPortalNav(h.portalDao)
 	initPortalNavGroup(h.portalDao)
 	initPages(h.archiveRepo)
+	// 初始化站点
+	go h.stationRepo.GetManager().SyncStations()
 }
 
 func initSuperLoginToken(repo registry.IRegistryRepo) {

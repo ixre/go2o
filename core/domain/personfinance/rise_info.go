@@ -11,13 +11,14 @@ package personfinance
 import (
 	"errors"
 	"fmt"
+	"math"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/personfinance"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
-	"github.com/ixre/go2o/core/infrastructure/tool"
-	"math"
-	"time"
+	tool "github.com/ixre/go2o/core/infrastructure/util"
 )
 
 var _ personfinance.IRiseInfo = new(riseInfo)

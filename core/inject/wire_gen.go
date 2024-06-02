@@ -388,8 +388,9 @@ func GetEventSource() *event.EventSource {
 	storageInterface := provide.GetStorageInstance()
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
 	iArchiveRepo := repos.NewContentRepo(orm)
+	iStationRepo := repos.NewStationRepo(orm)
 	iPortalDao := impl.NewPortalDao(orm)
-	eventHandler := handler.NewEventHandler(iRegistryRepo, iArchiveRepo, iPortalDao)
+	eventHandler := handler.NewEventHandler(iRegistryRepo, iArchiveRepo, iStationRepo, iPortalDao)
 	eventSource := event.NewEventSource(eventHandler)
 	return eventSource
 }

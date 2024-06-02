@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package tool
+package util
 
 import (
 	"bytes"

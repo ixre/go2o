@@ -25,7 +25,7 @@ import (
 	memberImpl "github.com/ixre/go2o/core/domain/member"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
-	"github.com/ixre/go2o/core/infrastructure/tool"
+	tool "github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
