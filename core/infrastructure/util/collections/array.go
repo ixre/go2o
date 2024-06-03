@@ -1,5 +1,6 @@
 package collections
 
+// 是否包含元素
 func InArray[T comparable](arr []T, e T) bool {
 	for _, v := range arr {
 		if v == e {
@@ -7,6 +8,27 @@ func InArray[T comparable](arr []T, e T) bool {
 		}
 	}
 	return false
+}
+
+// 是否包含任意元素
+func AnyArray[T comparable](arr []T, f func(e T) bool) bool {
+	for _, v := range arr {
+		if f(v) {
+			return true
+		}
+	}
+	return false
+}
+
+// 在数组中筛选
+func FilterArray[T comparable](arr []T, f func(e T) bool) []T {
+	ret := make([]T, 0)
+	for _, v := range arr {
+		if f(v) {
+			ret = append(ret, v)
+		}
+	}
+	return ret
 }
 
 // MapList 映射列表
