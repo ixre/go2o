@@ -236,19 +236,19 @@ func (p *rbacServiceImpl) getUserRoles(userId int64) ([]int64, []*model.PermRole
 
 // 移动资源顺序
 func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveResourceOrdinalRequest) (*proto.Result, error) {
-	res := p.dao.GetPermRes(r.ResourceId)
+	res := p.dao.GetRbacResource(r.ResourceId)
 	if res == nil {
 		return p.error(errors.New("no such data")), nil
 	}
 	// 获取交换的对象
 	var swapRes *model.PermRes
 	if r.Direction == 0 { // 向上移,获取上一个
-		swapRes = p.dao.GetPermResBy(
-			`sort_num < $1 AND pid = $2 AND depth=$3 ORDER BY sort_num DESC`,
+		swapRes = p.dao.GetRbacResourceBy(
+			`sort_num < $1 AND pid = $2 AND depth=$3 WHERE is_forbidden <> 1 ORDER BY sort_num DESC`,
 			res.SortNum, res.Pid, res.Depth)
 	} else {
-		swapRes = p.dao.GetPermResBy(
-			`sort_num > $1 AND pid = $2 AND depth=$3 ORDER BY sort_num ASC`,
+		swapRes = p.dao.GetRbacResourceBy(
+			`sort_num > $1 AND pid = $2 AND depth=$3 WHERE is_forbidden <> 1 ORDER BY sort_num ASC`,
 			res.SortNum, res.Pid, res.Depth)
 	}
 	// 交换顺序
@@ -272,7 +272,7 @@ func (p *rbacServiceImpl) appendParentResource(arr *[]*model.PermRes) {
 		if _, ok := mp[v.Pid]; !ok && v.Pid > 0 {
 			pid := v.Pid
 			for pid > 0 {
-				d := p.dao.GetPermRes(pid)
+				d := p.dao.GetRbacResource(pid)
 				if d == nil {
 					break
 				}
@@ -826,13 +826,13 @@ func (p *rbacServiceImpl) checkParentResource(id int, currentPid int, pid int) (
 	}
 	// 检测上级是否为下级
 	if currentPid > 0 {
-		var parent *model.PermRes = p.dao.GetPermRes(pid)
+		var parent *model.PermRes = p.dao.GetRbacResource(pid)
 		// 获取上级的Key,用于获取
 		if parent != nil {
 			parentRes = *parent
 		}
 		for parent != nil && parent.Pid > 0 {
-			parent = p.dao.GetPermRes(parent.Pid)
+			parent = p.dao.GetRbacResource(parent.Pid)
 			if parent != nil && int(parent.Id) == pid {
 				return parentRes, errors.New("不能选择下级作为上级资源")
 			}
@@ -873,7 +873,7 @@ func (p *rbacServiceImpl) GenerateResourceKey(parent model.PermRes) string {
 func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacResRequest) (*proto.SaveRbacResResponse, error) {
 	var dst *model.PermRes
 	if r.Id > 0 {
-		if dst = p.dao.GetPermRes(r.Id); dst == nil {
+		if dst = p.dao.GetRbacResource(r.Id); dst == nil {
 			return &proto.SaveRbacResResponse{
 				ErrCode: 2,
 				ErrMsg:  "no such data",
@@ -949,8 +949,8 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) parseRbacRes(v *model.PermRes) *proto.SPermRes {
-	return &proto.SPermRes{
+func (p *rbacServiceImpl) parseRbacRes(v *model.PermRes) *proto.SRbacRes {
+	return &proto.SRbacRes{
 		Id:            int64(v.Id),
 		Name:          v.Name,
 		ResType:       int32(v.ResType),
@@ -968,8 +968,8 @@ func (p *rbacServiceImpl) parseRbacRes(v *model.PermRes) *proto.SPermRes {
 }
 
 // 获取PermRes
-func (p *rbacServiceImpl) GetRbacRes(_ context.Context, id *proto.PermResId) (*proto.SPermRes, error) {
-	v := p.dao.GetPermRes(id.Value)
+func (p *rbacServiceImpl) GetRbacRes(_ context.Context, id *proto.PermResId) (*proto.SRbacRes, error) {
+	v := p.dao.GetRbacResource(id.Value)
 	if v == nil {
 		return nil, fmt.Errorf("no such resource %v", id.Value)
 	}
@@ -1016,8 +1016,8 @@ func (p *rbacServiceImpl) QueryRbacResourceList(_ context.Context, r *proto.Quer
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) queryResChildren(parentId int, arr []*model.PermRes) []*proto.SPermRes {
-	var list []*proto.SPermRes
+func (p *rbacServiceImpl) queryResChildren(parentId int, arr []*model.PermRes) []*proto.SRbacRes {
+	var list []*proto.SRbacRes
 	for _, v := range arr {
 		if v.Pid != parentId {
 			continue
@@ -1035,8 +1035,14 @@ func (p *rbacServiceImpl) queryResChildren(parentId int, arr []*model.PermRes) [
 	return list
 }
 
-func (p *rbacServiceImpl) DeletePermRes(_ context.Context, id *proto.PermResId) (*proto.Result, error) {
-	err := p.dao.DeletePermRes(id.Value)
+// 删除资源
+func (p *rbacServiceImpl) DeleteRbacResource(_ context.Context, id *proto.PermResId) (*proto.Result, error) {
+	res := p.dao.GetRbacResource(id.Value)
+	if res == nil {
+		return p.error(errors.New("资源不存在")), nil
+	}
+	res.IsForbidden = 1
+	_, err := p.dao.SaveRbacResource(res)
 	return p.error(err), nil
 }
 
@@ -1071,7 +1077,7 @@ func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
 func (p *rbacServiceImpl) getResDepth(pid int) int {
 	depth := 0
 	for pid > 0 {
-		v := p.dao.GetPermResBy("id = $1", pid)
+		v := p.dao.GetRbacResourceBy("id = $1", pid)
 		if v != nil {
 			pid = v.Pid
 			depth++
