@@ -101,7 +101,8 @@ func (s *stationRepoImpl) GetAllCities() []*station.Area {
 	}
 	ret := make([]*station.Area, 0)
 	for _, c := range list {
-		if c.Name == "市辖区" || c.Name == "县" || c.Name == "区"{
+		c.Name = strings.TrimSpace(c.Name)
+		if c.Name == "市辖区" || c.Name == "县" || c.Name == "区" {
 			// 将直辖市加入到城市列表中
 			isAppend := collections.AnyArray(ret, func(a *station.Area) bool {
 				return a.Code == c.Parent
