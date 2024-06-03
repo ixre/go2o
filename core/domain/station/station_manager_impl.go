@@ -61,7 +61,8 @@ func (s *stationManagerImpl) createSubStation(city *station.Area) {
 
 // 是否为热门城市
 func (s *stationManagerImpl) isHot(name string) int {
-	v := name[0:2]
-	in := collections.InArray([]string{"北京", "上海", "广州", "深圳", "深圳", "佛山", "厦门", "重庆", "杭州"}, v)
+	v := []rune(name)[0:2]
+	cityName := string(v)
+	in := collections.InArray([]string{"北京", "上海", "广州", "深圳", "深圳", "佛山", "厦门", "重庆", "杭州"}, cityName)
 	return types.Ternary(in, 1, 0)
 }

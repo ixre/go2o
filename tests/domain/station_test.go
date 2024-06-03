@@ -25,3 +25,11 @@ func TestGetGroupStations(t *testing.T) {
 		t.Log(city)
 	}
 }
+
+// 测试同步站点
+func TestSyncStations(t *testing.T) {
+	err := inject.GetStationRepo().GetManager().SyncStations()
+	if err != nil {
+		t.Error(err)
+	}
+}

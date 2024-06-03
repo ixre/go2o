@@ -34,6 +34,8 @@ type SubStation struct {
 	Id int `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
 	// Name
 	Name string `db:"name" json:"name" bson:"name"`
+	// 城市编号
+	CityCode int `db:"city_code" json:"cityCode" bson:"cityCode"`
 	// 状态: 0: 待开通  1: 已开通  2: 已关闭
 	Status int `db:"status" json:"status" bson:"status"`
 	// 首字母
@@ -96,7 +98,7 @@ func (s *StationQuery) QueryStations(status int) []*StationArea {
 func (s *StationQuery) QueryGroupStations(status int) map[string][]SubStation {
 	cities := make([]*SubStation, 0)
 	err := s._orm.SelectByQuery(&cities, `
-	SELECT s.id,a.name,s.status,s.letter,s.is_hot,a.parent FROM sys_sub_station s
+	SELECT s.id,a.name,s.city_code,s.status,s.letter,s.is_hot,a.parent FROM sys_sub_station s
 	LEFT JOIN china_area a ON a.code = s.city_code`)
 	if err != nil && err != sql.ErrNoRows {
 		log.Printf("[ Orm][ Error]: %s; Entity:Area\n", err.Error())
