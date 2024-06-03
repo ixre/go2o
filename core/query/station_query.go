@@ -107,9 +107,9 @@ func (s *StationQuery) QueryGroupStations(status int) map[string][]SubStation {
 		if !ok {
 			// 初始化
 			arr = make([]SubStation, 0)
-			ret[c.Letter] = arr
 		}
 		arr = append(arr, *c)
+		ret[c.Letter] = arr
 	}
 	return ret
 }

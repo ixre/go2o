@@ -15,3 +15,13 @@ func TestGetAllCities(t *testing.T) {
 		t.Log(city)
 	}
 }
+
+func TestGetGroupStations(t *testing.T) {
+	cities := inject.GetStationQueryService().QueryGroupStations(0)
+	if len(cities) == 0 {
+		t.Error("No cities found")
+	}
+	for _, city := range cities {
+		t.Log(city)
+	}
+}
