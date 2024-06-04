@@ -37,7 +37,7 @@ type SubStation struct {
 	// 状态: 0: 待开通  1: 已开通  2: 已关闭
 	Status int `db:"status" json:"status" bson:"status"`
 	// 首字母
-	Letter string `db:"letter" json:"letter" bson:"letter"`
+	Letter string `db:"letter" json:"-" bson:"letter"`
 	// 是否热门
 	IsHot int `db:"is_hot" json:"isHot" bson:"isHot"`
 	// 上级
@@ -90,4 +90,26 @@ func (s *StationQuery) QueryStations(status int) []*StationArea {
 		}
 	}
 	return province
+}
+
+// QueryGroupStations 按字母分组查询站点列表
+func (s *StationQuery) QueryGroupStations(status int) map[string][]SubStation {
+	cities := make([]*SubStation, 0)
+	err := s._orm.SelectByQuery(&cities, `
+	SELECT s.id,a.name,s.status,s.letter,s.is_hot,a.parent FROM sys_sub_station s
+	LEFT JOIN china_area a ON a.code = s.city_code`)
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("[ Orm][ Error]: %s; Entity:Area\n", err.Error())
+	}
+	ret := make(map[string][]SubStation, 0)
+	for _, c := range cities {
+		arr, ok := ret[c.Letter]
+		if !ok {
+			// 初始化
+			arr = make([]SubStation, 0)
+		}
+		arr = append(arr, *c)
+		ret[c.Letter] = arr
+	}
+	return ret
 }

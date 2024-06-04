@@ -88,18 +88,39 @@ func (s *stationRepoImpl) GetAreaList(parentId int) []*station.Area {
 
 // GetAllCities implements station.IStationRepo.
 func (s *stationRepoImpl) GetAllCities() []*station.Area {
-	list := make([]*station.Area, 0)
-	_ = s._orm.Select(&list, "parent = 0 and code <> 0")
-	provinceIdList := collections.MapList(list, func(v *station.Area) string {
+	province := make([]*station.Area, 0)
+	_ = s._orm.Select(&province, "parent = 0 and code <> 0")
+	provinceIdList := collections.MapList(province, func(v *station.Area) string {
 		return strconv.Itoa(v.Code)
 	})
-	list = make([]*station.Area, 0)
+	list := make([]*station.Area, 0)
 	err := s._orm.Select(&list, fmt.Sprintf("parent IN (%s)",
 		strings.Join(provinceIdList, ",")))
 	if err != nil && err != sql.ErrNoRows {
 		log.Printf("[ Orm][ Error]: %s; Entity:Area\n", err.Error())
 	}
-	return list
+	ret := make([]*station.Area, 0)
+	for _, c := range list {
+		c.Name = strings.TrimSpace(c.Name)
+		if c.Name == "市辖区" || c.Name == "县" || c.Name == "区" {
+			// 将直辖市加入到城市列表中
+			isAppend := collections.AnyArray(ret, func(a *station.Area) bool {
+				return a.Code == c.Parent
+			})
+			if isAppend {
+				continue
+			}
+			parents := collections.FilterArray(province, func(a *station.Area) bool {
+				return a.Code == c.Parent
+			})
+			if len(parents) > 0 {
+				ret = append(ret, parents[0])
+			}
+		} else {
+			ret = append(ret, c)
+		}
+	}
+	return ret
 }
 
 // GetStations implements station.IStationRepo.
