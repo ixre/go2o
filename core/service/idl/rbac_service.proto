@@ -82,10 +82,10 @@ service RbacService {
     rpc SaveRbacResource (SaveRbacResRequest) returns (SaveRbacResResponse) {
     }
     // 获取PermRes
-    rpc GetRbacRes (PermResId) returns (SPermRes) {
+    rpc GetRbacRes (PermResId) returns (SRbacRes) {
     }
     // 删除PermRes
-    rpc DeletePermRes (PermResId) returns (Result) {
+    rpc DeleteRbacResource (PermResId) returns (Result) {
     }
     // 获取用户登录日志分页数据
     rpc PagingLoginLog (LoginLogPagingRequest) returns (LoginLogPagingResponse);
@@ -576,7 +576,7 @@ message PermResId {
     int64 value =  1;
 }
 
-message SPermRes {
+message SRbacRes {
     // 资源ID
     int64 id = 1;
     // 资源名称
@@ -608,7 +608,7 @@ message SPermRes {
     // 是否为叶子节点
     bool isLeaf = 14;
     // 子资源
-    repeated SPermRes children = 15;
+    repeated SRbacRes children = 15;
 }
 
 message RbacUserResourceRequest {
@@ -630,7 +630,7 @@ message QueryRbacResRequest {
 }
 
 message QueryRbacResourceResponse {
-    repeated SPermRes list = 1;
+    repeated SRbacRes list = 1;
     // 返回初始化上级ID列表
     repeated int64 initialList = 2;
 }

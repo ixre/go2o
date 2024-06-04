@@ -396,7 +396,7 @@ func (p *rbacDaoImpl) PagingQueryPermRole(begin, end int, where, orderBy string)
 }
 
 // Get PermRes
-func (p *rbacDaoImpl) GetPermRes(primary interface{}) *model.PermRes {
+func (p *rbacDaoImpl) GetRbacResource(primary interface{}) *model.PermRes {
 	e := model.PermRes{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
@@ -409,7 +409,7 @@ func (p *rbacDaoImpl) GetPermRes(primary interface{}) *model.PermRes {
 }
 
 // GetBy PermRes
-func (p *rbacDaoImpl) GetPermResBy(where string, v ...interface{}) *model.PermRes {
+func (p *rbacDaoImpl) GetRbacResourceBy(where string, v ...interface{}) *model.PermRes {
 	e := model.PermRes{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
@@ -463,7 +463,7 @@ func (p *rbacDaoImpl) SaveRbacResource(v *model.PermRes) (int, error) {
 }
 
 // Delete PermRes
-func (p *rbacDaoImpl) DeletePermRes(primary interface{}) error {
+func (p *rbacDaoImpl) DeleteRbacResource(primary interface{}) error {
 	err := p._orm.DeleteByPk(model.PermRes{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRes")
@@ -472,7 +472,7 @@ func (p *rbacDaoImpl) DeletePermRes(primary interface{}) error {
 }
 
 // Batch Delete PermRes
-func (p *rbacDaoImpl) BatchDeletePermRes(where string, v ...interface{}) (int64, error) {
+func (p *rbacDaoImpl) BatchDeleteRbacResource(where string, v ...interface{}) (int64, error) {
 	r, err := p._orm.Delete(model.PermRes{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRes")

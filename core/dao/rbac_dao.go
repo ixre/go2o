@@ -73,9 +73,9 @@ type IRbacDao interface {
 	PagingQueryPermRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
 
 	// Get PermRes
-	GetPermRes(primary interface{}) *model.PermRes
+	GetRbacResource(primary interface{}) *model.PermRes
 	// GetBy PermRes
-	GetPermResBy(where string, v ...interface{}) *model.PermRes
+	GetRbacResourceBy(where string, v ...interface{}) *model.PermRes
 	// Count PermRes by condition
 	CountPermRes(where string, v ...interface{}) (int, error)
 	// Select PermRes
@@ -87,9 +87,9 @@ type IRbacDao interface {
 	// Save PermRes
 	SaveRbacResource(v *model.PermRes) (int, error)
 	// Delete PermRes
-	DeletePermRes(primary interface{}) error
+	DeleteRbacResource(primary interface{}) error
 	// Batch Delete PermRes
-	BatchDeletePermRes(where string, v ...interface{}) (int64, error)
+	BatchDeleteRbacResource(where string, v ...interface{}) (int64, error)
 
 	// Get 用户角色关联
 	GetUserRole(primary interface{}) *model.PermUserRole
