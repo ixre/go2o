@@ -10,27 +10,28 @@ package domain
 
 import (
 	"fmt"
-	"github.com/ixre/gof/crypto"
-	"github.com/ixre/gof/util"
 	"math/rand"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ixre/gof/crypto"
+	"github.com/ixre/gof/util"
 )
 
 // 创建交易号(16位)，business为零时，交易号为15位
 func NewTradeNo(business int, userId int) string {
 	dt := time.Now()
-	rand.Seed(dt.UnixNano())
+	rd := rand.New(rand.NewSource(dt.UnixNano()))
 	second := 1000 + (dt.Minute()*60)*(dt.Hour()/12+1) + dt.Second()
 	arr := make([]string, 5)
 	if business > 0 && business < 10 {
 		arr[0] = strconv.Itoa(business) // 业务：长度1
 	}
-	arr[1] = dt.Format("060102")              // 年月日：长度6
-	arr[2] = strconv.Itoa(userId)             // 用户编号:后3位
-	arr[3] = strconv.Itoa(second)             // 秒:4位
-	arr[4] = strconv.Itoa(10 + rand.Intn(88)) // 随机数:2位
+	arr[1] = dt.Format("060102")            // 年月日：长度6
+	arr[2] = strconv.Itoa(userId)           // 用户编号:后3位
+	arr[3] = strconv.Itoa(second)           // 秒:4位
+	arr[4] = strconv.Itoa(10 + rd.Intn(88)) // 随机数:2位
 	// 将用户编号调整为3位
 	if l := len(arr[2]); l > 3 {
 		arr[2] = arr[2][l-3:]
@@ -40,13 +41,12 @@ func NewTradeNo(business int, userId int) string {
 	return strings.Join(arr, "")
 }
 
-
 // 获取新的验证码
 func NewCheckCode() string {
 	unix := time.Now().UnixNano()
-	rand.Seed(unix)
-	rd := 100000 + rand.Intn(999999-100000)
-	return strconv.Itoa(rd)
+	rd := rand.New(rand.NewSource(unix))
+	value := 100000 + rd.Intn(999999-100000)
+	return strconv.Itoa(value)
 }
 
 // 创建API编号(10位)
@@ -55,9 +55,9 @@ func NewApiId(id int) string {
 	return fmt.Sprintf("60%s%d", strings.Repeat("0", 8-len(strconv.Itoa(offset))), offset)
 }
 
-//创建密钥(16位)
+// 创建密钥(16位)
 func NewSecret(hex int) string {
-	str := fmt.Sprintf("%d$%d", hex, time.Now().Add(time.Hour*24*365).Unix())
+	str := fmt.Sprintf("%d$%d", hex, time.Now().Add(time.Hour*24*365).UnixNano())
 	return crypto.Md5([]byte(str))[8:24]
 }
 

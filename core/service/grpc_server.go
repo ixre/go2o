@@ -29,6 +29,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	s := grpc.NewServer()
 	proto.RegisterStatusServiceServer(s, inject.GetStatusService())
 	proto.RegisterRegistryServiceServer(s, inject.GetRegistryService())
+	proto.RegisterCheckServiceServer(s, inject.GetCheckService())
 	proto.RegisterMerchantServiceServer(s, inject.GetMerchantService())
 	proto.RegisterMemberServiceServer(s, inject.GetMemberService())
 	proto.RegisterFoundationServiceServer(s, inject.GetFoundationService())
@@ -38,12 +39,14 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterWalletServiceServer(s, inject.GetWalletService())
 	proto.RegisterCartServiceServer(s, inject.GetCartService())
 	proto.RegisterOrderServiceServer(s, inject.GetOrderService())
+
 	proto.RegisterShopServiceServer(s, inject.GetShopService())
 	proto.RegisterShipmentServiceServer(s, inject.GetShipmentService())
 	proto.RegisterItemServiceServer(s, inject.GetItemService())
 	proto.RegisterFinanceServiceServer(s, inject.GetPersonFinanceService())
 	proto.RegisterQueryServiceServer(s, inject.GetQueryService())
 	proto.RegisterProductServiceServer(s, inject.GetProductService())
+
 	proto.RegisterAfterSalesServiceServer(s, inject.GetAfterSalesService())
 	proto.RegisterExpressServiceServer(s, inject.GetExpressService())
 	proto.RegisterAdvertisementServiceServer(s, inject.GetAdService())

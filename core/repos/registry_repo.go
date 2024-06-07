@@ -18,12 +18,29 @@ var _ registry.IRegistryRepo = new(registryRepo)
 
 var prefix = "registry/key"
 
+var (
+	singleRegistry registry.IRegistryRepo
+	registryOnce   sync.Once
+)
+
 type registryRepo struct {
 	conn  db.Connector
 	store storage.Interface
 	data  map[string]registry.IRegistry
 	lock  sync.RWMutex
 	_orm  orm.Orm
+}
+
+func NewRegistryRepo(conn orm.Orm, s storage.Interface) registry.IRegistryRepo {
+	registryOnce.Do(func() {
+		singleRegistry = (&registryRepo{
+			conn:  conn.Connector(),
+			_orm:  conn,
+			store: s,
+			data:  make(map[string]registry.IRegistry),
+		}).init()
+	})
+	return singleRegistry
 }
 
 func (r *registryRepo) CreateUserKey(key string, value string, desc string) error {
@@ -40,16 +57,6 @@ func (r *registryRepo) CreateUserKey(key string, value string, desc string) erro
 	}
 	return r.Create(rv).Save()
 }
-
-func NewRegistryRepo(conn orm.Orm, s storage.Interface) registry.IRegistryRepo {
-	return (&registryRepo{
-		conn:  conn.Connector(),
-		_orm:  conn,
-		store: s,
-		data:  make(map[string]registry.IRegistry),
-	}).init()
-}
-
 func (r *registryRepo) init() registry.IRegistryRepo {
 	r.lock.Lock()
 	// 从数据源加载数据
@@ -141,7 +148,7 @@ func (r *registryRepo) Save(registry registry.IRegistry) (err error) {
 		_, _, err = r._orm.Save(key, val)
 		// 清除缓存
 		sk := r.getStorageKey(key)
-		r.store.Delete(sk)
+		go r.store.Delete(sk)
 	} else {
 		_, _, err = r._orm.Save(nil, val)
 	}
@@ -160,7 +167,10 @@ func (r *registryRepo) Merge(registries []*registry.Registry) error {
 		return nil
 	}
 	for _, v := range registries {
-		if ir := r.Get(v.Key); ir != nil {
+		r.lock.RLock()
+		ir := r.data[v.Key]
+		r.lock.RUnlock()
+		if ir != nil {
 			raw := ir.Value()
 			if v.Description != raw.Description || v.DefaultValue != raw.DefaultValue ||
 				v.Options != raw.Options {
@@ -211,9 +221,11 @@ func (r *registryRepo) truncUnused(registries []*registry.Registry) error {
 }
 
 func (r *registryRepo) flushToStorage(list []*registry.Registry) {
-	for _, v := range list {
-		go r.store.Set(r.getStorageKey(v.Key), v.Value)
-	}
+	go func() {
+		for _, v := range list {
+			r.store.Set(r.getStorageKey(v.Key), v.Value)
+		}
+	}()
 }
 
 // GetGroups 获取分组

@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types/typeconv"
-	"go.etcd.io/etcd/client/v3"
 	"strconv"
 	"time"
+
+	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/types/typeconv"
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 /**
@@ -37,7 +38,7 @@ func NewEtcdStorage(config clientv3.Config) (storage.Interface, error) {
 	}
 	return &EtcdStorage{
 		cli:     cli,
-		timeout: 10 * time.Second,
+		timeout: 5 * time.Second,
 	}, nil
 }
 
@@ -56,7 +57,7 @@ func (e EtcdStorage) Exists(key string) (exists bool) {
 	return err == nil && v.Kvs != nil
 }
 
-//Set
+// Set
 func (e EtcdStorage) Set(key string, v interface{}) error {
 	//j, err := e.serialize(v)
 	if v == nil {

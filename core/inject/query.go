@@ -95,6 +95,7 @@ var serviceProvideSets = wire.NewSet(
 	impl.NewPortalService,
 	impl.NewPersonFinanceService,
 	impl.NewExecutionService,
+	impl.NewCheckService,
 	// 事件
 	event.NewEventSource,
 	handler.NewEventHandler,

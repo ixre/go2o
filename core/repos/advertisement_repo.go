@@ -12,7 +12,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"sync"
 
 	adImpl "github.com/ixre/go2o/core/domain/ad"
 	"github.com/ixre/go2o/core/domain/interface/ad"
@@ -25,7 +24,6 @@ var _ ad.IAdRepo = new(advertisementRepo)
 
 type advertisementRepo struct {
 	db.Connector
-	sync.Mutex
 	storage storage.Interface
 	o       orm.Orm
 }

@@ -4,8 +4,8 @@ package inject
 
 import (
 	"github.com/google/wire"
-	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/event"
+	"github.com/ixre/go2o/core/service/proto"
 )
 
 func GetEventSource() *event.EventSource {
@@ -147,5 +147,10 @@ func GetRbacService() proto.RbacServiceServer {
 
 // CodeService 条码服务
 func GetCodeService() proto.CodeServiceServer {
+	panic(wire.Build(serviceProvideSets))
+}
+
+// NewCheckService 校验服务
+func GetCheckService() proto.CheckServiceServer {
 	panic(wire.Build(serviceProvideSets))
 }
