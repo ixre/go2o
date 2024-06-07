@@ -21,7 +21,6 @@
  option go_package = "./;proto";
  option java_package = "com.github.go2o.rpc";
 
- import "global.proto";
 
 // 校验服务
 service CheckService {
@@ -29,7 +28,7 @@ service CheckService {
     rpc SendCode (SendCheckCodeRequest) returns (SendCheckCodeResponse) {
     }
     /** 比较验证码是否正确 */
-    rpc CompareCode (CompareCheckCodeRequest) returns (Result) {
+    rpc CompareCode (CompareCheckCodeRequest) returns (CompareCheckCodeResponse) {
     }
 }
 
@@ -60,7 +59,23 @@ message SendCheckCodeRequest {
     string checkCode = 3;
   }
   
+  // 比较验证码请求
   message CompareCheckCodeRequest {
-    sint64 memberId = 1;
-    string code = 2;
+    // 令牌 
+    string token = 1;
+    // 接收账号（手机号、邮箱）
+    string receptAccount = 2;
+    // 校验码
+    string checkCode = 3;
   }
+
+  // 比较验证码响应
+  message CompareCheckCodeResponse {
+    // 错误码
+    int32 errCode = 1;
+    // 错误消息
+    string errMsg = 2;
+    // 会员编号
+    sint64 userId = 3;
+  }
+    

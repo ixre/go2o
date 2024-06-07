@@ -45,7 +45,7 @@ type CheckServiceClient interface {
 	// * 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
 	SendCode(ctx context.Context, in *SendCheckCodeRequest, opts ...grpc.CallOption) (*SendCheckCodeResponse, error)
 	// * 比较验证码是否正确
-	CompareCode(ctx context.Context, in *CompareCheckCodeRequest, opts ...grpc.CallOption) (*Result, error)
+	CompareCode(ctx context.Context, in *CompareCheckCodeRequest, opts ...grpc.CallOption) (*CompareCheckCodeResponse, error)
 }
 
 type checkServiceClient struct {
@@ -65,8 +65,8 @@ func (c *checkServiceClient) SendCode(ctx context.Context, in *SendCheckCodeRequ
 	return out, nil
 }
 
-func (c *checkServiceClient) CompareCode(ctx context.Context, in *CompareCheckCodeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *checkServiceClient) CompareCode(ctx context.Context, in *CompareCheckCodeRequest, opts ...grpc.CallOption) (*CompareCheckCodeResponse, error) {
+	out := new(CompareCheckCodeResponse)
 	err := c.cc.Invoke(ctx, CheckService_CompareCode_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ type CheckServiceServer interface {
 	// * 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
 	SendCode(context.Context, *SendCheckCodeRequest) (*SendCheckCodeResponse, error)
 	// * 比较验证码是否正确
-	CompareCode(context.Context, *CompareCheckCodeRequest) (*Result, error)
+	CompareCode(context.Context, *CompareCheckCodeRequest) (*CompareCheckCodeResponse, error)
 	mustEmbedUnimplementedCheckServiceServer()
 }
 
@@ -92,7 +92,7 @@ type UnimplementedCheckServiceServer struct {
 func (UnimplementedCheckServiceServer) SendCode(context.Context, *SendCheckCodeRequest) (*SendCheckCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendCode not implemented")
 }
-func (UnimplementedCheckServiceServer) CompareCode(context.Context, *CompareCheckCodeRequest) (*Result, error) {
+func (UnimplementedCheckServiceServer) CompareCode(context.Context, *CompareCheckCodeRequest) (*CompareCheckCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompareCode not implemented")
 }
 func (UnimplementedCheckServiceServer) mustEmbedUnimplementedCheckServiceServer() {}

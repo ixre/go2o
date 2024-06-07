@@ -11,9 +11,9 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/util"
 )
 
 /**
@@ -27,9 +27,50 @@ import (
 
 var _ proto.CheckServiceServer = new(checkService)
 
+// 校验码信息
+type checkData struct {
+	// 发送时间
+	SendTime int64
+	// 过期时间
+	ExpiresTime int64
+	// 校验码
+	CheckCode string
+	// 账号
+	Account string
+	// 用户编号
+	UserId int
+}
+
+func (c checkData) String() string {
+	return fmt.Sprintf("%d|%d|%s|%s|%d",
+		c.SendTime,
+		c.ExpiresTime,
+		c.CheckCode,
+		c.Account,
+		c.UserId)
+}
+
+// 转换校验信息
+func parseCheckData(s string) *checkData {
+	arr := strings.Split(s, "|")
+	if len(arr) != 5 {
+		return nil
+	}
+	sendTime, _ := strconv.ParseInt(arr[0], 10, 64)
+	expiresTime, _ := strconv.ParseInt(arr[1], 10, 64)
+	userId, _ := strconv.Atoi(arr[4])
+	return &checkData{
+		SendTime:    sendTime,
+		ExpiresTime: expiresTime,
+		CheckCode:   arr[2],
+		Account:     arr[3],
+		UserId:      userId,
+	}
+}
+
 // 验证码验证器 todo: 移动到go2o
 type CheckCodeVerifier struct {
-	store             storage.Interface
+	store          storage.Interface
 	storageKey     string
 	expiresSeconds int64
 	resendLimit    int64
@@ -38,7 +79,7 @@ type CheckCodeVerifier struct {
 // NewCodeVerifier 创建一个代码验证器, 默认有效期为5分钟, 限制重复发送的时间为2分钟
 func NewCodeVerifier(store storage.Interface, storageKey string, minites int, resendLimit int) *CheckCodeVerifier {
 	return &CheckCodeVerifier{
-		store:             store,
+		store:          store,
 		storageKey:     storageKey,
 		expiresSeconds: int64(math.Max(float64(minites), 5)) * 60,
 		resendLimit:    int64(math.Max(float64(resendLimit), 60)),
@@ -49,40 +90,33 @@ func (c *CheckCodeVerifier) getKey(token string) string {
 	return fmt.Sprintf("%s-%s", c.storageKey, token)
 }
 
-// PrepareToken 1):准备token,30分钟有效, 在获取token时需要验证用户是否能频繁的拿到token计数
-func (c *CheckCodeVerifier) PrepareToken(aud string) (string, error) {
-	rd := util.RandString(10)
-	err := c.store.SetExpire(c.getKey(rd), "0|0|-|0", 1800) // 发送时间|有效时间|验证码|用户编号
-	return rd, err
-}
-
-// CheckDuration 2):检查短信验证码是否频繁发送
+// CheckDuration 1):检查短信验证码是否频繁发送
 func (c *CheckCodeVerifier) CheckDuration(token string) error {
 	if len(token) == 0 {
 		return errors.New("token不能为空")
 	}
 	now := time.Now().Unix()
 	s, err := c.store.GetString(c.getKey(token))
-	unix, err2 := strconv.Atoi(strings.Split(s, "|")[0])
-	if err != nil || err2 != nil {
+	if err != nil {
 		return errors.New("操作超时,请重新进入")
 	}
-	if now-int64(unix) < c.resendLimit {
+	data := parseCheckData(s)
+	if now-int64(data.SendTime) < c.resendLimit {
 		return errors.New("请勿在短时间内获取短信验证码")
 	}
 	return nil
 }
 
-// SaveSendData 3):存储验证码,默认5分钟有效, data应为phone和code的组合以保证phone和code是匹配的
-func (c *CheckCodeVerifier) SaveSendData(token string, data string, userId int) {
+// SaveData 3):存储验证码,默认5分钟有效, data应为phone和code的组合以保证phone和code是匹配的
+func (c *CheckCodeVerifier) SaveData(token string, data *checkData) {
 	now := time.Now().Unix()
-	expires := now + c.expiresSeconds
-	v := fmt.Sprintf("%d|%d|%s|%d", now, expires, data, userId)
-	_ = c.store.SetExpire(c.getKey(token), v, 1800)
+	data.ExpiresTime = now + c.expiresSeconds
+	_ = c.store.SetExpire(c.getKey(token), data.String(), 12*3600)
 }
 
 // MatchCode 4):验证验证码是否正确
-func (c *CheckCodeVerifier) Valid(token string, data string) (int, error) {
+// [userId]返回用户编号
+func (c *CheckCodeVerifier) Validate(token string, receptAccount string, checkCode string) (int, error) {
 	if len(token) == 0 {
 		return 0, errors.New("非法请求")
 	}
@@ -90,16 +124,15 @@ func (c *CheckCodeVerifier) Valid(token string, data string) (int, error) {
 	if err != nil {
 		return 0, errors.New("验证码已过期")
 	}
-	arr := strings.Split(s, "|")
-	if arr[2] != data {
+	data := parseCheckData(s)
+	if data.Account != receptAccount || data.CheckCode != checkCode {
 		return 0, errors.New("验证码不正确")
 	}
 	now := time.Now().Unix()
-	unix, err2 := strconv.Atoi(arr[1])
-	if err2 != nil || now-int64(unix) > c.expiresSeconds {
+	if now-int64(data.ExpiresTime) > c.expiresSeconds {
 		return 0, errors.New("验证码已过期")
 	}
-	return strconv.Atoi(arr[3])
+	return data.UserId, nil
 }
 
 // Destory 5):销毁本次操作令牌
@@ -116,31 +149,61 @@ type checkService struct {
 	proto.UnimplementedCheckServiceServer
 }
 
-// CompareCode implements proto.CheckServiceServer.
-func (c *checkService) CompareCode(context.Context, *proto.CompareCheckCodeRequest) (*proto.Result, error) {
-	panic("unimplemented")
-}
-
 // NewCheckService 校验服务
 func NewCheckService(repo member.IMemberRepo,
 	registryRepo registry.IRegistryRepo,
 	store storage.Interface,
 ) proto.CheckServiceServer {
 	s := &checkService{
-		repo:         repo,
-		registryRepo: registryRepo,
-		store:        store,
-		CheckCodeVerifier: NewCodeVerifier(store,"sys:go2o:reg:token"),
+		repo:              repo,
+		registryRepo:      registryRepo,
+		store:             store,
+		CheckCodeVerifier: NewCodeVerifier(store, "sys:go2o:reg:token",0,0),
 	}
 	return s
 }
 
 // SendCode 发送验证码
 func (c *checkService) SendCode(_ context.Context, r *proto.SendCheckCodeRequest) (*proto.SendCheckCodeResponse, error) {
-// 检查短信验证码是否频繁发送
-err := m.CheckDuration(token)
-if err != nil {
-	return m.ErrorJson(ctx, 7, err)
+	if len(r.Token) == 0 {
+		return &proto.SendCheckCodeResponse{
+			ErrCode: 1002,
+			ErrMsg:  "非法请求",
+		}, nil
+	}
+	// 检查短信验证码是否频繁发送
+	err := c.CheckCodeVerifier.CheckDuration(r.Token)
+	if err != nil {
+		return &proto.SendCheckCodeResponse{
+			ErrCode: 1003,
+			ErrMsg:  "频繁发送",
+		}, nil
+	}
+	code := domain.NewCheckCode()
+	// 保存校验码信息
+	c.CheckCodeVerifier.SaveData(r.Token,
+		&checkData{
+			Account:   r.ReceptAccount,
+			SendTime:  time.Now().Unix(),
+			UserId:    int(r.UserId),
+			CheckCode: code,
+		})
+	// 返回校验码
+	return &proto.SendCheckCodeResponse{
+		CheckCode: code,
+	}, nil
 }
-	panic("unimplemented")
+
+// CompareCode implements proto.CheckServiceServer.
+func (c *checkService) CompareCode(_ context.Context, r *proto.CompareCheckCodeRequest) (*proto.CompareCheckCodeResponse, error) {
+	userId, err := c.CheckCodeVerifier.Validate(r.Token, r.ReceptAccount, r.CheckCode)
+	if err != nil {
+		return &proto.CompareCheckCodeResponse{
+			ErrCode: 1001,
+			ErrMsg:  err.Error(),
+		}, nil
+	}
+	return &proto.CompareCheckCodeResponse{
+		UserId: int64(userId),
+	}, nil
 }
