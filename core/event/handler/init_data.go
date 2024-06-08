@@ -8,9 +8,11 @@ import (
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/util"
 )
@@ -28,6 +30,8 @@ func (h EventHandler) HandleAppInitialEvent(data interface{}) {
 	initPages(h.archiveRepo)
 	// 初始化站点
 	go h.stationRepo.GetManager().SyncStations()
+	// 初始化通知模板
+	h.initNotifyTemplate()
 }
 
 func initSuperLoginToken(repo registry.IRegistryRepo) {
@@ -165,6 +169,20 @@ func initPages(repo content.IArchiveRepo) {
 			v.Enabled = 1
 			v.UpdateTime = time.Now().Unix()
 			repo.SavePage(0, v)
+		}
+	}
+}
+
+// 初始化通知模板
+func (h *EventHandler) initNotifyTemplate() {
+	arr := h.messageRepo.GetAllNotifyTemplate()
+	// 初始化短信模板
+	smsArray := collections.FilterArray(arr, func(t *notify.NotifyTemplate) bool {
+		return t.TempType == 2
+	})
+	if len(smsArray) == 0 {
+		for _, v := range notify.InternalSmsTemplate {
+			h.messageRepo.SaveNotifyTemplate(v)
 		}
 	}
 }

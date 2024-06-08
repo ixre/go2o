@@ -146,4 +146,30 @@ type (
 
 	// 通知项集合
 	NotifyItemSet []*NotifyItem
+
+	// NotifyTemplate 系统通知模板
+	NotifyTemplate struct {
+		// 编号
+		Id int64 `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
+		// 模板编号
+		Code string `db:"code" json:"code" bson:"code"`
+		// 模板类型,1:站内信 2:短信 3:邮件
+		TempType int `db:"temp_type" json:"tempType" bson:"tempType"`
+		// 模板名称
+		TempName string `db:"temp_name" json:"tempName" bson:"tempName"`
+		// 模板内容
+		Content string `db:"content" json:"content" bson:"content"`
+		// 模板标签, 多个用,隔开
+		Labels string `db:"labels" json:"labels" bson:"labels"`
+		// 短信服务商代码
+		SpCode string `db:"sp_code" json:"spCode" bson:"spCode"`
+		// 短信服务商模板编号
+		SpTid string `db:"sp_tid" json:"spTid" bson:"spTid"`
+		// 创建时间
+		CreateTime int64 `db:"create_time" json:"createTime" bson:"createTime"`
+		// UpdateTime
+		UpdateTime int64 `db:"update_time" json:"updateTime" bson:"updateTime"`
+		// 是否删除,0:否 1:是
+		IsDeleted int `db:"is_deleted" json:"isDeleted" bson:"isDeleted"`
+	}
 )

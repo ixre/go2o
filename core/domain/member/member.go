@@ -47,7 +47,7 @@ type memberImpl struct {
 	walletRepo      wallet.IWalletRepo
 	relation        *member.InviteRelation
 	invitation      member.IInvitationManager
-	mssRepo         mss.IMssRepo
+	mssRepo         mss.IMessageRepo
 	registryRepo    registry.IRegistryRepo
 	valueRepo       valueobject.IValueRepo
 	profileManager  member.IProfileManager
@@ -57,7 +57,7 @@ type memberImpl struct {
 
 func NewMember(manager member.IMemberManager, val *member.Member,
 	rep member.IMemberRepo, walletRepo wallet.IWalletRepo,
-	mp mss.IMssRepo, valRepo valueobject.IValueRepo,
+	mp mss.IMessageRepo, valRepo valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo) member.IMemberAggregateRoot {
 	return &memberImpl{
 		manager:      manager,

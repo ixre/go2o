@@ -17,7 +17,7 @@ import (
 	"github.com/ixre/gof/db"
 )
 
-var _ mss.IMssRepo = new(MssRepo)
+var _ mss.IMessageRepo = new(MssRepo)
 
 type MssRepo struct {
 	_conn        db.Connector
@@ -46,7 +46,7 @@ func (this *MssRepo) GetMessageTo(msgId int32, toUserId int32, toRole int) *mss.
 	panic("implement me")
 }
 
-func NewMssRepo(conn db.Connector) mss.IMssRepo {
+func NewMssRepo(conn db.Connector) mss.IMessageRepo {
 	return &MssRepo{
 		_conn: conn,
 	}

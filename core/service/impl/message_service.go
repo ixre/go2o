@@ -22,12 +22,12 @@ import (
 var _ proto.MessageServiceServer = new(messageService)
 
 type messageService struct {
-	_rep mss.IMssRepo
+	_rep mss.IMessageRepo
 	serviceUtil
 	proto.UnimplementedMessageServiceServer
 }
 
-func NewMessageService(rep mss.IMssRepo) proto.MessageServiceServer {
+func NewMessageService(rep mss.IMessageRepo) proto.MessageServiceServer {
 	return &messageService{
 		_rep: rep,
 	}

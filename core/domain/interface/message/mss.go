@@ -92,7 +92,8 @@ type (
 		DeleteMailTemplate(id int32) error
 	}
 
-	IMssRepo interface {
+	// 消息仓储
+	IMessageRepo interface {
 		// 获取消息提供者
 		GetProvider() IUserMessageManager
 
@@ -140,6 +141,13 @@ type (
 
 		// 获取消息目标
 		GetMessageTo(msgId int32, toUserId int32, toRole int) *To
+
+		// GetNotifyTemplate Get 系统通知模板
+		GetAllNotifyTemplate() []*notify.NotifyTemplate
+		// SaveNotifyTemplate Save 系统通知模板
+		SaveNotifyTemplate(v *notify.NotifyTemplate) (int, error)
+		// DeleteNotifyTemplate Delete 系统通知模板
+		DeleteNotifyTemplate(primary interface{}) error
 	}
 
 	// 系统消息发送配置

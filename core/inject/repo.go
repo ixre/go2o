@@ -53,7 +53,7 @@ func GetNotifyRepo() notify.INotifyRepo {
 	panic(wire.Build(provideSets))
 
 }
-func GetMssRepo() mss.IMssRepo {
+func GetMessageRepo() mss.IMessageRepo {
 	panic(wire.Build(provideSets))
 
 }

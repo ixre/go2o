@@ -44,7 +44,7 @@ type MemberRepoImpl struct {
 	db.Connector
 	walletRepo   wallet.IWalletRepo
 	valueRepo    valueobject.IValueRepo
-	mssRepo      mss.IMssRepo
+	mssRepo      mss.IMessageRepo
 	registryRepo registry.IRegistryRepo
 	_orm         orm.Orm
 }
@@ -52,7 +52,7 @@ type MemberRepoImpl struct {
 var memberRepoImplMapped = false
 
 func NewMemberRepo(sto storage.Interface, o orm.Orm,
-	walletRepo wallet.IWalletRepo, mssRepo mss.IMssRepo,
+	walletRepo wallet.IWalletRepo, mssRepo mss.IMessageRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMemberRepo {
 	if !memberRepoImplMapped {
 		_ = o.Mapping(member.OAuthAccount{}, "mm_app_account")

@@ -402,3 +402,30 @@ ALTER TABLE sys_sub_station
 COMMENT ON COLUMN sys_sub_station.letter IS '首字母';
 COMMENT ON COLUMN sys_sub_station.is_hot IS '是否热门';
 
+
+-- 系统通知模板
+CREATE TABLE "public".sys_notify_template (
+  id          bigserial NOT NULL, 
+  code        varchar(20) NOT NULL, 
+  temp_type   int4 NOT NULL, 
+  temp_name   varchar(20) NOT NULL, 
+  content     varchar(512) NOT NULL, 
+  labels      varchar(40) NOT NULL, 
+  sp_code     varchar(20) NOT NULL, 
+  sp_tid      varchar(56) NOT NULL, 
+  create_time int8 NOT NULL, 
+  update_time int8 NOT NULL, 
+  is_deleted  int4 NOT NULL, 
+  CONSTRAINT sys_notify_template_key 
+    PRIMARY KEY (id));
+COMMENT ON TABLE "public".sys_notify_template IS '系统通知模板';
+COMMENT ON COLUMN "public".sys_notify_template.id IS '编号';
+COMMENT ON COLUMN "public".sys_notify_template.code IS '模板编号';
+COMMENT ON COLUMN "public".sys_notify_template.temp_type IS '模板类型,1:站内信 2:短信 3:邮件';
+COMMENT ON COLUMN "public".sys_notify_template.temp_name IS '模板名称';
+COMMENT ON COLUMN "public".sys_notify_template.content IS '模板内容';
+COMMENT ON COLUMN "public".sys_notify_template.labels IS '模板标签, 多个用,隔开';
+COMMENT ON COLUMN "public".sys_notify_template.sp_code IS '短信服务商代码';
+COMMENT ON COLUMN "public".sys_notify_template.sp_tid IS '短信服务商模板编号';
+COMMENT ON COLUMN "public".sys_notify_template.create_time IS '创建时间';
+COMMENT ON COLUMN "public".sys_notify_template.is_deleted IS '是否删除,0:否 1:是';

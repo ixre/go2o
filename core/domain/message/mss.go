@@ -22,10 +22,10 @@ var _ mss.IUserMessageManager = new(userMessageManagerImpl)
 var _ mss.IMessageManager = new(messageManagerImpl)
 
 type messageManagerImpl struct {
-	rep mss.IMssRepo
+	rep mss.IMessageRepo
 }
 
-func NewMessageManager(rep mss.IMssRepo) mss.IMessageManager {
+func NewMessageManager(rep mss.IMessageRepo) mss.IMessageManager {
 	return &messageManagerImpl{
 		rep: rep,
 	}
@@ -150,12 +150,12 @@ func (m *messageManagerImpl) CreateChatSession(senderRole int, senderId int32,
 type userMessageManagerImpl struct {
 	_appUserId     int64
 	_userRole      int //todo: role
-	_mssRepo       mss.IMssRepo
+	_mssRepo       mss.IMessageRepo
 	_mailTemplates []*mss.MailTemplate
 	_config        *mss.Config
 }
 
-func NewMssManager(appUserId int64, rep mss.IMssRepo) mss.IUserMessageManager {
+func NewMssManager(appUserId int64, rep mss.IMessageRepo) mss.IUserMessageManager {
 	return &userMessageManagerImpl{
 		_appUserId: appUserId,
 		_mssRepo:   rep,

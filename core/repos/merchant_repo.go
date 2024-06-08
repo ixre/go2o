@@ -45,7 +45,7 @@ type merchantRepo struct {
 	_wsRepo       wholesaler.IWholesaleRepo
 	_itemRepo     item.IItemRepo
 	_userRepo     user.IUserRepo
-	_mssRepo      mss.IMssRepo
+	_mssRepo      mss.IMessageRepo
 	_shopRepo     shop.IShopRepo
 	_valRepo      valueobject.IValueRepo
 	_memberRepo   member.IMemberRepo
@@ -58,7 +58,7 @@ type merchantRepo struct {
 
 func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
-	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
+	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMessageRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantRepo {
 	if !mchMerchantDaoImplMapped {
 		// 映射实体
