@@ -16,7 +16,6 @@ import (
 	"strings"
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/infrastructure/util/sms/aliyu"
 	"github.com/ixre/go2o/core/infrastructure/util/sms/cl253"
 )
@@ -44,7 +43,7 @@ type SmsApi struct {
 }
 
 // 发送短信
-func SendSms(setting *notify.SmsApiPerm, phoneNum string, content string,
+func SendSms(setting *mss.SmsApiPerm, phoneNum string, content string,
 	params []string) error {
 	if setting.Signature != "" && !strings.Contains(content, setting.Signature) {
 		content = setting.Signature + content
@@ -52,7 +51,7 @@ func SendSms(setting *notify.SmsApiPerm, phoneNum string, content string,
 	c := ResolveMessage(content, params)
 	switch mss.SmsProvider(setting.Provider) {
 	case mss.HTTP:
-		return sendPhoneMsgByHttpApi(setting, phoneNum, c, params, setting.TemplateId)
+		return sendPhoneMsgByHttpApi(setting, phoneNum, c, params, "")
 	case mss.TECENT_CLOUD:
 		return errors.New("not implemented")
 	case mss.ALIYUN:
@@ -60,7 +59,7 @@ func SendSms(setting *notify.SmsApiPerm, phoneNum string, content string,
 		return aliyu.SendSms(setting.Key,
 			setting.Secret, phoneNum,
 			content, params,
-			templateName, setting.TemplateId)
+			templateName, "")
 	case mss.CHUANGLAN:
 		return cl253.SendMsgToMobile(setting.Key, setting.Secret, phoneNum, c)
 	}
@@ -68,7 +67,7 @@ func SendSms(setting *notify.SmsApiPerm, phoneNum string, content string,
 }
 
 // 检查API接口数据是否正确
-func CheckSmsApiPerm(s *notify.SmsApiPerm) error {
+func CheckSmsApiPerm(s *mss.SmsApiPerm) error {
 	if s.Provider == int(mss.HTTP) {
 		if s.Extra.ApiUrl == "" {
 			return errors.New("HTTP短信接口必须提供API URL")

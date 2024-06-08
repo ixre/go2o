@@ -23,7 +23,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/personfinance"
@@ -79,7 +78,7 @@ func GetUserRepo() user.IUserRepo {
 	return iUserRepo
 }
 
-func GetNotifyRepo() notify.INotifyRepo {
+func GetNotifyRepo() mss.INotifyRepo {
 	orm := provide.GetOrmInstance()
 	storageInterface := provide.GetStorageInstance()
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)

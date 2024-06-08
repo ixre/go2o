@@ -21,7 +21,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
@@ -157,20 +156,20 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 		// 根据消息类型发送信息
 		switch mssType {
 		default:
-		case notify.TypeEmailMessage:
+		case mss.TypeEmailMessage:
 			n := mgr.GetNotifyItem("验证邮箱")
-			c := &notify.MailMessage{
+			c := &mss.MailMessage{
 				Subject: operation + "验证码",
 				Body:    n.Content,
 			}
 			err = mgr.SendEmail(m.value.Email, c, data)
-		case notify.TypePhoneMessage:
+		case mss.TypePhoneMessage:
 			// 某些短信平台要求传入模板ID,在这里附加参数
 			// re := m.registryRepo.Get(registry.SmsMemberCheckTemplateId)
 			// data["templateId"] = re.StringValue()
 			// 构造并发送短信
 			n := mgr.GetNotifyItem("验证手机")
-			c := notify.PhoneMessage(n.Content)
+			c := mss.PhoneMessage(n.Content)
 			err = mgr.SendPhoneMessage(m.value.Phone, c, data, "")
 		}
 	}

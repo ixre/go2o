@@ -1,4 +1,4 @@
-package notify
+package mss
 
 import "github.com/ixre/go2o/core/infrastructure/domain"
 

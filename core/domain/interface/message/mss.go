@@ -9,7 +9,6 @@
 package mss
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
@@ -101,7 +100,7 @@ type (
 		MessageManager() IMessageManager
 
 		// 通知服务
-		NotifyManager() notify.INotifyManager
+		NotifyManager() INotifyManager
 
 		// 获取消息设置
 		GetConfig(userId int64) *Config
@@ -143,9 +142,9 @@ type (
 		GetMessageTo(msgId int32, toUserId int32, toRole int) *To
 
 		// GetNotifyTemplate Get 系统通知模板
-		GetAllNotifyTemplate() []*notify.NotifyTemplate
+		GetAllNotifyTemplate() []*NotifyTemplate
 		// SaveNotifyTemplate Save 系统通知模板
-		SaveNotifyTemplate(v *notify.NotifyTemplate) (int, error)
+		SaveNotifyTemplate(v *NotifyTemplate) (int, error)
 		// DeleteNotifyTemplate Delete 系统通知模板
 		DeleteNotifyTemplate(primary interface{}) error
 	}

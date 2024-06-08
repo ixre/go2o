@@ -8,8 +8,9 @@ import (
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/go2o/core/domain/interface/content"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/util/collections"
@@ -177,11 +178,11 @@ func initPages(repo content.IArchiveRepo) {
 func (h *EventHandler) initNotifyTemplate() {
 	arr := h.messageRepo.GetAllNotifyTemplate()
 	// 初始化短信模板
-	smsArray := collections.FilterArray(arr, func(t *notify.NotifyTemplate) bool {
+	smsArray := collections.FilterArray(arr, func(t *mss.NotifyTemplate) bool {
 		return t.TempType == 2
 	})
 	if len(smsArray) == 0 {
-		for _, v := range notify.InternalSmsTemplate {
+		for _, v := range mss.InternalSmsTemplate {
 			h.messageRepo.SaveNotifyTemplate(v)
 		}
 	}

@@ -14,7 +14,6 @@ import (
 	"log"
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	mssImpl "github.com/ixre/go2o/core/domain/message"
@@ -29,8 +28,8 @@ var _ mss.IMessageRepo = new(messageRepoImpl)
 type messageRepoImpl struct {
 	_conn         db.Connector
 	_sysManger    mss.IMessageManager
-	_notifyManger notify.INotifyManager
-	_notifyRepo   notify.INotifyRepo
+	_notifyManger mss.INotifyManager
+	_notifyRepo   mss.INotifyRepo
 	_valRepo      valueobject.IValueRepo
 	registryRepo  registry.IRegistryRepo
 	_globMss      mss.IUserMessageManager
@@ -39,11 +38,11 @@ type messageRepoImpl struct {
 
 var messageRepoMapped = false
 
-func NewMssRepo(o orm.Orm, notifyRepo notify.INotifyRepo,
+func NewMssRepo(o orm.Orm, notifyRepo mss.INotifyRepo,
 	registryRepo registry.IRegistryRepo,
 	valRepo valueobject.IValueRepo) mss.IMessageRepo {
 	if !messageRepoMapped {
-		_ = o.Mapping(notify.NotifyTemplate{}, "sys_notify_template")
+		_ = o.Mapping(mss.NotifyTemplate{}, "sys_notify_template")
 		messageRepoMapped = true
 	}
 	return &messageRepoImpl{
@@ -64,7 +63,7 @@ func (m *messageRepoImpl) MessageManager() mss.IMessageManager {
 }
 
 // 通知服务
-func (m *messageRepoImpl) NotifyManager() notify.INotifyManager {
+func (m *messageRepoImpl) NotifyManager() mss.INotifyManager {
 	if m._notifyManger == nil {
 		m._notifyManger = notifyImpl.NewNotifyManager(
 			m._notifyRepo, m.registryRepo)
@@ -80,8 +79,8 @@ func (m *messageRepoImpl) GetProvider() mss.IUserMessageManager {
 }
 
 // SelectNotifyTemplate Select 系统通知模板
-func (s *messageRepoImpl) GetAllNotifyTemplate() []*notify.NotifyTemplate {
-	list := make([]*notify.NotifyTemplate, 0)
+func (s *messageRepoImpl) GetAllNotifyTemplate() []*mss.NotifyTemplate {
+	list := make([]*mss.NotifyTemplate, 0)
 	err := s._orm.Select(&list, "")
 	if err != nil && err != sql.ErrNoRows {
 		log.Printf("[ Orm][ Error]: %s; Entity:NotifyTemplate\n", err.Error())
@@ -90,7 +89,7 @@ func (s *messageRepoImpl) GetAllNotifyTemplate() []*notify.NotifyTemplate {
 }
 
 // SaveNotifyTemplate Save 系统通知模板
-func (s *messageRepoImpl) SaveNotifyTemplate(v *notify.NotifyTemplate) (int, error) {
+func (s *messageRepoImpl) SaveNotifyTemplate(v *mss.NotifyTemplate) (int, error) {
 	id, err := orm.Save(s._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Printf("[ Orm][ Error]: %s; Entity:NotifyTemplate\n", err.Error())
@@ -100,7 +99,7 @@ func (s *messageRepoImpl) SaveNotifyTemplate(v *notify.NotifyTemplate) (int, err
 
 // DeleteNotifyTemplate Delete 系统通知模板
 func (s *messageRepoImpl) DeleteNotifyTemplate(primary interface{}) error {
-	err := s._orm.DeleteByPk(notify.NotifyTemplate{}, primary)
+	err := s._orm.DeleteByPk(mss.NotifyTemplate{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Printf("[ Orm][ Error]: %s; Entity:NotifyTemplate\n", err.Error())
 	}

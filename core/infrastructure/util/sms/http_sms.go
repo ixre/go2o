@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 	"golang.org/x/text/encoding"
@@ -19,9 +19,9 @@ import (
 )
 
 // 通过HTTP-API发送短信, 短信模板参数在data里指定
-func sendPhoneMsgByHttpApi(api *notify.SmsApiPerm, phone, content string, data []string, templateId string) error {
+func sendPhoneMsgByHttpApi(api *mss.SmsApiPerm, phone, content string, data []string, templateId string) error {
 	if api.Extra == nil {
-		api.Extra = &notify.SmsExtraSetting{}
+		api.Extra = &mss.SmsExtraSetting{}
 	}
 	//如果指定了编码，则先编码内容
 	if api.Extra.Charset != "" {
@@ -90,7 +90,7 @@ func resolveApiRequestParams(params string, data map[string]string) string {
 }
 
 // 创建HTTP短信发送请求
-func createHttpRequest(api *notify.SmsApiPerm, body string) (*http.Request, error) {
+func createHttpRequest(api *mss.SmsApiPerm, body string) (*http.Request, error) {
 	var req *http.Request
 	var err error
 	if api.Extra.Method == "POST" {

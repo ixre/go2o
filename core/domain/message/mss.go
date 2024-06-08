@@ -13,7 +13,6 @@ import (
 	"time"
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/initial/provide"
 )
 
@@ -37,17 +36,17 @@ func (mm *messageManagerImpl) CreateMessage(msg *mss.Message,
 	m := newMessage(msg, mm.rep).(*messageImpl)
 	if content != nil {
 		switch m.Type() {
-		case notify.TypeEmailMessage:
-			return newMailMessage(m, content.(*notify.MailMessage), m.rep)
-		case notify.TypeSiteMessage:
-			return newSiteMessage(m, content.(*notify.SiteMessage), m.rep)
-		case notify.TypePhoneMessage:
-			return newPhoneMessage(m, content.(*notify.PhoneMessage), m.rep)
+		case mss.TypeEmailMessage:
+			return newMailMessage(m, content.(*mss.MailMessage), m.rep)
+		case mss.TypeSiteMessage:
+			return newSiteMessage(m, content.(*mss.SiteMessage), m.rep)
+		case mss.TypePhoneMessage:
+			return newPhoneMessage(m, content.(*mss.PhoneMessage), m.rep)
 		}
 	} else {
-		if m.Type() == notify.TypeEmailMessage ||
-			m.Type() == notify.TypeSiteMessage ||
-			m.Type() == notify.TypePhoneMessage {
+		if m.Type() == mss.TypeEmailMessage ||
+			m.Type() == mss.TypeSiteMessage ||
+			m.Type() == mss.TypePhoneMessage {
 			return m
 		}
 	}
@@ -59,15 +58,15 @@ func (m *messageManagerImpl) GetMessage(id int32) mss.IMessage {
 	if msg := m.rep.GetMessage(id); msg != nil {
 		con := m.rep.GetMessageContent(msg.Id)
 		switch msg.Type {
-		case notify.TypePhoneMessage:
-			v := notify.PhoneMessage(con.Data)
+		case mss.TypePhoneMessage:
+			v := mss.PhoneMessage(con.Data)
 			return m.CreateMessage(msg, &v)
-		case notify.TypeEmailMessage:
-			v := notify.MailMessage{}
+		case mss.TypeEmailMessage:
+			v := mss.MailMessage{}
 			json.Unmarshal([]byte(con.Data), &v)
 			return m.CreateMessage(msg, &v)
-		case notify.TypeSiteMessage:
-			v := notify.SiteMessage{}
+		case mss.TypeSiteMessage:
+			v := mss.SiteMessage{}
 			json.Unmarshal([]byte(con.Data), &v)
 			return m.CreateMessage(msg, &v)
 		}
@@ -103,7 +102,7 @@ func (m *messageManagerImpl) GetChatSessionId(senderRole int,
 	_db.ExecScalar(`SELECT msg_list.id FROM msg_list INNER JOIN msg_to
         ON msg_to.msg_id = msg_list.id WHERE use_for= $1 AND msg_type= $2 AND sender_role= $3
         AND sender_id= $4 AND to_role= $5 AND to_id= $6`, &msgId, mss.UseForChat,
-		notify.TypeSiteMessage, senderRole, senderId, toRole, toId)
+		mss.TypeSiteMessage, senderRole, senderId, toRole, toId)
 	return msgId
 }
 
@@ -115,7 +114,7 @@ func (m *messageManagerImpl) CreateChatSession(senderRole int, senderId int32,
 		return m.GetMessage(msgId).GetValue(), nil
 	}
 	msg := mss.Message{
-		Type: notify.TypeSiteMessage,
+		Type: mss.TypeSiteMessage,
 		// 消息用途
 		UseFor: mss.UseForChat,
 		// 发送人角色
@@ -138,7 +137,7 @@ func (m *messageManagerImpl) CreateChatSession(senderRole int, senderId int32,
 		// 创建时间
 		CreateTime: time.Now().Unix(),
 	}
-	im := m.CreateMessage(&msg, notify.SiteMessage{
+	im := m.CreateMessage(&msg, mss.SiteMessage{
 		Subject: "chat",
 		Message: "chat",
 	})

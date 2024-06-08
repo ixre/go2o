@@ -1,4 +1,4 @@
-package notify
+package mss
 
 /**
  * Copyright 2009-2019 @ 56x.net
@@ -12,17 +12,17 @@ package notify
 // 短信接口参数设置
 type SmsApiPerm struct {
 	// 短信提供商,1:通用HTTP接口,2:腾讯云短信,3:阿里云短信,4:创蓝短信
-	Provider int
+	Provider int `json:"provider"`
 	// 接口KEY
-	Key string
+	Key string `json:"key"`
 	// 接口密钥
-	Secret string
+	Secret string `json:"secret"`
 	/** 签名 */
-	Signature string
-	// 默认模板编号
-	TemplateId string
+	Signature string `json:"signature"`
 	// Http接口
-	Extra *SmsExtraSetting
+	Extra *SmsExtraSetting `json:"extra"`
+	// 凭据(可选)
+	Credential string `json:"credential"`
 }
 
 /** 短信接口额外信息配置 */

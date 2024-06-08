@@ -13,7 +13,6 @@ import (
 	"fmt"
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types"
@@ -60,7 +59,7 @@ func (m *messageService) GetAllNotifyItem(_ context.Context, empty *proto.Empty)
 // 发送短信
 func (m *messageService) SendPhoneMessage(_ context.Context, r *proto.SendMessageRequest) (*proto.Result, error) {
 	mg := m._rep.NotifyManager()
-	err := mg.SendPhoneMessage(r.Account, notify.PhoneMessage(r.Message), r.Data, r.TemplateId)
+	err := mg.SendPhoneMessage(r.Account, mss.PhoneMessage(r.Message), r.Data, r.TemplateId)
 	if err != nil {
 		return m.error(err), nil
 	}
@@ -113,7 +112,7 @@ func (m *messageService) SendSiteMessage(_ context.Context, r *proto.SendSiteMes
 	v := &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: notify.TypeSiteMessage,
+		Type: mss.TypeSiteMessage,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -131,7 +130,7 @@ func (m *messageService) SendSiteMessage(_ context.Context, r *proto.SendSiteMes
 		Readonly: 1,
 	}
 	var err error
-	im := m._rep.MessageManager().CreateMessage(v, &notify.SiteMessage{
+	im := m._rep.MessageManager().CreateMessage(v, &mss.SiteMessage{
 		Subject: r.Msg.Subject,
 		Message: r.Msg.Message,
 	})
@@ -152,8 +151,8 @@ func (m *messageService) SaveConfig(conf *mss.Config) error {
 }
 
 // 可通过外部添加
-func (m *messageService) RegisterNotifyItem(key string, item *notify.NotifyItem) {
-	notify.RegisterNotifyItem(key, item)
+func (m *messageService) RegisterNotifyItem(key string, item *mss.NotifyItem) {
+	mss.RegisterNotifyItem(key, item)
 }
 
 // todo: 考虑弄一个,确定后再发送.这样可以先在系统,然后才发送
@@ -161,11 +160,11 @@ func (m *messageService) RegisterNotifyItem(key string, item *notify.NotifyItem)
 // toRole: 为-1时发送给所有用户
 // sendNow: 是否马上发送
 func (m *messageService) SendSiteNotifyMessage(senderId int32, toRole int,
-	msg *notify.SiteMessage, sendNow bool) error {
+	msg *mss.SiteMessage, sendNow bool) error {
 	v := &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: notify.TypeSiteMessage,
+		Type: mss.TypeSiteMessage,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -195,11 +194,11 @@ func (m *messageService) SendSiteNotifyMessage(senderId int32, toRole int,
 
 // 对会用户发送站内信
 func (m *messageService) SendSiteMessageToUser(senderId int32, toRole int, toUser int64,
-	msg *notify.SiteMessage, sendNow bool) error {
+	msg *mss.SiteMessage, sendNow bool) error {
 	v := &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: notify.TypeSiteMessage,
+		Type: mss.TypeSiteMessage,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -243,11 +242,11 @@ func (m *messageService) GetSiteMessage(id, toUserId int64, toRole int) *dto.Sit
 		}
 
 		switch msg.Type() {
-		case notify.TypePhoneMessage:
+		case mss.TypePhoneMessage:
 			dto.Data = msg.(mss.IPhoneMessage).Value()
-		case notify.TypeEmailMessage:
+		case mss.TypeEmailMessage:
 			dto.Data = msg.(mss.IMailMessage).Value()
-		case notify.TypeSiteMessage:
+		case mss.TypeSiteMessage:
 			dto.Data = msg.(mss.ISiteMessage).Value()
 		}
 
@@ -272,7 +271,7 @@ func (m *messageService) CreateChatSession(senderRole int, senderId int32, toRol
 	return m._rep.MessageManager().CreateChatSession(senderRole, senderId, toRole, toId)
 }
 
-func (m *messageService) parseNotifyItemDto(v notify.NotifyItem) *proto.SNotifyItem {
+func (m *messageService) parseNotifyItemDto(v mss.NotifyItem) *proto.SNotifyItem {
 	return &proto.SNotifyItem{
 		Key:        v.Key,
 		NotifyBy:   int32(v.NotifyBy),
@@ -283,8 +282,8 @@ func (m *messageService) parseNotifyItemDto(v notify.NotifyItem) *proto.SNotifyI
 	}
 }
 
-func (m *messageService) parseNotifyItem(v *proto.SNotifyItem) *notify.NotifyItem {
-	return &notify.NotifyItem{
+func (m *messageService) parseNotifyItem(v *proto.SNotifyItem) *mss.NotifyItem {
+	return &mss.NotifyItem{
 		Key:        v.Key,
 		NotifyBy:   int(v.NotifyBy),
 		ReadonlyBy: v.ReadonlyBy,

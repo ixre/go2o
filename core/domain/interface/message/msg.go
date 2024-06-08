@@ -8,9 +8,7 @@
  */
 package mss
 
-import "github.com/ixre/go2o/core/domain/interface/message/notify"
-
-//todo: 客服消息
+// todo: 客服消息
 var (
 	RoleSystem   = 0
 	RoleMember   = 1
@@ -144,14 +142,14 @@ type (
 	}
 
 	ISiteMessage interface {
-		Value() *notify.SiteMessage
+		Value() *SiteMessage
 	}
 
 	IMailMessage interface {
-		Value() *notify.MailMessage
+		Value() *MailMessage
 	}
 
 	IPhoneMessage interface {
-		Value() *notify.PhoneMessage
+		Value() *PhoneMessage
 	}
 )

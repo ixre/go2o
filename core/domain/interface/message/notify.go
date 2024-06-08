@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package notify
+package mss
 
 import (
 	"errors"

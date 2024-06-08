@@ -14,7 +14,7 @@ import (
 // 测试配置短信服务商参数
 func TestConfigureSms(t *testing.T) {
 	provider := mss.CHUANGLAN
-	manager := inject.GetMssRepo().NotifyManager()
+	manager := inject.GetMessageRepo().NotifyManager()
 	err := manager.SaveSmsApiPerm(&notify.SmsApiPerm{
 		Provider:   int(provider),
 		Key:        "N42622266620",
@@ -44,8 +44,8 @@ func TestConfigureSms(t *testing.T) {
 
 // 测试发送短信
 func TestSendPhoneMessage(t *testing.T) {
-	templatId := ""
-	manager := inject.GetMssRepo().NotifyManager()
+	templatId := notify.SMS_CHECK_CODE
+	manager := inject.GetMessageRepo().NotifyManager()
 
 	err := manager.SendPhoneMessage("13162222872",
 		notify.PhoneMessage("测试短信:你本次进行{action}的验证码为{1},有效期为:{minites}"),

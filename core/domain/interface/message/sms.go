@@ -23,4 +23,6 @@ const (
 	ALIYUN SmsProvider = 4
 	// 创蓝短信
 	CHUANGLAN SmsProvider = 5
+	// 优刻得(UCLOUD)
+	UCLOUD SmsProvider = 6
 )

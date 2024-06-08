@@ -13,7 +13,7 @@ import (
 	"context"
 
 	de "github.com/ixre/go2o/core/domain/interface/domain"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -31,13 +31,13 @@ var _ proto.FoundationServiceServer = new(foundationService)
 type foundationService struct {
 	_rep         valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
-	notifyRepo   notify.INotifyRepo
+	notifyRepo   mss.INotifyRepo
 	_s           storage.Interface
 	serviceUtil
 	proto.UnimplementedFoundationServiceServer
 }
 
-func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, s storage.Interface, notifyRepo notify.INotifyRepo) proto.FoundationServiceServer {
+func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, s storage.Interface, notifyRepo mss.INotifyRepo) proto.FoundationServiceServer {
 	return &foundationService{
 		_rep:         rep,
 		_s:           s,
@@ -77,13 +77,12 @@ func (s *foundationService) SaveSmsSetting(_ context.Context, r *proto.SSmsProvi
 	if r.HttpExtra == nil {
 		r.HttpExtra = &proto.SSmsExtraSetting{}
 	}
-	perm := &notify.SmsApiPerm{
-		Provider:   int(r.Provider),
-		Key:        r.Key,
-		Secret:     r.Secret,
-		Signature:  r.Signature,
-		TemplateId: r.TemplateId,
-		Extra: &notify.SmsExtraSetting{
+	perm := &mss.SmsApiPerm{
+		Provider:  int(r.Provider),
+		Key:       r.Key,
+		Secret:    r.Secret,
+		Signature: r.Signature,
+		Extra: &mss.SmsExtraSetting{
 			ApiUrl:       r.HttpExtra.ApiUrl,
 			Params:       r.HttpExtra.Params,
 			Method:       r.HttpExtra.Method,
@@ -102,7 +101,7 @@ func (s *foundationService) GetSmsSetting(_ context.Context, req *proto.GetSmsSe
 	manager := s.notifyRepo.Manager()
 	perm := manager.GetSmsApiPerm(int(req.Provider))
 	if perm == nil {
-		return nil, notify.ErrNoSuchSmsProvider
+		return nil, mss.ErrNoSuchSmsProvider
 	}
 	return &proto.SSmsProviderSetting{
 		Provider:  proto.ESmsProvider(perm.Provider),
@@ -302,10 +301,10 @@ func (s *foundationService) ResourceUrl(_ context.Context, s2 *proto.String) (*p
 }
 
 // GetSmsApiSet 获取短信设置
-func (s *foundationService) GetSmsApiSet() notify.SmsApiSet {
+func (s *foundationService) GetSmsApiSet() mss.SmsApiSet {
 	//return _s._rep.GetSmsApiSet()
 	//todo: will remove
-	return notify.SmsApiSet{}
+	return mss.SmsApiSet{}
 }
 
 // GetChildAreas 获取下级区域

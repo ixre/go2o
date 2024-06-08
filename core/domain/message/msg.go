@@ -15,7 +15,6 @@ import (
 	"time"
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 )
 
 var reg = regexp.MustCompile("\\{([^\\}]+)\\}")
@@ -181,11 +180,11 @@ var _ mss.IMessage = new(mailMessageImpl)
 
 type mailMessageImpl struct {
 	*messageImpl
-	_val *notify.MailMessage
+	_val *mss.MailMessage
 	_rep mss.IMessageRepo
 }
 
-func newMailMessage(m *messageImpl, v *notify.MailMessage,
+func newMailMessage(m *messageImpl, v *mss.MailMessage,
 	rep mss.IMessageRepo) mss.IMessage {
 	return &mailMessageImpl{
 		messageImpl: m,
@@ -194,7 +193,7 @@ func newMailMessage(m *messageImpl, v *notify.MailMessage,
 	}
 }
 
-func (m *mailMessageImpl) Value() *notify.MailMessage {
+func (m *mailMessageImpl) Value() *mss.MailMessage {
 	return m._val
 }
 
@@ -235,11 +234,11 @@ var _ mss.IMessage = new(phoneMessageImpl)
 
 type phoneMessageImpl struct {
 	*messageImpl
-	_val *notify.PhoneMessage
+	_val *mss.PhoneMessage
 	_rep mss.IMessageRepo
 }
 
-func newPhoneMessage(m *messageImpl, v *notify.PhoneMessage,
+func newPhoneMessage(m *messageImpl, v *mss.PhoneMessage,
 	rep mss.IMessageRepo) mss.IMessage {
 	return &phoneMessageImpl{
 		messageImpl: m,
@@ -248,7 +247,7 @@ func newPhoneMessage(m *messageImpl, v *notify.PhoneMessage,
 	}
 }
 
-func (p *phoneMessageImpl) Value() *notify.PhoneMessage {
+func (p *phoneMessageImpl) Value() *mss.PhoneMessage {
 	return p._val
 }
 
@@ -261,7 +260,7 @@ func (p *phoneMessageImpl) Send(d mss.Data) error {
 	err := p.messageImpl.Send(d)
 	if err == nil {
 		v := *p._val
-		v = notify.PhoneMessage(Translate(string(v), d))
+		v = mss.PhoneMessage(Translate(string(v), d))
 		var contentId int32 //内容编号
 		if contentId, err = p.saveContent(string(v)); err == nil {
 			p.saveUserMsg(contentId, 1) //短信默认已读
@@ -275,11 +274,11 @@ var _ mss.IMessage = new(siteMessageImpl)
 
 type siteMessageImpl struct {
 	*messageImpl
-	_val *notify.SiteMessage
+	_val *mss.SiteMessage
 	_rep mss.IMessageRepo
 }
 
-func newSiteMessage(m *messageImpl, v *notify.SiteMessage,
+func newSiteMessage(m *messageImpl, v *mss.SiteMessage,
 	rep mss.IMessageRepo) mss.IMessage {
 	return &siteMessageImpl{
 		messageImpl: m,
@@ -288,7 +287,7 @@ func newSiteMessage(m *messageImpl, v *notify.SiteMessage,
 	}
 }
 
-func (s *siteMessageImpl) Value() *notify.SiteMessage {
+func (s *siteMessageImpl) Value() *mss.SiteMessage {
 	return s._val
 }
 

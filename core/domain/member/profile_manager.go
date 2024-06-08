@@ -20,7 +20,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
@@ -342,7 +341,7 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 		if mailTpl != nil {
 			v := &mss.Message{
 				// 消息类型
-				Type: notify.TypeEmailMessage,
+				Type: mss.TypeEmailMessage,
 				// 消息用途
 				UseFor: mss.UseForNotify,
 				// 发送人角色
@@ -363,7 +362,7 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 				// 是否只能阅读
 				Readonly: 1,
 			}
-			val := &notify.MailMessage{
+			val := &mss.MailMessage{
 				Subject: mailTpl.Subject,
 				Body:    mailTpl.Body,
 			}
