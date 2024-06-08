@@ -12,7 +12,6 @@ import (
 	"testing"
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 )
@@ -22,7 +21,7 @@ var _ mss.IMessageRepo = new(MssRepo)
 type MssRepo struct {
 	_conn        db.Connector
 	_globMss     mss.IUserMessageManager
-	_notifyItems map[string]*notify.NotifyItem
+	_notifyItems map[string]*mss.NotifyItem
 	_sysManger   mss.IMessageManager
 }
 
@@ -34,7 +33,7 @@ func (this *MssRepo) MessageManager() mss.IMessageManager {
 	panic("implement me")
 }
 
-func (this *MssRepo) NotifyManager() notify.INotifyManager {
+func (this *MssRepo) NotifyManager() mss.INotifyManager {
 	panic("implement me")
 }
 
@@ -73,17 +72,17 @@ func (this *MssRepo) GetConfig(userId int64) *mss.Config {
 }
 
 // 获取所有的通知项
-func (this *MssRepo) GetAllNotifyItem() []notify.NotifyItem {
-	return []notify.NotifyItem{}
+func (this *MssRepo) GetAllNotifyItem() []mss.NotifyItem {
+	return []mss.NotifyItem{}
 }
 
 // 获取通知项
-func (this *MssRepo) GetNotifyItem(key string) *notify.NotifyItem {
+func (this *MssRepo) GetNotifyItem(key string) *mss.NotifyItem {
 	return nil
 }
 
 // 保存通知项
-func (this *MssRepo) SaveNotifyItem(v *notify.NotifyItem) error {
+func (this *MssRepo) SaveNotifyItem(v *mss.NotifyItem) error {
 	return nil
 }
 
@@ -158,7 +157,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 	v := &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: notify.TypeEmailMessage,
+		Type: mss.TypeEmailMessage,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -179,7 +178,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 		// 是否只能阅读
 		Readonly: 1,
 	}
-	val := &notify.MailMessage{
+	val := &mss.MailMessage{
 		Subject: "邮件",
 		Body:    "您好,邮件{Name}",
 	}
@@ -201,7 +200,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 	v = &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: notify.TypePhoneMessage,
+		Type: mss.TypePhoneMessage,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -239,7 +238,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 	v = &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: notify.TypeSiteMessage,
+		Type: mss.TypeSiteMessage,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -253,7 +252,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 		// 是否只能阅读
 		Readonly: 1,
 	}
-	sm := notify.SiteMessage{
+	sm := mss.SiteMessage{
 		Subject: "站内信",
 		Message: "您好短信{Name}",
 	}

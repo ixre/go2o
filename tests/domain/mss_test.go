@@ -11,7 +11,6 @@ package domain
 import (
 	"testing"
 
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/inject"
 )
@@ -26,8 +25,8 @@ func TestMssSendSms(t *testing.T) {
 	re = registryRepo.Get(registry.SmsRegisterTemplateId)
 	re.Update("8332")
 	re.Save()
-	err := nm.SaveSmsApiPerm(&notify.SmsApiPerm{
-		Extra: &notify.SmsExtraSetting{
+	err := nm.SaveSmsApiPerm(&mss.SmsApiPerm{
+		Extra: &mss.SmsExtraSetting{
 			ApiUrl: "https://api.zhuanxinyun.com/api/v2/sendSms.json",
 			Params: "appKey={key}&appSecret={secret}&phones={phone}&content={content}" +
 				"&batchNum={stamp}&templateId={templateId}",

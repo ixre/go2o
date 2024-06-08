@@ -18,7 +18,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/personfinance"
@@ -49,7 +48,7 @@ func GetUserRepo() user.IUserRepo {
 	panic(wire.Build(provideSets))
 
 }
-func GetNotifyRepo() notify.INotifyRepo {
+func GetNotifyRepo() mss.INotifyRepo {
 	panic(wire.Build(provideSets))
 
 }
