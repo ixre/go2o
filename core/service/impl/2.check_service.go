@@ -4,12 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/service/proto"
@@ -25,7 +28,7 @@ import (
  * history :
  */
 
-var _ proto.CheckServiceServer = new(checkService)
+var _ proto.CheckServiceServer = new(checkServiceImpl)
 
 // 校验码信息
 type checkData struct {
@@ -96,13 +99,12 @@ func (c *CheckCodeVerifier) CheckDuration(token string) error {
 		return errors.New("token不能为空")
 	}
 	now := time.Now().Unix()
-	s, err := c.store.GetString(c.getKey(token))
-	if err != nil {
-		return errors.New("操作超时,请重新进入")
-	}
-	data := parseCheckData(s)
-	if now-int64(data.SendTime) < c.resendLimit {
-		return errors.New("请勿在短时间内获取短信验证码")
+	s, _ := c.store.GetString(c.getKey(token))
+	if len(s) > 0 {
+		data := parseCheckData(s)
+		if now-int64(data.SendTime) < c.resendLimit {
+			return errors.New("请勿在短时间内获取短信验证码")
+		}
 	}
 	return nil
 }
@@ -110,7 +112,11 @@ func (c *CheckCodeVerifier) CheckDuration(token string) error {
 // SaveData 3):存储验证码,默认5分钟有效, data应为phone和code的组合以保证phone和code是匹配的
 func (c *CheckCodeVerifier) SaveData(token string, data *checkData) {
 	now := time.Now().Unix()
-	data.ExpiresTime = now + c.expiresSeconds
+	data.SendTime = now
+	if data.ExpiresTime-data.SendTime < 60 {
+		// 如果过期时间小于60秒,则设置为5分钟
+		data.ExpiresTime = now + 5*60
+	}
 	_ = c.store.SetExpire(c.getKey(token), data.String(), 12*3600)
 }
 
@@ -140,53 +146,84 @@ func (c *CheckCodeVerifier) Destory(token string) {
 	c.store.Delete(c.getKey(token))
 }
 
-type checkService struct {
+var (
+	_checkServiceInstance proto.CheckServiceServer
+	_checkServiceOnce     sync.Once
+)
+
+// checkServiceImpl 校验服务
+type checkServiceImpl struct {
 	repo         member.IMemberRepo
 	registryRepo registry.IRegistryRepo
+	notifyRepo   notify.INotifyRepo
 	store        storage.Interface
 	*CheckCodeVerifier
-	serviceUtil
 	proto.UnimplementedCheckServiceServer
 }
 
-// NewCheckService 校验服务
+// NewCheckService 创建校验服务实现
 func NewCheckService(repo member.IMemberRepo,
+	notifyRepo notify.INotifyRepo,
 	registryRepo registry.IRegistryRepo,
 	store storage.Interface,
 ) proto.CheckServiceServer {
-	s := &checkService{
-		repo:              repo,
-		registryRepo:      registryRepo,
-		store:             store,
-		CheckCodeVerifier: NewCodeVerifier(store, "sys:go2o:reg:token",0,0),
-	}
-	return s
+	_checkServiceOnce.Do(func() {
+		_checkServiceInstance = &checkServiceImpl{
+			repo:              repo,
+			registryRepo:      registryRepo,
+			store:             store,
+			notifyRepo:        notifyRepo,
+			CheckCodeVerifier: NewCodeVerifier(store, "go2o:checkcode:token", 0, 0),
+		}
+	})
+	return _checkServiceInstance
 }
 
 // SendCode 发送验证码
-func (c *checkService) SendCode(_ context.Context, r *proto.SendCheckCodeRequest) (*proto.SendCheckCodeResponse, error) {
+func (c *checkServiceImpl) SendCode(_ context.Context, r *proto.SendCheckCodeRequest) (*proto.SendCheckCodeResponse, error) {
 	if len(r.Token) == 0 {
 		return &proto.SendCheckCodeResponse{
-			ErrCode: 1002,
+			ErrCode: 1001,
 			ErrMsg:  "非法请求",
+		}, nil
+	}
+	if len(r.Operation) == 0 {
+		return &proto.SendCheckCodeResponse{
+			ErrCode: 1002,
+			ErrMsg:  "操作名称不能为空",
+		}, nil
+	}
+	if len(r.MsgTemplateId) == 0 {
+		return &proto.SendCheckCodeResponse{
+			ErrCode: 1003,
+			ErrMsg:  "模板不能为空",
 		}, nil
 	}
 	// 检查短信验证码是否频繁发送
 	err := c.CheckCodeVerifier.CheckDuration(r.Token)
 	if err != nil {
 		return &proto.SendCheckCodeResponse{
-			ErrCode: 1003,
-			ErrMsg:  "频繁发送",
+			ErrCode: 1004,
+			ErrMsg:  err.Error(),
 		}, nil
 	}
+	if r.Effective <= 0 {
+		// 默认5分钟有效
+		r.Effective = 5
+	}
 	code := domain.NewCheckCode()
+	// 发送验证码,如果失败,则输出错误信息
+	if err := c.notifyCheckCode(code, r); err != nil {
+		log.Println("[ Go2o][ Error]: 发送验证码失败:", err.Error())
+	}
 	// 保存校验码信息
+	unix := time.Now().Unix()
 	c.CheckCodeVerifier.SaveData(r.Token,
 		&checkData{
-			Account:   r.ReceptAccount,
-			SendTime:  time.Now().Unix(),
-			UserId:    int(r.UserId),
-			CheckCode: code,
+			Account:     r.ReceptAccount,
+			ExpiresTime: unix + int64(r.Effective*60),
+			UserId:      int(r.UserId),
+			CheckCode:   code,
 		})
 	// 返回校验码
 	return &proto.SendCheckCodeResponse{
@@ -195,15 +232,33 @@ func (c *checkService) SendCode(_ context.Context, r *proto.SendCheckCodeRequest
 }
 
 // CompareCode implements proto.CheckServiceServer.
-func (c *checkService) CompareCode(_ context.Context, r *proto.CompareCheckCodeRequest) (*proto.CompareCheckCodeResponse, error) {
+func (c *checkServiceImpl) CompareCode(_ context.Context, r *proto.CompareCheckCodeRequest) (*proto.CompareCheckCodeResponse, error) {
+	if len(r.Token) == 0 {
+		return &proto.CompareCheckCodeResponse{
+			ErrCode: 1001,
+			ErrMsg:  "非法请求",
+		}, nil
+	}
 	userId, err := c.CheckCodeVerifier.Validate(r.Token, r.ReceptAccount, r.CheckCode)
 	if err != nil {
 		return &proto.CompareCheckCodeResponse{
-			ErrCode: 1001,
+			ErrCode: 1002,
 			ErrMsg:  err.Error(),
 		}, nil
+	}
+	if r.ResetIfOk {
+		// 如果验证成功,则重置令牌
+		c.CheckCodeVerifier.Destory(r.Token)
 	}
 	return &proto.CompareCheckCodeResponse{
 		UserId: int64(userId),
 	}, nil
+}
+
+func (c *checkServiceImpl) notifyCheckCode(code string, r *proto.SendCheckCodeRequest) error {
+	// 创建参数
+	data := []string{r.Operation, code, strconv.Itoa(int(r.Effective))}
+	// 构造并发送短信
+	mg := c.notifyRepo.Manager()
+	return mg.SendPhoneMessage(r.ReceptAccount, notify.PhoneMessage(""), data, r.MsgTemplateId)
 }

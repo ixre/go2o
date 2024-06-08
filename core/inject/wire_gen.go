@@ -801,7 +801,7 @@ func GetCheckService() proto.CheckServiceServer {
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
-	checkServiceServer := impl2.NewCheckService(iMemberRepo, iRegistryRepo, storageInterface)
+	checkServiceServer := impl2.NewCheckService(iMemberRepo, iNotifyRepo, iRegistryRepo, storageInterface)
 	return checkServiceServer
 }
 
