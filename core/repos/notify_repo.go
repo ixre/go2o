@@ -11,7 +11,6 @@ package repos
 import (
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	impl "github.com/ixre/go2o/core/domain/message/notify"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
@@ -25,13 +24,6 @@ type notifyRepImpl struct {
 	_notifyItems map[string]*mss.NotifyItem
 	registryRepo registry.IRegistryRepo
 	manager      mss.INotifyManager
-}
-
-func (n *notifyRepImpl) Manager() mss.INotifyManager {
-	if n.manager == nil {
-		n.manager = impl.NewNotifyManager(n, n.registryRepo)
-	}
-	return n.manager
 }
 
 func NewNotifyRepo(o orm.Orm, registryRepo registry.IRegistryRepo) mss.INotifyRepo {

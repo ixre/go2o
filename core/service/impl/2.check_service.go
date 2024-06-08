@@ -14,7 +14,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/message"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/service/proto"
@@ -160,8 +160,9 @@ type checkServiceImpl struct {
 	memberRepo   member.IMemberRepo
 	mchRepo      merchant.IMerchantRepo
 	registryRepo registry.IRegistryRepo
-	notifyRepo   mss.INotifyRepo
-	store        storage.Interface
+	notifyRepo   mss.IMessageRepo
+
+	store storage.Interface
 	*CheckCodeVerifier
 	proto.UnimplementedCheckServiceServer
 }
@@ -169,7 +170,7 @@ type checkServiceImpl struct {
 // NewCheckService 创建校验服务实现
 func NewCheckService(repo member.IMemberRepo,
 	mchRepo merchant.IMerchantRepo,
-	notifyRepo mss.INotifyRepo,
+	notifyRepo mss.IMessageRepo,
 	registryRepo registry.IRegistryRepo,
 	store storage.Interface,
 ) proto.CheckServiceServer {
@@ -271,7 +272,7 @@ func (c *checkServiceImpl) notifyCheckCode(code string, r *proto.SendCheckCodeRe
 	// 创建参数
 	data := []string{r.Operation, code, strconv.Itoa(int(r.Effective))}
 	// 构造并发送短信
-	mg := c.notifyRepo.Manager()
+	mg := c.notifyRepo.NotifyManager()
 	return mg.SendPhoneMessage(r.ReceptAccount, mss.PhoneMessage(""), data, r.MsgTemplateId)
 }
 

@@ -17,6 +17,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/event/events"
+	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/go2o/core/infrastructure/util/sms"
 	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/log"
@@ -27,12 +28,16 @@ var _ mss.INotifyManager = new(notifyManagerImpl)
 type notifyManagerImpl struct {
 	repo         mss.INotifyRepo
 	registryRepo registry.IRegistryRepo
+	mssRepo      mss.IMessageRepo
 	valueRepo    valueobject.IValueRepo
 }
 
-func NewNotifyManager(repo mss.INotifyRepo, registryRepo registry.IRegistryRepo) mss.INotifyManager {
+func NewNotifyManager(repo mss.INotifyRepo,
+	mssRepo mss.IMessageRepo,
+	registryRepo registry.IRegistryRepo) mss.INotifyManager {
 	return &notifyManagerImpl{
 		repo:         repo,
+		mssRepo:      mssRepo,
 		registryRepo: registryRepo,
 	}
 }
@@ -111,21 +116,26 @@ func (n *notifyManagerImpl) GetSmsApiPerm(provider int) *mss.SmsApiPerm {
 func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg mss.PhoneMessage,
 	data []string, templateId string) error {
 	provider := n.registryRepo.Get(registry.SmsDefaultProvider).IntValue()
-	if provider <= 0 {
-		return mss.ErrNotSettingSmsProvider
+
+	tpl := n.getSmsTemplate(templateId)
+	if tpl == nil {
+		return mss.ErrNoSuchTemplate
 	}
 	// 通过外部系统发送短信
 	if provider == int(mss.CUSTOM) {
 		eventbus.Publish(&events.SendSmsEvent{
-			Provider:   provider,
-			Phone:      phone,
-			Template:   string(msg),
-			TemplateId: templateId,
-			Data:       data,
+			Provider:     provider,
+			Phone:        phone,
+			Template:     string(msg),
+			TemplateCode: templateId,
+			SpTemplateId: templateId,
+			Data:         data,
 		})
 		return nil
 	}
-	n.getSmsTemplate(templateId)
+	// if provider <= 0 {
+	// 	return mss.ErrNotSettingSmsProvider
+	// }
 	setting := n.GetSmsApiPerm(provider)
 	if setting == nil {
 		//return mss.ErrNotSettingSmsProvider
@@ -137,7 +147,10 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg mss.PhoneMessage,
 }
 
 func (n *notifyManagerImpl) getSmsTemplate(templateId string) *mss.NotifyTemplate {
-	return nil
+	arr := n.mssRepo.GetAllNotifyTemplate()
+	return collections.FindArray(arr, func(t *mss.NotifyTemplate) bool {
+		return t.TempType == 2 && t.Code == templateId
+	})
 }
 
 // 发送邮件

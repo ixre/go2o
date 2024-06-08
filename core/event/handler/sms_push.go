@@ -14,11 +14,12 @@ func (e EventHandler) HandleSendSmsEvent(data interface{}) {
 	if v != nil {
 		v.Template = sms.ResolveMessage(v.Template, v.Data)
 		ev := &proto.EVSendSmsEventData{
-			Provider:   int32(v.Provider),
-			Phone:      v.Phone,
-			Template:   v.Template,
-			TemplateId: v.TemplateId,
-			Data:       v.Data,
+			Provider:     int32(v.Provider),
+			Phone:        v.Phone,
+			Template:     v.Template,
+			TemplateCode: v.TemplateCode,
+			SpTemplateId: v.SpTemplateId,
+			Data:         v.Data,
 		}
 		msq.Push(msq.SendSmsTopic, typeconv.MustJson(ev))
 	}

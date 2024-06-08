@@ -18,4 +18,7 @@ var (
 		"err_not_setting_sms_provider", "未配置短信服务商")
 	ErrNoSuchSmsProvider = domain.NewError(
 		"err_not_such_sms_provider", "不存在短信服务商")
+
+	ErrNoSuchTemplate = domain.NewError(
+		"err_not_such_template", "不存在短信模板")
 )

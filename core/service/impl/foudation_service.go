@@ -31,13 +31,16 @@ var _ proto.FoundationServiceServer = new(foundationService)
 type foundationService struct {
 	_rep         valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
-	notifyRepo   mss.INotifyRepo
+	notifyRepo   mss.IMessageRepo
 	_s           storage.Interface
 	serviceUtil
 	proto.UnimplementedFoundationServiceServer
 }
 
-func NewFoundationService(rep valueobject.IValueRepo, registryRepo registry.IRegistryRepo, s storage.Interface, notifyRepo mss.INotifyRepo) proto.FoundationServiceServer {
+func NewFoundationService(rep valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo,
+	s storage.Interface,
+	notifyRepo mss.IMessageRepo) proto.FoundationServiceServer {
 	return &foundationService{
 		_rep:         rep,
 		_s:           s,
@@ -73,7 +76,7 @@ func (s *foundationService) CleanCache(_ context.Context, request *proto.CleanCa
 
 // 保存短信API凭据
 func (s *foundationService) SaveSmsSetting(_ context.Context, r *proto.SSmsProviderSetting) (*proto.Result, error) {
-	manager := s.notifyRepo.Manager()
+	manager := s.notifyRepo.NotifyManager()
 	if r.HttpExtra == nil {
 		r.HttpExtra = &proto.SSmsExtraSetting{}
 	}
@@ -98,7 +101,7 @@ func (s *foundationService) SaveSmsSetting(_ context.Context, r *proto.SSmsProvi
 
 // 获取短信API凭据, @provider 短信服务商, 默认:http
 func (s *foundationService) GetSmsSetting(_ context.Context, req *proto.GetSmsSettingRequest) (*proto.SSmsProviderSetting, error) {
-	manager := s.notifyRepo.Manager()
+	manager := s.notifyRepo.NotifyManager()
 	perm := manager.GetSmsApiPerm(int(req.Provider))
 	if perm == nil {
 		return nil, mss.ErrNoSuchSmsProvider

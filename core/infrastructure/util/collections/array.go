@@ -31,6 +31,16 @@ func FilterArray[T comparable](arr []T, f func(e T) bool) []T {
 	return ret
 }
 
+// 在数组中查找单个元素
+func FindArray[T interface{}](arr []T, f func(e T) bool) (t T) {
+	for _, v := range arr {
+		if f(v) {
+			return v
+		}
+	}
+	return
+}
+
 // MapList 映射列表
 func MapList[T any, K any](arr []T, f func(T) K) []K {
 	var ret = make([]K, len(arr))

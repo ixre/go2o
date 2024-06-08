@@ -66,7 +66,7 @@ func (m *messageRepoImpl) MessageManager() mss.IMessageManager {
 func (m *messageRepoImpl) NotifyManager() mss.INotifyManager {
 	if m._notifyManger == nil {
 		m._notifyManger = notifyImpl.NewNotifyManager(
-			m._notifyRepo, m.registryRepo)
+			m._notifyRepo, m, m.registryRepo)
 	}
 	return m._notifyManger
 }

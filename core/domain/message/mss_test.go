@@ -25,6 +25,21 @@ type MssRepo struct {
 	_sysManger   mss.IMessageManager
 }
 
+// DeleteNotifyTemplate implements mss.IMessageRepo.
+func (this *MssRepo) DeleteNotifyTemplate(primary interface{}) error {
+	panic("unimplemented")
+}
+
+// GetAllNotifyTemplate implements mss.IMessageRepo.
+func (this *MssRepo) GetAllNotifyTemplate() []*mss.NotifyTemplate {
+	panic("unimplemented")
+}
+
+// SaveNotifyTemplate implements mss.IMessageRepo.
+func (this *MssRepo) SaveNotifyTemplate(v *mss.NotifyTemplate) (int, error) {
+	panic("unimplemented")
+}
+
 func (this *MssRepo) SaveConfig(userId int64, conf *mss.Config) error {
 	panic("implement me")
 }

@@ -11,14 +11,16 @@ package domain
 import (
 	"testing"
 
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+
 	"github.com/ixre/go2o/core/inject"
 )
 
 func TestMssSendSms(t *testing.T) {
-	nRepo := inject.GetNotifyRepo()
+	nRepo := inject.GetMessageRepo()
 	registryRepo := inject.GetRegistryRepo()
-	nm := nRepo.Manager()
+	nm := nRepo.NotifyManager()
 	re := registryRepo.Get(registry.SmsDefaultProvider)
 	re.Update("http")
 	re.Save()

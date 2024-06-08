@@ -32,8 +32,8 @@ func TestModifyMemberProfile(t *testing.T) {
 }
 
 func TestModifyMemberPwd(t *testing.T) {
-	m := inject.GetMemberRepo().GetMember(702)
-	md5 := crypto.Md5([]byte("1234567"))
+	m := inject.GetMemberRepo().GetMember(31)
+	md5 := crypto.Md5([]byte("123456"))
 	pwd := domain.Sha1Pwd(md5, m.GetValue().Salt)
 	// 7c4a8d09ca3762af61e59520943dc26494f8941b
 	err := m.Profile().ChangePassword(pwd, "")

@@ -59,8 +59,10 @@ type SendSmsEvent struct {
 	Phone string
 	// 短信内容
 	Template string
-	// 短信模板
-	TemplateId string
+	// 模板代码
+	TemplateCode string
+	// 短信模板ID
+	SpTemplateId string
 	// 数据
 	Data []string
 }

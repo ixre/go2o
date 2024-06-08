@@ -117,8 +117,6 @@ type (
 	}
 
 	INotifyRepo interface {
-		// 获取通知服务
-		Manager() INotifyManager
 		// 获取所有的通知项
 		GetAllNotifyItem() []NotifyItem
 

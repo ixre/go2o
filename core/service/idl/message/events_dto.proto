@@ -53,12 +53,14 @@ message EVSendSmsEventData{
 	string phone = 2;
 	// 短信内容
 	string template = 3; 
+	// 模板代码
+	string templateCode = 4;
 	// 短信模板
-	string templateId  = 4;
+	string spTemplateId  = 5;
 	/** 签名 */
-	string signature = 5;
+	string signature = 6;
 	// 数据
-	repeated string data = 6;
+	repeated string data = 7;
 }
 
 // 会员信息推送事件数据

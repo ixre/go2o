@@ -420,7 +420,8 @@ func GetFoundationService() proto.FoundationServiceServer {
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
-	foundationServiceServer := impl2.NewFoundationService(iValueRepo, iRegistryRepo, storageInterface, iNotifyRepo)
+	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	foundationServiceServer := impl2.NewFoundationService(iValueRepo, iRegistryRepo, storageInterface, iMessageRepo)
 	return foundationServiceServer
 }
 
@@ -813,7 +814,7 @@ func GetCheckService() proto.CheckServiceServer {
 	iItemRepo := repos.NewGoodsItemRepo(orm, iCategoryRepo, iProductRepo, iProductModelRepo, iItemWholesaleRepo, iExpressRepo, iRegistryRepo, iShopRepo)
 	iUserRepo := repos.NewUserRepo(orm)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iMemberRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
-	checkServiceServer := impl2.NewCheckService(iMemberRepo, iMerchantRepo, iNotifyRepo, iRegistryRepo, storageInterface)
+	checkServiceServer := impl2.NewCheckService(iMemberRepo, iMerchantRepo, iMessageRepo, iRegistryRepo, storageInterface)
 	return checkServiceServer
 }
 
