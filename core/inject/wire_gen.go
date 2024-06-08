@@ -801,7 +801,17 @@ func GetCheckService() proto.CheckServiceServer {
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iMssRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMssRepo, iValueRepo, iRegistryRepo)
-	checkServiceServer := impl2.NewCheckService(iMemberRepo, iNotifyRepo, iRegistryRepo, storageInterface)
+	iWholesaleRepo := repos.NewWholesaleRepo(orm)
+	iProductModelRepo := repos.NewProModelRepo(orm)
+	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
+	iProductRepo := repos.NewProductRepo(orm, iProductModelRepo, iValueRepo)
+	iItemWholesaleRepo := repos.NewItemWholesaleRepo(orm)
+	iExpressRepo := repos.NewExpressRepo(orm, iValueRepo)
+	iShopRepo := repos.NewShopRepo(orm, storageInterface, iValueRepo, iRegistryRepo)
+	iItemRepo := repos.NewGoodsItemRepo(orm, iCategoryRepo, iProductRepo, iProductModelRepo, iItemWholesaleRepo, iExpressRepo, iRegistryRepo, iShopRepo)
+	iUserRepo := repos.NewUserRepo(orm)
+	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iMemberRepo, iMssRepo, iWalletRepo, iValueRepo, iRegistryRepo)
+	checkServiceServer := impl2.NewCheckService(iMemberRepo, iMerchantRepo, iNotifyRepo, iRegistryRepo, storageInterface)
 	return checkServiceServer
 }
 

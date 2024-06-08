@@ -11,12 +11,16 @@ import (
 	"sync"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/message/notify"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/service/proto"
+	api "github.com/ixre/gof/ext/jwt-api"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/types/typeconv"
 )
 
 /**
@@ -153,7 +157,8 @@ var (
 
 // checkServiceImpl 校验服务
 type checkServiceImpl struct {
-	repo         member.IMemberRepo
+	memberRepo   member.IMemberRepo
+	mchRepo      merchant.IMerchantRepo
 	registryRepo registry.IRegistryRepo
 	notifyRepo   notify.INotifyRepo
 	store        storage.Interface
@@ -163,14 +168,16 @@ type checkServiceImpl struct {
 
 // NewCheckService 创建校验服务实现
 func NewCheckService(repo member.IMemberRepo,
+	mchRepo merchant.IMerchantRepo,
 	notifyRepo notify.INotifyRepo,
 	registryRepo registry.IRegistryRepo,
 	store storage.Interface,
 ) proto.CheckServiceServer {
 	_checkServiceOnce.Do(func() {
 		_checkServiceInstance = &checkServiceImpl{
-			repo:              repo,
+			memberRepo:        repo,
 			registryRepo:      registryRepo,
+			mchRepo:           mchRepo,
 			store:             store,
 			notifyRepo:        notifyRepo,
 			CheckCodeVerifier: NewCodeVerifier(store, "go2o:checkcode:token", 0, 0),
@@ -214,7 +221,7 @@ func (c *checkServiceImpl) SendCode(_ context.Context, r *proto.SendCheckCodeReq
 	code := domain.NewCheckCode()
 	// 发送验证码,如果失败,则输出错误信息
 	if err := c.notifyCheckCode(code, r); err != nil {
-		log.Println("[ Go2o][ Error]: 发送验证码失败:", err.Error())
+		log.Println("[ Go2o][ ERROR]: 发送验证码失败:", err.Error())
 	}
 	// 保存校验码信息
 	unix := time.Now().Unix()
@@ -225,6 +232,11 @@ func (c *checkServiceImpl) SendCode(_ context.Context, r *proto.SendCheckCodeReq
 			UserId:      int(r.UserId),
 			CheckCode:   code,
 		})
+	// 输出验证码调试信息
+	v, _ := c.registryRepo.GetValue(registry.EnableDebugMode)
+	if b, _ := strconv.ParseBool(v); b {
+		log.Printf("[ Go2o][ DEBUG]: 【测试】本次%s发送至%s的验证码为:%s \n", r.Operation, r.ReceptAccount, code)
+	}
 	// 返回校验码
 	return &proto.SendCheckCodeResponse{
 		CheckCode: code,
@@ -261,4 +273,148 @@ func (c *checkServiceImpl) notifyCheckCode(code string, r *proto.SendCheckCodeRe
 	// 构造并发送短信
 	mg := c.notifyRepo.Manager()
 	return mg.SendPhoneMessage(r.ReceptAccount, notify.PhoneMessage(""), data, r.MsgTemplateId)
+}
+
+// GrantAccessToken 发放访问令牌
+func (s *checkServiceImpl) GrantAccessToken(_ context.Context, request *proto.GrantAccessTokenRequest) (*proto.GrantAccessTokenResponse, error) {
+	now := time.Now().Unix()
+	if request.ExpiresTime <= now {
+		return &proto.GrantAccessTokenResponse{
+			ErrMsg: fmt.Sprintf("令牌有效时间已过有效期: value=%d", request.ExpiresTime),
+		}, nil
+	}
+	// 校验发放令牌
+	err := s.checkGrantAccessToken(request)
+	if err != nil {
+		return &proto.GrantAccessTokenResponse{ErrMsg: err.Error()}, nil
+	}
+	// 创建token并返回
+	aud := fmt.Sprintf("%d@%d", request.UserId, request.UserType)
+	claims := api.CreateClaims(aud, "go2o", "go2o-user-jwt", request.ExpiresTime).(jwt.MapClaims)
+	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
+	if err != nil {
+		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
+		return &proto.GrantAccessTokenResponse{ErrMsg: err.Error()}, nil
+	}
+	token, err := api.AccessToken(claims, []byte(jwtSecret))
+	if err != nil {
+		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
+		return &proto.GrantAccessTokenResponse{ErrMsg: err.Error()}, nil
+	}
+	return &proto.GrantAccessTokenResponse{
+		AccessToken: token,
+	}, nil
+}
+
+// 校验发放令牌
+func (s *checkServiceImpl) checkGrantAccessToken(request *proto.GrantAccessTokenRequest) error {
+	if request.UserId <= 0 || request.UserType <= 0 {
+		return errors.New("用户参数错误")
+	}
+	if request.UserType == 1 {
+		// 校验用户是否存在
+		im := s.memberRepo.GetMember(request.UserId)
+		if im == nil {
+			return member.ErrNoSuchMember
+		}
+	}
+
+	if request.UserType == 2 {
+		// 校验商户是否存在
+		im := s.mchRepo.GetMerchant(int(request.UserId))
+		if im == nil {
+			return merchant.ErrNoSuchMerchant
+		}
+	}
+	if request.UserType == 3 {
+		// 校验RBAC用户是否存在
+		// ...
+		panic("not implemented")
+	}
+	return nil
+}
+
+// CheckAccessToken 检查令牌是否有效
+func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
+	// 去掉"Bearer "
+	if len(request.AccessToken) > 6 &&
+		strings.HasPrefix(request.AccessToken, "Bearer") {
+		request.AccessToken = request.AccessToken[7:]
+	}
+	if len(request.AccessToken) == 0 {
+		return &proto.CheckAccessTokenResponse{ErrMsg: "令牌不能为空"}, nil
+	}
+	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
+	if err != nil {
+		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
+		return &proto.CheckAccessTokenResponse{ErrMsg: err.Error()}, nil
+	}
+	// 转换token
+	dstClaims := jwt.MapClaims{} // 可以用实现了Claim接口的自定义结构
+	tk, err := jwt.ParseWithClaims(request.AccessToken, &dstClaims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(jwtSecret), nil
+	})
+	if tk == nil {
+		return &proto.CheckAccessTokenResponse{ErrMsg: "令牌无效"}, nil
+	}
+	if !dstClaims.VerifyIssuer("go2o", true) ||
+		dstClaims["sub"] != "go2o-user-jwt" {
+		return &proto.CheckAccessTokenResponse{ErrMsg: "未知颁发者的令牌"}, nil
+	}
+	// 令牌过期时间
+	exp := int64(dstClaims["exp"].(float64))
+	// 判断是否有效
+	if !tk.Valid {
+		ve, _ := err.(*jwt.ValidationError)
+		if ve.Errors&jwt.ValidationErrorExpired != 0 {
+			return &proto.CheckAccessTokenResponse{
+				ErrMsg:           "令牌已过期",
+				IsExpires:        true,
+				TokenExpiresTime: exp,
+			}, nil
+		}
+		return &proto.CheckAccessTokenResponse{ErrMsg: "令牌无效:" + ve.Error()}, nil
+	}
+	audArray := strings.Split(dstClaims["aud"].(string), "@")
+	if len(audArray) != 2 {
+		return &proto.CheckAccessTokenResponse{ErrMsg: "令牌用户无效"}, nil
+	}
+	userId := typeconv.MustInt(audArray[0])
+	userType := typeconv.MustInt(audArray[1])
+	// 如果设置了续期参数
+	if exp <= request.CheckExpireTime {
+		return s.renewAccessToken(request, userId, userType, exp), nil
+	}
+	return &proto.CheckAccessTokenResponse{
+		UserId:           int64(userId),
+		UserType:         int32(userType),
+		TokenExpiresTime: exp,
+	}, nil
+}
+
+// renewAccessToken 续签令牌
+func (s *checkServiceImpl) renewAccessToken(request *proto.CheckAccessTokenRequest,
+	userId int, userType int, exp int64) *proto.CheckAccessTokenResponse {
+	if request.RenewExpiresTime < request.CheckExpireTime {
+		return &proto.CheckAccessTokenResponse{
+			ErrMsg: "令牌续期过期时间必须在检测过期时间之后",
+		}
+	}
+	ret, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
+		UserId:      int64(userId),
+		UserType:    int32(userType),
+		ExpiresTime: request.RenewExpiresTime,
+	})
+	if len(ret.ErrMsg) > 0 {
+		return &proto.CheckAccessTokenResponse{
+			ErrMsg: ret.ErrMsg,
+		}
+	}
+	return &proto.CheckAccessTokenResponse{
+		IsExpires:        false,
+		TokenExpiresTime: exp,
+		UserId:           int64(userId),
+		UserType:         int32(userType),
+		RenewAccessToken: ret.AccessToken,
+	}
 }

@@ -82,10 +82,14 @@ message CreateMerchantRequest {
   SSaveMerchantParams mch = 4;
 }
 
+// 商户注册响应
 message MerchantCreateResponse {
+  // 错误代码
   int32 errCode = 1;
+  // 错误信息
   string errMsg = 2;
-  int64 id = 3;
+  // 商户编号
+  int64 merchantId = 3;
 }
 
 // 保存商户请求

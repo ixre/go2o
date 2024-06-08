@@ -3,51 +3,11 @@ package service
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
-	"github.com/ixre/gof/types/typeconv"
 )
-
-func TestGrantMemberAccessToken(t *testing.T) {
-	var memberId int64 = 1
-	s := inject.GetMemberService()
-	token, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
-		MemberId:    memberId,
-		ExpiresTime: time.Now().Unix() + 720,
-	})
-	if len(token.Error) > 0 {
-		t.Error(token.Error)
-		t.Failed()
-	}
-	t.Log("token is:", token.AccessToken)
-	now := time.Now().Unix()
-	token.AccessToken = "Bearer " // + token.AccessToken
-	accessToken, _ := s.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
-		AccessToken:      token.AccessToken,
-		CheckExpireTime:  now + 800,
-		RenewExpiresTime: now + 900,
-	})
-	if accessToken.MemberId != memberId {
-		t.Error(accessToken.Error)
-		t.Failed()
-	}
-}
-
-func TestCheckMemberAccessToken(t *testing.T) {
-	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI3MTAiLCJleHAiOjE2Nzc3NTM5MjAsImlzcyI6ImdvMm8iLCJzdWIiOiJnbzJvLWFwaS1qd3QifQ.Vrd0NuAT5AfKM-C5NespEyhAiyMVDugoKDDgwv5hr_g"
-	ret, _ := inject.GetMemberService().CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
-		AccessToken: accessToken,
-	})
-	if len(ret.Error) > 0 {
-		t.Log(ret.Error)
-		t.FailNow()
-	}
-	t.Log(typeconv.MustJson(ret))
-	t.Log("会员Id", ret.MemberId)
-}
 
 // 测试检查交易密码
 func TestCheckTradePassword(t *testing.T) {

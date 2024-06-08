@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	MerchantService_GetMerchant_FullMethodName                 = "/MerchantService/GetMerchant"
+	MerchantService_GetMerchantIdByUsername_FullMethodName     = "/MerchantService/GetMerchantIdByUsername"
 	MerchantService_CreateMerchant_FullMethodName              = "/MerchantService/CreateMerchant"
 	MerchantService_SaveMerchant_FullMethodName                = "/MerchantService/SaveMerchant"
 	MerchantService_SaveAuthenticate_FullMethodName            = "/MerchantService/SaveAuthenticate"
@@ -61,6 +62,8 @@ const (
 type MerchantServiceClient interface {
 	// 获取商家的信息,mchId
 	GetMerchant(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*QMerchant, error)
+	// 根据电子邮箱获取商户编号,如果未注册,则返回0
+	GetMerchantIdByUsername(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int64, error)
 	// 注册商户并开店
 	CreateMerchant(ctx context.Context, in *CreateMerchantRequest, opts ...grpc.CallOption) (*MerchantCreateResponse, error)
 	// 保存商户
@@ -137,6 +140,15 @@ func NewMerchantServiceClient(cc grpc.ClientConnInterface) MerchantServiceClient
 func (c *merchantServiceClient) GetMerchant(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*QMerchant, error) {
 	out := new(QMerchant)
 	err := c.cc.Invoke(ctx, MerchantService_GetMerchant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetMerchantIdByUsername(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int64, error) {
+	out := new(Int64)
+	err := c.cc.Invoke(ctx, MerchantService_GetMerchantIdByUsername_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -446,6 +458,8 @@ func (c *merchantServiceClient) SaveGroupRebateRate(ctx context.Context, in *Sav
 type MerchantServiceServer interface {
 	// 获取商家的信息,mchId
 	GetMerchant(context.Context, *Int64) (*QMerchant, error)
+	// 根据电子邮箱获取商户编号,如果未注册,则返回0
+	GetMerchantIdByUsername(context.Context, *String) (*Int64, error)
 	// 注册商户并开店
 	CreateMerchant(context.Context, *CreateMerchantRequest) (*MerchantCreateResponse, error)
 	// 保存商户
@@ -518,6 +532,9 @@ type UnimplementedMerchantServiceServer struct {
 
 func (UnimplementedMerchantServiceServer) GetMerchant(context.Context, *Int64) (*QMerchant, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMerchant not implemented")
+}
+func (UnimplementedMerchantServiceServer) GetMerchantIdByUsername(context.Context, *String) (*Int64, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMerchantIdByUsername not implemented")
 }
 func (UnimplementedMerchantServiceServer) CreateMerchant(context.Context, *CreateMerchantRequest) (*MerchantCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMerchant not implemented")
@@ -645,6 +662,24 @@ func _MerchantService_GetMerchant_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MerchantServiceServer).GetMerchant(ctx, req.(*Int64))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetMerchantIdByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(String)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetMerchantIdByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GetMerchantIdByUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetMerchantIdByUsername(ctx, req.(*String))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1253,6 +1288,10 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMerchant",
 			Handler:    _MerchantService_GetMerchant_Handler,
+		},
+		{
+			MethodName: "GetMerchantIdByUsername",
+			Handler:    _MerchantService_GetMerchantIdByUsername_Handler,
 		},
 		{
 			MethodName: "CreateMerchant",

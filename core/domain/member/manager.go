@@ -18,6 +18,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/infrastructure/domain/validate"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/util"
 )
@@ -102,7 +103,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 		if len(v.Username) < 6 {
 			return 0, member.ErrUserLength
 		}
-		if !userRegex.MatchString(v.Username) {
+		if !validate.IsUser(v.Username) {
 			return 0, member.ErrUserValidErr
 		}
 		if m.rep.CheckUserExist(v.Username, 0) {
@@ -124,7 +125,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	}
 	if lp > 0 {
 		checkPhone := m.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
-		if checkPhone && !phoneRegex.MatchString(pro.Phone) {
+		if checkPhone && !validate.IsPhone(pro.Phone) {
 			return 0, member.ErrInvalidPhone
 		}
 		if m.CheckPhoneBind(pro.Phone, v.Id) != nil {

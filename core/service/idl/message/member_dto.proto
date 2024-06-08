@@ -66,45 +66,6 @@ message LoginResponse{
 }
 
 
-// 请求访问令牌
-message GrantAccessTokenRequest{
-  // 会员编号
-  int64 memberId = 1;
-  // 令牌过期时间(单位:s)
-  int64 expiresTime = 2;
-}
-
-// 发放访问令牌响应
-message GrantAccessTokenResponse{
-  // 错误信息
-  string error = 1;
-  // 访问令牌
-  string accessToken = 2;
-}
-
-// 检查令牌请求
-message CheckAccessTokenRequest{
-  // 访问令牌
-  string accessToken = 1;
-  // 检测过期时间,在此时间内过期,将生成返回新的令牌
-  int64 checkExpireTime = 2;
-  // 新生成令牌的有效时间
-  int64 renewExpiresTime = 3;
-}
-
-// 检查令牌响应
-message CheckAccessTokenResponse{
-  // 错误信息
-  string error = 1;
-  // 会员编号
-  int64 memberId = 2;
-  // 是否过期
-  bool isExpires = 3;
-  // 令牌过期时间
-  int64 tokenExpiresTime = 4;
-  // 重新生成的令牌
-  string renewAccessToken = 5;
-}
 
 // 注册结果
 message RegisterResponse {

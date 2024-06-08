@@ -13,7 +13,6 @@ package member
 
 import (
 	"errors"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -28,6 +27,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/domain/validate"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/domain/eventbus"
@@ -138,12 +138,6 @@ func (m *memberImpl) Invitation() member.IInvitationManager {
 func (m *memberImpl) GetValue() member.Member {
 	return *m.value
 }
-
-var (
-	userRegex  = regexp.MustCompile("^[a-zA-Z0-9_]{6,}$")
-	emailRegex = regexp.MustCompile("^[A-Za-z0-9_\\-]+@[a-zA-Z0-9\\-]+(\\.[a-zA-Z0-9]+)+$")
-	phoneRegex = regexp.MustCompile("^(13[0-9]|14[5|6|7]|15[0-9]|16[5|6|7|8]|18[0-9]|17[0|1|2|3|4|5|6|7|8]|19[1|8|9])(\\d{8})$")
-)
 
 // SendCheckCode 发送验证码,并返回验证码
 func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error) {
@@ -576,7 +570,7 @@ func (m *memberImpl) checkUser(user string) error {
 	if len([]rune(user)) < 6 {
 		return member.ErrUserLength
 	}
-	if !userRegex.MatchString(user) {
+	if !validate.IsUser(user) {
 		return member.ErrUserValidErr
 	}
 	if m.repo.CheckUserExist(user, m.GetAggregateRootId()) {
@@ -642,7 +636,7 @@ func (m *memberImpl) prepare() (err error) {
 	}
 	if lp > 0 {
 		checkPhone := m.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
-		if checkPhone && !phoneRegex.MatchString(m.value.Phone) {
+		if checkPhone && !validate.IsPhone(m.value.Phone) {
 			return member.ErrInvalidPhone
 		}
 		if m.checkPhoneBind(m.value.Phone, m.GetAggregateRootId()) != nil {

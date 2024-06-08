@@ -153,7 +153,7 @@ func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
 // 根据登录用户名获取商户
 func (m *merchantRepo) GetMerchantByLoginUser(user string) merchant.IMerchant {
 	e := merchant.Merchant{}
-	if err := m._orm.GetBy(&e, "login_user=$1", user); err == nil {
+	if err := m._orm.GetBy(&e, "username=$1", user); err == nil {
 		return m.CreateMerchant(&e)
 	}
 	return nil
@@ -402,7 +402,6 @@ func (m *merchantRepo) SaveAccount(v *merchant.Account) (int, error) {
 	return int(v.MchId), err
 }
 
-
 // Get MchBuyerGroupSetting
 func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant.MchBuyerGroupSetting {
 	e := merchant.MchBuyerGroupSetting{}
@@ -531,7 +530,6 @@ func (m *merchantRepo) GetMerchantByMemberId(memberId int) merchant.IMerchant {
 	}
 	return nil
 }
-
 
 // SaveAuthenticate Save 商户认证信息
 func (m *merchantRepo) SaveAuthenticate(v *merchant.Authenticate) (int, error) {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/infrastructure/domain/validate"
 )
 
 var _ member.IDeliverAddress = new(addressImpl)
@@ -61,7 +62,7 @@ func (p *addressImpl) checkValue(v *member.ConsigneeAddress) error {
 		return member.ErrNotSetArea
 	}
 
-	if !phoneRegex.MatchString(v.ConsigneePhone) {
+	if !validate.IsPhone(v.ConsigneePhone) {
 		return member.ErrDeliverContactPhone
 	}
 	// 判断字符长度

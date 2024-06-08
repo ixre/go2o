@@ -17,9 +17,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -34,7 +32,6 @@ import (
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
-	api "github.com/ixre/gof/ext/jwt-api"
 	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
@@ -760,113 +757,6 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 		ret.UserCode = v.UserCode
 	}
 	return ret, nil
-}
-
-// GrantAccessToken 发放访问令牌
-func (s *memberService) GrantAccessToken(_ context.Context, request *proto.GrantAccessTokenRequest) (*proto.GrantAccessTokenResponse, error) {
-	now := time.Now().Unix()
-	if request.ExpiresTime <= now {
-		return &proto.GrantAccessTokenResponse{
-			Error: fmt.Sprintf("令牌有效时间已过有效期: value=%d", request.ExpiresTime),
-		}, nil
-	}
-	im := s.repo.GetMember(request.MemberId)
-	if im == nil {
-		return &proto.GrantAccessTokenResponse{Error: member.ErrNoSuchMember.Error()}, nil
-	}
-	// 创建token并返回
-	claims := api.CreateClaims(strconv.Itoa(int(request.MemberId)), "go2o",
-		"go2o-api-jwt", request.ExpiresTime).(jwt.MapClaims)
-	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
-	if err != nil {
-		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
-		return &proto.GrantAccessTokenResponse{Error: err.Error()}, nil
-	}
-	token, err := api.AccessToken(claims, []byte(jwtSecret))
-	if err != nil {
-		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
-		return &proto.GrantAccessTokenResponse{Error: err.Error()}, nil
-	}
-	return &proto.GrantAccessTokenResponse{
-		AccessToken: token,
-	}, nil
-}
-
-// CheckAccessToken 检查令牌是否有效
-func (s *memberService) CheckAccessToken(_ context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
-	if len(request.AccessToken) == 0 {
-		return &proto.CheckAccessTokenResponse{Error: "令牌不能为空"}, nil
-	}
-	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
-	if err != nil {
-		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
-		return &proto.CheckAccessTokenResponse{Error: err.Error()}, nil
-	}
-	// 去掉"Bearer "
-	if len(request.AccessToken) > 6 &&
-		strings.HasPrefix(request.AccessToken, "Bearer") {
-		request.AccessToken = request.AccessToken[7:]
-	}
-	// 转换token
-	dstClaims := jwt.MapClaims{} // 可以用实现了Claim接口的自定义结构
-	tk, err := jwt.ParseWithClaims(request.AccessToken, &dstClaims, func(t *jwt.Token) (interface{}, error) {
-		return []byte(jwtSecret), nil
-	})
-	if tk == nil {
-		return &proto.CheckAccessTokenResponse{Error: "令牌无效"}, nil
-	}
-	if !dstClaims.VerifyIssuer("go2o", true) ||
-		dstClaims["sub"] != "go2o-api-jwt" {
-		return &proto.CheckAccessTokenResponse{Error: "未知颁发者的令牌"}, nil
-	}
-	// 令牌过期时间
-	exp := int64(dstClaims["exp"].(float64))
-	// 判断是否有效
-	if !tk.Valid {
-		ve, _ := err.(*jwt.ValidationError)
-		if ve.Errors&jwt.ValidationErrorExpired != 0 {
-			return &proto.CheckAccessTokenResponse{
-				Error:            "令牌已过期",
-				IsExpires:        true,
-				TokenExpiresTime: exp,
-			}, nil
-		}
-		return &proto.CheckAccessTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
-	}
-	aud := int64(typeconv.MustInt(dstClaims["aud"]))
-	// 如果设置了续期参数
-	if exp <= request.CheckExpireTime {
-		return s.renewAccessToken(request, aud, exp), nil
-	}
-	return &proto.CheckAccessTokenResponse{
-		MemberId:         aud,
-		TokenExpiresTime: exp,
-	}, nil
-}
-
-// renewAccessToken 续签令牌
-func (s *memberService) renewAccessToken(request *proto.CheckAccessTokenRequest,
-	aud int64, exp int64) *proto.CheckAccessTokenResponse {
-	if request.RenewExpiresTime < request.CheckExpireTime {
-		return &proto.CheckAccessTokenResponse{
-			Error: "令牌续期过期时间必须在检测过期时间之后",
-		}
-	}
-	ret, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
-		MemberId:    aud,
-		ExpiresTime: request.RenewExpiresTime,
-	})
-	if len(ret.Error) > 0 {
-		return &proto.CheckAccessTokenResponse{
-			Error: ret.Error,
-		}
-	}
-	return &proto.CheckAccessTokenResponse{
-		IsExpires:        false,
-		TokenExpiresTime: exp,
-		MemberId:         aud,
-		RenewAccessToken: ret.AccessToken,
-	}
 }
 
 // VerifyTradePassword 检查交易密码

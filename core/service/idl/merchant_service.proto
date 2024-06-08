@@ -12,6 +12,9 @@ service MerchantService {
     // 获取商家的信息,mchId
     rpc GetMerchant (Int64) returns (QMerchant) {
     }
+    // 根据电子邮箱获取商户编号,如果未注册,则返回0
+    rpc GetMerchantIdByUsername(String)returns(Int64){
+    }
     // 注册商户并开店
     rpc CreateMerchant (CreateMerchantRequest) returns (MerchantCreateResponse) {
     }

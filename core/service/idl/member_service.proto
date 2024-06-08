@@ -29,12 +29,7 @@ service MemberService {
     rpc CheckLogin (LoginRequest) returns (LoginResponse) {
     }
 
-    // 发放访问令牌,续期即重新颁发
-    rpc GrantAccessToken(GrantAccessTokenRequest) returns(GrantAccessTokenResponse){}
-
-    // 检查令牌是否有效并返回新的令牌
-    rpc CheckAccessToken(CheckAccessTokenRequest) returns(CheckAccessTokenResponse){}
-
+   
     /** 验证交易密码 */
     rpc VerifyTradePassword (VerifyPasswordRequest) returns (Result) {
     }

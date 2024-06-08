@@ -50,6 +50,15 @@ func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
 	}
 }
 
+// GetMerchantIdByMailAddress implements proto.MerchantServiceServer.
+func (m *merchantService) GetMerchantIdByUsername(_ context.Context, mail *proto.String) (*proto.Int64, error) {
+	mch := m._mchRepo.GetMerchantByLoginUser(mail.Value)
+	if mch != nil {
+		return &proto.Int64{Value: int64(mch.GetAggregateRootId())}, nil
+	}
+	return &proto.Int64{}, nil
+}
+
 // CreateMerchant 创建商户
 func (m *merchantService) CreateMerchant(_ context.Context, r *proto.CreateMerchantRequest) (*proto.MerchantCreateResponse, error) {
 	mch := r.Mch
@@ -89,7 +98,7 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.CreateMerch
 	}
 	rsp := &proto.MerchantCreateResponse{}
 	if err == nil {
-		rsp.Id = int64(im.GetAggregateRootId())
+		rsp.MerchantId = int64(im.GetAggregateRootId())
 	} else {
 		rsp.ErrCode = 1
 		rsp.ErrMsg = err.Error()

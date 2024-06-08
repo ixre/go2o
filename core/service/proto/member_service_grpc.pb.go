@@ -21,8 +21,6 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	MemberService_Register_FullMethodName                   = "/MemberService/Register"
 	MemberService_CheckLogin_FullMethodName                 = "/MemberService/CheckLogin"
-	MemberService_GrantAccessToken_FullMethodName           = "/MemberService/GrantAccessToken"
-	MemberService_CheckAccessToken_FullMethodName           = "/MemberService/CheckAccessToken"
 	MemberService_VerifyTradePassword_FullMethodName        = "/MemberService/VerifyTradePassword"
 	MemberService_GetLevels_FullMethodName                  = "/MemberService/GetLevels"
 	MemberService_GetTrustInfo_FullMethodName               = "/MemberService/GetTrustInfo"
@@ -121,10 +119,6 @@ type MemberServiceClient interface {
 	// 登录，返回结果(Result)和会员编号(Id);
 	// Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 	CheckLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	// 发放访问令牌,续期即重新颁发
-	GrantAccessToken(ctx context.Context, in *GrantAccessTokenRequest, opts ...grpc.CallOption) (*GrantAccessTokenResponse, error)
-	// 检查令牌是否有效并返回新的令牌
-	CheckAccessToken(ctx context.Context, in *CheckAccessTokenRequest, opts ...grpc.CallOption) (*CheckAccessTokenResponse, error)
 	// * 验证交易密码
 	VerifyTradePassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 等级列表
@@ -303,24 +297,6 @@ func (c *memberServiceClient) Register(ctx context.Context, in *RegisterMemberRe
 func (c *memberServiceClient) CheckLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, MemberService_CheckLogin_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *memberServiceClient) GrantAccessToken(ctx context.Context, in *GrantAccessTokenRequest, opts ...grpc.CallOption) (*GrantAccessTokenResponse, error) {
-	out := new(GrantAccessTokenResponse)
-	err := c.cc.Invoke(ctx, MemberService_GrantAccessToken_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *memberServiceClient) CheckAccessToken(ctx context.Context, in *CheckAccessTokenRequest, opts ...grpc.CallOption) (*CheckAccessTokenResponse, error) {
-	out := new(CheckAccessTokenResponse)
-	err := c.cc.Invoke(ctx, MemberService_CheckAccessToken_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1047,10 +1023,6 @@ type MemberServiceServer interface {
 	// 登录，返回结果(Result)和会员编号(Id);
 	// Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 	CheckLogin(context.Context, *LoginRequest) (*LoginResponse, error)
-	// 发放访问令牌,续期即重新颁发
-	GrantAccessToken(context.Context, *GrantAccessTokenRequest) (*GrantAccessTokenResponse, error)
-	// 检查令牌是否有效并返回新的令牌
-	CheckAccessToken(context.Context, *CheckAccessTokenRequest) (*CheckAccessTokenResponse, error)
 	// * 验证交易密码
 	VerifyTradePassword(context.Context, *VerifyPasswordRequest) (*Result, error)
 	// * 等级列表
@@ -1219,12 +1191,6 @@ func (UnimplementedMemberServiceServer) Register(context.Context, *RegisterMembe
 }
 func (UnimplementedMemberServiceServer) CheckLogin(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckLogin not implemented")
-}
-func (UnimplementedMemberServiceServer) GrantAccessToken(context.Context, *GrantAccessTokenRequest) (*GrantAccessTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GrantAccessToken not implemented")
-}
-func (UnimplementedMemberServiceServer) CheckAccessToken(context.Context, *CheckAccessTokenRequest) (*CheckAccessTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CheckAccessToken not implemented")
 }
 func (UnimplementedMemberServiceServer) VerifyTradePassword(context.Context, *VerifyPasswordRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyTradePassword not implemented")
@@ -1505,42 +1471,6 @@ func _MemberService_CheckLogin_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemberServiceServer).CheckLogin(ctx, req.(*LoginRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MemberService_GrantAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GrantAccessTokenRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemberServiceServer).GrantAccessToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MemberService_GrantAccessToken_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).GrantAccessToken(ctx, req.(*GrantAccessTokenRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MemberService_CheckAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckAccessTokenRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MemberServiceServer).CheckAccessToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MemberService_CheckAccessToken_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).CheckAccessToken(ctx, req.(*CheckAccessTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2963,14 +2893,6 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckLogin",
 			Handler:    _MemberService_CheckLogin_Handler,
-		},
-		{
-			MethodName: "GrantAccessToken",
-			Handler:    _MemberService_GrantAccessToken_Handler,
-		},
-		{
-			MethodName: "CheckAccessToken",
-			Handler:    _MemberService_CheckAccessToken_Handler,
 		},
 		{
 			MethodName: "VerifyTradePassword",
