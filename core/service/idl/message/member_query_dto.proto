@@ -13,7 +13,7 @@ message SMember {
     string userCode = 2;
     /** 会员标志 */
     sint32 userFlag = 3;
-    // 角色标志,1: 用户, 2: 商户, 4:商户雇员,8:扩展1,16:扩展2,32:扩展3
+    // 角色标志,1: 用户, 2:商户雇员, 4:扩展1, 8:扩展2, 16:扩展3
     sint32 role = 4;
     /** 用户名 */
     string username = 5;

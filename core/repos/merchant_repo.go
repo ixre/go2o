@@ -20,6 +20,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/employee"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
@@ -45,6 +46,7 @@ type merchantRepo struct {
 	_wsRepo       wholesaler.IWholesaleRepo
 	_itemRepo     item.IItemRepo
 	_userRepo     user.IUserRepo
+	_employeeRepo employee.IEmployeeRepo
 	_mssRepo      mss.IMessageRepo
 	_shopRepo     shop.IShopRepo
 	_valRepo      valueobject.IValueRepo
@@ -58,7 +60,9 @@ type merchantRepo struct {
 
 func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
-	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMessageRepo,
+	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
+	employeeRepo employee.IEmployeeRepo,
+	memberRepo member.IMemberRepo, mssRepo mss.IMessageRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantRepo {
 	if !mchMerchantDaoImplMapped {
 		// 映射实体
@@ -73,6 +77,7 @@ func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 		_wsRepo:       wsRepo,
 		_itemRepo:     itemRepo,
 		_userRepo:     userRepo,
+		_employeeRepo: employeeRepo,
 		_mssRepo:      mssRepo,
 		_shopRepo:     shopRepo,
 		_valRepo:      valRepo,
@@ -122,7 +127,9 @@ func (m *merchantRepo) GetMemberFromSignUpToken(token string) int64 {
 
 func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
 	return merchantImpl.NewMerchant(v, m, m._wsRepo, m._itemRepo,
-		m._shopRepo, m._userRepo, m._memberRepo, m._walletRepo, m._valRepo, m._registryRepo)
+		m._shopRepo, m._userRepo,
+		m._employeeRepo,
+		m._memberRepo, m._walletRepo, m._valRepo, m._registryRepo)
 }
 
 func (m *merchantRepo) cleanCache(mchId int64) {

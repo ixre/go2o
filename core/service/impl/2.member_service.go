@@ -21,6 +21,7 @@ import (
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
@@ -28,11 +29,11 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/regex"
+	"github.com/ixre/go2o/core/infrastructure/util/types"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
-	"github.com/ixre/gof/types"
 	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 )
@@ -41,6 +42,7 @@ var _ proto.MemberServiceServer = new(memberService)
 
 type memberService struct {
 	repo         member.IMemberRepo
+	mchRepo      merchant.IMerchantRepo
 	registryRepo registry.IRegistryRepo
 	query        *query.MemberQuery
 	orderQuery   *query.OrderQuery
@@ -50,11 +52,13 @@ type memberService struct {
 }
 
 func NewMemberService(repo member.IMemberRepo,
+	mchRepo merchant.IMerchantRepo,
 	registryRepo registry.IRegistryRepo,
 	q *query.MemberQuery, oq *query.OrderQuery,
 	valRepo valueobject.IValueRepo) proto.MemberServiceServer {
 	s := &memberService{
 		repo:         repo,
+		mchRepo:      mchRepo,
 		registryRepo: registryRepo,
 		query:        q,
 		orderQuery:   oq,
@@ -524,29 +528,48 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 			ErrMsg:  err.Error(),
 		}, nil
 	}
+	// 验证商户雇员
+	mch, err := s.getRegisterMerchant(r)
+	if err != nil {
+		return &proto.RegisterResponse{
+			ErrCode: 3,
+			ErrMsg:  err.Error(),
+		}, nil
+	}
 	// 创建会员
 	m := s.repo.CreateMember(v)
 	id, err := m.Save()
-
 	if err == nil {
 		// 保存关联信息
 		err = m.BindInviter(inviterId, true)
-		//m := _s.repo.CreateMember(v) //创建会员
-		//id, err := m.Save()
-		//if err == nil {
-		//	pro.Gender = 1
-		//	pro.MemberId = id
-		//	//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
-		//	if err = m.Profile().SaveProfile(pro); err != nil {
-		//		_s.repo.DeleteMember(id)
-		//}
+		// 添加商户雇员
+		if err == nil && r.UserType == member.RoleEmployee {
+			err = mch.EmployeeManager().Create(int(id))
+		}
 	}
-	ret := &proto.RegisterResponse{MemberId: id}
 	if err != nil {
-		ret.ErrCode = 1
-		ret.ErrMsg = err.Error()
+		return &proto.RegisterResponse{
+			ErrCode: 1,
+			ErrMsg:  err.Error(),
+		}, nil
 	}
-	return ret, nil
+	return &proto.RegisterResponse{MemberId: id}, nil
+}
+
+// 获取注册商户雇员的商户信息,如果其他角色,则返回nil
+func (s *memberService) getRegisterMerchant(r *proto.RegisterMemberRequest) (merchant.IMerchant, error) {
+	mchId := typeconv.MustInt(types.OrValue(r.Ext["mchId"], "0"))
+	if r.UserType == member.RoleEmployee {
+		if mchId == 0 {
+			return nil, errors.New("mchId参数未指定")
+		}
+		mch := s.mchRepo.GetMerchant(mchId)
+		if mch == nil {
+			return nil, errors.New("商户不存在")
+		}
+		return mch, nil
+	}
+	return nil, nil
 }
 
 // GetInviter 获取会员邀请关系
@@ -1671,7 +1694,7 @@ func (s *memberService) parseAddress(src *proto.SAddress) *member.ConsigneeAddre
 		District:       src.District,
 		Area:           src.Area,
 		DetailAddress:  src.DetailAddress,
-		IsDefault:      types.ElseInt(src.IsDefault, 1, 0),
+		IsDefault:      types.Ternary(src.IsDefault, 1, 0),
 	}
 }
 

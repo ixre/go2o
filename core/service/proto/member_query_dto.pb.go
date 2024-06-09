@@ -32,7 +32,7 @@ type SMember struct {
 	UserCode string `protobuf:"bytes,2,opt,name=userCode,proto3" json:"userCode"`
 	// * 会员标志
 	UserFlag int32 `protobuf:"zigzag32,3,opt,name=userFlag,proto3" json:"userFlag"`
-	// 角色标志,1: 用户, 2: 商户, 4:商户雇员,8:扩展1,16:扩展2,32:扩展3
+	// 角色标志,1: 用户, 2:商户雇员, 4:扩展1, 8:扩展2, 16:扩展3
 	Role int32 `protobuf:"zigzag32,4,opt,name=role,proto3" json:"role"`
 	// * 用户名
 	Username string `protobuf:"bytes,5,opt,name=username,proto3" json:"username"`

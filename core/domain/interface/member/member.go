@@ -63,16 +63,15 @@ const (
 const (
 	// 普通用户
 	RoleUser = 1
-	// 商户
-	RoleMerchant = 2
 	// 商户雇员
-	RoleEmployee = 4
+	RoleEmployee = 2
 	// 扩展角色1
-	RoleExt1 = 8
+	RoleExt1 = 4
 	// 扩展角色2
-	RoleExt2 = 16
+	RoleExt2 = 8
+	// 扩展角色3
+	RoleExt3 = 16
 )
-
 
 type (
 	IMemberAggregateRoot interface {

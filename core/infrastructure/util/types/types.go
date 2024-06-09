@@ -7,3 +7,10 @@ func Ternary[T any](cond bool, trueVal, falseVal T) T {
 	}
 	return falseVal
 }
+
+func OrValue[T comparable](v T, or T) (t T) {
+	if v == t {
+		return or
+	}
+	return v
+}

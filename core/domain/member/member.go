@@ -662,8 +662,10 @@ func (m *memberImpl) prepare() (err error) {
 	}
 	// 验证角色
 	if m.value.RoleFlag != 0 && !collections.InArray([]int{
-		member.RoleMerchant,
 		member.RoleEmployee,
+		member.RoleExt1,
+		member.RoleExt2,
+		member.RoleExt3,
 	}, m.value.RoleFlag) {
 		return errors.New("用户类型不合法")
 	}

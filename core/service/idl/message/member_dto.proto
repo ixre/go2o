@@ -35,12 +35,14 @@ message RegisterMemberRequest {
   string email = 5;
   // 邀请人代码
   string inviterCode = 6;
-  // 用户类型 1: 用户, 2: 商户, 4:商户雇员,8:扩展1,16:扩展2,32:扩展3
+  // 角色标志,1: 用户, 2:商户雇员, 4:扩展1, 8:扩展2, 16:扩展3  
   sint32 userType = 7;
   // 注册IP
   string regIp = 8;
   // 注册来源
   string regFrom = 9;
+  // 扩展字段
+  map<string,string> ext = 10;
 }
 
 // 登录请求
