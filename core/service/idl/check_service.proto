@@ -42,7 +42,7 @@ message SendCheckCodeRequest {
     // 操作
     string operation = 4;
     // 发送消息模板编号
-    string msgTemplateId = 5;
+    string templateCode = 5;
     // 有效时间（分钟）
     sint32 effective = 6;
 }

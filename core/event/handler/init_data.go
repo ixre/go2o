@@ -150,9 +150,9 @@ func initPages(repo content.IArchiveRepo) {
 					"如果您同意，请点击“同意”开始使用我们的服务。",
 			},
 			{
-				Title:   "用户服务协议",
-				Code:    "protocol",
-				Content: "",
+				Title:   "用户条款",
+				Code:    "agreement",
+				Content: "暂无内容",
 			},
 			{
 				Title:   "关于平台",

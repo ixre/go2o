@@ -22,7 +22,7 @@ func TestMssSendSms(t *testing.T) {
 	registryRepo := inject.GetRegistryRepo()
 	nm := nRepo.NotifyManager()
 	re := registryRepo.Get(registry.SmsDefaultProvider)
-	re.Update("http")
+	re.Update("0")
 	re.Save()
 	re = registryRepo.Get(registry.SmsRegisterTemplateId)
 	re.Update("8332")

@@ -201,7 +201,7 @@ func (c *checkServiceImpl) SendCode(_ context.Context, r *proto.SendCheckCodeReq
 			ErrMsg:  "操作名称不能为空",
 		}, nil
 	}
-	if len(r.MsgTemplateId) == 0 {
+	if len(r.TemplateCode) == 0 {
 		return &proto.SendCheckCodeResponse{
 			ErrCode: 1003,
 			ErrMsg:  "模板不能为空",
@@ -273,7 +273,7 @@ func (c *checkServiceImpl) notifyCheckCode(code string, r *proto.SendCheckCodeRe
 	data := []string{r.Operation, code, strconv.Itoa(int(r.Effective))}
 	// 构造并发送短信
 	mg := c.notifyRepo.NotifyManager()
-	return mg.SendPhoneMessage(r.ReceptAccount, mss.PhoneMessage(""), data, r.MsgTemplateId)
+	return mg.SendPhoneMessage(r.ReceptAccount, mss.PhoneMessage(""), data, r.TemplateCode)
 }
 
 // GrantAccessToken 发放访问令牌

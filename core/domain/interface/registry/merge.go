@@ -61,14 +61,14 @@ func MergeRegistries() []*Registry {
 
 	/* 应用 */
 	mergeAdd("启用消息订阅", AppEnableNatsSubscription, "0", "")
-	
+
 	/* 平台 */
 	mergeAdd("平台名称", PlatformName, "GO2O商城系统", "")
 	mergeAdd("客服客服电话", PlatformServiceTel, "+86-021-66666666", "")
-	mergeAdd("Logo标志", PlatformLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
-	mergeAdd("反色标志", PlatformInverseColorLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
-	mergeAdd("零售门户标志", PlatformRetailSiteLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
-	mergeAdd("批发门户标志", PlatformWholesaleSiteLogo, "//raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif", "")
+	mergeAdd("Logo标志", PlatformLogo, "https://gitee.com/jarrysix/go2o/blob/main/snapshot/assets/app-icon.png", "")
+	mergeAdd("反色标志", PlatformInverseColorLogo, "https://gitee.com/jarrysix/go2o/blob/main/snapshot/assets/app-icon.png", "")
+	mergeAdd("零售门户标志", PlatformRetailSiteLogo, "https://gitee.com/jarrysix/go2o/blob/main/snapshot/assets/app-icon.png", "")
+	mergeAdd("批发门户标志", PlatformWholesaleSiteLogo, "https://gitee.com/jarrysix/go2o/blob/main/snapshot/assets/app-icon.png", "")
 	mergeAdd("是否开启多店铺模式", PlatformMultipleShopEnabled, "1", "0:关闭,1:启用")
 
 	/** 系统 */

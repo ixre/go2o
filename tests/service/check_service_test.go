@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/types/typeconv"
@@ -19,7 +20,7 @@ func Test_checkServiceImpl_SendCode(t *testing.T) {
 		ReceptAccount: "13162222872",
 		UserId:        1,
 		Operation:     "注册会员",
-		MsgTemplateId: "验证手机",
+		TemplateCode:  mss.SMS_CHECK_CODE,
 	}
 	ret, _ := svc.SendCode(context.TODO(), r)
 	if len(ret.ErrMsg) != 0 {

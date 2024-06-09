@@ -119,7 +119,7 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg mss.PhoneMessage,
 
 	tpl := n.getSmsTemplate(templateId)
 	if tpl == nil {
-		return mss.ErrNoSuchTemplate
+		return fmt.Errorf(mss.ErrNoSuchTemplate.Error(), templateId)
 	}
 	// 通过外部系统发送短信
 	if provider == int(mss.CUSTOM) {
