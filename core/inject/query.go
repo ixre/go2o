@@ -67,7 +67,7 @@ var daoProvideSets = wire.NewSet(
 	impl2.NewPortalDao,
 )
 
-var serviceProvideSets = wire.NewSet(
+var InjectProvideSets = wire.NewSet(
 	daoProvideSets,
 	impl.NewStatusService,
 	impl.NewRegistryService,

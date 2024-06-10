@@ -866,6 +866,6 @@ var daoProvideSets = wire.NewSet(
 	queryProvideSets, impl.NewCommDao, impl.NewPortalDao,
 )
 
-var serviceProvideSets = wire.NewSet(
+var InjectProvideSets = wire.NewSet(
 	daoProvideSets, impl2.NewStatusService, impl2.NewRegistryService, impl2.NewMerchantService, impl2.NewPromotionService, impl2.NewFoundationService, impl2.NewMemberService, impl2.NewShopService, impl2.NewProductService, impl2.NewItemService, impl2.NewShoppingService, impl2.NewCartService, impl2.NewAfterSalesService, impl2.NewAdvertisementService, impl2.NewPaymentService, impl2.NewQuickPayService, impl2.NewMessageService, impl2.NewExpressService, impl2.NewShipmentService, impl2.NewContentService, impl2.NewWalletService, impl2.NewCodeService, impl2.NewQueryService, impl2.NewRbacService, impl2.NewAppService, impl2.NewPortalService, impl2.NewPersonFinanceService, impl2.NewExecutionService, impl2.NewCheckService, event.NewEventSource, handler.NewEventHandler,
 )
