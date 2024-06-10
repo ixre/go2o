@@ -821,7 +821,7 @@ func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.I
 
 // GetStaff implements proto.MerchantServiceServer.
 func (m *merchantService) GetStaff(_ context.Context, req *proto.StaffRequest) (*proto.SStaff, error) {
-	staff := m._staffRepo.GetStaffByMemberId(int(req.Id))
+	staff := m._staffRepo.GetStaff(int(req.Id))
 	if staff == nil {
 		return &proto.SStaff{}, nil
 	}
@@ -834,7 +834,7 @@ func (m *merchantService) GetStaff(_ context.Context, req *proto.StaffRequest) (
 
 // GetStaffByMember implements proto.MerchantServiceServer.
 func (m *merchantService) GetStaffByMember(_ context.Context, req *proto.StaffRequest) (*proto.SStaff, error) {
-	staff := m._staffRepo.GetStaff(int(req.Id))
+	staff := m._staffRepo.GetStaffByMemberId(int(req.Id))
 	if staff == nil {
 		return &proto.SStaff{}, nil
 	}
