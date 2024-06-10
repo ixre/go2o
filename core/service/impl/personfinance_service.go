@@ -46,14 +46,14 @@ func (p *personFinanceService) GetRiseInfo(_ context.Context, id *proto.PersonId
 			return p.parseRiseInfoDto(v), nil
 		}
 	}
-	return nil,fmt.Errorf("no such rise info") 
+	return nil, fmt.Errorf("no such rise info")
 }
 
 // 转入(业务放在service,是为person_finance解耦)
 // Parameters:
-//  - PersonId
-//  - TransferWith
-//  - Amount
+//   - PersonId
+//   - TransferWith
+//   - Amount
 func (p *personFinanceService) RiseTransferIn(_ context.Context, r *proto.TransferInRequest) (*proto.Result, error) {
 	//return errors.New("服务暂时不可用")
 	pf := p.repo.GetPersonFinance(r.PersonId)

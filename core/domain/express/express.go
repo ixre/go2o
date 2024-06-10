@@ -99,7 +99,7 @@ var _ express.IExpressTemplate = new(expressTemplateImpl)
 type expressTemplateImpl struct {
 	_value           *express.ExpressTemplate
 	_userExpress     *userExpressImpl
-	_repo             express.IExpressRepo
+	_repo            express.IExpressRepo
 	_regionList      []express.RegionExpressTemplate
 	_regionIsChanged bool
 	_areaMap         map[string]*express.RegionExpressTemplate
@@ -107,13 +107,12 @@ type expressTemplateImpl struct {
 	_valRepo         valueobject.IValueRepo
 }
 
-
 func newExpressTemplate(u *userExpressImpl, v *express.ExpressTemplate,
 	rep express.IExpressRepo, valRepo valueobject.IValueRepo) express.IExpressTemplate {
 	return &expressTemplateImpl{
 		_value:       v,
 		_userExpress: u,
-		_repo:         rep,
+		_repo:        rep,
 		_valRepo:     valRepo,
 	}
 }

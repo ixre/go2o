@@ -73,13 +73,13 @@ func (p *addressImpl) checkValue(v *member.ConsigneeAddress) error {
 }
 
 // Save 保存收货地址
-func (p *addressImpl) Save() error{
+func (p *addressImpl) Save() error {
 	if err := p.checkValue(p._value); err != nil {
 		return err
 	}
 	p._value.Area = p.renewAreaName(p._value)
-	id,err := p._memberRepo.SaveDeliverAddress(p._value)
-	if p.GetDomainId() == 0{
+	id, err := p._memberRepo.SaveDeliverAddress(p._value)
+	if p.GetDomainId() == 0 {
 		p._value.Id = id
 	}
 	return err

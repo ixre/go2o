@@ -29,7 +29,6 @@ type advertisementService struct {
 	proto.UnimplementedAdvertisementServiceServer
 }
 
-
 func (a *advertisementService) GetGroups(_ context.Context, empty *proto.Empty) (*proto.AdGroupResponse, error) {
 	repo := a._rep.GetAdManager()
 	var arr = repo.GetGroups()
@@ -222,7 +221,7 @@ func (a *advertisementService) DeleteSwiperAdImage(_ context.Context, r *proto.I
 	return a.error(err), nil
 }
 
-func NewAdvertisementService(rep ad.IAdRepo, storage storage.Interface)proto.AdvertisementServiceServer {
+func NewAdvertisementService(rep ad.IAdRepo, storage storage.Interface) proto.AdvertisementServiceServer {
 	return &advertisementService{
 		_rep:    rep,
 		storage: storage,

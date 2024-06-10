@@ -58,7 +58,7 @@ type Gateway struct {
 
 func NewGateway(s storage.Interface) *Gateway {
 	return &Gateway{
-		s:          s,
+		s: s,
 		//memberRepo: inject.GetMemberRepo(),
 	}
 }

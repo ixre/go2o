@@ -16,7 +16,7 @@ type postedDataImpl struct {
 	data       map[string]string
 	_addressId int64
 	_checked   map[int64][]int64
-	_req        *proto.SubmitOrderRequest
+	_req       *proto.SubmitOrderRequest
 }
 
 func NewPostedData(data map[string]string, req *proto.SubmitOrderRequest) order.IPostedData {
@@ -45,7 +45,7 @@ func (p *postedDataImpl) GetComment(sellerId int64) string {
 
 // TradeOrderAmount implements order.IPostedData
 func (p *postedDataImpl) TradeOrderAmount() int64 {
-	if p._req.TradeOrder != nil{
+	if p._req.TradeOrder != nil {
 		return p._req.TradeOrder.TradeAmount
 	}
 	return 0
@@ -53,7 +53,7 @@ func (p *postedDataImpl) TradeOrderAmount() int64 {
 
 // TradeOrderDiscount implements order.IPostedData
 func (p *postedDataImpl) TradeOrderDiscount() float32 {
-	if p._req.TradeOrder != nil{
+	if p._req.TradeOrder != nil {
 		return p._req.TradeOrder.Discount
 	}
 	return 0
@@ -61,7 +61,7 @@ func (p *postedDataImpl) TradeOrderDiscount() float32 {
 
 // TradeOrderStoreId implements order.IPostedData
 func (p *postedDataImpl) TradeOrderStoreId() int64 {
-	if p._req.TradeOrder != nil{
+	if p._req.TradeOrder != nil {
 		return p._req.TradeOrder.StoreId
 	}
 	return 0

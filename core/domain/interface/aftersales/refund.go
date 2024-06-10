@@ -10,17 +10,17 @@ package afterSales
 
 const (
 // 等待运营商确认
-//RefundStatAwaitingVendor = 1 + iota
-//// 退款取消
-//RefundStatCancelled
-//// 运营商拒绝退款
-//RefundStatVendorDecline
-//// 调解状态
-//RefundStatIntercede
-//// 等待确认退款
-//RefundStatAwaittingConfirm
-//// 退款成功
-//RefundStatCompleted
+// RefundStatAwaitingVendor = 1 + iota
+// // 退款取消
+// RefundStatCancelled
+// // 运营商拒绝退款
+// RefundStatVendorDecline
+// // 调解状态
+// RefundStatIntercede
+// // 等待确认退款
+// RefundStatAwaittingConfirm
+// // 退款成功
+// RefundStatCompleted
 )
 
 type (

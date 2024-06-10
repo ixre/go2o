@@ -18,5 +18,5 @@ func TestGetFirstLetter(t *testing.T) {
 func TestOrValue(t *testing.T) {
 	v := types.OrValue("str", "1")
 	v2 := types.OrValue("", "1")
-	t.Log(v,v2)
+	t.Log(v, v2)
 }

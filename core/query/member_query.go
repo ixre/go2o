@@ -81,7 +81,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, valueFilter int32, 
 		}
 	}, memberId, begin, end-begin)
 	if err != nil {
-		log.Println("----",err)
+		log.Println("----", err)
 	}
 
 	return num, rows

@@ -46,7 +46,7 @@ func NewItemService(sto storage.Interface, cateRepo product.ICategoryRepo,
 	goodsRepo item.IItemRepo,
 	goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProductModelRepo,
-	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo)proto.ItemServiceServer  {
+	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo) proto.ItemServiceServer {
 	return &itemService{
 		sto:       sto,
 		itemRepo:  goodsRepo,

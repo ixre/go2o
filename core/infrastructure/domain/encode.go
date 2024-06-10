@@ -60,7 +60,7 @@ func TradePassword(pwd string, salt string) string {
 	return Sha1Pwd(pwd, salt)
 }
 
-//加密合作商密码
+// 加密合作商密码
 func MerchantSha1Pwd(pwd string, salt string) string {
 	if pwd == "" {
 		return ""

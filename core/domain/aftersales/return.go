@@ -126,7 +126,7 @@ func (r *returnOrderImpl) submitReturnOrder() (err error) {
 	}
 	if r.refValue.Amount <= 0 || math.IsNaN(float64(r.refValue.Amount)) {
 		return afterSales.ErrOrderAmount
-	}		
+	}
 	_orm := provide.GetOrmInstance()
 	_, err = orm.Save(_orm, r.refValue, 0)
 	return err

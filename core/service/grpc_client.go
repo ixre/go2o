@@ -15,11 +15,11 @@ import (
 
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/go2o/core/service/proto"
-	"log"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
+	"log"
 )
 
 var staticAddr string
@@ -50,8 +50,8 @@ func tryConnect(retryTimes int) {
 			trans.Close()
 			break
 		}
-		if i > 0{
-			log.Printf("[ GO2O][ INFO]: the %dth retry connecting rpc server \n",i)
+		if i > 0 {
+			log.Printf("[ GO2O][ INFO]: the %dth retry connecting rpc server \n", i)
 		}
 		time.Sleep(time.Second)
 		if i >= retryTimes-1 {

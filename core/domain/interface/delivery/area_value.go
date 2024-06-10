@@ -8,7 +8,7 @@
  */
 package delivery
 
-//中国省市行政规划
+// 中国省市行政规划
 type AreaValue struct {
 	Id   int32  `db:"id" pk:"yes" auto:"no"`
 	Pid  int32  `db:"pid"`

@@ -144,7 +144,6 @@ type (
 
 		// 根据地区编码获取运费模板
 		GetAreaExpressTemplateByAreaCode(areaCode string) *RegionExpressTemplate
-
 	}
 
 	IExpressRepo interface {

@@ -24,7 +24,7 @@ const (
 )
 
 // 获取支付帮助内容
-//todo: 需要商户可以自定义设置
+// todo: 需要商户可以自定义设置
 func GetPaymentHelpContent(opt int32) string {
 	if opt-1 <= 0 {
 		opt = 1

@@ -41,17 +41,17 @@ type paymentRepoImpl struct {
 var payIntegrateAppDaoImplMapped = false
 
 func NewPaymentRepo(sto storage.Interface, o orm.Orm, mmRepo member.IMemberRepo,
-	 registryRepo registry.IRegistryRepo) payment.IPaymentRepo {
+	registryRepo registry.IRegistryRepo) payment.IPaymentRepo {
 	if !payIntegrateAppDaoImplMapped {
 		_ = o.Mapping(payment.IntegrateApp{}, "pay_integrate_app")
 		payIntegrateAppDaoImplMapped = true
 	}
 	//todo: 临时取消与orderRepo的循环依赖
 	return &paymentRepoImpl{
-		Storage:      sto,
-		Connector:    o.Connector(),
-		_orm:         o,
-		memberRepo:   mmRepo,
+		Storage:    sto,
+		Connector:  o.Connector(),
+		_orm:       o,
+		memberRepo: mmRepo,
 		//orderRepo:    orderRepo,
 		registryRepo: registryRepo,
 	}

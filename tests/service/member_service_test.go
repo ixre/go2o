@@ -123,11 +123,11 @@ func TestSetInviter(t *testing.T) {
 // 测试注册商户员工
 func TestRegisterMerchantStaff(t *testing.T) {
 	ms := inject.GetMemberService()
-	phone := "13800138005"
+	phone := "13900000001"
 	ret, _ := ms.Register(context.TODO(), &proto.RegisterMemberRequest{
 		Username:    phone,
 		Password:    crypto.Md5([]byte("123456")),
-		Nickname:    "李小二",
+		Nickname:    "一号律师",
 		Phone:       phone,
 		Email:       fmt.Sprintf("%s@qq.com", phone),
 		InviterCode: "",
