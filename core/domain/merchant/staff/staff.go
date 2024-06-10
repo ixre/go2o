@@ -7,7 +7,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/station"
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
 )
 
 var _ staff.IStaffManager = new(staffManagerImpl)
@@ -45,10 +44,8 @@ func (e *staffManagerImpl) Create(memberId int) error {
 	// if domain.TestFlag(role, member.RoleEmployee) {
 	// }
 	// 查询会员是否已存在在职
-	exists := e._repo.SelectStaffByMemberId(memberId)
-	if collections.AnyArray(exists, func(v *staff.Staff) bool {
-		return v.MemberId == memberId && v.WorkStatus != staff.WorkStatusOff
-	}) {
+	exists := e._repo.GetStaffByMemberId(memberId)
+	if exists != nil {
 		return staff.ErrStaffAlreadyExists
 	}
 	// 获取站点,站点允许为0

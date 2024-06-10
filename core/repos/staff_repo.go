@@ -41,14 +41,26 @@ func NewStaffRepo(o orm.Orm) staff.IStaffRepo {
 	}
 }
 
-// SelectStaff Select 商户代理人坐席(员工)
-func (m *staffRepoImpl) SelectStaffByMemberId(memberId int) []*staff.Staff {
-	list := make([]*staff.Staff, 0)
-	err := m._orm.Select(&list, "member_id = $1", memberId)
+// GetStaff implements staff.IStaffRepo.
+func (m *staffRepoImpl) GetStaff(id int) *staff.Staff {
+	var e staff.Staff
+	err := m._orm.Get(id, &e)
 	if err != nil && err != sql.ErrNoRows {
 		log.Printf("[ Orm][ Error]: %s; Entity:Staff\n", err.Error())
 	}
-	return list
+	return &e
+}
+
+// SelectStaff Select 商户代理人坐席(员工)
+func (m *staffRepoImpl) GetStaffByMemberId(memberId int) *staff.Staff {
+	var e staff.Staff
+	err := m._orm.GetBy(&e, "member_id = $1 and work_status <> $2",
+		memberId,
+		staff.WorkStatusOff)
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("[ Orm][ Error]: %s; Entity:Staff\n", err.Error())
+	}
+	return &e
 }
 
 // SaveStaff Save 商户代理人坐席(员工)

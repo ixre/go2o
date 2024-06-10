@@ -18,6 +18,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/dto"
@@ -34,13 +35,16 @@ var _ proto.MerchantServiceServer = new(merchantService)
 type merchantService struct {
 	_mchRepo    merchant.IMerchantRepo
 	_memberRepo member.IMemberRepo
+	_staffRepo  staff.IStaffRepo
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
 	serviceUtil
 	proto.UnimplementedMerchantServiceServer
 }
 
-func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
+func NewMerchantService(r merchant.IMerchantRepo,
+	memberRepo member.IMemberRepo,
+	staffRepo staff.IStaffRepo,
 	q *query.MerchantQuery, orderQuery *query.OrderQuery) proto.MerchantServiceServer {
 	return &merchantService{
 		_mchRepo:    r,
@@ -812,6 +816,51 @@ func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.I
 		mp = mch.Wholesaler().SyncItems(true)
 	}
 	return &proto.SyncWSItemsResponse{Value: mp}, nil
+}
+
+// GetStaff implements proto.MerchantServiceServer.
+func (m *merchantService) GetStaff(_ context.Context, req *proto.StaffRequest) (*proto.SStaff, error) {
+	staff := m._staffRepo.GetStaffByMemberId(int(req.Id))
+	if staff == nil {
+		return &proto.SStaff{}, nil
+	}
+	if req.MchId != 0 && req.MchId != int64(staff.MchId) {
+		// 如果商户不匹配，则返回空
+		return &proto.SStaff{}, nil
+	}
+	return m.parseStaffDto(staff), nil
+}
+
+// GetStaffByMember implements proto.MerchantServiceServer.
+func (m *merchantService) GetStaffByMember(_ context.Context, req *proto.StaffRequest) (*proto.SStaff, error) {
+	staff := m._staffRepo.GetStaff(int(req.Id))
+	if staff == nil {
+		return &proto.SStaff{}, nil
+	}
+	if req.MchId != 0 && req.MchId != int64(staff.MchId) {
+		// 如果商户不匹配，则返回空
+		return &proto.SStaff{}, nil
+	}
+	return m.parseStaffDto(staff), nil
+}
+
+func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {
+	return &proto.SStaff{
+		Id:            int64(src.Id),
+		MemberId:      int64(src.MemberId),
+		StationId:     int32(src.StationId),
+		MchId:         int64(src.MchId),
+		Flag:          int32(src.Flag),
+		Gender:        int32(src.Gender),
+		Nickname:      src.Nickname,
+		WorkStatus:    int32(src.WorkStatus),
+		Grade:         int32(src.Grade),
+		Status:        int32(src.Status),
+		IsCertified:   int32(src.IsCertified),
+		CertifiedName: src.CertifiedName,
+		PremiumLevel:  int32(src.PremiumLevel),
+		CreateTime:    int64(src.CreateTime),
+	}
 }
 
 func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto.QMerchant {

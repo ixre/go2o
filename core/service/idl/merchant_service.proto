@@ -115,8 +115,53 @@ service MerchantService {
     // 保存分组返点率
     rpc SaveGroupRebateRate (SaveWholesaleRebateRateRequest) returns (Result) {
     }
+    // 获取商户员工
+    rpc GetStaff(StaffRequest) returns (SStaff){
+    }
+    // 根据会员编号获取商户员工
+    rpc GetStaffByMember(StaffRequest) returns (SStaff){
+    }
 }
 
+// 员工请求
+message StaffRequest{
+    // 会员编号或员工编号
+    sint64 id = 1;
+    // 商户编号
+    sint64 mchId = 2;
+}
+
+// 商户员工
+message SStaff{
+    // 编号
+    int64 id = 1;
+    // 会员编号
+    int64 memberId = 2;
+    // 站点编号
+    int32 stationId = 3;
+    // 商户编号
+    int64 mchId = 4;
+    // 坐席标志
+    int32 flag = 5;
+    // 性别: 0: 未知 1:男 2:女
+    int32 gender = 6;
+    // 昵称
+    string nickname = 7;
+    // 工作状态: 1: 离线 2:在线空闲 3: 工作中
+    int32 workStatus = 8;
+    // 评分
+    int32 grade = 9;
+    // 状态: 1: 正常  2: 锁定
+    int32 status = 10;
+    // 是否认证 0:否 1:是
+    int32 isCertified = 11;
+    // 认证姓名
+    string certifiedName = 12;
+    // 高级用户等级
+    int32 premiumLevel = 13;
+    // 创建时间
+    int64 createTime = 14;
+}
 
 message MerchantOrderRequest {
     // 商户编号

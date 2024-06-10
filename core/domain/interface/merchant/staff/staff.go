@@ -20,8 +20,10 @@ type (
 
 	// IStaffRepo 员工数据访问接口
 	IStaffRepo interface {
+		// GetStaff 获取商户员工
+		GetStaff(id int) *Staff
 		// GetStaffBy GetBy 商户代理人坐席(员工)
-		SelectStaffByMemberId(memberId int) []*Staff
+		GetStaffByMemberId(memberId int) *Staff
 		// SaveStaff Save 商户代理人坐席(员工)
 		SaveStaff(v *Staff) (int, error)
 		// DeleteStaff Delete 商户代理人坐席(员工)

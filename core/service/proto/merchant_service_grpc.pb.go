@@ -54,6 +54,8 @@ const (
 	MerchantService_GetBuyerGroups_FullMethodName              = "/MerchantService/GetBuyerGroups"
 	MerchantService_GetRebateRate_FullMethodName               = "/MerchantService/GetRebateRate"
 	MerchantService_SaveGroupRebateRate_FullMethodName         = "/MerchantService/SaveGroupRebateRate"
+	MerchantService_GetStaff_FullMethodName                    = "/MerchantService/GetStaff"
+	MerchantService_GetStaffByMember_FullMethodName            = "/MerchantService/GetStaffByMember"
 )
 
 // MerchantServiceClient is the client API for MerchantService service.
@@ -127,6 +129,10 @@ type MerchantServiceClient interface {
 	GetRebateRate(ctx context.Context, in *MerchantBuyerGroupId, opts ...grpc.CallOption) (*WholesaleRebateRateListResponse, error)
 	// 保存分组返点率
 	SaveGroupRebateRate(ctx context.Context, in *SaveWholesaleRebateRateRequest, opts ...grpc.CallOption) (*Result, error)
+	// 获取商户员工
+	GetStaff(ctx context.Context, in *StaffRequest, opts ...grpc.CallOption) (*SStaff, error)
+	// 根据会员编号获取商户员工
+	GetStaffByMember(ctx context.Context, in *StaffRequest, opts ...grpc.CallOption) (*SStaff, error)
 }
 
 type merchantServiceClient struct {
@@ -452,6 +458,24 @@ func (c *merchantServiceClient) SaveGroupRebateRate(ctx context.Context, in *Sav
 	return out, nil
 }
 
+func (c *merchantServiceClient) GetStaff(ctx context.Context, in *StaffRequest, opts ...grpc.CallOption) (*SStaff, error) {
+	out := new(SStaff)
+	err := c.cc.Invoke(ctx, MerchantService_GetStaff_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GetStaffByMember(ctx context.Context, in *StaffRequest, opts ...grpc.CallOption) (*SStaff, error) {
+	out := new(SStaff)
+	err := c.cc.Invoke(ctx, MerchantService_GetStaffByMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MerchantServiceServer is the server API for MerchantService service.
 // All implementations must embed UnimplementedMerchantServiceServer
 // for forward compatibility
@@ -523,6 +547,10 @@ type MerchantServiceServer interface {
 	GetRebateRate(context.Context, *MerchantBuyerGroupId) (*WholesaleRebateRateListResponse, error)
 	// 保存分组返点率
 	SaveGroupRebateRate(context.Context, *SaveWholesaleRebateRateRequest) (*Result, error)
+	// 获取商户员工
+	GetStaff(context.Context, *StaffRequest) (*SStaff, error)
+	// 根据会员编号获取商户员工
+	GetStaffByMember(context.Context, *StaffRequest) (*SStaff, error)
 	mustEmbedUnimplementedMerchantServiceServer()
 }
 
@@ -634,6 +662,12 @@ func (UnimplementedMerchantServiceServer) GetRebateRate(context.Context, *Mercha
 }
 func (UnimplementedMerchantServiceServer) SaveGroupRebateRate(context.Context, *SaveWholesaleRebateRateRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveGroupRebateRate not implemented")
+}
+func (UnimplementedMerchantServiceServer) GetStaff(context.Context, *StaffRequest) (*SStaff, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStaff not implemented")
+}
+func (UnimplementedMerchantServiceServer) GetStaffByMember(context.Context, *StaffRequest) (*SStaff, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStaffByMember not implemented")
 }
 func (UnimplementedMerchantServiceServer) mustEmbedUnimplementedMerchantServiceServer() {}
 
@@ -1278,6 +1312,42 @@ func _MerchantService_SaveGroupRebateRate_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_GetStaff_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StaffRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetStaff(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GetStaff_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetStaff(ctx, req.(*StaffRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GetStaffByMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StaffRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetStaffByMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GetStaffByMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetStaffByMember(ctx, req.(*StaffRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MerchantService_ServiceDesc is the grpc.ServiceDesc for MerchantService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1424,6 +1494,14 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveGroupRebateRate",
 			Handler:    _MerchantService_SaveGroupRebateRate_Handler,
+		},
+		{
+			MethodName: "GetStaff",
+			Handler:    _MerchantService_GetStaff_Handler,
+		},
+		{
+			MethodName: "GetStaffByMember",
+			Handler:    _MerchantService_GetStaffByMember_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

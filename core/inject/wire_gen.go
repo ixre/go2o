@@ -486,7 +486,7 @@ func GetMerchantService() proto.MerchantServiceServer {
 	app := provide.GetApp()
 	merchantQuery := query.NewMerchantQuery(app)
 	orderQuery := query.NewOrderQuery(orm)
-	merchantServiceServer := impl2.NewMerchantService(iMerchantRepo, iMemberRepo, merchantQuery, orderQuery)
+	merchantServiceServer := impl2.NewMerchantService(iMerchantRepo, iMemberRepo, iStaffRepo, merchantQuery, orderQuery)
 	return merchantServiceServer
 }
 
