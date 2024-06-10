@@ -18,15 +18,15 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/merchant/employee"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
-	employeeImpl "github.com/ixre/go2o/core/domain/merchant/employee"
 	si "github.com/ixre/go2o/core/domain/merchant/shop"
+	staffImpl "github.com/ixre/go2o/core/domain/merchant/staff"
 	userImpl "github.com/ixre/go2o/core/domain/merchant/user"
 	wsImpl "github.com/ixre/go2o/core/domain/merchant/wholesale"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -46,7 +46,7 @@ type merchantImpl struct {
 	_itemRepo        item.IItemRepo
 	_shopRepo        shop.IShopRepo
 	_userRepo        user.IUserRepo
-	_employeeRepo    employee.IEmployeeRepo
+	_staffRepo    staff.IStaffRepo
 	_valRepo         valueobject.IValueRepo
 	_memberRepo      member.IMemberRepo
 	_userManager     user.IUserManager
@@ -60,7 +60,7 @@ type merchantImpl struct {
 	_profileManager  merchant.IProfileManager
 	_apiManager      merchant.IApiManager
 	_shopManager     shop.IShopManager
-	_employeeManager employee.IEmployeeManager
+	_employeeManager staff.IStaffManager
 	_walletRepo      wallet.IWalletRepo
 	_registryRepo    registry.IRegistryRepo
 	// 之前绑定的会员编号
@@ -68,9 +68,9 @@ type merchantImpl struct {
 }
 
 // EmployeeManager implements merchant.IMerchant.
-func (m *merchantImpl) EmployeeManager() employee.IEmployeeManager {
+func (m *merchantImpl) EmployeeManager() staff.IStaffManager {
 	if m._employeeManager == nil {
-		m._employeeManager = employeeImpl.NewEmployeeManager(m, m._employeeRepo)
+		m._employeeManager = staffImpl.NewEmployeeManager(m, m._staffRepo)
 	}
 	return m._employeeManager
 }
@@ -78,7 +78,7 @@ func (m *merchantImpl) EmployeeManager() employee.IEmployeeManager {
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
-	employeeRepo employee.IEmployeeRepo,
+	employeeRepo staff.IStaffRepo,
 	memberRepo member.IMemberRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchant {
 	mch := &merchantImpl{
@@ -88,7 +88,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 		_itemRepo:     itemRepo,
 		_shopRepo:     shopRepo,
 		_userRepo:     userRepo,
-		_employeeRepo: employeeRepo,
+		_staffRepo: employeeRepo,
 		_valRepo:      valRepo,
 		_memberRepo:   memberRepo,
 		_walletRepo:   walletRepo,

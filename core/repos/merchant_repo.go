@@ -20,8 +20,8 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/merchant/employee"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
@@ -46,7 +46,7 @@ type merchantRepo struct {
 	_wsRepo       wholesaler.IWholesaleRepo
 	_itemRepo     item.IItemRepo
 	_userRepo     user.IUserRepo
-	_employeeRepo employee.IEmployeeRepo
+	_employeeRepo staff.IStaffRepo
 	_mssRepo      mss.IMessageRepo
 	_shopRepo     shop.IShopRepo
 	_valRepo      valueobject.IValueRepo
@@ -61,7 +61,7 @@ type merchantRepo struct {
 func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
-	employeeRepo employee.IEmployeeRepo,
+	employeeRepo staff.IStaffRepo,
 	memberRepo member.IMemberRepo, mssRepo mss.IMessageRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantRepo {
 	if !mchMerchantDaoImplMapped {

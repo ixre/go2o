@@ -10,8 +10,8 @@
 package merchant
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/merchant/employee"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 )
@@ -84,7 +84,7 @@ type (
 		// MemberKvManager 获取会员键值管理器
 		MemberKvManager() IKvManager
 		// EmpManager 员工服务
-		EmployeeManager() employee.IEmployeeManager
+		EmployeeManager() staff.IStaffManager
 		// 消息系统管理器
 		//MssManager() mss.IMssManager
 	}

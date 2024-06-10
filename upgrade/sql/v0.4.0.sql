@@ -112,135 +112,9 @@ COMMENT ON COLUMN m_complain_details.id IS '编号';
 COMMENT ON COLUMN m_complain_details.case_id IS '案件编号';
 COMMENT ON COLUMN m_complain_details.sender_type IS '发送类型: 1:发起人  2: 投诉对象  3: 平台客服';
 COMMENT ON COLUMN m_complain_details.is_revert IS '是否撤回 0:否 1:是';
-DROP TABLE IF EXISTS mch_agent;
-CREATE TABLE mch_agent (
-  id             BIGSERIAL NOT NULL, 
-  member_id      int8 NOT NULL, 
-  station_id     int4 NOT NULL, 
-  mch_id         int8 NOT NULL, 
-  agent_flag     int4 NOT NULL, 
-  gender         int4 NOT NULL, 
-  nickname       varchar(20) NOT NULL, 
-  work_status    int4 NOT NULL, 
-  grade          int4 NOT NULL, 
-  status         int4 NOT NULL, 
-  is_certified   int4 NOT NULL, 
-  certified_name varchar(10) NOT NULL, 
-  premium_level  int4 NOT NULL, 
-  create_time    int8 NOT NULL, 
-  PRIMARY KEY (id));
-COMMENT ON TABLE mch_agent IS '商户代理人坐席(员工)';
-COMMENT ON COLUMN mch_agent.id IS '编号';
-COMMENT ON COLUMN mch_agent.member_id IS '会员编号';
-COMMENT ON COLUMN mch_agent.station_id IS '站点编号';
-COMMENT ON COLUMN mch_agent.mch_id IS '商户编号';
-COMMENT ON COLUMN mch_agent.agent_flag IS '坐席标志';
-COMMENT ON COLUMN mch_agent.gender IS '性别: 0: 未知 1:男 2:女';
-COMMENT ON COLUMN mch_agent.nickname IS '昵称';
-COMMENT ON COLUMN mch_agent.work_status IS '工作状态: 1: 离线 2:在线空闲 3: 工作中';
-COMMENT ON COLUMN mch_agent.grade IS '评分';
-COMMENT ON COLUMN mch_agent.status IS '状态: 1: 正常  2: 锁定';
-COMMENT ON COLUMN mch_agent.is_certified IS '是否认证 0:否 1:是';
-COMMENT ON COLUMN mch_agent.certified_name IS '认证姓名';
-COMMENT ON COLUMN mch_agent.premium_level IS '高级用户等级';
-COMMENT ON COLUMN mch_agent.create_time IS '创建时间';
-DROP TABLE IF EXISTS mch_agent_extent;
-CREATE TABLE mch_agent_extent (
-  id              BIGSERIAL NOT NULL, 
-  agent_id        int8 NOT NULL, 
-  certified_time  int8 NOT NULL, 
-  focus_fields    varchar(20) NOT NULL, 
-  unit_price      numeric(6, 2) NOT NULL, 
-  work_begin      int8 NOT NULL, 
-  work_years      int4 NOT NULL, 
-  birthday        int8 NOT NULL, 
-  age             int4 NOT NULL, 
-  city_code       int4 NOT NULL, 
-  introduce       varchar(80) NOT NULL, 
-  commission_rate numeric(4, 2) NOT NULL, 
-  id_no           varchar(20) NOT NULL, 
-  license_pic     varchar(120) NOT NULL, 
-  license_no      varchar(20) NOT NULL, 
-  update_time     int8 NOT NULL, 
-  PRIMARY KEY (id));
-COMMENT ON TABLE mch_agent_extent IS '商户坐席(员工)扩展表';
-COMMENT ON COLUMN mch_agent_extent.id IS '编号';
-COMMENT ON COLUMN mch_agent_extent.certified_time IS '认证时间';
-COMMENT ON COLUMN mch_agent_extent.focus_fields IS '聚焦领域';
-COMMENT ON COLUMN mch_agent_extent.unit_price IS '每小时单价';
-COMMENT ON COLUMN mch_agent_extent.work_begin IS '工作起始时间';
-COMMENT ON COLUMN mch_agent_extent.work_years IS '工龄';
-COMMENT ON COLUMN mch_agent_extent.birthday IS '生日';
-COMMENT ON COLUMN mch_agent_extent.age IS '年龄';
-COMMENT ON COLUMN mch_agent_extent.city_code IS '所在城市';
-COMMENT ON COLUMN mch_agent_extent.introduce IS '个人介绍';
-COMMENT ON COLUMN mch_agent_extent.commission_rate IS '提成比例';
-COMMENT ON COLUMN mch_agent_extent.id_no IS '身份证号码';
-COMMENT ON COLUMN mch_agent_extent.license_pic IS '执业资格图片';
-COMMENT ON COLUMN mch_agent_extent.license_no IS '执业资格证编号';
-COMMENT ON COLUMN mch_agent_extent.update_time IS '更新时间';
-DROP TABLE IF EXISTS mch_agent_revenue;
-CREATE TABLE mch_agent_revenue (
-  id              SERIAL NOT NULL, 
-  revenue_type    int4 NOT NULL, 
-  order_id        int8 NOT NULL, 
-  order_no        varchar(30) NOT NULL, 
-  consumer_name   varchar(20) NOT NULL, 
-  procedure_rate  numeric(4, 2) NOT NULL, 
-  commission_rate numeric(4, 2) NOT NULL, 
-  commission_fee  numeric(6, 2) NOT NULL, 
-  amount          int4 NOT NULL, 
-  review_status   int4 NOT NULL, 
-  review_remark   varchar(40) NOT NULL, 
-  grant_time      int8 NOT NULL, 
-  is_granted      int4 NOT NULL, 
-  create_time     int8 NOT NULL, 
-  PRIMARY KEY (id));
-COMMENT ON COLUMN mch_agent_revenue.id IS '编号';
-COMMENT ON COLUMN mch_agent_revenue.revenue_type IS '收入类型,预留默认传1';
-COMMENT ON COLUMN mch_agent_revenue.order_id IS '订单编号';
-COMMENT ON COLUMN mch_agent_revenue.order_no IS '订单号';
-COMMENT ON COLUMN mch_agent_revenue.consumer_name IS '消费者名称';
-COMMENT ON COLUMN mch_agent_revenue.review_status IS '1: 待审核  2: 已通过  3: 未通过';
-COMMENT ON COLUMN mch_agent_revenue.grant_time IS '佣金发放时间';
-COMMENT ON COLUMN mch_agent_revenue.is_granted IS '是否已发放';
-COMMENT ON COLUMN mch_agent_revenue.create_time IS ' 创建时间';
-DROP TABLE IF EXISTS mch_service_order;
-CREATE TABLE mch_service_order (
-  id                SERIAL NOT NULL, 
-  order_no          int4 NOT NULL, 
-  mch_id            int4 NOT NULL, 
-  station_id        int4 NOT NULL, 
-  agent_id          int4 NOT NULL, 
-  member_id         int4 NOT NULL, 
-  charge_amount     int4 NOT NULL, 
-  is_transformed    int4 NOT NULL, 
-  transform_time    int8 NOT NULL, 
-  transform_deposit int4 NOT NULL, 
-  service_time      int4 NOT NULL, 
-  service_rank      int4 NOT NULL, 
-  service_apprise   varchar(120) NOT NULL, 
-  status            int4 NOT NULL, 
-  create_time       int8 NOT NULL, 
-  update_time       int8 NOT NULL, 
-  PRIMARY KEY (id));
-COMMENT ON TABLE mch_service_order IS '商户服务单';
-COMMENT ON COLUMN mch_service_order.id IS '编号';
-COMMENT ON COLUMN mch_service_order.order_no IS '订单号';
-COMMENT ON COLUMN mch_service_order.mch_id IS '商户编号';
-COMMENT ON COLUMN mch_service_order.station_id IS '站点编号';
-COMMENT ON COLUMN mch_service_order.agent_id IS '代理人编号';
-COMMENT ON COLUMN mch_service_order.member_id IS '会员编号';
-COMMENT ON COLUMN mch_service_order.charge_amount IS '充值金额(服务单)';
-COMMENT ON COLUMN mch_service_order.is_transformed IS '是否转化';
-COMMENT ON COLUMN mch_service_order.transform_time IS '转化时间';
-COMMENT ON COLUMN mch_service_order.transform_deposit IS '定金';
-COMMENT ON COLUMN mch_service_order.service_time IS '服务计时(分钟)';
-COMMENT ON COLUMN mch_service_order.service_rank IS '服务评分';
-COMMENT ON COLUMN mch_service_order.service_apprise IS '服务评价';
-COMMENT ON COLUMN mch_service_order.status IS '状态: 1: 待服务  2: 服务中   3: 已结束  4: 已关闭';
-COMMENT ON COLUMN mch_service_order.create_time IS '创建时间';
-COMMENT ON COLUMN mch_service_order.update_time IS '更新时间';
+
+
+
 DROP TABLE IF EXISTS sys_general_option;
 CREATE TABLE sys_general_option (
   id          BIGSERIAL NOT NULL, 
@@ -429,3 +303,135 @@ COMMENT ON COLUMN "public".sys_notify_template.sp_code IS '短信服务商代码
 COMMENT ON COLUMN "public".sys_notify_template.sp_tid IS '短信服务商模板编号';
 COMMENT ON COLUMN "public".sys_notify_template.create_time IS '创建时间';
 COMMENT ON COLUMN "public".sys_notify_template.is_deleted IS '是否删除,0:否 1:是';
+
+
+DROP TABLE IF EXISTS mch_agent;
+DROP TABLE IF EXISTS mch_agent_extent;
+DROP TABLE IF EXISTS mch_agent_revenue;
+DROP TABLE IF EXISTS mch_service_order;
+
+CREATE TABLE mch_service_order (
+  id                SERIAL NOT NULL, 
+  order_no          int4 NOT NULL, 
+  mch_id            int4 NOT NULL, 
+  station_id        int4 NOT NULL, 
+  staff_id          int4 NOT NULL, 
+  member_id         int4 NOT NULL, 
+  charge_amount     int4 NOT NULL, 
+  is_transformed    int4 NOT NULL, 
+  transform_time    int8 NOT NULL, 
+  transform_deposit int4 NOT NULL, 
+  service_time      int4 NOT NULL, 
+  service_rank      int4 NOT NULL, 
+  service_apprise   varchar(120) NOT NULL, 
+  status            int4 NOT NULL, 
+  create_time       int8 NOT NULL, 
+  update_time       int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mch_service_order IS '商户服务单';
+COMMENT ON COLUMN mch_service_order.id IS '编号';
+COMMENT ON COLUMN mch_service_order.order_no IS '订单号';
+COMMENT ON COLUMN mch_service_order.mch_id IS '商户编号';
+COMMENT ON COLUMN mch_service_order.station_id IS '站点编号';
+COMMENT ON COLUMN mch_service_order.staff_id IS '代理人编号';
+COMMENT ON COLUMN mch_service_order.member_id IS '会员编号';
+COMMENT ON COLUMN mch_service_order.charge_amount IS '充值金额(服务单)';
+COMMENT ON COLUMN mch_service_order.is_transformed IS '是否转化';
+COMMENT ON COLUMN mch_service_order.transform_time IS '转化时间';
+COMMENT ON COLUMN mch_service_order.transform_deposit IS '定金';
+COMMENT ON COLUMN mch_service_order.service_time IS '服务计时(分钟)';
+COMMENT ON COLUMN mch_service_order.service_rank IS '服务评分';
+COMMENT ON COLUMN mch_service_order.service_apprise IS '服务评价';
+COMMENT ON COLUMN mch_service_order.status IS '状态: 1: 待服务  2: 服务中   3: 已结束  4: 已关闭';
+COMMENT ON COLUMN mch_service_order.create_time IS '创建时间';
+COMMENT ON COLUMN mch_service_order.update_time IS '更新时间';
+CREATE TABLE mch_staff (
+  id             BIGSERIAL NOT NULL, 
+  member_id      int8 NOT NULL, 
+  station_id     int4 NOT NULL, 
+  mch_id         int8 NOT NULL, 
+  flag           int4 NOT NULL, 
+  gender         int4 NOT NULL, 
+  nickname       varchar(20) NOT NULL, 
+  work_status    int4 NOT NULL, 
+  grade          int4 NOT NULL, 
+  status         int4 NOT NULL, 
+  is_certified   int4 NOT NULL, 
+  certified_name varchar(10) NOT NULL, 
+  premium_level  int4 NOT NULL, 
+  create_time    int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mch_staff IS '商户代理人坐席(员工)';
+COMMENT ON COLUMN mch_staff.id IS '编号';
+COMMENT ON COLUMN mch_staff.member_id IS '会员编号';
+COMMENT ON COLUMN mch_staff.station_id IS '站点编号';
+COMMENT ON COLUMN mch_staff.mch_id IS '商户编号';
+COMMENT ON COLUMN mch_staff.flag IS '坐席标志';
+COMMENT ON COLUMN mch_staff.gender IS '性别: 0: 未知 1:男 2:女';
+COMMENT ON COLUMN mch_staff.nickname IS '昵称';
+COMMENT ON COLUMN mch_staff.work_status IS '工作状态: 1: 离线 2:在线空闲 3: 工作中';
+COMMENT ON COLUMN mch_staff.grade IS '评分';
+COMMENT ON COLUMN mch_staff.status IS '状态: 1: 正常  2: 锁定';
+COMMENT ON COLUMN mch_staff.is_certified IS '是否认证 0:否 1:是';
+COMMENT ON COLUMN mch_staff.certified_name IS '认证姓名';
+COMMENT ON COLUMN mch_staff.premium_level IS '高级用户等级';
+COMMENT ON COLUMN mch_staff.create_time IS '创建时间';
+CREATE TABLE mch_staff_extent (
+  id              BIGSERIAL NOT NULL, 
+  staff_id        int8 NOT NULL, 
+  certified_time  int8 NOT NULL, 
+  focus_fields    varchar(20) NOT NULL, 
+  unit_price      numeric(6, 2) NOT NULL, 
+  work_begin      int8 NOT NULL, 
+  work_years      int4 NOT NULL, 
+  birthday        int8 NOT NULL, 
+  age             int4 NOT NULL, 
+  city_code       int4 NOT NULL, 
+  introduce       varchar(80) NOT NULL, 
+  commission_rate numeric(4, 2) NOT NULL, 
+  id_no           varchar(20) NOT NULL, 
+  license_pic     varchar(120) NOT NULL, 
+  license_no      varchar(20) NOT NULL, 
+  update_time     int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mch_staff_extent IS '商户坐席(员工)扩展表';
+COMMENT ON COLUMN mch_staff_extent.id IS '编号';
+COMMENT ON COLUMN mch_staff_extent.certified_time IS '认证时间';
+COMMENT ON COLUMN mch_staff_extent.focus_fields IS '聚焦领域';
+COMMENT ON COLUMN mch_staff_extent.unit_price IS '每小时单价';
+COMMENT ON COLUMN mch_staff_extent.work_begin IS '工作起始时间';
+COMMENT ON COLUMN mch_staff_extent.work_years IS '工龄';
+COMMENT ON COLUMN mch_staff_extent.birthday IS '生日';
+COMMENT ON COLUMN mch_staff_extent.age IS '年龄';
+COMMENT ON COLUMN mch_staff_extent.city_code IS '所在城市';
+COMMENT ON COLUMN mch_staff_extent.introduce IS '个人介绍';
+COMMENT ON COLUMN mch_staff_extent.commission_rate IS '提成比例';
+COMMENT ON COLUMN mch_staff_extent.id_no IS '身份证号码';
+COMMENT ON COLUMN mch_staff_extent.license_pic IS '执业资格图片';
+COMMENT ON COLUMN mch_staff_extent.license_no IS '执业资格证编号';
+COMMENT ON COLUMN mch_staff_extent.update_time IS '更新时间';
+CREATE TABLE mch_staff_revenue (
+  id              SERIAL NOT NULL, 
+  revenue_type    int4 NOT NULL, 
+  order_id        int8 NOT NULL, 
+  order_no        varchar(30) NOT NULL, 
+  consumer_name   varchar(20) NOT NULL, 
+  procedure_rate  numeric(4, 2) NOT NULL, 
+  commission_rate numeric(4, 2) NOT NULL, 
+  commission_fee  numeric(6, 2) NOT NULL, 
+  amount          int4 NOT NULL, 
+  review_status   int4 NOT NULL, 
+  review_remark   varchar(40) NOT NULL, 
+  grant_time      int8 NOT NULL, 
+  is_granted      int4 NOT NULL, 
+  create_time     int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON COLUMN mch_staff_revenue.id IS '编号';
+COMMENT ON COLUMN mch_staff_revenue.revenue_type IS '收入类型,预留默认传1';
+COMMENT ON COLUMN mch_staff_revenue.order_id IS '订单编号';
+COMMENT ON COLUMN mch_staff_revenue.order_no IS '订单号';
+COMMENT ON COLUMN mch_staff_revenue.consumer_name IS '消费者名称';
+COMMENT ON COLUMN mch_staff_revenue.review_status IS '1: 待审核  2: 已通过  3: 未通过';
+COMMENT ON COLUMN mch_staff_revenue.grant_time IS '佣金发放时间';
+COMMENT ON COLUMN mch_staff_revenue.is_granted IS '是否已发放';
+COMMENT ON COLUMN mch_staff_revenue.create_time IS ' 创建时间';
