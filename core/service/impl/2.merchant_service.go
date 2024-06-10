@@ -49,6 +49,7 @@ func NewMerchantService(r merchant.IMerchantRepo,
 	return &merchantService{
 		_mchRepo:    r,
 		_memberRepo: memberRepo,
+		_staffRepo:  staffRepo,
 		_query:      q,
 		_orderQuery: orderQuery,
 	}
