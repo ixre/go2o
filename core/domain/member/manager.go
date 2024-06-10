@@ -230,6 +230,11 @@ type levelManagerImpl struct {
 	repo member.IMemberRepo
 }
 
+// GetInitialLevel implements member.ILevelManager.
+func (l *levelManagerImpl) GetInitialLevel() *member.Level {
+	return l.GetLevelSet()[0]
+}
+
 func newLevelManager(rep member.IMemberRepo) member.ILevelManager {
 	impl := &levelManagerImpl{
 		repo: rep,
@@ -247,7 +252,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 				Enabled:       1,
 				AllowUpgrade:  1,
 				ProgramSignal: "LV.1",
-				IsOfficial:    0,
+				IsOfficial:    1,
 			},
 			{
 				Name:          "铜牌会员",

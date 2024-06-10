@@ -52,7 +52,7 @@ func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
 
 // GetMerchantIdByMailAddress implements proto.MerchantServiceServer.
 func (m *merchantService) GetMerchantIdByUsername(_ context.Context, mail *proto.String) (*proto.Int64, error) {
-	mch := m._mchRepo.GetMerchantByLoginUser(mail.Value)
+	mch := m._mchRepo.GetMerchantByUsername(mail.Value)
 	if mch != nil {
 		return &proto.Int64{Value: int64(mch.GetAggregateRootId())}, nil
 	}
@@ -499,7 +499,7 @@ func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMercha
 		return nil, 4, de.ErrNotMD5Format
 	}
 	//尝试作为独立的商户账号登陆
-	mch := m._mchRepo.GetMerchantByLoginUser(user)
+	mch := m._mchRepo.GetMerchantByUsername(user)
 	if mch == nil {
 		// 使用会员身份登录
 		var id int64

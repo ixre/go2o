@@ -10,6 +10,8 @@
 package domain
 
 import (
+	"fmt"
+
 	"github.com/ixre/go2o/core/initial/provide"
 )
 
@@ -39,10 +41,18 @@ func NewError(key string, msg string) *DomainError {
 	}
 }
 
-func (this *DomainError) Error() string {
-	return this.DefaultError
+func (d *DomainError) Error() string {
+	return d.DefaultError
 }
 
-func (this *DomainError) Set(msg string) {
-	this.DefaultError = msg
+func (d *DomainError) Set(msg string) {
+	d.DefaultError = msg
+}
+
+// Apply 格式化错误信息
+func (d *DomainError) Apply(args ...interface{}) *DomainError {
+	return &DomainError{
+		Key:          d.Key,
+		DefaultError: fmt.Sprintf(d.DefaultError, args...),
+	}
 }

@@ -15,19 +15,13 @@ type IMerchantRepo interface {
 
 	CreateMerchant(*Merchant) IMerchant
 
-	// 创建会员申请商户密钥
-	CreateSignUpToken(memberId int64) string
-
-	// 根据商户申请密钥获取会员编号
-	GetMemberFromSignUpToken(token string) int64
-
 	// 获取商户的编号
 	GetMerchantsId() []int32
 
 	// 获取商户
 	GetMerchant(id int) IMerchant
 	// 根据登录用户名获取商户
-	GetMerchantByLoginUser(user string) IMerchant
+	GetMerchantByUsername(user string) IMerchant
 	// 获取合作商主要的域名主机
 	GetMerchantMajorHost(mchId int) string
 
@@ -117,7 +111,6 @@ type IMerchantRepo interface {
 	// // 根据外部订单号查找账户日志
 	// GetBalanceLogByOuterNo(outerTradeNo string) *BalanceLog
 
-	
 	// 根据会员编号获取商户
 	GetMerchantByMemberId(memberId int) IMerchant
 	// 查找账户流水

@@ -267,7 +267,7 @@ func (m *memberImpl) checkLevelUp() bool {
 			UpgradeMode:  member.LAutoUpgrade,
 			CreateTime:   unix,
 		}
-		_, err = m.repo.SaveLevelUpLog(lvLog)
+		_, _ = m.repo.SaveLevelUpLog(lvLog)
 	}
 	return true
 }
@@ -299,8 +299,10 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 	}
 	_, err := m.repo.SaveLevelUpLog(lvLog)
 	if err == nil && !review {
+		if err = m.updateLevel(level); err != nil {
+			return err
+		}
 		m.value.Exp = lv.RequireExp
-		m.value.Level = level
 		m.value.UpdateTime = unix
 		_, err = m.Save()
 		if err == nil {
@@ -353,8 +355,10 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 			_, err := m.repo.SaveLevelUpLog(l)
 			if err == nil {
 				lv := m.manager.LevelManager().GetLevelById(l.TargetLevel)
+				if err = m.updateLevel(l.TargetLevel); err != nil {
+					return err
+				}
 				m.value.Exp = lv.RequireExp
-				m.value.Level = l.TargetLevel
 				m.value.UpdateTime = time.Now().Unix()
 				_, err = m.Save()
 			}
@@ -462,8 +466,7 @@ func (m *memberImpl) Active() error {
 		return member.ErrMemberLocked
 	}
 	m.value.UserFlag |= member.FlagActive
-	_, err := m.Save()
-	return err
+	return nil
 }
 
 // Lock 锁定会员
@@ -539,6 +542,25 @@ func (m *memberImpl) getUserRoleFlag(v *member.Member) int {
 	return ret
 }
 
+func (m *memberImpl) updateLevel(levelId int) error {
+	lm := m.manager.LevelManager()
+	var level *member.Level
+	if levelId <= 0 {
+		level = lm.GetInitialLevel()
+	} else {
+		level = lm.GetLevelById(level.Id)
+	}
+	if level == nil {
+		return member.ErrLevelNotExist.Apply(levelId)
+	}
+	m.value.Level = level.Id
+	if level.IsOfficial == 1 && !m.ContainFlag(member.FlagActive) {
+		// 如果为正式等级,则必须激活
+		return m.Active()
+	}
+	return nil
+}
+
 // 创建会员
 func (m *memberImpl) create(v *member.Member) (int64, error) {
 	err := m.prepare()
@@ -546,7 +568,8 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 		unix := time.Now().Unix()
 		v.RegTime = unix
 		v.LastLoginTime = unix
-		v.Level = 1
+		// 初始化等级
+		m.updateLevel(0)
 		v.Exp = 0
 		// 设置VIP用户信息
 		v.PremiumUser = member.PremiumNormal

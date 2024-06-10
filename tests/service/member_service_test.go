@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/gof/crypto"
 )
 
 // 测试检查交易密码
@@ -68,7 +70,6 @@ func TestChangeUsername(t *testing.T) {
 	if ret.ErrCode > 0 {
 		t.Log(ret.ErrMsg)
 	}
-
 }
 func TestChangePasswordAndCheckLogin(t *testing.T) {
 	pwd := domain.Md5("123456")
@@ -117,5 +118,27 @@ func TestSetInviter(t *testing.T) {
 			AllowChange: false,
 		})
 	t.Log(ret)
+}
 
+// 测试注册商户员工
+func TestRegisterMerchantStaff(t *testing.T) {
+	ms := inject.GetMemberService()
+	phone := "13800138005"
+	ret, _ := ms.Register(context.TODO(), &proto.RegisterMemberRequest{
+		Username:    phone,
+		Password:    crypto.Md5([]byte("123456")),
+		Nickname:    "李小二",
+		Phone:       phone,
+		Email:       fmt.Sprintf("%s@qq.com", phone),
+		InviterCode: "",
+		UserType:    2,
+		Ext: map[string]string{
+			"mchId": "1",
+		},
+	})
+	if ret.ErrCode > 0 {
+		t.Error(ret.ErrMsg)
+	} else {
+		t.Log("ok")
+	}
 }

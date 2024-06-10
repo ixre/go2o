@@ -34,6 +34,8 @@ var (
 	ErrMemberLocked = domain.NewError(
 		"err_member_locked", "会员已被停用")
 
+	ErrMemberNotActive = domain.NewError(
+		"err_member_not_active", "会员未激活")
 	ErrMemberHasActive = domain.NewError(
 		"err_member_has_active", "会员已激活")
 
@@ -195,6 +197,7 @@ var (
 	ErrInvalidQq = domain.NewError(
 		"err_qq_valid_err", "QQ号码不正确")
 
+	ErrLevelNotExist       = domain.NewError("err_member_level_not_exist", "等级不存在:%d")
 	ErrNotSetTradePassword = domain.NewError("err_not_set_trade_pwd", "交易密码未设置")
 
 	ErrIncorrectTradePassword       = domain.NewError("err_incorrect_trade_pwd", "交易密码不正确")

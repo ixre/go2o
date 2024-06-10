@@ -141,15 +141,16 @@ func (s *memberService) GetProfile(_ context.Context, id *proto.MemberIdRequest)
 
 // SaveProfile 保存资料
 func (s *memberService) SaveProfile(_ context.Context, v *proto.SProfile) (*proto.Result, error) {
-	if v.MemberId > 0 {
-		v2 := s.parseMemberProfile2(v)
-		m := s.repo.GetMember(v.MemberId)
-		if m != nil {
-			err := m.Profile().SaveProfile(v2)
-			return s.error(err), nil
-		}
+	if v.MemberId <= 0 {
+		return s.error(member.ErrNoSuchMember), nil
 	}
-	return s.error(member.ErrNoSuchMember), nil
+	m := s.repo.GetMember(v.MemberId)
+	if m == nil {
+		return s.error(member.ErrNoSuchMember), nil
+	}
+	v2 := s.parseMemberProfile2(v)
+	err := m.Profile().SaveProfile(v2)
+	return s.error(err), nil
 }
 
 // Premium 升级为高级会员
@@ -618,10 +619,12 @@ func (s *memberService) Active(_ context.Context, id *proto.MemberIdRequest) (*p
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	if err := m.Active(); err != nil {
-		return s.error(err), nil
+	err := m.Active()
+	if err == nil {
+		_, err = m.Save()
 	}
-	return s.success(nil), nil
+	return s.error(err), nil
+
 }
 
 // Lock 锁定/解锁会员
@@ -1586,9 +1589,9 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 		MemberId:   src.MemberId,
 		Nickname:   src.Name,
 		Portrait:   src.Avatar,
-		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
+		Gender:     src.Gender,
 		Address:    src.Address,
 		Im:         src.Im,
 		Email:      src.Email,
@@ -1664,13 +1667,13 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 		MemberId:   src.MemberId,
 		Name:       src.Nickname,
 		Avatar:     src.Portrait,
-		Gender:     src.Gender,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
 		Address:    src.Address,
 		Im:         src.Im,
 		Email:      src.Email,
 		Province:   src.Province,
+		Gender:     src.Gender,
 		City:       src.City,
 		District:   src.District,
 		Remark:     src.Remark,

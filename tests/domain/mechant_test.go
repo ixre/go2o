@@ -29,7 +29,7 @@ func TestCreateMerchant(t *testing.T) {
 		Level:    0,
 		Logo:     "",
 		Province: 0,
-		City:     0,
+		City:     110000,
 		District: 0,
 	}
 	v.Password = domain.MerchantSha1Pwd(domain.Md5("123456"), v.Salt)

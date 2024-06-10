@@ -76,6 +76,19 @@ func (s *stationRepoImpl) GetStation(id int) station.IStationAggregateRoot {
 	return nil
 }
 
+// GetStationByCity implements station.IStationRepo.
+func (s *stationRepoImpl) GetStationByCity(cityCode int) station.IStationAggregateRoot {
+	e := station.SubStation{}
+	err := s._orm.GetBy(&e, "city_code = $1", strconv.Itoa(cityCode))
+	if err == nil {
+		return s.CreateStation(&e)
+	}
+	if err != sql.ErrNoRows {
+		log.Printf("[ Orm][ Error]: %s; Entity:SubStation\n", err.Error())
+	}
+	return nil
+}
+
 // GetAreaList implements station.IStationRepo.
 func (s *stationRepoImpl) GetAreaList(parentId int) []*station.Area {
 	list := make([]*station.Area, 0)

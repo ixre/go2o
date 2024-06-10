@@ -68,6 +68,9 @@ type (
 		// 获取等级设置
 		GetLevelSet() []*Level
 
+		// 获取初始等级
+		GetInitialLevel() *Level
+
 		// 获取最高已启用的等级
 		GetHighestLevel() *Level
 

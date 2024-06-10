@@ -1,5 +1,7 @@
 package station
 
+import "github.com/ixre/go2o/core/infrastructure/domain"
+
 // 站点聚合根
 type IStationAggregateRoot interface {
 	// 获取聚合根编号
@@ -23,6 +25,9 @@ type IStationRepo interface {
 	CreateStation(v *SubStation) IStationAggregateRoot
 	// GetStation 获取站点
 	GetStation(id int) IStationAggregateRoot
+
+	// GetStationByCity 获取城市站点
+	GetStationByCity(cityCode int) IStationAggregateRoot
 	// 获取所有的站点
 	GetStations() []*SubStation
 	// SaveStation 保存站点
@@ -58,3 +63,7 @@ type Area struct {
 	// Parent
 	Parent int `db:"parent" json:"parent" bson:"parent"`
 }
+
+var (
+	ErrNoSuchStation = domain.NewError("no_such_station", "没有找到站点:%s")
+)

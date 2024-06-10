@@ -26,10 +26,10 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	merchantImpl "github.com/ixre/go2o/core/domain/merchant"
-	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
@@ -51,6 +51,7 @@ type merchantRepo struct {
 	_shopRepo     shop.IShopRepo
 	_valRepo      valueobject.IValueRepo
 	_memberRepo   member.IMemberRepo
+	_stationRepo  station.IStationRepo
 	_walletRepo   wallet.IWalletRepo
 	_registryRepo registry.IRegistryRepo
 	mux           *sync.RWMutex
@@ -62,7 +63,9 @@ func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
 	employeeRepo staff.IStaffRepo,
-	memberRepo member.IMemberRepo, mssRepo mss.IMessageRepo,
+	memberRepo member.IMemberRepo,
+	stationRepo station.IStationRepo,
+	mssRepo mss.IMessageRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantRepo {
 	if !mchMerchantDaoImplMapped {
 		// 映射实体
@@ -80,6 +83,7 @@ func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 		_employeeRepo: employeeRepo,
 		_mssRepo:      mssRepo,
 		_shopRepo:     shopRepo,
+		_stationRepo:  stationRepo,
 		_valRepo:      valRepo,
 		_memberRepo:   memberRepo,
 		_walletRepo:   walletRepo,
@@ -96,40 +100,14 @@ func (m *merchantRepo) GetManager() merchant.IMerchantManager {
 	return m.manager
 }
 
-// 创建会员申请商户密钥
-func (m *merchantRepo) CreateSignUpToken(memberId int64) string {
-	mKey := fmt.Sprintf("go2o:repo:mch:signup:mm-%d", memberId)
-	if token, err := m.storage.GetString(mKey); err == nil {
-		return token
-	}
-	for {
-		token := domain.NewSecret(0)[8:14]
-		key := "go2o:repo:mch:signup:tk-" + token
-		if _, err := m.storage.GetInt(key); err != nil {
-			seconds := int64(time.Hour * 12)
-			m.storage.SetExpire(key, memberId, seconds)
-			m.storage.SetExpire(mKey, token, seconds)
-			return token
-		}
-	}
-	return ""
-}
-
-// 根据商户申请密钥获取会员编号
-func (m *merchantRepo) GetMemberFromSignUpToken(token string) int64 {
-	key := "go2o:repo:mch:signup:tk-" + token
-	id, err := m.storage.GetInt64(key)
-	if err == nil {
-		return id
-	}
-	return -1
-}
-
 func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
 	return merchantImpl.NewMerchant(v, m, m._wsRepo, m._itemRepo,
 		m._shopRepo, m._userRepo,
 		m._employeeRepo,
-		m._memberRepo, m._walletRepo, m._valRepo, m._registryRepo)
+		m._memberRepo,
+		m._stationRepo,
+		m._walletRepo, m._valRepo,
+		m._registryRepo)
 }
 
 func (m *merchantRepo) cleanCache(mchId int64) {
@@ -158,7 +136,7 @@ func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
 }
 
 // 根据登录用户名获取商户
-func (m *merchantRepo) GetMerchantByLoginUser(user string) merchant.IMerchant {
+func (m *merchantRepo) GetMerchantByUsername(user string) merchant.IMerchant {
 	e := merchant.Merchant{}
 	if err := m._orm.GetBy(&e, "username=$1", user); err == nil {
 		return m.CreateMerchant(&e)

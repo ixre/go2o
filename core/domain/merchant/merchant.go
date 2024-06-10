@@ -23,6 +23,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	si "github.com/ixre/go2o/core/domain/merchant/shop"
@@ -46,9 +47,10 @@ type merchantImpl struct {
 	_itemRepo        item.IItemRepo
 	_shopRepo        shop.IShopRepo
 	_userRepo        user.IUserRepo
-	_staffRepo    staff.IStaffRepo
+	_staffRepo       staff.IStaffRepo
 	_valRepo         valueobject.IValueRepo
 	_memberRepo      member.IMemberRepo
+	_stationRepo     station.IStationRepo
 	_userManager     user.IUserManager
 	_confManager     merchant.IConfManager
 	_saleManager     merchant.ISaleManager
@@ -70,7 +72,10 @@ type merchantImpl struct {
 // EmployeeManager implements merchant.IMerchant.
 func (m *merchantImpl) EmployeeManager() staff.IStaffManager {
 	if m._employeeManager == nil {
-		m._employeeManager = staffImpl.NewEmployeeManager(m, m._staffRepo)
+		m._employeeManager = staffImpl.NewStaffManager(m,
+			m._staffRepo,
+			m._memberRepo,
+			m._stationRepo)
 	}
 	return m._employeeManager
 }
@@ -80,6 +85,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
 	employeeRepo staff.IStaffRepo,
 	memberRepo member.IMemberRepo,
+	stationRepo station.IStationRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchant {
 	mch := &merchantImpl{
 		_value:        v,
@@ -88,9 +94,10 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 		_itemRepo:     itemRepo,
 		_shopRepo:     shopRepo,
 		_userRepo:     userRepo,
-		_staffRepo: employeeRepo,
+		_staffRepo:    employeeRepo,
 		_valRepo:      valRepo,
 		_memberRepo:   memberRepo,
+		_stationRepo:  stationRepo,
 		_walletRepo:   walletRepo,
 		_registryRepo: registryRepo,
 	}
