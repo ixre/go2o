@@ -1,6 +1,7 @@
 package provide
 
 import (
+	"github.com/ixre/go2o/core/initial/wrap"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -12,14 +13,14 @@ var (
 	_app gof.App
 
 	_db      db.Connector
-	_orm     orm.Orm
+	_orm     *wrap.ORM
 	_storage storage.Interface
 )
 
 func Configure(a gof.App) {
 	_app = a
 	_db = a.Db()
-	_orm = orm.NewOrm(_db.Driver(), _db.Raw())
+	_orm = wrap.NewORM(_db)
 	_storage = a.Storage()
 }
 
@@ -34,8 +35,13 @@ func GetDb() db.Connector {
 }
 
 // 返回orm实例
-func GetOrmInstance() orm.Orm {
+func GetOrm() *wrap.ORM {
 	return _orm
+}
+
+// 返回旧orm实例(不包含gorm)
+func GetOrmInstance() orm.Orm {
+	return _orm.Orm
 }
 
 func GetStorageInstance() storage.Interface {

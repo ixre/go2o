@@ -14,6 +14,7 @@ import (
 )
 
 var provideSets = wire.NewSet(
+	provide.GetOrm,
 	provide.GetOrmInstance,
 	provide.GetStorageInstance,
 	provide.GetApp,
