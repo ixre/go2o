@@ -23,9 +23,9 @@ const (
 	MemberService_CheckLogin_FullMethodName                 = "/MemberService/CheckLogin"
 	MemberService_VerifyTradePassword_FullMethodName        = "/MemberService/VerifyTradePassword"
 	MemberService_GetLevels_FullMethodName                  = "/MemberService/GetLevels"
-	MemberService_GetTrustInfo_FullMethodName               = "/MemberService/GetTrustInfo"
-	MemberService_SubmitTrustInfo_FullMethodName            = "/MemberService/SubmitTrustInfo"
-	MemberService_ReviewTrustedInfo_FullMethodName          = "/MemberService/ReviewTrustedInfo"
+	MemberService_GetCertificationInfo_FullMethodName       = "/MemberService/GetCertificationInfo"
+	MemberService_SubmitCertification_FullMethodName        = "/MemberService/SubmitCertification"
+	MemberService_ReviewCertificationInfo_FullMethodName    = "/MemberService/ReviewCertificationInfo"
 	MemberService_GetMemberLevel_FullMethodName             = "/MemberService/GetMemberLevel"
 	MemberService_SaveMemberLevel_FullMethodName            = "/MemberService/SaveMemberLevel"
 	MemberService_GetLevelBySign_FullMethodName             = "/MemberService/GetLevelBySign"
@@ -124,11 +124,11 @@ type MemberServiceClient interface {
 	// * 等级列表
 	GetLevels(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SMemberLevelListResponse, error)
 	// 获取实名信息,memberId
-	GetTrustInfo(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*STrustedInfo, error)
+	GetCertificationInfo(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*SCertificationInfo, error)
 	// * 提交实名信息
-	SubmitTrustInfo(ctx context.Context, in *SubmitTrustInfoRequest, opts ...grpc.CallOption) (*Result, error)
+	SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 审核实名认证,若重复审核将返回错误 *
-	ReviewTrustedInfo(ctx context.Context, in *ReviewTrustInfoRequest, opts ...grpc.CallOption) (*Result, error)
+	ReviewCertificationInfo(ctx context.Context, in *ReviewTrustInfoRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 获取会员等级信息,id
 	GetMemberLevel(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*SMemberLevel, error)
 	// * 保存等级
@@ -321,27 +321,27 @@ func (c *memberServiceClient) GetLevels(ctx context.Context, in *Empty, opts ...
 	return out, nil
 }
 
-func (c *memberServiceClient) GetTrustInfo(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*STrustedInfo, error) {
-	out := new(STrustedInfo)
-	err := c.cc.Invoke(ctx, MemberService_GetTrustInfo_FullMethodName, in, out, opts...)
+func (c *memberServiceClient) GetCertificationInfo(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*SCertificationInfo, error) {
+	out := new(SCertificationInfo)
+	err := c.cc.Invoke(ctx, MemberService_GetCertificationInfo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *memberServiceClient) SubmitTrustInfo(ctx context.Context, in *SubmitTrustInfoRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *memberServiceClient) SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, MemberService_SubmitTrustInfo_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, MemberService_SubmitCertification_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *memberServiceClient) ReviewTrustedInfo(ctx context.Context, in *ReviewTrustInfoRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *memberServiceClient) ReviewCertificationInfo(ctx context.Context, in *ReviewTrustInfoRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
-	err := c.cc.Invoke(ctx, MemberService_ReviewTrustedInfo_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, MemberService_ReviewCertificationInfo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1028,11 +1028,11 @@ type MemberServiceServer interface {
 	// * 等级列表
 	GetLevels(context.Context, *Empty) (*SMemberLevelListResponse, error)
 	// 获取实名信息,memberId
-	GetTrustInfo(context.Context, *MemberIdRequest) (*STrustedInfo, error)
+	GetCertificationInfo(context.Context, *MemberIdRequest) (*SCertificationInfo, error)
 	// * 提交实名信息
-	SubmitTrustInfo(context.Context, *SubmitTrustInfoRequest) (*Result, error)
+	SubmitCertification(context.Context, *SubmitCertificationRequest) (*Result, error)
 	// * 审核实名认证,若重复审核将返回错误 *
-	ReviewTrustedInfo(context.Context, *ReviewTrustInfoRequest) (*Result, error)
+	ReviewCertificationInfo(context.Context, *ReviewTrustInfoRequest) (*Result, error)
 	// * 获取会员等级信息,id
 	GetMemberLevel(context.Context, *Int32) (*SMemberLevel, error)
 	// * 保存等级
@@ -1198,14 +1198,14 @@ func (UnimplementedMemberServiceServer) VerifyTradePassword(context.Context, *Ve
 func (UnimplementedMemberServiceServer) GetLevels(context.Context, *Empty) (*SMemberLevelListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLevels not implemented")
 }
-func (UnimplementedMemberServiceServer) GetTrustInfo(context.Context, *MemberIdRequest) (*STrustedInfo, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTrustInfo not implemented")
+func (UnimplementedMemberServiceServer) GetCertificationInfo(context.Context, *MemberIdRequest) (*SCertificationInfo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCertificationInfo not implemented")
 }
-func (UnimplementedMemberServiceServer) SubmitTrustInfo(context.Context, *SubmitTrustInfoRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitTrustInfo not implemented")
+func (UnimplementedMemberServiceServer) SubmitCertification(context.Context, *SubmitCertificationRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitCertification not implemented")
 }
-func (UnimplementedMemberServiceServer) ReviewTrustedInfo(context.Context, *ReviewTrustInfoRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReviewTrustedInfo not implemented")
+func (UnimplementedMemberServiceServer) ReviewCertificationInfo(context.Context, *ReviewTrustInfoRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReviewCertificationInfo not implemented")
 }
 func (UnimplementedMemberServiceServer) GetMemberLevel(context.Context, *Int32) (*SMemberLevel, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMemberLevel not implemented")
@@ -1511,56 +1511,56 @@ func _MemberService_GetLevels_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_GetTrustInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MemberService_GetCertificationInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MemberIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).GetTrustInfo(ctx, in)
+		return srv.(MemberServiceServer).GetCertificationInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MemberService_GetTrustInfo_FullMethodName,
+		FullMethod: MemberService_GetCertificationInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).GetTrustInfo(ctx, req.(*MemberIdRequest))
+		return srv.(MemberServiceServer).GetCertificationInfo(ctx, req.(*MemberIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_SubmitTrustInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubmitTrustInfoRequest)
+func _MemberService_SubmitCertification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitCertificationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).SubmitTrustInfo(ctx, in)
+		return srv.(MemberServiceServer).SubmitCertification(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MemberService_SubmitTrustInfo_FullMethodName,
+		FullMethod: MemberService_SubmitCertification_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).SubmitTrustInfo(ctx, req.(*SubmitTrustInfoRequest))
+		return srv.(MemberServiceServer).SubmitCertification(ctx, req.(*SubmitCertificationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_ReviewTrustedInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MemberService_ReviewCertificationInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReviewTrustInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).ReviewTrustedInfo(ctx, in)
+		return srv.(MemberServiceServer).ReviewCertificationInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MemberService_ReviewTrustedInfo_FullMethodName,
+		FullMethod: MemberService_ReviewCertificationInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).ReviewTrustedInfo(ctx, req.(*ReviewTrustInfoRequest))
+		return srv.(MemberServiceServer).ReviewCertificationInfo(ctx, req.(*ReviewTrustInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2903,16 +2903,16 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemberService_GetLevels_Handler,
 		},
 		{
-			MethodName: "GetTrustInfo",
-			Handler:    _MemberService_GetTrustInfo_Handler,
+			MethodName: "GetCertificationInfo",
+			Handler:    _MemberService_GetCertificationInfo_Handler,
 		},
 		{
-			MethodName: "SubmitTrustInfo",
-			Handler:    _MemberService_SubmitTrustInfo_Handler,
+			MethodName: "SubmitCertification",
+			Handler:    _MemberService_SubmitCertification_Handler,
 		},
 		{
-			MethodName: "ReviewTrustedInfo",
-			Handler:    _MemberService_ReviewTrustedInfo_Handler,
+			MethodName: "ReviewCertificationInfo",
+			Handler:    _MemberService_ReviewCertificationInfo_Handler,
 		},
 		{
 			MethodName: "GetMemberLevel",

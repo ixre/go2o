@@ -37,13 +37,13 @@ service MemberService {
     rpc GetLevels (Empty) returns (SMemberLevelListResponse) {
     }
     /* 获取实名信息,memberId */
-    rpc GetTrustInfo (MemberIdRequest) returns (STrustedInfo) {
+    rpc GetCertificationInfo (MemberIdRequest) returns (SCertificationInfo) {
     }
     /** 提交实名信息 */
-    rpc SubmitTrustInfo (SubmitTrustInfoRequest) returns (Result) {
+    rpc SubmitCertification (SubmitCertificationRequest) returns (Result) {
     }
     /** 审核实名认证,若重复审核将返回错误 **/
-    rpc ReviewTrustedInfo (ReviewTrustInfoRequest) returns (Result) {
+    rpc ReviewCertificationInfo (ReviewTrustInfoRequest) returns (Result) {
     }
     /** 获取会员等级信息,id */
     rpc GetMemberLevel (Int32) returns (SMemberLevel) {

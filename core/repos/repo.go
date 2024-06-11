@@ -99,7 +99,7 @@ func OrmMapping(orm orm.Orm) {
 	orm.Mapping(member.Account{}, "mm_account")
 	orm.Mapping(member.ConsigneeAddress{}, "mm_deliver_addr")
 	orm.Mapping(member.InviteRelation{}, "mm_relation")
-	orm.Mapping(member.TrustedInfo{}, "mm_trusted_info")
+	orm.Mapping(member.CerticationInfo{}, "mm_cert_info")
 	orm.Mapping(member.Favorite{}, "mm_favorite")
 	orm.Mapping(member.BankCard{}, "mm_bank_card")
 	orm.Mapping(member.ReceiptsCode{}, "mm_receipts_code")

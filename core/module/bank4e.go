@@ -157,7 +157,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	}
 
 	// 保存实名信息
-	if err := m.Profile().SaveTrustedInfo(&member.TrustedInfo{
+	if err := m.Profile().SaveTrustedInfo(&member.CerticationInfo{
 		RealName:   realName,
 		CardId:     idCard,
 		TrustImage: format.GetFileFullUrl(""),
@@ -166,7 +166,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	}
 
 	// 审核通过实名信息
-	if err := m.Profile().ReviewTrustedInfo(true, ""); err != nil {
+	if err := m.Profile().ReviewCertificationInfo(true, ""); err != nil {
 		return err
 	}
 	// 保存银行信息
