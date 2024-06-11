@@ -13,7 +13,7 @@ var (
 	_app gof.App
 
 	_db      db.Connector
-	_orm     *wrap.ORM
+	_orm     *wrap.OrmWrapper
 	_storage storage.Interface
 )
 
@@ -35,8 +35,12 @@ func GetDb() db.Connector {
 }
 
 // 返回orm实例
-func GetOrm() *wrap.ORM {
+func GetOrm() *wrap.OrmWrapper {
 	return _orm
+}
+
+func GetGOrm() wrap.ORM {
+	return _orm.DB
 }
 
 // 返回旧orm实例(不包含gorm)

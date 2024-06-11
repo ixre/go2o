@@ -9,15 +9,18 @@ import (
 	"gorm.io/gorm"
 )
 
-// ORM 数据库操作接口
-type ORM struct {
+
+type ORM = *gorm.DB
+
+// OrmWrapper 数据库操作接口
+type OrmWrapper struct {
 	// 引用orm包
 	orm.Orm
 	// 引用gorm包
 	DB *gorm.DB
 }
 
-func NewORM(db db.Connector) *ORM {
+func NewORM(db db.Connector) *OrmWrapper {
 	o := orm.NewOrm(db.Driver(), db.Raw())
 	n, err := gorm.Open(postgres.New(postgres.Config{
 		Conn: db.Raw(),
@@ -25,7 +28,7 @@ func NewORM(db db.Connector) *ORM {
 	if err != nil {
 		log.Fatalf("gorm.Open: %v", err)
 	}
-	return &ORM{
+	return &OrmWrapper{
 		Orm: o,
 		DB:  n,
 	}
