@@ -1015,7 +1015,7 @@ func (s *memberService) GetCertificationInfo(_ context.Context, id *proto.Member
 	t := &member.CerticationInfo{}
 	m := s.repo.GetMember(id.MemberId)
 	if m != nil {
-		t = m.Profile().GetTrustedInfo()
+		t = m.Profile().GetCertificationInfo()
 	}
 	return &proto.SCertificationInfo{
 		RealName:         t.RealName,
@@ -1041,7 +1041,7 @@ func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCe
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = m.Profile().SaveTrustedInfo(&member.CerticationInfo{
+		err = m.Profile().SaveCertificationInfo(&member.CerticationInfo{
 			MemberId:         r.Info.MemberId,
 			RealName:         r.Info.RealName,
 			CountryCode:      r.Info.CountryCode,

@@ -60,7 +60,7 @@ func (b *Bank4E) GetBasicInfo(memberId int64) map[string]string {
 		return data
 	}
 	pr := m.Profile().GetProfile()
-	info := m.Profile().GetTrustedInfo()
+	info := m.Profile().GetCertificationInfo()
 	bankCards := m.Profile().GetBankCards()
 	data["RealName"] = info.RealName
 	data["IDCard"] = info.CardId
@@ -125,7 +125,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	if mv.Phone != "" && mv.Phone != phone {
 		return errors.New("手机号码非法`")
 	}
-	info := m.Profile().GetTrustedInfo()
+	info := m.Profile().GetCertificationInfo()
 	if info.ReviewStatus == int(enum.ReviewPass) {
 		return errors.New("您已通过实名认证")
 	}
@@ -157,7 +157,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	}
 
 	// 保存实名信息
-	if err := m.Profile().SaveTrustedInfo(&member.CerticationInfo{
+	if err := m.Profile().SaveCertificationInfo(&member.CerticationInfo{
 		RealName:   realName,
 		CardId:     idCard,
 		TrustImage: format.GetFileFullUrl(""),

@@ -460,3 +460,44 @@ ALTER TABLE `mm_trusted_info`
 ALTER TABLE "public".mm_cert_info 
   ADD COLUMN "version" int4 DEFAULT 0 NOT NULL;
 COMMENT ON COLUMN "public".mm_cert_info.version IS '版本';
+
+DROP TABLE IF EXISTS "public".mm_cert_info;
+CREATE TABLE "public".mm_cert_info (
+  id                 serial NOT NULL, 
+  member_id          int8 NOT NULL, 
+  country_code       varchar(10) NOT NULL, 
+  real_name          varchar(10) NOT NULL, 
+  card_type          int4 NOT NULL, 
+  card_id            varchar(20) NOT NULL, 
+  cert_image         varchar(120) DEFAULT ''::character varying NOT NULL, 
+  cert_reverse_image varchar(120) DEFAULT ''::character varying NOT NULL, 
+  trust_image        varchar(120) NOT NULL, 
+  extra_cert_file    varchar(120) DEFAULT ''::character varying NOT NULL, 
+  extra_cert_ext1    varchar(120) DEFAULT ''::character varying NOT NULL, 
+  extra_cert_ext2    varchar(120) DEFAULT ''::character varying NOT NULL, 
+  version            int4 DEFAULT 0 NOT NULL, 
+  manual_review      int4 NOT NULL, 
+  review_status      int2 DEFAULT 0 NOT NULL, 
+  review_time        int4 NOT NULL, 
+  remark             varchar(120) NOT NULL, 
+  update_time        int4 NOT NULL, 
+  CONSTRAINT mm_cert_info_pkey 
+    PRIMARY KEY (id));
+COMMENT ON TABLE "public".mm_cert_info IS '会员认证信息';
+COMMENT ON COLUMN "public".mm_cert_info.id IS '编号';
+COMMENT ON COLUMN "public".mm_cert_info.country_code IS '国家代码';
+COMMENT ON COLUMN "public".mm_cert_info.real_name IS '真实姓名';
+COMMENT ON COLUMN "public".mm_cert_info.card_type IS '证件类型';
+COMMENT ON COLUMN "public".mm_cert_info.card_id IS '证件编号';
+COMMENT ON COLUMN "public".mm_cert_info.cert_image IS '证件图片';
+COMMENT ON COLUMN "public".mm_cert_info.cert_reverse_image IS '证件反面图片';
+COMMENT ON COLUMN "public".mm_cert_info.trust_image IS '认证图片,人与身份证的图像等';
+COMMENT ON COLUMN "public".mm_cert_info.extra_cert_file IS '其他认证资料';
+COMMENT ON COLUMN "public".mm_cert_info.extra_cert_ext1 IS '扩展认证资料1';
+COMMENT ON COLUMN "public".mm_cert_info.extra_cert_ext2 IS '扩展认证资料2';
+COMMENT ON COLUMN "public".mm_cert_info.version IS '版本';
+COMMENT ON COLUMN "public".mm_cert_info.manual_review IS '人工审核';
+COMMENT ON COLUMN "public".mm_cert_info.review_status IS '审核状态';
+COMMENT ON COLUMN "public".mm_cert_info.review_time IS '审核时间';
+COMMENT ON COLUMN "public".mm_cert_info.remark IS '备注';
+COMMENT ON COLUMN "public".mm_cert_info.update_time IS '更新时间';
