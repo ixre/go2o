@@ -121,9 +121,9 @@ type IMemberRepo interface {
 	// 获取会员关联
 	GetRelation(memberId int64) *InviteRelation
 	// 保存实名信息
-	SaveTrustedInfo(id int, v *TrustedInfo) (int, error)
+	SaveTrustedInfo(id int, v *CerticationInfo) (int, error)
 	// 获取实名信息
-	GetTrustedInfo(memberId int) *TrustedInfo
+	GetTrustedInfo(memberId int) *CerticationInfo
 	// 获取经验值对应的等级
 	GetLevelValueByExp(mchId int64, exp int64) int
 

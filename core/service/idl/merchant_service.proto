@@ -121,6 +121,10 @@ service MerchantService {
     // 根据会员编号获取商户员工
     rpc GetStaffByMember(StaffRequest) returns (SStaff){
     }
+    // 保存员工
+    rpc SaveStaff(SaveStaffRequest)returns(Result){
+
+    }
 }
 
 // 员工请求
@@ -147,7 +151,7 @@ message SStaff{
     int32 gender = 6;
     // 昵称
     string nickname = 7;
-    // 工作状态: 1: 离线 2:在线空闲 3: 工作中
+    // 工作状态: 1: 离线 2:在线空闲 3: 工作中 4:离职
     int32 workStatus = 8;
     // 评分
     int32 grade = 9;
@@ -162,6 +166,23 @@ message SStaff{
     // 创建时间
     int64 createTime = 14;
 }
+
+// 保存员工请求
+message SaveStaffRequest{
+    // 编号
+    int64 id = 1;
+    // 坐席标志
+    int32 flag = 5;
+    // 性别: 0: 未知 1:男 2:女
+    int32 gender = 6;
+    // 昵称
+    string nickname = 7;
+    // 工作状态: 1: 离线 2:在线空闲 3: 工作中 4:离职
+    int32 workStatus = 8;
+    // 评分
+    int32 grade = 9;
+}
+
 
 message MerchantOrderRequest {
     // 商户编号

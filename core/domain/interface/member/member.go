@@ -172,11 +172,11 @@ type (
 		// SaveReceiptsCode 保存收款码
 		SaveReceiptsCode(c *ReceiptsCode) error
 		// GetTrustedInfo 实名认证信息
-		GetTrustedInfo() *TrustedInfo
+		GetTrustedInfo() *CerticationInfo
 		// SaveTrustedInfo 保存实名认证信息
-		SaveTrustedInfo(v *TrustedInfo) error
-		// ReviewTrustedInfo 审核实名认证,若重复审核将返回错误
-		ReviewTrustedInfo(pass bool, remark string) error
+		SaveTrustedInfo(v *CerticationInfo) error
+		// ReviewCertificationInfo 审核实名认证,若重复审核将返回错误
+		ReviewCertificationInfo(pass bool, remark string) error
 		// CreateDeliver 创建配送地址
 		CreateDeliver(*ConsigneeAddress) IDeliverAddress
 		// GetDeliverAddress 获取配送地址
@@ -353,7 +353,7 @@ type (
 	}
 
 	// 实名认证信息
-	TrustedInfo struct {
+	CerticationInfo struct {
 		// 会员编号
 		MemberId int64 `db:"member_id" pk:"yes"`
 		// 真实姓名
@@ -365,11 +365,17 @@ type (
 		// 证件号码
 		CardId string `db:"card_id"`
 		// 证件图片
-		CardImage string `db:"card_image"`
+		CertImage string `db:"cert_image" json:"certImage" bson:"certImage"`
 		// 证件反面图片
-		CardReverseImage string `db:"card_reverse_image"`
+		CertReverseImage string `db:"cert_reverse_image" json:"certReverseImage" bson:"certReverseImage"`
 		// 认证图片,人与身份证的图像等
 		TrustImage string `db:"trust_image"`
+		// 其他认证资料
+		ExtraCertFile string `db:"extra_cert_file" json:"extraCertFile" bson:"extraCertFile"`
+		// 扩展认证资料1
+		ExtraCertExt1 string `db:"extra_cert_ext1" json:"extraCertExt1" bson:"extraCertExt1"`
+		// 扩展认证资料2
+		ExtraCertExt2 string `db:"extra_cert_ext2" json:"extraCertExt2" bson:"extraCertExt2"`
 		// 是否人工审核认证
 		ManualReview int `db:"manual_review"`
 		// 是否审核通过
@@ -378,6 +384,8 @@ type (
 		ReviewTime int64 `db:"review_time"`
 		// 审核备注
 		Remark string `db:"remark"`
+		// 版本
+		Version int `db:"version" json:"version" bson:"version"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}

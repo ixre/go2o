@@ -788,8 +788,8 @@ func (m *MemberRepoImpl) DeleteLockInfos(memberId int64) error {
 }
 
 // GetTrustedInfo implements member.IMemberRepo
-func (m *MemberRepoImpl) GetTrustedInfo(memberId int) *member.TrustedInfo {
-	e := member.TrustedInfo{}
+func (m *MemberRepoImpl) GetTrustedInfo(memberId int) *member.CerticationInfo {
+	e := member.CerticationInfo{}
 	err := m._orm.Get(memberId, &e)
 	if err == nil {
 		return &e
@@ -801,7 +801,7 @@ func (m *MemberRepoImpl) GetTrustedInfo(memberId int) *member.TrustedInfo {
 }
 
 // SaveTrustedInfo implements member.IMemberRepo
-func (m *MemberRepoImpl) SaveTrustedInfo(id int, v *member.TrustedInfo) (int, error) {
+func (m *MemberRepoImpl) SaveTrustedInfo(id int, v *member.CerticationInfo) (int, error) {
 	id, err := orm.Save(m._orm, v, id)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:TrustedInfo")

@@ -42,7 +42,7 @@ type profileManagerImpl struct {
 	valueRepo     valueobject.IValueRepo
 	registryRepo  registry.IRegistryRepo
 	bankCards     []member.BankCard
-	trustedInfo   *member.TrustedInfo
+	trustedInfo   *member.CerticationInfo
 	profile       *member.Profile
 	receiptsCodes []member.ReceiptsCode
 }
@@ -572,9 +572,9 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 }
 
 // 拷贝认证信息
-func (p *profileManagerImpl) copyTrustedInfo(src member.TrustedInfo, dst *member.TrustedInfo) error {
+func (p *profileManagerImpl) copyTrustedInfo(src member.CerticationInfo, dst *member.CerticationInfo) error {
 	if dst == nil {
-		dst = &member.TrustedInfo{
+		dst = &member.CerticationInfo{
 			MemberId:     p.memberId,
 			ReviewStatus: int(enum.ReviewAwaiting),
 		}
@@ -583,14 +583,17 @@ func (p *profileManagerImpl) copyTrustedInfo(src member.TrustedInfo, dst *member
 	dst.CountryCode = src.CountryCode
 	dst.CardId = src.CardId
 	dst.CardType = src.CardType
-	dst.CardImage = src.CardImage
-	dst.CardReverseImage = src.CardReverseImage
+	dst.CertImage = src.CertImage
+	dst.CertReverseImage = src.CertReverseImage
+	dst.ExtraCertFile = src.ExtraCertFile
+	dst.ExtraCertExt1 = src.ExtraCertExt1
+	dst.ExtraCertExt2 = src.ExtraCertExt2
 	dst.TrustImage = src.TrustImage
 	return nil
 }
 
 // 实名认证信息
-func (p *profileManagerImpl) GetTrustedInfo() *member.TrustedInfo {
+func (p *profileManagerImpl) GetTrustedInfo() *member.CerticationInfo {
 	if p.trustedInfo == nil {
 		p.trustedInfo = p.repo.GetTrustedInfo(int(p.memberId))
 	}
@@ -600,20 +603,23 @@ func (p *profileManagerImpl) GetTrustedInfo() *member.TrustedInfo {
 func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 	mId := 0
 	_db := provide.GetDb()
-	_db.ExecScalar(`SELECT COUNT(1) FROM mm_trusted_info WHERE 
+	_db.ExecScalar(`SELECT COUNT(1) FROM mm_cert_info WHERE 
 			review_status= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1`,
 		&mId, enum.ReviewPass, cardId, memberId)
 	return mId == 0
 }
 
 // 保存实名认证信息
-func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
+func (p *profileManagerImpl) SaveTrustedInfo(v *member.CerticationInfo) error {
 	// 验证数据是否完整
-	v.TrustImage = strings.TrimSpace(v.TrustImage)
-	v.CardImage = strings.TrimSpace(v.CardImage)
-	v.CardReverseImage = strings.TrimSpace(v.CardReverseImage)
 	v.CardId = strings.TrimSpace(v.CardId)
 	v.RealName = strings.TrimSpace(v.RealName)
+	v.TrustImage = strings.TrimSpace(v.TrustImage)
+	v.CertImage = strings.TrimSpace(v.CertImage)
+	v.CertReverseImage = strings.TrimSpace(v.CertReverseImage)
+	v.ExtraCertFile = strings.TrimSpace(v.ExtraCertFile)
+	v.ExtraCertExt1 = strings.TrimSpace(v.ExtraCertExt1)
+	v.ExtraCertExt2 = strings.TrimSpace(v.ExtraCertExt2)
 	if len(v.RealName) == 0 || len(v.CardId) == 0 {
 		return member.ErrMissingTrustedInfo
 	}
@@ -642,8 +648,8 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	}
 	// 检测证件照片
 	requireCardImg := p.registryRepo.Get(registry.MemberTrustRequireCardImage).BoolValue()
-	if v.CardImage != "" {
-		if len(v.CardImage) < 10 {
+	if v.CertImage != "" {
+		if len(v.CertImage) < 10 {
 			return member.ErrTrustMissingCardImage
 		}
 	} else if requireCardImg {
@@ -667,7 +673,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 }
 
 // 审核实名认证,若重复审核将返回错误
-func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
+func (p *profileManagerImpl) ReviewCertificationInfo(pass bool, remark string) error {
 	p.GetTrustedInfo()
 	if pass {
 		p.trustedInfo.ReviewStatus = int(enum.ReviewPass)

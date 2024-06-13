@@ -1011,19 +1011,22 @@ func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddReque
 }
 
 // 实名认证信息
-func (s *memberService) GetTrustInfo(_ context.Context, id *proto.MemberIdRequest) (*proto.STrustedInfo, error) {
-	t := &member.TrustedInfo{}
+func (s *memberService) GetCertificationInfo(_ context.Context, id *proto.MemberIdRequest) (*proto.SCertificationInfo, error) {
+	t := &member.CerticationInfo{}
 	m := s.repo.GetMember(id.MemberId)
 	if m != nil {
 		t = m.Profile().GetTrustedInfo()
 	}
-	return &proto.STrustedInfo{
+	return &proto.SCertificationInfo{
 		RealName:         t.RealName,
 		CountryCode:      t.CountryCode,
 		CardType:         int32(t.CardType),
 		CardId:           t.CardId,
-		CardImage:        t.CardImage,
-		CardReverseImage: t.CardReverseImage,
+		CertImage:        t.CertImage,
+		CertReverseImage: t.CertReverseImage,
+		ExtraCertFile:    t.ExtraCertFile,
+		ExtraCertExt1:    t.ExtraCertExt1,
+		ExtraCertExt2:    t.ExtraCertExt2,
 		TrustImage:       t.TrustImage,
 		ManualReview:     int32(t.ManualReview),
 		ReviewStatus:     int32(t.ReviewStatus),
@@ -1033,20 +1036,24 @@ func (s *memberService) GetTrustInfo(_ context.Context, id *proto.MemberIdReques
 }
 
 // 保存实名认证信息
-func (s *memberService) SubmitTrustInfo(_ context.Context, r *proto.SubmitTrustInfoRequest) (result *proto.Result, err error) {
+func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCertificationRequest) (result *proto.Result, err error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = m.Profile().SaveTrustedInfo(&member.TrustedInfo{
-			MemberId:         r.MemberId,
+		err = m.Profile().SaveTrustedInfo(&member.CerticationInfo{
+			MemberId:         r.Info.MemberId,
 			RealName:         r.Info.RealName,
 			CountryCode:      r.Info.CountryCode,
 			CardType:         int(r.Info.CardType),
 			CardId:           r.Info.CardId,
-			CardImage:        r.Info.CardImage,
-			CardReverseImage: r.Info.CardReverseImage,
+			CertImage:        r.Info.CertImage,
+			CertReverseImage: r.Info.CertReverseImage,
+			ExtraCertFile:    r.Info.ExtraCertFile,
+			ExtraCertExt1:    r.Info.ExtraCertExt1,
+			ExtraCertExt2:    r.Info.ExtraCertExt2,
 			TrustImage:       r.Info.TrustImage,
+			ManualReview:     int(r.Info.ManualReview),
 		})
 	}
 	if err != nil {
@@ -1056,9 +1063,9 @@ func (s *memberService) SubmitTrustInfo(_ context.Context, r *proto.SubmitTrustI
 }
 
 // 审核实名认证,若重复审核将返回错误
-func (s *memberService) ReviewTrustedInfo(_ context.Context, r *proto.ReviewTrustInfoRequest) (*proto.Result, error) {
+func (s *memberService) ReviewCertificationInfo(_ context.Context, r *proto.ReviewTrustInfoRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
-	err := m.Profile().ReviewTrustedInfo(r.ReviewPass, r.Remark)
+	err := m.Profile().ReviewCertificationInfo(r.ReviewPass, r.Remark)
 	if err != nil {
 		return s.error(err), nil
 	}

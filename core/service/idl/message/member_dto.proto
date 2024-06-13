@@ -101,9 +101,9 @@ message SMemberLevelListResponse {
   repeated SMemberLevel value = 1;
 }
 
-message SubmitTrustInfoRequest {
+message SubmitCertificationRequest {
   sint64 memberId = 1;
-  STrustedInfo info = 2;
+  SCertificationInfo info = 2;
 }
 
 message ReviewTrustInfoRequest {
@@ -430,29 +430,37 @@ message SMemberRelation {
 }
 
 /** 实名认证信息 */
-message STrustedInfo {
+message SCertificationInfo {
+  // 会员编号
+  sint64 memberId = 1;
   /** 真实姓名 */
-  string realName = 1;
+  string realName = 2;
   /** 国家代码,如:CN */
-  string countryCode = 2;
+  string countryCode = 3;
   /** 证件类型 */
-  sint32 cardType = 3;
+  sint32 cardType = 4;
   /** 证件号码 */
-  string cardId = 4;
+  string cardId = 5;
   /** 证件正面照 */
-  string cardImage = 5;
+  string certImage = 6;
   /** 证件反面照 */
-  string cardReverseImage = 6;
+  string certReverseImage = 7;
   /** 认证人脸照 */
-  string trustImage = 7;
+  string trustImage = 8;
+  // 其他认证资料
+  string extraCertFile = 9;
   /** 是否人工审核 */
-  sint32 manualReview = 8;
+  sint32 manualReview = 10;
   /** 审核状态 */
-  sint32 reviewStatus = 9;
+  sint32 reviewStatus = 11;
   /** 审核时间 */
-  sint64 reviewTime = 10;
+  sint64 reviewTime = 12;
   /** 备注 */
-  string remark = 11;
+  string remark = 13;
+  // 扩展认证资料1
+  string extraCertExt1 = 14;
+  // 扩展认证资料2
+  string extraCertExt2 = 15;
 }
 
 // 用户收货地址
