@@ -31,7 +31,7 @@ TRUNCATE TABLE "mm_flow_log";
 TRUNCATE TABLE "mm_account";
 TRUNCATE TABLE "mm_deliver_addr";
 TRUNCATE TABLE "mm_relation";
-TRUNCATE TABLE "mm_trusted_info";
+TRUNCATE TABLE "mm_cert_info";
 TRUNCATE TABLE "mm_favorite";
 TRUNCATE TABLE "mm_bank";
 TRUNCATE TABLE "mm_receipts_code";

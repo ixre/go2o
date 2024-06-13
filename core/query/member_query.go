@@ -359,7 +359,7 @@ func (m *MemberQuery) GetInviteQuantity(memberId int64, where string) int32 {
 	var total int32
 	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_relation
         INNER JOIN mm_member ON mm_member.id = mm_relation.member_id
-        LEFT JOIN mm_trusted_info mt ON mt.member_id=mm_member.id
+        LEFT JOIN mm_cert_info mt ON mt.member_id=mm_member.id
         WHERE inviter_id = $1 `+where, &total, memberId)
 	return total
 }
@@ -369,7 +369,7 @@ func (m *MemberQuery) GetInviteArray(memberId int64, where string) []int64 {
 	arr := []int64{}
 	m.Connector.Query(`SELECT mm_relation.member_id FROM mm_relation
         INNER JOIN mm_member ON mm_member.id = mm_relation.member_id
-        LEFT JOIN mm_trusted_info mt ON mt.member_id=mm_member.id
+        LEFT JOIN mm_cert_info mt ON mt.member_id=mm_member.id
         WHERE inviter_id = $1 `+where, func(rows *sql.Rows) {
 		var i int64
 		for rows.Next() {

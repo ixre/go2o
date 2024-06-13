@@ -31,6 +31,8 @@ require (
 	go.mongodb.org/mongo-driver v1.11.4
 	golang.org/x/net v0.25.0
 	golang.org/x/text v0.16.0
+	gorm.io/driver/postgres v1.5.7
+	gorm.io/gorm v1.25.10
 )
 
 require (
@@ -54,8 +56,6 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240521202816-d264139d666e // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240521202816-d264139d666e // indirect
-	gorm.io/driver/postgres v1.5.7 // indirect
-	gorm.io/gorm v1.25.10 // indirect
 )
 
 require (

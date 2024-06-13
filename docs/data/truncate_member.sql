@@ -3,7 +3,7 @@ delete  FROM mm_member where id>100
 DELETE FROM mm_profile WHERE member_id NOT IN (select id FROM mm_member);
 DELETE FROM mm_account WHERE member_id NOT IN (select id FROM mm_member);
 DELETE FROM mm_relation WHERE member_id NOT IN (select id FROM mm_member);
-DELETE FROM mm_trusted_info WHERE member_id NOT IN (select id FROM mm_member);
+DELETE FROM mm_cert_info WHERE member_id NOT IN (select id FROM mm_member);
 DELETE FROM mm_receipts_code WHERE member_id NOT IN (select id FROM mm_member);
 DELETE FROM mm_lock_info WHERE member_id NOT IN (select id FROM mm_member);
 DELETE FROM mm_lock_history WHERE member_id NOT IN (select id FROM mm_member);

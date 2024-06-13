@@ -435,3 +435,28 @@ COMMENT ON COLUMN mch_staff_revenue.review_status IS '1: 待审核  2: 已通过
 COMMENT ON COLUMN mch_staff_revenue.grant_time IS '佣金发放时间';
 COMMENT ON COLUMN mch_staff_revenue.is_granted IS '是否已发放';
 COMMENT ON COLUMN mch_staff_revenue.create_time IS ' 创建时间';
+
+
+ALTER TABLE "public".mm_trusted_info 
+  ADD COLUMN cert_image varchar(120) DEFAULT '' NOT NULL;
+ALTER TABLE "public".mm_trusted_info 
+  ADD COLUMN cert_reverse_image varchar(120) DEFAULT '' NOT NULL;
+ALTER TABLE "public".mm_trusted_info 
+  ADD COLUMN extra_cert_file varchar(120) DEFAULT '' NOT NULL;
+ALTER TABLE "public".mm_trusted_info 
+  ADD COLUMN extra_cert_ext1 varchar(120) DEFAULT '' NOT NULL;
+ALTER TABLE "public".mm_trusted_info 
+  ADD COLUMN extra_cert_ext2 varchar(120) DEFAULT '' NOT NULL;
+COMMENT ON COLUMN "public".mm_trusted_info.cert_image IS '证件图片';
+COMMENT ON COLUMN "public".mm_trusted_info.cert_reverse_image IS '证件反面图片';
+COMMENT ON COLUMN "public".mm_trusted_info.extra_cert_file IS '其他认证资料';
+COMMENT ON COLUMN "public".mm_trusted_info.extra_cert_ext1 IS '扩展认证资料1';
+COMMENT ON COLUMN "public".mm_trusted_info.extra_cert_ext2 IS '扩展认证资料2';
+
+
+ALTER TABLE `mm_trusted_info`
+    RENAME TO `mm_cert_info`;
+
+ALTER TABLE "public".mm_cert_info 
+  ADD COLUMN "version" int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".mm_cert_info.version IS '版本';
