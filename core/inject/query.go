@@ -104,10 +104,10 @@ var InjectProvideSets = wire.NewSet(
 	handler.NewEventHandler,
 )
 
-func GetStationQueryService() *query.StationQuery {
-	panic(wire.Build(queryProvideSets))
-}
+// func GetStationQueryService() *query.StationQuery {
+// 	panic(wire.Build(queryProvideSets))
+// }
 
-func GetMerchantQueryService() *query.MerchantQuery {
-	panic(wire.Build(queryProvideSets))
-}
+// func GetMerchantQueryService() *query.MerchantQuery {
+// 	panic(wire.Build(queryProvideSets))
+// }
