@@ -41,6 +41,7 @@ import (
 	"github.com/ixre/go2o/core/repos"
 	impl2 "github.com/ixre/go2o/core/service/impl"
 	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/go2o/core/sp"
 )
 
 // Injectors from query.go:
@@ -55,6 +56,14 @@ func GetMerchantQueryService() *query.MerchantQuery {
 	app := provide.GetApp()
 	merchantQuery := query.NewMerchantQuery(app)
 	return merchantQuery
+}
+
+func GetSPConfig() *sp.ServiceProviderConfiguration {
+	orm := provide.GetOrmInstance()
+	storageInterface := provide.GetStorageInstance()
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	serviceProviderConfiguration := sp.NewSPConfig(iRegistryRepo)
+	return serviceProviderConfiguration
 }
 
 // Injectors from repo.go:
@@ -867,5 +876,5 @@ var daoProvideSets = wire.NewSet(
 )
 
 var InjectProvideSets = wire.NewSet(
-	daoProvideSets, impl2.NewStatusService, impl2.NewRegistryService, impl2.NewMerchantService, impl2.NewPromotionService, impl2.NewFoundationService, impl2.NewMemberService, impl2.NewShopService, impl2.NewProductService, impl2.NewItemService, impl2.NewShoppingService, impl2.NewCartService, impl2.NewAfterSalesService, impl2.NewAdvertisementService, impl2.NewPaymentService, impl2.NewQuickPayService, impl2.NewMessageService, impl2.NewExpressService, impl2.NewShipmentService, impl2.NewContentService, impl2.NewWalletService, impl2.NewCodeService, impl2.NewQueryService, impl2.NewRbacService, impl2.NewAppService, impl2.NewPortalService, impl2.NewPersonFinanceService, impl2.NewExecutionService, impl2.NewCheckService, event.NewEventSource, handler.NewEventHandler,
+	daoProvideSets, impl2.NewStatusService, impl2.NewRegistryService, impl2.NewMerchantService, impl2.NewPromotionService, impl2.NewFoundationService, impl2.NewMemberService, impl2.NewShopService, impl2.NewProductService, impl2.NewItemService, impl2.NewShoppingService, impl2.NewCartService, impl2.NewAfterSalesService, impl2.NewAdvertisementService, impl2.NewPaymentService, impl2.NewQuickPayService, impl2.NewMessageService, impl2.NewExpressService, impl2.NewShipmentService, impl2.NewContentService, impl2.NewWalletService, impl2.NewCodeService, impl2.NewQueryService, impl2.NewRbacService, impl2.NewAppService, impl2.NewPortalService, impl2.NewPersonFinanceService, impl2.NewExecutionService, impl2.NewCheckService, event.NewEventSource, handler.NewEventHandler, sp.NewSPConfig,
 )

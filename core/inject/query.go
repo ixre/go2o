@@ -11,6 +11,7 @@ import (
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/repos"
 	"github.com/ixre/go2o/core/service/impl"
+	"github.com/ixre/go2o/core/sp"
 )
 
 var provideSets = wire.NewSet(
@@ -102,6 +103,8 @@ var InjectProvideSets = wire.NewSet(
 	// 事件
 	event.NewEventSource,
 	handler.NewEventHandler,
+	// 其他
+	sp.NewSPConfig,
 )
 
 func GetStationQueryService() *query.StationQuery {
@@ -110,4 +113,8 @@ func GetStationQueryService() *query.StationQuery {
 
 func GetMerchantQueryService() *query.MerchantQuery {
 	panic(wire.Build(queryProvideSets))
+}
+
+func GetSPConfig() *sp.ServiceProviderConfiguration {
+	panic(wire.Build(InjectProvideSets))
 }
