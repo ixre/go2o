@@ -171,10 +171,10 @@ type (
 		ReceiptsCodes() []ReceiptsCode
 		// SaveReceiptsCode 保存收款码
 		SaveReceiptsCode(c *ReceiptsCode) error
-		// GetTrustedInfo 实名认证信息
-		GetTrustedInfo() *CerticationInfo
-		// SaveTrustedInfo 保存实名认证信息
-		SaveTrustedInfo(v *CerticationInfo) error
+		// GetCertificationInfo 实名认证信息
+		GetCertificationInfo() *CerticationInfo
+		// SaveCertificationInfo 保存实名认证信息
+		SaveCertificationInfo(v *CerticationInfo) error
 		// ReviewCertificationInfo 审核实名认证,若重复审核将返回错误
 		ReviewCertificationInfo(pass bool, remark string) error
 		// CreateDeliver 创建配送地址
@@ -354,6 +354,8 @@ type (
 
 	// 实名认证信息
 	CerticationInfo struct {
+		// 编号
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
 		MemberId int64 `db:"member_id" pk:"yes"`
 		// 真实姓名

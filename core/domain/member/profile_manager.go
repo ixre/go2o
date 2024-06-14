@@ -451,7 +451,7 @@ func (p *profileManagerImpl) AddBankCard(v *member.BankCard) error {
 	if p.bankCardIsExists(v.BankAccount) {
 		return member.ErrBankCardIsExists
 	}
-	trustInfo := p.GetTrustedInfo()
+	trustInfo := p.GetCertificationInfo()
 	if trustInfo.ReviewStatus == 0 {
 		return member.ErrNotTrusted
 	}
@@ -572,7 +572,7 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 }
 
 // 拷贝认证信息
-func (p *profileManagerImpl) copyTrustedInfo(src member.CerticationInfo, dst *member.CerticationInfo) error {
+func (p *profileManagerImpl) copyCertificationInfo(src member.CerticationInfo, dst *member.CerticationInfo) error {
 	if dst == nil {
 		dst = &member.CerticationInfo{
 			MemberId:     p.memberId,
@@ -593,9 +593,15 @@ func (p *profileManagerImpl) copyTrustedInfo(src member.CerticationInfo, dst *me
 }
 
 // 实名认证信息
-func (p *profileManagerImpl) GetTrustedInfo() *member.CerticationInfo {
+func (p *profileManagerImpl) GetCertificationInfo() *member.CerticationInfo {
 	if p.trustedInfo == nil {
-		p.trustedInfo = p.repo.GetTrustedInfo(int(p.memberId))
+		p.trustedInfo = p.repo.GetCertificationInfo(int(p.memberId))
+		if p.trustedInfo == nil {
+			p.trustedInfo = &member.CerticationInfo{
+				MemberId:     p.memberId,
+				ReviewStatus: int(enum.ReviewAwaiting),
+			}
+		}
 	}
 	return p.trustedInfo
 }
@@ -610,7 +616,7 @@ func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 }
 
 // 保存实名认证信息
-func (p *profileManagerImpl) SaveTrustedInfo(v *member.CerticationInfo) error {
+func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) error {
 	// 验证数据是否完整
 	v.CardId = strings.TrimSpace(v.CardId)
 	v.RealName = strings.TrimSpace(v.RealName)
@@ -621,7 +627,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.CerticationInfo) error {
 	v.ExtraCertExt1 = strings.TrimSpace(v.ExtraCertExt1)
 	v.ExtraCertExt2 = strings.TrimSpace(v.ExtraCertExt2)
 	if len(v.RealName) == 0 || len(v.CardId) == 0 {
-		return member.ErrMissingTrustedInfo
+		return member.ErrMissingCertificationInfo
 	}
 	// 验证姓名
 	if !zhNameRegexp.MatchString(v.RealName) {
@@ -631,7 +637,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.CerticationInfo) error {
 	v.CardId = strings.ToUpper(v.CardId)
 	err := util.CheckChineseCardID(v.CardId)
 	if err != nil {
-		return member.ErrTrustCardId
+		return member.ErrCertCardId
 	}
 	// 检查身份证是否已被占用
 	if !p.checkCardId(v.CardId, p.memberId) {
@@ -656,25 +662,25 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.CerticationInfo) error {
 		return member.ErrTrustMissingCardImage
 	}
 	// 保存
-	current := p.GetTrustedInfo()
-	isCreate := current == nil
-	err = p.copyTrustedInfo(*v, current)
+	current := p.GetCertificationInfo()
+	err = p.copyCertificationInfo(*v, current)
 	if err == nil {
-		p.trustedInfo.Remark = ""
-		p.trustedInfo.ReviewStatus = int(enum.ReviewAwaiting) //标记为待处理
-		p.trustedInfo.UpdateTime = time.Now().Unix()
-		if isCreate {
-			_, err = p.repo.SaveTrustedInfo(0, p.trustedInfo)
-		} else {
-			_, err = p.repo.SaveTrustedInfo(int(p.memberId), p.trustedInfo)
+		current.Remark = ""
+		current.ReviewStatus = int(enum.ReviewAwaiting) //标记为待处理
+		current.UpdateTime = time.Now().Unix()
+		p.trustedInfo = current
+		id, err := p.repo.SaveCertificationInfo(p.trustedInfo)
+		if err == nil {
+			p.trustedInfo.Id = int64(id)
 		}
+		return err
 	}
 	return err
 }
 
 // 审核实名认证,若重复审核将返回错误
 func (p *profileManagerImpl) ReviewCertificationInfo(pass bool, remark string) error {
-	p.GetTrustedInfo()
+	p.GetCertificationInfo()
 	if pass {
 		p.trustedInfo.ReviewStatus = int(enum.ReviewPass)
 		p.member.value.UserFlag |= member.FlagTrusted
@@ -692,7 +698,7 @@ func (p *profileManagerImpl) ReviewCertificationInfo(pass bool, remark string) e
 	unix := time.Now().Unix()
 	p.trustedInfo.Remark = remark
 	p.trustedInfo.ReviewTime = unix
-	_, err := p.repo.SaveTrustedInfo(int(p.memberId), p.trustedInfo)
+	_, err := p.repo.SaveCertificationInfo(p.trustedInfo)
 	if err == nil {
 		_, err = p.member.Save()
 	}

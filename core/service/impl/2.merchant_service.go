@@ -11,6 +11,7 @@ package impl
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -843,6 +844,21 @@ func (m *merchantService) GetStaffByMember(_ context.Context, req *proto.StaffRe
 		return &proto.SStaff{}, nil
 	}
 	return m.parseStaffDto(staff), nil
+}
+
+// SaveStaff implements proto.MerchantServiceServer.
+func (m *merchantService) SaveStaff(_ context.Context, r *proto.SaveStaffRequest) (*proto.Result, error) {
+	staff := m._staffRepo.GetStaff(int(r.Id))
+	if staff == nil {
+		return m.error(errors.New("no such staff")), nil
+	}
+	staff.Flag = int(r.Flag)
+	staff.Gender = int(r.Gender)
+	staff.Grade = int(r.Grade)
+	staff.WorkStatus = int(r.WorkStatus)
+	staff.Nickname = r.Nickname
+	_, err := m._staffRepo.SaveStaff(staff)
+	return m.result(err), nil
 }
 
 func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {

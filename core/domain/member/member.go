@@ -79,7 +79,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	mv := m.GetValue()
 	lv := m.GetLevel()
 	pf := m.Profile()
-	tr := pf.GetTrustedInfo()
+	tr := pf.GetCertificationInfo()
 	s := &member.ComplexMember{
 		Nickname:            mv.Nickname,
 		RealName:            mv.RealName,

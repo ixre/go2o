@@ -787,24 +787,24 @@ func (m *MemberRepoImpl) DeleteLockInfos(memberId int64) error {
 	return err
 }
 
-// GetTrustedInfo implements member.IMemberRepo
-func (m *MemberRepoImpl) GetTrustedInfo(memberId int) *member.CerticationInfo {
+// GetCertificationInfo implements member.IMemberRepo
+func (m *MemberRepoImpl) GetCertificationInfo(memberId int) *member.CerticationInfo {
 	e := member.CerticationInfo{}
-	err := m._orm.Get(memberId, &e)
+	err := m._orm.GetBy(&e, "member_id = $1", memberId)
 	if err == nil {
 		return &e
 	}
 	if err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:TrustedInfo")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:CertificationInfo")
 	}
 	return nil
 }
 
-// SaveTrustedInfo implements member.IMemberRepo
-func (m *MemberRepoImpl) SaveTrustedInfo(id int, v *member.CerticationInfo) (int, error) {
-	id, err := orm.Save(m._orm, v, id)
+// SaveCertificationInfo implements member.IMemberRepo
+func (m *MemberRepoImpl) SaveCertificationInfo(v *member.CerticationInfo) (int, error) {
+	id, err := orm.Save(m._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:TrustedInfo")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:CertificationInfo")
 	}
 	return id, err
 }

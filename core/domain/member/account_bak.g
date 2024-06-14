@@ -139,7 +139,7 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	// 检测是否实名
 	mustTrust, _ := a.registryRepo.GetValue(registry.MemberWithdrawalMustTrust)
 	if mustTrust == "true" {
-		trust := a.member.Profile().GetTrustedInfo()
+		trust := a.member.Profile().GetCertificationInfo()
 		if trust.ReviewStatus != int(enum.ReviewPass) {
 			return 0, "", member.ErrTakeOutNotTrust
 		}

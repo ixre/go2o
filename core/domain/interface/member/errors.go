@@ -223,7 +223,7 @@ var (
 	ErrNoSuchRelateUser = domain.NewError(
 		"err_account_no_such_relate_user", "未提供操作人编号")
 
-	ErrMissingTrustedInfo = domain.NewError(
+	ErrMissingCertificationInfo = domain.NewError(
 		"err_missing_trusted_info", "信息不完整、无法完成实名认证")
 
 	ErrEmptyReviewRemark = domain.NewError(
@@ -238,7 +238,7 @@ var (
 	ErrRealName = domain.NewError(
 		"err_real_name", "请输入真实姓名")
 
-	ErrTrustCardId = domain.NewError(
+	ErrCertCardId = domain.NewError(
 		"err_member_trust_car_id", "身份证号码不正确")
 
 	ErrCarIdExists = domain.NewError(

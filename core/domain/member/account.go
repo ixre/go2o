@@ -960,7 +960,7 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 	// 检测是否实名
 	mustTrust, _ := a.registryRepo.GetValue(registry.MemberWithdrawalMustVerification)
 	if mustTrust == "true" {
-		trust := a.member.Profile().GetTrustedInfo()
+		trust := a.member.Profile().GetCertificationInfo()
 		if trust.ReviewStatus != int(enum.ReviewPass) {
 			return 0, "", member.ErrTakeOutNotTrust
 		}
@@ -1138,7 +1138,7 @@ func (a *accountImpl) walletFreezeExpired(amount int, remark string) error {
 
 // 获取会员名称
 func (a *accountImpl) getMemberName(m member.IMemberAggregateRoot) string {
-	if tr := m.Profile().GetTrustedInfo(); tr.RealName != "" &&
+	if tr := m.Profile().GetCertificationInfo(); tr.RealName != "" &&
 		tr.ReviewStatus == int(enum.ReviewPass) {
 		return tr.RealName
 	} else {
