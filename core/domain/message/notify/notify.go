@@ -15,7 +15,6 @@ import (
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/go2o/core/infrastructure/util/sms"
@@ -29,7 +28,6 @@ type notifyManagerImpl struct {
 	repo         mss.INotifyRepo
 	registryRepo registry.IRegistryRepo
 	mssRepo      mss.IMessageRepo
-	valueRepo    valueobject.IValueRepo
 }
 
 func NewNotifyManager(repo mss.INotifyRepo,
@@ -143,7 +141,11 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg mss.PhoneMessage,
 			Provider: provider,
 		}
 	}
-	return sms.SendSms(setting, phone, string(msg), data)
+	return sms.Send(sms.Template{
+		ProviderCode:    tpl.SpCode,
+		TemplateId:      tpl.SpTid,
+		TemplateContent: string(msg),
+	}, phone, data)
 }
 
 func (n *notifyManagerImpl) getSmsTemplate(templateId string) *mss.NotifyTemplate {
