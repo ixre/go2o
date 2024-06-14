@@ -145,7 +145,7 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg mss.PhoneMessage,
 		ProviderCode:    tpl.SpCode,
 		TemplateId:      tpl.SpTid,
 		TemplateContent: string(msg),
-	}, phone, data)
+	}, phone, data...)
 }
 
 func (n *notifyManagerImpl) getSmsTemplate(templateId string) *mss.NotifyTemplate {
