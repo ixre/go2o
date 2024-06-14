@@ -68,9 +68,10 @@ func init() {
 	app := initial.NewApp(confPath, &cfg)
 	initial.Init(app, false, false)
 	repos.OrmMapping(provide.GetOrmInstance())
+	// 初始化第三方配置
+	inject.GetSPConfig().Configure()
 	// 初始化nats
 	msq.Configure(msq.NATS, natsEndPoints, inject.GetRegistryRepo())
-
 	// 初始化分布式锁
 	etcd.InitializeLocker(&cfg)
 	// 初始化事件

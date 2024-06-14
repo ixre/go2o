@@ -15,8 +15,11 @@ type ISmsProvider interface {
 	// 提供商的名称
 	Name() string
 
-	// 发送短信
-	Send(templateId string, content string, args ...string) error
+	// 根据模板发送短信
+	Send(phone string, templateId string, args ...string) error
+
+	// 发送自定义内容短信
+	SendContent(phone string, content string) error
 }
 
 // 短信模板
@@ -57,15 +60,20 @@ func Send(t Template, phoneNum string, params ...string) error {
 	if len(t.ProviderCode) == 0 {
 		return errors.New("未指定短信服务商或模板ID")
 	}
-	if len(t.TemplateContent) == 0 || len(t.TemplateId) == 0 {
+	if len(t.TemplateContent) == 0 && len(t.TemplateId) == 0 {
 		return errors.New("未指定短信内容或短信服务商模板ID")
 	}
 	p, err := getProvider(t.ProviderCode)
 	if err != nil {
 		return err
 	}
-	c := ResolveMessage(t.TemplateContent, params)
-	return p.Send(t.TemplateId, c, params...)
+	if len(t.TemplateId) == 0 {
+		// 自定义短信内容
+		c := ResolveMessage(t.TemplateContent, params)
+		return p.SendContent(phoneNum, c)
+	}
+	// 根据短信验证码发送短信
+	return p.Send(phoneNum, t.TemplateId, params...)
 	// todo: 旧的短信需要重新实现
 	// if setting.Signature != "" && !strings.Contains(content, setting.Signature) {
 	// 	content = setting.Signature + content

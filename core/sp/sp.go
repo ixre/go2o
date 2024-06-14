@@ -1,6 +1,10 @@
 package sp
 
-import "github.com/ixre/go2o/core/domain/interface/registry"
+import (
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/infrastructure/util/sms"
+	"github.com/ixre/go2o/core/sp/tencent"
+)
 
 // 第三方服务商初始化
 type ServiceProviderConfiguration struct {
@@ -14,6 +18,8 @@ func NewSPConfig(registryRepo registry.IRegistryRepo) *ServiceProviderConfigurat
 	}
 }
 
+// Configure 函数用于配置服务提供商配置
 func (c *ServiceProviderConfiguration) Configure() {
-
+	// 注册腾讯云短信服务商
+	sms.RegisterProvider(tencent.NewTencentSms(c.registryRepo))
 }

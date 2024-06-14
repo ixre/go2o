@@ -97,6 +97,8 @@ func Run(ch chan bool, after func(cfg *clientv3.Config, debug bool)) {
 		os.Exit(1)
 	}
 	go core.SignalNotify(ch, initial.AppDispose)
+	// 初始化第三方配置
+	inject.GetSPConfig().Configure()
 	// 初始化分布式锁
 	etcd.InitializeLocker(&cfg)
 	repos.OrmMapping(provide.GetOrmInstance())

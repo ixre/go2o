@@ -9,7 +9,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
 type ORM = *gorm.DB
 
 // OrmWrapper 数据库操作接口
