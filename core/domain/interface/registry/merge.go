@@ -97,7 +97,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("邀请注册成功后跳转地址", MemberInviteRegisterReturnUrl, "", "")
 	mergeAdd("注册后赠送积分数量", MemberRegisterPresentIntegral, "0", "")
 	mergeAdd("邀请注册开启桥接页面,跳转到注册页前显示一个自定义页面", MemberInviteEnableBridge, "false", "")
-
+	mergeAdd("会员默认头像", MemberDefaultPortrait, "", "")
 	mergeAdd("会员资料不完善提醒信息", MemberProfileNotCompletedMessage, "您的个人资料未完善,是否立即完善?", "")
 	mergeAdd("会员未实名认证提示信息", MemberNotTrustedMessage, "您尚未实名认证!", "")
 	mergeAdd("实名时是否需要先完善资", MemberRequireProfileOnTrusting, "false", "")

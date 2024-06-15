@@ -132,6 +132,8 @@ var (
 	MemberInviteRegisterReturnUrl = KeyFormat("MemberInviteRegisterReturnUrl")
 	// 邀请注册开启桥接页面,如跳转到注册前先显示一个页面
 	MemberInviteEnableBridge = KeyFormat("MemberInviteEnableBridge")
+	// 会员默认头像
+	MemberDefaultPortrait = KeyFormat("MemberDefaultPortrait")
 
 	// 会员资料不完善提醒信息
 	MemberProfileNotCompletedMessage = KeyFormat("MemberProfileNotCompletedMessage")

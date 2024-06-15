@@ -154,9 +154,6 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 		//如果未设置昵称,则默认为用户名
 		pro.Name = v.Username
 	}
-	if len(pro.Avatar) == 0 {
-		pro.Avatar = "static/init/avatar.png"
-	}
 	return invitationId, err
 }
 

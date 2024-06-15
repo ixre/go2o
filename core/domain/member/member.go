@@ -681,7 +681,14 @@ func (m *memberImpl) prepare() (err error) {
 	// 初始化头像
 	m.value.Portrait = strings.TrimSpace(m.value.Portrait)
 	if len(m.value.Portrait) == 0 {
-		m.value.Portrait = "static/init/avatar.png"
+		// 使用默认头像
+		re, _ := m.registryRepo.GetValue(registry.MemberDefaultPortrait)
+		if len(strings.TrimSpace(re)) == 0 {
+			// 如果未设置,则用系统内置头像
+			url, _ := m.registryRepo.GetValue(registry.FileServerUrl)
+			re = url + "/files/static/init/avatar.png"
+		}
+		m.value.Portrait = re
 	}
 	// 验证角色
 	if m.value.RoleFlag != 0 && !collections.InArray([]int{
