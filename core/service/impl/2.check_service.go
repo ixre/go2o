@@ -270,7 +270,7 @@ func (c *checkServiceImpl) CompareCode(_ context.Context, r *proto.CompareCheckC
 
 func (c *checkServiceImpl) notifyCheckCode(code string, r *proto.SendCheckCodeRequest) error {
 	// 创建参数
-	data := []string{r.Operation, code, strconv.Itoa(int(r.Effective))}
+	data := []string{code, strconv.Itoa(int(r.Effective))}
 	// 构造并发送短信
 	mg := c.notifyRepo.NotifyManager()
 	return mg.SendPhoneMessage(r.ReceptAccount, mss.PhoneMessage(""), data, r.TemplateCode)

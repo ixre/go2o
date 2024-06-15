@@ -56,7 +56,7 @@ func getProvider(providerName string) (ISmsProvider, error) {
 }
 
 // 发送短信
-func Send(t Template, phoneNum string, params ...string) error {
+func Send(t Template, phone string, params ...string) error {
 	if len(t.ProviderCode) == 0 {
 		return errors.New("未指定短信服务商或模板ID")
 	}
@@ -70,10 +70,10 @@ func Send(t Template, phoneNum string, params ...string) error {
 	if len(t.TemplateId) == 0 {
 		// 自定义短信内容
 		c := ResolveMessage(t.TemplateContent, params)
-		return p.SendContent(phoneNum, c)
+		return p.SendContent(phone, c)
 	}
 	// 根据短信验证码发送短信
-	return p.Send(phoneNum, t.TemplateId, params...)
+	return p.Send(phone, t.TemplateId, params...)
 	// todo: 旧的短信需要重新实现
 	// if setting.Signature != "" && !strings.Contains(content, setting.Signature) {
 	// 	content = setting.Signature + content
