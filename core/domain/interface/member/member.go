@@ -63,7 +63,6 @@ const (
 const (
 	// 普通用户
 	RoleUser = 1
-	// 商户雇员
 	// 商户职员
 	RoleMchStaff = 2
 	// 扩展角色1

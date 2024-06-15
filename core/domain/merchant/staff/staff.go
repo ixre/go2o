@@ -74,9 +74,6 @@ func (e *staffManagerImpl) Create(memberId int) error {
 		PremiumLevel:  0,
 		CreateTime:    int(time.Now().Unix()),
 	}
-	id, err := e._repo.SaveStaff(v)
-	if err == nil {
-		v.Id = id
-	}
+	_, err := e._repo.Save(v)
 	return err
 }

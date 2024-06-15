@@ -16,70 +16,24 @@
 package repos
 
 import (
-	"database/sql"
-	"log"
-
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
-	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
 var _ staff.IStaffRepo = new(staffRepoImpl)
 
 type staffRepoImpl struct {
-	_orm orm.Orm
+	fw.BaseRepository[staff.Staff]
 }
 
-var mchStaffDaoImplMapped = false
-
-func NewStaffRepo(o orm.Orm) staff.IStaffRepo {
-	if !mchStaffDaoImplMapped {
-		_ = o.Mapping(staff.Staff{}, "mch_staff")
-		mchStaffDaoImplMapped = true
-	}
-	return &staffRepoImpl{
-		_orm: o,
-	}
-}
-
-// GetStaff implements staff.IStaffRepo.
-func (m *staffRepoImpl) GetStaff(id int) *staff.Staff {
-	var e staff.Staff
-	err := m._orm.Get(id, &e)
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:Staff\n", err.Error())
-	}
-	return &e
+func NewStaffRepo(o fw.ORM) staff.IStaffRepo {
+	s := &staffRepoImpl{}
+	s.ORM = o
+	return s
 }
 
 // SelectStaff Select 商户代理人坐席(员工)
 func (m *staffRepoImpl) GetStaffByMemberId(memberId int) *staff.Staff {
-	var e staff.Staff
-	err := m._orm.GetBy(&e, "member_id = $1 and work_status <> $2",
-		memberId,
+	return m.FindBy("member_id = $1 and work_status <> $2", memberId,
 		staff.WorkStatusOff)
-	if err == nil {
-		return &e
-	}
-	if err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:Staff\n", err.Error())
-	}
-	return nil
-}
-
-// SaveStaff Save 商户代理人坐席(员工)
-func (m *staffRepoImpl) SaveStaff(v *staff.Staff) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.Id))
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:Staff\n", err.Error())
-	}
-	return id, err
-}
-
-// DeleteStaff Delete 商户代理人坐席(员工)
-func (m *staffRepoImpl) DeleteStaff(id int) error {
-	err := m._orm.DeleteByPk(staff.Staff{}, id)
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:Staff\n", err.Error())
-	}
-	return err
 }

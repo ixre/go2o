@@ -822,7 +822,7 @@ func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.I
 
 // GetStaff implements proto.MerchantServiceServer.
 func (m *merchantService) GetStaff(_ context.Context, req *proto.StaffRequest) (*proto.SStaff, error) {
-	staff := m._staffRepo.GetStaff(int(req.Id))
+	staff := m._staffRepo.Get(int(req.Id))
 	if staff == nil {
 		return &proto.SStaff{}, nil
 	}
@@ -848,7 +848,7 @@ func (m *merchantService) GetStaffByMember(_ context.Context, req *proto.StaffRe
 
 // SaveStaff implements proto.MerchantServiceServer.
 func (m *merchantService) SaveStaff(_ context.Context, r *proto.SaveStaffRequest) (*proto.Result, error) {
-	staff := m._staffRepo.GetStaff(int(r.Id))
+	staff := m._staffRepo.Get(int(r.Id))
 	if staff == nil {
 		return m.error(errors.New("no such staff")), nil
 	}
@@ -857,7 +857,7 @@ func (m *merchantService) SaveStaff(_ context.Context, r *proto.SaveStaffRequest
 	staff.Grade = int(r.Grade)
 	staff.WorkStatus = int(r.WorkStatus)
 	staff.Nickname = r.Nickname
-	_, err := m._staffRepo.SaveStaff(staff)
+	_, err := m._staffRepo.Save(staff)
 	return m.result(err), nil
 }
 
