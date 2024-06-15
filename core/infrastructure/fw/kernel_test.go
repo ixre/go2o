@@ -3,7 +3,7 @@ package fw
 import (
 	"testing"
 
-	"github.com/ixre/go2o/core/initial/wrap"
+	"github.com/sirupsen/logrus"
 )
 
 type Staff struct {
@@ -42,8 +42,8 @@ func NewStaffService(repo IStaffRepo) *StaffService {
 }
 
 func TestGet(t *testing.T) {
-	o := wrap.NewORM(nil)
-	s := NewStaffRepo(o.DB)
+	var o ORM
+	s := NewStaffRepo(o)
 	ss := NewStaffService(s)
 	staff := Staff{}
 	_, err := ss.Save(&staff)
@@ -55,4 +55,5 @@ func TestGet(t *testing.T) {
 	if s2 == nil || s2.Id != id {
 		t.Error("get staff error")
 	}
+	logrus.Debugf
 }

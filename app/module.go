@@ -2,9 +2,6 @@ package app
 
 import (
 	"context"
-
-	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/module/express/kdniao"
 	"github.com/ixre/go2o/core/service/proto"
@@ -17,8 +14,6 @@ func InitialModules() {
 }
 
 func initSSOModule() {
-	// 初始化静态文件服务器地址
-	format.GlobalFileServerPath, _ = inject.GetRegistryRepo().GetValue(registry.FileServerPath)
 
 	//domain := variable.Domain
 	//service := inject.GetRegistryService()

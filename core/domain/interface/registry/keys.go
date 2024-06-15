@@ -5,41 +5,41 @@ var (
 	AppId = KeyFormat("AppId")
 	/** 域名 */
 	// 访问协议,https或http
-	HttpProtocols = KeyFormat("HttpProtocols")
+	// HttpProtocols = KeyFormat("HttpProtocols")
 	// 根域名
-	Domain = KeyFormat("Domain")
-	// 控制面板前缀
-	DomainPrefixDashboard = KeyFormat("DomainPrefixDashboard")
-	// 零售门户前缀
-	DomainPrefixPortal = KeyFormat("DomainPrefixPortal")
-	// 批发门户域名前缀
-	DomainPrefixWholesalePortal = KeyFormat("DomainPrefixWholesalePortal")
-	// 零售门户手机端域名前缀
-	DomainPrefixMobilePortal = KeyFormat("DomainPrefixMobilePortal")
-	// 会员中心域名前缀
-	DomainPrefixMember = KeyFormat("DomainPrefixMember")
-	// 商户系统域名前缀
-	DomainPrefixMerchant = KeyFormat("DomainPrefixMerchant")
-	// 通行证域名前缀
-	DomainPrefixPassport = KeyFormat("DomainPrefixPassport")
-	// 通行证域名协议,默认为http,可以使用https安全加密
-	DomainPassportProto = KeyFormat("DomainPassportProto")
-	// API前缀
-	DomainPrefixApi = KeyFormat("DomainPrefixApi")
-	// HAPI前缀
-	DomainPrefixHApi = KeyFormat("DomainPrefixHApi")
+	Domain = KeyFormat("DomainBaseUrl")
+	// // 控制面板前缀
+	// DomainPrefixDashboard = KeyFormat("DomainPrefixDashboard")
+	// // 零售门户前缀
+	// DomainPrefixPortal = KeyFormat("DomainPrefixPortal")
+	// // 批发门户域名前缀
+	// DomainPrefixWholesalePortal = KeyFormat("DomainPrefixWholesalePortal")
+	// // 零售门户手机端域名前缀
+	// DomainPrefixMobilePortal = KeyFormat("DomainPrefixMobilePortal")
+	// // 会员中心域名前缀
+	// DomainPrefixMember = KeyFormat("DomainPrefixMember")
+	// // 商户系统域名前缀
+	// DomainPrefixMerchant = KeyFormat("DomainPrefixMerchant")
+	// // 通行证域名前缀
+	// DomainPrefixPassport = KeyFormat("DomainPrefixPassport")
+	// // 通行证域名协议,默认为http,可以使用https安全加密
+	// DomainPassportProto = KeyFormat("DomainPassportProto")
+	// // API前缀
+	// DomainPrefixApi = KeyFormat("DomainPrefixApi")
+	// // HAPI前缀
+	// DomainPrefixHApi = KeyFormat("DomainPrefixHApi")
 	// 文件(上传)服务器前缀
-	FileServerPath = KeyFormat("DomainFileServerPrefix")
-	// 静态服务器前缀
-	DomainPrefixStatic = KeyFormat("DomainPrefixStatic")
-	// 图片服务器前缀
-	DomainPrefixImage = KeyFormat("DomainPrefixImage")
-	// 批发中心移动端
-	DomainPrefixMobileWholesale = KeyFormat("DomainPrefixMobileWholesale")
-	// 会员中心域名前缀(移动端)
-	DomainPrefixMobileMember = KeyFormat("DomainPrefixMobileMember")
-	// 通行证域名前缀(移动端)
-	DomainPrefixMobilePassport = KeyFormat("DomainPrefixMobilePassport")
+	FileServerUrl = KeyFormat("DomainFileServerUrl")
+	// // 静态服务器前缀
+	// DomainPrefixStatic = KeyFormat("DomainPrefixStatic")
+	// // 图片服务器前缀
+	// DomainPrefixImage = KeyFormat("DomainPrefixImage")
+	// // 批发中心移动端
+	// DomainPrefixMobileWholesale = KeyFormat("DomainPrefixMobileWholesale")
+	// // 会员中心域名前缀(移动端)
+	// DomainPrefixMobileMember = KeyFormat("DomainPrefixMobileMember")
+	// // 通行证域名前缀(移动端)
+	// DomainPrefixMobilePassport = KeyFormat("DomainPrefixMobilePassport")
 
 	/* 管理面板 */
 	// 面板钩子显示名称

@@ -13,6 +13,7 @@ import (
 
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/util"
@@ -24,6 +25,7 @@ func (h EventHandler) HandleAppInitialEvent(data interface{}) {
 	if v == nil {
 		return
 	}
+	initSystemConfig(h.registryRepo)
 	initJWTSecret(h.registryRepo)
 	initSuperLoginToken(h.registryRepo)
 	initPortalNav(h.portalDao)
@@ -33,6 +35,18 @@ func (h EventHandler) HandleAppInitialEvent(data interface{}) {
 	go h.stationRepo.GetManager().SyncStations()
 	// 初始化通知模板
 	h.initNotifyTemplate()
+}
+
+func initSystemConfig(repo registry.IRegistryRepo) {
+	// 初始化系统配置
+	re := repo.Get(registry.Domain)
+	if re != nil && re.StringValue() == re.Value().DefaultValue {
+		logger.Error("domain is not initialized, please set the domain in registry.")
+	}
+	re = repo.Get(registry.FileServerUrl)
+	if re != nil && re.StringValue() == re.Value().DefaultValue {
+		logger.Error("file server url is not initialized, please set the domain in registry.")
+	}
 }
 
 func initSuperLoginToken(repo registry.IRegistryRepo) {

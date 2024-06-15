@@ -16,7 +16,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	promImpl "github.com/ixre/go2o/core/domain/promotion"
-	"github.com/ixre/go2o/core/infrastructure/log"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"time"
@@ -165,7 +165,7 @@ func (this *promotionRepo) GetCouponTakes(couponId int32) []promotion.ValueCoupo
 	err := this.o.SelectByQuery(&arr,
 		"SELECT * FROM pm_coupon_take WHERE coupon_id = $1", couponId)
 	if err != nil {
-		log.Error(err)
+		logger.Error(err.Error())
 	}
 
 	return arr
@@ -185,7 +185,7 @@ func (this *promotionRepo) GetCouponBinds(couponId int32) []promotion.ValueCoupo
 	err := this.o.SelectByQuery(arr,
 		"SELECT * FROM pm_coupon_bind WHERE coupon_id = $1", couponId)
 	if err != nil {
-		log.Error(err)
+		logger.Error(err.Error())
 	}
 	return arr
 }

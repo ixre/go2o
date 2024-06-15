@@ -6,8 +6,24 @@ import (
 
 // Repository 仓储接口
 type (
+	// ORM 数据库关系映
 	ORM = *gorm.DB
 
+	// 日志
+	ILogger interface {
+		// 输出调试日志
+		Debug(format string, args ...interface{})
+		// 输出普通日志
+		Info(format string, args ...interface{})
+		// 输出错误日志
+		Error(format string, args ...interface{})
+		// 输出警告日志
+		Warn(format string, args ...interface{})
+		// 输出致命日志
+		Fatal(format string, args ...interface{})
+	}
+
+	// Repository 仓储接口
 	Repository[M any] interface {
 		// Get 获取实体
 		Get(id interface{}) *M
@@ -43,6 +59,7 @@ type (
 
 var _ Repository[any] = new(BaseRepository[any])
 
+// 基础仓储
 type BaseRepository[M any] struct {
 	ORM ORM
 }

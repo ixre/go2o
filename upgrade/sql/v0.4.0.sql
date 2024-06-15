@@ -501,3 +501,6 @@ COMMENT ON COLUMN "public".mm_cert_info.review_status IS '审核状态';
 COMMENT ON COLUMN "public".mm_cert_info.review_time IS '审核时间';
 COMMENT ON COLUMN "public".mm_cert_info.remark IS '备注';
 COMMENT ON COLUMN "public".mm_cert_info.update_time IS '更新时间';
+
+-- 删除域名相关配置
+delete FROM registry WHERE key like 'domain_%'
