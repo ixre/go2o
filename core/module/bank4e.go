@@ -16,7 +16,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/module/bank"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/storage"
@@ -160,7 +159,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	if err := m.Profile().SaveCertificationInfo(&member.CerticationInfo{
 		RealName:   realName,
 		CardId:     idCard,
-		TrustImage: format.GetFileFullUrl(""),
+		TrustImage: "",
 	}); err != nil {
 		return err
 	}

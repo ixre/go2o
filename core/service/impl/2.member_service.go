@@ -27,7 +27,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/infrastructure/util/types"
 	"github.com/ixre/go2o/core/module"
@@ -1195,7 +1194,6 @@ func (s *memberService) GetPagingInvitationMembers(_ context.Context, r *proto.M
 		num := iv.GetSubInvitationNum(arr)
 		for i := 0; i < l; i++ {
 			rows[i].InvitationNum = num[rows[i].MemberId]
-			rows[i].Portrait = format.GetFileFullUrl(rows[i].Portrait)
 			ret.Data = append(ret.Data, &proto.SInvitationMember{
 				MemberId: int64(rows[i].MemberId),
 				Username: rows[i].Username,

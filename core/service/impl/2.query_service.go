@@ -92,7 +92,6 @@ func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRe
 	}
 	if len(rows) > 0 {
 		for i, v := range rows {
-			v.Logo = format.GetFileFullUrl(v.Logo)
 			if v.Host == "" {
 				v.Host = v.Alias + "." + variable.Domain
 			}
@@ -231,7 +230,6 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 		Value: make([]*proto.MemberListSingle, len(list)),
 	}
 	for i, v := range list {
-		v.Avatar = format.GetFileFullUrl(v.Avatar)
 		rsp.Value[i] = &proto.MemberListSingle{
 			MemberId:      int64(v.MemberId),
 			Username:      v.Usr,
@@ -373,7 +371,6 @@ func (q *queryService) PagingOnShelvesGoods(_ context.Context, r *proto.PagingSh
 
 	ret.Total = int64(total)
 	for _, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
 		ret.Data = append(ret.Data, q.parseGoods(v))
 	}
 	return ret, nil
@@ -452,7 +449,6 @@ func (q *queryService) getPagedOnShelvesItemForWholesale(catId int32, start,
 		start, end, where, sortBy)
 	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for j, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
 		dto := parser.ItemDtoV2(*v)
 		q.attachWholesaleItemDataV2(dto)
 		arr[j] = dto

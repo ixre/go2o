@@ -14,7 +14,6 @@ import (
 
 	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/dto"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/gof/db"
 )
 
@@ -52,7 +51,6 @@ WHERE ao.buyer_id= $1 ORDER BY ao.create_time DESC LIMIT $3 OFFSET $2`, func(rs 
 					&e.SnapshotId, &e.Quantity, &e.SkuId, &e.GoodsTitle,
 					&e.GoodsImage, &e.Status, &e.CreateTime, &e.UpdateTime)
 				e.StatusText = afterSales.Stat(e.Status).String()
-				e.GoodsImage = format.GetFileFullUrl(e.GoodsImage)
 				list = append(list, e)
 			}
 		}, memberId, begin, size)
@@ -88,7 +86,6 @@ WHERE ao.vendor_id= $1 `+where+" ORDER BY id DESC LIMIT $3 OFFSET $2", func(rs *
 					&e.SnapshotId, &e.Quantity, &e.SkuId, &e.GoodsTitle,
 					&e.GoodsImage, &e.Status, &e.CreateTime, &e.UpdateTime)
 				e.StatusText = afterSales.Stat(e.Status).String()
-				e.GoodsImage = format.GetFileFullUrl(e.GoodsImage)
 				list = append(list, e)
 			}
 		}, vendorId, begin, size)

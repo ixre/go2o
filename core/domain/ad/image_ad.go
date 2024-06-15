@@ -10,7 +10,6 @@ package ad
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/ad"
-	"github.com/ixre/go2o/core/infrastructure/format"
 )
 
 var _ ad.IImageAd = new(ImageAdImpl)
@@ -47,7 +46,7 @@ func (i *ImageAdImpl) Save() (int64, error) {
 		v := i.getData()
 		if v == nil {
 			v = &ad.Image{
-				ImageUrl: format.GetNoPicPath(),
+				ImageUrl: "",
 			}
 		}
 		v.AdId = id

@@ -19,7 +19,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
@@ -293,7 +292,6 @@ func (i *itemService) GetItems(_ context.Context, r *proto.GetItemsRequest) (*pr
 	}
 	arr := make([]*proto.SUnifiedViewItem, len(list))
 	for i, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
 		arr[i] = parser.ItemDtoV2(*v)
 	}
 	return &proto.PagingGoodsResponse{

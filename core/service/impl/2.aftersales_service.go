@@ -14,7 +14,6 @@ import (
 
 	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/domain/interface/order"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/db"
@@ -151,7 +150,6 @@ func (a *afterSalesService) GetAfterSaleOrder(_ context.Context, req *proto.Afte
 	if as != nil {
 		v := as.Value()
 		v.StatusText = afterSales.Stat(v.Status).String()
-		v.ShipmentImage = format.GetFileFullUrl(v.ShipmentImage)
 		return a.parseAfterSalesDto(v), nil
 	}
 	return nil, order.ErrNoSuchOrder

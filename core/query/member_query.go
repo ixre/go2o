@@ -17,7 +17,6 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/dto"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -195,7 +194,7 @@ func (m *MemberQuery) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember 
 				User:   user,
 				Name:   name,
 				Phone:  phone,
-				Avatar: format.GetFileFullUrl(portrait),
+				Avatar: portrait,
 			})
 		}
 	}, qp, qp, qp)
@@ -209,7 +208,6 @@ func (m *MemberQuery) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
         WHERE user = $1 OR mm_profile.phone = $2`, func(rows *sql.Row) error {
 		er := rows.Scan(&e.Id, &e.User, &e.Name, &e.Phone, &e.Avatar)
-		e.Avatar = format.GetFileFullUrl(e.Avatar)
 		return er
 	}, key, key)
 	if err == nil {
@@ -307,7 +305,6 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 				e := dto.PagedShopFav{}
 				rs.Scan(&e.Id, &e.ShopId, &e.MchId, &e.ShopName,
 					&e.Logo, &e.UpdateTime)
-				e.Logo = format.GetFileFullUrl(e.Logo)
 				rows = append(rows, &e)
 			}
 		}, memberId, member.FavTypeShop, begin, end-begin)
@@ -343,7 +340,6 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 				e := dto.PagedGoodsFav{}
 				rs.Scan(&e.Id, &e.SkuId, &e.GoodsName, &e.Image, &e.SalePrice,
 					&e.StockNum, &e.UpdateTime)
-				e.Image = format.GetFileFullUrl(e.Image)
 				rows = append(rows, &e)
 			}
 		}, memberId, member.FavTypeGoods, begin, end-begin)

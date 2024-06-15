@@ -17,7 +17,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/util/sensitive"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/module/bank"
@@ -300,7 +299,7 @@ func (s *foundationService) SaveWxApiConfig(_ context.Context, cfg *proto.SWxApi
 
 // ResourceUrl 获取资源地址
 func (s *foundationService) ResourceUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
-	return &proto.String{Value: format.GetFileFullUrl(s2.Value)}, nil
+	return &proto.String{Value: s2.Value}, nil
 }
 
 // GetSmsApiSet 获取短信设置

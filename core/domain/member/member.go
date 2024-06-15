@@ -27,7 +27,6 @@ import (
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/domain/validate"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/util"
@@ -83,7 +82,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	s := &member.ComplexMember{
 		Nickname:            mv.Nickname,
 		RealName:            mv.RealName,
-		Avatar:              format.GetFileFullUrl(mv.Portrait),
+		Avatar:              mv.Portrait,
 		Exp:                 mv.Exp,
 		Level:               mv.Level,
 		LevelName:           lv.Name,

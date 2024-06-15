@@ -2,7 +2,6 @@ package parser
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/cart"
-	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/types"
@@ -27,7 +26,7 @@ func ParseCartItem(item *cart.NormalCartItem) *proto.SShoppingCartItem {
 		ShopId:   item.ShopId,
 	}
 	if item.Sku != nil {
-		i.Image = format.GetGoodsImageUrl(item.Sku.Image)
+		i.Image = item.Sku.Image
 		i.OriginPrice = math.Round(float64(item.Sku.OriginPrice), 2)
 		i.Price = math.Round(float64(item.Sku.Price), 2)
 		i.SpecWord = item.Sku.SpecWord
@@ -112,7 +111,7 @@ func parsePrepareOrderItem(item *cart.NormalCartItem) *proto.SPrepareOrderItem {
 		Quantity: item.Quantity,
 	}
 	if item.Sku != nil {
-		i.Image = format.GetGoodsImageUrl(item.Sku.Image)
+		i.Image = item.Sku.Image
 		i.Price = math.Round(float64(item.Sku.Price), 2)
 		i.SpecWord = item.Sku.SpecWord
 		if i.Title == "" {
