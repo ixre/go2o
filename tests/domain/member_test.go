@@ -115,7 +115,7 @@ func TestCreateNewMember(t *testing.T) {
 		Portrait: "",
 		Phone:    phone,
 		Email:    "",
-		RoleFlag: member.RoleEmployee,
+		RoleFlag: member.RoleMchStaff,
 	}
 	m := repo.CreateMember(v) //创建会员
 	id, err := m.Save()

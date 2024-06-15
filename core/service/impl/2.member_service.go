@@ -544,7 +544,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 		// 保存关联信息
 		err = m.BindInviter(inviterId, true)
 		// 添加商户雇员
-		if err == nil && r.UserType == member.RoleEmployee {
+		if err == nil && r.UserType == member.RoleMchStaff {
 			err = mch.EmployeeManager().Create(int(id))
 		}
 	}
@@ -560,7 +560,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 // 获取注册商户雇员的商户信息,如果其他角色,则返回nil
 func (s *memberService) getRegisterMerchant(r *proto.RegisterMemberRequest) (merchant.IMerchant, error) {
 	mchId := typeconv.MustInt(types.OrValue(r.Ext["mchId"], "0"))
-	if r.UserType == member.RoleEmployee {
+	if r.UserType == member.RoleMchStaff {
 		if mchId == 0 {
 			return nil, errors.New("mchId参数未指定")
 		}

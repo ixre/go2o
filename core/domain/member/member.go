@@ -528,15 +528,15 @@ func (m *memberImpl) getUserRoleFlag(v *member.Member) int {
 		v.RegFrom = ""
 		if strings.Contains(v.RegFrom, "EMPLOYEE") {
 			// 商户职员
-			ret |= member.RoleEmployee
+			ret |= member.RoleMchStaff
 		}
 		if strings.Contains(v.RegFrom, "EXT1") {
 			// 扩展角色1
-			ret |= member.RoleEmployee
+			ret |= member.RoleMchStaff
 		}
 		if strings.Contains(v.RegFrom, "EXT2") {
 			// 扩展角色2
-			ret |= member.RoleEmployee
+			ret |= member.RoleMchStaff
 		}
 	}
 	return ret
@@ -685,7 +685,7 @@ func (m *memberImpl) prepare() (err error) {
 	}
 	// 验证角色
 	if m.value.RoleFlag != 0 && !collections.InArray([]int{
-		member.RoleEmployee,
+		member.RoleMchStaff,
 		member.RoleExt1,
 		member.RoleExt2,
 		member.RoleExt3,

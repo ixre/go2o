@@ -1,7 +1,9 @@
 package provide
 
 import (
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/initial/wrap"
+
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -39,7 +41,7 @@ func GetOrm() *wrap.OrmWrapper {
 	return _orm
 }
 
-func GetGOrm() wrap.ORM {
+func GetGOrm() fw.ORM {
 	return _orm.DB
 }
 

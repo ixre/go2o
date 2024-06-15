@@ -57,10 +57,13 @@ func (m *staffRepoImpl) GetStaffByMemberId(memberId int) *staff.Staff {
 	err := m._orm.GetBy(&e, "member_id = $1 and work_status <> $2",
 		memberId,
 		staff.WorkStatusOff)
-	if err != nil && err != sql.ErrNoRows {
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
 		log.Printf("[ Orm][ Error]: %s; Entity:Staff\n", err.Error())
 	}
-	return &e
+	return nil
 }
 
 // SaveStaff Save 商户代理人坐席(员工)

@@ -62,3 +62,7 @@ type (
 		CreateTime int `db:"create_time" json:"createTime" bson:"createTime"`
 	}
 )
+
+func (s *Staff) TableName() string {
+	return "mch_staff"
+}
