@@ -175,8 +175,8 @@ type (
 		GetCertificationInfo() *CerticationInfo
 		// SaveCertificationInfo 保存实名认证信息
 		SaveCertificationInfo(v *CerticationInfo) error
-		// ReviewCertificationInfo 审核实名认证,若重复审核将返回错误
-		ReviewCertificationInfo(pass bool, remark string) error
+		// ReviewCertification 审核实名认证,若重复审核将返回错误
+		ReviewCertification(pass bool, remark string) error
 		// CreateDeliver 创建配送地址
 		CreateDeliver(*ConsigneeAddress) IDeliverAddress
 		// GetDeliverAddress 获取配送地址

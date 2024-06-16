@@ -1010,7 +1010,7 @@ func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddReque
 }
 
 // 实名认证信息
-func (s *memberService) GetCertificationInfo(_ context.Context, id *proto.MemberIdRequest) (*proto.SCertificationInfo, error) {
+func (s *memberService) GetCertification(_ context.Context, id *proto.MemberIdRequest) (*proto.SCertificationInfo, error) {
 	t := &member.CerticationInfo{}
 	m := s.repo.GetMember(id.MemberId)
 	if m != nil {
@@ -1062,9 +1062,9 @@ func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCe
 }
 
 // 审核实名认证,若重复审核将返回错误
-func (s *memberService) ReviewCertificationInfo(_ context.Context, r *proto.ReviewTrustInfoRequest) (*proto.Result, error) {
+func (s *memberService) ReviewCertification(_ context.Context, r *proto.ReviewTrustInfoRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
-	err := m.Profile().ReviewCertificationInfo(r.ReviewPass, r.Remark)
+	err := m.Profile().ReviewCertification(r.ReviewPass, r.Remark)
 	if err != nil {
 		return s.error(err), nil
 	}

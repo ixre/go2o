@@ -165,7 +165,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 	}
 
 	// 审核通过实名信息
-	if err := m.Profile().ReviewCertificationInfo(true, ""); err != nil {
+	if err := m.Profile().ReviewCertification(true, ""); err != nil {
 		return err
 	}
 	// 保存银行信息

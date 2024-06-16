@@ -279,3 +279,15 @@ func TestChangeMemberLevel(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+// TestReviewCertification 测试审核会员认证信息
+func TestReviewCertification(t *testing.T) {
+	memberId := 854
+	repo := inject.GetMemberRepo()
+	m := repo.GetMember(int64(memberId))
+	err := m.Profile().ReviewCertification(true, "测试审核")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}

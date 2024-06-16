@@ -589,6 +589,7 @@ func (p *profileManagerImpl) copyCertificationInfo(src member.CerticationInfo, d
 	dst.ExtraCertExt1 = src.ExtraCertExt1
 	dst.ExtraCertExt2 = src.ExtraCertExt2
 	dst.TrustImage = src.TrustImage
+	dst.ManualReview = src.ManualReview
 	return nil
 }
 
@@ -669,9 +670,12 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 		current.ReviewStatus = int(enum.ReviewAwaiting) //标记为待处理
 		current.UpdateTime = time.Now().Unix()
 		p.trustedInfo = current
-		id, err := p.repo.SaveCertificationInfo(p.trustedInfo)
+		_, err = p.repo.SaveCertificationInfo(p.trustedInfo)
 		if err == nil {
-			p.trustedInfo.Id = int64(id)
+			if v.ManualReview == 0 {
+				// 自动审核
+				err = p.ReviewCertification(true, "自动审核通过")
+			}
 		}
 		return err
 	}
@@ -679,7 +683,7 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 }
 
 // 审核实名认证,若重复审核将返回错误
-func (p *profileManagerImpl) ReviewCertificationInfo(pass bool, remark string) error {
+func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error {
 	p.GetCertificationInfo()
 	if pass {
 		p.trustedInfo.ReviewStatus = int(enum.ReviewPass)
