@@ -17,14 +17,12 @@ package repos
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"strconv"
-	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	si "github.com/ixre/go2o/core/domain/station"
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/db/orm"
 )
 
@@ -34,19 +32,20 @@ var _ station.IStationRepo = new(stationRepoImpl)
 type stationRepoImpl struct {
 	_orm     orm.Orm
 	_manager station.IStationManager
+	sysRepo  sys.ISystemRepo
 }
 
 var modelIsMapped = false
 
 // NewStationRepo Create new StationRepo
-func NewStationRepo(o orm.Orm) station.IStationRepo {
+func NewStationRepo(o orm.Orm, sysRepo sys.ISystemRepo) station.IStationRepo {
 	if !modelIsMapped {
 		_ = o.Mapping(station.SubStation{}, "sys_sub_station")
-		_ = o.Mapping(station.Area{}, "china_area")
 		modelIsMapped = true
 	}
 	return &stationRepoImpl{
-		_orm: o,
+		_orm:    o,
+		sysRepo: sysRepo,
 	}
 }
 
@@ -58,7 +57,7 @@ func (s *stationRepoImpl) CreateStation(v *station.SubStation) station.IStationA
 // GetManager implements station.IStationRepo.
 func (s *stationRepoImpl) GetManager() station.IStationManager {
 	if s._manager == nil {
-		s._manager = si.NewStationManager(s)
+		s._manager = si.NewStationManager(s, s.sysRepo)
 	}
 	return s._manager
 }
@@ -87,53 +86,6 @@ func (s *stationRepoImpl) GetStationByCity(cityCode int) station.IStationAggrega
 		log.Printf("[ Orm][ Error]: %s; Entity:SubStation\n", err.Error())
 	}
 	return nil
-}
-
-// GetAreaList implements station.IStationRepo.
-func (s *stationRepoImpl) GetAreaList(parentId int) []*station.Area {
-	list := make([]*station.Area, 0)
-	err := s._orm.Select(&list, "parent=$1", parentId)
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:Area\n", err.Error())
-	}
-	return list
-}
-
-// GetAllCities implements station.IStationRepo.
-func (s *stationRepoImpl) GetAllCities() []*station.Area {
-	province := make([]*station.Area, 0)
-	_ = s._orm.Select(&province, "parent = 0 and code <> 0")
-	provinceIdList := collections.MapList(province, func(v *station.Area) string {
-		return strconv.Itoa(v.Code)
-	})
-	list := make([]*station.Area, 0)
-	err := s._orm.Select(&list, fmt.Sprintf("parent IN (%s)",
-		strings.Join(provinceIdList, ",")))
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:Area\n", err.Error())
-	}
-	ret := make([]*station.Area, 0)
-	for _, c := range list {
-		c.Name = strings.TrimSpace(c.Name)
-		if c.Name == "市辖区" || c.Name == "县" || c.Name == "区" {
-			// 将直辖市加入到城市列表中
-			isAppend := collections.AnyArray(ret, func(a *station.Area) bool {
-				return a.Code == c.Parent
-			})
-			if isAppend {
-				continue
-			}
-			parents := collections.FilterArray(province, func(a *station.Area) bool {
-				return a.Code == c.Parent
-			})
-			if len(parents) > 0 {
-				ret = append(ret, parents[0])
-			}
-		} else {
-			ret = append(ret, c)
-		}
-	}
-	return ret
 }
 
 // GetStations implements station.IStationRepo.

@@ -21,6 +21,7 @@ var provideSets = wire.NewSet(
 	provide.GetStorageInstance,
 	provide.GetApp,
 	provide.GetDb,
+	repos.NewSystemRepo,
 	repos.NewRegistryRepo,
 	repos.NewProModelRepo,
 	repos.NewValueRepo,

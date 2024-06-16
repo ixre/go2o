@@ -76,6 +76,9 @@ func (r *BaseRepository[M]) Get(id interface{}) *M {
 
 func (r *BaseRepository[M]) joinQueryParams(where string, v ...interface{}) []interface{} {
 	var params []interface{}
+	if len(where) == 0 {
+		return params
+	}
 	if len(where) != 0 {
 		params = append([]interface{}{where}, v...)
 	} else {
@@ -95,7 +98,7 @@ func (r *BaseRepository[M]) FindBy(where string, v ...interface{}) *M {
 
 func (r *BaseRepository[M]) FindList(where string, v ...interface{}) []*M {
 	list := make([]*M, 0)
-	r.ORM.Select(&list, r.joinQueryParams(where, v...)...)
+	r.ORM.Find(&list, r.joinQueryParams(where, v...)...)
 	return list
 }
 

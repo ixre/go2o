@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/go2o/core/infrastructure/util/types"
@@ -13,20 +14,23 @@ import (
 var _ station.IStationManager = new(stationManagerImpl)
 
 type stationManagerImpl struct {
-	repo station.IStationRepo
+	repo    station.IStationRepo
+	sysRepo sys.ISystemRepo
 }
 
-func NewStationManager(repo station.IStationRepo) station.IStationManager {
+func NewStationManager(repo station.IStationRepo, sysRepo sys.ISystemRepo) station.IStationManager {
 	return &stationManagerImpl{
-		repo: repo,
+		repo:    repo,
+		sysRepo: sysRepo,
 	}
 }
 
 // SyncStations implements station.IStationManager.
 func (s *stationManagerImpl) SyncStations() error {
-	arr := s.repo.GetAllCities()
+	is := s.sysRepo.GetSystemAggregateRoot()
+	arr := is.Address().GetAllCities()
 	stations := s.repo.GetStations()
-	syncArray := make([]*station.Area, 0)
+	syncArray := make([]*sys.Region, 0)
 	for _, v := range arr {
 		exists := false
 		for _, s := range stations {
@@ -48,7 +52,7 @@ func (s *stationManagerImpl) SyncStations() error {
 	return nil
 }
 
-func (s *stationManagerImpl) createSubStation(city *station.Area) {
+func (s *stationManagerImpl) createSubStation(city *sys.Region) {
 	i := s.repo.CreateStation(&station.SubStation{
 		CityCode:   city.Code,
 		Status:     0,

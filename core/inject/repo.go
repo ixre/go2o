@@ -28,6 +28,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 )
@@ -38,6 +39,11 @@ import (
 //r.memberRepo.GetManager().GetAllBuyerGroups()
 
 func GetProModelRepo() promodel.IProductModelRepo {
+	panic(wire.Build(provideSets))
+}
+
+// 获取系统仓库
+func GetSystemRepo() sys.ISystemRepo {
 	panic(wire.Build(provideSets))
 }
 

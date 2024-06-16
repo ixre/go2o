@@ -3647,7 +3647,7 @@ func (x *SAddress) GetDistrict() int32 {
 	return 0
 }
 
-func (x *SAddress) GetArea() string {
+func (x *SAddress) GetRegion() string {
 	if x != nil {
 		return x.Area
 	}

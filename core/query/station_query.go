@@ -7,7 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/domain/interface/sys"
+
 	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -56,10 +57,10 @@ func NewStationQuery(o orm.Orm) *StationQuery {
 
 // QueryStations 查询站点列表
 func (s *StationQuery) QueryStations(status int) []*StationArea {
-	list := make([]*station.Area, 0)
+	list := make([]*sys.Region, 0)
 	_ = s._orm.Select(&list, "parent = 0 and code <> 0")
 
-	province := collections.MapList(list, func(v *station.Area) *StationArea {
+	province := collections.MapList(list, func(v *sys.Region) *StationArea {
 		return &StationArea{
 			Id:       v.Code,
 			Name:     v.Name,
@@ -67,13 +68,13 @@ func (s *StationQuery) QueryStations(status int) []*StationArea {
 		}
 	})
 
-	provinceIdList := collections.MapList(list, func(v *station.Area) string {
+	provinceIdList := collections.MapList(list, func(v *sys.Region) string {
 		return strconv.Itoa(v.Code)
 	})
 	cities := make([]*SubStation, 0)
 	err := s._orm.SelectByQuery(&cities, fmt.Sprintf(`
 		SELECT s.id,a.name,s.status,s.letter,s.is_hot,a.parent FROM sys_sub_station s
-		INNER JOIN china_area a ON a.code = s.city_code
+		INNER JOIN sys_region a ON a.code = s.city_code
 		WHERE a.parent IN (%s)`,
 		strings.Join(provinceIdList, ",")))
 	if err != nil && err != sql.ErrNoRows {
@@ -99,7 +100,7 @@ func (s *StationQuery) QueryGroupStations(status int) map[string][]SubStation {
 	cities := make([]*SubStation, 0)
 	err := s._orm.SelectByQuery(&cities, `
 	SELECT s.id,a.name,s.city_code,s.status,s.letter,s.is_hot,a.parent FROM sys_sub_station s
-	LEFT JOIN china_area a ON a.code = s.city_code`)
+	LEFT JOIN sys_region a ON a.code = s.city_code`)
 	if err != nil && err != sql.ErrNoRows {
 		log.Printf("[ Orm][ Error]: %s; Entity:Area\n", err.Error())
 	}

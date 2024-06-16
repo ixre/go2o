@@ -503,4 +503,7 @@ COMMENT ON COLUMN "public".mm_cert_info.remark IS '备注';
 COMMENT ON COLUMN "public".mm_cert_info.update_time IS '更新时间';
 
 -- 删除域名相关配置
-delete FROM registry WHERE key like 'domain_%'
+delete FROM registry WHERE key like 'domain_%';
+
+-- 更改地区表名
+ALTER TABLE china_area RENAME TO sys_region;

@@ -377,7 +377,7 @@ func (r *valueRepo) GetAreaName(code int32) string {
 	key := "go2o:repo:area:name-" + strId
 	name, err := r.storage.GetString(key)
 	if err != nil {
-		err = r.Connector.ExecScalar("SELECT name FROM china_area WHERE code= $1", &name, strId)
+		err = r.Connector.ExecScalar("SELECT name FROM sys_region WHERE code= $1", &name, strId)
 		if err == nil {
 			name = strings.TrimSpace(name)
 			if name == "市辖区" || name == "市辖县" || name == "县" {
