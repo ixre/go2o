@@ -15,8 +15,10 @@ import (
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/go2o/core/infrastructure/util/sensitive"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/module/bank"
@@ -31,6 +33,7 @@ type foundationService struct {
 	_rep         valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
 	notifyRepo   mss.IMessageRepo
+	sysRepo      sys.ISystemRepo
 	_s           storage.Interface
 	serviceUtil
 	proto.UnimplementedFoundationServiceServer
@@ -38,12 +41,14 @@ type foundationService struct {
 
 func NewFoundationService(rep valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo,
+	sysRepo sys.ISystemRepo,
 	s storage.Interface,
 	notifyRepo mss.IMessageRepo) proto.FoundationServiceServer {
 	return &foundationService{
 		_rep:         rep,
 		_s:           s,
 		notifyRepo:   notifyRepo,
+		sysRepo:      sysRepo,
 		registryRepo: registryRepo,
 	}
 }
@@ -325,9 +330,17 @@ func (s *foundationService) GetChildAreas(_ context.Context, code *proto.Int32) 
 }
 
 // GetAreaNames 获取地区名称
-func (s *foundationService) GetAreaNames(_ context.Context, request *proto.GetAreaNamesRequest) (*proto.StringListResponse, error) {
-	return &proto.StringListResponse{
-		Value: s._rep.GetAreaNames(request.Value),
+func (s *foundationService) GetAreaNames(_ context.Context, request *proto.GetAreaNamesRequest) (*proto.IntStringMapResponse, error) {
+	isa := s.sysRepo.GetSystemAggregateRoot().Address()
+	codes := collections.MapList(request.Value, func(i int32) int {
+		return int(i)
+	})
+	mp := isa.GetRegionNames(codes...)
+	retMap := collections.Map(mp, func(k int, v string) (uint64, string) {
+		return uint64(k), v
+	})
+	return &proto.IntStringMapResponse{
+		Value: retMap,
 	}, nil
 }
 

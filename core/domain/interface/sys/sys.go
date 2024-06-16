@@ -23,6 +23,8 @@ type (
 		GetAllCities() []*Region
 		// GetRegionList 获取区域信息
 		GetRegionList(parentId int) []*Region
+		// GetRegions 获取区域名称
+		GetRegionNames(code ...int) map[int]string
 	}
 
 	// IOptionManager 选项管理器

@@ -42,10 +42,20 @@ func FindArray[T interface{}](arr []T, f func(e T) bool) (t T) {
 }
 
 // MapList 映射列表
-func MapList[T any, K any](arr []T, f func(T) K) []K {
-	var ret = make([]K, len(arr))
+func MapList[T any, M any](arr []T, f func(T) M) []M {
+	var ret = make([]M, len(arr))
 	for i := range arr {
 		ret[i] = f(arr[i])
+	}
+	return ret
+}
+
+// Map 映射
+func Map[K, I comparable, V, M any](m map[K]V, f func(K, V) (I, M)) map[I]M {
+	var ret = make(map[I]M, len(m))
+	for k, v := range m {
+		i, m := f(k, v)
+		ret[i] = m
 	}
 	return ret
 }

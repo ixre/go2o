@@ -463,9 +463,11 @@ func GetFoundationService() proto.FoundationServiceServer {
 	storageInterface := provide.GetStorageInstance()
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	db := provide.GetGOrm()
+	iSystemRepo := repos.NewSystemRepo(db)
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
-	foundationServiceServer := impl2.NewFoundationService(iValueRepo, iRegistryRepo, storageInterface, iMessageRepo)
+	foundationServiceServer := impl2.NewFoundationService(iValueRepo, iRegistryRepo, iSystemRepo, storageInterface, iMessageRepo)
 	return foundationServiceServer
 }
 

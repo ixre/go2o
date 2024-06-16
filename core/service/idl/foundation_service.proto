@@ -61,7 +61,7 @@ service FoundationService {
     rpc GetSyncLoginUrl (String) returns (String) {
     }
     // 获取地区名称
-    rpc GetAreaNames (GetAreaNamesRequest) returns (StringListResponse) {
+    rpc GetAreaNames (GetAreaNamesRequest) returns (IntStringMapResponse) {
     }
     // 获取省市区字符串
     rpc GetAreaString (AreaStringRequest) returns (String) {

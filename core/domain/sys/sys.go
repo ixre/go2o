@@ -64,6 +64,22 @@ func (a *addressManagerImpl) getProvinces() []*sys.Region {
 	})
 }
 
+// GetRegionNames implements sys.IAddressManager.
+func (a *addressManagerImpl) GetRegionNames(code ...int) map[int]string {
+	mp := make(map[int]string)
+	for _, v := range a.getAreaList() {
+		if len(mp) == len(code) {
+			break
+		}
+		if collections.AnyArray(code, func(c int) bool {
+			return c == v.Code
+		}) {
+			mp[v.Code] = v.Name
+		}
+	}
+	return mp
+}
+
 // GetAllCities 获取所有城市列表
 func (a *addressManagerImpl) GetAllCities() []*sys.Region {
 	provinceList := a.getProvinces()

@@ -36,3 +36,13 @@ func GetCityName(addr string) (string, error) {
 	}
 	return matches[0][2], nil
 }
+
+// 去除省市区中的直辖区和县
+func TrimAreaNames(arr []string) []string {
+	if len(arr) >= 3 {
+		if arr[1] == "市辖区" || arr[1] == "市辖县" || arr[1] == "县" {
+			return []string{arr[0], arr[2]}
+		}
+	}
+	return arr
+}

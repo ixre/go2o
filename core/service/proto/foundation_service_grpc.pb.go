@@ -84,7 +84,7 @@ type FoundationServiceClient interface {
 	// 创建同步登录的地址,returnUrl
 	GetSyncLoginUrl(ctx context.Context, in *String, opts ...grpc.CallOption) (*String, error)
 	// 获取地区名称
-	GetAreaNames(ctx context.Context, in *GetAreaNamesRequest, opts ...grpc.CallOption) (*StringListResponse, error)
+	GetAreaNames(ctx context.Context, in *GetAreaNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error)
 	// 获取省市区字符串
 	GetAreaString(ctx context.Context, in *AreaStringRequest, opts ...grpc.CallOption) (*String, error)
 	// 获取下级区域,code
@@ -230,8 +230,8 @@ func (c *foundationServiceClient) GetSyncLoginUrl(ctx context.Context, in *Strin
 	return out, nil
 }
 
-func (c *foundationServiceClient) GetAreaNames(ctx context.Context, in *GetAreaNamesRequest, opts ...grpc.CallOption) (*StringListResponse, error) {
-	out := new(StringListResponse)
+func (c *foundationServiceClient) GetAreaNames(ctx context.Context, in *GetAreaNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error) {
+	out := new(IntStringMapResponse)
 	err := c.cc.Invoke(ctx, FoundationService_GetAreaNames_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -360,7 +360,7 @@ type FoundationServiceServer interface {
 	// 创建同步登录的地址,returnUrl
 	GetSyncLoginUrl(context.Context, *String) (*String, error)
 	// 获取地区名称
-	GetAreaNames(context.Context, *GetAreaNamesRequest) (*StringListResponse, error)
+	GetAreaNames(context.Context, *GetAreaNamesRequest) (*IntStringMapResponse, error)
 	// 获取省市区字符串
 	GetAreaString(context.Context, *AreaStringRequest) (*String, error)
 	// 获取下级区域,code
@@ -425,7 +425,7 @@ func (UnimplementedFoundationServiceServer) FlushSuperPwd(context.Context, *User
 func (UnimplementedFoundationServiceServer) GetSyncLoginUrl(context.Context, *String) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSyncLoginUrl not implemented")
 }
-func (UnimplementedFoundationServiceServer) GetAreaNames(context.Context, *GetAreaNamesRequest) (*StringListResponse, error) {
+func (UnimplementedFoundationServiceServer) GetAreaNames(context.Context, *GetAreaNamesRequest) (*IntStringMapResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAreaNames not implemented")
 }
 func (UnimplementedFoundationServiceServer) GetAreaString(context.Context, *AreaStringRequest) (*String, error) {
