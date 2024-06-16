@@ -37,7 +37,7 @@ func (s *systemAggregateRootImpl) Address() sys.IAddressManager {
 // Options implements sys.ISystemAggregateRoot.
 func (s *systemAggregateRootImpl) Options() sys.IOptionManager {
 	if s._options == nil {
-		//s._options = &optionManagerImpl{s._repo.Options()}
+		s._options = &optionManagerImpl{s._repo.Option(), nil}
 	}
 	return s._options
 }
@@ -124,4 +124,30 @@ func (a *addressManagerImpl) GetRegionList(parentId int) []*sys.Region {
 var _ sys.IOptionManager = new(optionManagerImpl)
 
 type optionManagerImpl struct {
+	fw.Repository[sys.GeneralOption]
+	allList []*sys.GeneralOption
+}
+
+// getAreaList 获取地区列表
+func (o *optionManagerImpl) getList() []*sys.GeneralOption {
+	if o.allList == nil {
+		o.allList = o.FindList("")
+	}
+	return o.allList
+}
+
+// GetOptionNames implements sys.IOptionManager.
+func (o *optionManagerImpl) GetOptionNames(code ...int) map[int]string {
+	mp := make(map[int]string)
+	for _, v := range o.getList() {
+		if len(mp) == len(code) {
+			break
+		}
+		if collections.AnyArray(code, func(c int) bool {
+			return c == v.Id
+		}) {
+			mp[v.Id] = v.Name
+		}
+	}
+	return mp
 }

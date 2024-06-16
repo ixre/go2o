@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	FoundationService_CheckSensitive_FullMethodName       = "/FoundationService/CheckSensitive"
 	FoundationService_ReplaceSensitive_FullMethodName     = "/FoundationService/ReplaceSensitive"
+	FoundationService_GetOptionNames_FullMethodName       = "/FoundationService/GetOptionNames"
 	FoundationService_GetSmsSetting_FullMethodName        = "/FoundationService/GetSmsSetting"
 	FoundationService_SaveSmsSetting_FullMethodName       = "/FoundationService/SaveSmsSetting"
 	FoundationService_CleanCache_FullMethodName           = "/FoundationService/CleanCache"
@@ -32,7 +33,7 @@ const (
 	FoundationService_SuperValidate_FullMethodName        = "/FoundationService/SuperValidate"
 	FoundationService_FlushSuperPwd_FullMethodName        = "/FoundationService/FlushSuperPwd"
 	FoundationService_GetSyncLoginUrl_FullMethodName      = "/FoundationService/GetSyncLoginUrl"
-	FoundationService_GetAreaNames_FullMethodName         = "/FoundationService/GetAreaNames"
+	FoundationService_GetRegionNames_FullMethodName         = "/FoundationService/GetRegionNames"
 	FoundationService_GetAreaString_FullMethodName        = "/FoundationService/GetAreaString"
 	FoundationService_GetChildAreas_FullMethodName        = "/FoundationService/GetChildAreas"
 	FoundationService_GetMoAppConf_FullMethodName         = "/FoundationService/GetMoAppConf"
@@ -52,6 +53,8 @@ type FoundationServiceClient interface {
 	CheckSensitive(ctx context.Context, in *String, opts ...grpc.CallOption) (*Bool, error)
 	// * 替换敏感词
 	ReplaceSensitive(ctx context.Context, in *ReplaceSensitiveRequest, opts ...grpc.CallOption) (*String, error)
+	// 获取选项名称
+	GetOptionNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error)
 	// * 获取短信API凭据, provider 短信服务商, 默认:http
 	GetSmsSetting(ctx context.Context, in *GetSmsSettingRequest, opts ...grpc.CallOption) (*SSmsProviderSetting, error)
 	// * 保存短信API凭据,@provider 短信服务商, 默认:http
@@ -84,7 +87,7 @@ type FoundationServiceClient interface {
 	// 创建同步登录的地址,returnUrl
 	GetSyncLoginUrl(ctx context.Context, in *String, opts ...grpc.CallOption) (*String, error)
 	// 获取地区名称
-	GetAreaNames(ctx context.Context, in *GetAreaNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error)
+	GetRegionNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error)
 	// 获取省市区字符串
 	GetAreaString(ctx context.Context, in *AreaStringRequest, opts ...grpc.CallOption) (*String, error)
 	// 获取下级区域,code
@@ -125,6 +128,15 @@ func (c *foundationServiceClient) CheckSensitive(ctx context.Context, in *String
 func (c *foundationServiceClient) ReplaceSensitive(ctx context.Context, in *ReplaceSensitiveRequest, opts ...grpc.CallOption) (*String, error) {
 	out := new(String)
 	err := c.cc.Invoke(ctx, FoundationService_ReplaceSensitive_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundationServiceClient) GetOptionNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error) {
+	out := new(IntStringMapResponse)
+	err := c.cc.Invoke(ctx, FoundationService_GetOptionNames_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -230,9 +242,9 @@ func (c *foundationServiceClient) GetSyncLoginUrl(ctx context.Context, in *Strin
 	return out, nil
 }
 
-func (c *foundationServiceClient) GetAreaNames(ctx context.Context, in *GetAreaNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error) {
+func (c *foundationServiceClient) GetRegionNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error) {
 	out := new(IntStringMapResponse)
-	err := c.cc.Invoke(ctx, FoundationService_GetAreaNames_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, FoundationService_GetRegionNames_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -328,6 +340,8 @@ type FoundationServiceServer interface {
 	CheckSensitive(context.Context, *String) (*Bool, error)
 	// * 替换敏感词
 	ReplaceSensitive(context.Context, *ReplaceSensitiveRequest) (*String, error)
+	// 获取选项名称
+	GetOptionNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error)
 	// * 获取短信API凭据, provider 短信服务商, 默认:http
 	GetSmsSetting(context.Context, *GetSmsSettingRequest) (*SSmsProviderSetting, error)
 	// * 保存短信API凭据,@provider 短信服务商, 默认:http
@@ -360,7 +374,7 @@ type FoundationServiceServer interface {
 	// 创建同步登录的地址,returnUrl
 	GetSyncLoginUrl(context.Context, *String) (*String, error)
 	// 获取地区名称
-	GetAreaNames(context.Context, *GetAreaNamesRequest) (*IntStringMapResponse, error)
+	GetRegionNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error)
 	// 获取省市区字符串
 	GetAreaString(context.Context, *AreaStringRequest) (*String, error)
 	// 获取下级区域,code
@@ -391,6 +405,9 @@ func (UnimplementedFoundationServiceServer) CheckSensitive(context.Context, *Str
 }
 func (UnimplementedFoundationServiceServer) ReplaceSensitive(context.Context, *ReplaceSensitiveRequest) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReplaceSensitive not implemented")
+}
+func (UnimplementedFoundationServiceServer) GetOptionNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOptionNames not implemented")
 }
 func (UnimplementedFoundationServiceServer) GetSmsSetting(context.Context, *GetSmsSettingRequest) (*SSmsProviderSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSmsSetting not implemented")
@@ -425,8 +442,8 @@ func (UnimplementedFoundationServiceServer) FlushSuperPwd(context.Context, *User
 func (UnimplementedFoundationServiceServer) GetSyncLoginUrl(context.Context, *String) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSyncLoginUrl not implemented")
 }
-func (UnimplementedFoundationServiceServer) GetAreaNames(context.Context, *GetAreaNamesRequest) (*IntStringMapResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAreaNames not implemented")
+func (UnimplementedFoundationServiceServer) GetRegionNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRegionNames not implemented")
 }
 func (UnimplementedFoundationServiceServer) GetAreaString(context.Context, *AreaStringRequest) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAreaString not implemented")
@@ -500,6 +517,24 @@ func _FoundationService_ReplaceSensitive_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FoundationServiceServer).ReplaceSensitive(ctx, req.(*ReplaceSensitiveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundationService_GetOptionNames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNamesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).GetOptionNames(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FoundationService_GetOptionNames_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).GetOptionNames(ctx, req.(*GetNamesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -702,20 +737,20 @@ func _FoundationService_GetSyncLoginUrl_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FoundationService_GetAreaNames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAreaNamesRequest)
+func _FoundationService_GetRegionNames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNamesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FoundationServiceServer).GetAreaNames(ctx, in)
+		return srv.(FoundationServiceServer).GetRegionNames(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FoundationService_GetAreaNames_FullMethodName,
+		FullMethod: FoundationService_GetRegionNames_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FoundationServiceServer).GetAreaNames(ctx, req.(*GetAreaNamesRequest))
+		return srv.(FoundationServiceServer).GetRegionNames(ctx, req.(*GetNamesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -898,6 +933,10 @@ var FoundationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _FoundationService_ReplaceSensitive_Handler,
 		},
 		{
+			MethodName: "GetOptionNames",
+			Handler:    _FoundationService_GetOptionNames_Handler,
+		},
+		{
 			MethodName: "GetSmsSetting",
 			Handler:    _FoundationService_GetSmsSetting_Handler,
 		},
@@ -942,8 +981,8 @@ var FoundationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _FoundationService_GetSyncLoginUrl_Handler,
 		},
 		{
-			MethodName: "GetAreaNames",
-			Handler:    _FoundationService_GetAreaNames_Handler,
+			MethodName: "GetRegionNames",
+			Handler:    _FoundationService_GetRegionNames_Handler,
 		},
 		{
 			MethodName: "GetAreaString",

@@ -329,13 +329,28 @@ func (s *foundationService) GetChildAreas(_ context.Context, code *proto.Int32) 
 	}, nil
 }
 
-// GetAreaNames 获取地区名称
-func (s *foundationService) GetAreaNames(_ context.Context, request *proto.GetAreaNamesRequest) (*proto.IntStringMapResponse, error) {
+// GetRegionNames 获取地区名称
+func (s *foundationService) GetRegionNames(_ context.Context, request *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Address()
 	codes := collections.MapList(request.Value, func(i int32) int {
 		return int(i)
 	})
 	mp := isa.GetRegionNames(codes...)
+	retMap := collections.Map(mp, func(k int, v string) (uint64, string) {
+		return uint64(k), v
+	})
+	return &proto.IntStringMapResponse{
+		Value: retMap,
+	}, nil
+}
+
+// GetOptionNames implements proto.FoundationServiceServer.
+func (s *foundationService) GetOptionNames(_ context.Context, req *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
+	isa := s.sysRepo.GetSystemAggregateRoot().Options()
+	codes := collections.MapList(req.Value, func(i int32) int {
+		return int(i)
+	})
+	mp := isa.GetOptionNames(codes...)
 	retMap := collections.Map(mp, func(k int, v string) (uint64, string) {
 		return uint64(k), v
 	})

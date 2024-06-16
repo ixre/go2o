@@ -14,6 +14,9 @@ service FoundationService {
     /** 替换敏感词 */
     rpc ReplaceSensitive(ReplaceSensitiveRequest)returns(String) {}
 
+    // 获取选项名称
+    rpc GetOptionNames (GetNamesRequest) returns (IntStringMapResponse) {
+    }
   
     /** 获取短信API凭据, provider 短信服务商, 默认:http */
     rpc GetSmsSetting (GetSmsSettingRequest) returns (SSmsProviderSetting) {
@@ -61,7 +64,7 @@ service FoundationService {
     rpc GetSyncLoginUrl (String) returns (String) {
     }
     // 获取地区名称
-    rpc GetAreaNames (GetAreaNamesRequest) returns (IntStringMapResponse) {
+    rpc GetRegionNames (GetNamesRequest) returns (IntStringMapResponse) {
     }
     // 获取省市区字符串
     rpc GetAreaString (AreaStringRequest) returns (String) {

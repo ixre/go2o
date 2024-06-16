@@ -241,7 +241,7 @@ func (e *expressTemplateImpl) saveAreaTemplate(t *express.RegionExpressTemplate)
 		intArr[i] = int32(i2)
 	}
 	// 获取对应的中文名称
-	names := e._valRepo.GetAreaNames(intArr)
+	names := e._valRepo.GetRegionNames(intArr)
 	t.NameList = strings.Join(names, ",")
 
 	// 保存,如果未出错,则更新缓存

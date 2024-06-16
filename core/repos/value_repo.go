@@ -390,7 +390,7 @@ func (r *valueRepo) GetAreaName(code int32) string {
 }
 
 // 获取地区名称
-func (r *valueRepo) GetAreaNames(codeArr []int32) []string {
+func (r *valueRepo) GetRegionNames(codeArr []int32) []string {
 	arr := make([]string, len(codeArr))
 	for i, v := range codeArr {
 		arr[i] = r.GetAreaName(v)
@@ -405,13 +405,13 @@ func (r *valueRepo) GetAreaNames(codeArr []int32) []string {
 
 // 获取省市区字符串
 func (r *valueRepo) GetAreaString(province, city, district int32) string {
-	names := r.GetAreaNames([]int32{province, city, district})
+	names := r.GetRegionNames([]int32{province, city, district})
 	return strings.Join(names, " ")
 }
 
 // 获取省市区字符串
 func (r *valueRepo) AreaString(province, city, district int32, detail string) string {
-	names := r.GetAreaNames([]int32{province, city, district})
+	names := r.GetRegionNames([]int32{province, city, district})
 	prefix := []byte(strings.Join(names, ""))
 	if len(prefix) != 0 && len(detail) != 0 {
 		i := strings.IndexFunc(detail, func(r rune) bool {

@@ -255,7 +255,7 @@ type (
 		GetAreaName(code int32) string
 
 		// 获取地区名称
-		GetAreaNames(codeArr []int32) []string
+		GetRegionNames(codeArr []int32) []string
 		// 获取省市区字符串
 		AreaString(province, city, district int32, detail string) string
 		// 获取省市区字符串

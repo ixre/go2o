@@ -96,7 +96,7 @@ message IntStringMapResponse{
     map<uint64, string> value =  1;
 }
 
-message GetAreaNamesRequest {
+message GetNamesRequest {
     repeated sint32 value =  1;
 }
 
