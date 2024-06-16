@@ -10,7 +10,7 @@ require (
 	github.com/gomodule/redigo v1.9.2
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.15.20
+	github.com/ixre/gof v1.15.21
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/nats-io/nats.go v1.36.0
 	github.com/pelletier/go-toml v1.9.5 // indirect
