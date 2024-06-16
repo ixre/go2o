@@ -106,7 +106,7 @@ message SubmitCertificationRequest {
   SCertificationInfo info = 2;
 }
 
-message ReviewTrustInfoRequest {
+message ReviewCertificationRequest {
   int64 memberId = 1;
   bool reviewPass = 2;
   string remark = 3;

@@ -460,7 +460,7 @@ var file_member_service_proto_goTypes = []interface{}{
 	(*Empty)(nil),                          // 5: Empty
 	(*MemberIdRequest)(nil),                // 6: MemberIdRequest
 	(*SubmitCertificationRequest)(nil),     // 7: SubmitCertificationRequest
-	(*ReviewTrustInfoRequest)(nil),         // 8: ReviewTrustInfoRequest
+	(*ReviewCertificationRequest)(nil),         // 8: ReviewCertificationRequest
 	(*Int32)(nil),                          // 9: Int32
 	(*SMemberLevel)(nil),                   // 10: SMemberLevel
 	(*String)(nil),                         // 11: String
@@ -543,7 +543,7 @@ var file_member_service_proto_depIdxs = []int32{
 	5,  // 3: MemberService.GetLevels:input_type -> Empty
 	6,  // 4: MemberService.GetCertification:input_type -> MemberIdRequest
 	7,  // 5: MemberService.SubmitCertification:input_type -> SubmitCertificationRequest
-	8,  // 6: MemberService.ReviewCertification:input_type -> ReviewTrustInfoRequest
+	8,  // 6: MemberService.ReviewCertification:input_type -> ReviewCertificationRequest
 	9,  // 7: MemberService.GetMemberLevel:input_type -> Int32
 	10, // 8: MemberService.SaveMemberLevel:input_type -> SMemberLevel
 	11, // 9: MemberService.GetLevelBySign:input_type -> String

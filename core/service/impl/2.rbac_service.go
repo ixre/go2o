@@ -32,8 +32,8 @@ import (
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/typeconv"
 	"github.com/ixre/gof/types"
-	"github.com/ixre/gof/types/typeconv"
 	"github.com/ixre/gof/util"
 )
 

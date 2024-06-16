@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/ixre/go2o/core/query"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 )
 
 func TestQueryMemberNormalOrderList(t *testing.T) {

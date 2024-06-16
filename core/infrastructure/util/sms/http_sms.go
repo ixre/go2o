@@ -11,7 +11,7 @@ import (
 	"time"
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 	"github.com/ixre/gof/util"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/simplifiedchinese"

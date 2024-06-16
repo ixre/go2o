@@ -6,7 +6,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/inject"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 )
 
 func TestSaveProduct(t *testing.T) {

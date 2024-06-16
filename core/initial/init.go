@@ -11,6 +11,7 @@ package initial
 import (
 	"github.com/ixre/go2o/core/event/msq"
 	"github.com/ixre/go2o/core/infrastructure/locker"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/variable"
 )
@@ -41,4 +42,24 @@ func AppDispose() {
 	//if clickhouse.connInstance != nil{
 	//	clickhouse.connInstance.Close()
 	//}
+}
+
+// ResetCache 重置缓存
+func ResetCache() {
+	sto := provide.GetStorageInstance()
+	prefixs := []string{
+		"go2o",
+		"member",
+		"merchant",
+	}
+	var total int
+	for _, v := range prefixs {
+		i, err := sto.DeleteWith(v)
+		if err != nil {
+			logger.Error("reset cache error, %s", err.Error())
+			return
+		}
+		total += i
+	}
+	logger.Info("reset cache complete! total %s keys", total)
 }

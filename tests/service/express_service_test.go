@@ -6,7 +6,7 @@ import (
 
 	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 )
 
 // TestGetProviderGroup 测试快递分组

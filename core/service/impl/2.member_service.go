@@ -33,7 +33,7 @@ import (
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 	"github.com/ixre/gof/util"
 )
 
@@ -1062,7 +1062,7 @@ func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCe
 }
 
 // 审核实名认证,若重复审核将返回错误
-func (s *memberService) ReviewCertification(_ context.Context, r *proto.ReviewTrustInfoRequest) (*proto.Result, error) {
+func (s *memberService) ReviewCertification(_ context.Context, r *proto.ReviewCertificationRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	err := m.Profile().ReviewCertification(r.ReviewPass, r.Remark)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/inject"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 )
 
 func TestGetNormalCartItems(t *testing.T) {

@@ -40,7 +40,7 @@ type (
 		// DeleteBy 根据条件删除
 		DeleteBy(where string, v ...interface{}) (int, error)
 		// PagingQuery 查询分页数据
-		PagingQuery(begin, end int, orderBy string, where string, args ...interface{}) (total int, rows []*M, err error)
+		PagingQuery(p *PagingParams) (r *PagingResult, err error)
 		// Count 统计条数
 		//Count(where string, v ...interface{}) (int, error)
 	}
@@ -55,7 +55,7 @@ type (
 		// Delete 删除
 		Delete(v *M) error
 		// PagingQuery 查询分页数据
-		PagingQuery(begin, end int, orderBy, where string, args ...interface{}) (total int, rows []*M, err error)
+		PagingQuery(p *PagingParams) (r *PagingResult, err error)
 	}
 )
 
@@ -120,23 +120,30 @@ func (r *BaseRepository[M]) DeleteBy(where string, v ...interface{}) (int, error
 	return int(tx.RowsAffected), nil
 }
 
-func (r *BaseRepository[M]) PagingQuery(begin, end int, orderBy string, where string, args ...interface{}) (total int, rows []*M, err error) {
+func (r *BaseRepository[M]) PagingQuery(p *PagingParams) (ret *PagingResult, err error) {
 	var m M
-	var list []*M
 	var t int64
 	wh := func(tx *gorm.DB) *gorm.DB {
-		if len(where) > 0 {
-			tx.Where(where, args...)
+		if len(p.Arguments) > 0 {
+			tx.Where(p.Arguments)
 		}
 		return tx
 	}
+	var list []interface{}
 	err = wh(r.ORM.Model(&m)).Count(&t).Error
-	if err == nil {
-		if t > 0 {
-			err = wh(r.ORM.Limit(end - begin).Offset(begin)).Find(&list).Error
+	if err == nil && t > 0 {
+		tx := r.ORM.Limit(p.Size).Offset(p.Begin)
+		if len(p.Order) > 0 {
+			// 排序
+			tx = tx.Order(p.Order)
 		}
+		err = wh(tx).Find(&list).Error
 	}
-	return int(t), list, err
+	return &PagingResult{
+		Total: int(t),
+		Rows:  list,
+		Extra: nil,
+	}, err
 }
 
 var _ Service[any] = new(BaseService[any])
@@ -161,6 +168,33 @@ func (m *BaseService[M]) Delete(v *M) error {
 	return m.Repo.Delete(v)
 }
 
-func (m *BaseService[M]) PagingQuery(begin, end int, orderBy, where string, args ...interface{}) (total int, rows []*M, err error) {
-	return m.Repo.PagingQuery(begin, end, orderBy, where, args...)
+func (m *BaseService[M]) PagingQuery(p *PagingParams) (ret *PagingResult, err error) {
+	return m.Repo.PagingQuery(p)
+}
+
+// 分页参数
+// // Arguments: 第一个参数为SQL条件语句,后面跟参数,如:
+//
+//	&PagingParams{
+//		Arguments: []interface{}{"id=? and name=?", "test"},
+//	}
+type PagingParams struct {
+	// 开始数量
+	Begin int `json:"begin"`
+	// 单页数量
+	Size int `json:"size"`
+	// 排序条件
+	Order string `json:"order"`
+	// SQL条件及参数
+	Arguments []interface{} `json:"arguments"`
+}
+
+// 分页结果
+type PagingResult struct {
+	// 总数量
+	Total int `json:"total"`
+	// 当前页数据
+	Rows []interface{} `json:"rows"`
+	// 额外信息
+	Extra map[string]interface{} `json:"extra,omitempty"`
 }

@@ -969,7 +969,7 @@ func (x *SubmitCertificationRequest) GetInfo() *SCertificationInfo {
 	return nil
 }
 
-type ReviewTrustInfoRequest struct {
+type ReviewCertificationRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -979,8 +979,8 @@ type ReviewTrustInfoRequest struct {
 	Remark     string `protobuf:"bytes,3,opt,name=remark,proto3" json:"remark"`
 }
 
-func (x *ReviewTrustInfoRequest) Reset() {
-	*x = ReviewTrustInfoRequest{}
+func (x *ReviewCertificationRequest) Reset() {
+	*x = ReviewCertificationRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_message_member_dto_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -988,13 +988,13 @@ func (x *ReviewTrustInfoRequest) Reset() {
 	}
 }
 
-func (x *ReviewTrustInfoRequest) String() string {
+func (x *ReviewCertificationRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ReviewTrustInfoRequest) ProtoMessage() {}
+func (*ReviewCertificationRequest) ProtoMessage() {}
 
-func (x *ReviewTrustInfoRequest) ProtoReflect() protoreflect.Message {
+func (x *ReviewCertificationRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_message_member_dto_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1006,26 +1006,26 @@ func (x *ReviewTrustInfoRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ReviewTrustInfoRequest.ProtoReflect.Descriptor instead.
-func (*ReviewTrustInfoRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ReviewCertificationRequest.ProtoReflect.Descriptor instead.
+func (*ReviewCertificationRequest) Descriptor() ([]byte, []int) {
 	return file_message_member_dto_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *ReviewTrustInfoRequest) GetMemberId() int64 {
+func (x *ReviewCertificationRequest) GetMemberId() int64 {
 	if x != nil {
 		return x.MemberId
 	}
 	return 0
 }
 
-func (x *ReviewTrustInfoRequest) GetReviewPass() bool {
+func (x *ReviewCertificationRequest) GetReviewPass() bool {
 	if x != nil {
 		return x.ReviewPass
 	}
 	return false
 }
 
-func (x *ReviewTrustInfoRequest) GetRemark() string {
+func (x *ReviewCertificationRequest) GetRemark() string {
 	if x != nil {
 		return x.Remark
 	}
@@ -6746,7 +6746,7 @@ var file_message_member_dto_proto_goTypes = []interface{}{
 	(*FindMemberRequest)(nil),              // 12: FindMemberRequest
 	(*SMemberLevelListResponse)(nil),       // 13: SMemberLevelListResponse
 	(*SubmitCertificationRequest)(nil),     // 14: SubmitCertificationRequest
-	(*ReviewTrustInfoRequest)(nil),         // 15: ReviewTrustInfoRequest
+	(*ReviewCertificationRequest)(nil),         // 15: ReviewCertificationRequest
 	(*LockRequest)(nil),                    // 16: LockRequest
 	(*GrantFlagRequest)(nil),               // 17: GrantFlagRequest
 	(*SendCodeRequest)(nil),                // 18: SendCodeRequest
@@ -6960,7 +6960,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReviewTrustInfoRequest); i {
+			switch v := v.(*ReviewCertificationRequest); i {
 			case 0:
 				return &v.state
 			case 1:

@@ -20,7 +20,7 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 	api "github.com/ixre/gof/ext/jwt-api"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 )
 
 /**

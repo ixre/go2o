@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 

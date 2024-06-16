@@ -31,6 +31,7 @@ var (
 	mqAddr        string
 	debug         bool
 	trace         bool
+	resetCache    bool // 重置缓存
 	runDaemon     bool // 运行daemon
 	help          bool
 	showVersion   bool
@@ -62,6 +63,7 @@ func ParseFlags() {
 	flag.BoolVar(&showVersion, "v", false, "print version")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
+	flag.BoolVar(&resetCache, "reset-cache", false, "force reset cache")
 	flag.BoolVar(&help, "help", false, "command usage")
 	flag.Parse()
 }
@@ -101,6 +103,11 @@ func Run(ch chan bool, after func(cfg *clientv3.Config, debug bool)) {
 	inject.GetSPConfig().Configure()
 	// 初始化分布式锁
 	etcd.InitializeLocker(&cfg)
+	if resetCache {
+		// 重置缓存
+		initial.ResetCache()
+		os.Exit(0)
+	}
 	repos.OrmMapping(provide.GetOrmInstance())
 	// 运行RPC服务
 	service.ServeRPC(ch, &cfg, port)

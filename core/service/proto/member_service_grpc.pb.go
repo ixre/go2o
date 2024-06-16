@@ -128,7 +128,7 @@ type MemberServiceClient interface {
 	// * 提交实名信息
 	SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 审核实名认证,若重复审核将返回错误 *
-	ReviewCertification(ctx context.Context, in *ReviewTrustInfoRequest, opts ...grpc.CallOption) (*Result, error)
+	ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 获取会员等级信息,id
 	GetMemberLevel(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*SMemberLevel, error)
 	// * 保存等级
@@ -339,7 +339,7 @@ func (c *memberServiceClient) SubmitCertification(ctx context.Context, in *Submi
 	return out, nil
 }
 
-func (c *memberServiceClient) ReviewCertification(ctx context.Context, in *ReviewTrustInfoRequest, opts ...grpc.CallOption) (*Result, error) {
+func (c *memberServiceClient) ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, MemberService_ReviewCertification_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -1032,7 +1032,7 @@ type MemberServiceServer interface {
 	// * 提交实名信息
 	SubmitCertification(context.Context, *SubmitCertificationRequest) (*Result, error)
 	// * 审核实名认证,若重复审核将返回错误 *
-	ReviewCertification(context.Context, *ReviewTrustInfoRequest) (*Result, error)
+	ReviewCertification(context.Context, *ReviewCertificationRequest) (*Result, error)
 	// * 获取会员等级信息,id
 	GetMemberLevel(context.Context, *Int32) (*SMemberLevel, error)
 	// * 保存等级
@@ -1204,7 +1204,7 @@ func (UnimplementedMemberServiceServer) GetCertification(context.Context, *Membe
 func (UnimplementedMemberServiceServer) SubmitCertification(context.Context, *SubmitCertificationRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitCertification not implemented")
 }
-func (UnimplementedMemberServiceServer) ReviewCertification(context.Context, *ReviewTrustInfoRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) ReviewCertification(context.Context, *ReviewCertificationRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewCertification not implemented")
 }
 func (UnimplementedMemberServiceServer) GetMemberLevel(context.Context, *Int32) (*SMemberLevel, error) {
@@ -1548,7 +1548,7 @@ func _MemberService_SubmitCertification_Handler(srv interface{}, ctx context.Con
 }
 
 func _MemberService_ReviewCertification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReviewTrustInfoRequest)
+	in := new(ReviewCertificationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1560,7 +1560,7 @@ func _MemberService_ReviewCertification_Handler(srv interface{}, ctx context.Con
 		FullMethod: MemberService_ReviewCertification_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).ReviewCertification(ctx, req.(*ReviewTrustInfoRequest))
+		return srv.(MemberServiceServer).ReviewCertification(ctx, req.(*ReviewCertificationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

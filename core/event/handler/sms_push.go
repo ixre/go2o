@@ -5,7 +5,7 @@ import (
 	"github.com/ixre/go2o/core/event/msq"
 	"github.com/ixre/go2o/core/infrastructure/util/sms"
 	"github.com/ixre/go2o/core/service/proto"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 )
 
 // 处理发送短信事件

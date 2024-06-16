@@ -9,7 +9,7 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/gof/crypto"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 )
 
 func TestGetMember(t *testing.T) {

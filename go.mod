@@ -10,7 +10,7 @@ require (
 	github.com/gomodule/redigo v1.9.2
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.15.19
+	github.com/ixre/gof v1.15.20
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/nats-io/nats.go v1.36.0
 	github.com/pelletier/go-toml v1.9.5 // indirect
@@ -26,6 +26,7 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.25.0
 	github.com/google/wire v0.6.0
 	github.com/mozillazg/go-pinyin v0.20.0
+	github.com/sirupsen/logrus v1.9.3
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.942
 	go.etcd.io/etcd/client/v3 v3.5.14
 	golang.org/x/net v0.26.0
@@ -41,7 +42,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/sirupsen/logrus v1.9.3 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240610135401-a8a62080eff3 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240610135401-a8a62080eff3 // indirect

@@ -43,7 +43,7 @@ service MemberService {
     rpc SubmitCertification (SubmitCertificationRequest) returns (Result) {
     }
     /** 审核实名认证,若重复审核将返回错误 **/
-    rpc ReviewCertification (ReviewTrustInfoRequest) returns (Result) {
+    rpc ReviewCertification (ReviewCertificationRequest) returns (Result) {
     }
     /** 获取会员等级信息,id */
     rpc GetMemberLevel (Int32) returns (SMemberLevel) {
