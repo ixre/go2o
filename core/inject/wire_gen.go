@@ -20,6 +20,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/domain/interface/message"
@@ -399,6 +400,12 @@ func GetJobRepo() job.IJobRepo {
 	storageInterface := provide.GetStorageInstance()
 	iJobRepo := repos.NewJobRepository(orm, storageInterface)
 	return iJobRepo
+}
+
+func GetStaffRepo() staff.IStaffRepo {
+	db := provide.GetGOrm()
+	iStaffRepo := repos.NewStaffRepo(db)
+	return iStaffRepo
 }
 
 // Injectors from service.go:

@@ -137,6 +137,8 @@ var (
 
 	// 会员资料不完善提醒信息
 	MemberProfileNotCompletedMessage = KeyFormat("MemberProfileNotCompletedMessage")
+	// 会员实名是否关闭审核
+	MemberCertificationReviewOff = KeyFormat("MemberCertificationReviewOff")
 	// 会员实名提醒信息
 	MemberNotTrustedMessage = KeyFormat("MemberNotTrustedMessage")
 	// 实名时是否需要先完善资料

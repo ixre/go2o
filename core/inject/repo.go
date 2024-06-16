@@ -15,6 +15,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
+	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
@@ -158,5 +159,9 @@ func GetRegistryRepo() registry.IRegistryRepo {
 }
 
 func GetJobRepo() job.IJobRepo {
+	panic(wire.Build(provideSets))
+}
+
+func GetStaffRepo() staff.IStaffRepo {
 	panic(wire.Build(provideSets))
 }

@@ -25,6 +25,7 @@ import (
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
 	"github.com/ixre/go2o/core/infrastructure/domain/validate"
+	"github.com/ixre/go2o/core/infrastructure/util/types"
 	"github.com/ixre/go2o/core/initial/provide"
 )
 
@@ -662,6 +663,14 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	} else if requireCardImg {
 		return member.ErrTrustMissingCardImage
 	}
+	// 是否不需要审核, 自动通过
+	autoReviewPass := v.ManualReview == 0
+	if v.ManualReview < 0 {
+		// 如果外部未指定(默认值),则根据配置决定是否需要审核
+		b, _ := p.registryRepo.GetValue(registry.MemberCertificationReviewOff)
+		autoReviewPass = b == "1"
+		v.ManualReview = types.Ternary(autoReviewPass, 0, 1)
+	}
 	// 保存
 	current := p.GetCertificationInfo()
 	err = p.copyCertificationInfo(*v, current)
@@ -672,7 +681,7 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 		p.trustedInfo = current
 		_, err = p.repo.SaveCertificationInfo(p.trustedInfo)
 		if err == nil {
-			if v.ManualReview == 0 {
+			if autoReviewPass {
 				// 自动审核
 				err = p.ReviewCertification(true, "自动审核通过")
 			}

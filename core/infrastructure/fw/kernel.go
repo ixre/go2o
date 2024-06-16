@@ -31,8 +31,10 @@ type (
 		FindBy(where string, v ...interface{}) *M
 		// FindList 查找列表
 		FindList(where string, v ...interface{}) []*M
-		// Save 保存
+		// Save 保存实体,如主键为空则新增
 		Save(v *M) (*M, error)
+		// Update 更新实体的非零字段
+		Update(v *M) (*M, error)
 		// Delete 删除
 		Delete(v *M) error
 		// DeleteBy 根据条件删除
@@ -61,7 +63,7 @@ var _ Repository[any] = new(BaseRepository[any])
 
 // 基础仓储
 type BaseRepository[M any] struct {
-	ORM ORM
+	ORM
 }
 
 func (r *BaseRepository[M]) Get(id interface{}) *M {
@@ -95,26 +97,29 @@ func (r *BaseRepository[M]) FindList(where string, v ...interface{}) []*M {
 	return list
 }
 
-// SaveStaffExtent Save 商户坐席(员工)扩展表
+// Save 保存实体
 func (r *BaseRepository[M]) Save(v *M) (*M, error) {
 	ctx := r.ORM.Save(v)
 	return v, ctx.Error
 }
 
-// DeleteStaffExtent Delete 商户坐席(员工)扩展表
+// Update 更新实体的非零字段
+func (r *BaseRepository[M]) Update(v *M) (*M, error) {
+	ctx := r.ORM.Model(v).Updates(v)
+	return v, ctx.Error
+}
+
 func (r *BaseRepository[M]) Delete(v *M) error {
 	tx := r.ORM.Delete(v)
 	return tx.Error
 }
 
-// BatchDeleteStaffExtent Batch Delete 商户坐席(员工)扩展表
 func (r *BaseRepository[M]) DeleteBy(where string, v ...interface{}) (int, error) {
 	var m M
 	tx := r.ORM.Delete(&m, r.joinQueryParams(where, v...)...)
 	return int(tx.RowsAffected), nil
 }
 
-// PagingQueryStaffExtent Query paging data
 func (r *BaseRepository[M]) PagingQuery(begin, end int, orderBy string, where string, args ...interface{}) (total int, rows []*M, err error) {
 	var m M
 	var list []*M
