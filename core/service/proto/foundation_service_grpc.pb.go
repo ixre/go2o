@@ -22,6 +22,7 @@ const (
 	FoundationService_CheckSensitive_FullMethodName       = "/FoundationService/CheckSensitive"
 	FoundationService_ReplaceSensitive_FullMethodName     = "/FoundationService/ReplaceSensitive"
 	FoundationService_GetOptionNames_FullMethodName       = "/FoundationService/GetOptionNames"
+	FoundationService_GetChildOptions_FullMethodName      = "/FoundationService/GetChildOptions"
 	FoundationService_GetSmsSetting_FullMethodName        = "/FoundationService/GetSmsSetting"
 	FoundationService_SaveSmsSetting_FullMethodName       = "/FoundationService/SaveSmsSetting"
 	FoundationService_CleanCache_FullMethodName           = "/FoundationService/CleanCache"
@@ -33,7 +34,7 @@ const (
 	FoundationService_SuperValidate_FullMethodName        = "/FoundationService/SuperValidate"
 	FoundationService_FlushSuperPwd_FullMethodName        = "/FoundationService/FlushSuperPwd"
 	FoundationService_GetSyncLoginUrl_FullMethodName      = "/FoundationService/GetSyncLoginUrl"
-	FoundationService_GetRegionNames_FullMethodName         = "/FoundationService/GetRegionNames"
+	FoundationService_GetRegionNames_FullMethodName       = "/FoundationService/GetRegionNames"
 	FoundationService_GetAreaString_FullMethodName        = "/FoundationService/GetAreaString"
 	FoundationService_GetChildAreas_FullMethodName        = "/FoundationService/GetChildAreas"
 	FoundationService_GetMoAppConf_FullMethodName         = "/FoundationService/GetMoAppConf"
@@ -55,6 +56,8 @@ type FoundationServiceClient interface {
 	ReplaceSensitive(ctx context.Context, in *ReplaceSensitiveRequest, opts ...grpc.CallOption) (*String, error)
 	// 获取选项名称
 	GetOptionNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error)
+	// 获取下级选项,code
+	GetChildOptions(ctx context.Context, in *OptionsRequest, opts ...grpc.CallOption) (*OptionsResponse, error)
 	// * 获取短信API凭据, provider 短信服务商, 默认:http
 	GetSmsSetting(ctx context.Context, in *GetSmsSettingRequest, opts ...grpc.CallOption) (*SSmsProviderSetting, error)
 	// * 保存短信API凭据,@provider 短信服务商, 默认:http
@@ -137,6 +140,15 @@ func (c *foundationServiceClient) ReplaceSensitive(ctx context.Context, in *Repl
 func (c *foundationServiceClient) GetOptionNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error) {
 	out := new(IntStringMapResponse)
 	err := c.cc.Invoke(ctx, FoundationService_GetOptionNames_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *foundationServiceClient) GetChildOptions(ctx context.Context, in *OptionsRequest, opts ...grpc.CallOption) (*OptionsResponse, error) {
+	out := new(OptionsResponse)
+	err := c.cc.Invoke(ctx, FoundationService_GetChildOptions_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -342,6 +354,8 @@ type FoundationServiceServer interface {
 	ReplaceSensitive(context.Context, *ReplaceSensitiveRequest) (*String, error)
 	// 获取选项名称
 	GetOptionNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error)
+	// 获取下级选项,code
+	GetChildOptions(context.Context, *OptionsRequest) (*OptionsResponse, error)
 	// * 获取短信API凭据, provider 短信服务商, 默认:http
 	GetSmsSetting(context.Context, *GetSmsSettingRequest) (*SSmsProviderSetting, error)
 	// * 保存短信API凭据,@provider 短信服务商, 默认:http
@@ -408,6 +422,9 @@ func (UnimplementedFoundationServiceServer) ReplaceSensitive(context.Context, *R
 }
 func (UnimplementedFoundationServiceServer) GetOptionNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOptionNames not implemented")
+}
+func (UnimplementedFoundationServiceServer) GetChildOptions(context.Context, *OptionsRequest) (*OptionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChildOptions not implemented")
 }
 func (UnimplementedFoundationServiceServer) GetSmsSetting(context.Context, *GetSmsSettingRequest) (*SSmsProviderSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSmsSetting not implemented")
@@ -535,6 +552,24 @@ func _FoundationService_GetOptionNames_Handler(srv interface{}, ctx context.Cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FoundationServiceServer).GetOptionNames(ctx, req.(*GetNamesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FoundationService_GetChildOptions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OptionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FoundationServiceServer).GetChildOptions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FoundationService_GetChildOptions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FoundationServiceServer).GetChildOptions(ctx, req.(*OptionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -935,6 +970,10 @@ var FoundationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetOptionNames",
 			Handler:    _FoundationService_GetOptionNames_Handler,
+		},
+		{
+			MethodName: "GetChildOptions",
+			Handler:    _FoundationService_GetChildOptions_Handler,
 		},
 		{
 			MethodName: "GetSmsSetting",

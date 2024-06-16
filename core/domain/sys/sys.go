@@ -128,6 +128,13 @@ type optionManagerImpl struct {
 	allList []*sys.GeneralOption
 }
 
+// GetChildOptions implements sys.IOptionManager.
+func (o *optionManagerImpl) GetChildOptions(parentId int, typeName string) []*sys.GeneralOption {
+	return collections.FilterArray(o.getList(), func(s *sys.GeneralOption) bool {
+		return s.Pid == parentId && (s.Type == typeName || typeName == "")
+	})
+}
+
 // getAreaList 获取地区列表
 func (o *optionManagerImpl) getList() []*sys.GeneralOption {
 	if o.allList == nil {

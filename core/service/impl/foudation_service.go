@@ -359,6 +359,22 @@ func (s *foundationService) GetOptionNames(_ context.Context, req *proto.GetName
 	}, nil
 }
 
+// GetChildOptions implements proto.FoundationServiceServer.
+func (s *foundationService) GetChildOptions(_ context.Context, req *proto.OptionsRequest) (*proto.OptionsResponse, error) {
+	isa := s.sysRepo.GetSystemAggregateRoot().Options()
+	options := isa.GetChildOptions(int(req.ParentId), req.TypeName)
+
+	ret := collections.MapList(options, func(o *sys.GeneralOption) *proto.SOption {
+		return &proto.SOption{
+			Id:   int64(o.Id),
+			Name: o.Name,
+		}
+	})
+	return &proto.OptionsResponse{
+		Value: ret,
+	}, nil
+}
+
 // GetAreaString 获取省市区字符串
 func (s *foundationService) GetAreaString(_ context.Context, r *proto.AreaStringRequest) (*proto.String, error) {
 	if r.Province == 0 || r.City == 0 || r.District == 0 {

@@ -134,7 +134,7 @@ func (r *BaseRepository[M]) PagingQuery(p *PagingParams) (ret *PagingResult, err
 		}
 		return tx
 	}
-	var list []interface{}
+	var list []*M
 	err = wh(r.ORM.Model(&m)).Count(&t).Error
 	if err == nil && t > 0 {
 		tx := r.ORM.Limit(p.Size).Offset(p.Begin)
@@ -144,9 +144,13 @@ func (r *BaseRepository[M]) PagingQuery(p *PagingParams) (ret *PagingResult, err
 		}
 		err = wh(tx).Find(&list).Error
 	}
+	var arr = make([]interface{}, 0)
+	for _, v := range list {
+		arr = append(arr, v)
+	}
 	return &PagingResult{
 		Total: int(t),
-		Rows:  list,
+		Rows:  arr,
 		Extra: nil,
 	}, err
 }
