@@ -17,7 +17,10 @@ service FoundationService {
     // 获取选项名称
     rpc GetOptionNames (GetNamesRequest) returns (IntStringMapResponse) {
     }
-  
+    // 获取下级选项,code
+    rpc GetChildOptions (OptionsRequest) returns (OptionsResponse) {
+    }
+
     /** 获取短信API凭据, provider 短信服务商, 默认:http */
     rpc GetSmsSetting (GetSmsSettingRequest) returns (SSmsProviderSetting) {
     }
@@ -99,4 +102,26 @@ service FoundationService {
 message ReplaceSensitiveRequest {
     string text = 1;
     string replacement = 2;
+}
+
+// 获取下级选项请求
+message OptionsRequest{
+    // 上级ID
+    uint64 parentId = 1;
+    // 类型名称,当上级ID为0时,筛选根节点数据
+    string typeName = 2;
+}
+
+// 选项响应
+message OptionsResponse {
+    // 选项
+    repeated SOption value = 1;
+}
+
+// 选项 
+message SOption {
+    // 编号
+    int64 id = 1;
+    // 名称
+    string name = 2;
 }

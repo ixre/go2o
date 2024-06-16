@@ -31,6 +31,8 @@ type (
 	IOptionManager interface {
 		// GetOptionNames 获取选项名称
 		GetOptionNames(code ...int) map[int]string
+		// 获取下级选项
+		GetChildOptions(parentId int, typeName string) []*GeneralOption
 	}
 )
 
