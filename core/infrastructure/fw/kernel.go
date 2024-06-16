@@ -1,6 +1,8 @@
 package fw
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -187,6 +189,19 @@ type PagingParams struct {
 	Order string `json:"order"`
 	// SQL条件及参数
 	Arguments []interface{} `json:"arguments"`
+}
+
+// Where 添加条件
+func (p *PagingParams) Where(field string, value interface{}) *PagingParams {
+	if len(p.Arguments) > 0 {
+		s := fmt.Sprintf("%s AND %s =?", p.Arguments[0].(string), field)
+		p.Arguments = append([]interface{}{s}, p.Arguments...)
+		p.Arguments = append(p.Arguments, value)
+	} else {
+		s := fmt.Sprintf("%s =?", field)
+		p.Arguments = []interface{}{s, value}
+	}
+	return p
 }
 
 // 分页结果
