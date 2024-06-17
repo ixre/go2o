@@ -1,17 +1,33 @@
 package repos
 
 import (
+	"sync"
+
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	impl "github.com/ixre/go2o/core/domain/sys"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
-var _ sys.ISystemRepo = new(systemRepoImpl)
+var (
+	_sysRepo      = new(systemRepoImpl)
+	_sysAggregate sys.ISystemAggregateRoot
+	_repoOnce     sync.Once
+)
 
 type systemRepoImpl struct {
 	fw.ORM
 	areaRepo fw.Repository[sys.Region]
 	optRepo  fw.Repository[sys.GeneralOption]
+}
+
+func NewSystemRepo(o fw.ORM) sys.ISystemRepo {
+	_repoOnce.Do(func() {
+		_sysRepo = &systemRepoImpl{
+			ORM: o,
+		}
+		_sysAggregate = impl.NewSystemAggregateRoot(_sysRepo)
+	})
+	return _sysRepo
 }
 
 // Option implements sys.ISystemRepo.
@@ -20,12 +36,6 @@ func (s *systemRepoImpl) Option() fw.Repository[sys.GeneralOption] {
 		s.optRepo = newGeneralOptionRepoImpl(s.ORM)
 	}
 	return s.optRepo
-}
-
-func NewSystemRepo(o fw.ORM) sys.ISystemRepo {
-	return &systemRepoImpl{
-		ORM: o,
-	}
 }
 
 // AreaRepo implements sys.ISystemRepo.
@@ -48,7 +58,7 @@ func (s *systemRepoImpl) GetRegionList(parentId int) []*sys.Region {
 
 // GetSystemAggregateRoot implements sys.ISystemRepo.
 func (s *systemRepoImpl) GetSystemAggregateRoot() sys.ISystemAggregateRoot {
-	return impl.NewSystemAggregateRoot(s)
+	return _sysAggregate
 }
 
 type areaRepository struct {
