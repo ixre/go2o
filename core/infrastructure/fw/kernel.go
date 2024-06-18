@@ -130,7 +130,7 @@ func (r *BaseRepository[M]) PagingQuery(p *PagingParams) (ret *PagingResult, err
 	var t int64
 	wh := func(tx *gorm.DB) *gorm.DB {
 		if len(p.Arguments) > 0 {
-			tx.Where(p.Arguments)
+			tx.Where(p.Arguments[0], p.Arguments[1:]...)
 		}
 		return tx
 	}
