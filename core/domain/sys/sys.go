@@ -140,6 +140,22 @@ type optionManagerImpl struct {
 
 // GetChildOptions implements sys.IOptionManager.
 func (o *optionManagerImpl) GetChildOptions(parentId int, typeName string) []*sys.GeneralOption {
+	l := len(typeName)
+	if parentId == 0 && l == 0 {
+		// 无法根据参数获取数据
+		return []*sys.GeneralOption{}
+	}
+	if parentId == 0 && l > 0 {
+		// 返回顶级节点的下级数据
+		t := collections.FindArray(o.getList(), func(s *sys.GeneralOption) bool {
+			return s.Type == typeName
+		})
+		if t == nil {
+			return []*sys.GeneralOption{}
+		}
+		parentId = t.Id
+		typeName = ""
+	}
 	return collections.FilterArray(o.getList(), func(s *sys.GeneralOption) bool {
 		return s.Pid == parentId && (s.Type == typeName || typeName == "")
 	})
