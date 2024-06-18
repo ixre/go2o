@@ -1,6 +1,7 @@
 package fw
 
 import (
+	"bytes"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -199,16 +200,29 @@ type PagingParams struct {
 }
 
 // Where 添加条件
-func (p *PagingParams) Where(field string, value interface{}) *PagingParams {
-	if len(p.Arguments) > 0 {
-		s := fmt.Sprintf("%s AND %s =?", p.Arguments[0].(string), field)
-		p.Arguments = append([]interface{}{s}, p.Arguments...)
-		p.Arguments = append(p.Arguments, value)
+func (p *PagingParams) where(field string, exp string, value interface{}) *PagingParams {
+	buf := bytes.NewBuffer(nil)
+	isBlank := len(p.Arguments) == 0
+	if !isBlank {
+		buf.WriteString(p.Arguments[0].(string))
+		buf.WriteString(" AND ")
+	}
+	buf.WriteString(fmt.Sprintf("%s %s", field, exp))
+	if isBlank {
+		p.Arguments = []interface{}{buf.String(), value}
 	} else {
-		s := fmt.Sprintf("%s =?", field)
-		p.Arguments = []interface{}{s, value}
+		p.Arguments[0] = buf.String()
+		p.Arguments = append(p.Arguments, value)
 	}
 	return p
+}
+
+func (p *PagingParams) Equal(field string, value interface{}) *PagingParams {
+	return p.where(field, "=?", value)
+}
+
+func (p *PagingParams) Like(field string, value interface{}) *PagingParams {
+	return p.where(field, "LIKE ?", value)
 }
 
 // 分页结果
