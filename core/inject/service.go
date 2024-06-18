@@ -27,7 +27,7 @@ func GetRegistryService() proto.RegistryServiceServer {
 // }
 
 // 基础服务
-func GetFoundationService() proto.FoundationServiceServer {
+func GetSystemService() proto.SystemServiceServer {
 	panic(wire.Build(InjectProvideSets))
 }
 

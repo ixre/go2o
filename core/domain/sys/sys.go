@@ -42,6 +42,16 @@ func (s *systemAggregateRootImpl) Options() sys.IOptionManager {
 	return s._options
 }
 
+// FlushUpdateStatus implements sys.ISystemAggregateRoot.
+func (s *systemAggregateRootImpl) FlushUpdateStatus() {
+	s._repo.FlushUpdateStatus()
+}
+
+// LastUpdateTime implements sys.ISystemAggregateRoot.
+func (s *systemAggregateRootImpl) LastUpdateTime() int64 {
+	return s._repo.LastUpdateTime()
+}
+
 var _ sys.IAddressManager = new(addressManagerImpl)
 
 type addressManagerImpl struct {

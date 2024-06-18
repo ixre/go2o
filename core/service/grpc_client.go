@@ -13,13 +13,14 @@ import (
 	"os"
 	"time"
 
+	"log"
+
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/go2o/core/service/proto"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
-	"log"
 )
 
 var staticAddr string
@@ -124,11 +125,11 @@ func MemberServiceClient() (*grpc.ClientConn, proto.MemberServiceClient, error) 
 	return conn, nil, err
 }
 
-// FoundationServiceClient 基础服务
-func FoundationServiceClient() (*grpc.ClientConn, proto.FoundationServiceClient, error) {
+// SystemServiceClient 基础服务
+func SystemServiceClient() (*grpc.ClientConn, proto.SystemServiceClient, error) {
 	conn, err := getConn(selector)
 	if err == nil {
-		return conn, proto.NewFoundationServiceClient(conn), err
+		return conn, proto.NewSystemServiceClient(conn), err
 	}
 	return conn, nil, err
 }

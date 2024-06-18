@@ -32,7 +32,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterCheckServiceServer(s, inject.GetCheckService())
 	proto.RegisterMerchantServiceServer(s, inject.GetMerchantService())
 	proto.RegisterMemberServiceServer(s, inject.GetMemberService())
-	proto.RegisterFoundationServiceServer(s, inject.GetFoundationService())
+	proto.RegisterSystemServiceServer(s, inject.GetSystemService())
 	proto.RegisterMessageServiceServer(s, inject.GetMessageService())
 	proto.RegisterContentServiceServer(s, inject.GetContentService())
 	proto.RegisterPaymentServiceServer(s, inject.GetPaymentService())
@@ -63,7 +63,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 func serveRPC(ch chan bool, s *grpc.Server, port int) {
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
-	panic(err)
+		panic(err)
 	}
 	log.Println("[ GO2O][ INFO]: grpc node serve on port :" + strconv.Itoa(port))
 	if err = s.Serve(l); err != nil {

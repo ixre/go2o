@@ -15,6 +15,12 @@ type (
 
 		// 获取选项管理器
 		Options() IOptionManager
+
+		// 标记更新状态,通常监听数据变更或事件后调用
+		FlushUpdateStatus()
+
+		// 获取最后更新时间,用于对比系统设置是否已经变更
+		LastUpdateTime() int64
 	}
 
 	// IAddressManager 地址管理器
@@ -40,14 +46,14 @@ type (
 type ISystemRepo interface {
 	// GetSystemAggregateRoot 获取系统聚合根
 	GetSystemAggregateRoot() ISystemAggregateRoot
+	// 标记已更新
+	FlushUpdateStatus()
+	// 获取最后更新时间
+	LastUpdateTime() int64
 	// Region 获取区域仓储
 	Region() fw.Repository[Region]
 	// Option 获取选项仓储
 	Option() fw.Repository[GeneralOption]
-	// GetAllCities 获取所有城市
-	GetAllCities() []*Region
-	// GetRegionList 获取区域信息
-	GetRegionList(parentId int) []*Region
 }
 
 type (

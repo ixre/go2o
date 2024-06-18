@@ -26,7 +26,7 @@ import (
 	"github.com/ixre/gof/storage"
 )
 
-var _ proto.FoundationServiceServer = new(foundationService)
+var _ proto.SystemServiceServer = new(foundationService)
 
 // 基础服务
 type foundationService struct {
@@ -36,14 +36,14 @@ type foundationService struct {
 	sysRepo      sys.ISystemRepo
 	_s           storage.Interface
 	serviceUtil
-	proto.UnimplementedFoundationServiceServer
+	proto.UnimplementedSystemServiceServer
 }
 
-func NewFoundationService(rep valueobject.IValueRepo,
+func NewSystemService(rep valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo,
 	sysRepo sys.ISystemRepo,
 	s storage.Interface,
-	notifyRepo mss.IMessageRepo) proto.FoundationServiceServer {
+	notifyRepo mss.IMessageRepo) proto.SystemServiceServer {
 	return &foundationService{
 		_rep:         rep,
 		_s:           s,
@@ -51,6 +51,21 @@ func NewFoundationService(rep valueobject.IValueRepo,
 		sysRepo:      sysRepo,
 		registryRepo: registryRepo,
 	}
+}
+
+// FlushCache implements proto.SystemServiceServer.
+func (s *foundationService) FlushCache(context.Context, *proto.Empty) (*proto.Result, error) {
+	isa := s.sysRepo.GetSystemAggregateRoot()
+	isa.FlushUpdateStatus()
+	return s.success(nil), nil
+}
+
+// GetSystemInfo implements proto.SystemServiceServer.
+func (s *foundationService) GetSystemInfo(context.Context, *proto.Empty) (*proto.SSystemInfo, error) {
+	isa := s.sysRepo.GetSystemAggregateRoot()
+	return &proto.SSystemInfo{
+		LastUpdateTime: uint64(isa.LastUpdateTime()),
+	}, nil
 }
 
 // 检测是否包含敏感词
@@ -344,7 +359,7 @@ func (s *foundationService) GetRegionNames(_ context.Context, request *proto.Get
 	}, nil
 }
 
-// GetOptionNames implements proto.FoundationServiceServer.
+// GetOptionNames implements proto.SystemServiceServer.
 func (s *foundationService) GetOptionNames(_ context.Context, req *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Options()
 	codes := collections.MapList(req.Value, func(i int32) int {
@@ -359,7 +374,7 @@ func (s *foundationService) GetOptionNames(_ context.Context, req *proto.GetName
 	}, nil
 }
 
-// GetChildOptions implements proto.FoundationServiceServer.
+// GetChildOptions implements proto.SystemServiceServer.
 func (s *foundationService) GetChildOptions(_ context.Context, req *proto.OptionsRequest) (*proto.OptionsResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Options()
 	options := isa.GetChildOptions(int(req.ParentId), req.TypeName)

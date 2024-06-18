@@ -79,7 +79,8 @@ func GetProModelRepo() promodel.IProductModelRepo {
 // 获取系统仓库
 func GetSystemRepo() sys.ISystemRepo {
 	db := provide.GetGOrm()
-	iSystemRepo := repos.NewSystemRepo(db)
+	storageInterface := provide.GetStorageInstance()
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	return iSystemRepo
 }
 
@@ -228,7 +229,8 @@ func GetWholesaleRepo() wholesaler.IWholesaleRepo {
 func GetStationRepo() station.IStationRepo {
 	orm := provide.GetOrmInstance()
 	db := provide.GetGOrm()
-	iSystemRepo := repos.NewSystemRepo(db)
+	storageInterface := provide.GetStorageInstance()
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	return iStationRepo
 }
@@ -253,7 +255,7 @@ func GetMerchantRepo() merchant.IMerchantRepo {
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	return iMerchantRepo
@@ -279,7 +281,7 @@ func GetCartRepo() cart.ICartRepo {
 	iUserRepo := repos.NewUserRepo(orm)
 	db := provide.GetGOrm()
 	iStaffRepo := repos.NewStaffRepo(db)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
@@ -338,7 +340,7 @@ func GetOrderRepo() order.IOrderRepo {
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, iMemberRepo, iRegistryRepo)
@@ -383,7 +385,7 @@ func GetAfterSalesRepo() afterSales.IAfterSalesRepo {
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, iMemberRepo, iRegistryRepo)
@@ -433,7 +435,7 @@ func GetEventSource() *event.EventSource {
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	db := provide.GetGOrm()
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iPortalDao := impl.NewPortalDao(orm)
 	eventHandler := handler.NewEventHandler(iRegistryRepo, iArchiveRepo, iMessageRepo, iStationRepo, iPortalDao)
@@ -458,17 +460,17 @@ func GetRegistryService() proto.RegistryServiceServer {
 }
 
 // 基础服务
-func GetFoundationService() proto.FoundationServiceServer {
+func GetSystemService() proto.SystemServiceServer {
 	orm := provide.GetOrmInstance()
 	storageInterface := provide.GetStorageInstance()
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
 	db := provide.GetGOrm()
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
-	foundationServiceServer := impl2.NewFoundationService(iValueRepo, iRegistryRepo, iSystemRepo, storageInterface, iMessageRepo)
-	return foundationServiceServer
+	systemServiceServer := impl2.NewSystemService(iValueRepo, iRegistryRepo, iSystemRepo, storageInterface, iMessageRepo)
+	return systemServiceServer
 }
 
 // 会员服务
@@ -492,7 +494,7 @@ func GetMemberService() proto.MemberServiceServer {
 	iUserRepo := repos.NewUserRepo(orm)
 	db := provide.GetGOrm()
 	iStaffRepo := repos.NewStaffRepo(db)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	memberQuery := query.NewMemberQuery(orm)
@@ -522,7 +524,7 @@ func GetMerchantService() proto.MerchantServiceServer {
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	app := provide.GetApp()
@@ -553,7 +555,7 @@ func GetShopService() proto.ShopServiceServer {
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	shopQuery := query.NewShopQuery(orm, storageInterface)
@@ -597,7 +599,7 @@ func GetItemService() proto.ItemServiceServer {
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	itemServiceServer := impl2.NewItemService(storageInterface, iCategoryRepo, iItemRepo, itemQuery, iSaleLabelRepo, iProductModelRepo, iMerchantRepo, iValueRepo)
@@ -625,7 +627,7 @@ func GetOrderService() proto.OrderServiceServer {
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, iMemberRepo, iRegistryRepo)
@@ -660,7 +662,7 @@ func GetCartService() proto.CartServiceServer {
 	iUserRepo := repos.NewUserRepo(orm)
 	db := provide.GetGOrm()
 	iStaffRepo := repos.NewStaffRepo(db)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
@@ -689,7 +691,7 @@ func GetAfterSalesService() proto.AfterSalesServiceServer {
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, iMemberRepo, iRegistryRepo)
@@ -727,7 +729,7 @@ func GetPaymentService() proto.PaymentServiceServer {
 	iUserRepo := repos.NewUserRepo(orm)
 	db := provide.GetGOrm()
 	iStaffRepo := repos.NewStaffRepo(db)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
@@ -903,7 +905,7 @@ func GetCheckService() proto.CheckServiceServer {
 	iUserRepo := repos.NewUserRepo(orm)
 	db := provide.GetGOrm()
 	iStaffRepo := repos.NewStaffRepo(db)
-	iSystemRepo := repos.NewSystemRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	checkServiceServer := impl2.NewCheckService(iMemberRepo, iMerchantRepo, iMessageRepo, iRegistryRepo, storageInterface)
@@ -923,5 +925,5 @@ var daoProvideSets = wire.NewSet(
 )
 
 var InjectProvideSets = wire.NewSet(
-	daoProvideSets, impl2.NewStatusService, impl2.NewRegistryService, impl2.NewMerchantService, impl2.NewPromotionService, impl2.NewFoundationService, impl2.NewMemberService, impl2.NewShopService, impl2.NewProductService, impl2.NewItemService, impl2.NewShoppingService, impl2.NewCartService, impl2.NewAfterSalesService, impl2.NewAdvertisementService, impl2.NewPaymentService, impl2.NewQuickPayService, impl2.NewMessageService, impl2.NewExpressService, impl2.NewShipmentService, impl2.NewContentService, impl2.NewWalletService, impl2.NewCodeService, impl2.NewQueryService, impl2.NewRbacService, impl2.NewAppService, impl2.NewPortalService, impl2.NewPersonFinanceService, impl2.NewExecutionService, impl2.NewCheckService, event.NewEventSource, handler.NewEventHandler, sp.NewSPConfig,
+	daoProvideSets, impl2.NewStatusService, impl2.NewRegistryService, impl2.NewMerchantService, impl2.NewPromotionService, impl2.NewSystemService, impl2.NewMemberService, impl2.NewShopService, impl2.NewProductService, impl2.NewItemService, impl2.NewShoppingService, impl2.NewCartService, impl2.NewAfterSalesService, impl2.NewAdvertisementService, impl2.NewPaymentService, impl2.NewQuickPayService, impl2.NewMessageService, impl2.NewExpressService, impl2.NewShipmentService, impl2.NewContentService, impl2.NewWalletService, impl2.NewCodeService, impl2.NewQueryService, impl2.NewRbacService, impl2.NewAppService, impl2.NewPortalService, impl2.NewPersonFinanceService, impl2.NewExecutionService, impl2.NewCheckService, event.NewEventSource, handler.NewEventHandler, sp.NewSPConfig,
 )

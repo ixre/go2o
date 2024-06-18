@@ -77,7 +77,7 @@ var InjectProvideSets = wire.NewSet(
 	impl.NewRegistryService,
 	impl.NewMerchantService,
 	impl.NewPromotionService,
-	impl.NewFoundationService,
+	impl.NewSystemService,
 	impl.NewMemberService,
 	impl.NewShopService,
 	impl.NewProductService,

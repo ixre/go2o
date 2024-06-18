@@ -1,18 +1,24 @@
 syntax = "proto3";
 
 import "global.proto";
-import "message/foundation_dto.proto";
+import "message/system_dto.proto";
 
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
 // 基础服务
-service FoundationService {
+service SystemService {
     /** 检测是否包含敏感词 */
     rpc CheckSensitive(String)returns(Bool) {}
 
     /** 替换敏感词 */
     rpc ReplaceSensitive(ReplaceSensitiveRequest)returns(String) {}
+
+    // 获取系统信息
+    rpc GetSystemInfo(Empty)returns(SSystemInfo){}
+
+    // 清除缓存
+    rpc FlushCache(Empty)returns(Result){}
 
     // 获取选项名称
     rpc GetOptionNames (GetNamesRequest) returns (IntStringMapResponse) {
@@ -96,6 +102,12 @@ service FoundationService {
     // 保存全局商户销售设置
     rpc SaveGlobMchSaleConf_ (SGlobMchSaleConf) returns (Result) {
     }
+}
+
+// 系统信息
+message SSystemInfo{
+    // 配置最后更新时间
+    uint64 lastUpdateTime = 1;
 }
 
 /** 替换敏感词请求 */

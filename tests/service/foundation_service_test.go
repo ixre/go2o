@@ -19,7 +19,7 @@ import (
  */
 
 func TestCheckSensitive(t *testing.T) {
-	ret, _ := inject.GetFoundationService().ReplaceSensitive(context.TODO(),
+	ret, _ := inject.GetSystemService().ReplaceSensitive(context.TODO(),
 		&proto.ReplaceSensitiveRequest{
 			Text:        "我自愿加入中国共产党,坚持党的领导,守护我们的长城",
 			Replacement: "*",
