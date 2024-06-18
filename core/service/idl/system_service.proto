@@ -136,4 +136,6 @@ message SOption {
     int64 id = 1;
     // 名称
     string name = 2;
+    // 值
+    string value = 3;
 }

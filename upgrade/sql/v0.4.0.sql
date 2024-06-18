@@ -121,7 +121,7 @@ CREATE TABLE sys_general_option (
   type        varchar(20) NOT NULL, 
   pid         int8 NOT NULL, 
   name        varchar(20) NOT NULL, 
-  value       int4 NOT NULL, 
+  value       varchar(20) NOT NULL, 
   sort_num    int4 NOT NULL, 
   enabled     int4 NOT NULL, 
   create_time int8 NOT NULL, 

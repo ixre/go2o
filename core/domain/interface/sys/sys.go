@@ -83,7 +83,7 @@ type GeneralOption struct {
 	// 名称
 	Name string `db:"name" json:"name" bson:"name"`
 	// 值
-	Value int `db:"value" json:"value" bson:"value"`
+	Value string `db:"value" json:"value" bson:"value"`
 	// 排列序号
 	SortNum int `db:"sort_num" json:"sortNum" bson:"sortNum"`
 	// 是否启用
