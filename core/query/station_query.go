@@ -57,10 +57,10 @@ func NewStationQuery(o orm.Orm) *StationQuery {
 
 // QueryStations 查询站点列表
 func (s *StationQuery) QueryStations(status int) []*StationArea {
-	list := make([]*sys.Region, 0)
+	list := make([]*sys.District, 0)
 	_ = s._orm.Select(&list, "parent = 0 and code <> 0")
 
-	province := collections.MapList(list, func(v *sys.Region) *StationArea {
+	province := collections.MapList(list, func(v *sys.District) *StationArea {
 		return &StationArea{
 			Id:       v.Code,
 			Name:     v.Name,
@@ -68,13 +68,13 @@ func (s *StationQuery) QueryStations(status int) []*StationArea {
 		}
 	})
 
-	provinceIdList := collections.MapList(list, func(v *sys.Region) string {
+	provinceIdList := collections.MapList(list, func(v *sys.District) string {
 		return strconv.Itoa(v.Code)
 	})
 	cities := make([]*SubStation, 0)
 	err := s._orm.SelectByQuery(&cities, fmt.Sprintf(`
 		SELECT s.id,a.name,s.status,s.letter,s.is_hot,a.parent FROM sys_sub_station s
-		INNER JOIN sys_region a ON a.code = s.city_code
+		INNER JOIN sys_district a ON a.code = s.city_code
 		WHERE a.parent IN (%s)`,
 		strings.Join(provinceIdList, ",")))
 	if err != nil && err != sql.ErrNoRows {
@@ -100,7 +100,7 @@ func (s *StationQuery) QueryGroupStations(status int) map[string][]SubStation {
 	cities := make([]*SubStation, 0)
 	err := s._orm.SelectByQuery(&cities, `
 	SELECT s.id,a.name,s.city_code,s.status,s.letter,s.is_hot,a.parent FROM sys_sub_station s
-	LEFT JOIN sys_region a ON a.code = s.city_code`)
+	LEFT JOIN sys_district a ON a.code = s.city_code`)
 	if err != nil && err != sql.ErrNoRows {
 		log.Printf("[ Orm][ Error]: %s; Entity:Area\n", err.Error())
 	}

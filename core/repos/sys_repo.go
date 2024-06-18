@@ -22,7 +22,7 @@ type systemRepoImpl struct {
 	st storage.Interface
 	// 最后更新时间,用于跟踪系统参数变更
 	lastUpdateTime int64
-	areaRepo       fw.Repository[sys.Region]
+	areaRepo       fw.Repository[sys.District]
 	optRepo        fw.Repository[sys.GeneralOption]
 }
 
@@ -71,7 +71,7 @@ func (s *systemRepoImpl) Option() fw.Repository[sys.GeneralOption] {
 }
 
 // AreaRepo implements sys.ISystemRepo.
-func (s *systemRepoImpl) Region() fw.Repository[sys.Region] {
+func (s *systemRepoImpl) District() fw.Repository[sys.District] {
 	if s.areaRepo == nil {
 		s.areaRepo = newAreaRepository(s.ORM)
 	}
@@ -84,10 +84,10 @@ func (s *systemRepoImpl) GetSystemAggregateRoot() sys.ISystemAggregateRoot {
 }
 
 type areaRepository struct {
-	fw.BaseRepository[sys.Region]
+	fw.BaseRepository[sys.District]
 }
 
-func newAreaRepository(o fw.ORM) fw.Repository[sys.Region] {
+func newAreaRepository(o fw.ORM) fw.Repository[sys.District] {
 	s := &areaRepository{}
 	s.ORM = o
 	return s

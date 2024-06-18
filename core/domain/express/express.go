@@ -97,14 +97,14 @@ func (e *userExpressImpl) CreateCalculator() express.IExpressCalculator {
 var _ express.IExpressTemplate = new(expressTemplateImpl)
 
 type expressTemplateImpl struct {
-	_value           *express.ExpressTemplate
-	_userExpress     *userExpressImpl
-	_repo            express.IExpressRepo
-	_regionList      []express.RegionExpressTemplate
-	_regionIsChanged bool
-	_areaMap         map[string]*express.RegionExpressTemplate
-	_mux             sync.Mutex
-	_valRepo         valueobject.IValueRepo
+	_value             *express.ExpressTemplate
+	_userExpress       *userExpressImpl
+	_repo              express.IExpressRepo
+	_districtList      []express.DistrictExpressTemplate
+	_districtIsChanged bool
+	_areaMap           map[string]*express.DistrictExpressTemplate
+	_mux               sync.Mutex
+	_valRepo           valueobject.IValueRepo
 }
 
 func newExpressTemplate(u *userExpressImpl, v *express.ExpressTemplate,
@@ -167,10 +167,10 @@ func (e *expressTemplateImpl) Set(v *express.ExpressTemplate) error {
 	return err
 }
 
-// SetRegionExpress implements express.IExpressTemplate
-func (e *expressTemplateImpl) SetRegionExpress(arr *[]express.RegionExpressTemplate) error {
-	e._regionList = *arr
-	e._regionIsChanged = true
+// SetDistrictExpress implements express.IExpressTemplate
+func (e *expressTemplateImpl) SetDistrictExpress(arr *[]express.DistrictExpressTemplate) error {
+	e._districtList = *arr
+	e._districtIsChanged = true
 	return nil
 }
 
@@ -185,21 +185,21 @@ func (e *expressTemplateImpl) Save() (int, error) {
 	if err == nil {
 		e._value.Id = id
 		e._userExpress.arr = nil
-		if err == nil && e._regionIsChanged {
-			err = e.saveRegionExpress(e._regionList)
-			e._regionIsChanged = false
+		if err == nil && e._districtIsChanged {
+			err = e.saveDistrictExpress(e._districtList)
+			e._districtIsChanged = false
 		}
 	}
 	return id, err
 }
 
 // 保存区域快递模板
-func (e *expressTemplateImpl) saveRegionExpress(items []express.RegionExpressTemplate) error {
+func (e *expressTemplateImpl) saveDistrictExpress(items []express.DistrictExpressTemplate) error {
 	// 获取存在的项
 	old := e._repo.GetExpressTemplateAllAreaSet(e.GetDomainId())
 	// 分析当前项目并加入到MAP中
 	delList := []int{}
-	currMap := make(map[int]*express.RegionExpressTemplate, len(items))
+	currMap := make(map[int]*express.DistrictExpressTemplate, len(items))
 	for _, v := range items {
 		currMap[v.Id] = &v
 	}
@@ -221,12 +221,12 @@ func (e *expressTemplateImpl) saveRegionExpress(items []express.RegionExpressTem
 		}
 		v.Id = int(i)
 	}
-	e._regionList = items
+	e._districtList = items
 	return nil
 }
 
 // 保存地区快递模板
-func (e *expressTemplateImpl) saveAreaTemplate(t *express.RegionExpressTemplate) (int, error) {
+func (e *expressTemplateImpl) saveAreaTemplate(t *express.DistrictExpressTemplate) (int, error) {
 	arr := e.getAreaCodeArray(t.CodeList)
 	if arr == nil {
 		return 0, express.ErrExpressTemplateMissingAreaCode
@@ -241,15 +241,15 @@ func (e *expressTemplateImpl) saveAreaTemplate(t *express.RegionExpressTemplate)
 		intArr[i] = int32(i2)
 	}
 	// 获取对应的中文名称
-	names := e._valRepo.GetRegionNames(intArr)
+	names := e._valRepo.GetDistrictNames(intArr)
 	t.NameList = strings.Join(names, ",")
 
 	// 保存,如果未出错,则更新缓存
 	id, err := e._repo.SaveExpressTemplateAreaSet(t)
 	if err == nil {
-		e._regionList = nil
+		e._districtList = nil
 		e._areaMap = nil
-		e.RegionExpress()
+		e.DistrictExpress()
 	}
 	return id, err
 }
@@ -265,8 +265,8 @@ func (e *expressTemplateImpl) getAreaCodeArray(codeList string) []string {
 
 // 初始化地区与运费的映射
 func (e *expressTemplateImpl) initAreaMap() {
-	e._areaMap = make(map[string]*express.RegionExpressTemplate, len(e._regionList))
-	for _, v := range e._regionList {
+	e._areaMap = make(map[string]*express.DistrictExpressTemplate, len(e._districtList))
+	for _, v := range e._districtList {
 		arr := e.getAreaCodeArray(v.CodeList)
 		if arr == nil {
 			continue
@@ -284,19 +284,19 @@ func (e *expressTemplateImpl) initAreaMap() {
 }
 
 // 获取所有的地区快递模板
-func (e *expressTemplateImpl) RegionExpress() []express.RegionExpressTemplate {
+func (e *expressTemplateImpl) DistrictExpress() []express.DistrictExpressTemplate {
 	e._mux.Lock()
-	if e._regionList == nil {
-		e._regionList = e._repo.GetExpressTemplateAllAreaSet(e.GetDomainId())
+	if e._districtList == nil {
+		e._districtList = e._repo.GetExpressTemplateAllAreaSet(e.GetDomainId())
 		e.initAreaMap()
 	}
 	e._mux.Unlock()
-	return e._regionList
+	return e._districtList
 }
 
 // 根据地区编码获取运费模板
-func (e *expressTemplateImpl) GetAreaExpressTemplateByAreaCode(areaCode string) *express.RegionExpressTemplate {
-	e.RegionExpress()
+func (e *expressTemplateImpl) GetAreaExpressTemplateByAreaCode(areaCode string) *express.DistrictExpressTemplate {
+	e.DistrictExpress()
 	return e._areaMap[areaCode]
 }
 

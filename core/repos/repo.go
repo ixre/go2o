@@ -68,7 +68,7 @@ func PrefixDel(sto storage.Interface, prefix string) error {
 
 func OrmMapping(orm orm.Orm) {
 	//table mapping
-	orm.Mapping(valueobject.Area{}, "sys_region")
+	orm.Mapping(valueobject.Area{}, "sys_district")
 	orm.Mapping(registry.Registry{}, "registry")
 	// ad
 	orm.Mapping(ad.Ad{}, "ad_list")
@@ -130,7 +130,7 @@ func OrmMapping(orm orm.Orm) {
 	// Express
 	orm.Mapping(express.Provider{}, "express_provider")
 	orm.Mapping(express.ExpressTemplate{}, "mch_express_template")
-	orm.Mapping(express.RegionExpressTemplate{}, "express_area_set")
+	orm.Mapping(express.DistrictExpressTemplate{}, "express_area_set")
 
 	// Shipment
 	orm.Mapping(shipment.ShipmentOrder{}, "ship_order")

@@ -129,7 +129,7 @@ func (e *expressServiceImpl) SaveExpressTemplate(_ context.Context, r *proto.SEx
 	var id int
 	err := ie.Set(v)
 	if err == nil {
-		ie.SetRegionExpress(e.parseRegionsTemplate(r.Regions))
+		ie.SetDistrictExpress(e.parseDistrictsTemplate(r.Districts))
 		id, err = ie.Save()
 	}
 	ret := &proto.SaveTemplateResponse{
@@ -148,9 +148,9 @@ func (e *expressServiceImpl) GetTemplate(_ context.Context, id *proto.ExpressTem
 	t := u.GetTemplate(int(id.TemplateId))
 	if t != nil {
 		v := t.Value()
-		v2 := t.RegionExpress()
+		v2 := t.DistrictExpress()
 		ret := e.parseExpressTemplateDto(&v)
-		ret.Regions = e.parseExpressRegions(&v2)
+		ret.Districts = e.parseExpressDistricts(&v2)
 		return ret, nil
 	}
 	return nil, express.ErrNoSuchTemplate
@@ -245,10 +245,10 @@ func (e *expressServiceImpl) parseExpressTemplateDto(v *express.ExpressTemplate)
 	}
 }
 
-func (e *expressServiceImpl) parseExpressRegions(regions *[]express.RegionExpressTemplate) []*proto.SRegionExpressTemplate {
-	arr := make([]*proto.SRegionExpressTemplate, 0)
-	for _, v := range *regions {
-		arr = append(arr, &proto.SRegionExpressTemplate{
+func (e *expressServiceImpl) parseExpressDistricts(districts *[]express.DistrictExpressTemplate) []*proto.SDistrictExpressTemplate {
+	arr := make([]*proto.SDistrictExpressTemplate, 0)
+	for _, v := range *districts {
+		arr = append(arr, &proto.SDistrictExpressTemplate{
 			Id:        int64(v.Id),
 			CodeList:  v.CodeList,
 			NameList:  v.NameList,
@@ -261,10 +261,10 @@ func (e *expressServiceImpl) parseExpressRegions(regions *[]express.RegionExpres
 	return arr
 }
 
-func (e *expressServiceImpl) parseRegionsTemplate(regions []*proto.SRegionExpressTemplate) *[]express.RegionExpressTemplate {
-	arr := make([]express.RegionExpressTemplate, 0)
-	for _, v := range regions {
-		arr = append(arr, express.RegionExpressTemplate{
+func (e *expressServiceImpl) parseDistrictsTemplate(districts []*proto.SDistrictExpressTemplate) *[]express.DistrictExpressTemplate {
+	arr := make([]express.DistrictExpressTemplate, 0)
+	for _, v := range districts {
+		arr = append(arr, express.DistrictExpressTemplate{
 			Id:        int(v.Id),
 			CodeList:  v.CodeList,
 			NameList:  v.NameList,

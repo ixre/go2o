@@ -85,7 +85,7 @@ message AreaStringRequest {
     int32 district = 3;
 }
 message AreaListResponse {
-    repeated SArea value =  1;
+    repeated SDistrict value =  1;
 }
 message StringListResponse {
     repeated string value =  1;
@@ -117,13 +117,13 @@ message SSsoApp {
     string token = 4;
 }
 
-/** 行政区域 */
-message SArea {
-    /** 编号 **/
+// 行政区域
+message SDistrict {
+    // 编号
     int64 id = 1;
-    /** 上级编号 */
+    // 上级编号
     int64 parentId = 2;
-    /** 区域名称 */
+    // 区域名称
     string name = 3;
 }
 

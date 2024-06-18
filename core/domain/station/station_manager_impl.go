@@ -30,7 +30,7 @@ func (s *stationManagerImpl) SyncStations() error {
 	is := s.sysRepo.GetSystemAggregateRoot()
 	arr := is.Address().GetAllCities()
 	stations := s.repo.GetStations()
-	syncArray := make([]*sys.Region, 0)
+	syncArray := make([]*sys.District, 0)
 	for _, v := range arr {
 		exists := false
 		for _, s := range stations {
@@ -52,7 +52,7 @@ func (s *stationManagerImpl) SyncStations() error {
 	return nil
 }
 
-func (s *stationManagerImpl) createSubStation(city *sys.Region) {
+func (s *stationManagerImpl) createSubStation(city *sys.District) {
 	i := s.repo.CreateStation(&station.SubStation{
 		CityCode:   city.Code,
 		Status:     0,

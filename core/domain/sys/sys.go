@@ -29,7 +29,7 @@ func (s *systemAggregateRootImpl) GetAggregateRootId() int {
 func (s *systemAggregateRootImpl) Address() sys.IAddressManager {
 	if s._address == nil {
 		s._address = &addressManagerImpl{
-			s._repo.Region(), nil}
+			s._repo.District(), nil}
 	}
 	return s._address
 }
@@ -55,12 +55,12 @@ func (s *systemAggregateRootImpl) LastUpdateTime() int64 {
 var _ sys.IAddressManager = new(addressManagerImpl)
 
 type addressManagerImpl struct {
-	fw.Repository[sys.Region]
-	areaList []*sys.Region
+	fw.Repository[sys.District]
+	areaList []*sys.District
 }
 
 // getAreaList 获取地区列表
-func (a *addressManagerImpl) getAreaList() []*sys.Region {
+func (a *addressManagerImpl) getAreaList() []*sys.District {
 	if a.areaList == nil {
 		a.areaList = a.FindList("")
 	}
@@ -68,14 +68,14 @@ func (a *addressManagerImpl) getAreaList() []*sys.Region {
 }
 
 // getProvinces 获取省列表
-func (a *addressManagerImpl) getProvinces() []*sys.Region {
-	return collections.FilterArray(a.getAreaList(), func(a *sys.Region) bool {
+func (a *addressManagerImpl) getProvinces() []*sys.District {
+	return collections.FilterArray(a.getAreaList(), func(a *sys.District) bool {
 		return a.Parent == 0 && a.Code != 0
 	})
 }
 
-// GetRegionNames implements sys.IAddressManager.
-func (a *addressManagerImpl) GetRegionNames(code ...int) map[int]string {
+// GetDistrictNames implements sys.IAddressManager.
+func (a *addressManagerImpl) GetDistrictNames(code ...int) map[int]string {
 	mp := make(map[int]string)
 	for _, v := range a.getAreaList() {
 		if len(mp) == len(code) {
@@ -91,29 +91,29 @@ func (a *addressManagerImpl) GetRegionNames(code ...int) map[int]string {
 }
 
 // GetAllCities 获取所有城市列表
-func (a *addressManagerImpl) GetAllCities() []*sys.Region {
+func (a *addressManagerImpl) GetAllCities() []*sys.District {
 	provinceList := a.getProvinces()
 	provinceCodes := collections.MapList(provinceList,
-		func(s *sys.Region) int {
+		func(s *sys.District) int {
 			return s.Code
 		})
-	cityList := collections.FilterArray(a.getAreaList(), func(s *sys.Region) bool {
+	cityList := collections.FilterArray(a.getAreaList(), func(s *sys.District) bool {
 		return s.Parent != 0 && collections.AnyArray(provinceCodes, func(c int) bool {
 			return c == s.Parent
 		})
 	})
-	ret := make([]*sys.Region, 0)
+	ret := make([]*sys.District, 0)
 	for _, c := range cityList {
 		c.Name = strings.TrimSpace(c.Name)
 		if c.Name == "市辖区" || c.Name == "县" || c.Name == "区" {
 			// 将直辖市加入到城市列表中
-			if collections.AnyArray(ret, func(a *sys.Region) bool {
+			if collections.AnyArray(ret, func(a *sys.District) bool {
 				return a.Code == c.Parent
 			}) {
 				// 已添加直辖市到城市列表中
 				continue
 			}
-			parent := collections.FindArray(provinceList, func(a *sys.Region) bool {
+			parent := collections.FindArray(provinceList, func(a *sys.District) bool {
 				return a.Code == c.Parent
 			})
 			if parent != nil {
@@ -126,8 +126,8 @@ func (a *addressManagerImpl) GetAllCities() []*sys.Region {
 	return ret
 }
 
-// GetRegionList implements sys.IAddressManager.
-func (a *addressManagerImpl) GetRegionList(parentId int) []*sys.Region {
+// GetDistrictList implements sys.IAddressManager.
+func (a *addressManagerImpl) GetDistrictList(parentId int) []*sys.District {
 	return a.FindList("parent=$1", parentId)
 }
 
@@ -140,6 +140,22 @@ type optionManagerImpl struct {
 
 // GetChildOptions implements sys.IOptionManager.
 func (o *optionManagerImpl) GetChildOptions(parentId int, typeName string) []*sys.GeneralOption {
+	l := len(typeName)
+	if parentId == 0 && l == 0 {
+		// 无法根据参数获取数据
+		return []*sys.GeneralOption{}
+	}
+	if parentId == 0 && l > 0 {
+		// 返回顶级节点的下级数据
+		t := collections.FindArray(o.getList(), func(s *sys.GeneralOption) bool {
+			return s.Type == typeName
+		})
+		if t == nil {
+			return []*sys.GeneralOption{}
+		}
+		parentId = t.Id
+		typeName = ""
+	}
 	return collections.FilterArray(o.getList(), func(s *sys.GeneralOption) bool {
 		return s.Pid == parentId && (s.Type == typeName || typeName == "")
 	})
@@ -151,6 +167,13 @@ func (o *optionManagerImpl) getList() []*sys.GeneralOption {
 		o.allList = o.FindList("")
 	}
 	return o.allList
+}
+
+// IsLeaf implements sys.IOptionManager.
+func (o *optionManagerImpl) IsLeaf(g *sys.GeneralOption) bool {
+	return collections.FindArray(o.getList(), func(n *sys.GeneralOption) bool {
+		return n.Pid == g.Id && n.Enabled == 1
+	}) == nil
 }
 
 // GetOptionNames implements sys.IOptionManager.

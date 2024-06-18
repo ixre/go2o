@@ -43,7 +43,7 @@ func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, er
 	v.ReviewStatus = int(enum.ReviewAwaiting)
 	v.ReviewRemark = ""
 	v.ReviewTime = 0
-	// aName := p.valRepo.GetRegionNames([]int32{e.Province, e.City, e.District})
+	// aName := p.valRepo.GetDistrictNames([]int32{e.Province, e.City, e.District})
 	// e.Location = strings.Join(aName, "")
 	v.UpdateTime = int(time.Now().Unix())
 	e := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 0)

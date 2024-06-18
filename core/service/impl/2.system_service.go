@@ -331,9 +331,9 @@ func (s *foundationService) GetSmsApiSet() mss.SmsApiSet {
 
 // GetChildAreas 获取下级区域
 func (s *foundationService) GetChildAreas(_ context.Context, code *proto.Int32) (*proto.AreaListResponse, error) {
-	var arr []*proto.SArea
+	var arr []*proto.SDistrict
 	for _, v := range s._rep.GetChildAreas(code.Value) {
-		arr = append(arr, &proto.SArea{
+		arr = append(arr, &proto.SDistrict{
 			Id:       v.Code,
 			ParentId: v.Parent,
 			Name:     v.Name,
@@ -344,13 +344,13 @@ func (s *foundationService) GetChildAreas(_ context.Context, code *proto.Int32) 
 	}, nil
 }
 
-// GetRegionNames 获取地区名称
-func (s *foundationService) GetRegionNames(_ context.Context, request *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
+// GetDistrictNames 获取地区名称
+func (s *foundationService) GetDistrictNames(_ context.Context, request *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Address()
 	codes := collections.MapList(request.Value, func(i int32) int {
 		return int(i)
 	})
-	mp := isa.GetRegionNames(codes...)
+	mp := isa.GetDistrictNames(codes...)
 	retMap := collections.Map(mp, func(k int, v string) (uint64, string) {
 		return uint64(k), v
 	})
@@ -381,9 +381,10 @@ func (s *foundationService) GetChildOptions(_ context.Context, req *proto.Option
 
 	ret := collections.MapList(options, func(o *sys.GeneralOption) *proto.SOption {
 		return &proto.SOption{
-			Id:    int64(o.Id),
-			Name:  o.Name,
-			Value: o.Value,
+			Id:     int64(o.Id),
+			Name:   o.Name,
+			Value:  o.Value,
+			IsLeaf: isa.IsLeaf(o),
 		}
 	})
 	return &proto.OptionsResponse{

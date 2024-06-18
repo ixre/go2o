@@ -36,7 +36,7 @@ const (
 	SystemService_SuperValidate_FullMethodName        = "/SystemService/SuperValidate"
 	SystemService_FlushSuperPwd_FullMethodName        = "/SystemService/FlushSuperPwd"
 	SystemService_GetSyncLoginUrl_FullMethodName      = "/SystemService/GetSyncLoginUrl"
-	SystemService_GetRegionNames_FullMethodName       = "/SystemService/GetRegionNames"
+	SystemService_GetDistrictNames_FullMethodName     = "/SystemService/GetDistrictNames"
 	SystemService_GetAreaString_FullMethodName        = "/SystemService/GetAreaString"
 	SystemService_GetChildAreas_FullMethodName        = "/SystemService/GetChildAreas"
 	SystemService_GetMoAppConf_FullMethodName         = "/SystemService/GetMoAppConf"
@@ -96,7 +96,7 @@ type SystemServiceClient interface {
 	// 创建同步登录的地址,returnUrl
 	GetSyncLoginUrl(ctx context.Context, in *String, opts ...grpc.CallOption) (*String, error)
 	// 获取地区名称
-	GetRegionNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error)
+	GetDistrictNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error)
 	// 获取省市区字符串
 	GetAreaString(ctx context.Context, in *AreaStringRequest, opts ...grpc.CallOption) (*String, error)
 	// 获取下级区域,code
@@ -278,9 +278,9 @@ func (c *systemServiceClient) GetSyncLoginUrl(ctx context.Context, in *String, o
 	return out, nil
 }
 
-func (c *systemServiceClient) GetRegionNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error) {
+func (c *systemServiceClient) GetDistrictNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error) {
 	out := new(IntStringMapResponse)
-	err := c.cc.Invoke(ctx, SystemService_GetRegionNames_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, SystemService_GetDistrictNames_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -416,7 +416,7 @@ type SystemServiceServer interface {
 	// 创建同步登录的地址,returnUrl
 	GetSyncLoginUrl(context.Context, *String) (*String, error)
 	// 获取地区名称
-	GetRegionNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error)
+	GetDistrictNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error)
 	// 获取省市区字符串
 	GetAreaString(context.Context, *AreaStringRequest) (*String, error)
 	// 获取下级区域,code
@@ -493,8 +493,8 @@ func (UnimplementedSystemServiceServer) FlushSuperPwd(context.Context, *UserPwd)
 func (UnimplementedSystemServiceServer) GetSyncLoginUrl(context.Context, *String) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSyncLoginUrl not implemented")
 }
-func (UnimplementedSystemServiceServer) GetRegionNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRegionNames not implemented")
+func (UnimplementedSystemServiceServer) GetDistrictNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDistrictNames not implemented")
 }
 func (UnimplementedSystemServiceServer) GetAreaString(context.Context, *AreaStringRequest) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAreaString not implemented")
@@ -842,20 +842,20 @@ func _SystemService_GetSyncLoginUrl_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SystemService_GetRegionNames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SystemService_GetDistrictNames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetNamesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SystemServiceServer).GetRegionNames(ctx, in)
+		return srv.(SystemServiceServer).GetDistrictNames(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: SystemService_GetRegionNames_FullMethodName,
+		FullMethod: SystemService_GetDistrictNames_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SystemServiceServer).GetRegionNames(ctx, req.(*GetNamesRequest))
+		return srv.(SystemServiceServer).GetDistrictNames(ctx, req.(*GetNamesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1098,8 +1098,8 @@ var SystemService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SystemService_GetSyncLoginUrl_Handler,
 		},
 		{
-			MethodName: "GetRegionNames",
-			Handler:    _SystemService_GetRegionNames_Handler,
+			MethodName: "GetDistrictNames",
+			Handler:    _SystemService_GetDistrictNames_Handler,
 		},
 		{
 			MethodName: "GetAreaString",

@@ -377,7 +377,7 @@ func (r *valueRepo) GetAreaName(code int32) string {
 	key := "go2o:repo:area:name-" + strId
 	name, err := r.storage.GetString(key)
 	if err != nil {
-		err = r.Connector.ExecScalar("SELECT name FROM sys_region WHERE code= $1", &name, strId)
+		err = r.Connector.ExecScalar("SELECT name FROM sys_district WHERE code= $1", &name, strId)
 		if err == nil {
 			name = strings.TrimSpace(name)
 			if name == "市辖区" || name == "市辖县" || name == "县" {
@@ -390,7 +390,7 @@ func (r *valueRepo) GetAreaName(code int32) string {
 }
 
 // 获取地区名称
-func (r *valueRepo) GetRegionNames(codeArr []int32) []string {
+func (r *valueRepo) GetDistrictNames(codeArr []int32) []string {
 	arr := make([]string, len(codeArr))
 	for i, v := range codeArr {
 		arr[i] = r.GetAreaName(v)
@@ -405,13 +405,13 @@ func (r *valueRepo) GetRegionNames(codeArr []int32) []string {
 
 // 获取省市区字符串
 func (r *valueRepo) GetAreaString(province, city, district int32) string {
-	names := r.GetRegionNames([]int32{province, city, district})
+	names := r.GetDistrictNames([]int32{province, city, district})
 	return strings.Join(names, " ")
 }
 
 // 获取省市区字符串
 func (r *valueRepo) AreaString(province, city, district int32, detail string) string {
-	names := r.GetRegionNames([]int32{province, city, district})
+	names := r.GetDistrictNames([]int32{province, city, district})
 	prefix := []byte(strings.Join(names, ""))
 	if len(prefix) != 0 && len(detail) != 0 {
 		i := strings.IndexFunc(detail, func(r rune) bool {

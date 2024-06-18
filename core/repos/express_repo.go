@@ -93,20 +93,20 @@ func (er *expressRepo) SaveExpressTemplate(v *express.ExpressTemplate) (int, err
 }
 
 // 获取模板的所有地区设置
-func (er *expressRepo) GetExpressTemplateAllAreaSet(templateId int) []express.RegionExpressTemplate {
-	var list []express.RegionExpressTemplate
+func (er *expressRepo) GetExpressTemplateAllAreaSet(templateId int) []express.DistrictExpressTemplate {
+	var list []express.DistrictExpressTemplate
 	er.o.Select(&list, "template_id= $1", templateId)
 	return list
 }
 
 // 保存模板的地区设置
-func (er *expressRepo) SaveExpressTemplateAreaSet(v *express.RegionExpressTemplate) (int, error) {
+func (er *expressRepo) SaveExpressTemplateAreaSet(v *express.DistrictExpressTemplate) (int, error) {
 	return orm.Save(er.o, v, int(v.Id))
 }
 
 // 删除模板的地区设置
 func (er *expressRepo) DeleteAreaExpressTemplate(templateId int, areaSetId int) error {
-	_, err := er.o.Delete(express.RegionExpressTemplate{},
+	_, err := er.o.Delete(express.DistrictExpressTemplate{},
 		"id= $1 AND template_id = $2", areaSetId, templateId)
 	return err
 }

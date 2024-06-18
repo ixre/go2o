@@ -26,11 +26,11 @@ type (
 	// IAddressManager 地址管理器
 	IAddressManager interface {
 		// GetAllCities 获取所有城市
-		GetAllCities() []*Region
-		// GetRegionList 获取区域信息
-		GetRegionList(parentId int) []*Region
-		// GetRegions 获取区域名称
-		GetRegionNames(code ...int) map[int]string
+		GetAllCities() []*District
+		// GetDistrictList 获取区域信息
+		GetDistrictList(parentId int) []*District
+		// GetDistricts 获取区域名称
+		GetDistrictNames(code ...int) map[int]string
 	}
 
 	// IOptionManager 选项管理器
@@ -39,6 +39,8 @@ type (
 		GetOptionNames(code ...int) map[int]string
 		// 获取下级选项
 		GetChildOptions(parentId int, typeName string) []*GeneralOption
+		// 是否为叶子节点
+		IsLeaf(n *GeneralOption) bool
 	}
 )
 
@@ -50,15 +52,15 @@ type ISystemRepo interface {
 	FlushUpdateStatus()
 	// 获取最后更新时间
 	LastUpdateTime() int64
-	// Region 获取区域仓储
-	Region() fw.Repository[Region]
+	// District 获取区域仓储
+	District() fw.Repository[District]
 	// Option 获取选项仓储
 	Option() fw.Repository[GeneralOption]
 }
 
 type (
-	// Region ChinaArea
-	Region struct {
+	// District ChinaArea
+	District struct {
 		// Code
 		Code int `db:"code" pk:"yes" json:"code" bson:"code"`
 		// Name
@@ -68,8 +70,8 @@ type (
 	}
 )
 
-func (a Region) TableName() string {
-	return "sys_region"
+func (a District) TableName() string {
+	return "sys_district"
 }
 
 // GeneralOption 系统通用选项(用于存储分类和选项等数据)
