@@ -113,11 +113,11 @@ message SExpressTemplate {
   // 是否启用
   bool enabled = 10;
   // 地区模板设置
-  repeated SRegionExpressTemplate regions = 11;
+  repeated SDistrictExpressTemplate districts = 11;
 }
 
 // 快递地区模板
-message SRegionExpressTemplate {
+message SDistrictExpressTemplate {
   // 模板编号
   int64 id = 1;
   // 地区编号列表，通常精确到省即可
@@ -152,7 +152,7 @@ message ExpressTemplateListResponse {
 message SaveAreaExpTemplateRequest {
   int64 sellerId = 1;
   int64 templateId = 2;
-  SRegionExpressTemplate value = 3;
+  SDistrictExpressTemplate value = 3;
 }
 
 message AreaTemplateId {

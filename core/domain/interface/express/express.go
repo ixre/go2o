@@ -131,10 +131,10 @@ type (
 		Set(v *ExpressTemplate) error
 
 		// 设置地区运费
-		SetRegionExpress(arr *[]RegionExpressTemplate) error
+		SetDistrictExpress(arr *[]DistrictExpressTemplate) error
 
 		// 地区运费设置
-		RegionExpress() []RegionExpressTemplate
+		DistrictExpress() []DistrictExpressTemplate
 
 		// 是否启用
 		Enabled() bool
@@ -143,7 +143,7 @@ type (
 		Save() (int, error)
 
 		// 根据地区编码获取运费模板
-		GetAreaExpressTemplateByAreaCode(areaCode string) *RegionExpressTemplate
+		GetAreaExpressTemplateByAreaCode(areaCode string) *DistrictExpressTemplate
 	}
 
 	IExpressRepo interface {
@@ -169,10 +169,10 @@ type (
 		SaveExpressTemplate(value *ExpressTemplate) (int, error)
 
 		// 获取模板的所有地区设置
-		GetExpressTemplateAllAreaSet(templateId int) []RegionExpressTemplate
+		GetExpressTemplateAllAreaSet(templateId int) []DistrictExpressTemplate
 
 		// 保存模板的地区设置
-		SaveExpressTemplateAreaSet(t *RegionExpressTemplate) (int, error)
+		SaveExpressTemplateAreaSet(t *DistrictExpressTemplate) (int, error)
 
 		// 删除模板的地区设置
 		DeleteAreaExpressTemplate(templateId int, areaSetId int) error
@@ -221,7 +221,7 @@ type (
 	}
 
 	// 快递地区模板
-	RegionExpressTemplate struct {
+	DistrictExpressTemplate struct {
 		// 模板编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 运费模板编号

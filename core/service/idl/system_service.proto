@@ -73,7 +73,7 @@ service SystemService {
     rpc GetSyncLoginUrl (String) returns (String) {
     }
     // 获取地区名称
-    rpc GetRegionNames (GetNamesRequest) returns (IntStringMapResponse) {
+    rpc GetDistrictNames (GetNamesRequest) returns (IntStringMapResponse) {
     }
     // 获取省市区字符串
     rpc GetAreaString (AreaStringRequest) returns (String) {
@@ -138,4 +138,6 @@ message SOption {
     string name = 2;
     // 值
     string value = 3;
+    // 是否为叶子节点
+    bool isLeaf = 4;
 }
