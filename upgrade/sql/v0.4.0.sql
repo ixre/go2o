@@ -454,8 +454,8 @@ COMMENT ON COLUMN "public".mm_trusted_info.extra_cert_ext1 IS '扩展认证资�
 COMMENT ON COLUMN "public".mm_trusted_info.extra_cert_ext2 IS '扩展认证资料2';
 
 
-ALTER TABLE `mm_trusted_info`
-    RENAME TO `mm_cert_info`;
+ALTER TABLE mm_trusted_info
+    RENAME TO mm_cert_info;
 
 ALTER TABLE "public".mm_cert_info 
   ADD COLUMN "version" int4 DEFAULT 0 NOT NULL;
