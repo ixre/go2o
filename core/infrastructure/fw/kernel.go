@@ -50,6 +50,8 @@ type (
 	Service[M any] interface {
 		// Get 获取实体
 		Get(id interface{}) *M
+		// FindBy 根据条件获取实体
+		FindBy(where string, v ...interface{}) *M
 		// Save 保存
 		Save(v *M) (*M, error)
 		// FindList 查找列表
@@ -168,6 +170,10 @@ func (m *BaseService[M]) Save(r *M) (*M, error) {
 
 func (m *BaseService[M]) Get(id interface{}) *M {
 	return m.Repo.Get(id)
+}
+
+func (m *BaseService[M]) FindBy(where string, args ...interface{}) *M {
+	return m.Repo.FindBy(where, args...)
 }
 
 func (m *BaseService[M]) FindList(where string, args ...interface{}) []*M {
