@@ -44,7 +44,7 @@ func (s *systemRepoImpl) FlushUpdateStatus() {
 	unix := time.Now().Unix()
 	err := s.st.Set("go2o:sys:last_update_time", unix)
 	if err != nil {
-		logger.Error("sys", "set last update time error: %s", err.Error())
+		logger.Error("set last update time error: %s", err.Error())
 	}
 	// 清除缓存
 	_sysAggregate = impl.NewSystemAggregateRoot(_sysRepo)
@@ -53,9 +53,16 @@ func (s *systemRepoImpl) FlushUpdateStatus() {
 // LastUpdateTime implements sys.ISystemRepo.
 func (s *systemRepoImpl) LastUpdateTime() int64 {
 	if s.lastUpdateTime <= 0 {
-		updateTime, err := s.st.GetInt64("go2o:sys:last_update_time")
+		key := "go2o:sys:last_update_time"
+		updateTime, err := s.st.GetInt64(key)
 		if err != nil {
-			logger.Error("sys", "get last update time error: %s", err.Error())
+			if s.st.Exists(key) {
+				logger.Error("get last update time error: %s", err.Error())
+			}
+
+			s.lastUpdateTime = time.Now().Unix()
+			s.st.Set(key, s.lastUpdateTime)
+
 		}
 		s.lastUpdateTime = updateTime
 	}
