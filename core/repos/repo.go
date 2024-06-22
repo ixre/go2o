@@ -86,7 +86,7 @@ func OrmMapping(orm orm.Orm) {
 	// 内容
 	orm.Mapping(content.Page{}, "arc_page")
 	orm.Mapping(content.Article{}, "article_list")
-	orm.Mapping(content.ArticleCategory{}, "article_category")
+	orm.Mapping(content.Category{}, "article_category")
 
 	// new
 	orm.Mapping(member.Level{}, "mm_level")

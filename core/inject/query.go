@@ -52,6 +52,8 @@ var provideSets = wire.NewSet(
 	repos.NewAdvertisementRepo,
 	repos.NewJobRepository,
 	repos.NewStaffRepo,
+	repos.NewPageRepo,
+	repos.NewArticleCategoryRepo,
 )
 var queryProvideSets = wire.NewSet(
 	provideSets,

@@ -22,14 +22,14 @@ import (
 var _ proto.ContentServiceServer = new(contentService)
 
 type contentService struct {
-	_contentRepo content.IArchiveRepo
+	_contentRepo content.IArticleRepo
 	_query       *query.ContentQuery
 	_sysContent  content.IContentAggregateRoot
 	serviceUtil
 	proto.UnimplementedContentServiceServer
 }
 
-func NewContentService(rep content.IArchiveRepo, q *query.ContentQuery) proto.ContentServiceServer {
+func NewContentService(rep content.IArticleRepo, q *query.ContentQuery) proto.ContentServiceServer {
 	return &contentService{
 		_contentRepo: rep,
 		_query:       q,
@@ -42,9 +42,9 @@ func (c *contentService) GetPage(_ context.Context, id *proto.IdOrName) (*proto.
 	ic := c._contentRepo.GetContent(0)
 	var ia content.IPage
 	if id.Id > 0 {
-		ia = ic.GetPage(int32(id.Id))
+		ia = ic.PageManager().GetPage(int(id.Id))
 	} else {
-		ia = ic.GetPageByCode(id.Name)
+		ia = ic.PageManager().GetPageByCode(id.Name)
 	}
 	if ia != nil {
 		return c.parsePageDto(ia.GetValue()), nil
@@ -59,9 +59,9 @@ func (c *contentService) SavePage(_ context.Context, v *proto.SPage) (*proto.Res
 	var err error
 	iv := c.parsePage(v)
 	if v.Id > 0 {
-		ip = ic.GetPage(int32(v.Id))
+		ip = ic.PageManager().GetPage(int(v.Id))
 	} else {
-		ip = ic.CreatePage(iv)
+		ip = ic.PageManager().CreatePage(iv)
 	}
 	err = ip.SetValue(iv)
 	if err == nil {
@@ -73,7 +73,7 @@ func (c *contentService) SavePage(_ context.Context, v *proto.SPage) (*proto.Res
 // 删除页面
 func (c *contentService) DeletePage(_ context.Context, id *proto.Int64) (*proto.Result, error) {
 	ic := c._contentRepo.GetContent(0)
-	err := ic.DeletePage(int32(id.Value))
+	err := ic.PageManager().DeletePage(int(id.Value))
 	return c.error(err), nil
 }
 
@@ -82,8 +82,7 @@ func (c *contentService) GetArticleCategories(_ context.Context, empty *proto.Em
 	list := c._sysContent.ArticleManager().GetAllCategory()
 	arr := make([]*proto.SArticleCategory, len(list))
 	for i, v := range list {
-		val := v.GetValue()
-		arr[i] = c.parseArticleCategoryDto(val)
+		arr[i] = c.parseArticleCategoryDto(v)
 	}
 	return &proto.ArticleCategoriesResponse{
 		Value: arr,
@@ -93,14 +92,14 @@ func (c *contentService) GetArticleCategories(_ context.Context, empty *proto.Em
 // 获取栏目
 func (c *contentService) GetArticleCategory(_ context.Context, name *proto.IdOrName) (*proto.SArticleCategory, error) {
 	mgr := c._sysContent.ArticleManager()
-	var ic content.ICategory
+	var ic *content.Category
 	if name.Id > 0 {
-		ic = mgr.GetCategory(int32(name.Id))
+		ic = mgr.GetCategory(int(name.Id))
 	} else {
 		ic = mgr.GetCategoryByAlias(name.Name)
 	}
 	if ic != nil {
-		return c.parseArticleCategoryDto(ic.GetValue()), nil
+		return c.parseArticleCategoryDto(*ic), nil
 	}
 	return nil, fmt.Errorf("no such category")
 }
@@ -108,21 +107,14 @@ func (c *contentService) GetArticleCategory(_ context.Context, name *proto.IdOrN
 // 保存文章栏目
 func (c *contentService) SaveArticleCategory(_ context.Context, r *proto.SArticleCategory) (*proto.Result, error) {
 	m := c._sysContent.ArticleManager()
-	ic := m.GetCategory(int32(r.Id))
 	v := c.parseArticleCategory(r)
-	if ic == nil {
-		ic = m.CreateCategory(v)
-	}
-	err := ic.SetValue(v)
-	if err == nil {
-		_, err = ic.Save()
-	}
+	err := m.SaveCategory(v)
 	return c.error(err), nil
 }
 
 // 删除文章分类
 func (c *contentService) DeleteArticleCategory(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	err := c._sysContent.ArticleManager().DelCategory(int32(id.Value))
+	err := c._sysContent.ArticleManager().DelCategory(int(id.Value))
 	return c.error(err), nil
 }
 
@@ -169,8 +161,8 @@ func (c *contentService) QueryPagingArticles(_ context.Context, r *proto.PagingA
 	var total = 0
 	var rows []*content.Article
 	ic := c._sysContent.ArticleManager().GetCategoryByAlias(r.CategoryName)
-	if ic != nil && ic.GetDomainId() > 0 {
-		total, rows = c._query.PagedArticleList(ic.GetDomainId(), int(r.Begin), int(r.Size), "")
+	if ic != nil && ic.ID > 0 {
+		total, rows = c._query.PagedArticleList(int32(ic.ID), int(r.Begin), int(r.Size), "")
 	}
 	var arr = make([]*proto.SArticle, 0)
 	for _, v := range rows {
@@ -184,15 +176,15 @@ func (c *contentService) QueryPagingArticles(_ context.Context, r *proto.PagingA
 
 func (c *contentService) QueryTopArticles(_ context.Context, cat *proto.IdOrName) (*proto.ArticleListResponse, error) {
 	var arr = make([]*proto.SArticle, 0)
-	var ic content.ICategory
+	var ic *content.Category
 	var m = c._sysContent.ArticleManager()
 	if cat.Id > 0 {
-		ic = m.GetCategory(int32(cat.Id))
+		ic = m.GetCategory(int(cat.Id))
 	} else {
 		ic = m.GetCategoryByAlias(cat.Name)
 	}
-	if ic != nil && ic.GetDomainId() > 0 {
-		_, rows := c._query.PagedArticleList(ic.GetDomainId(), 0, 1, "")
+	if ic != nil && ic.ID > 0 {
+		_, rows := c._query.PagedArticleList(int32(ic.ID), 0, 1, "")
 		for _, v := range rows {
 			arr = append(arr, c.parseArticleDto(v))
 		}
@@ -237,7 +229,7 @@ func (c *contentService) parsePage(v *proto.SPage) *content.Page {
 	}
 }
 
-func (c *contentService) parseArticleCategoryDto(v content.ArticleCategory) *proto.SArticleCategory {
+func (c *contentService) parseArticleCategoryDto(v content.Category) *proto.SArticleCategory {
 	return &proto.SArticleCategory{
 		Id:          int64(v.ID),
 		ParentId:    int64(v.ParentId),
@@ -252,10 +244,10 @@ func (c *contentService) parseArticleCategoryDto(v content.ArticleCategory) *pro
 	}
 }
 
-func (c *contentService) parseArticleCategory(r *proto.SArticleCategory) *content.ArticleCategory {
-	return &content.ArticleCategory{
-		ID:          int32(r.Id),
-		ParentId:    int32(r.ParentId),
+func (c *contentService) parseArticleCategory(r *proto.SArticleCategory) *content.Category {
+	return &content.Category{
+		ID:          int(r.Id),
+		ParentId:    int(r.ParentId),
 		PermFlag:    int(r.PermFlag),
 		Name:        r.Name,
 		Alias:       r.Alias,

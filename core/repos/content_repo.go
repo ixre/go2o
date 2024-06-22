@@ -9,63 +9,44 @@
 package repos
 
 import (
-	contentImpl "github.com/ixre/go2o/core/domain/content"
+	"errors"
+
+	impl "github.com/ixre/go2o/core/domain/content"
 	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )
 
-var _ content.IArchiveRepo = new(contentRepo)
+var _ content.IArticleRepo = new(contentRepo)
+var _ content.IPageRepo = new(pageRepoImpl)
 
 type contentRepo struct {
 	db.Connector
-	o orm.Orm
+	o        orm.Orm
+	pageRepo content.IPageRepo
+	catRepo  content.IArticleCategoryRepo
 }
 
 // 内容仓储
-func NewContentRepo(o orm.Orm) content.IArchiveRepo {
+func NewContentRepo(o orm.Orm,
+	catRepo content.IArticleCategoryRepo,
+	pageRepo content.IPageRepo) content.IArticleRepo {
 	return &contentRepo{
 		Connector: o.Connector(),
+		pageRepo:  pageRepo,
+		catRepo:   catRepo,
 		o:         o,
 	}
 }
 
 // 获取内容
 func (c *contentRepo) GetContent(userId int64) content.IContentAggregateRoot {
-	return contentImpl.NewContent(userId, c)
-}
-
-// 根据编号获取页面
-func (c *contentRepo) GetPageById(mchId, id int32) *content.Page {
-	var e content.Page
-	if err := c.o.Get(id, &e); err == nil && e.UserId == int(mchId) {
-		return &e
-	}
-	return nil
-}
-
-// 根据标识获取页面
-func (c *contentRepo) GetPageByCode(userId int, code string) *content.Page {
-	var e content.Page
-	if err := c.o.GetBy(&e, "user_id= $1 and code= $2", userId, code); err == nil {
-		return &e
-	}
-	return nil
-}
-
-// 删除页面
-func (c *contentRepo) DeletePage(userId, id int32) error {
-	_, err := c.o.Delete(content.Page{}, "user_id= $1 AND id= $2", userId, id)
-	return err
-}
-
-// 保存页面
-func (c *contentRepo) SavePage(userId int32, v *content.Page) (int32, error) {
-	return orm.I32(orm.Save(c.o, v, int(v.Id)))
+	return impl.NewContent(userId, c, c.catRepo, c.pageRepo)
 }
 
 // 获取文章数量
-func (c *contentRepo) GetArticleNumByCategory(categoryId int32) int {
+func (c *contentRepo) GetArticleNumByCategory(categoryId int) int {
 	num := 0
 	c.Connector.ExecScalar("SELECT COUNT(1) FROM article_list WHERE cat_id= $1",
 		&num, categoryId)
@@ -73,28 +54,23 @@ func (c *contentRepo) GetArticleNumByCategory(categoryId int32) int {
 }
 
 // 获取栏目
-func (c *contentRepo) GetAllArticleCategory() []*content.ArticleCategory {
-	var list []*content.ArticleCategory
+func (c *contentRepo) GetAllArticleCategory() []*content.Category {
+	var list []*content.Category
 	c.o.Select(&list, "")
 	return list
 }
 
 // 判断栏目是否存在
-func (c *contentRepo) CategoryExists(alias string, id int32) bool {
+func (c *contentRepo) CategoryExists(alias string, id int) bool {
 	num := 0
 	c.Connector.ExecScalar("SELECT COUNT(1) FROM article_category WHERE cat_alias= $1 and id <> $2",
 		&num, alias, id)
 	return num > 0
 }
 
-// 保存栏目
-func (c *contentRepo) SaveCategory(v *content.ArticleCategory) (int32, error) {
-	return orm.I32(orm.Save(c.o, v, int(v.ID)))
-}
-
 // 删除栏目
 func (c *contentRepo) DeleteCategory(id int32) error {
-	return c.o.DeleteByPk(&content.ArticleCategory{}, id)
+	return c.o.DeleteByPk(&content.Category{}, id)
 }
 
 // 获取文章
@@ -122,4 +98,61 @@ func (c *contentRepo) SaveArticle(v *content.Article) (int32, error) {
 // 删除文章
 func (c *contentRepo) DeleteArticle(id int32) error {
 	return c.o.DeleteByPk(&content.Article{}, id)
+}
+
+var _ content.IArticleCategoryRepo = new(articleCategoryRepo)
+
+type articleCategoryRepo struct {
+	fw.BaseRepository[content.Category]
+}
+
+func NewArticleCategoryRepo(o fw.ORM) content.IArticleCategoryRepo {
+	s := &articleCategoryRepo{}
+	s.ORM = o
+	return s
+}
+
+var _ content.IPageRepo = new(pageRepoImpl)
+
+type pageRepoImpl struct {
+	fw.BaseRepository[content.Page]
+}
+
+func NewPageRepo(o fw.ORM) content.IPageRepo {
+	s := &pageRepoImpl{}
+	s.ORM = o
+	return s
+}
+
+// 根据编号获取页面
+func (p *pageRepoImpl) GetPageById(zoneId, id int) content.IPage {
+	v := p.Get(id)
+	if v != nil && v.UserId == zoneId {
+		return impl.NewPage(zoneId, p, v)
+	}
+	return nil
+}
+
+// 根据标识获取页面
+func (p *pageRepoImpl) GetPageByCode(zoneId int, code string) content.IPage {
+	v := p.FindBy("user_id = ? and code = ?", zoneId, code)
+	if v != nil && v.UserId == zoneId {
+		return impl.NewPage(zoneId, p, v)
+	}
+	return nil
+}
+
+// 删除页面
+func (p *pageRepoImpl) DeletePage(zoneId, id int) error {
+	_, err := p.DeleteBy("user_id= ? AND id= ?", zoneId, id)
+	return err
+}
+
+// 保存页面
+func (p *pageRepoImpl) SavePage(zoneId int, v *content.Page) error {
+	if v.UserId != zoneId {
+		return errors.New("zone id not match")
+	}
+	_, err := p.Save(v)
+	return err
 }

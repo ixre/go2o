@@ -12,23 +12,56 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/content"
-	"github.com/ixre/go2o/core/initial/provide"
 )
+
+var _ content.IPageManager = new(pageManagerImpl)
+
+type pageManagerImpl struct {
+	zoneId   int
+	pageRepo content.IPageRepo
+}
+
+// CreatePage 创建页面
+func (c *pageManagerImpl) CreatePage(v *content.Page) content.IPage {
+	return NewPage(c.zoneId, c.pageRepo, v)
+}
+
+// GetPage 获取页面
+func (c *pageManagerImpl) GetPage(id int) content.IPage {
+	return c.pageRepo.GetPageById(c.zoneId, id)
+}
+
+// GetPageByCode 根据字符串标识获取页面
+func (c *pageManagerImpl) GetPageByCode(indent string) content.IPage {
+	return c.pageRepo.GetPageByCode(c.zoneId, indent)
+}
+
+// DeletePage 删除页面
+func (c *pageManagerImpl) DeletePage(id int) error {
+	ip := c.pageRepo.GetPageById(c.zoneId, id)
+	if ip == nil {
+		return content.ErrNoSuchPage
+	}
+	if ip.GetValue().Flag&content.FCategoryInternal == content.FCategoryInternal {
+		return content.ErrInternalPage
+	}
+	return c.pageRepo.DeletePage(c.zoneId, id)
+}
 
 var _ content.IPage = new(pageImpl)
 
 type pageImpl struct {
-	contentRepo content.IArchiveRepo
-	userId      int32
-	value       *content.Page
+	repo   content.IPageRepo
+	zoneId int
+	value  *content.Page
 }
 
-func newPage(userId int32, rep content.IArchiveRepo,
+func NewPage(zoneId int, repo content.IPageRepo,
 	v *content.Page) content.IPage {
 	return &pageImpl{
-		contentRepo: rep,
-		userId:      userId,
-		value:       v,
+		repo:   repo,
+		zoneId: zoneId,
+		value:  v,
 	}
 }
 
@@ -44,11 +77,8 @@ func (p *pageImpl) GetValue() *content.Page {
 
 // 检测别名是否可用
 func (p *pageImpl) checkAliasExists(alias string) bool {
-	total := 0
-	_db := provide.GetDb()
-	_db.ExecScalar("SELECT COUNT(1) FROM arc_page WHERE user_id= $1 AND str_indent= $2 AND id <> $3",
-		&total, p.userId, alias, p.GetDomainId())
-	return total == 0
+	v := p.repo.FindBy("user_id= ? AND str_indent = ? AND id <> ?", p.zoneId, alias, p.GetDomainId())
+	return v != nil
 }
 
 // SetValue 设置值
@@ -57,7 +87,7 @@ func (p *pageImpl) SetValue(v *content.Page) error {
 	if p.value.UserId != v.UserId {
 		return content.ErrUserNotMatch
 	}
-	if p.value.Flag&content.FlagInternal == content.FlagInternal {
+	if p.value.Flag&content.FCategoryInternal == content.FCategoryInternal {
 		if p.value.Code != v.Code {
 			return content.ErrInternalPage
 		}
@@ -70,7 +100,8 @@ func (p *pageImpl) SetValue(v *content.Page) error {
 }
 
 // Save 保存
-func (p *pageImpl) Save() (int32, error) {
+func (p *pageImpl) Save() (int, error) {
 	p.value.UpdateTime = time.Now().Unix()
-	return p.contentRepo.SavePage(p.userId, p.value)
+	err := p.repo.SavePage(p.zoneId, p.value)
+	return p.GetDomainId(), err
 }

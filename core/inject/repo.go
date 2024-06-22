@@ -133,10 +133,14 @@ func GetDeliveryRepo() delivery.IDeliveryRepo {
 	panic(wire.Build(provideSets))
 
 }
-func GetContentRepo() content.IArchiveRepo {
+func GetContentRepo() content.IArticleRepo {
 	panic(wire.Build(provideSets))
-
 }
+
+func GetArticleCategoryRepo() content.IArticleCategoryRepo {
+	panic(wire.Build(provideSets))
+}
+
 func GetAdRepo() ad.IAdRepo {
 	panic(wire.Build(provideSets))
 
@@ -169,5 +173,9 @@ func GetJobRepo() job.IJobRepo {
 }
 
 func GetStaffRepo() staff.IStaffRepo {
+	panic(wire.Build(provideSets))
+}
+
+func GetPageRepo() content.IPageRepo {
 	panic(wire.Build(provideSets))
 }

@@ -307,10 +307,19 @@ func GetDeliveryRepo() delivery.IDeliveryRepo {
 	return iDeliveryRepo
 }
 
-func GetContentRepo() content.IArchiveRepo {
+func GetContentRepo() content.IArticleRepo {
 	orm := provide.GetOrmInstance()
-	iArchiveRepo := repos.NewContentRepo(orm)
-	return iArchiveRepo
+	db := provide.GetGOrm()
+	iArticleCategoryRepo := repos.NewArticleCategoryRepo(db)
+	iPageRepo := repos.NewPageRepo(db)
+	iArticleRepo := repos.NewContentRepo(orm, iArticleCategoryRepo, iPageRepo)
+	return iArticleRepo
+}
+
+func GetArticleCategoryRepo() content.IArticleCategoryRepo {
+	db := provide.GetGOrm()
+	iArticleCategoryRepo := repos.NewArticleCategoryRepo(db)
+	return iArticleCategoryRepo
 }
 
 func GetAdRepo() ad.IAdRepo {
@@ -424,21 +433,29 @@ func GetStaffRepo() staff.IStaffRepo {
 	return iStaffRepo
 }
 
+func GetPageRepo() content.IPageRepo {
+	db := provide.GetGOrm()
+	iPageRepo := repos.NewPageRepo(db)
+	return iPageRepo
+}
+
 // Injectors from service.go:
 
 func GetEventSource() *event.EventSource {
 	orm := provide.GetOrmInstance()
 	storageInterface := provide.GetStorageInstance()
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
-	iArchiveRepo := repos.NewContentRepo(orm)
+	db := provide.GetGOrm()
+	iArticleCategoryRepo := repos.NewArticleCategoryRepo(db)
+	iPageRepo := repos.NewPageRepo(db)
+	iArticleRepo := repos.NewContentRepo(orm, iArticleCategoryRepo, iPageRepo)
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
-	db := provide.GetGOrm()
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iPortalDao := impl.NewPortalDao(orm)
-	eventHandler := handler.NewEventHandler(iRegistryRepo, iArchiveRepo, iMessageRepo, iStationRepo, iPortalDao)
+	eventHandler := handler.NewEventHandler(iRegistryRepo, iArticleRepo, iMessageRepo, iStationRepo, iPageRepo, iPortalDao)
 	eventSource := event.NewEventSource(eventHandler)
 	return eventSource
 }
@@ -787,9 +804,12 @@ func GetShipmentService() proto.ShipmentServiceServer {
 // 内容服务
 func GetContentService() proto.ContentServiceServer {
 	orm := provide.GetOrmInstance()
-	iArchiveRepo := repos.NewContentRepo(orm)
+	db := provide.GetGOrm()
+	iArticleCategoryRepo := repos.NewArticleCategoryRepo(db)
+	iPageRepo := repos.NewPageRepo(db)
+	iArticleRepo := repos.NewContentRepo(orm, iArticleCategoryRepo, iPageRepo)
 	contentQuery := query.NewContentQuery(orm)
-	contentServiceServer := impl2.NewContentService(iArchiveRepo, contentQuery)
+	contentServiceServer := impl2.NewContentService(iArticleRepo, contentQuery)
 	return contentServiceServer
 }
 
@@ -914,7 +934,7 @@ func GetCheckService() proto.CheckServiceServer {
 
 // query.go:
 
-var provideSets = wire.NewSet(provide.GetOrm, provide.GetGOrm, provide.GetOrmInstance, provide.GetStorageInstance, provide.GetApp, provide.GetDb, repos.NewSystemRepo, repos.NewRegistryRepo, repos.NewProModelRepo, repos.NewValueRepo, repos.NewUserRepo, repos.NewWalletRepo, repos.NewNotifyRepo, repos.NewMssRepo, repos.NewExpressRepo, repos.NewShipmentRepo, repos.NewMemberRepo, repos.NewProductRepo, repos.NewItemWholesaleRepo, repos.NewCategoryRepo, repos.NewShopRepo, repos.NewGoodsItemRepo, repos.NewAfterSalesRepo, repos.NewCartRepo, repos.NewContentRepo, repos.NewMerchantRepo, repos.NewOrderRepo, repos.NewPaymentRepo, repos.NewPromotionRepo, repos.NewStationRepo, repos.NewTagSaleRepo, repos.NewWholesaleRepo, repos.NewPersonFinanceRepository, repos.NewDeliverRepo, repos.NewAdvertisementRepo, repos.NewJobRepository, repos.NewStaffRepo)
+var provideSets = wire.NewSet(provide.GetOrm, provide.GetGOrm, provide.GetOrmInstance, provide.GetStorageInstance, provide.GetApp, provide.GetDb, repos.NewSystemRepo, repos.NewRegistryRepo, repos.NewProModelRepo, repos.NewValueRepo, repos.NewUserRepo, repos.NewWalletRepo, repos.NewNotifyRepo, repos.NewMssRepo, repos.NewExpressRepo, repos.NewShipmentRepo, repos.NewMemberRepo, repos.NewProductRepo, repos.NewItemWholesaleRepo, repos.NewCategoryRepo, repos.NewShopRepo, repos.NewGoodsItemRepo, repos.NewAfterSalesRepo, repos.NewCartRepo, repos.NewContentRepo, repos.NewMerchantRepo, repos.NewOrderRepo, repos.NewPaymentRepo, repos.NewPromotionRepo, repos.NewStationRepo, repos.NewTagSaleRepo, repos.NewWholesaleRepo, repos.NewPersonFinanceRepository, repos.NewDeliverRepo, repos.NewAdvertisementRepo, repos.NewJobRepository, repos.NewStaffRepo, repos.NewPageRepo, repos.NewArticleCategoryRepo)
 
 var queryProvideSets = wire.NewSet(
 	provideSets, query.NewStationQuery, query.NewMerchantQuery, query.NewOrderQuery, query.NewMemberQuery, query.NewShopQuery, query.NewItemQuery, query.NewAfterSalesQuery, query.NewContentQuery,

@@ -13,15 +13,22 @@ import "github.com/ixre/go2o/core/domain/interface/content"
 var _ content.IContentAggregateRoot = new(Content)
 
 type Content struct {
-	contentRepo    content.IArchiveRepo
+	artRepo        content.IArticleRepo
+	catRepo        content.IArticleCategoryRepo
 	userId         int64
 	articleManager content.IArticleManager
+	pageManager    content.IPageManager
+	pageRepo       content.IPageRepo
 }
 
-func NewContent(userId int64, rep content.IArchiveRepo) content.IContentAggregateRoot {
+func NewContent(userId int64, rep content.IArticleRepo,
+	catRepo content.IArticleCategoryRepo,
+	pageRepo content.IPageRepo) content.IContentAggregateRoot {
 	return &Content{
-		contentRepo: rep,
-		userId:      userId,
+		artRepo:  rep,
+		pageRepo: pageRepo,
+		userId:   userId,
+		catRepo:  catRepo,
 	}
 }
 
@@ -33,42 +40,18 @@ func (c *Content) GetAggregateRootId() int {
 // ArticleManager 文章服务
 func (c *Content) ArticleManager() content.IArticleManager {
 	if c.articleManager == nil {
-		c.articleManager = newArticleManagerImpl(c.userId, c.contentRepo)
+		c.articleManager = newArticleManagerImpl(c.userId, c.catRepo, c.artRepo)
 	}
 	return c.articleManager
 }
 
-// CreatePage 创建页面
-func (c *Content) CreatePage(v *content.Page) content.IPage {
-	return newPage(int32(c.GetAggregateRootId()), c.contentRepo, v)
-}
-
-// GetPage 获取页面
-func (c *Content) GetPage(id int32) content.IPage {
-	v := c.contentRepo.GetPageById(int32(c.GetAggregateRootId()), id)
-	if v != nil {
-		return c.CreatePage(v)
+// PageManager implements content.IContentAggregateRoot.
+func (c *Content) PageManager() content.IPageManager {
+	if c.pageManager == nil {
+		c.pageManager = &pageManagerImpl{
+			zoneId:   int(c.userId),
+			pageRepo: c.pageRepo,
+		}
 	}
-	return nil
-}
-
-// GetPageByCode 根据字符串标识获取页面
-func (c *Content) GetPageByCode(indent string) content.IPage {
-	v := c.contentRepo.GetPageByCode(c.GetAggregateRootId(), indent)
-	if v != nil {
-		return c.CreatePage(v)
-	}
-	return nil
-}
-
-// DeletePage 删除页面
-func (c *Content) DeletePage(id int32) error {
-	ip := c.GetPage(id)
-	if ip == nil {
-		return content.ErrNoSuchPage
-	}
-	if ip.GetValue().Flag&content.FlagInternal == content.FlagInternal {
-		return content.ErrInternalPage
-	}
-	return c.contentRepo.DeletePage(int32(c.GetAggregateRootId()), id)
+	return c.pageManager
 }
