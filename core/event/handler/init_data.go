@@ -30,7 +30,7 @@ func (h EventHandler) HandleAppInitialEvent(data interface{}) {
 	initSuperLoginToken(h.registryRepo)
 	initPortalNav(h.portalDao)
 	initPortalNavGroup(h.portalDao)
-	initPages(h.archiveRepo)
+	initPages(h.pageRepo)
 	// 初始化站点
 	go h.stationRepo.GetManager().SyncStations()
 	// 初始化通知模板
@@ -152,7 +152,7 @@ func initPortalNavGroup(repo dao.IPortalDao) {
 }
 
 // 初始化内置页面
-func initPages(repo content.IArchiveRepo) {
+func initPages(repo content.IPageRepo) {
 	ip := repo.GetPageByCode(0, "privacy")
 	if ip == nil {
 		pages := []*content.Page{
@@ -180,7 +180,7 @@ func initPages(repo content.IArchiveRepo) {
 			},
 		}
 		for _, v := range pages {
-			v.Flag |= content.FlagInternal
+			v.Flag |= content.FCategoryInternal
 			v.Enabled = 1
 			v.UpdateTime = time.Now().Unix()
 			repo.SavePage(0, v)

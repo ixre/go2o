@@ -133,10 +133,14 @@ func GetDeliveryRepo() delivery.IDeliveryRepo {
 	panic(wire.Build(provideSets))
 
 }
-func GetContentRepo() content.IArchiveRepo {
+func GetContentRepo() content.IArticleRepo {
 	panic(wire.Build(provideSets))
-
 }
+
+func GetArticleCategoryRepo() content.IArticleCategoryRepo {
+	panic(wire.Build(provideSets))
+}
+
 func GetAdRepo() ad.IAdRepo {
 	panic(wire.Build(provideSets))
 

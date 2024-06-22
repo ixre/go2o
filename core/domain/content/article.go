@@ -13,83 +13,20 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/infrastructure/util/collections"
 )
-
-var _ content.ICategory = new(categoryImpl)
-
-type categoryImpl struct {
-	contentRepo content.IArchiveRepo
-	value       *content.Category
-	manager     *articleManagerImpl
-}
-
-func NewCategory(v *content.Category, m *articleManagerImpl,
-	rep content.IArchiveRepo) content.ICategory {
-	return &categoryImpl{
-		contentRepo: rep,
-		value:       v,
-		manager:     m,
-	}
-}
-
-// 获取领域编号
-func (c *categoryImpl) GetDomainId() int32 {
-	return c.value.ID
-}
-
-// 获取文章数量
-func (c *categoryImpl) ArticleNum() int {
-	return c.contentRepo.GetArticleNumByCategory(c.GetDomainId())
-}
-
-// 获取值
-func (c *categoryImpl) GetValue() content.Category {
-	return *c.value
-}
-
-// 设置值
-func (c *categoryImpl) SetValue(v *content.Category) error {
-	if c.contentRepo.CategoryExists(c.value.Alias, c.GetDomainId()) {
-		return content.ErrCategoryAliasExists
-	}
-	v.ID = c.GetDomainId()
-	c.value.Name = v.Name
-	c.value.Alias = v.Alias
-	c.value.Location = v.Location
-	c.value.Title = v.Title
-	c.value.SortNum = v.SortNum
-	c.value.ParentId = v.ParentId
-	c.value.Title = v.Title
-	c.value.Keywords = v.Keywords
-	c.value.Description = v.Description
-	// 设置访问权限
-	if v.PermFlag > 0 {
-		c.value.PermFlag = v.PermFlag
-	}
-	return nil
-}
-
-// 保存
-func (c *categoryImpl) Save() (int32, error) {
-	c.value.UpdateTime = time.Now().Unix()
-	id, err := c.contentRepo.SaveCategory(c.value)
-	if err == nil {
-		c.value.ID = id
-	}
-	return id, err
-}
 
 var _ content.IArticle = new(articleImpl)
 
 type articleImpl struct {
-	_rep      content.IArchiveRepo
+	_rep      content.IArticleRepo
 	_value    *content.Article
-	_category content.ICategory
+	_category *content.Category
 	_manager  content.IArticleManager
 }
 
 func NewArticle(v *content.Article, m content.IArticleManager,
-	rep content.IArchiveRepo) content.IArticle {
+	rep content.IArticleRepo) content.IArticle {
 	return &articleImpl{
 		_rep:     rep,
 		_value:   v,
@@ -130,9 +67,9 @@ func (a *articleImpl) SetValue(v *content.Article) error {
 }
 
 // Category 栏目
-func (a *articleImpl) Category() content.ICategory {
+func (a *articleImpl) Category() *content.Category {
 	if a._category == nil {
-		a._category = a._manager.GetCategory(a._value.CatId)
+		a._category = a._manager.GetCategory(int(a._value.CatId))
 	}
 	return a._category
 }
@@ -150,32 +87,41 @@ func (a *articleImpl) Save() (int32, error) {
 var _ content.IArticleManager = new(articleManagerImpl)
 
 type articleManagerImpl struct {
-	_rep    content.IArchiveRepo
-	_userId int64
+	_rep         content.IArticleCategoryRepo
+	_artRepo     content.IArticleRepo
+	_userId      int64
+	categoryList []*content.Category
 }
 
-func newArticleManagerImpl(userId int64, rep content.IArchiveRepo) content.IArticleManager {
+func newArticleManagerImpl(userId int64, rep content.IArticleCategoryRepo, artRepo content.IArticleRepo) content.IArticleManager {
 	return &articleManagerImpl{
-		_rep:    rep,
-		_userId: userId,
+		_rep:     rep,
+		_userId:  userId,
+		_artRepo: artRepo,
 	}
 }
 
 // GetAllCategory 获取所有的栏目
-func (a *articleManagerImpl) GetAllCategory() []content.ICategory {
-	list := a._rep.GetAllArticleCategory()
-	l := len(list)
-	//如果没有分类,则为系统初始化数据
-	if l == 0 && a._userId <= 0 {
-		a.initSystemCategory()
-		list = a._rep.GetAllArticleCategory()
-		l = len(list)
+func (a *articleManagerImpl) GetAllCategory() []content.Category {
+	if a.categoryList == nil {
+		list := a._rep.FindList("")
+		l := len(list)
+		//如果没有分类,则为系统初始化数据
+		if l == 0 && a._userId <= 0 {
+			a.initSystemCategory()
+			list = a._rep.FindList("")
+			l = len(list)
+		}
+		catList := make([]*content.Category, l)
+		for i, v := range list {
+			catList[i] = v
+		}
+		a.categoryList = catList
 	}
-	catList := make([]content.ICategory, l)
-	for i, v := range list {
-		catList[i] = NewCategory(v, a, a._rep)
-	}
-	return catList
+	return collections.MapList(a.categoryList, func(a *content.Category) content.Category {
+		return *a
+	})
+
 }
 
 // 初始化系统数据
@@ -219,49 +165,74 @@ func (a *articleManagerImpl) initSystemCategory() {
 	}
 	for _, v := range list {
 		v.PermFlag = v.PermFlag | content.FCategoryInternal
-		c := NewCategory(v, a, a._rep)
-		if c.GetDomainId() == 0 {
-			c.Save() //如果为新建的分类,则保存
-		}
+		a.SaveCategory(v)
 	}
 }
 
 // 获取栏目
-func (a *articleManagerImpl) GetCategory(id int32) content.ICategory {
-	list := a.GetAllCategory()
-	for _, v := range list {
-		if v.GetDomainId() == id {
-			return v
-		}
+func (a *articleManagerImpl) GetCategory(id int) *content.Category {
+	v := collections.FindArray(a.GetAllCategory(), func(v content.Category) bool {
+		return v.ID == id
+	})
+	if v.ID > 0 {
+		return &v
 	}
 	return nil
-}
-
-// 创建栏目
-func (a *articleManagerImpl) CreateCategory(v *content.Category) content.ICategory {
-	return NewCategory(v, a, a._rep)
 }
 
 // GetCategoryByAlias 根据标识获取文章栏目
-func (a *articleManagerImpl) GetCategoryByAlias(alias string) content.ICategory {
-	list := a.GetAllCategory()
-	for _, v := range list {
-		if v2 := v.GetValue(); v2.Alias == alias ||
-			strconv.Itoa(int(v2.ID)) == alias {
-			return v
-		}
+func (a *articleManagerImpl) GetCategoryByAlias(alias string) *content.Category {
+	v := collections.FindArray(a.GetAllCategory(), func(v content.Category) bool {
+		return v.Alias == alias || strconv.Itoa(int(v.ID)) == alias
+	})
+	if v.ID > 0 {
+		return &v
 	}
 	return nil
 }
 
+func (a *articleManagerImpl) SaveCategory(v *content.Category) error {
+	exit := a._rep.FindBy("alias = ? and id <> ?", v.Alias, v.ID)
+	if exit != nil {
+		return content.ErrCategoryAliasExists
+	}
+	var r *content.Category
+	if v.ID > 0 {
+		r = a.GetCategory(v.ID)
+	} else {
+		r = &content.Category{}
+	}
+	r.Name = v.Name
+	r.Alias = v.Alias
+	r.Location = v.Location
+	r.Title = v.Title
+	r.SortNum = v.SortNum
+	r.ParentId = v.ParentId
+	r.Title = v.Title
+	r.Keywords = v.Keywords
+	r.Description = v.Description
+
+	// 设置访问权限
+	if v.PermFlag > 0 {
+		r.PermFlag = v.PermFlag
+	}
+	r.UpdateTime = time.Now().Unix()
+	_, err := a._rep.Save(r)
+	if err == nil {
+		a.categoryList = nil
+	}
+	return err
+}
+
 // DelCategory 删除栏目
-func (a *articleManagerImpl) DelCategory(id int32) error {
+func (a *articleManagerImpl) DelCategory(id int) error {
 	c := a.GetCategory(id)
 	if c != nil {
-		if c.ArticleNum() > 0 {
+		n := a._artRepo.GetArticleNumByCategory(id)
+		if n > 0 {
 			return content.ErrCategoryContainArchive
 		}
-		return a._rep.DeleteCategory(id)
+		return a._rep.Delete(&content.Category{ID: id})
 	}
 	return nil
 
@@ -269,25 +240,21 @@ func (a *articleManagerImpl) DelCategory(id int32) error {
 
 // CreateArticle 创建文章
 func (a *articleManagerImpl) CreateArticle(v *content.Article) content.IArticle {
-	return NewArticle(v, a, a._rep)
+	return NewArticle(v, a, a._artRepo)
 }
 
 // GetArticle 获取文章
 func (a *articleManagerImpl) GetArticle(id int32) content.IArticle {
-	v := a._rep.GetArticleById(id)
+	v := a._artRepo.GetArticleById(id)
 	if v != nil {
-		return NewArticle(v, a, a._rep)
+		return NewArticle(v, a, a._artRepo)
 	}
 	return nil
 }
 
-// GetArticleList 获取文章列表
-func (a *articleManagerImpl) GetArticleList(categoryId int32,
-	begin, end int) []*content.Article {
-	return a._rep.GetArticleList(categoryId, begin, end)
-}
+
 
 // DeleteArticle 删除文章
 func (a *articleManagerImpl) DeleteArticle(id int32) error {
-	return a._rep.DeleteArticle(id)
+	return a._artRepo.DeleteArticle(id)
 }
