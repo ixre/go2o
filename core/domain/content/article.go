@@ -252,11 +252,7 @@ func (a *articleManagerImpl) GetArticle(id int32) content.IArticle {
 	return nil
 }
 
-// GetArticleList 获取文章列表
-func (a *articleManagerImpl) GetArticleList(categoryId int32,
-	begin, end int) []*content.Article {
-	return a._artRepo.GetArticleList(categoryId, begin, end)
-}
+
 
 // DeleteArticle 删除文章
 func (a *articleManagerImpl) DeleteArticle(id int32) error {

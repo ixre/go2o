@@ -22,6 +22,7 @@ var _ content.IArticleRepo = new(contentRepo)
 var _ content.IPageRepo = new(pageRepoImpl)
 
 type contentRepo struct {
+	fw.Repository[content.Article]
 	db.Connector
 	o        orm.Orm
 	pageRepo content.IPageRepo
@@ -29,7 +30,7 @@ type contentRepo struct {
 }
 
 // 内容仓储
-func NewContentRepo(o orm.Orm,
+func NewArticleRepo(o orm.Orm,
 	catRepo content.IArticleCategoryRepo,
 	pageRepo content.IPageRepo) content.IArticleRepo {
 	return &contentRepo{
@@ -53,26 +54,6 @@ func (c *contentRepo) GetArticleNumByCategory(categoryId int) int {
 	return num
 }
 
-// 获取栏目
-func (c *contentRepo) GetAllArticleCategory() []*content.Category {
-	var list []*content.Category
-	c.o.Select(&list, "")
-	return list
-}
-
-// 判断栏目是否存在
-func (c *contentRepo) CategoryExists(alias string, id int) bool {
-	num := 0
-	c.Connector.ExecScalar("SELECT COUNT(1) FROM article_category WHERE cat_alias= $1 and id <> $2",
-		&num, alias, id)
-	return num > 0
-}
-
-// 删除栏目
-func (c *contentRepo) DeleteCategory(id int32) error {
-	return c.o.DeleteByPk(&content.Category{}, id)
-}
-
 // 获取文章
 func (c *contentRepo) GetArticleById(id int32) *content.Article {
 	e := content.Article{}
@@ -80,14 +61,6 @@ func (c *contentRepo) GetArticleById(id int32) *content.Article {
 		return &e
 	}
 	return nil
-}
-
-// 获取文章列表
-func (c *contentRepo) GetArticleList(categoryId int32, begin int, end int) []*content.Article {
-	list := []*content.Article{}
-	c.o.SelectByQuery(&content.Article{},
-		"cat_id= $1 LIMIT $3 OFFSET $2", categoryId, begin, end-begin)
-	return list
 }
 
 // 保存文章

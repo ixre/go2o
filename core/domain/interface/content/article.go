@@ -47,8 +47,6 @@ type (
 		CreateArticle(*Article) IArticle
 		// GetArticle 获取文章
 		GetArticle(id int32) IArticle
-		// GetArticleList 获取文章列表
-		GetArticleList(categoryId int32, begin, end int) []*Article
 		// DeleteArticle 删除文章
 		DeleteArticle(id int32) error
 	}
@@ -62,19 +60,11 @@ type (
 	IArticleRepo interface {
 		// GetContent 获取内容
 		GetContent(userId int64) IContentAggregateRoot
-		// GetAllArticleCategory 获取所有栏目
-		GetAllArticleCategory() []*Category
 		// GetArticleNumByCategory 获取文章数量
 		GetArticleNumByCategory(categoryId int) int
 
-		// CategoryExists 判断栏目是否存在
-		CategoryExists(alias string, id int) bool
-		// DeleteCategory 删除栏目
-		DeleteCategory(id int32) error
 		// 获取文章
 		GetArticleById(id int32) *Article
-		// 获取文章列表
-		GetArticleList(categoryId int32, begin int, end int) []*Article
 		// 保存文章
 		SaveArticle(v *Article) (int32, error)
 		// 删除文章
