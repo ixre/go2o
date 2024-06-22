@@ -29,11 +29,11 @@ type (
 		// GetDomainId 获取领域编号
 		GetDomainId() int32
 		// GetValue 获取值
-		GetValue() ArticleCategory
+		GetValue() Category
 		// ArticleNum 获取文章数量
 		ArticleNum() int
 		// SetValue 设置值
-		SetValue(*ArticleCategory) error
+		SetValue(*Category) error
 		// Save 保存
 		Save() (int32, error)
 	}
@@ -47,7 +47,7 @@ type (
 		// GetAllCategory 获取所有的栏目
 		GetAllCategory() []ICategory
 		// CreateCategory 创建栏目
-		CreateCategory(*ArticleCategory) ICategory
+		CreateCategory(*Category) ICategory
 		// DelCategory 删除栏目
 		DelCategory(id int32) error
 		// CreateArticle 创建文章
@@ -60,8 +60,8 @@ type (
 		DeleteArticle(id int32) error
 	}
 
-	// ArticleCategory 栏目
-	ArticleCategory struct {
+	// Category 栏目
+	Category struct {
 		//编号
 		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		//父类编号,如为一级栏目则为0
@@ -120,3 +120,10 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 )
+
+func (c Category) TableName()string{
+	return "arc_category"
+}
+func (c Article) TableName()string{
+	return "arc_article"
+}

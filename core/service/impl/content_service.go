@@ -237,7 +237,7 @@ func (c *contentService) parsePage(v *proto.SPage) *content.Page {
 	}
 }
 
-func (c *contentService) parseArticleCategoryDto(v content.ArticleCategory) *proto.SArticleCategory {
+func (c *contentService) parseArticleCategoryDto(v content.Category) *proto.SArticleCategory {
 	return &proto.SArticleCategory{
 		Id:          int64(v.ID),
 		ParentId:    int64(v.ParentId),
@@ -252,8 +252,8 @@ func (c *contentService) parseArticleCategoryDto(v content.ArticleCategory) *pro
 	}
 }
 
-func (c *contentService) parseArticleCategory(r *proto.SArticleCategory) *content.ArticleCategory {
-	return &content.ArticleCategory{
+func (c *contentService) parseArticleCategory(r *proto.SArticleCategory) *content.Category {
+	return &content.Category{
 		ID:          int32(r.Id),
 		ParentId:    int32(r.ParentId),
 		PermFlag:    int(r.PermFlag),

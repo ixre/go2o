@@ -8,7 +8,10 @@
  */
 package content
 
-import "github.com/ixre/go2o/core/infrastructure/domain"
+import (
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	d	"github.com/ixre/go2o/core/domain"
+)
 
 var (
 	ErrCategoryContainArchive = domain.NewError(
@@ -35,23 +38,18 @@ var (
 
 const (
 	// FlagInternal 是否内置
-	FlagInternal = 1 << iota
-	// FlagAll open for all users
-	FlagAll
-	// PermUser only open for system user
-	PermUser
-	// FlagMember only open for member
-	FlagMember
-	// FlagVendor only open for vendor
-	FlagVendor
+	FCategoryInternal = 1 << iota
+	// FCategorySupportPost 是否支持投稿
+	FCategorySupportPost = 2
+	// FCategoryOpen 是否对会员开放
+	FCategoryOpen = 4
 )
 
 const ()
 
 type (
 	IContentAggregateRoot interface {
-		// GetAggregateRootId 获取聚合根编号
-		GetAggregateRootId() int
+		d.IAggregateRoot
 		// ArticleManager 文章服务
 		ArticleManager() IArticleManager
 		// CreatePage 创建页面
@@ -62,17 +60,6 @@ type (
 		GetPageByCode(indent string) IPage
 		// DeletePage 删除页面
 		DeletePage(id int32) error
-	}
-
-	IPage interface {
-		// GetDomainId 获取领域编号
-		GetDomainId() int
-		// GetValue 获取值
-		GetValue() *Page
-		// SetValue 设置值
-		SetValue(*Page) error
-		// Save 保存
-		Save() (int32, error)
 	}
 
 	IArchiveRepo interface {
@@ -87,11 +74,11 @@ type (
 		// SavePage 保存页面
 		SavePage(userId int32, v *Page) (int32, error)
 		// GetAllArticleCategory 获取所有栏目
-		GetAllArticleCategory() []*ArticleCategory
+		GetAllArticleCategory() []*Category
 		// GetArticleNumByCategory 获取文章数量
 		GetArticleNumByCategory(categoryId int32) int
 		// SaveCategory 保存栏目
-		SaveCategory(v *ArticleCategory) (int32, error)
+		SaveCategory(v *Category) (int32, error)
 		// CategoryExists 判断栏目是否存在
 		CategoryExists(alias string, id int32) bool
 		// DeleteCategory 删除栏目
@@ -104,32 +91,5 @@ type (
 		SaveArticle(v *Article) (int32, error)
 		// 删除文章
 		DeleteArticle(id int32) error
-	}
-
-	Page struct {
-		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
-		// 商户编号
-		UserId int `db:"user_id"`
-		// 标题
-		Title string `db:"title"`
-		// 字符标识
-		Code string `db:"code"`
-		// 浏览权限
-		Flag int `db:"flag"`
-		// 浏览钥匙
-		AccessKey string `db:"access_key"`
-		// 关键词
-		KeyWord string `db:"keyword"`
-		// 描述
-		Description string `db:"description"`
-		// 样式表地址
-		CssPath string `db:"css_path"`
-		// 内容
-		Content string `db:"content"`
-		// 是否启用
-		Enabled int `db:"enabled"`
-		// 修改时间
-		UpdateTime int64 `db:"update_time"`
 	}
 )

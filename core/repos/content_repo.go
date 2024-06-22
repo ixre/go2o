@@ -11,28 +11,32 @@ package repos
 import (
 	contentImpl "github.com/ixre/go2o/core/domain/content"
 	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )
 
 var _ content.IArchiveRepo = new(contentRepo)
+var _ content.IPageRepo = new(pageRepoImpl)
 
 type contentRepo struct {
 	db.Connector
-	o orm.Orm
+	o        orm.Orm
+	pageRepo content.IPageRepo
 }
 
 // 内容仓储
-func NewContentRepo(o orm.Orm) content.IArchiveRepo {
+func NewContentRepo(o orm.Orm, pageRepo content.IPageRepo) content.IArchiveRepo {
 	return &contentRepo{
 		Connector: o.Connector(),
+		pageRepo:  pageRepo,
 		o:         o,
 	}
 }
 
 // 获取内容
 func (c *contentRepo) GetContent(userId int64) content.IContentAggregateRoot {
-	return contentImpl.NewContent(userId, c)
+	return contentImpl.NewContent(userId, c, c.pageRepo)
 }
 
 // 根据编号获取页面
@@ -73,8 +77,8 @@ func (c *contentRepo) GetArticleNumByCategory(categoryId int32) int {
 }
 
 // 获取栏目
-func (c *contentRepo) GetAllArticleCategory() []*content.ArticleCategory {
-	var list []*content.ArticleCategory
+func (c *contentRepo) GetAllArticleCategory() []*content.Category {
+	var list []*content.Category
 	c.o.Select(&list, "")
 	return list
 }
@@ -88,13 +92,13 @@ func (c *contentRepo) CategoryExists(alias string, id int32) bool {
 }
 
 // 保存栏目
-func (c *contentRepo) SaveCategory(v *content.ArticleCategory) (int32, error) {
+func (c *contentRepo) SaveCategory(v *content.Category) (int32, error) {
 	return orm.I32(orm.Save(c.o, v, int(v.ID)))
 }
 
 // 删除栏目
 func (c *contentRepo) DeleteCategory(id int32) error {
-	return c.o.DeleteByPk(&content.ArticleCategory{}, id)
+	return c.o.DeleteByPk(&content.Category{}, id)
 }
 
 // 获取文章
@@ -122,4 +126,14 @@ func (c *contentRepo) SaveArticle(v *content.Article) (int32, error) {
 // 删除文章
 func (c *contentRepo) DeleteArticle(id int32) error {
 	return c.o.DeleteByPk(&content.Article{}, id)
+}
+
+type pageRepoImpl struct {
+	fw.BaseRepository[content.Page]
+}
+
+func NewPageRepo(o fw.ORM) content.IPageRepo {
+	s := &pageRepoImpl{}
+	s.ORM = o
+	return s
 }

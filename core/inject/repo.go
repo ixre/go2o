@@ -171,3 +171,7 @@ func GetJobRepo() job.IJobRepo {
 func GetStaffRepo() staff.IStaffRepo {
 	panic(wire.Build(provideSets))
 }
+
+func GetPageRepo() content.IPageRepo {
+	panic(wire.Build(provideSets))
+}

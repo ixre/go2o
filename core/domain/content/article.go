@@ -9,20 +9,21 @@
 package content
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/content"
 	"strconv"
 	"time"
+
+	"github.com/ixre/go2o/core/domain/interface/content"
 )
 
 var _ content.ICategory = new(categoryImpl)
 
 type categoryImpl struct {
 	contentRepo content.IArchiveRepo
-	value       *content.ArticleCategory
+	value       *content.Category
 	manager     *articleManagerImpl
 }
 
-func NewCategory(v *content.ArticleCategory, m *articleManagerImpl,
+func NewCategory(v *content.Category, m *articleManagerImpl,
 	rep content.IArchiveRepo) content.ICategory {
 	return &categoryImpl{
 		contentRepo: rep,
@@ -42,12 +43,12 @@ func (c *categoryImpl) ArticleNum() int {
 }
 
 // 获取值
-func (c *categoryImpl) GetValue() content.ArticleCategory {
+func (c *categoryImpl) GetValue() content.Category {
 	return *c.value
 }
 
 // 设置值
-func (c *categoryImpl) SetValue(v *content.ArticleCategory) error {
+func (c *categoryImpl) SetValue(v *content.Category) error {
 	if c.contentRepo.CategoryExists(c.value.Alias, c.GetDomainId()) {
 		return content.ErrCategoryAliasExists
 	}
@@ -64,9 +65,6 @@ func (c *categoryImpl) SetValue(v *content.ArticleCategory) error {
 	// 设置访问权限
 	if v.PermFlag > 0 {
 		c.value.PermFlag = v.PermFlag
-	}
-	if c.value.PermFlag <= 0 {
-		c.value.PermFlag = content.FlagAll
 	}
 	return nil
 }
@@ -182,57 +180,45 @@ func (a *articleManagerImpl) GetAllCategory() []content.ICategory {
 
 // 初始化系统数据
 func (a *articleManagerImpl) initSystemCategory() {
-	list := []*content.ArticleCategory{
+	list := []*content.Category{
 		{
-			ID:       0,
-			Alias:    "news",
-			Name:     "商城公告",
-			PermFlag: content.FlagInternal | content.FlagAll,
+
+			Alias: "about",
+			Name:  "关于商城",
 		},
 		{
-			ID:       0,
-			Alias:    "about",
-			Name:     "关于商城",
-			PermFlag: content.FlagInternal | content.FlagAll,
+			Alias: "wholesale",
+			Name:  "批发公告",
 		},
 		{
-			ID:       0,
-			Alias:    "wholesale",
-			Name:     "批发公告",
-			PermFlag: content.FlagInternal | content.FlagAll,
-		},
-		{
-			ID:       0,
 			Alias:    "member",
 			Name:     "会员公告",
-			PermFlag: content.FlagInternal | content.FlagMember,
+			PermFlag: content.FCategoryOpen,
 		},
 		{
-			ID:       0,
-			Alias:    "merchant",
-			Name:     "商户公告",
-			PermFlag: content.FlagInternal | content.FlagVendor,
+			Alias: "merchant",
+			Name:  "商户公告",
 		},
 		{
-			ID:       0,
-			Alias:    "service",
-			Name:     "客户服务",
-			PermFlag: content.FlagInternal | content.FlagAll,
+			Alias: "service",
+			Name:  "客户服务",
 		},
 		{
-			ID:       0,
-			Alias:    "help",
-			Name:     "帮助中心",
-			PermFlag: content.FlagInternal | content.FlagAll,
+			Alias: "help",
+			Name:  "帮助中心",
 		},
 		{
-			ID:       0,
-			Alias:    "notification",
-			Name:     "系统通知",
-			PermFlag: content.FlagInternal | content.FlagMember,
+			Alias:    "news",
+			Name:     "新闻资讯",
+			PermFlag: content.FCategorySupportPost,
+		},
+		{
+			Alias: "notification",
+			Name:  "系统通知",
 		},
 	}
 	for _, v := range list {
+		v.PermFlag = v.PermFlag | content.FCategoryInternal
 		c := NewCategory(v, a, a._rep)
 		if c.GetDomainId() == 0 {
 			c.Save() //如果为新建的分类,则保存
@@ -252,7 +238,7 @@ func (a *articleManagerImpl) GetCategory(id int32) content.ICategory {
 }
 
 // 创建栏目
-func (a *articleManagerImpl) CreateCategory(v *content.ArticleCategory) content.ICategory {
+func (a *articleManagerImpl) CreateCategory(v *content.Category) content.ICategory {
 	return NewCategory(v, a, a._rep)
 }
 

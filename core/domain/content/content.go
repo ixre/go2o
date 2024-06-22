@@ -16,11 +16,13 @@ type Content struct {
 	contentRepo    content.IArchiveRepo
 	userId         int64
 	articleManager content.IArticleManager
+	pageRepo       content.IPageRepo
 }
 
-func NewContent(userId int64, rep content.IArchiveRepo) content.IContentAggregateRoot {
+func NewContent(userId int64, rep content.IArchiveRepo, pageRepo content.IPageRepo) content.IContentAggregateRoot {
 	return &Content{
 		contentRepo: rep,
+		pageRepo:    pageRepo,
 		userId:      userId,
 	}
 }
