@@ -19,8 +19,7 @@ import (
 type (
 	// IArticle 文章
 	IArticle interface {
-		// GetDomainId 获取领域编号
-		GetDomainId() int32
+		domain.IDomain
 		// GetValue 获取值
 		GetValue() Article
 		// SetValue 设置值
@@ -28,7 +27,15 @@ type (
 		// Category 栏目
 		Category() *Category
 		// Save 保存文章
-		Save() (int32, error)
+		Save() error
+		// Destory 删除文章
+		Destory() error
+		// 增加浏览次数
+		IncreaseViewCount(memberId int, count int) error
+		// 喜欢
+		Like(memberId int) error
+		// 不喜欢
+		Dislike(memberId int) error
 	}
 
 	// IArticleManager 文章管理器
@@ -41,14 +48,12 @@ type (
 		GetAllCategory() []Category
 		// SaveCategory 保存栏目
 		SaveCategory(v *Category) error
-		// DelCategory 删除栏目
-		DelCategory(id int) error
+		// DeleteCategory 删除栏目
+		DeleteCategory(id int) error
 		// CreateArticle 创建文章
 		CreateArticle(*Article) IArticle
 		// GetArticle 获取文章
-		GetArticle(id int32) IArticle
-		// DeleteArticle 删除文章
-		DeleteArticle(id int32) error
+		GetArticle(id int) IArticle
 	}
 
 	// IArticleCategoryRepo 文章栏目仓储
@@ -58,24 +63,18 @@ type (
 
 	// IArticleManager 文章服务
 	IArticleRepo interface {
+		fw.Repository[Article]
 		// GetContent 获取内容
 		GetContent(userId int64) IContentAggregateRoot
 		// GetArticleNumByCategory 获取文章数量
 		GetArticleNumByCategory(categoryId int) int
-
-		// 获取文章
-		GetArticleById(id int32) *Article
-		// 保存文章
-		SaveArticle(v *Article) (int32, error)
-		// 删除文章
-		DeleteArticle(id int32) error
 	}
 
 	// Category 栏目
 	Category struct {
 		domain.IValueObject
 		//编号
-		ID int `db:"id" pk:"yes" auto:"yes"`
+		Id int `db:"id" pk:"yes" auto:"yes"`
 		//父类编号,如为一级栏目则为0
 		ParentId int `db:"parent_id"`
 		// 浏览权限
@@ -101,35 +100,43 @@ type (
 	// Article 文章
 	Article struct {
 		// 编号
-		ID int32 `db:"id" auto:"yes" pk:"yes"`
-		// 栏目编号
-		CatId int32 `db:"cat_id"`
+		Id int `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
+		// 分类编号
+		CatId int `db:"cat_id" json:"catId" bson:"catId"`
 		// 标题
-		Title string `db:"title"`
-		// 小标题
-		SmallTitle string `db:"small_title"`
-		// 文章附图
-		Thumbnail string `db:"thumbnail"`
-		// 重定向URL
-		Location string `db:"location"`
-		// 优先级,优先级越高，则置顶
-		Priority int `db:"priority"`
-		// 浏览钥匙
-		AccessKey string `db:"access_key"`
+		Title string `db:"title" json:"title" bson:"title"`
+		// ShortTitle
+		ShortTitle string `db:"short_title" json:"shortTitle" bson:"shortTitle"`
+		// 标志
+		Flag int `db:"flag" json:"flag" bson:"flag"`
+		// 缩略图
+		Thumbnail string `db:"thumbnail" json:"thumbnail" bson:"thumbnail"`
+		// 访问密钥
+		AccessToken string `db:"access_token" json:"accessToken" bson:"accessToken"`
 		// 作者
-		PublisherId int `db:"publisher_id"`
-		// 文档内容
-		Content string `db:"content"`
-		// 标签（关键词）
-		Tags string `db:"tags"`
-		// 显示次数
-		ViewCount int `db:"view_count"`
-		// 排序序号
-		SortNum int `db:"sort_num"`
+		PublisherId int `db:"publisher_id" json:"publisherId" bson:"publisherId"`
+		// 地址
+		Location string `db:"location" json:"location" bson:"location"`
+		// 优先级
+		Priority int `db:"priority" json:"priority" bson:"priority"`
+		// 短标题
+		MchId int `db:"mch_id" json:"mchId" bson:"mchId"`
+		// 内容
+		Content string `db:"content" json:"content" bson:"content"`
+		// 标签
+		Tags string `db:"tags" json:"tags" bson:"tags"`
+		// 喜欢的数量
+		LikeCount int `db:"like_count" json:"likeCount" bson:"likeCount"`
+		// 不喜欢的数量
+		DislikeCount int `db:"dislike_count" json:"dislikeCount" bson:"dislikeCount"`
+		// 浏览次数
+		ViewCount int `db:"view_count" json:"viewCount" bson:"viewCount"`
+		// 排列序号
+		SortNum int `db:"sort_num" json:"sortNum" bson:"sortNum"`
 		// 创建时间
-		CreateTime int64 `db:"create_time"`
-		// 最后修改时间
-		UpdateTime int64 `db:"update_time"`
+		CreateTime int `db:"create_time" json:"createTime" bson:"createTime"`
+		// 更新时间
+		UpdateTime int `db:"update_time" json:"updateTime" bson:"updateTime"`
 	}
 )
 

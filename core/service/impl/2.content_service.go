@@ -34,6 +34,7 @@ func NewContentService(rep content.IArticleRepo, q *query.ContentQuery) proto.Co
 		_contentRepo: rep,
 		_query:       q,
 		_sysContent:  rep.GetContent(0),
+		serviceUtil:  serviceUtil{},
 	}
 }
 
@@ -114,7 +115,7 @@ func (c *contentService) SaveArticleCategory(_ context.Context, r *proto.SArticl
 
 // 删除文章分类
 func (c *contentService) DeleteArticleCategory(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	err := c._sysContent.ArticleManager().DelCategory(int(id.Value))
+	err := c._sysContent.ArticleManager().DeleteCategory(int(id.Value))
 	return c.error(err), nil
 }
 
@@ -123,7 +124,7 @@ func (c *contentService) GetArticle(_ context.Context, id *proto.IdOrName) (*pro
 	m := c._sysContent.ArticleManager()
 	var ia content.IArticle
 	if id.Id > 0 {
-		ia = m.GetArticle(int32(id.Id))
+		ia = m.GetArticle(int(id.Id))
 	} else {
 
 	}
@@ -136,7 +137,11 @@ func (c *contentService) GetArticle(_ context.Context, id *proto.IdOrName) (*pro
 
 // DeleteArticle 删除文章
 func (c *contentService) DeleteArticle(_ context.Context, id *proto.Int64) (*proto.Result, error) {
-	err := c._sysContent.ArticleManager().DeleteArticle(int32(id.Value))
+	art := c._sysContent.ArticleManager().GetArticle(int(id.Value))
+	if art == nil {
+		return c.error(fmt.Errorf("no such article")), nil
+	}
+	err := art.Destory()
 	return c.error(err), nil
 }
 
@@ -146,14 +151,39 @@ func (c *contentService) SaveArticle(_ context.Context, r *proto.SArticle) (*pro
 	v := c.parseArticle(r)
 	var ia content.IArticle
 	if r.Id > 0 {
-		ia = m.GetArticle(int32(r.Id))
+		ia = m.GetArticle(int(r.Id))
 	} else {
 		ia = m.CreateArticle(v)
 	}
 	err := ia.SetValue(v)
 	if err == nil {
-		_, err = ia.Save()
+		err = ia.Save()
 	}
+	return c.error(err), nil
+}
+
+// LikeArticle implements proto.ContentServiceServer.
+func (c *contentService) LikeArticle(_ context.Context, req *proto.ArticleLikeRequest) (*proto.Result, error) {
+	art := c._sysContent.ArticleManager().GetArticle(int(req.Id))
+	if art == nil {
+		return c.error(fmt.Errorf("no such article")), nil
+	}
+	var err error
+	if req.IsDislike {
+		err = art.Dislike(int(req.MemberId))
+	}else{
+		err = art.Like(int(req.MemberId))
+	}
+	return c.error(err), nil
+}
+
+// UpdateArticleViewsCount implements proto.ContentServiceServer.
+func (c *contentService) UpdateArticleViewsCount(_ context.Context, req *proto.ArticleViewsRequest) (*proto.Result, error) {
+	art := c._sysContent.ArticleManager().GetArticle(int(req.Id))
+	if art == nil {
+		return c.error(fmt.Errorf("no such article")), nil
+	}
+	err := art.IncreaseViewCount(int(req.MemberId), int(req.Count))
 	return c.error(err), nil
 }
 
@@ -161,8 +191,8 @@ func (c *contentService) QueryPagingArticles(_ context.Context, r *proto.PagingA
 	var total = 0
 	var rows []*content.Article
 	ic := c._sysContent.ArticleManager().GetCategoryByAlias(r.CategoryName)
-	if ic != nil && ic.ID > 0 {
-		total, rows = c._query.PagedArticleList(int32(ic.ID), int(r.Begin), int(r.Size), "")
+	if ic != nil && ic.Id > 0 {
+		total, rows = c._query.PagedArticleList(int32(ic.Id), int(r.Begin), int(r.Size), "")
 	}
 	var arr = make([]*proto.SArticle, 0)
 	for _, v := range rows {
@@ -183,8 +213,8 @@ func (c *contentService) QueryTopArticles(_ context.Context, cat *proto.IdOrName
 	} else {
 		ic = m.GetCategoryByAlias(cat.Name)
 	}
-	if ic != nil && ic.ID > 0 {
-		_, rows := c._query.PagedArticleList(int32(ic.ID), 0, 1, "")
+	if ic != nil && ic.Id > 0 {
+		_, rows := c._query.PagedArticleList(int32(ic.Id), 0, 1, "")
 		for _, v := range rows {
 			arr = append(arr, c.parseArticleDto(v))
 		}
@@ -231,7 +261,7 @@ func (c *contentService) parsePage(v *proto.SPage) *content.Page {
 
 func (c *contentService) parseArticleCategoryDto(v content.Category) *proto.SArticleCategory {
 	return &proto.SArticleCategory{
-		Id:          int64(v.ID),
+		Id:          int64(v.Id),
 		ParentId:    int64(v.ParentId),
 		PermFlag:    int32(v.PermFlag),
 		Name:        v.Name,
@@ -246,7 +276,7 @@ func (c *contentService) parseArticleCategoryDto(v content.Category) *proto.SArt
 
 func (c *contentService) parseArticleCategory(r *proto.SArticleCategory) *content.Category {
 	return &content.Category{
-		ID:          int(r.Id),
+		Id:          int(r.Id),
 		ParentId:    int(r.ParentId),
 		PermFlag:    int(r.PermFlag),
 		Name:        r.Name,
@@ -261,40 +291,48 @@ func (c *contentService) parseArticleCategory(r *proto.SArticleCategory) *conten
 
 func (c *contentService) parseArticleDto(v *content.Article) *proto.SArticle {
 	return &proto.SArticle{
-		Id:          int64(v.ID),
-		CategoryId:  int64(v.CatId),
-		Title:       v.Title,
-		SmallTitle:  v.SmallTitle,
-		Thumbnail:   v.Thumbnail,
-		PublisherId: int64(v.PublisherId),
-		Location:    v.Location,
-		Priority:    int32(v.Priority),
-		AccessKey:   v.AccessKey,
-		Content:     v.Content,
-		Tags:        v.Tags,
-		ViewCount:   int32(v.ViewCount),
-		SortNum:     int32(v.SortNum),
-		CreateTime:  v.CreateTime,
-		UpdateTime:  v.UpdateTime,
+		Id:           int64(v.Id),
+		CategoryId:   int64(v.CatId),
+		Title:        v.Title,
+		Flag:         int32(v.Flag),
+		ShortTitle:   v.ShortTitle,
+		Thumbnail:    v.Thumbnail,
+		MchId:        int32(v.MchId),
+		PublisherId:  int64(v.PublisherId),
+		Location:     v.Location,
+		Priority:     int32(v.Priority),
+		AccessKey:    v.AccessToken,
+		Content:      v.Content,
+		Tags:         v.Tags,
+		ViewCount:    int32(v.ViewCount),
+		LikeCount:    int32(v.LikeCount),
+		DislikeCount: int32(v.DislikeCount),
+		SortNum:      int32(v.SortNum),
+		CreateTime:   int64(v.CreateTime),
+		UpdateTime:   int64(v.UpdateTime),
 	}
 }
 
 func (c *contentService) parseArticle(v *proto.SArticle) *content.Article {
 	return &content.Article{
-		ID:          int32(v.Id),
-		CatId:       int32(v.CategoryId),
-		Title:       v.Title,
-		SmallTitle:  v.SmallTitle,
-		Thumbnail:   v.Thumbnail,
-		Location:    v.Location,
-		Priority:    int(v.Priority),
-		AccessKey:   v.AccessKey,
-		PublisherId: int(v.PublisherId),
-		Content:     v.Content,
-		Tags:        v.Tags,
-		ViewCount:   int(v.ViewCount),
-		SortNum:     int(v.SortNum),
-		CreateTime:  v.CreateTime,
-		UpdateTime:  v.UpdateTime,
+		Id:           int(v.Id),
+		CatId:        int(v.CategoryId),
+		Title:        v.Title,
+		ShortTitle:   v.ShortTitle,
+		Flag:         int(v.Flag),
+		Thumbnail:    v.Thumbnail,
+		AccessToken:  v.AccessKey,
+		PublisherId:  int(v.PublisherId),
+		Location:     v.Location,
+		Priority:     int(v.Priority),
+		MchId:        int(v.MchId),
+		Content:      v.Content,
+		Tags:         v.Tags,
+		LikeCount:    int(v.LikeCount),
+		DislikeCount: int(v.DislikeCount),
+		ViewCount:    int(v.ViewCount),
+		SortNum:      int(v.SortNum),
+		CreateTime:   int(v.CreateTime),
+		UpdateTime:   int(v.UpdateTime),
 	}
 }

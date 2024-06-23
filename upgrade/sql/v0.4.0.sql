@@ -507,3 +507,22 @@ delete FROM registry WHERE key like 'domain_%';
 
 -- 更改地区表名
 ALTER TABLE china_area RENAME TO sys_district;
+
+-- 文章表添加mch_id字段
+ALTER TABLE article_list 
+  ADD COLUMN "mch_id" int4 DEFAULT 0 NOT NULL;
+  COMMENT ON COLUMN article_list.mch_id IS '商户编号';
+
+ALTER TABLE article_list 
+  ADD COLUMN "short_title" varchar(20) NOT NULL ;
+  COMMENT ON COLUMN article_list.mch_id IS '短标题';
+
+ALTER TABLE article_list 
+  DROP COLUMN IF EXISTS "small_title";
+
+ALTER TABLE "public".article_list 
+  ADD COLUMN like_count int4 NOT NULL;
+ALTER TABLE "public".article_list 
+  ADD COLUMN dislike_count int4 NOT NULL;
+COMMENT ON COLUMN "public".article_list.like_count IS '喜欢的数量';
+COMMENT ON COLUMN "public".article_list.dislike_count IS '不喜欢的数量';

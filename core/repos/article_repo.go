@@ -54,25 +54,6 @@ func (c *contentRepo) GetArticleNumByCategory(categoryId int) int {
 	return num
 }
 
-// 获取文章
-func (c *contentRepo) GetArticleById(id int32) *content.Article {
-	e := content.Article{}
-	if c.o.Get(id, &e) == nil {
-		return &e
-	}
-	return nil
-}
-
-// 保存文章
-func (c *contentRepo) SaveArticle(v *content.Article) (int32, error) {
-	return orm.I32(orm.Save(c.o, v, int(v.ID)))
-}
-
-// 删除文章
-func (c *contentRepo) DeleteArticle(id int32) error {
-	return c.o.DeleteByPk(&content.Article{}, id)
-}
-
 var _ content.IArticleCategoryRepo = new(articleCategoryRepo)
 
 type articleCategoryRepo struct {

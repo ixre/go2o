@@ -19,18 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ContentService_GetPage_FullMethodName               = "/ContentService/GetPage"
-	ContentService_SavePage_FullMethodName              = "/ContentService/SavePage"
-	ContentService_DeletePage_FullMethodName            = "/ContentService/DeletePage"
-	ContentService_GetArticleCategories_FullMethodName  = "/ContentService/GetArticleCategories"
-	ContentService_GetArticleCategory_FullMethodName    = "/ContentService/GetArticleCategory"
-	ContentService_SaveArticleCategory_FullMethodName   = "/ContentService/SaveArticleCategory"
-	ContentService_DeleteArticleCategory_FullMethodName = "/ContentService/DeleteArticleCategory"
-	ContentService_GetArticle_FullMethodName            = "/ContentService/GetArticle"
-	ContentService_DeleteArticle_FullMethodName         = "/ContentService/DeleteArticle"
-	ContentService_SaveArticle_FullMethodName           = "/ContentService/SaveArticle"
-	ContentService_QueryTopArticles_FullMethodName      = "/ContentService/QueryTopArticles"
-	ContentService_QueryPagingArticles_FullMethodName   = "/ContentService/QueryPagingArticles"
+	ContentService_GetPage_FullMethodName                 = "/ContentService/GetPage"
+	ContentService_SavePage_FullMethodName                = "/ContentService/SavePage"
+	ContentService_DeletePage_FullMethodName              = "/ContentService/DeletePage"
+	ContentService_GetArticleCategories_FullMethodName    = "/ContentService/GetArticleCategories"
+	ContentService_GetArticleCategory_FullMethodName      = "/ContentService/GetArticleCategory"
+	ContentService_SaveArticleCategory_FullMethodName     = "/ContentService/SaveArticleCategory"
+	ContentService_DeleteArticleCategory_FullMethodName   = "/ContentService/DeleteArticleCategory"
+	ContentService_GetArticle_FullMethodName              = "/ContentService/GetArticle"
+	ContentService_UpdateArticleViewsCount_FullMethodName = "/ContentService/UpdateArticleViewsCount"
+	ContentService_LikeArticle_FullMethodName             = "/ContentService/LikeArticle"
+	ContentService_DeleteArticle_FullMethodName           = "/ContentService/DeleteArticle"
+	ContentService_SaveArticle_FullMethodName             = "/ContentService/SaveArticle"
+	ContentService_QueryTopArticles_FullMethodName        = "/ContentService/QueryTopArticles"
+	ContentService_QueryPagingArticles_FullMethodName     = "/ContentService/QueryPagingArticles"
 )
 
 // ContentServiceClient is the client API for ContentService service.
@@ -53,6 +55,10 @@ type ContentServiceClient interface {
 	DeleteArticleCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
 	// 获取文章
 	GetArticle(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*SArticle, error)
+	// 更新文章浏览次数
+	UpdateArticleViewsCount(ctx context.Context, in *ArticleViewsRequest, opts ...grpc.CallOption) (*Result, error)
+	// 喜欢/不喜欢文章
+	LikeArticle(ctx context.Context, in *ArticleLikeRequest, opts ...grpc.CallOption) (*Result, error)
 	// 删除文章
 	DeleteArticle(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
 	// 保存文章
@@ -143,6 +149,24 @@ func (c *contentServiceClient) GetArticle(ctx context.Context, in *IdOrName, opt
 	return out, nil
 }
 
+func (c *contentServiceClient) UpdateArticleViewsCount(ctx context.Context, in *ArticleViewsRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, ContentService_UpdateArticleViewsCount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contentServiceClient) LikeArticle(ctx context.Context, in *ArticleLikeRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, ContentService_LikeArticle_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *contentServiceClient) DeleteArticle(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, ContentService_DeleteArticle_FullMethodName, in, out, opts...)
@@ -199,6 +223,10 @@ type ContentServiceServer interface {
 	DeleteArticleCategory(context.Context, *Int64) (*Result, error)
 	// 获取文章
 	GetArticle(context.Context, *IdOrName) (*SArticle, error)
+	// 更新文章浏览次数
+	UpdateArticleViewsCount(context.Context, *ArticleViewsRequest) (*Result, error)
+	// 喜欢/不喜欢文章
+	LikeArticle(context.Context, *ArticleLikeRequest) (*Result, error)
 	// 删除文章
 	DeleteArticle(context.Context, *Int64) (*Result, error)
 	// 保存文章
@@ -237,6 +265,12 @@ func (UnimplementedContentServiceServer) DeleteArticleCategory(context.Context, 
 }
 func (UnimplementedContentServiceServer) GetArticle(context.Context, *IdOrName) (*SArticle, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetArticle not implemented")
+}
+func (UnimplementedContentServiceServer) UpdateArticleViewsCount(context.Context, *ArticleViewsRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateArticleViewsCount not implemented")
+}
+func (UnimplementedContentServiceServer) LikeArticle(context.Context, *ArticleLikeRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LikeArticle not implemented")
 }
 func (UnimplementedContentServiceServer) DeleteArticle(context.Context, *Int64) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteArticle not implemented")
@@ -407,6 +441,42 @@ func _ContentService_GetArticle_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContentService_UpdateArticleViewsCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArticleViewsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).UpdateArticleViewsCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_UpdateArticleViewsCount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).UpdateArticleViewsCount(ctx, req.(*ArticleViewsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ContentService_LikeArticle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArticleLikeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServiceServer).LikeArticle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ContentService_LikeArticle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServiceServer).LikeArticle(ctx, req.(*ArticleLikeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ContentService_DeleteArticle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Int64)
 	if err := dec(in); err != nil {
@@ -517,6 +587,14 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetArticle",
 			Handler:    _ContentService_GetArticle_Handler,
+		},
+		{
+			MethodName: "UpdateArticleViewsCount",
+			Handler:    _ContentService_UpdateArticleViewsCount_Handler,
+		},
+		{
+			MethodName: "LikeArticle",
+			Handler:    _ContentService_LikeArticle_Handler,
 		},
 		{
 			MethodName: "DeleteArticle",
