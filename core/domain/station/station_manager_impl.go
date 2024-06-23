@@ -6,9 +6,9 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/sys"
+	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/go2o/core/infrastructure/util/collections"
-	"github.com/ixre/go2o/core/infrastructure/util/types"
 )
 
 var _ station.IStationManager = new(stationManagerImpl)

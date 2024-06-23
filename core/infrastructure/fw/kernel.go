@@ -7,6 +7,16 @@ import (
 	"gorm.io/gorm"
 )
 
+type (
+	// ListOption 列表查询参数
+	ListOption struct {
+		// 跳过条数
+		Skip int
+		// 限制条数
+		Limit int
+	}
+)
+
 // Repository 仓储接口
 type (
 	// ORM 数据库关系映
@@ -31,9 +41,9 @@ type (
 		// Get 获取实体
 		Get(id interface{}) *M
 		// FindBy 根据条件获取实体
-		FindBy(where string, v ...interface{}) *M
+		FindBy(where string, args ...interface{}) *M
 		// FindList 查找列表
-		FindList(where string, v ...interface{}) []*M
+		FindList(where string, opt *ListOption, args ...interface{}) []*M
 		// Save 保存实体,如主键为空则新增
 		Save(v *M) (*M, error)
 		// Update 更新实体的非零字段
@@ -55,7 +65,7 @@ type (
 		// Save 保存
 		Save(v *M) (*M, error)
 		// FindList 查找列表
-		FindList(where string, args ...interface{}) []*M
+		FindList(where string, opt *ListOption, args ...interface{}) []*M
 
 		// Delete 删除
 		Delete(v *M) error
@@ -99,9 +109,15 @@ func (r *BaseRepository[M]) FindBy(where string, v ...interface{}) *M {
 	return nil
 }
 
-func (r *BaseRepository[M]) FindList(where string, v ...interface{}) []*M {
+func (r *BaseRepository[M]) FindList(where string, opt *ListOption, v ...interface{}) []*M {
 	list := make([]*M, 0)
-	r.ORM.Find(&list, r.joinQueryParams(where, v...)...)
+	var tx *gorm.DB
+	if opt != nil && opt.Limit > 0 {
+		tx = r.ORM.Limit(opt.Limit).Offset(opt.Skip)
+	} else {
+		tx = r.ORM
+	}
+	tx.Find(&list, r.joinQueryParams(where, v...)...)
 	return list
 }
 
@@ -176,8 +192,8 @@ func (m *BaseService[M]) FindBy(where string, args ...interface{}) *M {
 	return m.Repo.FindBy(where, args...)
 }
 
-func (m *BaseService[M]) FindList(where string, args ...interface{}) []*M {
-	return m.Repo.FindList(where, args...)
+func (m *BaseService[M]) FindList(where string, opt *ListOption, args ...interface{}) []*M {
+	return m.Repo.FindList(where, opt, args...)
 }
 
 func (m *BaseService[M]) Delete(v *M) error {
@@ -239,4 +255,24 @@ type PagingResult struct {
 	Rows []interface{} `json:"rows"`
 	// 额外信息
 	Extra map[string]interface{} `json:"extra,omitempty"`
+}
+
+// ReduceFinds 分次查询合并数组,用于分次查询出数量较多的数据
+func ReduceFinds[T any](fn func(opt *ListOption) []*T, size int) (arr []*T) {
+	begin := 0
+	for {
+		list := fn(&ListOption{
+			Skip:  begin,
+			Limit: size,
+		})
+		l := len(list)
+		if l != 0 {
+			arr = append(arr, list...)
+		}
+		begin += l
+		if l < size {
+			break
+		}
+	}
+	return arr
 }

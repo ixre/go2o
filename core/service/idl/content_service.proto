@@ -126,6 +126,8 @@ message SArticle {
     sint64 createTime = 18;
     /** 最后修改时间 */
     sint64 updateTime = 19;
+    // 扩展信息
+    map<string,string> ext = 20;
 }
 
 message SPage {

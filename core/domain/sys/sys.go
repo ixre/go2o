@@ -59,17 +59,19 @@ type addressManagerImpl struct {
 	areaList []*sys.District
 }
 
-// getAreaList 获取地区列表
-func (a *addressManagerImpl) getAreaList() []*sys.District {
+// getDistrictList 获取地区列表
+func (a *addressManagerImpl) getDistrictList() []*sys.District {
 	if a.areaList == nil {
-		a.areaList = a.FindList("")
+		a.areaList = fw.ReduceFinds(func(opt *fw.ListOption) []*sys.District {
+			return a.FindList("", opt)
+		}, 1000)
 	}
 	return a.areaList
 }
 
 // getProvinces 获取省列表
 func (a *addressManagerImpl) getProvinces() []*sys.District {
-	return collections.FilterArray(a.getAreaList(), func(a *sys.District) bool {
+	return collections.FilterArray(a.getDistrictList(), func(a *sys.District) bool {
 		return a.Parent == 0 && a.Code != 0
 	})
 }
@@ -77,7 +79,7 @@ func (a *addressManagerImpl) getProvinces() []*sys.District {
 // GetDistrictNames implements sys.IAddressManager.
 func (a *addressManagerImpl) GetDistrictNames(code ...int) map[int]string {
 	mp := make(map[int]string)
-	for _, v := range a.getAreaList() {
+	for _, v := range a.getDistrictList() {
 		if len(mp) == len(code) {
 			break
 		}
@@ -97,7 +99,7 @@ func (a *addressManagerImpl) GetAllCities() []*sys.District {
 		func(s *sys.District) int {
 			return s.Code
 		})
-	cityList := collections.FilterArray(a.getAreaList(), func(s *sys.District) bool {
+	cityList := collections.FilterArray(a.getDistrictList(), func(s *sys.District) bool {
 		return s.Parent != 0 && collections.AnyArray(provinceCodes, func(c int) bool {
 			return c == s.Parent
 		})
@@ -128,7 +130,7 @@ func (a *addressManagerImpl) GetAllCities() []*sys.District {
 
 // GetDistrictList implements sys.IAddressManager.
 func (a *addressManagerImpl) GetDistrictList(parentId int) []*sys.District {
-	return a.FindList("parent=$1", parentId)
+	return a.FindList("parent=$1", nil, parentId)
 }
 
 var _ sys.IOptionManager = new(optionManagerImpl)
@@ -161,10 +163,12 @@ func (o *optionManagerImpl) GetChildOptions(parentId int, typeName string) []*sy
 	})
 }
 
-// getAreaList 获取地区列表
+// getDistrictList 获取地区列表
 func (o *optionManagerImpl) getList() []*sys.GeneralOption {
 	if o.allList == nil {
-		o.allList = o.FindList("")
+		o.allList = fw.ReduceFinds(func(opt *fw.ListOption) []*sys.GeneralOption {
+			return o.FindList("", opt)
+		}, 1000)
 	}
 	return o.allList
 }
