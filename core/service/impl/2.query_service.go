@@ -41,12 +41,12 @@ type queryService struct {
 }
 
 func NewQueryService(o orm.Orm, s storage.Interface,
-	catRepo product.ICategoryRepo) proto.QueryServiceServer {
+	catRepo product.ICategoryRepo, memberQuery *query.MemberQuery) proto.QueryServiceServer {
 	shopQuery := query.NewShopQuery(o, s)
 	return &queryService{
 		shopQuery:       shopQuery,
 		itemQuery:       query.NewItemQuery(o),
-		memberQuery:     query.NewMemberQuery(o),
+		memberQuery:     memberQuery,
 		orderQuery:      query.NewOrderQuery(o),
 		catRepo:         catRepo,
 		statisticsQuery: query.NewStatisticsQuery(o, s),

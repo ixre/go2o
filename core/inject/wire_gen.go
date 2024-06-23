@@ -56,16 +56,20 @@ func GetStationQueryService() *query.StationQuery {
 
 func GetMerchantQueryService() *query.MerchantQuery {
 	app := provide.GetApp()
-	merchantQuery := query.NewMerchantQuery(app)
+	db := provide.GetGOrm()
+	merchantQuery := query.NewMerchantQuery(app, db)
 	return merchantQuery
 }
 
-func GetSPConfig() *sp.ServiceProviderConfiguration {
+// GetContentQuery 获取内容查询服务
+func GetContentQuery() *query.ContentQuery {
 	orm := provide.GetOrmInstance()
-	storageInterface := provide.GetStorageInstance()
-	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
-	serviceProviderConfiguration := sp.NewSPConfig(iRegistryRepo)
-	return serviceProviderConfiguration
+	db := provide.GetGOrm()
+	app := provide.GetApp()
+	merchantQuery := query.NewMerchantQuery(app, db)
+	memberQuery := query.NewMemberQuery(orm, db)
+	contentQuery := query.NewContentQuery(orm, db, merchantQuery, memberQuery)
+	return contentQuery
 }
 
 // Injectors from repo.go:
@@ -441,6 +445,15 @@ func GetPageRepo() content.IPageRepo {
 
 // Injectors from service.go:
 
+// GetSPConfig 获取第三方服务自动配置
+func GetSPConfig() *sp.ServiceProviderConfiguration {
+	orm := provide.GetOrmInstance()
+	storageInterface := provide.GetStorageInstance()
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	serviceProviderConfiguration := sp.NewSPConfig(iRegistryRepo)
+	return serviceProviderConfiguration
+}
+
 func GetEventSource() *event.EventSource {
 	orm := provide.GetOrmInstance()
 	storageInterface := provide.GetStorageInstance()
@@ -514,7 +527,7 @@ func GetMemberService() proto.MemberServiceServer {
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
-	memberQuery := query.NewMemberQuery(orm)
+	memberQuery := query.NewMemberQuery(orm, db)
 	orderQuery := query.NewOrderQuery(orm)
 	memberServiceServer := impl2.NewMemberService(iMemberRepo, iMerchantRepo, iRegistryRepo, memberQuery, orderQuery, iValueRepo)
 	return memberServiceServer
@@ -545,7 +558,7 @@ func GetMerchantService() proto.MerchantServiceServer {
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iMerchantRepo := repos.NewMerchantRepo(orm, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo)
 	app := provide.GetApp()
-	merchantQuery := query.NewMerchantQuery(app)
+	merchantQuery := query.NewMerchantQuery(app, db)
 	orderQuery := query.NewOrderQuery(orm)
 	merchantServiceServer := impl2.NewMerchantService(iMerchantRepo, iMemberRepo, iStaffRepo, merchantQuery, orderQuery)
 	return merchantServiceServer
@@ -808,7 +821,10 @@ func GetContentService() proto.ContentServiceServer {
 	iArticleCategoryRepo := repos.NewArticleCategoryRepo(db)
 	iPageRepo := repos.NewPageRepo(db)
 	iArticleRepo := repos.NewArticleRepo(orm, db, iArticleCategoryRepo, iPageRepo)
-	contentQuery := query.NewContentQuery(orm)
+	app := provide.GetApp()
+	merchantQuery := query.NewMerchantQuery(app, db)
+	memberQuery := query.NewMemberQuery(orm, db)
+	contentQuery := query.NewContentQuery(orm, db, merchantQuery, memberQuery)
 	contentServiceServer := impl2.NewContentService(iArticleRepo, contentQuery)
 	return contentServiceServer
 }
@@ -866,7 +882,9 @@ func GetQueryService() proto.QueryServiceServer {
 	iProductModelRepo := repos.NewProModelRepo(orm)
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
 	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
-	queryServiceServer := impl2.NewQueryService(orm, storageInterface, iCategoryRepo)
+	db := provide.GetGOrm()
+	memberQuery := query.NewMemberQuery(orm, db)
+	queryServiceServer := impl2.NewQueryService(orm, storageInterface, iCategoryRepo, memberQuery)
 	return queryServiceServer
 }
 

@@ -6,7 +6,13 @@ import (
 	"github.com/google/wire"
 	"github.com/ixre/go2o/core/event"
 	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/go2o/core/sp"
 )
+
+// GetSPConfig 获取第三方服务自动配置
+func GetSPConfig() *sp.ServiceProviderConfiguration {
+	panic(wire.Build(InjectProvideSets))
+}
 
 func GetEventSource() *event.EventSource {
 	panic(wire.Build(InjectProvideSets))

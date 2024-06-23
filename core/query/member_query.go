@@ -17,6 +17,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/dto"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -25,10 +26,15 @@ import (
 type MemberQuery struct {
 	db.Connector
 	o orm.Orm
+	fw.BaseRepository[member.Member]
 }
 
-func NewMemberQuery(o orm.Orm) *MemberQuery {
-	return &MemberQuery{o.Connector(), o}
+func NewMemberQuery(o orm.Orm, fo fw.ORM) *MemberQuery {
+	q := &MemberQuery{
+		Connector: o.Connector(),
+		o:         o}
+	q.ORM = fo
+	return q
 }
 
 // 获取会员列表

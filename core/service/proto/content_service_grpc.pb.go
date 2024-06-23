@@ -31,8 +31,6 @@ const (
 	ContentService_LikeArticle_FullMethodName             = "/ContentService/LikeArticle"
 	ContentService_DeleteArticle_FullMethodName           = "/ContentService/DeleteArticle"
 	ContentService_SaveArticle_FullMethodName             = "/ContentService/SaveArticle"
-	ContentService_QueryTopArticles_FullMethodName        = "/ContentService/QueryTopArticles"
-	ContentService_QueryPagingArticles_FullMethodName     = "/ContentService/QueryPagingArticles"
 )
 
 // ContentServiceClient is the client API for ContentService service.
@@ -63,10 +61,6 @@ type ContentServiceClient interface {
 	DeleteArticle(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
 	// 保存文章
 	SaveArticle(ctx context.Context, in *SArticle, opts ...grpc.CallOption) (*Result, error)
-	// * 获取置顶的文章,cat
-	QueryTopArticles(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*ArticleListResponse, error)
-	// * 获取分页文章
-	QueryPagingArticles(ctx context.Context, in *PagingArticleRequest, opts ...grpc.CallOption) (*ArticleListResponse, error)
 }
 
 type contentServiceClient struct {
@@ -185,24 +179,6 @@ func (c *contentServiceClient) SaveArticle(ctx context.Context, in *SArticle, op
 	return out, nil
 }
 
-func (c *contentServiceClient) QueryTopArticles(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*ArticleListResponse, error) {
-	out := new(ArticleListResponse)
-	err := c.cc.Invoke(ctx, ContentService_QueryTopArticles_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *contentServiceClient) QueryPagingArticles(ctx context.Context, in *PagingArticleRequest, opts ...grpc.CallOption) (*ArticleListResponse, error) {
-	out := new(ArticleListResponse)
-	err := c.cc.Invoke(ctx, ContentService_QueryPagingArticles_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // ContentServiceServer is the server API for ContentService service.
 // All implementations must embed UnimplementedContentServiceServer
 // for forward compatibility
@@ -231,10 +207,6 @@ type ContentServiceServer interface {
 	DeleteArticle(context.Context, *Int64) (*Result, error)
 	// 保存文章
 	SaveArticle(context.Context, *SArticle) (*Result, error)
-	// * 获取置顶的文章,cat
-	QueryTopArticles(context.Context, *IdOrName) (*ArticleListResponse, error)
-	// * 获取分页文章
-	QueryPagingArticles(context.Context, *PagingArticleRequest) (*ArticleListResponse, error)
 	mustEmbedUnimplementedContentServiceServer()
 }
 
@@ -277,12 +249,6 @@ func (UnimplementedContentServiceServer) DeleteArticle(context.Context, *Int64) 
 }
 func (UnimplementedContentServiceServer) SaveArticle(context.Context, *SArticle) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveArticle not implemented")
-}
-func (UnimplementedContentServiceServer) QueryTopArticles(context.Context, *IdOrName) (*ArticleListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryTopArticles not implemented")
-}
-func (UnimplementedContentServiceServer) QueryPagingArticles(context.Context, *PagingArticleRequest) (*ArticleListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryPagingArticles not implemented")
 }
 func (UnimplementedContentServiceServer) mustEmbedUnimplementedContentServiceServer() {}
 
@@ -513,42 +479,6 @@ func _ContentService_SaveArticle_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ContentService_QueryTopArticles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IdOrName)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContentServiceServer).QueryTopArticles(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ContentService_QueryTopArticles_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).QueryTopArticles(ctx, req.(*IdOrName))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ContentService_QueryPagingArticles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PagingArticleRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContentServiceServer).QueryPagingArticles(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ContentService_QueryPagingArticles_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContentServiceServer).QueryPagingArticles(ctx, req.(*PagingArticleRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // ContentService_ServiceDesc is the grpc.ServiceDesc for ContentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -603,14 +533,6 @@ var ContentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveArticle",
 			Handler:    _ContentService_SaveArticle_Handler,
-		},
-		{
-			MethodName: "QueryTopArticles",
-			Handler:    _ContentService_QueryTopArticles_Handler,
-		},
-		{
-			MethodName: "QueryPagingArticles",
-			Handler:    _ContentService_QueryPagingArticles_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

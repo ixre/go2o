@@ -130,12 +130,12 @@ func newArticleManagerImpl(userId int64, rep content.IArticleCategoryRepo, artRe
 // GetAllCategory 获取所有的栏目
 func (a *articleManagerImpl) GetAllCategory() []content.Category {
 	if a.categoryList == nil {
-		list := a._rep.FindList("", nil)
+		list := a._rep.FindList(nil, "")
 		l := len(list)
 		//如果没有分类,则为系统初始化数据
 		if l == 0 && a._userId <= 0 {
 			a.initSystemCategory()
-			list = a._rep.FindList("", nil)
+			list = a._rep.FindList(nil, "")
 			l = len(list)
 		}
 		catList := make([]*content.Category, l)

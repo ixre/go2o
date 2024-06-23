@@ -118,6 +118,7 @@ func GetMerchantQueryService() *query.MerchantQuery {
 	panic(wire.Build(queryProvideSets))
 }
 
-func GetSPConfig() *sp.ServiceProviderConfiguration {
-	panic(wire.Build(InjectProvideSets))
+// GetContentQuery 获取内容查询服务
+func GetContentQuery() *query.ContentQuery {
+	panic(wire.Build(queryProvideSets))
 }

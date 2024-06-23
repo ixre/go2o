@@ -41,26 +41,11 @@ service ContentService {
     }
     // 保存文章
     rpc SaveArticle (SArticle) returns (Result) {
-    }
-    /** 获取置顶的文章,cat */
-    rpc QueryTopArticles (IdOrName) returns (ArticleListResponse) {
-    }
-    /** 获取分页文章 */
-    rpc QueryPagingArticles (PagingArticleRequest) returns (ArticleListResponse) {
-    }
+    } 
 }
 
 
-message PagingArticleRequest {
-    string categoryName = 1;
-    sint32 begin = 2;
-    sint32 size = 3;
-}
 
-message ArticleListResponse {
-    int64 total = 1;
-    repeated SArticle rows = 2;
-}
 
 //栏目
 message SArticleCategory {
