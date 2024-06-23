@@ -562,3 +562,7 @@ func (b BankCard) Locked() bool {
 	//panic(errors.New("Not Implemented"))
 	//return b.IsLocked == BankLocked
 }
+
+func (m Member) TableName() string {
+	return "mm_member"
+}

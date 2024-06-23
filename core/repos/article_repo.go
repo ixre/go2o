@@ -81,32 +81,32 @@ func NewPageRepo(o fw.ORM) content.IPageRepo {
 }
 
 // 根据编号获取页面
-func (p *pageRepoImpl) GetPageById(zoneId, id int) content.IPage {
+func (p *pageRepoImpl) GetPageById(tenantId, id int) content.IPage {
 	v := p.Get(id)
-	if v != nil && v.UserId == zoneId {
-		return impl.NewPage(zoneId, p, v)
+	if v != nil && v.UserId == tenantId {
+		return impl.NewPage(tenantId, p, v)
 	}
 	return nil
 }
 
 // 根据标识获取页面
-func (p *pageRepoImpl) GetPageByCode(zoneId int, code string) content.IPage {
-	v := p.FindBy("user_id = ? and code = ?", zoneId, code)
-	if v != nil && v.UserId == zoneId {
-		return impl.NewPage(zoneId, p, v)
+func (p *pageRepoImpl) GetPageByCode(tenantId int, code string) content.IPage {
+	v := p.FindBy("user_id = ? and code = ?", tenantId, code)
+	if v != nil && v.UserId == tenantId {
+		return impl.NewPage(tenantId, p, v)
 	}
 	return nil
 }
 
 // 删除页面
-func (p *pageRepoImpl) DeletePage(zoneId, id int) error {
-	_, err := p.DeleteBy("user_id= ? AND id= ?", zoneId, id)
+func (p *pageRepoImpl) DeletePage(tenantId, id int) error {
+	_, err := p.DeleteBy("user_id= ? AND id= ?", tenantId, id)
 	return err
 }
 
 // 保存页面
-func (p *pageRepoImpl) SavePage(zoneId int, v *content.Page) error {
-	if v.UserId != zoneId {
+func (p *pageRepoImpl) SavePage(tenantId int, v *content.Page) error {
+	if v.UserId != tenantId {
 		return errors.New("zone id not match")
 	}
 	_, err := p.Save(v)

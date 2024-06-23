@@ -160,3 +160,7 @@ func GetCodeService() proto.CodeServiceServer {
 func GetCheckService() proto.CheckServiceServer {
 	panic(wire.Build(InjectProvideSets))
 }
+
+func GetInvoiceService() proto.InvoiceServiceServer {
+	panic(wire.Build(InjectProvideSets))
+}

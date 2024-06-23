@@ -119,3 +119,13 @@ type WithdrawalPushEvent struct {
 	// 提现银行名称
 	BankName string
 }
+
+// SendEmailEvent 发送邮件事件
+type SendEmailEvent struct {
+	// 邮件标题
+	Subject string
+	// 收件人
+	To string
+	// 邮件内容
+	Body string
+}

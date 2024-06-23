@@ -49,7 +49,7 @@ func (c *Content) ArticleManager() content.IArticleManager {
 func (c *Content) PageManager() content.IPageManager {
 	if c.pageManager == nil {
 		c.pageManager = &pageManagerImpl{
-			zoneId:   int(c.userId),
+			tenantId:   int(c.userId),
 			pageRepo: c.pageRepo,
 		}
 	}

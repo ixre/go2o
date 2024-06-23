@@ -526,3 +526,109 @@ ALTER TABLE "public".article_list
   ADD COLUMN dislike_count int4 NOT NULL;
 COMMENT ON COLUMN "public".article_list.like_count IS '喜欢的数量';
 COMMENT ON COLUMN "public".article_list.dislike_count IS '不喜欢的数量';
+
+
+
+-- 发票抬头
+CREATE TABLE invoice_headers (
+  id           int8 NOT NULL UNIQUE, 
+  user_type    int4 NOT NULL, 
+  user_id      int8 NOT NULL, 
+  invoice_type int4 NOT NULL, 
+  issue_type   int4 NOT NULL, 
+  header_name  varchar(20) NOT NULL, 
+  tax_code   varchar(40) NOT NULL, 
+  sign_address varchar(60) NOT NULL, 
+  sign_tel     varchar(20) NOT NULL, 
+  bank_name    varchar(20) NOT NULL, 
+  bank_account varchar(20) NOT NULL, 
+  remarks      varchar(20) NOT NULL, 
+  is_default   int4 NOT NULL, 
+  create_time  int8 NOT NULL);
+COMMENT ON TABLE invoice_headers IS '发票抬头';
+COMMENT ON COLUMN invoice_headers.id IS '编号';
+COMMENT ON COLUMN invoice_headers.user_type IS '用户类型,1:会员  2:商户';
+COMMENT ON COLUMN invoice_headers.user_id IS '会员/商户编号';
+COMMENT ON COLUMN invoice_headers.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
+COMMENT ON COLUMN invoice_headers.issue_type IS '开具类型, 1: 个人 2:企业';
+COMMENT ON COLUMN invoice_headers.tax_code IS '纳税人识别号';
+COMMENT ON COLUMN invoice_headers.sign_address IS '注册场所地址';
+COMMENT ON COLUMN invoice_headers.sign_tel IS '注册固定电话';
+COMMENT ON COLUMN invoice_headers.bank_name IS '基本户开户银行名';
+COMMENT ON COLUMN invoice_headers.bank_account IS '基本户开户账号';
+COMMENT ON COLUMN invoice_headers.remarks IS '备注';
+COMMENT ON COLUMN invoice_headers.is_default IS '是否默认';
+
+-- 发票内容/ 发票备注 / 邮箱 / 留言
+CREATE TABLE invoice (
+  id           int8 NOT NULL UNIQUE, 
+  invoice_code varchar(32) NOT NULL,
+  invoice_no varchar(32) NOT NULL,
+  user_type    int4 NOT NULL, 
+  user_id      int8 NOT NULL, 
+  invoice_type int4 NOT NULL, 
+  issue_type   int4 NOT NULL,
+  seller_name varchar(20) NOT NULL,
+  seller_tax_code varchar(64) NOT NULL,
+  purchaser_name  varchar(20) NOT NULL, 
+  purchaser_tax_code  varchar(40) NOT NULL, 
+  invoice_amount decimal(10,2) NOT NULL,
+  tax_amount decimal(10,2) NOT NULL,
+  remark varchar(64) NOT NULL,
+  issue_remark varchar(64) NOT NULL,
+  receive_email varchar(64) NOT NULL,
+  invoice_status int4 NOT NULL,
+  invoice_time int8 NOT NULL,
+  create_time int8 NOT NULL,
+  update_time int8 NOT NULL);
+
+COMMENT ON TABLE invoice IS '发票';
+COMMENT ON COLUMN invoice.id IS '编号';
+COMMENT ON COLUMN invoice.invoice_code IS '发票代码';
+COMMENT ON COLUMN invoice.invoice_no IS '发票号码';
+COMMENT ON COLUMN invoice.user_type IS '用户类型,1:会员  2:商户';
+COMMENT ON COLUMN invoice.user_id IS '会员/商户编号';
+COMMENT ON COLUMN invoice.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
+COMMENT ON COLUMN invoice.issue_type IS '开具类型, 1: 个人 2:企业';
+COMMENT ON COLUMN invoice.seller_name IS '销售方名称';
+COMMENT ON COLUMN invoice.seller_tax_code IS  '销售方纳税人识别号';
+COMMENT ON COLUMN invoice.purchaser_name IS '买方名称';
+COMMENT ON COLUMN invoice.purchaser_tax_code IS '买方纳税人识别号';
+COMMENT ON COLUMN invoice.invoice_amount IS '合计金额';
+COMMENT ON COLUMN invoice.tax_amount IS '合计税额';
+COMMENT ON COLUMN invoice.remark IS '备注';
+COMMENT ON COLUMN invoice.issue_remark IS '开具备注/开票失败备注';
+COMMENT ON COLUMN invoice.receive_email IS '发票接收邮箱地址';
+COMMENT ON COLUMN invoice.invoice_status IS '发票状态,1:待开票 2:开票完成 3:未通过';
+COMMENT ON COLUMN invoice.invoice_time IS '开票时间';
+COMMENT ON COLUMN invoice.create_time IS '创建时间';
+COMMENT ON COLUMN invoice.update_time IS '更新时间';
+
+CREATE TABLE invoice_item (
+  id int8 NOT NULL UNIQUE, 
+  invoice_id  int8 NOT NULL, 
+  item_name varchar(50) NOT NULL,
+  item_spec varchar(50) NOT NULL,
+  price decimal(10,2) NOT NULL,
+  quantity int4 NOT NULL,
+  tax_rate decimal(4,2) NOT NULL,
+  unit varchar(4) NOT NULL,
+  amount decimal(10,2) NOT NULL,
+  tax_amount decimal(6,2) NOT NULL,
+  create_time int8 NOT NULL,
+  update_time int8 NOT NULL
+);
+
+COMMENT ON TABLE invoice_item IS '发票项目';
+COMMENT ON COLUMN invoice_item.id IS '编号';
+COMMENT ON COLUMN invoice_item.invoice_id IS '发票编号';
+COMMENT ON COLUMN invoice_item.item_name IS '项目名称';
+COMMENT ON COLUMN invoice_item.item_spec IS '项目规格';
+COMMENT ON COLUMN invoice_item.price IS '价格';
+COMMENT ON COLUMN invoice_item.quantity IS  '数量';
+COMMENT ON COLUMN invoice_item.tax_rate IS '税率';
+COMMENT ON COLUMN invoice_item.unit IS  '计量单位';
+COMMENT ON COLUMN invoice_item.amount IS '总金额';
+COMMENT ON COLUMN invoice_item.tax_amount IS '税额';
+COMMENT ON COLUMN invoice_item.create_time IS '创建时间';
+COMMENT ON COLUMN invoice_item.update_time IS '更新时间';

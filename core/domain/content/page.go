@@ -17,50 +17,50 @@ import (
 var _ content.IPageManager = new(pageManagerImpl)
 
 type pageManagerImpl struct {
-	zoneId   int
+	tenantId   int
 	pageRepo content.IPageRepo
 }
 
 // CreatePage 创建页面
 func (c *pageManagerImpl) CreatePage(v *content.Page) content.IPage {
-	return NewPage(c.zoneId, c.pageRepo, v)
+	return NewPage(c.tenantId, c.pageRepo, v)
 }
 
 // GetPage 获取页面
 func (c *pageManagerImpl) GetPage(id int) content.IPage {
-	return c.pageRepo.GetPageById(c.zoneId, id)
+	return c.pageRepo.GetPageById(c.tenantId, id)
 }
 
 // GetPageByCode 根据字符串标识获取页面
 func (c *pageManagerImpl) GetPageByCode(indent string) content.IPage {
-	return c.pageRepo.GetPageByCode(c.zoneId, indent)
+	return c.pageRepo.GetPageByCode(c.tenantId, indent)
 }
 
 // DeletePage 删除页面
 func (c *pageManagerImpl) DeletePage(id int) error {
-	ip := c.pageRepo.GetPageById(c.zoneId, id)
+	ip := c.pageRepo.GetPageById(c.tenantId, id)
 	if ip == nil {
 		return content.ErrNoSuchPage
 	}
 	if ip.GetValue().Flag&content.FCategoryInternal == content.FCategoryInternal {
 		return content.ErrInternalPage
 	}
-	return c.pageRepo.DeletePage(c.zoneId, id)
+	return c.pageRepo.DeletePage(c.tenantId, id)
 }
 
 var _ content.IPage = new(pageImpl)
 
 type pageImpl struct {
 	repo   content.IPageRepo
-	zoneId int
+	tenantId int
 	value  *content.Page
 }
 
-func NewPage(zoneId int, repo content.IPageRepo,
+func NewPage(tenantId int, repo content.IPageRepo,
 	v *content.Page) content.IPage {
 	return &pageImpl{
 		repo:   repo,
-		zoneId: zoneId,
+		tenantId: tenantId,
 		value:  v,
 	}
 }
@@ -77,7 +77,7 @@ func (p *pageImpl) GetValue() *content.Page {
 
 // 检测别名是否可用
 func (p *pageImpl) checkAliasExists(alias string) bool {
-	v := p.repo.FindBy("user_id= ? AND str_indent = ? AND id <> ?", p.zoneId, alias, p.GetDomainId())
+	v := p.repo.FindBy("user_id= ? AND str_indent = ? AND id <> ?", p.tenantId, alias, p.GetDomainId())
 	return v != nil
 }
 
@@ -102,6 +102,6 @@ func (p *pageImpl) SetValue(v *content.Page) error {
 // Save 保存
 func (p *pageImpl) Save() (int, error) {
 	p.value.UpdateTime = time.Now().Unix()
-	err := p.repo.SavePage(p.zoneId, p.value)
+	err := p.repo.SavePage(p.tenantId, p.value)
 	return p.GetDomainId(), err
 }

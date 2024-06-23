@@ -54,6 +54,7 @@ var provideSets = wire.NewSet(
 	repos.NewStaffRepo,
 	repos.NewPageRepo,
 	repos.NewArticleCategoryRepo,
+	repos.NewInvoiceTenantRepo,
 )
 var queryProvideSets = wire.NewSet(
 	provideSets,
@@ -103,6 +104,7 @@ var InjectProvideSets = wire.NewSet(
 	impl.NewPersonFinanceService,
 	impl.NewExecutionService,
 	impl.NewCheckService,
+	impl.NewInvoiceService,
 	// 事件
 	event.NewEventSource,
 	handler.NewEventHandler,

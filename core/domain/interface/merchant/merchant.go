@@ -344,3 +344,7 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 )
+
+func (m Merchant) TableName()string {
+	return "mch_merchant"
+}

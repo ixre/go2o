@@ -53,13 +53,12 @@ func TestGrantMemberAccessToken(t *testing.T) {
 	token, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
 		UserId:      memberId,
 		UserType:    1,
-		ExpiresTime: time.Now().Unix() + 720,
+		ExpiresTime: time.Now().Unix() + 3600*30*24,
 	})
 	if len(token.ErrMsg) > 0 {
 		t.Error(token.ErrMsg)
 		t.FailNow()
 	}
-	t.Log("token is:", token.AccessToken)
 	now := time.Now().Unix()
 	token.AccessToken = "Bearer " + token.AccessToken
 	accessToken, _ := s.CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
@@ -71,7 +70,8 @@ func TestGrantMemberAccessToken(t *testing.T) {
 		t.Error(accessToken.ErrMsg)
 		t.Failed()
 	}
-	t.Logf("user token:%s", token.AccessToken)
+	t.Logf("token is:%s", token.AccessToken)
+
 }
 
 // TestCheckMemberAccessToken 测试 CheckMemberAccessToken 函数
