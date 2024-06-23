@@ -32,6 +32,10 @@ service ContentService {
     // 获取文章
     rpc GetArticle (IdOrName) returns (SArticle) {
     }
+    // 更新文章浏览次数
+    rpc UpdateArticleViewsCount(ArticleViewsRequest) returns (Result){} 
+    // 喜欢/不喜欢文章
+    rpc LikeArticle(ArticleLikeRequest) returns (Result){} 
     // 删除文章
     rpc DeleteArticle (Int64) returns (Result) {
     }
@@ -90,30 +94,38 @@ message SArticle {
     sint64 categoryId = 2;
     /** 标题 */
     string title = 3;
+    /** 标志 */
+    sint32 flag = 4;
     /** 小标题 */
-    string smallTitle = 4;
+    string shortTitle = 5;
     /** 文章附图 */
-    string thumbnail = 5;
+    string thumbnail = 6;
+    /** 商户编号 */
+    sint32 mchId = 7;
+    /** 发布人用户编号 */
+    sint64 publisherId = 8;
     /** 重定向URL */
-    sint64 publisherId = 6;
-    /** 重定向URL */
-    string location = 7;
+    string location = 9;
     /** 优先级,优先级越高，则置顶 */
-    sint32 priority = 8;
+    sint32 priority = 10;
     /** 浏览钥匙 */
-    string accessKey = 9;
+    string accessKey = 11;
     /** 文档内容 */
-    string content = 10;
+    string content = 12;
     /** 标签（关键词） */
-    string tags = 11;
+    string tags = 13;
     /** 显示次数 */
-    sint32 viewCount = 12;
+    sint32 viewCount = 14;
+    /** 点赞次数 */
+    sint32 likeCount = 15;
+    /** 不喜欢次数 */
+    sint32 dislikeCount = 16;
     /** 排序序号 */
-    sint32 sortNum = 13;
+    sint32 sortNum = 17;
     /** 创建时间 */
-    sint64 createTime = 14;
+    sint64 createTime = 18;
     /** 最后修改时间 */
-    sint64 updateTime = 15;
+    sint64 updateTime = 19;
 }
 
 message SPage {
@@ -145,4 +157,24 @@ message SPage {
 
 message ArticleCategoriesResponse {
     repeated SArticleCategory value =  1;
+}
+
+// 文章浏览数更新请求
+message ArticleViewsRequest{
+    // 文章编号
+    uint64 id = 1;
+    // 会员编号
+    uint32 memberId = 2;
+    // 次数
+    uint32 count = 3;
+}
+
+// 文章点赞/不喜欢请求
+message ArticleLikeRequest{
+    // 文章编号
+    uint64 id = 1;
+    // 会员编号
+    uint32 memberId = 2;
+    // 是否不喜欢
+    bool isDislike = 3;
 }

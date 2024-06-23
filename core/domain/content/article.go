@@ -19,7 +19,7 @@ import (
 var _ content.IArticle = new(articleImpl)
 
 type articleImpl struct {
-	_rep      content.IArticleRepo
+	_repo     content.IArticleRepo
 	_value    *content.Article
 	_category *content.Category
 	_manager  content.IArticleManager
@@ -28,15 +28,15 @@ type articleImpl struct {
 func NewArticle(v *content.Article, m content.IArticleManager,
 	rep content.IArticleRepo) content.IArticle {
 	return &articleImpl{
-		_rep:     rep,
+		_repo:    rep,
 		_value:   v,
 		_manager: m,
 	}
 }
 
 // 获取领域编号
-func (a *articleImpl) GetDomainId() int32 {
-	return a._value.ID
+func (a *articleImpl) GetDomainId() int {
+	return a._value.Id
 }
 
 // 获取值
@@ -47,15 +47,17 @@ func (a *articleImpl) GetValue() content.Article {
 // SetValue 设置值
 func (a *articleImpl) SetValue(v *content.Article) error {
 	a._value.Title = v.Title
-	a._value.SmallTitle = v.SmallTitle
+	a._value.ShortTitle = v.ShortTitle
 	a._value.SortNum = v.SortNum
 	a._value.Location = v.Location
 	a._value.Content = v.Content
 	a._value.Thumbnail = v.Thumbnail
 	a._value.CatId = v.CatId
-	a._value.AccessKey = v.AccessKey
+	a._value.Flag = v.Flag
+	a._value.MchId = v.MchId
+	a._value.AccessToken = v.AccessToken
 	a._value.Priority = v.Priority
-	a._value.UpdateTime = time.Now().Unix()
+	a._value.UpdateTime = int(time.Now().Unix())
 
 	if a._value.CreateTime == 0 {
 		a._value.CreateTime = a._value.UpdateTime
@@ -75,13 +77,36 @@ func (a *articleImpl) Category() *content.Category {
 }
 
 // Save 保存文章
-func (a *articleImpl) Save() (int32, error) {
+func (a *articleImpl) Save() error {
 	if a.Category() == nil {
-		return a.GetDomainId(), content.NotSetCategory
+		return content.NotSetCategory
 	}
-	id, err := a._rep.SaveArticle(a._value)
-	a._value.ID = id
-	return id, err
+	_, err := a._repo.Save(a._value)
+	return err
+}
+
+// Dislike implements content.IArticle.
+func (a *articleImpl) Dislike(memberId int) error {
+	//todo: 记录会员的点赞记录
+	a._value.DislikeCount += 1
+	return a.Save()
+}
+
+// IncreaseViewCount implements content.IArticle.
+func (a *articleImpl) IncreaseViewCount(memberId int, count int) error {
+	a._value.ViewCount += count
+	return a.Save()
+}
+
+// Like implements content.IArticle.
+func (a *articleImpl) Like(memberId int) error {
+	a._value.LikeCount += 1
+	return a.Save()
+}
+
+// DeleteArticle 删除文章
+func (a *articleImpl) Destory() error {
+	return a._repo.Delete(&content.Article{Id: a.GetDomainId()})
 }
 
 var _ content.IArticleManager = new(articleManagerImpl)
@@ -172,9 +197,9 @@ func (a *articleManagerImpl) initSystemCategory() {
 // 获取栏目
 func (a *articleManagerImpl) GetCategory(id int) *content.Category {
 	v := collections.FindArray(a.GetAllCategory(), func(v content.Category) bool {
-		return v.ID == id
+		return v.Id == id
 	})
-	if v.ID > 0 {
+	if v.Id > 0 {
 		return &v
 	}
 	return nil
@@ -183,22 +208,22 @@ func (a *articleManagerImpl) GetCategory(id int) *content.Category {
 // GetCategoryByAlias 根据标识获取文章栏目
 func (a *articleManagerImpl) GetCategoryByAlias(alias string) *content.Category {
 	v := collections.FindArray(a.GetAllCategory(), func(v content.Category) bool {
-		return v.Alias == alias || strconv.Itoa(int(v.ID)) == alias
+		return v.Alias == alias || strconv.Itoa(int(v.Id)) == alias
 	})
-	if v.ID > 0 {
+	if v.Id > 0 {
 		return &v
 	}
 	return nil
 }
 
 func (a *articleManagerImpl) SaveCategory(v *content.Category) error {
-	exit := a._rep.FindBy("alias = ? and id <> ?", v.Alias, v.ID)
+	exit := a._rep.FindBy("alias = ? and id <> ?", v.Alias, v.Id)
 	if exit != nil {
 		return content.ErrCategoryAliasExists
 	}
 	var r *content.Category
-	if v.ID > 0 {
-		r = a.GetCategory(v.ID)
+	if v.Id > 0 {
+		r = a.GetCategory(v.Id)
 	} else {
 		r = &content.Category{}
 	}
@@ -224,15 +249,15 @@ func (a *articleManagerImpl) SaveCategory(v *content.Category) error {
 	return err
 }
 
-// DelCategory 删除栏目
-func (a *articleManagerImpl) DelCategory(id int) error {
+// DeleteCategory 删除栏目
+func (a *articleManagerImpl) DeleteCategory(id int) error {
 	c := a.GetCategory(id)
 	if c != nil {
 		n := a._artRepo.GetArticleNumByCategory(id)
 		if n > 0 {
 			return content.ErrCategoryContainArchive
 		}
-		return a._rep.Delete(&content.Category{ID: id})
+		return a._rep.Delete(&content.Category{Id: id})
 	}
 	return nil
 
@@ -244,17 +269,10 @@ func (a *articleManagerImpl) CreateArticle(v *content.Article) content.IArticle 
 }
 
 // GetArticle 获取文章
-func (a *articleManagerImpl) GetArticle(id int32) content.IArticle {
-	v := a._artRepo.GetArticleById(id)
+func (a *articleManagerImpl) GetArticle(id int) content.IArticle {
+	v := a._artRepo.Get(id)
 	if v != nil {
 		return NewArticle(v, a, a._artRepo)
 	}
 	return nil
-}
-
-
-
-// DeleteArticle 删除文章
-func (a *articleManagerImpl) DeleteArticle(id int32) error {
-	return a._artRepo.DeleteArticle(id)
 }
