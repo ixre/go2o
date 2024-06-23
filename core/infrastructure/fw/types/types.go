@@ -41,3 +41,10 @@ func CamelTitle(str string, shortUpper bool) string {
 	arr = append(arr[:1], n...)
 	return strings.Join(arr, "")
 }
+
+// DeepClone 深拷贝
+func DeepClone[T any](v *T) (t *T) {
+	dst := new(T)
+	*dst = *v
+	return dst
+}

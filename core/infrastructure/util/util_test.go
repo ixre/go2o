@@ -3,7 +3,7 @@ package util
 import (
 	"testing"
 
-	"github.com/ixre/go2o/core/infrastructure/util/types"
+	"github.com/ixre/go2o/core/infrastructure/fw/types"
 )
 
 // 测试获取首字母

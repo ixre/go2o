@@ -80,7 +80,7 @@ func (s *systemRepoImpl) Option() fw.Repository[sys.GeneralOption] {
 // AreaRepo implements sys.ISystemRepo.
 func (s *systemRepoImpl) District() fw.Repository[sys.District] {
 	if s.areaRepo == nil {
-		s.areaRepo = newAreaRepository(s.ORM)
+		s.areaRepo = newDistrictRepository(s.ORM)
 	}
 	return s.areaRepo
 }
@@ -90,12 +90,12 @@ func (s *systemRepoImpl) GetSystemAggregateRoot() sys.ISystemAggregateRoot {
 	return _sysAggregate
 }
 
-type areaRepository struct {
+type districtRepository struct {
 	fw.BaseRepository[sys.District]
 }
 
-func newAreaRepository(o fw.ORM) fw.Repository[sys.District] {
-	s := &areaRepository{}
+func newDistrictRepository(o fw.ORM) fw.Repository[sys.District] {
+	s := &districtRepository{}
 	s.ORM = o
 	return s
 }

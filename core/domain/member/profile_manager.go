@@ -25,7 +25,7 @@ import (
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
 	"github.com/ixre/go2o/core/infrastructure/domain/validate"
-	"github.com/ixre/go2o/core/infrastructure/util/types"
+	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/go2o/core/initial/provide"
 )
 
