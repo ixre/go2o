@@ -53,7 +53,7 @@ func (c *ContentQuery) PagedArticleList(p *fw.PagingParams) (ret *fw.PagingResul
 	var mchMap map[int]*merchant.Merchant
 	var mmMap map[int]*member.Member
 	if len(mchIds) > 0 {
-		mchMap = collections.ToMap(c.mq.FindList(nil, "mch_id id IN ?", mchIds), func(m *merchant.Merchant) (int, *merchant.Merchant) {
+		mchMap = collections.ToMap(c.mq.FindList(nil, "id IN ?", mchIds), func(m *merchant.Merchant) (int, *merchant.Merchant) {
 			return m.Id, m
 		})
 	}
@@ -63,7 +63,7 @@ func (c *ContentQuery) PagedArticleList(p *fw.PagingParams) (ret *fw.PagingResul
 		})
 	}
 	retArray := make([]interface{}, len(ret.Rows))
-	for _, v := range ret.Rows {
+	for i, v := range ret.Rows {
 		r := v.(*content.Article)
 		dst := &PagingArticleDto{
 			Id:           r.Id,
@@ -88,31 +88,31 @@ func (c *ContentQuery) PagedArticleList(p *fw.PagingParams) (ret *fw.PagingResul
 			dst.Ext["mchName"] = m.MchName
 		}
 		if m, ok := mmMap[r.PublisherId]; ok {
-			dst.Ext["name"] = m.Nickname
+			dst.Ext["publisherName"] = m.Nickname
 		}
-		retArray = append(retArray, dst)
+		retArray[i] = dst
 	}
 	ret.Rows = retArray
 	return ret, err
 }
 
 type PagingArticleDto struct {
-	Id           int
-	CatId        int
-	Title        string
-	ShortTitle   string
-	Flag         int
-	Thumbnail    string
-	PublisherId  int
-	Location     string
-	Priority     int
-	MchId        int
-	Tags         string
-	LikeCount    int
-	DislikeCount int
-	ViewCount    int
-	SortNum      int
-	CreateTime   int
-	UpdateTime   int
+	Id           int                    `json:"id"`
+	CatId        int                    `json:"catId"`
+	Title        string                 `json:"title"`
+	ShortTitle   string                 `json:"shortTitle"`
+	Flag         int                    `json:"flag"`
+	Thumbnail    string                 `json:"thumbnail"`
+	PublisherId  int                    `json:"publisherId"`
+	Location     string                 `json:"location"`
+	Priority     int                    `json:"priority"`
+	MchId        int                    `json:"mchId"`
+	Tags         string                 `json:"tags"`
+	LikeCount    int                    `json:"likeCount"`
+	DislikeCount int                    `json:"dislikeCount"`
+	ViewCount    int                    `json:"viewCount"`
+	SortNum      int                    `json:"sortNum"`
+	CreateTime   int                    `json:"createTime"`
+	UpdateTime   int                    `json:"updateTime"`
 	Ext          map[string]interface{} `json:"ext"`
 }
