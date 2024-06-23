@@ -22,7 +22,7 @@ var _ content.IArticleRepo = new(contentRepo)
 var _ content.IPageRepo = new(pageRepoImpl)
 
 type contentRepo struct {
-	fw.Repository[content.Article]
+	fw.BaseRepository[content.Article]
 	db.Connector
 	o        orm.Orm
 	pageRepo content.IPageRepo
@@ -30,15 +30,17 @@ type contentRepo struct {
 }
 
 // 内容仓储
-func NewArticleRepo(o orm.Orm,
+func NewArticleRepo(o orm.Orm, wo fw.ORM,
 	catRepo content.IArticleCategoryRepo,
 	pageRepo content.IPageRepo) content.IArticleRepo {
-	return &contentRepo{
+	r := &contentRepo{
 		Connector: o.Connector(),
 		pageRepo:  pageRepo,
 		catRepo:   catRepo,
 		o:         o,
 	}
+	r.ORM = wo
+	return r
 }
 
 // 获取内容
