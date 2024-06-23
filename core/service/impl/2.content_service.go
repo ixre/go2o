@@ -171,7 +171,7 @@ func (c *contentService) LikeArticle(_ context.Context, req *proto.ArticleLikeRe
 	var err error
 	if req.IsDislike {
 		err = art.Dislike(int(req.MemberId))
-	}else{
+	} else {
 		err = art.Like(int(req.MemberId))
 	}
 	return c.error(err), nil
@@ -200,7 +200,7 @@ func (c *contentService) QueryPagingArticles(_ context.Context, r *proto.PagingA
 	}
 	return &proto.ArticleListResponse{
 		Total: int64(total),
-		Data:  arr,
+		Rows:  arr,
 	}, nil
 }
 
@@ -221,7 +221,7 @@ func (c *contentService) QueryTopArticles(_ context.Context, cat *proto.IdOrName
 	}
 	return &proto.ArticleListResponse{
 		Total: 0,
-		Data:  arr,
+		Rows:  arr,
 	}, nil
 }
 

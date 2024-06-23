@@ -72,7 +72,6 @@ type (
 
 	// Category 栏目
 	Category struct {
-		domain.IValueObject
 		//编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		//父类编号,如为一级栏目则为0
@@ -82,7 +81,7 @@ type (
 		// 名称(唯一)
 		Name string `db:"name"`
 		// 别名
-		Alias string `db:"cat_alias"`
+		Alias string `db:"cat_alias" gorm:"column:cat_alias"`
 		// 排序编号
 		SortNum int `db:"sort_num"`
 		// 定位路径（打开栏目页定位到的路径）
@@ -141,7 +140,7 @@ type (
 )
 
 func (c Category) TableName() string {
-	return "arc_category"
+	return "article_category"
 }
 
 var _ domain.IValueObject = new(Category)
@@ -152,5 +151,5 @@ func (c Category) Equal(v interface{}) bool {
 }
 
 func (c Article) TableName() string {
-	return "arc_article"
+	return "article_list"
 }

@@ -312,7 +312,7 @@ func GetContentRepo() content.IArticleRepo {
 	db := provide.GetGOrm()
 	iArticleCategoryRepo := repos.NewArticleCategoryRepo(db)
 	iPageRepo := repos.NewPageRepo(db)
-	iArticleRepo := repos.NewArticleRepo(orm, iArticleCategoryRepo, iPageRepo)
+	iArticleRepo := repos.NewArticleRepo(orm, db, iArticleCategoryRepo, iPageRepo)
 	return iArticleRepo
 }
 
@@ -448,7 +448,7 @@ func GetEventSource() *event.EventSource {
 	db := provide.GetGOrm()
 	iArticleCategoryRepo := repos.NewArticleCategoryRepo(db)
 	iPageRepo := repos.NewPageRepo(db)
-	iArticleRepo := repos.NewArticleRepo(orm, iArticleCategoryRepo, iPageRepo)
+	iArticleRepo := repos.NewArticleRepo(orm, db, iArticleCategoryRepo, iPageRepo)
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
@@ -807,7 +807,7 @@ func GetContentService() proto.ContentServiceServer {
 	db := provide.GetGOrm()
 	iArticleCategoryRepo := repos.NewArticleCategoryRepo(db)
 	iPageRepo := repos.NewPageRepo(db)
-	iArticleRepo := repos.NewArticleRepo(orm, iArticleCategoryRepo, iPageRepo)
+	iArticleRepo := repos.NewArticleRepo(orm, db, iArticleCategoryRepo, iPageRepo)
 	contentQuery := query.NewContentQuery(orm)
 	contentServiceServer := impl2.NewContentService(iArticleRepo, contentQuery)
 	return contentServiceServer

@@ -59,7 +59,7 @@ message PagingArticleRequest {
 
 message ArticleListResponse {
     int64 total = 1;
-    repeated SArticle data = 2;
+    repeated SArticle rows = 2;
 }
 
 //栏目

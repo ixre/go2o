@@ -39,7 +39,7 @@ var provideSets = wire.NewSet(
 	repos.NewGoodsItemRepo,
 	repos.NewAfterSalesRepo,
 	repos.NewCartRepo,
-	repos.NewContentRepo,
+	repos.NewArticleRepo,
 	repos.NewMerchantRepo,
 	repos.NewOrderRepo,
 	repos.NewPaymentRepo,
