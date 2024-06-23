@@ -882,14 +882,24 @@ func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {
 
 func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto.QMerchant {
 	return &proto.QMerchant{
+		MchId:         src.MemberId,
+		MchName:       src.Name,
 		MemberId:      src.MemberId,
+		MailAddr:      src.Usr,
+		IsSelf:        src.SelfSales,
+		Flag:          0,
 		Level:         src.Level,
-		Logo:          src.Logo,
 		Province:      src.Province,
 		City:          src.City,
 		District:      src.District,
+		Address:       "",
+		Logo:          src.Logo,
+		Tel:           "",
+		Status:        0,
 		ExpiresTime:   src.ExpiresTime,
 		LastLoginTime: src.LastLoginTime,
+		CreateTime:    0,
+		Authenticate:  &proto.QAuthenticate{},
 	}
 }
 
