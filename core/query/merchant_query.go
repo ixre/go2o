@@ -11,6 +11,8 @@ package query
 import (
 	"regexp"
 
+	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof"
@@ -21,13 +23,16 @@ import (
 type MerchantQuery struct {
 	db.Connector
 	Storage storage.Interface
+	fw.BaseRepository[merchant.Merchant]
 }
 
-func NewMerchantQuery(c gof.App) *MerchantQuery {
-	return &MerchantQuery{
+func NewMerchantQuery(c gof.App, fo fw.ORM) *MerchantQuery {
+	q := &MerchantQuery{
 		Connector: c.Db(),
 		Storage:   c.Storage(),
 	}
+	q.ORM = fo
+	return q
 }
 
 var (

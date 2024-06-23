@@ -43,7 +43,7 @@ type (
 		// FindBy 根据条件获取实体
 		FindBy(where string, args ...interface{}) *M
 		// FindList 查找列表
-		FindList(where string, opt *ListOption, args ...interface{}) []*M
+		FindList(opt *ListOption, where string, args ...interface{}) []*M
 		// Save 保存实体,如主键为空则新增
 		Save(v *M) (*M, error)
 		// Update 更新实体的非零字段
@@ -65,7 +65,7 @@ type (
 		// Save 保存
 		Save(v *M) (*M, error)
 		// FindList 查找列表
-		FindList(where string, opt *ListOption, args ...interface{}) []*M
+		FindList(opt *ListOption, where string, args ...interface{}) []*M
 
 		// Delete 删除
 		Delete(v *M) error
@@ -109,7 +109,7 @@ func (r *BaseRepository[M]) FindBy(where string, v ...interface{}) *M {
 	return nil
 }
 
-func (r *BaseRepository[M]) FindList(where string, opt *ListOption, v ...interface{}) []*M {
+func (r *BaseRepository[M]) FindList(opt *ListOption, where string, v ...interface{}) []*M {
 	list := make([]*M, 0)
 	var tx *gorm.DB
 	if opt != nil && opt.Limit > 0 {
@@ -192,8 +192,8 @@ func (m *BaseService[M]) FindBy(where string, args ...interface{}) *M {
 	return m.Repo.FindBy(where, args...)
 }
 
-func (m *BaseService[M]) FindList(where string, opt *ListOption, args ...interface{}) []*M {
-	return m.Repo.FindList(where, opt, args...)
+func (m *BaseService[M]) FindList(opt *ListOption, where string, args ...interface{}) []*M {
+	return m.Repo.FindList(opt, where, args...)
 }
 
 func (m *BaseService[M]) Delete(v *M) error {

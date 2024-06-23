@@ -71,6 +71,7 @@ func TestGrantMemberAccessToken(t *testing.T) {
 		t.Error(accessToken.ErrMsg)
 		t.Failed()
 	}
+	t.Logf("user token:%s", token.AccessToken)
 }
 
 // TestCheckMemberAccessToken 测试 CheckMemberAccessToken 函数

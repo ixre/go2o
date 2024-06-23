@@ -187,44 +187,6 @@ func (c *contentService) UpdateArticleViewsCount(_ context.Context, req *proto.A
 	return c.error(err), nil
 }
 
-func (c *contentService) QueryPagingArticles(_ context.Context, r *proto.PagingArticleRequest) (*proto.ArticleListResponse, error) {
-	var total = 0
-	var rows []*content.Article
-	ic := c._sysContent.ArticleManager().GetCategoryByAlias(r.CategoryName)
-	if ic != nil && ic.Id > 0 {
-		total, rows = c._query.PagedArticleList(int32(ic.Id), int(r.Begin), int(r.Size), "")
-	}
-	var arr = make([]*proto.SArticle, 0)
-	for _, v := range rows {
-		arr = append(arr, c.parseArticleDto(v))
-	}
-	return &proto.ArticleListResponse{
-		Total: int64(total),
-		Rows:  arr,
-	}, nil
-}
-
-func (c *contentService) QueryTopArticles(_ context.Context, cat *proto.IdOrName) (*proto.ArticleListResponse, error) {
-	var arr = make([]*proto.SArticle, 0)
-	var ic *content.Category
-	var m = c._sysContent.ArticleManager()
-	if cat.Id > 0 {
-		ic = m.GetCategory(int(cat.Id))
-	} else {
-		ic = m.GetCategoryByAlias(cat.Name)
-	}
-	if ic != nil && ic.Id > 0 {
-		_, rows := c._query.PagedArticleList(int32(ic.Id), 0, 1, "")
-		for _, v := range rows {
-			arr = append(arr, c.parseArticleDto(v))
-		}
-	}
-	return &proto.ArticleListResponse{
-		Total: 0,
-		Rows:  arr,
-	}, nil
-}
-
 func (c *contentService) parsePageDto(src *content.Page) *proto.SPage {
 	return &proto.SPage{
 		Id:          int64(src.Id),

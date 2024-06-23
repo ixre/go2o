@@ -63,7 +63,7 @@ type addressManagerImpl struct {
 func (a *addressManagerImpl) getDistrictList() []*sys.District {
 	if a.areaList == nil {
 		a.areaList = fw.ReduceFinds(func(opt *fw.ListOption) []*sys.District {
-			return a.FindList("", opt)
+			return a.FindList(opt, "")
 		}, 1000)
 	}
 	return a.areaList
@@ -130,7 +130,7 @@ func (a *addressManagerImpl) GetAllCities() []*sys.District {
 
 // GetDistrictList implements sys.IAddressManager.
 func (a *addressManagerImpl) GetDistrictList(parentId int) []*sys.District {
-	return a.FindList("parent=$1", nil, parentId)
+	return a.FindList(nil, "parent=$1", parentId)
 }
 
 var _ sys.IOptionManager = new(optionManagerImpl)
@@ -167,7 +167,7 @@ func (o *optionManagerImpl) GetChildOptions(parentId int, typeName string) []*sy
 func (o *optionManagerImpl) getList() []*sys.GeneralOption {
 	if o.allList == nil {
 		o.allList = fw.ReduceFinds(func(opt *fw.ListOption) []*sys.GeneralOption {
-			return o.FindList("", opt)
+			return o.FindList(opt, "")
 		}, 1000)
 	}
 	return o.allList

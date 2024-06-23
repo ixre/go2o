@@ -50,6 +50,16 @@ func MapList[T any, M any](arr []T, f func(T) M) []M {
 	return ret
 }
 
+// ToMap 数组转为字典
+func ToMap[K comparable, T, V any](arr []T, f func(t T) (K, V)) map[K]V {
+	var ret = make(map[K]V, len(arr))
+	for _, e := range arr {
+		k, v := f(e)
+		ret[k] = v
+	}
+	return ret
+}
+
 // Map 映射
 func Map[K, I comparable, V, M any](m map[K]V, f func(K, V) (I, M)) map[I]M {
 	var ret = make(map[I]M, len(m))

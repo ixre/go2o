@@ -9,8 +9,11 @@
 package query
 
 import (
-	"fmt"
 	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/infrastructure/fw"
+	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )
@@ -18,28 +21,98 @@ import (
 type ContentQuery struct {
 	db.Connector
 	o orm.Orm
+	fw.BaseRepository[content.Article]
+	mq  *MerchantQuery
+	mmq *MemberQuery
 }
 
-func NewContentQuery(o orm.Orm) *ContentQuery {
-	return &ContentQuery{o.Connector(), o}
-}
-
-func (cq *ContentQuery) PagedArticleList(catId int32, begin, size int, where string) (total int,
-	rows []*content.Article) {
-	if len(where) != 0 {
-		where = " AND " + where
+func NewContentQuery(o orm.Orm, fo fw.ORM, mq *MerchantQuery, mmq *MemberQuery) *ContentQuery {
+	c := &ContentQuery{
+		Connector: o.Connector(),
+		o:         o,
+		mq:        mq,
+		mmq:       mmq,
 	}
-	cq.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM
-		article_list WHERE cat_id= $1 %s`, where), &total, catId)
-	rows = []*content.Article{}
-	if total > 0 {
-		cq.o.SelectByQuery(&rows, fmt.Sprintf(`SELECT * FROM
-		article_list WHERE cat_id= $1 %s ORDER BY update_time DESC LIMIT $3 OFFSET $2`, where),
-			catId, begin, size)
-		for i := 0; i < len(rows); i++ {
-			//rows[i].Content = ""
+	c.ORM = fo
+	return c
+}
+
+func (c *ContentQuery) PagedArticleList(p *fw.PagingParams) (ret *fw.PagingResult, err error) {
+	ret, err = c.PagingQuery(p)
+	var mchIds []int
+	var memberIds []int
+	for _, v := range ret.Rows {
+		r := v.(*content.Article)
+		if r.MchId > 0 {
+			mchIds = append(mchIds, r.MchId)
+		}
+		if r.PublisherId > 0 {
+			memberIds = append(memberIds, r.PublisherId)
 		}
 	}
+	var mchMap map[int]*merchant.Merchant
+	var mmMap map[int]*member.Member
+	if len(mchIds) > 0 {
+		mchMap = collections.ToMap(c.mq.FindList(nil, "mch_id id IN ?", mchIds), func(m *merchant.Merchant) (int, *merchant.Merchant) {
+			return m.Id, m
+		})
+	}
+	if len(memberIds) > 0 {
+		mmMap = collections.ToMap(c.mmq.FindList(nil, "id IN ?", mchIds), func(m *member.Member) (int, *member.Member) {
+			return int(m.Id), m
+		})
+	}
+	retArray := make([]interface{}, len(ret.Rows))
+	for _, v := range ret.Rows {
+		r := v.(*content.Article)
+		dst := &PagingArticleDto{
+			Id:           r.Id,
+			CatId:        r.CatId,
+			Title:        r.Title,
+			ShortTitle:   r.ShortTitle,
+			Flag:         r.Flag,
+			Thumbnail:    r.Thumbnail,
+			PublisherId:  r.PublisherId,
+			Location:     r.Location,
+			Priority:     r.Priority,
+			MchId:        r.MchId,
+			Tags:         r.Tags,
+			LikeCount:    r.LikeCount,
+			DislikeCount: r.DislikeCount,
+			ViewCount:    r.ViewCount,
+			CreateTime:   r.CreateTime,
+			UpdateTime:   r.UpdateTime,
+			Ext:          map[string]interface{}{},
+		}
+		if m, ok := mchMap[r.MchId]; ok {
+			dst.Ext["mchName"] = m.MchName
+		}
+		if m, ok := mmMap[r.PublisherId]; ok {
+			dst.Ext["name"] = m.Nickname
+		}
+		retArray = append(retArray, dst)
+	}
+	ret.Rows = retArray
+	return ret, err
+}
 
-	return total, rows
+type PagingArticleDto struct {
+	Id           int
+	CatId        int
+	Title        string
+	ShortTitle   string
+	Flag         int
+	Thumbnail    string
+	PublisherId  int
+	Location     string
+	Priority     int
+	MchId        int
+	Tags         string
+	LikeCount    int
+	DislikeCount int
+	ViewCount    int
+	SortNum      int
+	CreateTime   int
+	UpdateTime   int
+	Ext          map[string]interface{} `json:"ext"`
 }
