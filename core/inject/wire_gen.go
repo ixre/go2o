@@ -958,7 +958,9 @@ func GetCheckService() proto.CheckServiceServer {
 }
 
 func GetInvoiceService() proto.InvoiceServiceServer {
-	invoiceServiceServer := impl2.NewInvoiceService()
+	db := provide.GetGOrm()
+	iInvoiceTenantRepo := repos.NewInvoiceTenantRepo(db)
+	invoiceServiceServer := impl2.NewInvoiceService(iInvoiceTenantRepo)
 	return invoiceServiceServer
 }
 

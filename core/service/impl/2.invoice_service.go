@@ -13,6 +13,7 @@ type invoiceServiceImpl struct {
 	_    proto.InvoiceServiceServer
 	repo invoice.IInvoiceTenantRepo
 	proto.UnimplementedInvoiceServiceServer
+	serviceUtil
 }
 
 func NewInvoiceService(repo invoice.IInvoiceTenantRepo) proto.InvoiceServiceServer {
@@ -27,15 +28,25 @@ func (i *invoiceServiceImpl) CreateRecord(_ context.Context, req *proto.SaveReco
 		TenantType: int(req.TenantType),
 		TenantUid:  int(req.TenantUid),
 	})
-	tenant.CreateInvoice(&invoice.InvoiceRecord{
+	iv := tenant.CreateInvoice(&invoice.InvoiceRecord{
 		IssueTenantId:    int(req.IssueTenantId),
 		InvoiceType:      int(req.InvoiceType),
-		IssueType:        req.IssueType,
+		IssueType:        int(req.IssueType),
 		PurchaserName:    req.PurchaserName,
 		PurchaserTaxCode: req.PurchaserTaxCode,
 		Remark:           req.Remark,
 		ReceiveEmail:     req.ReceiveEmail,
 	})
+	err := iv.Save()
+	if err != nil {
+		return &proto.SaveRecordResponse{
+			ErrCode: 1,
+			ErrMsg:  err.Error(),
+		}, nil
+	}
+	return &proto.SaveRecordResponse{
+		Id: int64(iv.GetDomainId()),
+	}, nil
 }
 
 // GetRecord implements proto.InvoiceServiceServer.

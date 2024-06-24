@@ -44,6 +44,7 @@ service InvoiceService {
     rpc Revert(InvoiceRevertRequest)returns (Result){}
 }
 
+// InvoiceIssueRequest 发票开具请求
 message InvoiceIssueRequest{
     int64 invoiceId = 1;
     // 发票代码
@@ -56,18 +57,27 @@ message InvoiceIssueRequest{
     string invoicePic = 16;
 }
 
+// InvoiceIssueFailRequest 发票开具失败请求
 message InvoiceIssueFailRequest{
+    // 发票ID
     int64 invoiceId = 1;
+    // 失败原因
     string reason = 2;
 }
 
+// InvoiceSendMailRequest 发送发票到邮件中
 message InvoiceSendMailRequest{
+    // 发票ID
     int64 invoiceId = 1;
+    // 邮箱地址
     string email = 2;
 }
 
+// InvoiceRevertRequest 撤销发票
 message InvoiceRevertRequest{
+    // 发票ID
     int64 invoiceId = 1;
+    // 撤销原因
     string reason = 2; 
 }
 
@@ -103,8 +113,11 @@ message SaveHeaderRequest{
 
 // 保存发票抬头响应
 message SaveHeaderResponse{
+    // 错误码
     int32 errCode = 1;
+    // 错误信息
     string errMsg = 2;
+    // 编号
     int64 id = 3;
 }
 
@@ -135,13 +148,17 @@ message SaveRecordRequest{
 
 // 保存发票响应
 message SaveRecordResponse{
+    // 错误码
     int32 errCode = 1;
+    // 错误信息
     string errMsg = 2;
+    // 发票ID
     int64 id = 3;
 }
 
 // 发票编号
 message InvoiceRecordId{
+    // 发票ID
     int64 value = 1;
  }
  
