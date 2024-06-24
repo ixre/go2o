@@ -9,7 +9,7 @@
  *
  * name : invoice_tenant_service.proto
  * author : jarrysix
- * date : 2024/06/24 15:22:54
+ * date : 2024/06/23 15:22:54
  * description :
  * history :
  */
@@ -35,13 +35,40 @@ service InvoiceService {
     rpc GetRecord (InvoiceRecordId) returns (SRecord) {
     }
     // Issue 开具发票,更新发票图片
-    rpc Issue(picture string) (SResult){}
+    rpc Issue(InvoiceIssueRequest)returns (Result){}
     // Issue 发票开具失败
-    rpc IssueFail(reason string)  (SResult){}
+    rpc IssueFail(InvoiceIssueFailRequest)returns (Result){}
     // SendMail 发送发票到邮件中
-    rpc SendMail(mail string) (SResult){}
+    rpc SendMail(InvoiceSendMailRequest)returns (Result){}
     // Revert 撤销发票
-    rpc Revert(reason string) (SResult){}
+    rpc Revert(InvoiceRevertRequest)returns (Result){}
+}
+
+message InvoiceIssueRequest{
+    int64 invoiceId = 1;
+    // 发票代码
+    string invoiceCode = 3;
+    // 发票号码
+    string invoiceNo = 4;
+    // 开具备注/开票失败备注
+    string issueRemark = 15;
+    // 发票图片
+    string invoicePic = 16;
+}
+
+message InvoiceIssueFailRequest{
+    int64 invoiceId = 1;
+    string reason = 2;
+}
+
+message InvoiceSendMailRequest{
+    int64 invoiceId = 1;
+    string email = 2;
+}
+
+message InvoiceRevertRequest{
+    int64 invoiceId = 1;
+    string reason = 2; 
 }
 
 // 保存发票抬头请求
@@ -84,48 +111,26 @@ message SaveHeaderResponse{
 
 // 保存发票请求
 message SaveRecordRequest{
-    // 编号
-    int64 id = 1;
-    // 发票代码
-    string invoiceCode = 2;
-    // 发票号码
-    string invoiceNo = 3;
-    // 租户编号
-    int64 tenantId = 4;
+    // 租户类型,1:会员  2:商户
+    int64 tenantType = 1;
+    // 租户用户编号
+    int64 tenantUid = 2;
     // 开具租户编号
-    int64 issueTenantId = 5;
+    int64 issueTenantId = 3;
     // 发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票
-    int32 invoiceType = 6;
-    // 开具类型, 1: 个人 2:企业
-    int32 issueType = 7;
-    // 销售方名称
-    string sellerName = 8;
-    // 销售方纳税人识别号
-    string sellerTaxCode = 9;
+    int32 invoiceType = 4;
+    // 开具抬头类型, 1: 个人 2:企业
+    int32 issueType = 5;
     // 买方名称
-    string purchaserName = 10;
+    string purchaserName = 6;
     // 买方纳税人识别号
-    string purchaserTaxCode = 11;
-    // 合计金额
-    double invoiceAmount = 12;
-    // 合计税额
-    double taxAmount = 13;
+    string purchaserTaxCode = 7;
+    // 发票项目
+    repeated SInvoiceItem items = 8; 
     // 备注
-    string remark = 14;
-    // 开具备注/开票失败备注
-    string issueRemark = 15;
-    // 发票图片
-    string invoicePic = 16;
+    string remark = 9;
     // 发票接收邮箱地址
-    string receiveEmail = 17;
-    // 发票状态,1:待开票 2:开票完成 3:未通过
-    int32 invoiceStatus = 18;
-    // 开票时间
-    int64 invoiceTime = 19;
-    // 创建时间
-    int64 createTime = 20;
-    // 更新时间
-    int64 updateTime = 21;
+    string receiveEmail = 10;
 }
 
 // 保存发票响应
@@ -187,12 +192,12 @@ message SRecord{
     // 更新时间
     int64 updateTime = 21;
     // 发票项目
-    repeated SItem items = 22;
+    repeated SInvoiceItem items = 22;
 }
 
 
 // 发票项目
-message SItem{
+message SInvoiceItem{
     // 编号
     int64 id = 1;
     // 发票编号

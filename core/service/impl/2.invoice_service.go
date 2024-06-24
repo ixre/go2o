@@ -3,41 +3,72 @@ package impl
 import (
 	"context"
 
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/service/proto"
 )
 
 var _ proto.InvoiceServiceServer = new(invoiceServiceImpl)
 
 type invoiceServiceImpl struct {
-	_ proto.InvoiceServiceServer
+	_    proto.InvoiceServiceServer
+	repo invoice.IInvoiceTenantRepo
 	proto.UnimplementedInvoiceServiceServer
 }
 
-func NewInvoiceService() proto.InvoiceServiceServer {
-	return new(invoiceServiceImpl)
+func NewInvoiceService(repo invoice.IInvoiceTenantRepo) proto.InvoiceServiceServer {
+	return &invoiceServiceImpl{
+		repo: repo,
+	}
 }
 
-// DeleteTenant implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) DeleteTenant(context.Context, *proto.InvoiceTenantId) (*proto.Result, error) {
+// CreateRecord implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) CreateRecord(_ context.Context, req *proto.SaveRecordRequest) (*proto.SaveRecordResponse, error) {
+	tenant := i.repo.CreateTenant(&invoice.InvoiceTenant{
+		TenantType: int(req.TenantType),
+		TenantUid:  int(req.TenantUid),
+	})
+	tenant.CreateInvoice(&invoice.InvoiceRecord{
+		IssueTenantId:    int(req.IssueTenantId),
+		InvoiceType:      int(req.InvoiceType),
+		IssueType:        req.IssueType,
+		PurchaserName:    req.PurchaserName,
+		PurchaserTaxCode: req.PurchaserTaxCode,
+		Remark:           req.Remark,
+		ReceiveEmail:     req.ReceiveEmail,
+	})
+}
+
+// GetRecord implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) GetRecord(context.Context, *proto.InvoiceRecordId) (*proto.SRecord, error) {
 	panic("unimplemented")
 }
 
-// GetTenant implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) GetTenant(context.Context, *proto.InvoiceTenantId) (*proto.STenant, error) {
+// Issue implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) Issue(context.Context, *proto.InvoiceIssueRequest) (*proto.Result, error) {
 	panic("unimplemented")
 }
 
-// PagingTenant implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) PagingTenant(context.Context, *proto.TenantPagingRequest) (*proto.TenantPagingResponse, error) {
+// IssueFail implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) IssueFail(context.Context, *proto.InvoiceIssueFailRequest) (*proto.Result, error) {
 	panic("unimplemented")
 }
 
-// QueryTenantList implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) QueryTenantList(context.Context, *proto.QueryTenantRequest) (*proto.QueryTenantResponse, error) {
+// Revert implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) Revert(context.Context, *proto.InvoiceRevertRequest) (*proto.Result, error) {
 	panic("unimplemented")
 }
 
-// SaveTenant implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) SaveTenant(context.Context, *proto.SaveTenantRequest) (*proto.SaveTenantResponse, error) {
+// SaveHeader implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) SaveHeader(context.Context, *proto.SaveHeaderRequest) (*proto.SaveHeaderResponse, error) {
+	panic("unimplemented")
+}
+
+// SendMail implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) SendMail(context.Context, *proto.InvoiceSendMailRequest) (*proto.Result, error) {
+	panic("unimplemented")
+}
+
+// mustEmbedUnimplementedInvoiceServiceServer implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) mustEmbedUnimplementedInvoiceServiceServer() {
 	panic("unimplemented")
 }
