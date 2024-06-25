@@ -23,11 +23,11 @@ type (
 	IPageRepo interface {
 		fw.Repository[Page]
 		// GetPageById 根据编号获取页面
-		GetPageById(zoneId, id int) IPage
+		GetPageById(tenantId, id int) IPage
 		// GetPageByCode 根据标识获取页面
-		GetPageByCode(zoneId int, code string) IPage
+		GetPageByCode(tenantId int, code string) IPage
 		// DeletePage 删除页面
-		DeletePage(zoneId, id int) error
+		DeletePage(tenantId, id int) error
 		// SavePage 保存页面
 		SavePage(zondId int, v *Page) error
 	}

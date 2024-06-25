@@ -10,6 +10,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/content"
 	"github.com/ixre/go2o/core/domain/interface/delivery"
 	"github.com/ixre/go2o/core/domain/interface/express"
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/job"
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -177,5 +178,9 @@ func GetStaffRepo() staff.IStaffRepo {
 }
 
 func GetPageRepo() content.IPageRepo {
+	panic(wire.Build(provideSets))
+}
+
+func GetInvoiceTenantRepo() invoice.IInvoiceTenantRepo {
 	panic(wire.Build(provideSets))
 }

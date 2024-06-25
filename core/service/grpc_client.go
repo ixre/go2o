@@ -313,3 +313,21 @@ func RbacServiceClient() (*grpc.ClientConn, proto.RbacServiceClient, error) {
 	}
 	return conn, nil, err
 }
+
+// CheckServiceClient 校验服务
+func CheckServiceClient() (*grpc.ClientConn, proto.CheckServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewCheckServiceClient(conn), err
+	}
+	return conn, nil, err
+}
+
+// InvoiceServiceClient 发票服务
+func InvoiceServiceClient() (*grpc.ClientConn, proto.InvoiceServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewInvoiceServiceClient(conn), err
+	}
+	return conn, nil, err
+}
