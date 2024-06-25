@@ -50,7 +50,9 @@ type (
 	InvoiceDomain interface {
 		domain.IDomain
 		// GetValue 获取发票记录
-		GetValue(id int) *InvoiceRecord
+		GetValue() *InvoiceRecord
+		// GetItems 获取发票明细
+		GetItems() []*InvoiceItem
 		// Issue 开具发票,更新发票图片
 		Issue(picture string) error
 		// Issue 发票开具失败

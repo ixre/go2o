@@ -4,6 +4,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/invoice"
 	impl "github.com/ixre/go2o/core/domain/invoice"
 	"github.com/ixre/go2o/core/infrastructure/fw"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 )
 
 var _ invoice.IInvoiceTenantRepo = new(invoiceTenantRepoImpl)
@@ -48,7 +49,18 @@ func (i *invoiceTenantRepoImpl) Records() invoice.IInvoiceRecordRepo {
 
 // CreateTenant implements invoice.IInvoiceTenantRepo.
 func (i *invoiceTenantRepoImpl) CreateTenant(v *invoice.InvoiceTenant) invoice.InvoiceUserAggregateRoot {
-	return impl.NewInvoiceTenant(v, i)
+	e := i.FindBy("tenant_type=? AND tenant_uid=?", v.TenantType, v.TenantUid)
+	if e != nil {
+		// 已经存在租户
+		return impl.NewInvoiceTenant(e, i)
+	}
+	t := impl.NewInvoiceTenant(v, i)
+	err := t.Create()
+	if err != nil {
+		logger.Error("创建租户失败: %+v", v)
+		return nil
+	}
+	return t
 }
 
 // GetTenant implements invoice.IInvoiceTenantRepo.

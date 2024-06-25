@@ -79,6 +79,7 @@ type invoiceRecordDomainImpl struct {
 	value    *invoice.InvoiceRecord
 	repo     invoice.IInvoiceRecordRepo
 	itemRepo invoice.IInvoiceItemRepo
+	_items   []*invoice.InvoiceItem
 }
 
 func newInvoiceRecord(v *invoice.InvoiceRecord, repo invoice.IInvoiceRecordRepo, itemRepo invoice.IInvoiceItemRepo) invoice.InvoiceDomain {
@@ -95,8 +96,16 @@ func (i *invoiceRecordDomainImpl) GetDomainId() int {
 }
 
 // GetValue implements invoice.InvoiceDomain.
-func (i *invoiceRecordDomainImpl) GetValue(id int) *invoice.InvoiceRecord {
+func (i *invoiceRecordDomainImpl) GetValue() *invoice.InvoiceRecord {
 	return types.DeepClone(i.value)
+}
+
+// GetItems implements invoice.InvoiceDomain.
+func (i *invoiceRecordDomainImpl) GetItems() []*invoice.InvoiceItem {
+	if i._items == nil {
+		i._items = i.itemRepo.FindList(nil, "invoice_id=?", i.GetDomainId())
+	}
+	return i._items
 }
 
 // Issue implements invoice.InvoiceDomain.
