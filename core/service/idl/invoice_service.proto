@@ -48,39 +48,48 @@ service InvoiceService {
 
 // InvoiceIssueRequest 发票开具请求
 message InvoiceIssueRequest{
-    int64 invoiceId = 1;
+    // 租户编号
+    int64 tenantId = 1;
+    // 发票ID
+    int64 invoiceId = 2;
     // 发票代码
     string invoiceCode = 3;
     // 发票号码
     string invoiceNo = 4;
     // 开具备注/开票失败备注
-    string issueRemark = 15;
+    string issueRemark = 5;
     // 发票图片
-    string invoicePic = 16;
+    string invoicePic = 6;
 }
 
 // InvoiceIssueFailRequest 发票开具失败请求
 message InvoiceIssueFailRequest{
+    // 租户编号
+    int64 tenantId = 1;
     // 发票ID
-    int64 invoiceId = 1;
+    int64 invoiceId = 2;
     // 失败原因
-    string reason = 2;
+    string reason = 3;
 }
 
 // InvoiceSendMailRequest 发送发票到邮件中
 message InvoiceSendMailRequest{
+    // 租户编号
+    int64 tenantId = 1;
     // 发票ID
-    int64 invoiceId = 1;
+    int64 invoiceId = 2;
     // 邮箱地址
-    string email = 2;
+    string email = 3;
 }
 
 // InvoiceRevertRequest 撤销发票
 message InvoiceRevertRequest{
+    // 租户编号
+    int64 tenantId = 1;
     // 发票ID
-    int64 invoiceId = 1;
+    int64 invoiceId = 2;
     // 撤销原因
-    string reason = 2; 
+    string reason = 3; 
 }
 
 message InvoiceTenantRequest{
@@ -90,8 +99,11 @@ message InvoiceTenantRequest{
     int64 tenantUid = 2;
 }
 
+// 发票租户
 message SInvoiceTenant{
+    // 错误码
     int32 errCode = 1;
+    // 错误信息
     string errMsg = 2;
     // 租户编号
     int64 tenantId = 3; 
@@ -123,8 +135,6 @@ message SaveHeaderRequest{
     string remarks = 11;
     // 是否默认
     int32 isDefault = 12;
-    // 创建时间
-    int64 createTime = 13;
 }
 
 // 保存发票抬头响应

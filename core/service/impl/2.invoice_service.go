@@ -13,7 +13,7 @@ var _ proto.InvoiceServiceServer = new(invoiceServiceImpl)
 type invoiceServiceImpl struct {
 	_    proto.InvoiceServiceServer
 	repo invoice.IInvoiceTenantRepo
-	//proto.UnimplementedInvoiceServiceServer
+	proto.UnimplementedInvoiceServiceServer
 	serviceUtil
 }
 
@@ -24,7 +24,7 @@ func NewInvoiceService(repo invoice.IInvoiceTenantRepo) proto.InvoiceServiceServ
 }
 
 // 获取发票租户
-func (i *invoiceServiceImpl) GetTenant(context.Context, *InvoiceTenantRequest) (*SInvoiceTenant, error) {
+func (i *invoiceServiceImpl) GetTenant(_ context.Context, req *proto.InvoiceTenantRequest) (*proto.SInvoiceTenant, error) {
 	tenant := i.repo.CreateTenant(&invoice.InvoiceTenant{
 		TenantType: int(req.TenantType),
 		TenantUid:  int(req.TenantUid),
@@ -157,21 +157,59 @@ func (i *invoiceServiceImpl) IssueFail(_ context.Context, req *proto.InvoiceIssu
 }
 
 // Revert implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) Revert(context.Context, *proto.InvoiceRevertRequest) (*proto.Result, error) {
-	panic("unimplemented")
+func (i *invoiceServiceImpl) Revert(_ context.Context, req *proto.InvoiceRevertRequest) (*proto.Result, error) {
+	it, iv := i.getInvoice(req.TenantId, req.InvoiceId)
+	if it == nil || iv == nil {
+		return &proto.Result{
+			ErrCode: 1,
+			ErrMsg:  "no any tenant or invoice",
+		}, nil
+	}
+	err := iv.Revert(req.Reason)
+	return i.error(err), nil
 }
 
 // SaveHeader implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) SaveHeader(context.Context, *proto.SaveHeaderRequest) (*proto.SaveHeaderResponse, error) {
-	panic("unimplemented")
+func (i *invoiceServiceImpl) SaveHeader(_ context.Context, req *proto.SaveHeaderRequest) (*proto.SaveHeaderResponse, error) {
+	t := i.repo.GetTenant(int(req.TenantId))
+	if t == nil {
+		logger.Error("no such invoice tenant, data=%d", req.TenantId)
+		return nil, nil
+	}
+	v := &invoice.InvoiceHeader{
+		Id:          int(req.Id),
+		InvoiceType: int(req.InvoiceType),
+		IssueType:   int(req.IssueType),
+		HeaderName:  req.HeaderName,
+		TaxCode:     req.TaxCode,
+		SignAddress: req.SignAddress,
+		SignTel:     req.SignTel,
+		BankName:    req.BankName,
+		BankAccount: req.BankAccount,
+		Remarks:     req.Remarks,
+		IsDefault:   int(req.GetIsDefault()),
+	}
+	err := t.SaveInvoiceHeader(v)
+	if err != nil {
+		return &proto.SaveHeaderResponse{
+			ErrCode: 1,
+			ErrMsg:  err.Error(),
+		}, nil
+	}
+	return &proto.SaveHeaderResponse{
+		Id: int64(v.Id),
+	}, nil
 }
 
 // SendMail implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) SendMail(context.Context, *proto.InvoiceSendMailRequest) (*proto.Result, error) {
-	panic("unimplemented")
-}
-
-// mustEmbedUnimplementedInvoiceServiceServer implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) mustEmbedUnimplementedInvoiceServiceServer() {
-	panic("unimplemented")
+func (i *invoiceServiceImpl) SendMail(_ context.Context, req *proto.InvoiceSendMailRequest) (*proto.Result, error) {
+	it, iv := i.getInvoice(req.TenantId, req.InvoiceId)
+	if it == nil || iv == nil {
+		return &proto.Result{
+			ErrCode: 1,
+			ErrMsg:  "no any tenant or invoice",
+		}, nil
+	}
+	err := iv.SendMail(req.Email)
+	return i.error(err), nil
 }

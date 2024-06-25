@@ -55,6 +55,13 @@ func (i *invoiceTenantAggregateRootImpl) GetInvoiceHeader(id int) *invoice.Invoi
 
 // SaveInvoiceHeader 保存发票抬头
 func (i *invoiceTenantAggregateRootImpl) SaveInvoiceHeader(header *invoice.InvoiceHeader) error {
+	if header.TenantId > 0 && header.TenantId != i.GetAggregateRootId() {
+		return errors.New("invoice tenant error")
+	}
+	if header.Id <= 0 {
+		header.CreateTime = int(time.Now().Unix())
+	}
+	header.TenantId = i.GetAggregateRootId()
 	_, err := i.repo.Header().Save(header)
 	return err
 }
