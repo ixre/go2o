@@ -7,6 +7,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/ad"
 	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
 	"github.com/ixre/go2o/core/domain/interface/cart"
+	"github.com/ixre/go2o/core/domain/interface/chat"
 	"github.com/ixre/go2o/core/domain/interface/content"
 	"github.com/ixre/go2o/core/domain/interface/delivery"
 	"github.com/ixre/go2o/core/domain/interface/express"
@@ -182,5 +183,9 @@ func GetPageRepo() content.IPageRepo {
 }
 
 func GetInvoiceTenantRepo() invoice.IInvoiceTenantRepo {
+	panic(wire.Build(provideSets))
+}
+
+func GetChatRepo() chat.IChatRepo {
 	panic(wire.Build(provideSets))
 }
