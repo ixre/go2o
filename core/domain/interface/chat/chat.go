@@ -40,6 +40,10 @@ type (
 
 	IConversation interface {
 		domain.IDomain
+		// Get 获取值
+		Get() ChatConversation
+		// GetMsg 获取消息
+		GetMsg(msgId int) *ChatMsg
 		// Destroy 删除会话
 		Destroy() error
 		// Greet 打招呼
@@ -60,6 +64,8 @@ type (
 
 	// IChatRepository 聊天仓储
 	IChatRepository interface {
+		// GetChatUser 获取聊天人聚合
+		GetChatUser(sid int) IChatUserAggregateRoot
 		// Conversation 获取聊天仓储
 		Conversation() IChatConversationRepo
 		// Msg 获取消息仓储

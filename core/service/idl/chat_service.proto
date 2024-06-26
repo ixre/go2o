@@ -26,16 +26,13 @@
  // 聊天会话服务
  service ChatService {
     // 获取聊天会话
-    rpc getConversation (ChatConversationRequest) returns (SConversation) {
+    rpc getConversation (ChatConversationRequest) returns (ChatConversationResponse) {
     }
     // 删除会话
 	rpc destroyConversation(ConversationIdRequest) returns (Result) {
     }
     // 发送消息，并返回消息编号
     rpc send(SendMsgRequest)returns (SendMsgResponse) {
-    }
-	// 获取历史消息
-	rpc fetchHistoryMsgList(FetchMsgRequest)returns (FetchMsgResponse) {
     }
 	// 获取最近的消息
 	rpc fetchMsgList(FetchMsgRequest) returns (FetchMsgResponse) {
@@ -91,6 +88,26 @@
     int64 chatType = 3;
     // 打招呼内容
     string greetWord = 4;
+ }
+
+ // 聊天会话响应
+ message ChatConversationResponse{
+    // 错误码
+    int32 errCode = 1;
+    // 编号
+    int64 convId = 2;
+    // 编码
+    string key = 3;
+    // 会话发起人
+    int64 sid = 4;
+    // 会话回复人
+    int64 rid = 5;
+    // 聊天类型
+    int32 chatType = 6; 
+    // 最后消息
+    string lastMsg = 7;
+    // 最后聊天时间
+    int64 lastChatTime = 8;
  }
  
  // 聊天会话
@@ -200,22 +217,18 @@ message UpdateMsgAttrRequest{
 // 消息消息
 message SMsg{
     // 编号
-    int64 id = 1;
-    // 会话编号
-    int64 convId = 2;
+    int64 msgId = 1;
     // 发送人编号
-    int64 sid = 3;
+    int64 sid = 2;
     // 消息类型, 1: 文本  2: 图片  3: 表情  4: 文件  5:语音  6:位置  7:语音  8:红包  9:名片  11: 委托申请
-    int32 msgType = 4;
+    int32 msgType = 3;
     // 消息标志: 1:提示 2:撤回 4:删除
-    int32 msgFlag = 5;
+    int32 msgFlag = 4;
     // 消息内容
-    string content = 6;
+    string content = 5;
     // 扩展数据
-    string extra = 7;
-    // 过期时间
-    int64 expiresTime = 8;
+    map<string,string> extra = 6;
     // 创建时间
-    int64 createTime = 9;
+    int64 createTime = 7;
 }
  
