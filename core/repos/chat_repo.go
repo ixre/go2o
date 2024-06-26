@@ -3,6 +3,7 @@ package repos
 import (
 	"github.com/ixre/go2o/core/domain/interface/chat"
 	"github.com/ixre/go2o/core/infrastructure/fw"
+	impl "github.com/ixre/go2o/core/domain/chat"
 )
 
 var _ chat.IChatRepository = new(chatRepoImpl)
@@ -11,6 +12,11 @@ type chatRepoImpl struct {
 	o        fw.ORM
 	convRepo chat.IChatConversationRepo
 	msgRepo  chat.IChatMsgRepo
+}
+
+// GetChatUser implements chat.IChatRepository.
+func (c *chatRepoImpl) GetChatUser(sid int) chat.IChatUserAggregateRoot {
+	return  impl.CreateChatUser(sid,c)
 }
 
 func NewChatRepo(o fw.ORM) chat.IChatRepository {
