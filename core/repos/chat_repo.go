@@ -5,13 +5,13 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
-var _ chat.IChatRepo = new(chatRepoImpl)
+var _ chat.IChatRepository = new(chatRepoImpl)
 
 type chatRepoImpl struct {
 	o fw.ORM
 }
 
-func NewChatRepo(o fw.ORM) chat.IChatRepo {
+func NewChatRepo(o fw.ORM) chat.IChatRepository {
 	return &chatRepoImpl{
 		o: o,
 	}

@@ -451,7 +451,7 @@ func GetInvoiceTenantRepo() invoice.IInvoiceTenantRepo {
 	return iInvoiceTenantRepo
 }
 
-func GetChatRepo() chat.IChatRepo {
+func GetChatRepo() chat.IChatRepository {
 	db := provide.GetGOrm()
 	iChatRepo := repos.NewChatRepo(db)
 	return iChatRepo
