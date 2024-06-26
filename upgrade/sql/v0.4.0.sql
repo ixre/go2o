@@ -527,13 +527,27 @@ ALTER TABLE "public".article_list
 COMMENT ON COLUMN "public".article_list.like_count IS '喜欢的数量';
 COMMENT ON COLUMN "public".article_list.dislike_count IS '不喜欢的数量';
 
+-- 发票租户
+DROP TABLE IF EXISTS invoice_tenant CASCADE;
+CREATE TABLE invoice_tenant(
+   "id" BIGSERIAL NOT NULL,
+   "tenant_type" integer NOT NULL,
+   "tenant_uid" bigint NOT NULL,
+   "create_time" bigint NOT NULL,
+   PRIMARY KEY (id)
+);
+COMMENT ON TABLE invoice_tenant IS '发票租户';
+COMMENT ON COLUMN invoice_tenant.id IS '租户会员/商户编号';
+COMMENT ON COLUMN invoice_tenant.tenant_type IS '租户类型:1会员 2:商户';
+COMMENT ON COLUMN invoice_tenant.tenant_uid IS '会员/商户编号';
+COMMENT ON COLUMN invoice_tenant.create_time IS '创建时间';
 
 
 -- 发票抬头
-CREATE TABLE invoice_headers (
-  id           int8 NOT NULL UNIQUE, 
-  user_type    int4 NOT NULL, 
-  user_id      int8 NOT NULL, 
+DROP TABLE IF EXISTS invoice_header CASCADE;
+CREATE TABLE invoice_header (
+  id           BIGSERIAL NOT NULL, 
+  tenant_id      int8 NOT NULL, 
   invoice_type int4 NOT NULL, 
   issue_type   int4 NOT NULL, 
   header_name  varchar(20) NOT NULL, 
@@ -544,28 +558,30 @@ CREATE TABLE invoice_headers (
   bank_account varchar(20) NOT NULL, 
   remarks      varchar(20) NOT NULL, 
   is_default   int4 NOT NULL, 
-  create_time  int8 NOT NULL);
-COMMENT ON TABLE invoice_headers IS '发票抬头';
-COMMENT ON COLUMN invoice_headers.id IS '编号';
-COMMENT ON COLUMN invoice_headers.user_type IS '用户类型,1:会员  2:商户';
-COMMENT ON COLUMN invoice_headers.user_id IS '会员/商户编号';
-COMMENT ON COLUMN invoice_headers.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
-COMMENT ON COLUMN invoice_headers.issue_type IS '开具类型, 1: 个人 2:企业';
-COMMENT ON COLUMN invoice_headers.tax_code IS '纳税人识别号';
-COMMENT ON COLUMN invoice_headers.sign_address IS '注册场所地址';
-COMMENT ON COLUMN invoice_headers.sign_tel IS '注册固定电话';
-COMMENT ON COLUMN invoice_headers.bank_name IS '基本户开户银行名';
-COMMENT ON COLUMN invoice_headers.bank_account IS '基本户开户账号';
-COMMENT ON COLUMN invoice_headers.remarks IS '备注';
-COMMENT ON COLUMN invoice_headers.is_default IS '是否默认';
+  create_time  int8 NOT NULL,
+  PRIMARY KEY (id)
+);
+COMMENT ON TABLE invoice_header IS '发票抬头';
+COMMENT ON COLUMN invoice_header.id IS '编号';
+COMMENT ON COLUMN invoice_header.tenant_id IS '租户会员/商户编号';
+COMMENT ON COLUMN invoice_header.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
+COMMENT ON COLUMN invoice_header.issue_type IS '开具类型, 1: 个人 2:企业';
+COMMENT ON COLUMN invoice_header.tax_code IS '纳税人识别号';
+COMMENT ON COLUMN invoice_header.sign_address IS '注册场所地址';
+COMMENT ON COLUMN invoice_header.sign_tel IS '注册固定电话';
+COMMENT ON COLUMN invoice_header.bank_name IS '基本户开户银行名';
+COMMENT ON COLUMN invoice_header.bank_account IS '基本户开户账号';
+COMMENT ON COLUMN invoice_header.remarks IS '备注';
+COMMENT ON COLUMN invoice_header.is_default IS '是否默认';
 
 -- 发票内容/ 发票备注 / 邮箱 / 留言
-CREATE TABLE invoice (
-  id           int8 NOT NULL UNIQUE, 
+DROP TABLE IF EXISTS invoice_record CASCADE;
+CREATE TABLE invoice_record (
+  id           BIGSERIAL NOT NULL, 
   invoice_code varchar(32) NOT NULL,
   invoice_no varchar(32) NOT NULL,
-  user_type    int4 NOT NULL, 
-  user_id      int8 NOT NULL, 
+  tenant_id int8 NOT NULL,
+  issue_tenant_id int8 NOT NULL,
   invoice_type int4 NOT NULL, 
   issue_type   int4 NOT NULL,
   seller_name varchar(20) NOT NULL,
@@ -576,36 +592,41 @@ CREATE TABLE invoice (
   tax_amount decimal(10,2) NOT NULL,
   remark varchar(64) NOT NULL,
   issue_remark varchar(64) NOT NULL,
+  invoice_pic  varchar(128) NOT NULL,
   receive_email varchar(64) NOT NULL,
   invoice_status int4 NOT NULL,
   invoice_time int8 NOT NULL,
   create_time int8 NOT NULL,
-  update_time int8 NOT NULL);
+  update_time int8 NOT NULL,
+  PRIMARY KEY (id)
+);
 
-COMMENT ON TABLE invoice IS '发票';
-COMMENT ON COLUMN invoice.id IS '编号';
-COMMENT ON COLUMN invoice.invoice_code IS '发票代码';
-COMMENT ON COLUMN invoice.invoice_no IS '发票号码';
-COMMENT ON COLUMN invoice.user_type IS '用户类型,1:会员  2:商户';
-COMMENT ON COLUMN invoice.user_id IS '会员/商户编号';
-COMMENT ON COLUMN invoice.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
-COMMENT ON COLUMN invoice.issue_type IS '开具类型, 1: 个人 2:企业';
-COMMENT ON COLUMN invoice.seller_name IS '销售方名称';
-COMMENT ON COLUMN invoice.seller_tax_code IS  '销售方纳税人识别号';
-COMMENT ON COLUMN invoice.purchaser_name IS '买方名称';
-COMMENT ON COLUMN invoice.purchaser_tax_code IS '买方纳税人识别号';
-COMMENT ON COLUMN invoice.invoice_amount IS '合计金额';
-COMMENT ON COLUMN invoice.tax_amount IS '合计税额';
-COMMENT ON COLUMN invoice.remark IS '备注';
-COMMENT ON COLUMN invoice.issue_remark IS '开具备注/开票失败备注';
-COMMENT ON COLUMN invoice.receive_email IS '发票接收邮箱地址';
-COMMENT ON COLUMN invoice.invoice_status IS '发票状态,1:待开票 2:开票完成 3:未通过';
-COMMENT ON COLUMN invoice.invoice_time IS '开票时间';
-COMMENT ON COLUMN invoice.create_time IS '创建时间';
-COMMENT ON COLUMN invoice.update_time IS '更新时间';
+COMMENT ON TABLE invoice_record IS '发票';
+COMMENT ON COLUMN invoice_record.id IS '编号';
+COMMENT ON COLUMN invoice_record.invoice_code IS '发票代码';
+COMMENT ON COLUMN invoice_record.invoice_no IS '发票号码';
+COMMENT ON COLUMN invoice_record.tenant_id IS '申请人租户ID';
+COMMENT ON COLUMN invoice_record.issue_tenant_id IS '开票租户编号';
+COMMENT ON COLUMN invoice_record.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
+COMMENT ON COLUMN invoice_record.issue_type IS '开具类型, 1: 个人 2:企业';
+COMMENT ON COLUMN invoice_record.seller_name IS '销售方名称';
+COMMENT ON COLUMN invoice_record.seller_tax_code IS  '销售方纳税人识别号';
+COMMENT ON COLUMN invoice_record.purchaser_name IS '买方名称';
+COMMENT ON COLUMN invoice_record.purchaser_tax_code IS '买方纳税人识别号';
+COMMENT ON COLUMN invoice_record.invoice_amount IS '合计金额';
+COMMENT ON COLUMN invoice_record.tax_amount IS '合计税额';
+COMMENT ON COLUMN invoice_record.remark IS '备注';
+COMMENT ON COLUMN invoice_record.issue_remark IS '开具备注/开票失败备注';
+COMMENT ON COLUMN invoice_record.invoice_pic IS '发票图片';
+COMMENT ON COLUMN invoice_record.receive_email IS '发票接收邮箱地址';
+COMMENT ON COLUMN invoice_record.invoice_status IS '发票状态,1:待开票 2:开票完成 3:未通过';
+COMMENT ON COLUMN invoice_record.invoice_time IS '开票时间';
+COMMENT ON COLUMN invoice_record.create_time IS '创建时间';
+COMMENT ON COLUMN invoice_record.update_time IS '更新时间';
 
+DROP TABLE IF EXISTS invoice_item CASCADE;
 CREATE TABLE invoice_item (
-  id int8 NOT NULL UNIQUE, 
+  id int8 BIGSERIAL NOT NULL, 
   invoice_id  int8 NOT NULL, 
   item_name varchar(50) NOT NULL,
   item_spec varchar(50) NOT NULL,
@@ -616,7 +637,8 @@ CREATE TABLE invoice_item (
   amount decimal(10,2) NOT NULL,
   tax_amount decimal(6,2) NOT NULL,
   create_time int8 NOT NULL,
-  update_time int8 NOT NULL
+  update_time int8 NOT NULL,
+  PRIMARY KEY (id)
 );
 
 COMMENT ON TABLE invoice_item IS '发票项目';

@@ -55,7 +55,7 @@ type (
 		// FetchMsgList 获取最近的消息
 		FetchMsgList(lastTime int, size int) []*ChatMsg
 		// UpdateMsgAttrs 更新消息扩展数据
-		UpdateMsgAttrs(msgId int, attrs map[string]interface{}) error
+		UpdateMsgAttrs(msgId int, attrs map[string]string) error
 		// RevertMsg 撤回消息
 		RevertMsg(msgId int) error
 		// DeleteMsg 删除消息
@@ -121,7 +121,7 @@ type MsgBody struct {
 	// 消息内容
 	Content string `json:"content" db:"content" gorm:"column:content" bson:"content"`
 	// 扩展数据
-	Extrta string `json:"extra" db:"extra" gorm:"column:extra" bson:"extra"`
+	Extra map[string]string `json:"extra" db:"extra" gorm:"column:extra" bson:"extra"`
 }
 
 // ChatMsg 消息消息

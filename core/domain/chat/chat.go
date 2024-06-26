@@ -3,11 +3,14 @@ package chat
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/chat"
 	"github.com/ixre/go2o/core/infrastructure/fw"
+	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/go2o/core/infrastructure/logger"
+	"github.com/ixre/gof/crypto"
 )
 
 var _ chat.IChatUserAggregateRoot = new(chatUserAggregateRoot)
@@ -40,15 +43,19 @@ func (c *chatUserAggregateRoot) GetConversation(convId int) chat.IConversation {
 
 // BuildConversation implements chat.IChatUserAggregateRoot.
 func (c *chatUserAggregateRoot) BuildConversation(rid int, chatType chat.ChatType) (chat.IConversation, error) {
-	v := &chat.ChatConversation{
-		Sid:      c.GetAggregateRootId(),
-		Rid:      rid,
-		ChatType: int(chatType),
-	}
-	uid := []int{rid, c.GetAggregateRootId()}
+
+	uid := []int{c.GetAggregateRootId(), rid}
 	cr := c.repo.Conversation()
 	conv := cr.FindBy("sid IN (?) AND rid IN(?)", uid, uid)
 	if conv == nil {
+		key := fmt.Sprintf("%d-%d#%d", uid[0], uid[1], chatType)
+		key = crypto.Md5([]byte(key))[8:24]
+		v := &chat.ChatConversation{
+			Sid:      c.GetAggregateRootId(),
+			Rid:      rid,
+			Key:      key,
+			ChatType: int(chatType),
+		}
 		_, err := cr.Save(v)
 		if err != nil {
 			return nil, err
@@ -80,8 +87,26 @@ func (c *converstationImpl) GetDomainId() int {
 	return c.value.Id
 }
 
+// Get implements chat.IConversation.
+func (c *converstationImpl) Get() chat.ChatConversation {
+	return *types.DeepClone(c.value)
+}
+
+// GetMsg implements chat.IConversation.
+func (c *converstationImpl) GetMsg(msgId int) *chat.ChatMsg {
+	msg, err := c.getMsg(msgId)
+	if err != nil || msg == nil {
+		return nil
+	}
+	return types.DeepClone(msg)
+}
+
 // DeleteMsg implements chat.IConversation.
 func (c *converstationImpl) DeleteMsg(msgId int) error {
+	msg, err := c.getMsg(msgId)
+	if err != nil || msg == nil || msg.Sid != c.user.GetAggregateRootId() {
+		return errors.New("no such message")
+	}
 	return c.repo.Msg().Delete(&chat.ChatMsg{Id: msgId})
 }
 
@@ -98,16 +123,16 @@ func (c *converstationImpl) Destroy() error {
 func (c *converstationImpl) FetchHistoryMsgList(lastTime int, size int) []*chat.ChatMsg {
 	return c.repo.Msg().FindList(&fw.QueryOption{
 		Limit: size,
-		Order: "last_chat_time DESC",
-	}, "last_chat_time < ?", lastTime)
+		Order: "create_time DESC",
+	}, "create_time < ?", lastTime)
 }
 
 // FetchMsgList implements chat.IConversation.
 func (c *converstationImpl) FetchMsgList(lastTime int, size int) []*chat.ChatMsg {
 	return c.repo.Msg().FindList(&fw.QueryOption{
 		Limit: size,
-		Order: "last_chat_time ASC",
-	}, "last_chat_time > ?", lastTime)
+		Order: "create_time ASC",
+	}, "create_time > ?", lastTime)
 }
 
 // Greet implements chat.IConversation.
@@ -118,7 +143,7 @@ func (c *converstationImpl) Greet(msg string) error {
 	v := &chat.MsgBody{
 		MsgType: 1,
 		Content: msg,
-		Extrta:  "{}",
+		Extra:   nil,
 	}
 	_, err := c.sendMsg(v, chat.MsgFlagHint, 0)
 	return err
@@ -127,13 +152,21 @@ func (c *converstationImpl) Greet(msg string) error {
 func (c *converstationImpl) sendMsg(v *chat.MsgBody, flag int, expiresTime int) (int, error) {
 	// 是否为发送人的消息
 	sid := c.user.GetAggregateRootId()
+	extra := ""
+	if v.Extra != nil && len(v.Extra) > 0 {
+		bytes, err := json.Marshal(v.Extra)
+		if err != nil {
+			logger.Error("chat msg marshal error", err)
+		}
+		extra = string(bytes)
+	}
 	msg := &chat.ChatMsg{
 		ConvId:      c.GetDomainId(),
 		MsgType:     int(v.MsgType),
 		Sid:         sid,
 		MsgFlag:     flag,
 		Content:     v.Content,
-		Extra:       v.Extrta,
+		Extra:       extra,
 		ExpiresTime: expiresTime,
 	}
 	return c.saveMsg(msg)
@@ -185,7 +218,7 @@ func (c *converstationImpl) Send(msg *chat.MsgBody) (int, error) {
 }
 
 // UpdateMsgAttrs implements chat.IConversation.
-func (c *converstationImpl) UpdateMsgAttrs(msgId int, attrs map[string]interface{}) error {
+func (c *converstationImpl) UpdateMsgAttrs(msgId int, attrs map[string]string) error {
 	msg, err := c.getMsg(msgId)
 	if err == nil {
 		if attrs == nil {
