@@ -8,12 +8,14 @@ import (
 )
 
 type (
-	// ListOption 列表查询参数
-	ListOption struct {
+	// QueryOption 列表查询参数
+	QueryOption struct {
 		// 跳过条数
 		Skip int
 		// 限制条数
 		Limit int
+		// 排序
+		Order interface{}
 	}
 )
 
@@ -43,7 +45,7 @@ type (
 		// FindBy 根据条件获取实体
 		FindBy(where string, args ...interface{}) *M
 		// FindList 查找列表
-		FindList(opt *ListOption, where string, args ...interface{}) []*M
+		FindList(opt *QueryOption, where string, args ...interface{}) []*M
 		// Save 保存实体,如主键为空则新增
 		Save(v *M) (*M, error)
 		// Update 更新实体的非零字段
@@ -65,7 +67,7 @@ type (
 		// Save 保存
 		Save(v *M) (*M, error)
 		// FindList 查找列表
-		FindList(opt *ListOption, where string, args ...interface{}) []*M
+		FindList(opt *QueryOption, where string, args ...interface{}) []*M
 
 		// Delete 删除
 		Delete(v *M) error
@@ -109,14 +111,25 @@ func (r *BaseRepository[M]) FindBy(where string, v ...interface{}) *M {
 	return nil
 }
 
-func (r *BaseRepository[M]) FindList(opt *ListOption, where string, v ...interface{}) []*M {
+func (r *BaseRepository[M]) FindList(opt *QueryOption, where string, v ...interface{}) []*M {
 	list := make([]*M, 0)
-	var tx *gorm.DB
-	if opt != nil && opt.Limit > 0 {
-		tx = r.ORM.Limit(opt.Limit).Offset(opt.Skip)
-	} else {
-		tx = r.ORM
+	tx := r.ORM
+	if opt != nil {
+		if opt.Limit > 0 {
+			tx = tx.Limit(opt.Limit).Offset(opt.Skip)
+		}
+		if opt.Order != nil {
+			if v, ok := opt.Order.(string); ok {
+				// "id desc"
+				if len(v) > 0 {
+					tx = tx.Order(v)
+				}
+			} else {
+				tx = tx.Order(opt.Order)
+			}
+		}
 	}
+
 	tx.Find(&list, r.joinQueryParams(where, v...)...)
 	return list
 }
@@ -192,7 +205,7 @@ func (m *BaseService[M]) FindBy(where string, args ...interface{}) *M {
 	return m.Repo.FindBy(where, args...)
 }
 
-func (m *BaseService[M]) FindList(opt *ListOption, where string, args ...interface{}) []*M {
+func (m *BaseService[M]) FindList(opt *QueryOption, where string, args ...interface{}) []*M {
 	return m.Repo.FindList(opt, where, args...)
 }
 
@@ -258,10 +271,10 @@ type PagingResult struct {
 }
 
 // ReduceFinds 分次查询合并数组,用于分次查询出数量较多的数据
-func ReduceFinds[T any](fn func(opt *ListOption) []*T, size int) (arr []*T) {
+func ReduceFinds[T any](fn func(opt *QueryOption) []*T, size int) (arr []*T) {
 	begin := 0
 	for {
-		list := fn(&ListOption{
+		list := fn(&QueryOption{
 			Skip:  begin,
 			Limit: size,
 		})

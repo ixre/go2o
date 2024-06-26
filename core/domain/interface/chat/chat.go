@@ -32,7 +32,7 @@ type (
 		// Send 发送消息，并返回消息编号
 		Send(msg *MsgBody) (int, error)
 		// FetchHistoryMsgs 获取历史消息
-		FetchHistoryMsgList(lastTime int, size int)
+		FetchHistoryMsgList(lastTime int, size int) []*ChatMsg
 		// FetchMsgList 获取最近的消息
 		FetchMsgList(lastTime int, size int) []*ChatMsg
 		// UpdateMsgAttrs 更新消息扩展数据
@@ -100,7 +100,7 @@ type MsgBody struct {
 	// 消息内容
 	Content string `json:"content" db:"content" gorm:"column:content" bson:"content"`
 	// 扩展数据
-	Extrta string `json:"extrta" db:"extrta" gorm:"column:extrta" bson:"extrta"`
+	Extrta string `json:"extra" db:"extra" gorm:"column:extra" bson:"extra"`
 }
 
 // ChatMsg 消息消息
@@ -116,7 +116,7 @@ type ChatMsg struct {
 	// 消息内容
 	Content string `json:"content" db:"content" gorm:"column:content" bson:"content"`
 	// 扩展数据
-	Extrta string `json:"extrta" db:"extrta" gorm:"column:extrta" bson:"extrta"`
+	Extra string `json:"extra" db:"extra" gorm:"column:extra" bson:"extra"`
 	// 是否撤回 0:否 1:是, 撤回的消息对方不可见
 	IsRevert int `json:"isRevert" db:"is_revert" gorm:"column:is_revert" bson:"isRevert"`
 	// 是否删除, 删除的消息对方可见,自己不可见
