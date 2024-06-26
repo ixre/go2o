@@ -106,6 +106,7 @@ var InjectProvideSets = wire.NewSet(
 	impl.NewExecutionService,
 	impl.NewCheckService,
 	impl.NewInvoiceService,
+	impl.NewChatService,
 	// 事件
 	event.NewEventSource,
 	handler.NewEventHandler,

@@ -164,3 +164,7 @@ func GetCheckService() proto.CheckServiceServer {
 func GetInvoiceService() proto.InvoiceServiceServer {
 	panic(wire.Build(InjectProvideSets))
 }
+
+func GetChatService() proto.ChatServiceServer {
+	panic(wire.Build(InjectProvideSets))
+}

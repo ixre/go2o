@@ -186,6 +186,6 @@ func GetInvoiceTenantRepo() invoice.IInvoiceTenantRepo {
 	panic(wire.Build(provideSets))
 }
 
-func GetChatRepo() chat.IChatRepo {
+func GetChatRepo() chat.IChatRepository {
 	panic(wire.Build(provideSets))
 }

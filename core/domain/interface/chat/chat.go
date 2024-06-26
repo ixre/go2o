@@ -7,7 +7,20 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
+// ChatType 聊天类型
 type ChatType int
+
+// 消息标志
+type MsgFlag int
+
+const (
+	// MsgFlagHint 提示
+	MsgFlagHint = 1
+	// MsgFlagRevert 撤回
+	MsgFlagRevert = 2
+	// MsgFlagDelete 删除
+	MsgFlagDelete = 4
+)
 
 var (
 	// ChatTypeNormal 用户聊天
@@ -20,7 +33,9 @@ type (
 	IChatUserAggregateRoot interface {
 		domain.IAggregateRoot
 		// GetConversation 获取聊天会话
-		GetConversation(rid int, chatType ChatType) (IConversation, error)
+		GetConversation(convId int) IConversation
+		// BuildConversation 生成聊天会话
+		BuildConversation(rid int, chatType ChatType) (IConversation, error)
 	}
 
 	IConversation interface {
@@ -109,18 +124,16 @@ type ChatMsg struct {
 	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
 	// 会话编号
 	ConvId int `json:"convId" db:"conv_id" gorm:"column:conv_id" bson:"convId"`
-	// 消息类型, 1: 文本  2: 图片  3: 表情  4: 文件  5:语音  6:位置  7:语音  8:红包  9:名片
+	// 发送人编号
+	Sid int `json:"sid" db:"sid" gorm:"column:sid" bson:"sid"`
+	// 消息类型, 1: 文本  2: 图片  3: 表情  4: 文件  5:语音  6:位置  7:语音  8:红包  9:名片  11: 委托申请
 	MsgType int `json:"msgType" db:"msg_type" gorm:"column:msg_type" bson:"msgType"`
-	// 是否为发起人的消息, 0:否 1:是
-	SidMsg int `json:"sidMsg" db:"sid_msg" gorm:"column:sid_msg" bson:"sidMsg"`
+	// 消息标志: 1:撤回 2:删除
+	MsgFlag int `json:"msgFlag" db:"msg_flag" gorm:"column:msg_flag" bson:"msgFlag"`
 	// 消息内容
 	Content string `json:"content" db:"content" gorm:"column:content" bson:"content"`
 	// 扩展数据
 	Extra string `json:"extra" db:"extra" gorm:"column:extra" bson:"extra"`
-	// 是否撤回 0:否 1:是, 撤回的消息对方不可见
-	IsRevert int `json:"isRevert" db:"is_revert" gorm:"column:is_revert" bson:"isRevert"`
-	// 是否删除, 删除的消息对方可见,自己不可见
-	IsDeleted int `json:"isDeleted" db:"is_deleted" gorm:"column:is_deleted" bson:"isDeleted"`
 	// 过期时间
 	ExpiresTime int `json:"expiresTime" db:"expires_time" gorm:"column:expires_time" bson:"expiresTime"`
 	// 消息清理时间,0表示永不清理

@@ -665,12 +665,11 @@ DROP TABLE IF EXISTS chat_msg CASCADE;
 CREATE TABLE chat_msg (
   id           BIGSERIAL NOT NULL, 
   conv_id      int8 NOT NULL, 
+  sid          int8 NOT NULL, 
   msg_type     int4 NOT NULL, 
-  sid_msg      int4 NOT NULL, 
+  msg_flag     int4 NOT NULL, 
   content      varchar(255) NOT NULL, 
-  extra       varchar(512) NOT NULL, 
-  is_revert    int4 NOT NULL, 
-  is_deleted   int4 NOT NULL, 
+  extra        varchar(512) NOT NULL, 
   expires_time int8 NOT NULL, 
   purge_time   int8 NOT NULL, 
   create_time  int8 NOT NULL, 
@@ -678,12 +677,11 @@ CREATE TABLE chat_msg (
 COMMENT ON TABLE chat_msg IS '消息消息';
 COMMENT ON COLUMN chat_msg.id IS '编号';
 COMMENT ON COLUMN chat_msg.conv_id IS '会话编号';
+COMMENT ON COLUMN chat_msg.sid IS '发送人编号';
 COMMENT ON COLUMN chat_msg.msg_type IS '消息类型, 1: 文本  2: 图片  3: 表情  4: 文件  5:语音  6:位置  7:语音  8:红包  9:名片  11: 委托申请';
-COMMENT ON COLUMN chat_msg.sid_msg IS '是否为发起人的消息, 0:否 1:是';
+COMMENT ON COLUMN chat_msg.msg_flag IS '消息标志: 1:撤回 2:删除';
 COMMENT ON COLUMN chat_msg.content IS '消息内容';
 COMMENT ON COLUMN chat_msg.extra IS '扩展数据';
-COMMENT ON COLUMN chat_msg.is_revert IS '是否撤回 0:否 1:是, 撤回的消息对方不可见';
-COMMENT ON COLUMN chat_msg.is_deleted IS '是否删除, 删除的消息对方可见,自己不可见';
 COMMENT ON COLUMN chat_msg.expires_time IS '过期时间';
 COMMENT ON COLUMN chat_msg.purge_time IS '消息清理时间,0表示永不清理';
 COMMENT ON COLUMN chat_msg.create_time IS '创建时间';

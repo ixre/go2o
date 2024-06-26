@@ -7,7 +7,6 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/chat"
 	"github.com/ixre/go2o/core/infrastructure/fw"
-	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/go2o/core/infrastructure/logger"
 )
 
@@ -31,7 +30,16 @@ func (c *chatUserAggregateRoot) GetAggregateRootId() int {
 }
 
 // GetConversation implements chat.IChatUserAggregateRoot.
-func (c *chatUserAggregateRoot) GetConversation(rid int, chatType chat.ChatType) (chat.IConversation, error) {
+func (c *chatUserAggregateRoot) GetConversation(convId int) chat.IConversation {
+	v := c.repo.Conversation().Get(convId)
+	if v == nil {
+		return nil
+	}
+	return newConversation(v, c, c.repo)
+}
+
+// BuildConversation implements chat.IChatUserAggregateRoot.
+func (c *chatUserAggregateRoot) BuildConversation(rid int, chatType chat.ChatType) (chat.IConversation, error) {
 	v := &chat.ChatConversation{
 		Sid:      c.GetAggregateRootId(),
 		Rid:      rid,
@@ -110,26 +118,23 @@ func (c *converstationImpl) Greet(msg string) error {
 	v := &chat.MsgBody{
 		MsgType: 1,
 		Content: msg,
-		Extrta:  "{\"greet\":1}",
+		Extrta:  "{}",
 	}
-	_, err := c.sendMsg(v, 0)
+	_, err := c.sendMsg(v, chat.MsgFlagHint, 0)
 	return err
 }
 
-func (c *converstationImpl) sendMsg(v *chat.MsgBody, expiresTime int) (int, error) {
+func (c *converstationImpl) sendMsg(v *chat.MsgBody, flag int, expiresTime int) (int, error) {
 	// 是否为发送人的消息
 	sid := c.user.GetAggregateRootId()
-	sidMsg := types.Ternary(c.value.Sid == sid, 1, 0)
 	msg := &chat.ChatMsg{
 		ConvId:      c.GetDomainId(),
 		MsgType:     int(v.MsgType),
-		SidMsg:      sidMsg,
+		Sid:         sid,
+		MsgFlag:     flag,
 		Content:     v.Content,
 		Extra:       v.Extrta,
-		IsRevert:    0,
-		IsDeleted:   0,
 		ExpiresTime: expiresTime,
-		PurgeTime:   0,
 	}
 	return c.saveMsg(msg)
 }
@@ -147,7 +152,7 @@ func (c *converstationImpl) saveMsg(msg *chat.ChatMsg) (int, error) {
 func (c *converstationImpl) RevertMsg(msgId int) error {
 	msg, err := c.getMsg(msgId)
 	if err == nil {
-		msg.IsRevert = 1
+		msg.MsgFlag |= chat.MsgFlagRevert
 		_, err = c.saveMsg(msg)
 	}
 	return err
@@ -159,14 +164,13 @@ func (c *converstationImpl) getMsg(msgId int) (*chat.ChatMsg, error) {
 	if msg == nil {
 		return msg, errors.New("msg not found")
 	}
-	if msg.IsRevert == 1 {
+	if (msg.MsgFlag & chat.MsgFlagRevert) == chat.MsgFlagRevert {
 		return msg, errors.New("msg has been revert")
 	}
-	if msg.IsDeleted == 1 {
+	if (msg.MsgFlag & chat.MsgFlagDelete) == chat.MsgFlagDelete {
 		return msg, errors.New("msg has been deleted")
 	}
-	sid := c.user.GetAggregateRootId()
-	if (msg.SidMsg == 1 && sid != c.value.Sid) || (msg.SidMsg == 0 && sid != c.value.Rid) {
+	if c.user.GetAggregateRootId() != msg.Sid {
 		// 非发送人的消息, 不能撤回
 		return msg, errors.New("can't revert msg")
 	}
@@ -177,7 +181,7 @@ func (c *converstationImpl) getMsg(msgId int) (*chat.ChatMsg, error) {
 func (c *converstationImpl) Send(msg *chat.MsgBody) (int, error) {
 	// 默认消息30天过期
 	expires := int(time.Now().Add(time.Hour * 24 * 30).Unix())
-	return c.sendMsg(msg, expires)
+	return c.sendMsg(msg, 0, expires)
 }
 
 // UpdateMsgAttrs implements chat.IConversation.
