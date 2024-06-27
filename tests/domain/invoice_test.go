@@ -17,7 +17,7 @@ func TestInvoiceTitle(t *testing.T) {
 	err := tn.CreateInvoiceTitle(&invoice.InvoiceTitle{
 		InvoiceType: 1,
 		IssueType:   2,
-		HeaderName:  "上海丁丁网络科技有限公司",
+		TitleName:   "上海丁丁网络科技有限公司",
 		TaxCode:     "64443223446656622",
 		SignAddress: "",
 		SignTel:     "",
