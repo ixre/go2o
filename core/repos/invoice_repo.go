@@ -11,7 +11,7 @@ var _ invoice.IInvoiceTenantRepo = new(invoiceTenantRepoImpl)
 
 type invoiceTenantRepoImpl struct {
 	fw.BaseRepository[invoice.InvoiceTenant]
-	headerRepo invoice.IInvoiceHeaderRepo
+	headerRepo invoice.IInvoiceTitleRepo
 	itemRepo   invoice.IInvoiceItemRepo
 	recordRepo invoice.IInvoiceRecordRepo
 }
@@ -24,9 +24,9 @@ func NewInvoiceTenantRepo(o fw.ORM) invoice.IInvoiceTenantRepo {
 }
 
 // Header implements invoice.IInvoiceTenantRepo.
-func (i *invoiceTenantRepoImpl) Header() invoice.IInvoiceHeaderRepo {
+func (i *invoiceTenantRepoImpl) Header() invoice.IInvoiceTitleRepo {
 	if i.headerRepo == nil {
-		i.headerRepo = NewInvoiceHeaderRepo(i.ORM)
+		i.headerRepo = NewInvoiceTitleRepo(i.ORM)
 	}
 	return i.headerRepo
 }
@@ -72,14 +72,14 @@ func (i *invoiceTenantRepoImpl) GetTenant(id int) invoice.InvoiceUserAggregateRo
 	return nil
 }
 
-var _ invoice.IInvoiceHeaderRepo = new(invoiceHeaderRepoImpl)
+var _ invoice.IInvoiceTitleRepo = new(invoiceHeaderRepoImpl)
 
 type invoiceHeaderRepoImpl struct {
-	fw.BaseRepository[invoice.InvoiceHeader]
+	fw.BaseRepository[invoice.InvoiceTitle]
 }
 
-// NewInvoiceHeaderRepo 创建发票抬头仓储
-func NewInvoiceHeaderRepo(o fw.ORM) invoice.IInvoiceHeaderRepo {
+// NewInvoiceTitleRepo 创建发票抬头仓储
+func NewInvoiceTitleRepo(o fw.ORM) invoice.IInvoiceTitleRepo {
 	r := &invoiceHeaderRepoImpl{}
 	r.ORM = o
 	return r

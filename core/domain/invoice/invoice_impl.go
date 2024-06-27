@@ -49,19 +49,20 @@ func (i *invoiceTenantAggregateRootImpl) Create() error {
 	return err
 }
 
-// GetInvoiceHeader 获取发票抬头
-func (i *invoiceTenantAggregateRootImpl) GetInvoiceHeader(id int) *invoice.InvoiceHeader {
+// GetInvoiceTitle 获取发票抬头
+func (i *invoiceTenantAggregateRootImpl) GetInvoiceTitle(id int) *invoice.InvoiceTitle {
 	return i.repo.Header().Get(id)
 }
 
-// SaveInvoiceHeader 保存发票抬头
-func (i *invoiceTenantAggregateRootImpl) SaveInvoiceHeader(header *invoice.InvoiceHeader) error {
+// CreateInvoiceTitle 新增发票抬头
+func (i *invoiceTenantAggregateRootImpl) CreateInvoiceTitle(header *invoice.InvoiceTitle) error {
+	if header.Id > 0 {
+		return errors.New("invoice header has been created")
+	}
 	if header.TenantId > 0 && header.TenantId != i.GetAggregateRootId() {
 		return errors.New("invoice tenant error")
 	}
-	if header.Id <= 0 {
-		header.CreateTime = int(time.Now().Unix())
-	}
+	header.CreateTime = int(time.Now().Unix())
 	header.TenantId = i.GetAggregateRootId()
 	_, err := i.repo.Header().Save(header)
 	return err
@@ -80,7 +81,7 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 	}
 	// 申请人信息
 	h := i.repo.Header().Get(v.HeaderId)
-	if h == nil {
+	if h == nil || h.Id <= 0 || h.TenantId != i.GetAggregateRootId() {
 		return nil, errors.New("invoice header is error")
 	}
 	r.PurchaserName = h.HeaderName
@@ -108,16 +109,24 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 		r.InvoiceAmount += amount
 		r.TaxAmount += amount * v.TaxRate
 	}
+	if r.InvoiceAmount <= 0 {
+		return nil, errors.New("invoice amount is zero")
+	}
 	r.CreateTime = int(time.Now().Unix())
 	r.IssueTenantId = v.IssueTenantId
-	return newInvoiceRecord(r,i.repo.Records(), i.repo.Items())
+	return i.createInvoice(r, v.Items), nil
+}
+
+func (i *invoiceTenantAggregateRootImpl) createInvoice(v *invoice.InvoiceRecord, items []*invoice.InvoiceItem) invoice.InvoiceDomain {
+	return newInvoiceRecord(v, items, i.repo.Records(), i.repo.Items())
 }
 
 // GetInvoice 获取发票
 func (i *invoiceTenantAggregateRootImpl) GetInvoice(id int) invoice.InvoiceDomain {
 	v := i.repo.Records().Get(id)
 	if v != nil {
-		return i.CreateInvoice(v)
+		items := i.repo.Items().FindList(nil, "invoice_id=?", id)
+		return i.createInvoice(v, items)
 	}
 	return nil
 }
@@ -131,11 +140,14 @@ type invoiceRecordDomainImpl struct {
 	_items   []*invoice.InvoiceItem
 }
 
-func newInvoiceRecord(v *invoice.InvoiceRecord, repo invoice.IInvoiceRecordRepo, itemRepo invoice.IInvoiceItemRepo) invoice.InvoiceDomain {
+func newInvoiceRecord(v *invoice.InvoiceRecord,
+	items []*invoice.InvoiceItem,
+	repo invoice.IInvoiceRecordRepo, itemRepo invoice.IInvoiceItemRepo) invoice.InvoiceDomain {
 	return &invoiceRecordDomainImpl{
 		value:    v,
 		repo:     repo,
 		itemRepo: itemRepo,
+		_items:   items,
 	}
 }
 

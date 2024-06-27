@@ -49,16 +49,29 @@ func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.Invoic
 			ErrMsg:  "无法申请发票",
 		}, nil
 	}
-	iv := tenant.CreateInvoice( &invoice.InvoiceRecord{
-		IssueTenantId:    int(req.IssueTenantId),
-		InvoiceType:      int(req.InvoiceType),
-		IssueType:        int(req.IssueType),
-		PurchaserName:    req.PurchaserName,
-		PurchaserTaxCode: req.PurchaserTaxCode,
-		Remark:           req.Remark,
-		ReceiveEmail:     req.ReceiveEmail,
-	})
-	err := iv.Save()
+	rd := &invoice.InvoiceRequestData{
+		OuterNo:       req.OuterNo,
+		IssueTenantId: int(req.IssueTenantId),
+		HeaderId:      int(req.HeaderId),
+		ReceiveEmail:  req.ReceiveEmail,
+		Remark:        req.Remark,
+		Items:         []*invoice.InvoiceItem{},
+	}
+	for _, v := range req.Items {
+		rd.Items = append(rd.Items, &invoice.InvoiceItem{
+			ItemName:  v.ItemName,
+			ItemSpec:  v.ItemSpec,
+			Price:     v.Price,
+			Quantity:  int(v.Quantity),
+			TaxRate:   v.TaxRate,
+			Unit:      v.Unit,
+			TaxAmount: v.TaxRate,
+		})
+	}
+	iv, err := tenant.RequestInvoice(rd)
+	if err == nil {
+		err = iv.Save()
+	}
 	if err != nil {
 		return &proto.SaveRecordResponse{
 			ErrCode: 1,
@@ -117,14 +130,12 @@ func (i *invoiceServiceImpl) GetInvoice(_ context.Context, req *proto.InvoiceId)
 	}
 	for _, v := range iv.GetItems() {
 		ret.Items = append(ret.Items, &proto.SInvoiceItem{
-			ItemName:  v.ItemName,
-			ItemSpec:  v.ItemSpec,
-			Price:     v.Price,
-			Quantity:  int32(v.Quantity),
-			TaxRate:   v.TaxRate,
-			Unit:      v.Unit,
-			Amount:    v.Amount,
-			TaxAmount: v.TaxAmount,
+			ItemName: v.ItemName,
+			ItemSpec: v.ItemSpec,
+			Price:    v.Price,
+			Quantity: int32(v.Quantity),
+			TaxRate:  v.TaxRate,
+			Unit:     v.Unit,
 		})
 	}
 	return ret, nil
@@ -169,14 +180,14 @@ func (i *invoiceServiceImpl) Revert(_ context.Context, req *proto.InvoiceRevertR
 	return i.error(err), nil
 }
 
-// CreateInvoiceHeader implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) CreateInvoiceHeader(_ context.Context, req *proto.CreateInvoiceHeaderRequest) (*proto.CreateInvoiceHeaderResponse, error) {
+// CreateInvoiceTitle implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) CreateInvoiceTitle(_ context.Context, req *proto.CreateInvoiceTitleRequest) (*proto.CreateInvoiceTitleResponse, error) {
 	t := i.repo.GetTenant(int(req.TenantId))
 	if t == nil {
 		logger.Error("no such invoice tenant, data=%d", req.TenantId)
 		return nil, nil
 	}
-	v := &invoice.InvoiceHeader{
+	v := &invoice.InvoiceTitle{
 		InvoiceType: int(req.InvoiceType),
 		IssueType:   int(req.IssueType),
 		HeaderName:  req.HeaderName,
@@ -187,14 +198,14 @@ func (i *invoiceServiceImpl) CreateInvoiceHeader(_ context.Context, req *proto.C
 		BankAccount: req.BankAccount,
 		IsDefault:   int(req.GetIsDefault()),
 	}
-	err := t.SaveInvoiceHeader(v)
+	err := t.CreateInvoiceTitle(v)
 	if err != nil {
-		return &proto.CreateInvoiceHeaderResponse{
+		return &proto.CreateInvoiceTitleResponse{
 			ErrCode: 1,
 			ErrMsg:  err.Error(),
 		}, nil
 	}
-	return &proto.CreateInvoiceHeaderResponse{
+	return &proto.CreateInvoiceTitleResponse{
 		Id: int64(v.Id),
 	}, nil
 }

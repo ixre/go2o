@@ -41,10 +41,10 @@ type (
 		TenantUserId() int
 		// Create 创建租户
 		Create() error
-		// GetInvoiceHeader 获取发票抬头
-		GetInvoiceHeader(id int) *InvoiceHeader
-		// SaveInvoiceHeader 保存发票抬头
-		SaveInvoiceHeader(header *InvoiceHeader) error
+		// GetInvoiceTitle 获取发票抬头
+		GetInvoiceTitle(id int) *InvoiceTitle
+		// CreateInvoiceTitle 保存发票抬头
+		CreateInvoiceTitle(header *InvoiceTitle) error
 		// CreateInvoice 创建发票
 		RequestInvoice(data *InvoiceRequestData) (InvoiceDomain, error)
 		// GetInvoice 获取发票
@@ -83,7 +83,7 @@ type InvoiceRequestData struct {
 	// 备注
 	Remark string `json:"remark"`
 	// 开票项目
-	Items []InvoiceItem `json:"items"`
+	Items []*InvoiceItem `json:"items"`
 }
 
 var _ domain.IValueObject = new(InvoiceItem)
@@ -92,7 +92,7 @@ var _ domain.IValueObject = new(InvoiceItem)
 type IInvoiceTenantRepo interface {
 	fw.Repository[InvoiceTenant]
 	// Headers 获取发票抬头仓储接口
-	Header() IInvoiceHeaderRepo
+	Header() IInvoiceTitleRepo
 	// Records 获取发票记录仓储接口
 	Records() IInvoiceRecordRepo
 	// Items 获取发票项目仓储接口
@@ -103,9 +103,9 @@ type IInvoiceTenantRepo interface {
 	CreateTenant(v *InvoiceTenant) InvoiceUserAggregateRoot
 }
 
-// IInvoiceHeadersRepo 发票抬头仓储接口
-type IInvoiceHeaderRepo interface {
-	fw.Repository[InvoiceHeader]
+// IInvoiceTitlesRepo 发票抬头仓储接口
+type IInvoiceTitleRepo interface {
+	fw.Repository[InvoiceTitle]
 }
 
 // IInvoiceRecordRepo 发票仓储接口
@@ -134,8 +134,8 @@ func (i InvoiceTenant) TableName() string {
 	return "invoice_tenant"
 }
 
-// InvoiceHeader 发票抬头
-type InvoiceHeader struct {
+// InvoiceTitle 发票抬头
+type InvoiceTitle struct {
 	// 编号
 	Id int `json:"id" db:"id" gorm:"column:id" bson:"id"`
 	// 租户编号
@@ -164,8 +164,8 @@ type InvoiceHeader struct {
 	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 }
 
-func (i InvoiceHeader) TableName() string {
-	return "invoice_header"
+func (i InvoiceTitle) TableName() string {
+	return "invoice_title"
 }
 
 // InvoiceRecord 发票

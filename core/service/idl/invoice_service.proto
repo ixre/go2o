@@ -28,7 +28,7 @@ service InvoiceService {
     // 获取发票租户
     rpc GetTenant(InvoiceTenantRequest)returns(SInvoiceTenant){}
     // 新增发票抬头
-    rpc CreateInvoiceHeader (CreateInvoiceHeaderRequest) returns (CreateInvoiceHeaderResponse) {
+    rpc CreateInvoiceTitle (CreateInvoiceTitleRequest) returns (CreateInvoiceTitleResponse) {
     }
     // 保存发票
     rpc RequestInvoice (InvoiceRequest) returns (SaveRecordResponse) {
@@ -110,7 +110,7 @@ message SInvoiceTenant{
 }
 
 // 新增发票抬头请求
-message CreateInvoiceHeaderRequest{
+message CreateInvoiceTitleRequest{
     // 租户编号
     int64 tenantId = 2;
     // 发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票
@@ -134,7 +134,7 @@ message CreateInvoiceHeaderRequest{
 }
 
 // 新增发票抬头响应
-message CreateInvoiceHeaderResponse{
+message CreateInvoiceTitleResponse{
     // 错误码
     int32 errCode = 1;
     // 错误信息
@@ -180,8 +180,6 @@ message InvoiceId{
     int64 invoiceId = 2;
  }
  
-
-
 // 发票
 message SInvoice{
     // 编号
@@ -239,14 +237,10 @@ message SInvoiceItem{
     string itemSpec = 2;
     // 价格
     double price = 3;
-    // 数量
-    int32 quantity = 4;
     // 税率
-    double taxRate = 5;
+    double taxRate = 4;
+    // 数量
+    int32 quantity = 5;
     // 计量单位
     string unit = 6;
-    // 总金额
-    double amount = 7;
-    // 税额
-    double taxAmount = 8;
 }

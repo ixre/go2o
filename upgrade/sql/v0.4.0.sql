@@ -544,8 +544,8 @@ COMMENT ON COLUMN invoice_tenant.create_time IS '创建时间';
 
 
 -- 发票抬头
-DROP TABLE IF EXISTS invoice_header CASCADE;
-CREATE TABLE invoice_header (
+DROP TABLE IF EXISTS invoice_title CASCADE;
+CREATE TABLE invoice_title (
   id           BIGSERIAL NOT NULL, 
   tenant_id      int8 NOT NULL, 
   invoice_type int4 NOT NULL, 
@@ -561,18 +561,18 @@ CREATE TABLE invoice_header (
   create_time  int8 NOT NULL,
   PRIMARY KEY (id)
 );
-COMMENT ON TABLE invoice_header IS '发票抬头';
-COMMENT ON COLUMN invoice_header.id IS '编号';
-COMMENT ON COLUMN invoice_header.tenant_id IS '租户会员/商户编号';
-COMMENT ON COLUMN invoice_header.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
-COMMENT ON COLUMN invoice_header.issue_type IS '开具类型, 1: 个人 2:企业';
-COMMENT ON COLUMN invoice_header.tax_code IS '纳税人识别号';
-COMMENT ON COLUMN invoice_header.sign_address IS '注册场所地址';
-COMMENT ON COLUMN invoice_header.sign_tel IS '注册固定电话';
-COMMENT ON COLUMN invoice_header.bank_name IS '基本户开户银行名';
-COMMENT ON COLUMN invoice_header.bank_account IS '基本户开户账号';
-COMMENT ON COLUMN invoice_header.remarks IS '备注';
-COMMENT ON COLUMN invoice_header.is_default IS '是否默认';
+COMMENT ON TABLE invoice_title IS '发票抬头';
+COMMENT ON COLUMN invoice_title.id IS '编号';
+COMMENT ON COLUMN invoice_title.tenant_id IS '租户会员/商户编号';
+COMMENT ON COLUMN invoice_title.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
+COMMENT ON COLUMN invoice_title.issue_type IS '开具类型, 1: 个人 2:企业';
+COMMENT ON COLUMN invoice_title.tax_code IS '纳税人识别号';
+COMMENT ON COLUMN invoice_title.sign_address IS '注册场所地址';
+COMMENT ON COLUMN invoice_title.sign_tel IS '注册固定电话';
+COMMENT ON COLUMN invoice_title.bank_name IS '基本户开户银行名';
+COMMENT ON COLUMN invoice_title.bank_account IS '基本户开户账号';
+COMMENT ON COLUMN invoice_title.remarks IS '备注';
+COMMENT ON COLUMN invoice_title.is_default IS '是否默认';
 
 -- 发票内容/ 发票备注 / 邮箱 / 留言
 DROP TABLE IF EXISTS invoice_record CASCADE;
