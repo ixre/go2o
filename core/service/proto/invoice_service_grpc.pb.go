@@ -34,14 +34,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	InvoiceService_GetTenant_FullMethodName           = "/InvoiceService/GetTenant"
+	InvoiceService_GetTenant_FullMethodName          = "/InvoiceService/GetTenant"
 	InvoiceService_CreateInvoiceTitle_FullMethodName = "/InvoiceService/CreateInvoiceTitle"
-	InvoiceService_RequestInvoice_FullMethodName      = "/InvoiceService/RequestInvoice"
-	InvoiceService_GetInvoice_FullMethodName          = "/InvoiceService/GetInvoice"
-	InvoiceService_Issue_FullMethodName               = "/InvoiceService/Issue"
-	InvoiceService_IssueFail_FullMethodName           = "/InvoiceService/IssueFail"
-	InvoiceService_SendMail_FullMethodName            = "/InvoiceService/SendMail"
-	InvoiceService_Revert_FullMethodName              = "/InvoiceService/Revert"
+	InvoiceService_RequestInvoice_FullMethodName     = "/InvoiceService/RequestInvoice"
+	InvoiceService_GetInvoice_FullMethodName         = "/InvoiceService/GetInvoice"
+	InvoiceService_Issue_FullMethodName              = "/InvoiceService/Issue"
+	InvoiceService_IssueFail_FullMethodName          = "/InvoiceService/IssueFail"
+	InvoiceService_SendMail_FullMethodName           = "/InvoiceService/SendMail"
+	InvoiceService_Revert_FullMethodName             = "/InvoiceService/Revert"
 )
 
 // InvoiceServiceClient is the client API for InvoiceService service.

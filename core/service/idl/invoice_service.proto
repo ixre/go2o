@@ -117,8 +117,8 @@ message CreateInvoiceTitleRequest{
     int32 invoiceType = 3;
     // 开具类型, 1: 个人 2:企业
     int32 issueType = 4;
-    // HeaderName
-    string headerName = 5;
+    // 抬头名称
+    string titleName = 5;
     // 纳税人识别号
     string taxCode = 6;
     // 注册场所地址
@@ -151,7 +151,7 @@ message InvoiceRequest{
     // 开具租户编号
     int64 issueTenantId = 2;
     // 发票抬头编号
-    int64 headerId = 3;
+    int64 titleId = 3;
     // 发票项目
     repeated SInvoiceItem items = 4;
     // 发票接收邮箱地址

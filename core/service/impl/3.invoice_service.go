@@ -52,7 +52,7 @@ func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.Invoic
 	rd := &invoice.InvoiceRequestData{
 		OuterNo:       req.OuterNo,
 		IssueTenantId: int(req.IssueTenantId),
-		HeaderId:      int(req.HeaderId),
+		TitleId:       int(req.TitleId),
 		ReceiveEmail:  req.ReceiveEmail,
 		Remark:        req.Remark,
 		Items:         []*invoice.InvoiceItem{},
@@ -190,7 +190,7 @@ func (i *invoiceServiceImpl) CreateInvoiceTitle(_ context.Context, req *proto.Cr
 	v := &invoice.InvoiceTitle{
 		InvoiceType: int(req.InvoiceType),
 		IssueType:   int(req.IssueType),
-		HeaderName:  req.HeaderName,
+		TitleName:   req.TitleName,
 		TaxCode:     req.TaxCode,
 		SignAddress: req.SignAddress,
 		SignTel:     req.SignTel,

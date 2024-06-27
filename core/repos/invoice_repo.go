@@ -23,8 +23,8 @@ func NewInvoiceTenantRepo(o fw.ORM) invoice.IInvoiceTenantRepo {
 	return r
 }
 
-// Header implements invoice.IInvoiceTenantRepo.
-func (i *invoiceTenantRepoImpl) Header() invoice.IInvoiceTitleRepo {
+// Title implements invoice.IInvoiceTenantRepo.
+func (i *invoiceTenantRepoImpl) Title() invoice.IInvoiceTitleRepo {
 	if i.headerRepo == nil {
 		i.headerRepo = NewInvoiceTitleRepo(i.ORM)
 	}
@@ -72,15 +72,15 @@ func (i *invoiceTenantRepoImpl) GetTenant(id int) invoice.InvoiceUserAggregateRo
 	return nil
 }
 
-var _ invoice.IInvoiceTitleRepo = new(invoiceHeaderRepoImpl)
+var _ invoice.IInvoiceTitleRepo = new(invoiceTitleRepoImpl)
 
-type invoiceHeaderRepoImpl struct {
+type invoiceTitleRepoImpl struct {
 	fw.BaseRepository[invoice.InvoiceTitle]
 }
 
 // NewInvoiceTitleRepo 创建发票抬头仓储
 func NewInvoiceTitleRepo(o fw.ORM) invoice.IInvoiceTitleRepo {
-	r := &invoiceHeaderRepoImpl{}
+	r := &invoiceTitleRepoImpl{}
 	r.ORM = o
 	return r
 }

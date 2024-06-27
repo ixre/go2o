@@ -550,7 +550,7 @@ CREATE TABLE invoice_title (
   tenant_id      int8 NOT NULL, 
   invoice_type int4 NOT NULL, 
   issue_type   int4 NOT NULL, 
-  header_name  varchar(20) NOT NULL, 
+  title_name  varchar(20) NOT NULL, 
   tax_code   varchar(40) NOT NULL, 
   sign_address varchar(60) NOT NULL, 
   sign_tel     varchar(20) NOT NULL, 
@@ -566,6 +566,7 @@ COMMENT ON COLUMN invoice_title.id IS '编号';
 COMMENT ON COLUMN invoice_title.tenant_id IS '租户会员/商户编号';
 COMMENT ON COLUMN invoice_title.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
 COMMENT ON COLUMN invoice_title.issue_type IS '开具类型, 1: 个人 2:企业';
+COMMENT ON COLUMN invoice_title.title_name IS '抬头名称';
 COMMENT ON COLUMN invoice_title.tax_code IS '纳税人识别号';
 COMMENT ON COLUMN invoice_title.sign_address IS '注册场所地址';
 COMMENT ON COLUMN invoice_title.sign_tel IS '注册固定电话';
@@ -626,7 +627,7 @@ COMMENT ON COLUMN invoice_record.update_time IS '更新时间';
 
 DROP TABLE IF EXISTS invoice_item CASCADE;
 CREATE TABLE invoice_item (
-  id int8 BIGSERIAL NOT NULL, 
+  id BIGSERIAL NOT NULL, 
   invoice_id  int8 NOT NULL, 
   item_name varchar(50) NOT NULL,
   item_spec varchar(50) NOT NULL,

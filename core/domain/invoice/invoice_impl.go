@@ -51,20 +51,20 @@ func (i *invoiceTenantAggregateRootImpl) Create() error {
 
 // GetInvoiceTitle 获取发票抬头
 func (i *invoiceTenantAggregateRootImpl) GetInvoiceTitle(id int) *invoice.InvoiceTitle {
-	return i.repo.Header().Get(id)
+	return i.repo.Title().Get(id)
 }
 
 // CreateInvoiceTitle 新增发票抬头
-func (i *invoiceTenantAggregateRootImpl) CreateInvoiceTitle(header *invoice.InvoiceTitle) error {
-	if header.Id > 0 {
-		return errors.New("invoice header has been created")
+func (i *invoiceTenantAggregateRootImpl) CreateInvoiceTitle(title *invoice.InvoiceTitle) error {
+	if title.Id > 0 {
+		return errors.New("invoice title has been created")
 	}
-	if header.TenantId > 0 && header.TenantId != i.GetAggregateRootId() {
+	if title.TenantId > 0 && title.TenantId != i.GetAggregateRootId() {
 		return errors.New("invoice tenant error")
 	}
-	header.CreateTime = int(time.Now().Unix())
-	header.TenantId = i.GetAggregateRootId()
-	_, err := i.repo.Header().Save(header)
+	title.CreateTime = int(time.Now().Unix())
+	title.TenantId = i.GetAggregateRootId()
+	_, err := i.repo.Title().Save(title)
 	return err
 }
 
@@ -80,11 +80,11 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 		InvoiceStatus: invoice.IssueAwaiting,
 	}
 	// 申请人信息
-	h := i.repo.Header().Get(v.HeaderId)
+	h := i.repo.Title().Get(v.TitleId)
 	if h == nil || h.Id <= 0 || h.TenantId != i.GetAggregateRootId() {
-		return nil, errors.New("invoice header is error")
+		return nil, errors.New("invoice title is error")
 	}
-	r.PurchaserName = h.HeaderName
+	r.PurchaserName = h.TitleName
 	r.PurchaserTaxCode = h.TaxCode
 	r.IssueType = h.IssueType
 	r.InvoiceType = h.InvoiceType

@@ -44,7 +44,7 @@ type (
 		// GetInvoiceTitle 获取发票抬头
 		GetInvoiceTitle(id int) *InvoiceTitle
 		// CreateInvoiceTitle 保存发票抬头
-		CreateInvoiceTitle(header *InvoiceTitle) error
+		CreateInvoiceTitle(title *InvoiceTitle) error
 		// CreateInvoice 创建发票
 		RequestInvoice(data *InvoiceRequestData) (InvoiceDomain, error)
 		// GetInvoice 获取发票
@@ -77,7 +77,7 @@ type InvoiceRequestData struct {
 	// 开票人ID
 	IssueTenantId int `json:"issueTenantId"`
 	// 发票抬头
-	HeaderId int `json:"headerId"`
+	TitleId int `json:"titleId"`
 	// 接收邮箱
 	ReceiveEmail string `json:"receiveEmail"`
 	// 备注
@@ -91,8 +91,8 @@ var _ domain.IValueObject = new(InvoiceItem)
 // IInvoiceTenantRepo 发票租户仓储接口
 type IInvoiceTenantRepo interface {
 	fw.Repository[InvoiceTenant]
-	// Headers 获取发票抬头仓储接口
-	Header() IInvoiceTitleRepo
+	// Title 获取发票抬头仓储接口
+	Title() IInvoiceTitleRepo
 	// Records 获取发票记录仓储接口
 	Records() IInvoiceRecordRepo
 	// Items 获取发票项目仓储接口
@@ -145,7 +145,7 @@ type InvoiceTitle struct {
 	// 开具类型, 1: 个人 2:企业
 	IssueType int `json:"issueType" db:"issue_type" gorm:"column:issue_type" bson:"issueType"`
 	// HeaderName
-	HeaderName string `json:"headerName" db:"header_name" gorm:"column:header_name" bson:"headerName"`
+	TitleName string `json:"titleName" db:"title_name" gorm:"column:title_name" bson:"titleName"`
 	// 纳税人识别号
 	TaxCode string `json:"taxCode" db:"tax_code" gorm:"column:tax_code" bson:"taxCode"`
 	// 注册场所地址
