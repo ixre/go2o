@@ -40,8 +40,8 @@ func (i *invoiceServiceImpl) GetTenant(_ context.Context, req *proto.InvoiceTena
 	}, nil
 }
 
-// CreateInvoice implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) CreateInvoice(_ context.Context, req *proto.SaveRecordRequest) (*proto.SaveRecordResponse, error) {
+// RequestInvoice implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.InvoiceRequest) (*proto.SaveRecordResponse, error) {
 	tenant := i.repo.GetTenant(int(req.TenantId))
 	if tenant == nil {
 		return &proto.SaveRecordResponse{
@@ -49,7 +49,7 @@ func (i *invoiceServiceImpl) CreateInvoice(_ context.Context, req *proto.SaveRec
 			ErrMsg:  "无法申请发票",
 		}, nil
 	}
-	iv := tenant.CreateInvoice(&invoice.InvoiceRecord{
+	iv := tenant.CreateInvoice( &invoice.InvoiceRecord{
 		IssueTenantId:    int(req.IssueTenantId),
 		InvoiceType:      int(req.InvoiceType),
 		IssueType:        int(req.IssueType),
@@ -169,15 +169,14 @@ func (i *invoiceServiceImpl) Revert(_ context.Context, req *proto.InvoiceRevertR
 	return i.error(err), nil
 }
 
-// SaveHeader implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) SaveHeader(_ context.Context, req *proto.SaveHeaderRequest) (*proto.SaveHeaderResponse, error) {
+// CreateInvoiceHeader implements proto.InvoiceServiceServer.
+func (i *invoiceServiceImpl) CreateInvoiceHeader(_ context.Context, req *proto.CreateInvoiceHeaderRequest) (*proto.CreateInvoiceHeaderResponse, error) {
 	t := i.repo.GetTenant(int(req.TenantId))
 	if t == nil {
 		logger.Error("no such invoice tenant, data=%d", req.TenantId)
 		return nil, nil
 	}
 	v := &invoice.InvoiceHeader{
-		Id:          int(req.Id),
 		InvoiceType: int(req.InvoiceType),
 		IssueType:   int(req.IssueType),
 		HeaderName:  req.HeaderName,
@@ -186,17 +185,16 @@ func (i *invoiceServiceImpl) SaveHeader(_ context.Context, req *proto.SaveHeader
 		SignTel:     req.SignTel,
 		BankName:    req.BankName,
 		BankAccount: req.BankAccount,
-		Remarks:     req.Remarks,
 		IsDefault:   int(req.GetIsDefault()),
 	}
 	err := t.SaveInvoiceHeader(v)
 	if err != nil {
-		return &proto.SaveHeaderResponse{
+		return &proto.CreateInvoiceHeaderResponse{
 			ErrCode: 1,
 			ErrMsg:  err.Error(),
 		}, nil
 	}
-	return &proto.SaveHeaderResponse{
+	return &proto.CreateInvoiceHeaderResponse{
 		Id: int64(v.Id),
 	}, nil
 }

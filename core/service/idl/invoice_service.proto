@@ -27,11 +27,11 @@ import "global.proto";
 service InvoiceService {
     // 获取发票租户
     rpc GetTenant(InvoiceTenantRequest)returns(SInvoiceTenant){}
-    // 保存发票抬头
-    rpc SaveHeader (SaveHeaderRequest) returns (SaveHeaderResponse) {
+    // 新增发票抬头
+    rpc CreateInvoiceHeader (CreateInvoiceHeaderRequest) returns (CreateInvoiceHeaderResponse) {
     }
     // 保存发票
-    rpc CreateInvoice (SaveRecordRequest) returns (SaveRecordResponse) {
+    rpc RequestInvoice (InvoiceRequest) returns (SaveRecordResponse) {
     }
     // 获取发票
     rpc GetInvoice (InvoiceId) returns (SInvoice) {
@@ -109,10 +109,8 @@ message SInvoiceTenant{
     int64 tenantId = 3; 
 }
 
-// 保存发票抬头请求
-message SaveHeaderRequest{
-    // 编号
-    int64 id = 1;
+// 新增发票抬头请求
+message CreateInvoiceHeaderRequest{
     // 租户编号
     int64 tenantId = 2;
     // 发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票
@@ -131,14 +129,12 @@ message SaveHeaderRequest{
     string bankName = 9;
     // 基本户开户账号
     string bankAccount = 10;
-    // 备注
-    string remarks = 11;
     // 是否默认
     int32 isDefault = 12;
 }
 
-// 保存发票抬头响应
-message SaveHeaderResponse{
+// 新增发票抬头响应
+message CreateInvoiceHeaderResponse{
     // 错误码
     int32 errCode = 1;
     // 错误信息
@@ -149,25 +145,21 @@ message SaveHeaderResponse{
 
 
 // 保存发票请求
-message SaveRecordRequest{
+message InvoiceRequest{
     // 申请发票租户编号
     int64 tenantId = 1;
     // 开具租户编号
     int64 issueTenantId = 2;
-    // 发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票
-    int32 invoiceType = 3;
-    // 开具抬头类型, 1: 个人 2:企业
-    int32 issueType = 4;
-    // 买方名称
-    string purchaserName = 5;
-    // 买方纳税人识别号
-    string purchaserTaxCode = 6;
+    // 发票抬头编号
+    int64 headerId = 3;
     // 发票项目
-    repeated SInvoiceItem items = 7;
+    repeated SInvoiceItem items = 4;
     // 发票接收邮箱地址
-    string receiveEmail = 8; 
+    string receiveEmail = 5; 
+    // 关联单据编号
+    string outerNo = 6;
     // 备注
-    string remark = 9;
+    string remark = 7;
 }
 
 // 保存发票响应

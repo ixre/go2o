@@ -123,16 +123,16 @@ func (c *converstationImpl) Destroy() error {
 func (c *converstationImpl) FetchHistoryMsgList(lastTime int, size int) []*chat.ChatMsg {
 	return c.repo.Msg().FindList(&fw.QueryOption{
 		Limit: size,
-		Order: "last_chat_time DESC",
-	}, "last_chat_time < ?", lastTime)
+		Order: "create_time DESC",
+	}, "create_time < ?", lastTime)
 }
 
 // FetchMsgList implements chat.IConversation.
 func (c *converstationImpl) FetchMsgList(lastTime int, size int) []*chat.ChatMsg {
 	return c.repo.Msg().FindList(&fw.QueryOption{
 		Limit: size,
-		Order: "last_chat_time ASC",
-	}, "last_chat_time > ?", lastTime)
+		Order: "create_time ASC",
+	}, "create_time > ?", lastTime)
 }
 
 // Greet implements chat.IConversation.

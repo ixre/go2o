@@ -7,6 +7,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/event/events"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/gof/domain/eventbus"
 )
@@ -67,8 +68,49 @@ func (i *invoiceTenantAggregateRootImpl) SaveInvoiceHeader(header *invoice.Invoi
 }
 
 // CreateInvoice 创建发票
-func (i *invoiceTenantAggregateRootImpl) CreateInvoice(record *invoice.InvoiceRecord) invoice.InvoiceDomain {
-	return newInvoiceRecord(record, i.repo.Records(), i.repo.Items())
+func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceRequestData) (invoice.InvoiceDomain, error) {
+	r := &invoice.InvoiceRecord{
+		InvoiceNo:     "T" + domain.NewTradeNo(11, i.GetAggregateRootId()),
+		TenantId:      i.GetAggregateRootId(),
+		Remark:        v.Remark,
+		IssueRemark:   "",
+		InvoicePic:    "",
+		ReceiveEmail:  v.ReceiveEmail,
+		InvoiceStatus: invoice.IssueAwaiting,
+	}
+	// 申请人信息
+	h := i.repo.Header().Get(v.HeaderId)
+	if h == nil {
+		return nil, errors.New("invoice header is error")
+	}
+	r.PurchaserName = h.HeaderName
+	r.PurchaserTaxCode = h.TaxCode
+	r.IssueType = h.IssueType
+	r.InvoiceType = h.InvoiceType
+	// 开具人信息
+	if v.IssueTenantId == 0 {
+		r.SellerName = "系统"
+		r.SellerTaxCode = ""
+	} else {
+		tn := i.repo.GetTenant(v.IssueTenantId)
+		if tn == nil {
+			return nil, errors.New("issue tenant not exists")
+		}
+		r.SellerName = "商户"
+		r.SellerTaxCode = ""
+	}
+	// 开票项目
+	if len(v.Items) == 0 {
+		return nil, errors.New("no such invoice items")
+	}
+	for _, v := range v.Items {
+		amount := v.Price * float64(v.Quantity)
+		r.InvoiceAmount += amount
+		r.TaxAmount += amount * v.TaxRate
+	}
+	r.CreateTime = int(time.Now().Unix())
+	r.IssueTenantId = v.IssueTenantId
+	return newInvoiceRecord(r,i.repo.Records(), i.repo.Items())
 }
 
 // GetInvoice 获取发票

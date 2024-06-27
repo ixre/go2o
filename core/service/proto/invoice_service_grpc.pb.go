@@ -24,10 +24,10 @@ const _ = grpc.SupportPackageIsVersion7
 type InvoiceServiceClient interface {
 	// 获取发票租户
 	GetTenant(ctx context.Context, in *InvoiceTenantRequest, opts ...grpc.CallOption) (*SInvoiceTenant, error)
-	// 保存发票抬头
-	SaveHeader(ctx context.Context, in *SaveHeaderRequest, opts ...grpc.CallOption) (*SaveHeaderResponse, error)
+	// 新增发票抬头
+	CreateInvoiceHeader(ctx context.Context, in *CreateInvoiceHeaderRequest, opts ...grpc.CallOption) (*CreateInvoiceHeaderResponse, error)
 	// 保存发票
-	CreateInvoice(ctx context.Context, in *SaveRecordRequest, opts ...grpc.CallOption) (*SaveRecordResponse, error)
+	RequestInvoice(ctx context.Context, in *InvoiceRequest, opts ...grpc.CallOption) (*SaveRecordResponse, error)
 	// 获取发票
 	GetInvoice(ctx context.Context, in *InvoiceId, opts ...grpc.CallOption) (*SInvoice, error)
 	// Issue 开具发票,更新发票图片
@@ -57,18 +57,18 @@ func (c *invoiceServiceClient) GetTenant(ctx context.Context, in *InvoiceTenantR
 	return out, nil
 }
 
-func (c *invoiceServiceClient) SaveHeader(ctx context.Context, in *SaveHeaderRequest, opts ...grpc.CallOption) (*SaveHeaderResponse, error) {
-	out := new(SaveHeaderResponse)
-	err := c.cc.Invoke(ctx, "/InvoiceService/SaveHeader", in, out, opts...)
+func (c *invoiceServiceClient) CreateInvoiceHeader(ctx context.Context, in *CreateInvoiceHeaderRequest, opts ...grpc.CallOption) (*CreateInvoiceHeaderResponse, error) {
+	out := new(CreateInvoiceHeaderResponse)
+	err := c.cc.Invoke(ctx, "/InvoiceService/CreateInvoiceHeader", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *invoiceServiceClient) CreateInvoice(ctx context.Context, in *SaveRecordRequest, opts ...grpc.CallOption) (*SaveRecordResponse, error) {
+func (c *invoiceServiceClient) RequestInvoice(ctx context.Context, in *InvoiceRequest, opts ...grpc.CallOption) (*SaveRecordResponse, error) {
 	out := new(SaveRecordResponse)
-	err := c.cc.Invoke(ctx, "/InvoiceService/CreateInvoice", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/InvoiceService/RequestInvoice", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -126,10 +126,10 @@ func (c *invoiceServiceClient) Revert(ctx context.Context, in *InvoiceRevertRequ
 type InvoiceServiceServer interface {
 	// 获取发票租户
 	GetTenant(context.Context, *InvoiceTenantRequest) (*SInvoiceTenant, error)
-	// 保存发票抬头
-	SaveHeader(context.Context, *SaveHeaderRequest) (*SaveHeaderResponse, error)
+	// 新增发票抬头
+	CreateInvoiceHeader(context.Context, *CreateInvoiceHeaderRequest) (*CreateInvoiceHeaderResponse, error)
 	// 保存发票
-	CreateInvoice(context.Context, *SaveRecordRequest) (*SaveRecordResponse, error)
+	RequestInvoice(context.Context, *InvoiceRequest) (*SaveRecordResponse, error)
 	// 获取发票
 	GetInvoice(context.Context, *InvoiceId) (*SInvoice, error)
 	// Issue 开具发票,更新发票图片
@@ -150,11 +150,11 @@ type UnimplementedInvoiceServiceServer struct {
 func (UnimplementedInvoiceServiceServer) GetTenant(context.Context, *InvoiceTenantRequest) (*SInvoiceTenant, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTenant not implemented")
 }
-func (UnimplementedInvoiceServiceServer) SaveHeader(context.Context, *SaveHeaderRequest) (*SaveHeaderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveHeader not implemented")
+func (UnimplementedInvoiceServiceServer) CreateInvoiceHeader(context.Context, *CreateInvoiceHeaderRequest) (*CreateInvoiceHeaderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateInvoiceHeader not implemented")
 }
-func (UnimplementedInvoiceServiceServer) CreateInvoice(context.Context, *SaveRecordRequest) (*SaveRecordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateInvoice not implemented")
+func (UnimplementedInvoiceServiceServer) RequestInvoice(context.Context, *InvoiceRequest) (*SaveRecordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestInvoice not implemented")
 }
 func (UnimplementedInvoiceServiceServer) GetInvoice(context.Context, *InvoiceId) (*SInvoice, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInvoice not implemented")
@@ -202,38 +202,38 @@ func _InvoiceService_GetTenant_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _InvoiceService_SaveHeader_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveHeaderRequest)
+func _InvoiceService_CreateInvoiceHeader_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateInvoiceHeaderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(InvoiceServiceServer).SaveHeader(ctx, in)
+		return srv.(InvoiceServiceServer).CreateInvoiceHeader(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/InvoiceService/SaveHeader",
+		FullMethod: "/InvoiceService/CreateInvoiceHeader",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InvoiceServiceServer).SaveHeader(ctx, req.(*SaveHeaderRequest))
+		return srv.(InvoiceServiceServer).CreateInvoiceHeader(ctx, req.(*CreateInvoiceHeaderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _InvoiceService_CreateInvoice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveRecordRequest)
+func _InvoiceService_RequestInvoice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InvoiceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(InvoiceServiceServer).CreateInvoice(ctx, in)
+		return srv.(InvoiceServiceServer).RequestInvoice(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/InvoiceService/CreateInvoice",
+		FullMethod: "/InvoiceService/RequestInvoice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InvoiceServiceServer).CreateInvoice(ctx, req.(*SaveRecordRequest))
+		return srv.(InvoiceServiceServer).RequestInvoice(ctx, req.(*InvoiceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -340,12 +340,12 @@ var InvoiceService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _InvoiceService_GetTenant_Handler,
 		},
 		{
-			MethodName: "SaveHeader",
-			Handler:    _InvoiceService_SaveHeader_Handler,
+			MethodName: "CreateInvoiceHeader",
+			Handler:    _InvoiceService_CreateInvoiceHeader_Handler,
 		},
 		{
-			MethodName: "CreateInvoice",
-			Handler:    _InvoiceService_CreateInvoice_Handler,
+			MethodName: "RequestInvoice",
+			Handler:    _InvoiceService_RequestInvoice_Handler,
 		},
 		{
 			MethodName: "GetInvoice",

@@ -7,12 +7,16 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
+// 发票用户类型
 type TenantType int
 type IssueStatus int
 
 const (
-	// 发票用户类型: 普通
-	TenantUser     TenantType = 1
+	// 系统
+	TenantSystem TenantType = 0
+	// 用户
+	TenantUser TenantType = 1
+	// 商户
 	TenantMerchant TenantType = 2
 )
 
@@ -42,7 +46,7 @@ type (
 		// SaveInvoiceHeader 保存发票抬头
 		SaveInvoiceHeader(header *InvoiceHeader) error
 		// CreateInvoice 创建发票
-		CreateInvoice(record *InvoiceRecord) InvoiceDomain
+		RequestInvoice(data *InvoiceRequestData) (InvoiceDomain, error)
 		// GetInvoice 获取发票
 		GetInvoice(id int) InvoiceDomain
 	}
@@ -65,6 +69,22 @@ type (
 		Save() error
 	}
 )
+
+// 发票申请数据
+type InvoiceRequestData struct {
+	// 关联单号
+	OuterNo string `json:"outerNo"`
+	// 开票人ID
+	IssueTenantId int `json:"issueTenantId"`
+	// 发票抬头
+	HeaderId int `json:"headerId"`
+	// 接收邮箱
+	ReceiveEmail string `json:"receiveEmail"`
+	// 备注
+	Remark string `json:"remark"`
+	// 开票项目
+	Items []InvoiceItem `json:"items"`
+}
 
 var _ domain.IValueObject = new(InvoiceItem)
 
