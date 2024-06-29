@@ -48,8 +48,8 @@ func (c *chatServiceImpl) GetConversation(_ context.Context, req *proto.ChatConv
 		LastChatTime: int64(v.LastChatTime),
 	}
 	if v.ChatType == chat.ChatTypeNormal {
-		// 绑定会员用户代码
-		im := c.memberRepo.GetMember(int64(v.Rid))
+		// 绑定会员用户代码(聊天对方用户)
+		im := c.memberRepo.GetMember(req.Rid)
 		if im != nil {
 			ret.Rcode = im.GetValue().UserCode
 		}
