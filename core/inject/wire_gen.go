@@ -974,7 +974,15 @@ func GetInvoiceService() proto.InvoiceServiceServer {
 func GetChatService() proto.ChatServiceServer {
 	db := provide.GetGOrm()
 	iChatRepository := repos.NewChatRepo(db)
-	chatServiceServer := impl2.NewChatService(iChatRepository)
+	storageInterface := provide.GetStorageInstance()
+	orm := provide.GetOrmInstance()
+	iWalletRepo := repos.NewWalletRepo(orm)
+	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
+	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
+	iValueRepo := repos.NewValueRepo(orm, storageInterface)
+	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
+	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
+	chatServiceServer := impl2.NewChatService(iChatRepository, iMemberRepo)
 	return chatServiceServer
 }
 

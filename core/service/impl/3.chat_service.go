@@ -6,19 +6,24 @@ import (
 	"errors"
 
 	"github.com/ixre/go2o/core/domain/interface/chat"
+	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/service/proto"
 )
 
 var _ proto.ChatServiceServer = new(chatServiceImpl)
 
 type chatServiceImpl struct {
-	repo chat.IChatRepository
+	repo       chat.IChatRepository
+	memberRepo member.IMemberRepo
 	proto.UnimplementedChatServiceServer
 	serviceUtil
 }
 
-func NewChatService(repo chat.IChatRepository) proto.ChatServiceServer {
-	return &chatServiceImpl{repo: repo}
+func NewChatService(repo chat.IChatRepository, memberRepo member.IMemberRepo) proto.ChatServiceServer {
+	return &chatServiceImpl{
+		repo:       repo,
+		memberRepo: memberRepo,
+	}
 }
 
 // GetConversation implements proto.ChatServiceServer.
@@ -32,7 +37,8 @@ func (c *chatServiceImpl) GetConversation(_ context.Context, req *proto.ChatConv
 		}, nil
 	}
 	v := ic.Get()
-	return &proto.ChatConversationResponse{
+
+	ret := &proto.ChatConversationResponse{
 		ConvId:       int64(ic.GetDomainId()),
 		Key:          v.Key,
 		Sid:          int64(v.Sid),
@@ -40,7 +46,20 @@ func (c *chatServiceImpl) GetConversation(_ context.Context, req *proto.ChatConv
 		ChatType:     int32(v.ChatType),
 		LastMsg:      v.LastMsg,
 		LastChatTime: int64(v.LastChatTime),
-	}, nil
+	}
+	if v.ChatType == chat.ChatTypeNormal {
+		// 绑定会员用户代码
+		im := c.memberRepo.GetMember(int64(v.Rid))
+		if im != nil {
+			ret.Rcode = im.GetValue().UserCode
+		}
+	}
+	// 绑定会员用户代码
+	im := c.memberRepo.GetMember(int64(v.Rid))
+	if im != nil {
+		ret.Rcode = im.GetValue().UserCode
+	}
+	return ret, nil
 }
 
 // DeleteMsg implements proto.ChatServiceServer.

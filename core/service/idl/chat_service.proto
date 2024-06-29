@@ -102,12 +102,14 @@
     int64 sid = 4;
     // 会话回复人
     int64 rid = 5;
+    // 回复人用户代码
+    string rcode = 6;
     // 聊天类型
-    int32 chatType = 6; 
+    int32 chatType = 7; 
     // 最后消息
-    string lastMsg = 7;
+    string lastMsg = 8;
     // 最后聊天时间
-    int64 lastChatTime = 8;
+    int64 lastChatTime = 9;
  }
  
  // 聊天会话
