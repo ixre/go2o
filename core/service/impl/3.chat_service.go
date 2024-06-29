@@ -54,11 +54,6 @@ func (c *chatServiceImpl) GetConversation(_ context.Context, req *proto.ChatConv
 			ret.Rcode = im.GetValue().UserCode
 		}
 	}
-	// 绑定会员用户代码
-	im := c.memberRepo.GetMember(int64(v.Rid))
-	if im != nil {
-		ret.Rcode = im.GetValue().UserCode
-	}
 	return ret, nil
 }
 
