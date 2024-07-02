@@ -3,7 +3,10 @@ package fw
 import (
 	"bytes"
 	"fmt"
+	"log"
 
+	"github.com/ixre/go2o/core/infrastructure/fw/types"
+	"github.com/ixre/gof/db"
 	"gorm.io/gorm"
 )
 
@@ -288,4 +291,37 @@ func ReduceFinds[T any](fn func(opt *QueryOption) []*T, size int) (arr []*T) {
 		}
 	}
 	return arr
+}
+
+// UnifinedPagingQuery 通用查询
+//
+//	tables Like: mm_member m ON m.id = o.member_id INNER JOIN mch_merchant mch ON mch.id = o.mch_id
+//	fields like: s.gender,m.nickname,certified_name
+func UnifinedPagingQuery(o ORM, p *PagingParams, tables string, fields string) (_ *PagingResult, err error) {
+	var ret PagingResult
+	from := `FROM ` + tables
+	// 查询条件
+	where, args := "", []interface{}{}
+	if len(p.Arguments) > 0 {
+		where = " WHERE " + p.Arguments[0].(string)
+		args = p.Arguments[1:]
+	}
+	// 查询条数
+	sql := fmt.Sprintf("SELECT COUNT(*) %s %s", from, where)
+	o.Raw(sql, args...).Scan(&ret.Total)
+	// 查询行数
+	order := types.Ternary(p.Order != "", " ORDER BY "+p.Order, "")
+	if ret.Total > 0 {
+		sql = fmt.Sprintf(`SELECT %s %s %s %s`, fields, from, where, order)
+		rows, err := o.Raw(sql, args...).Offset(p.Begin).Limit(p.Size).Rows()
+		if err != nil {
+			log.Println("paging query rows error: %s", err.Error())
+		} else {
+			for _, v := range db.RowsToMarshalMap(rows) {
+				ret.Rows = append(ret.Rows, v)
+			}
+			rows.Close()
+		}
+	}
+	return &ret, nil
 }
