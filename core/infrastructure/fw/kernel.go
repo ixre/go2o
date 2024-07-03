@@ -356,7 +356,10 @@ func ParsePagingRow(v interface{}) *pagingRow {
 // 转换为float类型
 func (p *pagingRow) AsFloat(keys ...string) {
 	for _, key := range keys {
-		f := typeconv.MustFloat(string(p.v[key].([]uint8)))
-		p.v[key] = f
+		v, ok := p.v[key].([]uint8)
+		if ok {
+			f := typeconv.MustFloat(string(v))
+			p.v[key] = f
+		}
 	}
 }
