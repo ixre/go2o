@@ -264,6 +264,23 @@ func (p *PagingParams) Like(field string, value interface{}) *PagingParams {
 	return p.where(field, "LIKE ?", value)
 }
 
+func (p *PagingParams) And(where string, values ...interface{}) *PagingParams {
+	buf := bytes.NewBuffer(nil)
+	isBlank := len(p.Arguments) == 0
+	if !isBlank {
+		buf.WriteString(p.Arguments[0].(string))
+		buf.WriteString(" AND ")
+	}
+	buf.WriteString(where)
+	if isBlank {
+		p.Arguments = []interface{}{buf.String()}
+	} else {
+		p.Arguments[0] = buf.String()
+	}
+	p.Arguments = append(p.Arguments, values...)
+	return p
+}
+
 // 分页结果
 type PagingResult struct {
 	// 总数量
