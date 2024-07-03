@@ -7,6 +7,7 @@ import (
 
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/typeconv"
 	"gorm.io/gorm"
 )
 
@@ -324,4 +325,21 @@ func UnifinedPagingQuery(o ORM, p *PagingParams, tables string, fields string) (
 		}
 	}
 	return &ret, nil
+}
+
+// 分页行
+type pagingRow struct {
+	v map[string]interface{}
+}
+
+func ParsePagingRow(v interface{}) *pagingRow {
+	return &pagingRow{v: v.(map[string]interface{})}
+}
+
+// 转换为float类型
+func (p *pagingRow) AsFloat(keys ...string) {
+	for _, key := range keys {
+		f := typeconv.MustFloat(string(p.v[key].([]uint8)))
+		p.v[key] = f
+	}
 }
