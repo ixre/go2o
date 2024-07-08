@@ -177,7 +177,14 @@ func (c *converstationImpl) saveMsg(msg *chat.ChatMsg) (int, error) {
 	if msg.CreateTime <= 0 {
 		msg.CreateTime = unix
 	}
+	isNewMsg := msg.Id == 0
 	_, err := c.repo.Msg().Save(msg)
+	if err == nil && isNewMsg {
+		// 更新会话最后聊天时间和聊天内容
+		c.value.LastChatTime = unix
+		c.value.LastMsg = msg.Content
+		_, err = c.repo.Conversation().Save(c.value)
+	}
 	return msg.Id, err
 }
 
