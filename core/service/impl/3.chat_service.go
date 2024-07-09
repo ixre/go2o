@@ -51,7 +51,13 @@ func (c *chatServiceImpl) GetConversation(_ context.Context, req *proto.ChatConv
 		// 绑定会员用户代码(聊天对方用户)
 		im := c.memberRepo.GetMember(req.Rid)
 		if im != nil {
-			ret.Rcode = im.GetValue().UserCode
+			iv := im.GetValue()
+			ret.ChatProfile = &proto.SChatUserProfile{
+				ProfilePhoto: iv.Portrait,
+				UserCode:     iv.UserCode,
+				Nickname:     iv.Nickname,
+				UserRole: int32(iv.RoleFlag),
+			}
 		}
 	}
 	return ret, nil

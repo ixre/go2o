@@ -90,6 +90,18 @@
     string greetWord = 4;
  }
 
+ // 聊天用户信息
+ message SChatUserProfile{
+    // 头像
+    string profilePhoto = 1;
+    // 用户代码
+    string userCode = 2;
+    // 昵称
+    string nickname = 3;
+    // 用户角色
+    int32 userRole = 4;
+ }
+
  // 聊天会话响应
  message ChatConversationResponse{
     // 错误码
@@ -102,14 +114,14 @@
     int64 sid = 4;
     // 会话回复人
     int64 rid = 5;
-    // 回复人用户代码
-    string rcode = 6;
+    // 回复人信息
+    SChatUserProfile chatProfile = 6;
     // 聊天类型
-    int32 chatType = 7; 
+    int32 chatType = 8; 
     // 最后消息
-    string lastMsg = 8;
+    string lastMsg = 9;
     // 最后聊天时间
-    int64 lastChatTime = 9;
+    int64 lastChatTime = 10;
  }
  
  // 聊天会话
