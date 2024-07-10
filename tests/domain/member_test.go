@@ -8,6 +8,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/inject"
+	_ "github.com/ixre/go2o/tests"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/typeconv"
 )
@@ -290,4 +291,40 @@ func TestReviewCertification(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+}
+
+// 测试钱包
+func TestMemberWalletRefreeze(t *testing.T) {
+	var memberId int64 = 848
+	m := inject.GetMemberRepo().GetMember(memberId)
+	ic := m.GetAccount()
+	err := ic.Charge(member.AccountWallet, "测试充值", 10000, "", "测试充值")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	tradeLogId, err := ic.Freeze(member.AccountWallet, member.AccountOperateData{
+		Title:      "测试冻结",
+		Amount:     10,
+		OuterNo:    "xxx",
+		Remark:     "",
+		TradeLogId: 0,
+	}, 0)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	wr := inject.GetWalletRepo()
+	l := wr.GetWalletLog_(tradeLogId)
+	t.Logf("冻结金额:%d, 钱包余额:%d", l.ChangeValue, l.Balance)
+
+	tradeLogId, _ = ic.Freeze(member.AccountWallet, member.AccountOperateData{
+		Title:      "测试冻结",
+		Amount:     20,
+		OuterNo:    "xxx",
+		Remark:     "",
+		TradeLogId: tradeLogId,
+	}, 0)
+	l = wr.GetWalletLog_(tradeLogId)
+	t.Logf("冻结金额:%d, 钱包余额:%d", l.ChangeValue, l.Balance)
 }

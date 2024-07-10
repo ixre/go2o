@@ -722,10 +722,11 @@ func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int6
 // FreezeWallet 冻结钱包
 func (a *accountImpl) freezeWallet(p member.AccountOperateData, relateUser int64) (int, error) {
 	id, err := a.wallet.Freeze(wallet.OperateData{
-		Title:   p.Title,
-		Amount:  p.Amount,
-		OuterNo: p.OuterNo,
-		Remark:  p.Remark,
+		Title:      p.Title,
+		Amount:     p.Amount,
+		OuterNo:    p.OuterNo,
+		Remark:     p.Remark,
+		TradeLogId: p.TradeLogId,
 	}, wallet.Operator{
 		OperatorUid:  int(relateUser),
 		OperatorName: "",

@@ -292,21 +292,51 @@ func (w *WalletImpl) Freeze(data wallet.OperateData, operator wallet.Operator) (
 		if data.Amount > 0 {
 			data.Amount = -data.Amount
 		}
-		if w._value.Balance < -int64(data.Amount) {
-			return 0, wallet.ErrOutOfAmount
+		if data.TradeLogId > 0 {
+			return w.refreeze(data)
 		}
-		w._value.Balance += int64(data.Amount)
-		w._value.FreezeAmount += -data.Amount
-		l := w.createWalletLog(wallet.KFreeze, data.Amount, data.Title, operator.OperatorUid, operator.OperatorName)
-		l.OuterNo = data.OuterNo
-		l.Balance = w._value.Balance
-		err := w.saveWalletLog(l)
-		if err == nil {
-			_, err = w.Save()
-		}
-		return int(l.Id), err
+		return w.freeze(data, operator)
 	}
 	return 0, err
+}
+
+// 创建新的冻结记录
+func (w *WalletImpl) freeze(data wallet.OperateData, operator wallet.Operator) (int, error) {
+	if w._value.Balance < -int64(data.Amount) {
+		return 0, wallet.ErrOutOfAmount
+	}
+	w._value.Balance += int64(data.Amount)
+	w._value.FreezeAmount += -data.Amount
+	l := w.createWalletLog(wallet.KFreeze, data.Amount, data.Title, operator.OperatorUid, operator.OperatorName)
+	l.OuterNo = data.OuterNo
+	l.Balance = w._value.Balance
+	err := w.saveWalletLog(l)
+	if err == nil {
+		_, err = w.Save()
+	}
+	return int(l.Id), err
+}
+
+// 对现有的冻结流水进行更新
+func (w *WalletImpl) refreeze(data wallet.OperateData) (int, error) {
+	l := w._repo.GetWalletLog_(data.TradeLogId)
+	if l == nil || l.WalletId != w.GetAggregateRootId() {
+		return 0, errors.New("冻结失败,交易日志不存在")
+	}
+	diffValue := int(math.Abs(float64(data.Amount - int(l.ChangeValue))))
+	if w._value.Balance < int64(diffValue) {
+		return 0, wallet.ErrOutOfAmount
+	}
+	w._value.Balance -= int64(diffValue)
+	w._value.FreezeAmount += diffValue
+	l.OuterNo = data.OuterNo
+	l.ChangeValue = int64(data.Amount)
+	l.Balance = w._value.Balance
+	err := w.saveWalletLog(l)
+	if err == nil {
+		_, err = w.Save()
+	}
+	return int(l.Id), err
 }
 
 func (w *WalletImpl) Unfreeze(value int, title, outerNo string, operatorUid int, operatorName string) error {

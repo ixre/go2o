@@ -126,10 +126,16 @@ var (
 type (
 	// OperateData 操作钱包的数据
 	OperateData struct {
-		Title   string
-		Amount  int
+		// 描述
+		Title string
+		// 金额
+		Amount int
+		// 外部订单号
 		OuterNo string
-		Remark  string
+		// 备注
+		Remark string
+		// 交易流水编号,对冻结流水进行更新时,传递该参数
+		TradeLogId int
 	}
 	Operator struct {
 		OperatorUid  int

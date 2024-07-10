@@ -1248,11 +1248,12 @@ func (s *memberService) Freeze(_ context.Context, r *proto.AccountFreezeRequest)
 			Amount:  int(r.Amount),
 			OuterNo: r.OuterNo,
 			Remark:  r.Remark,
+			TradeLogId: int(r.TradeLogId),
 		}, 0)
 	if err != nil {
 		return &proto.AccountFreezeResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
-	return &proto.AccountFreezeResponse{LogId: int64(id)}, nil
+	return &proto.AccountFreezeResponse{TradeLogId: int64(id)}, nil
 }
 
 func (s *memberService) Unfreeze(_ context.Context, r *proto.AccountUnfreezeRequest) (*proto.Result, error) {
