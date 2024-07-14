@@ -57,13 +57,13 @@ type InvoiceServiceClient interface {
 	// 获取发票
 	GetInvoice(ctx context.Context, in *InvoiceId, opts ...grpc.CallOption) (*SInvoice, error)
 	// Issue 开具发票,更新发票图片
-	Issue(ctx context.Context, in *InvoiceIssueRequest, opts ...grpc.CallOption) (*Result, error)
+	Issue(ctx context.Context, in *InvoiceIssueRequest, opts ...grpc.CallOption) (*ResultV2, error)
 	// Issue 发票开具失败
-	IssueFail(ctx context.Context, in *InvoiceIssueFailRequest, opts ...grpc.CallOption) (*Result, error)
+	IssueFail(ctx context.Context, in *InvoiceIssueFailRequest, opts ...grpc.CallOption) (*ResultV2, error)
 	// SendMail 发送发票到邮件中
-	SendMail(ctx context.Context, in *InvoiceSendMailRequest, opts ...grpc.CallOption) (*Result, error)
+	SendMail(ctx context.Context, in *InvoiceSendMailRequest, opts ...grpc.CallOption) (*ResultV2, error)
 	// Revert 撤销发票
-	Revert(ctx context.Context, in *InvoiceRevertRequest, opts ...grpc.CallOption) (*Result, error)
+	Revert(ctx context.Context, in *InvoiceRevertRequest, opts ...grpc.CallOption) (*ResultV2, error)
 }
 
 type invoiceServiceClient struct {
@@ -110,8 +110,8 @@ func (c *invoiceServiceClient) GetInvoice(ctx context.Context, in *InvoiceId, op
 	return out, nil
 }
 
-func (c *invoiceServiceClient) Issue(ctx context.Context, in *InvoiceIssueRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *invoiceServiceClient) Issue(ctx context.Context, in *InvoiceIssueRequest, opts ...grpc.CallOption) (*ResultV2, error) {
+	out := new(ResultV2)
 	err := c.cc.Invoke(ctx, InvoiceService_Issue_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -119,8 +119,8 @@ func (c *invoiceServiceClient) Issue(ctx context.Context, in *InvoiceIssueReques
 	return out, nil
 }
 
-func (c *invoiceServiceClient) IssueFail(ctx context.Context, in *InvoiceIssueFailRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *invoiceServiceClient) IssueFail(ctx context.Context, in *InvoiceIssueFailRequest, opts ...grpc.CallOption) (*ResultV2, error) {
+	out := new(ResultV2)
 	err := c.cc.Invoke(ctx, InvoiceService_IssueFail_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -128,8 +128,8 @@ func (c *invoiceServiceClient) IssueFail(ctx context.Context, in *InvoiceIssueFa
 	return out, nil
 }
 
-func (c *invoiceServiceClient) SendMail(ctx context.Context, in *InvoiceSendMailRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *invoiceServiceClient) SendMail(ctx context.Context, in *InvoiceSendMailRequest, opts ...grpc.CallOption) (*ResultV2, error) {
+	out := new(ResultV2)
 	err := c.cc.Invoke(ctx, InvoiceService_SendMail_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -137,8 +137,8 @@ func (c *invoiceServiceClient) SendMail(ctx context.Context, in *InvoiceSendMail
 	return out, nil
 }
 
-func (c *invoiceServiceClient) Revert(ctx context.Context, in *InvoiceRevertRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *invoiceServiceClient) Revert(ctx context.Context, in *InvoiceRevertRequest, opts ...grpc.CallOption) (*ResultV2, error) {
+	out := new(ResultV2)
 	err := c.cc.Invoke(ctx, InvoiceService_Revert_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -159,13 +159,13 @@ type InvoiceServiceServer interface {
 	// 获取发票
 	GetInvoice(context.Context, *InvoiceId) (*SInvoice, error)
 	// Issue 开具发票,更新发票图片
-	Issue(context.Context, *InvoiceIssueRequest) (*Result, error)
+	Issue(context.Context, *InvoiceIssueRequest) (*ResultV2, error)
 	// Issue 发票开具失败
-	IssueFail(context.Context, *InvoiceIssueFailRequest) (*Result, error)
+	IssueFail(context.Context, *InvoiceIssueFailRequest) (*ResultV2, error)
 	// SendMail 发送发票到邮件中
-	SendMail(context.Context, *InvoiceSendMailRequest) (*Result, error)
+	SendMail(context.Context, *InvoiceSendMailRequest) (*ResultV2, error)
 	// Revert 撤销发票
-	Revert(context.Context, *InvoiceRevertRequest) (*Result, error)
+	Revert(context.Context, *InvoiceRevertRequest) (*ResultV2, error)
 	mustEmbedUnimplementedInvoiceServiceServer()
 }
 
@@ -185,16 +185,16 @@ func (UnimplementedInvoiceServiceServer) RequestInvoice(context.Context, *Invoic
 func (UnimplementedInvoiceServiceServer) GetInvoice(context.Context, *InvoiceId) (*SInvoice, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInvoice not implemented")
 }
-func (UnimplementedInvoiceServiceServer) Issue(context.Context, *InvoiceIssueRequest) (*Result, error) {
+func (UnimplementedInvoiceServiceServer) Issue(context.Context, *InvoiceIssueRequest) (*ResultV2, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Issue not implemented")
 }
-func (UnimplementedInvoiceServiceServer) IssueFail(context.Context, *InvoiceIssueFailRequest) (*Result, error) {
+func (UnimplementedInvoiceServiceServer) IssueFail(context.Context, *InvoiceIssueFailRequest) (*ResultV2, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IssueFail not implemented")
 }
-func (UnimplementedInvoiceServiceServer) SendMail(context.Context, *InvoiceSendMailRequest) (*Result, error) {
+func (UnimplementedInvoiceServiceServer) SendMail(context.Context, *InvoiceSendMailRequest) (*ResultV2, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendMail not implemented")
 }
-func (UnimplementedInvoiceServiceServer) Revert(context.Context, *InvoiceRevertRequest) (*Result, error) {
+func (UnimplementedInvoiceServiceServer) Revert(context.Context, *InvoiceRevertRequest) (*ResultV2, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Revert not implemented")
 }
 func (UnimplementedInvoiceServiceServer) mustEmbedUnimplementedInvoiceServiceServer() {}

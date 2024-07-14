@@ -37,13 +37,13 @@ service InvoiceService {
     rpc GetInvoice (InvoiceId) returns (SInvoice) {
     }
     // Issue 开具发票,更新发票图片
-    rpc Issue(InvoiceIssueRequest)returns (Result){}
+    rpc Issue(InvoiceIssueRequest)returns (ResultV2){}
     // Issue 发票开具失败
-    rpc IssueFail(InvoiceIssueFailRequest)returns (Result){}
+    rpc IssueFail(InvoiceIssueFailRequest)returns (ResultV2){}
     // SendMail 发送发票到邮件中
-    rpc SendMail(InvoiceSendMailRequest)returns (Result){}
+    rpc SendMail(InvoiceSendMailRequest)returns (ResultV2){}
     // Revert 撤销发票
-    rpc Revert(InvoiceRevertRequest)returns (Result){}
+    rpc Revert(InvoiceRevertRequest)returns (ResultV2){}
 }
 
 // InvoiceIssueRequest 发票开具请求
@@ -102,9 +102,9 @@ message InvoiceTenantRequest{
 // 发票租户
 message SInvoiceTenant{
     // 错误码
-    int32 errCode = 1;
+    int32 code = 1;
     // 错误信息
-    string errMsg = 2;
+    string msg = 2;
     // 租户编号
     int64 tenantId = 3; 
 }
@@ -136,9 +136,9 @@ message CreateInvoiceTitleRequest{
 // 新增发票抬头响应
 message CreateInvoiceTitleResponse{
     // 错误码
-    int32 errCode = 1;
+    int32 code = 1;
     // 错误信息
-    string errMsg = 2;
+    string msg = 2;
     // 编号
     int64 id = 3;
 }
@@ -165,9 +165,9 @@ message InvoiceRequest{
 // 保存发票响应
 message SaveRecordResponse{
     // 错误码
-    int32 errCode = 1;
+    int32 code = 1;
     // 错误信息
-    string errMsg = 2;
+    string msg = 2;
     // 发票ID
     int64 id = 3;
 }

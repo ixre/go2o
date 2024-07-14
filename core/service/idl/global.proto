@@ -33,6 +33,17 @@ message Result {
     map<string, string> data = 3;
 }
 
+//传输结果对象
+message ResultV2 {
+    /* 状态码,如为0表示成功 */
+    sint32 code = 1;
+    /* 消息 */
+    string msg = 2;
+    /** 数据字典 */
+    map<string, string> data = 3;
+}
+
+
 // 键值对
 message Pair {
     string key = 1;

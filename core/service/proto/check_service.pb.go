@@ -202,7 +202,7 @@ type CompareCheckCodeRequest struct {
 	ReceptAccount string `protobuf:"bytes,2,opt,name=receptAccount,proto3" json:"receptAccount"`
 	// 校验码
 	CheckCode string `protobuf:"bytes,3,opt,name=checkCode,proto3" json:"checkCode"`
-	// 验证成功后是否充值
+	// 验证成功后是否重置
 	ResetIfOk bool `protobuf:"varint,4,opt,name=resetIfOk,proto3" json:"resetIfOk"`
 }
 
