@@ -770,7 +770,7 @@ message SInvitationMember {
   // 等级
   int32 level = 3;
   // 头像
-  string portrait = 4;
+  string profilePhoto = 4;
   // 昵称
   string nickname = 5;
   // 电话

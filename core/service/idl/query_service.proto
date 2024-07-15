@@ -171,7 +171,7 @@ message MemberListSingle {
     // 昵称
     string nickname = 3;
     // 头像
-    string portrait = 4;
+    string profilePhoto = 4;
     // 等级
     int32 level = 5;
     // 积分

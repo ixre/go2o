@@ -58,11 +58,11 @@ func TestGetJoinList(t *testing.T) {
 // 测试创建新的资源Key
 func TestGenerateResourceKey(t *testing.T) {
 	// gk := inject.GetRbacService().GenerateResourceKey
-	// ret := gk(model.PermRes{Id: 0})
+	// ret := gk(model.RbacRes{Id: 0})
 	// t.Log("新建一级:", ret)
-	// ret = gk(model.PermRes{Id: 2328, ResKey: "D"})
+	// ret = gk(model.RbacRes{Id: 2328, ResKey: "D"})
 	// t.Log("新建商户二级:", ret)
-	// ret = gk(model.PermRes{Id: 2321, ResKey: "B0101"})
+	// ret = gk(model.RbacRes{Id: 2321, ResKey: "B0101"})
 	// t.Log("新建商户三级:", ret)
 }
 

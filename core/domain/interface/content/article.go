@@ -77,7 +77,7 @@ type (
 		//父类编号,如为一级栏目则为0
 		ParentId int `db:"parent_id"`
 		// 浏览权限
-		PermFlag int `db:"perm_flag"`
+		PermFlag int `db:"rbac_flag"`
 		// 名称(唯一)
 		Name string `db:"name"`
 		// 别名

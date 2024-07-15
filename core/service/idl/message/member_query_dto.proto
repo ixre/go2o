@@ -22,7 +22,7 @@ message SMember {
     /** 等级  */
     sint32 level = 7;
     /** 会员头像 */
-    string portrait = 8;
+    string profilePhoto = 8;
     /** 昵称 */
     string nickname = 9;
     /** 注册IP */
@@ -50,7 +50,7 @@ message SMember {
 message SProfile {
     sint64 memberId = 1;
     string nickname = 2;
-    string portrait = 3;
+    string profilePhoto = 3;
     sint32 gender = 4;
     string birthDay = 5;
     string phone = 6;
@@ -73,7 +73,7 @@ message SProfile {
 
 message SComplexMember {
     string nickname = 1;
-    string portrait = 2;
+    string profilePhoto = 2;
     string phone = 3;
     sint32 exp = 4;
     sint32 level = 5;

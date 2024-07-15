@@ -709,3 +709,27 @@ COMMENT ON COLUMN chat_msg.expires_time IS '过期时间';
 COMMENT ON COLUMN chat_msg.purge_time IS '消息清理时间,0表示永不清理';
 COMMENT ON COLUMN chat_msg.create_time IS '创建时间';
 
+/** 2024-07-15 rbac */
+ALTER TABLE "public"."perm_dept" RENAME TO "rbac_depart"; 
+ALTER TABLE "public"."perm_dict" RENAME TO "rbac_dict"; 
+ALTER TABLE "public"."perm_dict_detail" RENAME TO "rbac_dict_detail"; 
+
+ALTER TABLE "public"."perm_job" RENAME TO "rbac_job"; 
+ALTER TABLE "public"."perm_login_log" RENAME TO "rbac_login_log"; 
+ALTER TABLE "public"."perm_res" RENAME TO "rbac_res"; 
+ALTER TABLE "public"."perm_dict_detail" RENAME TO "rbac_dict_detail"; 
+ALTER TABLE "public"."perm_role" RENAME TO "rbac_role"; 
+ALTER TABLE "public"."perm_role_dept" RENAME TO "rbac_role_dept"; 
+ALTER TABLE "public"."perm_role_res" RENAME TO "rbac_role_res"; 
+ALTER TABLE "public"."perm_user" RENAME TO "rbac_user"; 
+ALTER TABLE "public"."perm_user_role" RENAME TO "rbac_user_role"; 
+
+
+
+
+
+
+
+
+
+

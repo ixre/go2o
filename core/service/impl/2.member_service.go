@@ -1198,7 +1198,7 @@ func (s *memberService) GetPagingInvitationMembers(_ context.Context, r *proto.M
 				MemberId: int64(rows[i].MemberId),
 				Username: rows[i].Username,
 				Level:    rows[i].Level,
-				Portrait: rows[i].Portrait,
+				ProfilePhoto: rows[i].Portrait,
 				Nickname: rows[i].Nickname,
 				Phone:    rows[i].Phone,
 				RegTime:  rows[i].RegTime,
@@ -1580,7 +1580,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegFrom:        src.RegFrom,
 		UserFlag:       int32(src.UserFlag),
 		Role:           int32(src.RoleFlag),
-		Portrait:       src.Portrait,
+		ProfilePhoto:       src.Portrait,
 		Phone:          src.Phone,
 		Email:          src.Email,
 		Nickname:       src.Nickname,
@@ -1594,7 +1594,7 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 	return &proto.SProfile{
 		MemberId:   src.MemberId,
 		Nickname:   src.Name,
-		Portrait:   src.Avatar,
+		ProfilePhoto:   src.Avatar,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
 		Gender:     src.Gender,
@@ -1618,7 +1618,7 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 	return &proto.SComplexMember{
 		Nickname:            src.Nickname,
-		Portrait:            src.Avatar,
+		ProfilePhoto:            src.Avatar,
 		Exp:                 int32(src.Exp),
 		Level:               int32(src.Level),
 		LevelName:           src.LevelName,
@@ -1672,7 +1672,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 	return &member.Profile{
 		MemberId:   src.MemberId,
 		Name:       src.Nickname,
-		Avatar:     src.Portrait,
+		Avatar:     src.ProfilePhoto,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
 		Address:    src.Address,
