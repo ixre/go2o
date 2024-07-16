@@ -118,7 +118,13 @@ func GetStationQueryService() *query.StationQuery {
 	panic(wire.Build(queryProvideSets))
 }
 
+// GetMerchantQueryService 商户查询服务
 func GetMerchantQueryService() *query.MerchantQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+// GetMemberQueryService 会员查询服务
+func GetMemberQueryService() *query.MemberQuery {
 	panic(wire.Build(queryProvideSets))
 }
 

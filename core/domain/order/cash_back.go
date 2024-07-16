@@ -104,7 +104,7 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMemberAggregateRoot,
 }
 
 // 三级返现
-func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMemberAggregateRoot,
+func (o *subOrderImpl) backFor3R(mch merchant.IMerchantAggregateRoot, m member.IMemberAggregateRoot,
 	back_fee int64, unixTime int64) (err error) {
 	if back_fee > 0 {
 		i := 0

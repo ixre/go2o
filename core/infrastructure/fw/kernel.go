@@ -363,3 +363,10 @@ func (p *pagingRow) AsFloat(keys ...string) {
 		}
 	}
 }
+
+// Excludes 排除字段
+func (p *pagingRow) Excludes(keys ...string) {
+	for _, key := range keys {
+		delete(p.v, key)
+	}
+}

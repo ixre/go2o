@@ -42,7 +42,7 @@ type orderManagerImpl struct {
 	valRepo      valueobject.IValueRepo
 	paymentRepo  payment.IPaymentRepo
 	expressRepo  express.IExpressRepo
-	mch          merchant.IMerchant
+	mch          merchant.IMerchantAggregateRoot
 	shipRepo     shipment.IShipmentRepo
 	breaker      *wholesaleOrderBreaker
 }

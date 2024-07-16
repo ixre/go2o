@@ -9,19 +9,23 @@
 
 package merchant
 
+import "github.com/ixre/go2o/core/infrastructure/fw"
+
 type IMerchantRepo interface {
+	// 仓储实现
+	fw.Repository[Merchant]
 	// 获取商户管理器
 	GetManager() IMerchantManager
 
-	CreateMerchant(*Merchant) IMerchant
+	CreateMerchant(*Merchant) IMerchantAggregateRoot
 
 	// 获取商户的编号
 	GetMerchantsId() []int32
 
 	// 获取商户
-	GetMerchant(id int) IMerchant
+	GetMerchant(id int) IMerchantAggregateRoot
 	// 根据登录用户名获取商户
-	GetMerchantByUsername(user string) IMerchant
+	GetMerchantByUsername(user string) IMerchantAggregateRoot
 	// 获取合作商主要的域名主机
 	GetMerchantMajorHost(mchId int) string
 
@@ -112,7 +116,7 @@ type IMerchantRepo interface {
 	// GetBalanceLogByOuterNo(outerTradeNo string) *BalanceLog
 
 	// 根据会员编号获取商户
-	GetMerchantByMemberId(memberId int) IMerchant
+	GetMerchantByMemberId(memberId int) IMerchantAggregateRoot
 	// 查找账户流水
 	GetBalanceAccountLog(id int) *BalanceLog
 	// 保存账户日志

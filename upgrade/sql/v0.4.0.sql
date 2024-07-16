@@ -204,6 +204,7 @@ CREATE TABLE "public".mch_authenticate (
   mch_id            int4 NOT NULL, 
   org_name          varchar(45) NOT NULL, 
   org_no            varchar(45) NOT NULL, 
+  org_address          varchar(120) NOT NULL, 
   org_pic           varchar(120) NOT NULL, 
   work_city         int4 NOT NULL, 
   qualification_pic varchar(120) NOT NULL, 
@@ -226,6 +227,7 @@ COMMENT ON COLUMN "public".mch_authenticate.mch_id IS '商户编号';
 COMMENT ON COLUMN "public".mch_authenticate.org_name IS '公司名称';
 COMMENT ON COLUMN "public".mch_authenticate.org_no IS '营业执照编号';
 COMMENT ON COLUMN "public".mch_authenticate.org_pic IS '营业执照照片';
+COMMENT ON COLUMN "public".mch_authenticate.org_address IS '公司地址';
 COMMENT ON COLUMN "public".mch_authenticate.work_city IS '办公地';
 COMMENT ON COLUMN "public".mch_authenticate.qualification_pic IS '资质图片';
 COMMENT ON COLUMN "public".mch_authenticate.person_id IS '法人身份证号';
@@ -724,6 +726,8 @@ ALTER TABLE "public"."perm_role_res" RENAME TO "rbac_role_res";
 ALTER TABLE "public"."perm_user" RENAME TO "rbac_user"; 
 ALTER TABLE "public"."perm_user_role" RENAME TO "rbac_user_role"; 
 
+/** 2024-07-16 merchant */
+DROP TABLE IF EXISTS mch_sign_up CASCADE;
 
 
 

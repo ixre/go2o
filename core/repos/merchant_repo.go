@@ -30,6 +30,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	merchantImpl "github.com/ixre/go2o/core/domain/merchant"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
@@ -39,6 +40,7 @@ var _ merchant.IMerchantRepo = new(merchantRepo)
 var mchMerchantDaoImplMapped = false
 
 type merchantRepo struct {
+	fw.BaseRepository[merchant.Merchant]
 	db.Connector
 	_orm          orm.Orm
 	storage       storage.Interface
@@ -59,7 +61,7 @@ type merchantRepo struct {
 
 // GetBalanceAccountLog implements merchant.IMerchantRepo
 
-func NewMerchantRepo(o orm.Orm, storage storage.Interface,
+func NewMerchantRepo(o orm.Orm,on fw.ORM, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
 	employeeRepo staff.IStaffRepo,
@@ -73,7 +75,7 @@ func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 		o.Mapping(merchant.Authenticate{}, "mch_authenticate")
 		mchMerchantDaoImplMapped = true
 	}
-	return &merchantRepo{
+	r := &merchantRepo{
 		Connector:     o.Connector(),
 		_orm:          o,
 		storage:       storage,
@@ -90,6 +92,8 @@ func NewMerchantRepo(o orm.Orm, storage storage.Interface,
 		_registryRepo: registryRepo,
 		mux:           &sync.RWMutex{},
 	}
+	r.ORM = on
+	return r
 }
 
 // 获取商户管理器
@@ -100,7 +104,7 @@ func (m *merchantRepo) GetManager() merchant.IMerchantManager {
 	return m.manager
 }
 
-func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
+func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchantAggregateRoot {
 	return merchantImpl.NewMerchant(v, m, m._wsRepo, m._itemRepo,
 		m._shopRepo, m._userRepo,
 		m._employeeRepo,
@@ -120,7 +124,7 @@ func (m *merchantRepo) getMchCacheKey(mchId int64) string {
 	return fmt.Sprintf("go2o:repo:mch:%d", mchId)
 }
 
-func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
+func (m *merchantRepo) GetMerchant(id int) merchant.IMerchantAggregateRoot {
 	e := merchant.Merchant{}
 	key := m.getMchCacheKey(int64(id))
 	err := m.storage.Get(key, &e)
@@ -136,7 +140,7 @@ func (m *merchantRepo) GetMerchant(id int) merchant.IMerchant {
 }
 
 // 根据登录用户名获取商户
-func (m *merchantRepo) GetMerchantByUsername(user string) merchant.IMerchant {
+func (m *merchantRepo) GetMerchantByUsername(user string) merchant.IMerchantAggregateRoot {
 	e := merchant.Merchant{}
 	if err := m._orm.GetBy(&e, "username=$1", user); err == nil {
 		return m.CreateMerchant(&e)
@@ -504,7 +508,7 @@ func (m *merchantRepo) SaveBalanceAccountLog(v *merchant.BalanceLog) (int, error
 }
 
 // GetMerchantByMemberId implements merchant.IMerchantRepo
-func (m *merchantRepo) GetMerchantByMemberId(memberId int) merchant.IMerchant {
+func (m *merchantRepo) GetMerchantByMemberId(memberId int) merchant.IMerchantAggregateRoot {
 	v := merchant.Merchant{}
 	err := m._orm.GetBy(&v, "member_id= $1", memberId)
 	if err == nil {

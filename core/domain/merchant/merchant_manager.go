@@ -21,6 +21,6 @@ func NewMerchantManager(rep merchant.IMerchantRepo,
 }
 
 // GetMerchantByMemberId 获取会员关联的商户
-func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int) merchant.IMerchant {
+func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int) merchant.IMerchantAggregateRoot {
 	return m.rep.GetMerchantByMemberId(memberId)
 }

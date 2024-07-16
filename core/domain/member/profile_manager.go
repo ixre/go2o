@@ -335,7 +335,7 @@ func (p *profileManagerImpl) notifyOnProfileComplete() {
 	//}
 }
 
-func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
+func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchantAggregateRoot) error {
 	tplId := pt.KvManager().GetInt(merchant.KeyMssTplIdOfProfileComplete)
 	if tplId > 0 {
 		mailTpl := p.member.mssRepo.GetProvider().GetMailTemplate(int32(tplId))
