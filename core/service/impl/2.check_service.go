@@ -284,6 +284,11 @@ func (s *checkServiceImpl) GrantAccessToken(_ context.Context, request *proto.Gr
 			ErrMsg: fmt.Sprintf("令牌有效时间已过有效期: value=%d", request.ExpiresTime),
 		}, nil
 	}
+	if len(request.Sub) == 0 {
+		return &proto.GrantAccessTokenResponse{
+			ErrMsg: "令牌主题不能为空",
+		}, nil
+	}
 	// 校验发放令牌
 	err := s.checkGrantAccessToken(request)
 	if err != nil {
@@ -291,7 +296,7 @@ func (s *checkServiceImpl) GrantAccessToken(_ context.Context, request *proto.Gr
 	}
 	// 创建token并返回
 	aud := fmt.Sprintf("%d@%d", request.UserId, request.UserType)
-	claims := api.CreateClaims(aud, "go2o", "go2o-user-jwt", request.ExpiresTime).(jwt.MapClaims)
+	claims := api.CreateClaims(aud, "go2o", request.Sub, request.ExpiresTime).(jwt.MapClaims)
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
@@ -345,6 +350,11 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 	if len(request.AccessToken) == 0 {
 		return &proto.CheckAccessTokenResponse{ErrMsg: "令牌不能为空"}, nil
 	}
+	if len(request.Sub) == 0 {
+		return &proto.CheckAccessTokenResponse{
+			ErrMsg: "令牌主题不能为空",
+		}, nil
+	}
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
@@ -359,7 +369,7 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 		return &proto.CheckAccessTokenResponse{ErrMsg: "令牌无效"}, nil
 	}
 	if !dstClaims.VerifyIssuer("go2o", true) ||
-		dstClaims["sub"] != "go2o-user-jwt" {
+		dstClaims["sub"] != request.Sub {
 		return &proto.CheckAccessTokenResponse{ErrMsg: "未知颁发者的令牌"}, nil
 	}
 	// 令牌过期时间
