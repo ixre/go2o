@@ -479,7 +479,7 @@ var file_member_service_proto_goTypes = []interface{}{
 	(*ChangePhoneRequest)(nil),             // 24: ChangePhoneRequest
 	(*ChangeUsernameRequest)(nil),          // 25: ChangeUsernameRequest
 	(*ChangeNicknameRequest)(nil),          // 26: ChangeNicknameRequest
-	(*ChangePortraitRequest)(nil),          // 27: ChangePortraitRequest
+	(*ChangeProfilePhotoRequest)(nil),          // 27: ChangeProfilePhotoRequest
 	(*ChangePasswordRequest)(nil),          // 28: ChangePasswordRequest
 	(*SetInviterRequest)(nil),              // 29: SetInviterRequest
 	(*PremiumRequest)(nil),                 // 30: PremiumRequest
@@ -575,7 +575,7 @@ var file_member_service_proto_depIdxs = []int32{
 	24, // 35: MemberService.ChangePhone:input_type -> ChangePhoneRequest
 	25, // 36: MemberService.ChangeUsername:input_type -> ChangeUsernameRequest
 	26, // 37: MemberService.ChangeNickname:input_type -> ChangeNicknameRequest
-	27, // 38: MemberService.ChangeHeadPortrait:input_type -> ChangePortraitRequest
+	27, // 38: MemberService.ChangeProfilePhoto:input_type -> ChangeProfilePhotoRequest
 	28, // 39: MemberService.ChangePassword:input_type -> ChangePasswordRequest
 	28, // 40: MemberService.ChangeTradePassword:input_type -> ChangePasswordRequest
 	12, // 41: MemberService.CheckProfileCompleted:input_type -> Int64
@@ -655,7 +655,7 @@ var file_member_service_proto_depIdxs = []int32{
 	58, // 115: MemberService.ChangePhone:output_type -> Result
 	58, // 116: MemberService.ChangeUsername:output_type -> Result
 	58, // 117: MemberService.ChangeNickname:output_type -> Result
-	58, // 118: MemberService.ChangeHeadPortrait:output_type -> Result
+	58, // 118: MemberService.ChangeProfilePhoto:output_type -> Result
 	58, // 119: MemberService.ChangePassword:output_type -> Result
 	58, // 120: MemberService.ChangeTradePassword:output_type -> Result
 	69, // 121: MemberService.CheckProfileCompleted:output_type -> Bool

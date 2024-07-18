@@ -204,7 +204,7 @@ func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 
 // QueryItemSalesHistory 查询商品销售记录
 func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (rows []*dto.ItemSalesHistoryDto) {
-	s := `SELECT m.user_code,m.nickname,m.portrait,ord.create_time,
+	s := `SELECT m.user_code,m.nickname,m.profile_photo,ord.create_time,
 		ord.status FROM sale_sub_item it 
 		INNER JOIN sale_normal_order ord ON ord.id = it.order_id
 		INNER JOIN mm_member m ON m.member_id = ord.buyer_id

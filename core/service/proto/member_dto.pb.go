@@ -3025,7 +3025,7 @@ func (x *SMemberLevel) GetAllowUpgrade() int32 {
 }
 
 // 更换头像申请
-type ChangePortraitRequest struct {
+type ChangeProfilePhotoRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -3036,8 +3036,8 @@ type ChangePortraitRequest struct {
 	PortraitUrl string `protobuf:"bytes,2,opt,name=portraitUrl,proto3" json:"portraitUrl"`
 }
 
-func (x *ChangePortraitRequest) Reset() {
-	*x = ChangePortraitRequest{}
+func (x *ChangeProfilePhotoRequest) Reset() {
+	*x = ChangeProfilePhotoRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_message_member_dto_proto_msgTypes[39]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3045,13 +3045,13 @@ func (x *ChangePortraitRequest) Reset() {
 	}
 }
 
-func (x *ChangePortraitRequest) String() string {
+func (x *ChangeProfilePhotoRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ChangePortraitRequest) ProtoMessage() {}
+func (*ChangeProfilePhotoRequest) ProtoMessage() {}
 
-func (x *ChangePortraitRequest) ProtoReflect() protoreflect.Message {
+func (x *ChangeProfilePhotoRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_message_member_dto_proto_msgTypes[39]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3063,19 +3063,19 @@ func (x *ChangePortraitRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangePortraitRequest.ProtoReflect.Descriptor instead.
-func (*ChangePortraitRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ChangeProfilePhotoRequest.ProtoReflect.Descriptor instead.
+func (*ChangeProfilePhotoRequest) Descriptor() ([]byte, []int) {
 	return file_message_member_dto_proto_rawDescGZIP(), []int{39}
 }
 
-func (x *ChangePortraitRequest) GetMemberId() int64 {
+func (x *ChangeProfilePhotoRequest) GetMemberId() int64 {
 	if x != nil {
 		return x.MemberId
 	}
 	return 0
 }
 
-func (x *ChangePortraitRequest) GetPortraitUrl() string {
+func (x *ChangeProfilePhotoRequest) GetPortraitUrl() string {
 	if x != nil {
 		return x.PortraitUrl
 	}
@@ -6788,7 +6788,7 @@ var file_message_member_dto_proto_goTypes = []interface{}{
 	(*AccountCarryResponse)(nil),           // 42: AccountCarryResponse
 	(*B4EAuthRequest)(nil),                 // 43: B4EAuthRequest
 	(*SMemberLevel)(nil),                   // 44: SMemberLevel
-	(*ChangePortraitRequest)(nil),          // 45: ChangePortraitRequest
+	(*ChangeProfilePhotoRequest)(nil),          // 45: ChangeProfilePhotoRequest
 	(*SAccount)(nil),                       // 46: SAccount
 	(*SMemberRelation)(nil),                // 47: SMemberRelation
 	(*SCertificationInfo)(nil),             // 48: SCertificationInfo
@@ -7332,7 +7332,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ChangePortraitRequest); i {
+			switch v := v.(*ChangeProfilePhotoRequest); i {
 			case 0:
 				return &v.state
 			case 1:

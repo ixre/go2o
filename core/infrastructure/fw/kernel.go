@@ -370,3 +370,13 @@ func (p *pagingRow) Excludes(keys ...string) {
 		delete(p.v, key)
 	}
 }
+
+// Put 添加/更新字段
+func (p *pagingRow) Put(key string, v interface{}) {
+	p.v[key] = v
+}
+
+// Get 获取字段
+func (p *pagingRow) Get(key string) interface{} {
+	return p.v[key]
+}

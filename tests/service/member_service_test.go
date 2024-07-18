@@ -36,9 +36,9 @@ func TestGetMember(t *testing.T) {
 	t.Logf("%#v", r)
 }
 
-func TestChangeHeadPortrait(t *testing.T) {
-	r, _ := inject.GetMemberService().ChangeHeadPortrait(context.TODO(),
-		&proto.ChangePortraitRequest{
+func TestChangeProfilePhoto(t *testing.T) {
+	r, _ := inject.GetMemberService().ChangeProfilePhoto(context.TODO(),
+		&proto.ChangeProfilePhotoRequest{
 			MemberId:    702,
 			PortraitUrl: "",
 		})

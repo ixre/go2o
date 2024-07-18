@@ -53,10 +53,10 @@ func (c *chatServiceImpl) GetConversation(_ context.Context, req *proto.ChatConv
 		if im != nil {
 			iv := im.GetValue()
 			ret.ChatProfile = &proto.SChatUserProfile{
-				ProfilePhoto: iv.Portrait,
+				ProfilePhoto: iv.ProfilePhoto,
 				UserCode:     iv.UserCode,
 				Nickname:     iv.Nickname,
-				UserRole: int32(iv.RoleFlag),
+				UserRole:     int32(iv.RoleFlag),
 			}
 		}
 	}

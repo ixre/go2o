@@ -728,6 +728,9 @@ ALTER TABLE "public"."perm_user_role" RENAME TO "rbac_user_role";
 
 /** 2024-07-16 merchant */
 DROP TABLE IF EXISTS mch_sign_up CASCADE;
+ALTER TABLE "public"."mm_member" RENAME COLUMN "portrait" TO "profile_photo";
+
+
 
 
 

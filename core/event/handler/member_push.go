@@ -24,7 +24,7 @@ func (h *EventHandler) HandleMemberPushEvent(data interface{}) {
 		Exp:           int64(m.Exp),
 		Level:         int32(m.Level),
 		Nickname:      m.Nickname,
-		ProfilePhoto:  m.Portrait,
+		ProfilePhoto:  m.ProfilePhoto,
 		Phone:         m.Phone,
 		Email:         m.Email,
 		RegFrom:       m.RegFrom,

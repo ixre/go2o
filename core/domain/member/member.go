@@ -82,7 +82,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	s := &member.ComplexMember{
 		Nickname:            mv.Nickname,
 		RealName:            mv.RealName,
-		Avatar:              mv.Portrait,
+		Avatar:              mv.ProfilePhoto,
 		Exp:                 mv.Exp,
 		Level:               mv.Level,
 		LevelName:           lv.Name,
@@ -678,16 +678,16 @@ func (m *memberImpl) prepare() (err error) {
 		m.value.Nickname = "User" + m.value.Username
 	}
 	// 初始化头像
-	m.value.Portrait = strings.TrimSpace(m.value.Portrait)
-	if len(m.value.Portrait) == 0 {
+	m.value.ProfilePhoto = strings.TrimSpace(m.value.ProfilePhoto)
+	if len(m.value.ProfilePhoto) == 0 {
 		// 使用默认头像
-		re, _ := m.registryRepo.GetValue(registry.MemberDefaultPortrait)
+		re, _ := m.registryRepo.GetValue(registry.MemberDefaultProfilePhoto)
 		if len(strings.TrimSpace(re)) == 0 {
 			// 如果未设置,则用系统内置头像
 			url, _ := m.registryRepo.GetValue(registry.FileServerUrl)
 			re = url + "/files/static/init/avatar.png"
 		}
-		m.value.Portrait = re
+		m.value.ProfilePhoto = re
 	}
 	// 验证角色
 	if m.value.RoleFlag != 0 && !collections.InArray([]int{

@@ -488,13 +488,13 @@ func (s *memberService) ConfirmLevelUpRequest(_ context.Context, r *proto.LevelU
 	return s.result(err), nil
 }
 
-// ChangeHeadPortrait 上传会员头像
-func (s *memberService) ChangeHeadPortrait(_ context.Context, r *proto.ChangePortraitRequest) (*proto.Result, error) {
+// ChangeProfilePhoto 上传会员头像
+func (s *memberService) ChangeProfilePhoto(_ context.Context, r *proto.ChangeProfilePhotoRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	err := m.Profile().ChangeHeadPortrait(r.PortraitUrl)
+	err := m.Profile().ChangeProfilePhoto(r.PortraitUrl)
 	return s.result(err), nil
 }
 
@@ -508,17 +508,17 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	}
 	salt := util.RandString(6)
 	v := &member.Member{
-		Username: r.Username,
-		Salt:     salt,
-		Password: domain.Sha1Pwd(r.Password, salt),
-		Nickname: r.Nickname,
-		RealName: "",
-		Portrait: "", //todo: default avatar
-		RoleFlag: int(r.UserType),
-		Phone:    r.Phone,
-		Email:    r.Email,
-		RegFrom:  r.RegFrom,
-		RegIp:    r.RegIp,
+		Username:     r.Username,
+		Salt:         salt,
+		Password:     domain.Sha1Pwd(r.Password, salt),
+		Nickname:     r.Nickname,
+		RealName:     "",
+		ProfilePhoto: "", //todo: default avatar
+		RoleFlag:     int(r.UserType),
+		Phone:        r.Phone,
+		Email:        r.Email,
+		RegFrom:      r.RegFrom,
+		RegIp:        r.RegIp,
 	}
 	// 验证邀请码
 	inviterId, err := s.repo.GetManager().CheckInviteRegister(r.InviterCode)
@@ -586,7 +586,7 @@ func (s *memberService) GetInviter(_ context.Context, id *proto.MemberIdRequest)
 				mv := mm.GetValue()
 				ret.InviterUsername = mv.Username
 				ret.InviterNickname = mv.Nickname
-				ret.InviterPortrait = mv.Portrait
+				ret.InviterPortrait = mv.ProfilePhoto
 				ret.InviterPhone = mv.Phone
 			}
 		}
@@ -1580,7 +1580,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegFrom:        src.RegFrom,
 		UserFlag:       int32(src.UserFlag),
 		Role:           int32(src.RoleFlag),
-		ProfilePhoto:   src.Portrait,
+		ProfilePhoto:   src.ProfilePhoto,
 		Phone:          src.Phone,
 		Email:          src.Email,
 		Nickname:       src.Nickname,

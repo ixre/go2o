@@ -371,7 +371,7 @@ message SMemberLevel {
 }
 
 // 更换头像申请
-message ChangePortraitRequest {
+message ChangeProfilePhotoRequest {
   // 会员编号
   sint64 memberId = 1;
   // 头像
@@ -547,7 +547,7 @@ message MemberInviterResponse {
   // 邀请人姓名
   string inviterNickname = 3;
   // 邀请人头像
-  string inviterPortrait = 4;
+  string inviterProfilePhoto = 4;
   // 邀请人电话
   string inviterPhone = 5;
   // 邀请会员编号(depth2)

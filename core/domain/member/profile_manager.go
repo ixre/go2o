@@ -301,7 +301,7 @@ func (p *profileManagerImpl) ChangeNickname(nickname string, limitTime bool) err
 }
 
 // 设置头像
-func (p *profileManagerImpl) ChangeHeadPortrait(portrait string) error {
+func (p *profileManagerImpl) ChangeProfilePhoto(portrait string) error {
 	if portrait == "" {
 		return member.ErrInvalidHeadPortrait
 	}
