@@ -212,7 +212,7 @@ func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (
 	err := i.Query(s, func(_rows *sql.Rows) {
 		for _rows.Next() {
 			e := dto.ItemSalesHistoryDto{}
-			_rows.Scan(&e.BuyerUserCode, &e.BuyerName, &e.BuyerPortrait, &e.BuyTime, &e.OrderState)
+			_rows.Scan(&e.BuyerUserCode, &e.BuyerName, &e.BuyerProfilePhoto, &e.BuyTime, &e.OrderState)
 			rows = append(rows, &e)
 		}
 	}, itemId, size)

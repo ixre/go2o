@@ -586,7 +586,7 @@ func (s *memberService) GetInviter(_ context.Context, id *proto.MemberIdRequest)
 				mv := mm.GetValue()
 				ret.InviterUsername = mv.Username
 				ret.InviterNickname = mv.Nickname
-				ret.InviterPortrait = mv.ProfilePhoto
+				ret.InviterProfilePhoto = mv.ProfilePhoto
 				ret.InviterPhone = mv.Phone
 			}
 		}
@@ -772,10 +772,10 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.LoginResponse, error) {
 	v, code, err := s.tryLogin(r.Username, r.Password, r.Update)
 	ret := &proto.LoginResponse{
-		ErrCode: code,
+		Code: code,
 	}
 	if err != nil {
-		ret.ErrMsg = err.Error()
+		ret.Msg = err.Error()
 		return ret, nil
 	} else {
 		ret.MemberId = v.Id
@@ -1198,7 +1198,7 @@ func (s *memberService) GetPagingInvitationMembers(_ context.Context, r *proto.M
 				MemberId:     int64(rows[i].MemberId),
 				Username:     rows[i].Username,
 				Level:        rows[i].Level,
-				ProfilePhoto: rows[i].Portrait,
+				ProfilePhoto: rows[i].ProfilePhoto,
 				Nickname:     rows[i].Nickname,
 				Phone:        rows[i].Phone,
 				RegTime:      rows[i].RegTime,

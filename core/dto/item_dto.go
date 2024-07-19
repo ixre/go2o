@@ -7,7 +7,7 @@ type ItemSalesHistoryDto struct {
 	// 买家昵称
 	BuyerName string
 	// 买家头像
-	BuyerPortrait string
+	BuyerProfilePhoto string
 	// 购买时间
 	BuyTime int64
 	// 订单状态

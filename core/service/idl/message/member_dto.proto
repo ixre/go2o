@@ -58,9 +58,9 @@ message LoginRequest {
 // 用户登录响应
 message LoginResponse{
   // 错误码
-  int32 errCode = 1;
+  int32 code = 1;
   // 错误消息
-  string errMsg = 2;
+  string msg = 2;
   // 会员编号
   int64 memberId = 3;
   // 用户代码
