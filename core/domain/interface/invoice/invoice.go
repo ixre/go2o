@@ -22,7 +22,7 @@ const (
 
 const (
 	// 发票状态: 待开票
-	IssueAwaiting = 1
+	IssuePending = 1
 	// 发票状态: 开票完成
 	IssueSuccess = 2
 	// 发票状态: 开票失败

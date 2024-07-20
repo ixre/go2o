@@ -396,7 +396,7 @@ func (w *WalletImpl) CarryTo(d wallet.OperateData, review bool, procedureFee int
 		l := w.createWalletLog(wallet.KCarry, d.Amount, d.Title, 0, "")
 		if review {
 			w._value.FreezeAmount += d.Amount
-			l.ReviewStatus = wallet.ReviewAwaiting
+			l.ReviewStatus = wallet.ReviewPending
 			l.ReviewRemark = "待审核"
 		} else {
 			w._value.Balance += int64(d.Amount)
@@ -419,7 +419,7 @@ func (w *WalletImpl) CarryTo(d wallet.OperateData, review bool, procedureFee int
 // ReviewCarryTo 审核入账
 func (w *WalletImpl) ReviewCarryTo(requestId int, pass bool, reason string) error {
 	l := w._repo.GetLog(w.GetAggregateRootId(), int64(requestId))
-	if l.ReviewStatus != int(enum.ReviewAwaiting) {
+	if l.ReviewStatus != int(enum.ReviewPending) {
 		return wallet.ErrNotSupport
 	}
 	w._value.FreezeAmount -= int(l.ChangeValue)
@@ -591,7 +591,7 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 	l := w.createWalletLog(kind, -(amount - tradeFee), title, 0, "")
 	l.ProcedureFee = -tradeFee
 	l.OuterNo = tradeNo
-	l.ReviewStatus = wallet.ReviewAwaiting
+	l.ReviewStatus = wallet.ReviewPending
 	l.ReviewRemark = ""
 	l.BankName = bankName
 	l.AccountNo = accountNo
@@ -615,7 +615,7 @@ func (w *WalletImpl) ReviewWithdrawal(requestId int64, pass bool, remark string,
 	if l.Kind != wallet.KWithdrawToBankCard && l.Kind != wallet.KWithdrawToThirdPart {
 		return wallet.ErrNotSupport
 	}
-	if l.ReviewStatus != wallet.ReviewAwaiting {
+	if l.ReviewStatus != wallet.ReviewPending {
 		return wallet.ErrWithdrawState
 	}
 	l.ReviewTime = time.Now().Unix()

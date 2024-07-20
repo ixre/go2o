@@ -58,6 +58,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 	proto.RegisterAppServiceServer(s, inject.GetAppService())
 	proto.RegisterRbacServiceServer(s, inject.GetRbacService())
 	proto.RegisterInvoiceServiceServer(s, inject.GetInvoiceService())
+	proto.RegisterWorkorderServiceServer(s, inject.GetWorkorderService())
 	go serveRPC(ch, s, port)
 }
 

@@ -42,8 +42,8 @@ const (
 const (
 	// 未设置
 	ReviewNotSet = 0
-	// ReviewAwaiting 等待审核
-	ReviewAwaiting = 1
+	// ReviewPending 等待审核
+	ReviewPending = 1
 	// ReviewReject 审核失败
 	ReviewReject = 2
 	// ReviewPass 审核成功

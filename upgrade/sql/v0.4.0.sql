@@ -59,60 +59,6 @@ COMMENT ON COLUMN m_block_list.block_member_id IS '拉黑会员编号';
 COMMENT ON COLUMN m_block_list.block_flag IS '拉黑标志，1: 屏蔽  2: 拉黑';
 COMMENT ON COLUMN m_block_list.remark IS '备注';
 COMMENT ON COLUMN m_block_list.create_time IS '拉黑时间';
-DROP TABLE IF EXISTS m_complain_case;
-CREATE TABLE m_complain_case (
-  id               BIGSERIAL NOT NULL, 
-  member_id        int8 NOT NULL, 
-  complain_type    int4 NOT NULL, 
-  order_id         int8 NOT NULL, 
-  mch_id           int8 NOT NULL, 
-  target_member_id int8 NOT NULL, 
-  complain_desc    varchar(255) NOT NULL, 
-  hope_desc        varchar(120) NOT NULL, 
-  first_pic        varchar(80) NOT NULL, 
-  pic_list         varchar(350) NOT NULL, 
-  is_resolved      int4 NOT NULL, 
-  is_closed        int4 NOT NULL, 
-  status           int4 NOT NULL, 
-  service_agent_id int8 NOT NULL, 
-  service_rank     int4 NOT NULL, 
-  service_apprise  varchar(120) NOT NULL, 
-  create_time      int8 NOT NULL, 
-  update_time      int8 NOT NULL, 
-  PRIMARY KEY (id));
-COMMENT ON COLUMN m_complain_case.id IS '编号';
-COMMENT ON COLUMN m_complain_case.member_id IS '会员编号';
-COMMENT ON COLUMN m_complain_case.complain_type IS '投诉类型:  1:常规   11: 咨询服务';
-COMMENT ON COLUMN m_complain_case.order_id IS '订单号';
-COMMENT ON COLUMN m_complain_case.mch_id IS '商户编号';
-COMMENT ON COLUMN m_complain_case.target_member_id IS '投诉目标会员';
-COMMENT ON COLUMN m_complain_case.complain_desc IS '投诉内容';
-COMMENT ON COLUMN m_complain_case.hope_desc IS '诉求描述';
-COMMENT ON COLUMN m_complain_case.first_pic IS '图片';
-COMMENT ON COLUMN m_complain_case.pic_list IS '图片列表';
-COMMENT ON COLUMN m_complain_case.is_resolved IS '是否已解决 0:否 1:是';
-COMMENT ON COLUMN m_complain_case.is_closed IS '是否用户关闭 0:否 1:是';
-COMMENT ON COLUMN m_complain_case.status IS '状态,1:待处理 2:处理中 3:已完结';
-COMMENT ON COLUMN m_complain_case.service_agent_id IS '客服编号';
-COMMENT ON COLUMN m_complain_case.service_rank IS '服务评分';
-COMMENT ON COLUMN m_complain_case.service_apprise IS '服务评价';
-COMMENT ON COLUMN m_complain_case.create_time IS '创建时间';
-COMMENT ON COLUMN m_complain_case.update_time IS '更新时间';
-DROP TABLE IF EXISTS m_complain_details;
-CREATE TABLE m_complain_details (
-  id          BIGSERIAL NOT NULL, 
-  case_id     int8 NOT NULL, 
-  sender_type int4 NOT NULL, 
-  content     varchar(255) NOT NULL, 
-  is_revert   int4 NOT NULL, 
-  create_time int8 NOT NULL, 
-  PRIMARY KEY (id));
-COMMENT ON TABLE m_complain_details IS '投诉详情';
-COMMENT ON COLUMN m_complain_details.id IS '编号';
-COMMENT ON COLUMN m_complain_details.case_id IS '案件编号';
-COMMENT ON COLUMN m_complain_details.sender_type IS '发送类型: 1:发起人  2: 投诉对象  3: 平台客服';
-COMMENT ON COLUMN m_complain_details.is_revert IS '是否撤回 0:否 1:是';
-
 
 
 DROP TABLE IF EXISTS sys_general_option;
@@ -733,7 +679,71 @@ DROP TABLE IF EXISTS mch_sign_up CASCADE;
 ALTER TABLE "public"."mm_member" RENAME COLUMN "portrait" TO "profile_photo";
 
 
+/** 2024-07-20 workorder */
+DROP TABLE IF EXISTS work_order CASCADE;
+DROP TABLE IF EXISTS workorder CASCADE;
+CREATE TABLE workorder (
+  id              BIGSERIAL NOT NULL, 
+  member_id       int8 NOT NULL, 
+  class_id        int4 NOT NULL, 
+  mch_id          int8 NOT NULL, 
+  flag            int4 NOT NULL, 
+  wip             varchar(40) NOT NULL, 
+  subject         varchar(120) NOT NULL, 
+  content         varchar(255) NOT NULL, 
+  is_opened       int4 NOT NULL, 
+  hope_desc       varchar(64) NOT NULL, 
+  first_photo     varchar(80) NOT NULL, 
+  photo_list      varchar(350) NOT NULL, 
+  status          int4 NOT NULL, 
+  allocate_aid    int8 NOT NULL, 
+  service_rank    int4 NOT NULL, 
+  service_apprise varchar(120) NOT NULL, 
+  is_usefully     int4 NOT NULL, 
+  create_time     int8 NOT NULL, 
+  update_time     int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE workorder IS '工单';
+COMMENT ON COLUMN workorder.id IS '编号';
+COMMENT ON COLUMN workorder.member_id IS '会员编号';
+COMMENT ON COLUMN workorder.class_id IS '类型, 1: 建议 2:申诉';
+COMMENT ON COLUMN workorder.mch_id IS '关联商户';
+COMMENT ON COLUMN workorder.flag IS '标志, 1:用户关闭';
+COMMENT ON COLUMN workorder.wip IS '关联业务, 如:CHARGE:2014050060';
+COMMENT ON COLUMN workorder.content IS '投诉内容';
+COMMENT ON COLUMN workorder.is_opened IS '是否开放评论';
+COMMENT ON COLUMN workorder.hope_desc IS '诉求描述';
+COMMENT ON COLUMN workorder.first_photo IS '图片';
+COMMENT ON COLUMN workorder.photo_list IS '图片列表';
+COMMENT ON COLUMN workorder.status IS '状态,1:待处理 2:处理中 3:已完结';
+COMMENT ON COLUMN workorder.allocate_aid IS '分配的客服编号';
+COMMENT ON COLUMN workorder.service_rank IS '服务评分';
+COMMENT ON COLUMN workorder.service_apprise IS '服务评价';
+COMMENT ON COLUMN workorder.is_usefully IS '是否有用 0:未评价 1:是 2:否';
+COMMENT ON COLUMN workorder.create_time IS '创建时间';
+COMMENT ON COLUMN workorder.update_time IS '更新时间';
 
+
+DROP TABLE IF EXISTS workorder_details CASCADE;
+
+
+DROP TABLE IF EXISTS workorder_comment CASCADE;
+CREATE TABLE workorder_comment (
+  id          BIGSERIAL NOT NULL, 
+  order_id    int8 NOT NULL, 
+  is_replay   int4 NOT NULL, 
+  content     varchar(255) NOT NULL, 
+  is_revert   int4 NOT NULL, 
+  ref_cid     int8 NOT NULL, 
+  create_time int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE workorder_comment IS '工单讨论';
+COMMENT ON COLUMN workorder_comment.id IS '编号';
+COMMENT ON COLUMN workorder_comment.order_id IS '案件编号';
+COMMENT ON COLUMN workorder_comment.is_replay IS '是否为回复信息,0:用户信息 1: 回复信息';
+COMMENT ON COLUMN workorder_comment.is_revert IS '是否撤回 0:否 1:是';
+COMMENT ON COLUMN workorder_comment.ref_cid IS '引用评论编号';
+COMMENT ON COLUMN workorder_comment.create_time IS '创建时间';
 
 
 

@@ -577,7 +577,7 @@ func (p *profileManagerImpl) copyCertificationInfo(src member.CerticationInfo, d
 	if dst == nil {
 		dst = &member.CerticationInfo{
 			MemberId:     p.memberId,
-			ReviewStatus: int(enum.ReviewAwaiting),
+			ReviewStatus: int(enum.ReviewPending),
 		}
 	}
 	dst.RealName = src.RealName
@@ -601,7 +601,7 @@ func (p *profileManagerImpl) GetCertificationInfo() *member.CerticationInfo {
 		if p.trustedInfo == nil {
 			p.trustedInfo = &member.CerticationInfo{
 				MemberId:     p.memberId,
-				ReviewStatus: int(enum.ReviewAwaiting),
+				ReviewStatus: int(enum.ReviewPending),
 			}
 		}
 	}
@@ -676,7 +676,7 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	err = p.copyCertificationInfo(*v, current)
 	if err == nil {
 		current.Remark = ""
-		current.ReviewStatus = int(enum.ReviewAwaiting) //标记为待处理
+		current.ReviewStatus = int(enum.ReviewPending) //标记为待处理
 		current.UpdateTime = time.Now().Unix()
 		p.trustedInfo = current
 		_, err = p.repo.SaveCertificationInfo(p.trustedInfo)

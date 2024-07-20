@@ -33,6 +33,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/domain/interface/work/workorder"
 )
 
 // 解决依赖
@@ -187,5 +188,9 @@ func GetInvoiceTenantRepo() invoice.IInvoiceTenantRepo {
 }
 
 func GetChatRepo() chat.IChatRepository {
+	panic(wire.Build(provideSets))
+}
+
+func GetWorkorderRepo() workorder.IWorkorderRepo {
 	panic(wire.Build(provideSets))
 }

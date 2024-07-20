@@ -84,7 +84,7 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 		IssueRemark:   "",
 		InvoicePic:    "",
 		ReceiveEmail:  v.ReceiveEmail,
-		InvoiceStatus: invoice.IssueAwaiting,
+		InvoiceStatus: invoice.IssuePending,
 	}
 	// 申请人信息
 	h := i.repo.Title().Get(v.TitleId)
@@ -184,7 +184,7 @@ func (i *invoiceRecordDomainImpl) GetItems() []*invoice.InvoiceItem {
 
 // Issue implements invoice.InvoiceDomain.
 func (i *invoiceRecordDomainImpl) Issue(picture string) error {
-	if i.value.InvoiceStatus != invoice.IssueAwaiting {
+	if i.value.InvoiceStatus != invoice.IssuePending {
 		return errors.New("invoice status error")
 	}
 	i.value.InvoiceStatus = invoice.IssueSuccess
@@ -210,7 +210,7 @@ func (i *invoiceRecordDomainImpl) Revert(reason string) error {
 	i.value.InvoiceStatus = invoice.IssueRevert
 	i.value.IssueRemark = reason
 	i.value.UpdateTime = int(time.Now().Unix())
-	_,err := i.repo.Save(i.value)
+	_, err := i.repo.Save(i.value)
 	return err
 }
 

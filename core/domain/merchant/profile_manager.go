@@ -40,7 +40,7 @@ func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, er
 		return 0, err
 	}
 	v.MchId = int(p.GetAggregateRootId())
-	v.ReviewStatus = int(enum.ReviewAwaiting)
+	v.ReviewStatus = int(enum.ReviewPending)
 	v.ReviewRemark = ""
 	v.ReviewTime = 0
 	// aName := p.valRepo.GetDistrictNames([]int32{e.Province, e.City, e.District})
@@ -100,7 +100,7 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 	if e == nil {
 		return errors.New("未找到企业认证信息")
 	}
-	if e.ReviewStatus != int(enum.ReviewAwaiting) {
+	if e.ReviewStatus != int(enum.ReviewPending) {
 		return errors.New("企业认证信息已审核")
 	}
 	e.ReviewTime = int(time.Now().Unix())
