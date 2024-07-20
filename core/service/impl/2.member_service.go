@@ -1427,7 +1427,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	//if latestApplyInfo != nil {
 	//	var sText string
 	//	switch latestApplyInfo.ReviewStatus {
-	//	case enum.ReviewAwaiting:
+	//	case enum.ReviewPending:
 	//		sText = "已申请"
 	//	case enum.ReviewPass:
 	//		sText = "已审核,等待打款"

@@ -189,7 +189,7 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 		OuterNo:     tradeNo,
 		Amount:      finalAmount,
 		CsnFee:      csnAmount,
-		ReviewStatus: enum.ReviewAwaiting,
+		ReviewStatus: enum.ReviewPending,
 		RelateUser:  member.DefaultRelateUser,
 		Remark:      "",
 		CreateTime:  unix,
@@ -217,7 +217,7 @@ func (a *accountImpl) ReviewWithdrawal_(id int32, pass bool, remark string) erro
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
 	}
-	if v.ReviewStatus != enum.ReviewAwaiting {
+	if v.ReviewStatus != enum.ReviewPending {
 		return member.ErrTakeOutState
 	}
 	// todo: 应该先冻结, 再扣除

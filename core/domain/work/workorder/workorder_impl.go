@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/work/workorder"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 )
 
@@ -37,6 +38,7 @@ func (w *workorderAggregateRootImpl) Submit() error {
 	if w.value.MemberId == 0 {
 		return errors.New("workorder member is empty")
 	}
+	w.value.OrderNo = domain.NewTradeNo(7, w.value.MemberId)
 	w.value.Status = workorder.StatusPending
 	w.value.CreateTime = int(time.Now().Unix())
 	w.value.UpdateTime = int(time.Now().Unix())

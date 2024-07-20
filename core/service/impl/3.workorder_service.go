@@ -15,7 +15,7 @@ type workorderServiceImpl struct {
 	serviceUtil
 }
 
-func NewWorkorderService(repo workorder.IWorkorderRepo)proto.WorkorderServiceServer {
+func NewWorkorderService(repo workorder.IWorkorderRepo) proto.WorkorderServiceServer {
 	return &workorderServiceImpl{
 		repo: repo,
 	}
@@ -105,6 +105,7 @@ func (w *workorderServiceImpl) GetWorkorder(_ context.Context, req *proto.Workor
 	iv := iw.Value()
 	return &proto.SWorkorder{
 		Id:             int64(iv.Id),
+		OrderNo:        iv.OrderNo,
 		MemberId:       int64(iv.MemberId),
 		ClassId:        int32(iv.ClassId),
 		MchId:          int64(iv.MchId),

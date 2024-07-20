@@ -684,6 +684,7 @@ DROP TABLE IF EXISTS work_order CASCADE;
 DROP TABLE IF EXISTS workorder CASCADE;
 CREATE TABLE workorder (
   id              BIGSERIAL NOT NULL, 
+  order_no        varchar(20) NOT NULL, 
   member_id       int8 NOT NULL, 
   class_id        int4 NOT NULL, 
   mch_id          int8 NOT NULL, 
@@ -705,6 +706,7 @@ CREATE TABLE workorder (
   PRIMARY KEY (id));
 COMMENT ON TABLE workorder IS '工单';
 COMMENT ON COLUMN workorder.id IS '编号';
+COMMENT ON COLUMN workorder.order_no IS '工单号';
 COMMENT ON COLUMN workorder.member_id IS '会员编号';
 COMMENT ON COLUMN workorder.class_id IS '类型, 1: 建议 2:申诉';
 COMMENT ON COLUMN workorder.mch_id IS '关联商户';
@@ -722,6 +724,7 @@ COMMENT ON COLUMN workorder.service_apprise IS '服务评价';
 COMMENT ON COLUMN workorder.is_usefully IS '是否有用 0:未评价 1:是 2:否';
 COMMENT ON COLUMN workorder.create_time IS '创建时间';
 COMMENT ON COLUMN workorder.update_time IS '更新时间';
+
 
 
 DROP TABLE IF EXISTS workorder_details CASCADE;

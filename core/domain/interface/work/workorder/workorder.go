@@ -65,6 +65,8 @@ type IWorkorderRepo interface {
 type Workorder struct {
 	// 编号
 	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 工单号
+	OrderNo string `json:"orderNo" db:"order_no" gorm:"column:order_no" bson:"orderNo"`
 	// 会员编号
 	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
 	// 反馈类型, 1: 建议 2:申诉

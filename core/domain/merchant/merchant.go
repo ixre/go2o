@@ -348,7 +348,7 @@ func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 		MchId:        int64(m.GetAggregateRootId()),
 		Rate:         1,
 		ReviewStatus: enum.ReviewPass,
-		//ReviewStatus: enum.ReviewAwaiting,
+		//ReviewStatus: enum.ReviewPending,
 	}
 	_, err := m._wsRepo.SaveWsWholesaler(v, true)
 	return v, err
