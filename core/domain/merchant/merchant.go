@@ -35,7 +35,7 @@ import (
 	"github.com/ixre/go2o/core/variable"
 )
 
-var _ merchant.IMerchant = new(merchantImpl)
+var _ merchant.IMerchantAggregateRoot = new(merchantImpl)
 
 type merchantImpl struct {
 	_value           *merchant.Merchant
@@ -86,7 +86,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	employeeRepo staff.IStaffRepo,
 	memberRepo member.IMemberRepo,
 	stationRepo station.IStationRepo,
-	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchant {
+	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantAggregateRoot {
 	mch := &merchantImpl{
 		_value:        v,
 		_repo:         rep,

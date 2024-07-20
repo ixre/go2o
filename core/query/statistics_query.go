@@ -75,6 +75,6 @@ func (s *StatisticsQuery) QuerySummary() *SummaryStatistics {
 		},
 		todayBeginTime,
 		order.StatAwaitingShipment,
-		wallet.ReviewAwaiting)
+		wallet.ReviewPending)
 	return &ss
 }

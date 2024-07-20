@@ -171,7 +171,7 @@ message MemberListSingle {
     // 昵称
     string nickname = 3;
     // 头像
-    string portrait = 4;
+    string profilePhoto = 4;
     // 等级
     int32 level = 5;
     // 积分
@@ -281,7 +281,7 @@ message SItemSalesHistory{
     // 买家昵称
     string buyerName = 2;
     // 买家头像
-    string buyerPortrait = 3;
+    string buyerProfilePhoto = 3;
     // 购买时间
     int64 buyTime = 4;
     // 是否已经支付

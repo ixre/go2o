@@ -19,7 +19,7 @@
 
 syntax = "proto3";
 option go_package = "./;proto";
-option java_package = "github.com.ixre.go2o-server.extend.lsp.rpc";
+option java_package = "com.github.go2o.rpc";
 
 import "global.proto";
 
@@ -27,23 +27,23 @@ import "global.proto";
 service InvoiceService {
     // 获取发票租户
     rpc GetTenant(InvoiceTenantRequest)returns(SInvoiceTenant){}
-    // 保存发票抬头
-    rpc SaveHeader (SaveHeaderRequest) returns (SaveHeaderResponse) {
+    // 新增发票抬头
+    rpc CreateInvoiceTitle (CreateInvoiceTitleRequest) returns (CreateInvoiceTitleResponse) {
     }
     // 保存发票
-    rpc CreateInvoice (SaveRecordRequest) returns (SaveRecordResponse) {
+    rpc RequestInvoice (InvoiceRequest) returns (RequestInvoiceResponse) {
     }
     // 获取发票
     rpc GetInvoice (InvoiceId) returns (SInvoice) {
     }
     // Issue 开具发票,更新发票图片
-    rpc Issue(InvoiceIssueRequest)returns (Result){}
+    rpc Issue(InvoiceIssueRequest)returns (ResultV2){}
     // Issue 发票开具失败
-    rpc IssueFail(InvoiceIssueFailRequest)returns (Result){}
+    rpc IssueFail(InvoiceIssueFailRequest)returns (ResultV2){}
     // SendMail 发送发票到邮件中
-    rpc SendMail(InvoiceSendMailRequest)returns (Result){}
+    rpc SendMail(InvoiceSendMailRequest)returns (ResultV2){}
     // Revert 撤销发票
-    rpc Revert(InvoiceRevertRequest)returns (Result){}
+    rpc Revert(InvoiceRevertRequest)returns (ResultV2){}
 }
 
 // InvoiceIssueRequest 发票开具请求
@@ -102,25 +102,23 @@ message InvoiceTenantRequest{
 // 发票租户
 message SInvoiceTenant{
     // 错误码
-    int32 errCode = 1;
+    int32 code = 1;
     // 错误信息
-    string errMsg = 2;
+    string msg = 2;
     // 租户编号
     int64 tenantId = 3; 
 }
 
-// 保存发票抬头请求
-message SaveHeaderRequest{
-    // 编号
-    int64 id = 1;
+// 新增发票抬头请求
+message CreateInvoiceTitleRequest{
     // 租户编号
     int64 tenantId = 2;
     // 发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票
     int32 invoiceType = 3;
     // 开具类型, 1: 个人 2:企业
     int32 issueType = 4;
-    // HeaderName
-    string headerName = 5;
+    // 抬头名称
+    string titleName = 5;
     // 纳税人识别号
     string taxCode = 6;
     // 注册场所地址
@@ -131,53 +129,49 @@ message SaveHeaderRequest{
     string bankName = 9;
     // 基本户开户账号
     string bankAccount = 10;
-    // 备注
-    string remarks = 11;
     // 是否默认
     int32 isDefault = 12;
 }
 
-// 保存发票抬头响应
-message SaveHeaderResponse{
+// 新增发票抬头响应
+message CreateInvoiceTitleResponse{
     // 错误码
-    int32 errCode = 1;
+    int32 code = 1;
     // 错误信息
-    string errMsg = 2;
+    string msg = 2;
     // 编号
     int64 id = 3;
 }
 
 
 // 保存发票请求
-message SaveRecordRequest{
+message InvoiceRequest{
     // 申请发票租户编号
     int64 tenantId = 1;
     // 开具租户编号
     int64 issueTenantId = 2;
-    // 发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票
-    int32 invoiceType = 3;
-    // 开具抬头类型, 1: 个人 2:企业
-    int32 issueType = 4;
-    // 买方名称
-    string purchaserName = 5;
-    // 买方纳税人识别号
-    string purchaserTaxCode = 6;
+    // 发票抬头编号
+    int64 titleId = 3;
+    // 发票内容
+    string subject = 4;
     // 发票项目
-    repeated SInvoiceItem items = 7;
+    repeated SInvoiceItem items = 5;
     // 发票接收邮箱地址
-    string receiveEmail = 8; 
+    string receiveEmail = 6; 
+    // 关联单据编号
+    string outerNo = 7;
     // 备注
-    string remark = 9;
+    string remark = 8;
 }
 
 // 保存发票响应
-message SaveRecordResponse{
+message RequestInvoiceResponse{
     // 错误码
-    int32 errCode = 1;
+    int32 code = 1;
     // 错误信息
-    string errMsg = 2;
+    string msg = 2;
     // 发票ID
-    int64 id = 3;
+    int64 invoiceId = 3;
 }
 
 // 发票编号
@@ -188,8 +182,6 @@ message InvoiceId{
     int64 invoiceId = 2;
  }
  
-
-
 // 发票
 message SInvoice{
     // 编号
@@ -247,14 +239,10 @@ message SInvoiceItem{
     string itemSpec = 2;
     // 价格
     double price = 3;
-    // 数量
-    int32 quantity = 4;
     // 税率
-    double taxRate = 5;
+    double taxRate = 4;
+    // 数量
+    int32 quantity = 5;
     // 计量单位
     string unit = 6;
-    // 总金额
-    double amount = 7;
-    // 税额
-    double taxAmount = 8;
 }

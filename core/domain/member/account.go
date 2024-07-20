@@ -380,7 +380,7 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, p
 	l, err := a.createBalanceLog(member.KindCarry, d.Title, d.Amount, d.OuterNo, true)
 	if freeze {
 		a.value.FreezeBalance += int64(d.Amount)
-		l.ReviewStatus = enum.ReviewAwaiting
+		l.ReviewStatus = enum.ReviewPending
 		l.Remark = "待审核"
 	} else {
 		a.value.Balance += int64(d.Amount)
@@ -400,7 +400,7 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, p
 
 func (a *accountImpl) reviewBalanceCarryTo(requestId int, pass bool, reason string) error {
 	l := a.rep.GetBalanceLog(requestId)
-	if l.ReviewStatus != int32(enum.ReviewAwaiting) {
+	if l.ReviewStatus != int32(enum.ReviewPending) {
 		return wallet.ErrNotSupport
 	}
 	a.value.FreezeBalance -= l.Amount
@@ -429,7 +429,7 @@ func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) 
 	l, err := a.createIntegralLog(member.KindCarry, d.Title, d.Amount, d.OuterNo, true)
 	if freeze {
 		a.value.FreezeIntegral += d.Amount
-		l.ReviewStatus = int16(enum.ReviewAwaiting)
+		l.ReviewStatus = int16(enum.ReviewPending)
 		l.Remark = "待审核"
 	} else {
 		a.value.Integral += d.Amount
@@ -449,7 +449,7 @@ func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) 
 
 func (a *accountImpl) reviewIntegralCarryTo(requestId int, pass bool, reason string) error {
 	l := a.rep.GetIntegralLog(requestId)
-	if l.ReviewStatus != int16(enum.ReviewAwaiting) {
+	if l.ReviewStatus != int16(enum.ReviewPending) {
 		return wallet.ErrNotSupport
 	}
 	a.value.FreezeIntegral -= l.Value
@@ -722,10 +722,11 @@ func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int6
 // FreezeWallet 冻结钱包
 func (a *accountImpl) freezeWallet(p member.AccountOperateData, relateUser int64) (int, error) {
 	id, err := a.wallet.Freeze(wallet.OperateData{
-		Title:   p.Title,
-		Amount:  p.Amount,
-		OuterNo: p.OuterNo,
-		Remark:  p.Remark,
+		Title:      p.Title,
+		Amount:     p.Amount,
+		OuterNo:    p.OuterNo,
+		Remark:     p.Remark,
+		TradeLogId: p.TradeLogId,
 	}, wallet.Operator{
 		OperatorUid:  int(relateUser),
 		OperatorName: "",

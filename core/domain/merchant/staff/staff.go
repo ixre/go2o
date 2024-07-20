@@ -12,13 +12,13 @@ import (
 var _ staff.IStaffManager = new(staffManagerImpl)
 
 type staffManagerImpl struct {
-	_mch         merchant.IMerchant
+	_mch         merchant.IMerchantAggregateRoot
 	_repo        staff.IStaffRepo
 	_memberRepo  member.IMemberRepo
 	_stationRepo station.IStationRepo
 }
 
-func NewStaffManager(mch merchant.IMerchant,
+func NewStaffManager(mch merchant.IMerchantAggregateRoot,
 	staffRepo staff.IStaffRepo,
 	memberRepo member.IMemberRepo,
 	stationRepo station.IStationRepo) staff.IStaffManager {

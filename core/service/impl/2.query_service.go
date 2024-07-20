@@ -234,7 +234,7 @@ func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListReq
 			MemberId:      int64(v.MemberId),
 			Username:      v.Usr,
 			Nickname:      v.Name,
-			Portrait:      v.Avatar,
+			ProfilePhoto:  v.Avatar,
 			Level:         v.Level,
 			Integral:      v.Integral,
 			Balance:       v.Balance,
@@ -252,10 +252,10 @@ func (q *queryService) SearchMembers(_ context.Context, r *proto.MemberSearchReq
 	}
 	for i, v := range list {
 		ret.Value[i] = &proto.MemberListSingle{
-			MemberId: int64(v.Id),
-			Username: v.User,
-			Nickname: v.Name,
-			Portrait: v.Avatar,
+			MemberId:     int64(v.Id),
+			Username:     v.User,
+			Nickname:     v.Name,
+			ProfilePhoto: v.Avatar,
 		}
 	}
 	return ret, nil
@@ -406,11 +406,11 @@ func (q *queryService) QueryItemSalesHistory(_ context.Context, req *proto.Query
 	}
 	for _, v := range list {
 		dst := &proto.SItemSalesHistory{
-			BuyerUserCode:   v.BuyerUserCode,
-			BuyerName:       v.BuyerName,
-			BuyerPortrait:   v.BuyerPortrait,
-			BuyTime:         v.BuyTime,
-			IsFinishPayment: v.OrderState > order.StatAwaitingPayment,
+			BuyerUserCode:     v.BuyerUserCode,
+			BuyerName:         v.BuyerName,
+			BuyerProfilePhoto: v.BuyerProfilePhoto,
+			BuyTime:           v.BuyTime,
+			IsFinishPayment:   v.OrderState > order.StatAwaitingPayment,
 		}
 		if req.MaskBuyer {
 			dst.BuyerName = format.MaskNickname(dst.BuyerName)

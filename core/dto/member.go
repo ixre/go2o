@@ -26,7 +26,7 @@ type (
 		// 等级
 		Level int32
 		// 头像
-		Portrait string
+		ProfilePhoto string
 		// 昵称
 		Nickname string
 		// 电话

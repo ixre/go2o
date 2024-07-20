@@ -488,13 +488,13 @@ func (s *memberService) ConfirmLevelUpRequest(_ context.Context, r *proto.LevelU
 	return s.result(err), nil
 }
 
-// ChangeHeadPortrait 上传会员头像
-func (s *memberService) ChangeHeadPortrait(_ context.Context, r *proto.ChangePortraitRequest) (*proto.Result, error) {
+// ChangeProfilePhoto 上传会员头像
+func (s *memberService) ChangeProfilePhoto(_ context.Context, r *proto.ChangeProfilePhotoRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	err := m.Profile().ChangeHeadPortrait(r.PortraitUrl)
+	err := m.Profile().ChangeProfilePhoto(r.PortraitUrl)
 	return s.result(err), nil
 }
 
@@ -508,17 +508,17 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	}
 	salt := util.RandString(6)
 	v := &member.Member{
-		Username: r.Username,
-		Salt:     salt,
-		Password: domain.Sha1Pwd(r.Password, salt),
-		Nickname: r.Nickname,
-		RealName: "",
-		Portrait: "", //todo: default avatar
-		RoleFlag: int(r.UserType),
-		Phone:    r.Phone,
-		Email:    r.Email,
-		RegFrom:  r.RegFrom,
-		RegIp:    r.RegIp,
+		Username:     r.Username,
+		Salt:         salt,
+		Password:     domain.Sha1Pwd(r.Password, salt),
+		Nickname:     r.Nickname,
+		RealName:     "",
+		ProfilePhoto: "", //todo: default avatar
+		RoleFlag:     int(r.UserType),
+		Phone:        r.Phone,
+		Email:        r.Email,
+		RegFrom:      r.RegFrom,
+		RegIp:        r.RegIp,
 	}
 	// 验证邀请码
 	inviterId, err := s.repo.GetManager().CheckInviteRegister(r.InviterCode)
@@ -557,7 +557,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 }
 
 // 获取注册商户雇员的商户信息,如果其他角色,则返回nil
-func (s *memberService) getRegisterMerchant(r *proto.RegisterMemberRequest) (merchant.IMerchant, error) {
+func (s *memberService) getRegisterMerchant(r *proto.RegisterMemberRequest) (merchant.IMerchantAggregateRoot, error) {
 	mchId := typeconv.MustInt(types.OrValue(r.Ext["mchId"], "0"))
 	if r.UserType == member.RoleMchStaff {
 		if mchId == 0 {
@@ -586,7 +586,7 @@ func (s *memberService) GetInviter(_ context.Context, id *proto.MemberIdRequest)
 				mv := mm.GetValue()
 				ret.InviterUsername = mv.Username
 				ret.InviterNickname = mv.Nickname
-				ret.InviterPortrait = mv.Portrait
+				ret.InviterProfilePhoto = mv.ProfilePhoto
 				ret.InviterPhone = mv.Phone
 			}
 		}
@@ -772,10 +772,10 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.LoginResponse, error) {
 	v, code, err := s.tryLogin(r.Username, r.Password, r.Update)
 	ret := &proto.LoginResponse{
-		ErrCode: code,
+		Code: code,
 	}
 	if err != nil {
-		ret.ErrMsg = err.Error()
+		ret.Msg = err.Error()
 		return ret, nil
 	} else {
 		ret.MemberId = v.Id
@@ -1195,13 +1195,13 @@ func (s *memberService) GetPagingInvitationMembers(_ context.Context, r *proto.M
 		for i := 0; i < l; i++ {
 			rows[i].InvitationNum = num[rows[i].MemberId]
 			ret.Data = append(ret.Data, &proto.SInvitationMember{
-				MemberId: int64(rows[i].MemberId),
-				Username: rows[i].Username,
-				Level:    rows[i].Level,
-				Portrait: rows[i].Portrait,
-				Nickname: rows[i].Nickname,
-				Phone:    rows[i].Phone,
-				RegTime:  rows[i].RegTime,
+				MemberId:     int64(rows[i].MemberId),
+				Username:     rows[i].Username,
+				Level:        rows[i].Level,
+				ProfilePhoto: rows[i].ProfilePhoto,
+				Nickname:     rows[i].Nickname,
+				Phone:        rows[i].Phone,
+				RegTime:      rows[i].RegTime,
 				//Im:            rows[i].Im,
 				InvitationNum: int32(rows[i].InvitationNum),
 			})
@@ -1244,15 +1244,16 @@ func (s *memberService) Freeze(_ context.Context, r *proto.AccountFreezeRequest)
 	}
 	id, err := m.GetAccount().Freeze(member.AccountType(r.AccountType),
 		member.AccountOperateData{
-			Title:   r.Title,
-			Amount:  int(r.Amount),
-			OuterNo: r.OuterNo,
-			Remark:  r.Remark,
+			Title:      r.Title,
+			Amount:     int(r.Amount),
+			OuterNo:    r.OuterNo,
+			Remark:     r.Remark,
+			TradeLogId: int(r.TradeLogId),
 		}, 0)
 	if err != nil {
 		return &proto.AccountFreezeResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
-	return &proto.AccountFreezeResponse{LogId: int64(id)}, nil
+	return &proto.AccountFreezeResponse{TradeLogId: int64(id)}, nil
 }
 
 func (s *memberService) Unfreeze(_ context.Context, r *proto.AccountUnfreezeRequest) (*proto.Result, error) {
@@ -1579,7 +1580,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		RegFrom:        src.RegFrom,
 		UserFlag:       int32(src.UserFlag),
 		Role:           int32(src.RoleFlag),
-		Portrait:       src.Portrait,
+		ProfilePhoto:   src.ProfilePhoto,
 		Phone:          src.Phone,
 		Email:          src.Email,
 		Nickname:       src.Nickname,
@@ -1591,33 +1592,33 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 
 func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile {
 	return &proto.SProfile{
-		MemberId:   src.MemberId,
-		Nickname:   src.Name,
-		Portrait:   src.Avatar,
-		BirthDay:   src.BirthDay,
-		Phone:      src.Phone,
-		Gender:     src.Gender,
-		Address:    src.Address,
-		Im:         src.Im,
-		Email:      src.Email,
-		Province:   src.Province,
-		City:       src.City,
-		District:   src.District,
-		Remark:     src.Remark,
-		Ext1:       src.Ext1,
-		Ext2:       src.Ext2,
-		Ext3:       src.Ext3,
-		Ext4:       src.Ext4,
-		Ext5:       src.Ext5,
-		Ext6:       src.Ext6,
-		UpdateTime: src.UpdateTime,
+		MemberId:     src.MemberId,
+		Nickname:     src.Name,
+		ProfilePhoto: src.Avatar,
+		BirthDay:     src.BirthDay,
+		Phone:        src.Phone,
+		Gender:       src.Gender,
+		Address:      src.Address,
+		Im:           src.Im,
+		Email:        src.Email,
+		Province:     src.Province,
+		City:         src.City,
+		District:     src.District,
+		Remark:       src.Remark,
+		Ext1:         src.Ext1,
+		Ext2:         src.Ext2,
+		Ext3:         src.Ext3,
+		Ext4:         src.Ext4,
+		Ext5:         src.Ext5,
+		Ext6:         src.Ext6,
+		UpdateTime:   src.UpdateTime,
 	}
 }
 
 func (s *memberService) parseComplexMemberDto(src *member.ComplexMember) *proto.SComplexMember {
 	return &proto.SComplexMember{
 		Nickname:            src.Nickname,
-		Portrait:            src.Avatar,
+		ProfilePhoto:        src.Avatar,
 		Exp:                 int32(src.Exp),
 		Level:               int32(src.Level),
 		LevelName:           src.LevelName,
@@ -1671,7 +1672,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 	return &member.Profile{
 		MemberId:   src.MemberId,
 		Name:       src.Nickname,
-		Avatar:     src.Portrait,
+		Avatar:     src.ProfilePhoto,
 		BirthDay:   src.BirthDay,
 		Phone:      src.Phone,
 		Address:    src.Address,

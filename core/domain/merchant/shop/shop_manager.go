@@ -23,13 +23,13 @@ import (
 var _ shop.IShopManager = new(shopManagerImpl)
 
 type shopManagerImpl struct {
-	merchant     merchant.IMerchant
+	merchant     merchant.IMerchantAggregateRoot
 	repo         shop.IShopRepo
 	valueRepo    valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
 }
 
-func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
+func NewShopManagerImpl(m merchant.IMerchantAggregateRoot, rep shop.IShopRepo,
 	valueRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) shop.IShopManager {
 	return &shopManagerImpl{
 		merchant:     m,

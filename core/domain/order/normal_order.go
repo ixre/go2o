@@ -1019,7 +1019,7 @@ func (o *normalOrderImpl) takeGoodsStock(itemId, skuId int64, quantity int32) er
 }
 
 // 更新返现到会员账户
-func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
+func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchantAggregateRoot,
 	m member.IMemberAggregateRoot, fee int64, unixTime int64) error {
 	if fee == 0 {
 		return nil
@@ -1051,7 +1051,7 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 }
 
 // 处理返现促销
-func (o *normalOrderImpl) handleCashBackPromotions(pt merchant.IMerchant,
+func (o *normalOrderImpl) handleCashBackPromotions(pt merchant.IMerchantAggregateRoot,
 	m member.IMemberAggregateRoot) error {
 	proms := o.GetPromotionBinds()
 	for _, v := range proms {
@@ -1064,7 +1064,7 @@ func (o *normalOrderImpl) handleCashBackPromotions(pt merchant.IMerchant,
 }
 
 // 处理返现促销
-func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
+func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchantAggregateRoot,
 	m member.IMemberAggregateRoot,
 	v *order.OrderPromotionBind, pm promotion.IPromotion) error {
 	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)

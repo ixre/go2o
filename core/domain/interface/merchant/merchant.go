@@ -10,6 +10,7 @@
 package merchant
 
 import (
+	"github.com/ixre/go2o/core/domain"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
@@ -30,11 +31,10 @@ const (
 )
 
 type (
-	// IMerchant 商户接口
+	// IMerchantAggregateRoot 商户接口
 	//todo: 实现商户等级,商户的品牌
-	IMerchant interface {
-		// GetAggregateRootId 获取编号
-		GetAggregateRootId() int
+	IMerchantAggregateRoot interface {
+		domain.IAggregateRoot
 		GetValue() Merchant
 		// ContainFlag 判断是否包含标志
 		ContainFlag(f int) bool
@@ -128,59 +128,9 @@ type (
 
 	IMerchantManager interface {
 		// GetMerchantByMemberId 获取会员关联的商户
-		GetMerchantByMemberId(memberId int) IMerchant
+		GetMerchantByMemberId(memberId int) IMerchantAggregateRoot
 	}
 
-	// MchSignUp 商户申请信息
-	MchSignUp struct {
-		Id int32 `db:"id" pk:"yes" auth:"yes"`
-		// 申请单号
-		SignNo string `db:"sign_no"`
-		// 会员编号
-		MemberId int64 `db:"member_id"`
-		// 用户名
-		Username string `db:"user"`
-		// 密码
-		Password string `db:"pwd"`
-		// 盐
-		Salt string `db:"salt"`
-		// 商户名称号
-		MchName string `db:"mch_name"`
-		// 省
-		Province int32 `db:"province"`
-		// 市
-		City int32 `db:"city"`
-		// 区
-		District int32 `db:"district"`
-		// 详细地址
-		Address string `db:"address"`
-		// 店铺店铺
-		ShopName string `db:"shop_name"`
-		// 公司名称
-		CompanyName string `db:"company_name"`
-		// 营业执照编号
-		CompanyNo string `db:"company_no"`
-		// 法人
-		PersonName string `db:"person_name"`
-		// 法人身份证
-		PersonId string `db:"person_id"`
-		// 法人身份证
-		PersonImage string `db:"person_image"`
-		// 联系电话
-		Phone string `db:"phone"`
-		// 营业执照图片
-		CompanyImage string `db:"company_image"`
-		// 委托书
-		AuthDoc string `db:"auth_doc"`
-		// 备注
-		Remark string `db:"remark"`
-		// 提交时间
-		SubmitTime int64 `db:"submit_time"`
-		// 是否通过
-		Reviewed int32 `db:"review_status"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-	}
 	// 商户
 	ComplexMerchant struct {
 		Id int32
@@ -220,48 +170,48 @@ type (
 		LastLoginTime int64
 	}
 
-	// Merchant 商户
+	// MchMerchant 商户
 	Merchant struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
+		Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
 		// 会员编号
-		MemberId int `db:"member_id" json:"memberId" bson:"memberId"`
+		MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
 		// 登录用户
-		Username string `db:"username" json:"username" bson:"username"`
+		Username string `json:"username" db:"username" gorm:"column:username" bson:"username"`
 		// 登录密码
-		Password string `db:"password" json:"password" bson:"password"`
+		Password string `json:"password" db:"password" gorm:"column:password" bson:"password"`
 		// 邮箱地址
-		MailAddr string `db:"mail_addr" json:"mailAddr" bson:"mailAddr"`
+		MailAddr string `json:"mailAddr" db:"mail_addr" gorm:"column:mail_addr" bson:"mailAddr"`
 		// 加密盐
-		Salt string `db:"salt" json:"salt" bson:"salt"`
+		Salt string `json:"salt" db:"salt" gorm:"column:salt" bson:"salt"`
 		// 名称
-		MchName string `db:"mch_name" json:"mchName" bson:"mchName"`
+		MchName string `json:"mchName" db:"mch_name" gorm:"column:mch_name" bson:"mchName"`
 		// 是否自营
-		IsSelf int16 `db:"is_self" json:"isSelf" bson:"isSelf"`
+		IsSelf int16 `json:"isSelf" db:"is_self" gorm:"column:is_self" bson:"isSelf"`
 		// 标志
-		Flag int `db:"flag" json:"flag" bson:"flag"`
+		Flag int `json:"flag" db:"flag" gorm:"column:flag" bson:"flag"`
 		// 商户等级
-		Level int `db:"level" json:"level" bson:"level"`
+		Level int `json:"level" db:"level" gorm:"column:level" bson:"level"`
 		// 所在省
-		Province int `db:"province" json:"province" bson:"province"`
+		Province int `json:"province" db:"province" gorm:"column:province" bson:"province"`
 		// 所在市
-		City int `db:"city" json:"city" bson:"city"`
+		City int `json:"city" db:"city" gorm:"column:city" bson:"city"`
 		// 所在区
-		District int `db:"district" json:"district" bson:"district"`
+		District int `json:"district" db:"district" gorm:"column:district" bson:"district"`
 		// 公司地址
-		Address string `db:"address" json:"address" bson:"address"`
+		Address string `json:"address" db:"address" gorm:"column:address" bson:"address"`
 		// 标志
-		Logo string `db:"logo" json:"logo" bson:"logo"`
+		Logo string `json:"logo" db:"logo" gorm:"column:logo" bson:"logo"`
 		// 公司电话
-		Tel string `db:"tel" json:"tel" bson:"tel"`
-		// 状态: 0:待认证 1:已开通  2:停用  3: 关闭
-		Status int16 `db:"status" json:"status" bson:"status"`
+		Tel string `json:"tel" db:"tel" gorm:"column:tel" bson:"tel"`
+		// 状态: 0:待审核 1:已开通  2:停用  3: 关闭
+		Status int16 `json:"status" db:"status" gorm:"column:status" bson:"status"`
 		// 过期时间
-		ExpiresTime int `db:"expires_time" json:"expiresTime" bson:"expiresTime"`
+		ExpiresTime int `json:"expiresTime" db:"expires_time" gorm:"column:expires_time" bson:"expiresTime"`
 		// 最后登录时间
-		LastLoginTime int `db:"last_login_time" json:"lastLoginTime" bson:"lastLoginTime"`
+		LastLoginTime int `json:"lastLoginTime" db:"last_login_time" gorm:"column:last_login_time" bson:"lastLoginTime"`
 		// 创建时间
-		CreateTime int `db:"create_time" json:"createTime" bson:"createTime"`
+		CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 	}
 
 	// 商户账户表
@@ -345,6 +295,6 @@ type (
 	}
 )
 
-func (m Merchant) TableName()string {
+func (m Merchant) TableName() string {
 	return "mch_merchant"
 }

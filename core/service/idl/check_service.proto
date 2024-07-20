@@ -65,7 +65,7 @@ message CompareCheckCodeRequest {
   string receptAccount = 2;
   // 校验码
   string checkCode = 3;
-  // 验证成功后是否充值
+  // 验证成功后是否重置
   bool resetIfOk = 4;
 }
 
@@ -88,6 +88,8 @@ message GrantAccessTokenRequest{
   sint64 userId = 2;
   // 令牌过期时间(单位:s)
   sint64 expiresTime = 3;
+  // 令牌主题
+  string sub = 4;
 }
 
 // 发放访问令牌响应
@@ -106,6 +108,8 @@ message CheckAccessTokenRequest{
   sint64 checkExpireTime = 2;
   // 新生成令牌的有效时间
   sint64 renewExpiresTime = 3;
+    // 令牌主题
+  string sub = 4;
 }
 
 // 检查令牌响应

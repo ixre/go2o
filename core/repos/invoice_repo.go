@@ -2,6 +2,7 @@ package repos
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/invoice"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 	impl "github.com/ixre/go2o/core/domain/invoice"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/infrastructure/logger"
@@ -11,22 +12,25 @@ var _ invoice.IInvoiceTenantRepo = new(invoiceTenantRepoImpl)
 
 type invoiceTenantRepoImpl struct {
 	fw.BaseRepository[invoice.InvoiceTenant]
-	headerRepo invoice.IInvoiceHeaderRepo
+	headerRepo invoice.IInvoiceTitleRepo
 	itemRepo   invoice.IInvoiceItemRepo
 	recordRepo invoice.IInvoiceRecordRepo
+	mchRepo    merchant.IMerchantRepo
 }
 
 // NewInvoiceTenantRepo 创建发票租户仓储
-func NewInvoiceTenantRepo(o fw.ORM) invoice.IInvoiceTenantRepo {
-	r := &invoiceTenantRepoImpl{}
+func NewInvoiceTenantRepo(o fw.ORM, mchRepo merchant.IMerchantRepo) invoice.IInvoiceTenantRepo {
+	r := &invoiceTenantRepoImpl{
+		mchRepo: mchRepo,
+	}
 	r.ORM = o
 	return r
 }
 
-// Header implements invoice.IInvoiceTenantRepo.
-func (i *invoiceTenantRepoImpl) Header() invoice.IInvoiceHeaderRepo {
+// Title implements invoice.IInvoiceTenantRepo.
+func (i *invoiceTenantRepoImpl) Title() invoice.IInvoiceTitleRepo {
 	if i.headerRepo == nil {
-		i.headerRepo = NewInvoiceHeaderRepo(i.ORM)
+		i.headerRepo = NewInvoiceTitleRepo(i.ORM)
 	}
 	return i.headerRepo
 }
@@ -52,9 +56,9 @@ func (i *invoiceTenantRepoImpl) CreateTenant(v *invoice.InvoiceTenant) invoice.I
 	e := i.FindBy("tenant_type=? AND tenant_uid=?", v.TenantType, v.TenantUid)
 	if e != nil {
 		// 已经存在租户
-		return impl.NewInvoiceTenant(e, i)
+		return impl.NewInvoiceTenant(e, i, i.mchRepo)
 	}
-	t := impl.NewInvoiceTenant(v, i)
+	t := impl.NewInvoiceTenant(v, i, i.mchRepo)
 	err := t.Create()
 	if err != nil {
 		logger.Error("创建租户失败: %+v", v)
@@ -67,20 +71,20 @@ func (i *invoiceTenantRepoImpl) CreateTenant(v *invoice.InvoiceTenant) invoice.I
 func (i *invoiceTenantRepoImpl) GetTenant(id int) invoice.InvoiceUserAggregateRoot {
 	v := i.Get(id)
 	if v != nil {
-		return impl.NewInvoiceTenant(v, i)
+		return impl.NewInvoiceTenant(v, i, i.mchRepo)
 	}
 	return nil
 }
 
-var _ invoice.IInvoiceHeaderRepo = new(invoiceHeaderRepoImpl)
+var _ invoice.IInvoiceTitleRepo = new(invoiceTitleRepoImpl)
 
-type invoiceHeaderRepoImpl struct {
-	fw.BaseRepository[invoice.InvoiceHeader]
+type invoiceTitleRepoImpl struct {
+	fw.BaseRepository[invoice.InvoiceTitle]
 }
 
-// NewInvoiceHeaderRepo 创建发票抬头仓储
-func NewInvoiceHeaderRepo(o fw.ORM) invoice.IInvoiceHeaderRepo {
-	r := &invoiceHeaderRepoImpl{}
+// NewInvoiceTitleRepo 创建发票抬头仓储
+func NewInvoiceTitleRepo(o fw.ORM) invoice.IInvoiceTitleRepo {
+	r := &invoiceTitleRepoImpl{}
 	r.ORM = o
 	return r
 }

@@ -21,6 +21,8 @@ type (
 		OrgNo string `db:"org_no" json:"orgNo" bson:"orgNo"`
 		// 营业执照照片
 		OrgPic string `db:"org_pic" json:"orgPic" bson:"orgPic"`
+		// 营业执照地址
+		OrgAddress string `db:"org_address" json:"orgAddress" bson:"orgAddress"`
 		// 办公地
 		WorkCity int `db:"work_city" json:"workCity" bson:"workCity"`
 		// 资质图片
@@ -67,3 +69,7 @@ type (
 		ChangePassword(newPassword, oldPwd string) error
 	}
 )
+
+func (a *Authenticate) TableName() string {
+	return "mch_authenticate"
+}

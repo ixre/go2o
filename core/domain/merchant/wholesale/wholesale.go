@@ -41,7 +41,7 @@ func (w *wholesalerImpl) Value() *wholesaler.WsWholesaler {
 
 // 审核批发商
 func (w *wholesalerImpl) Review(pass bool, reason string) error {
-	if w.value.ReviewStatus == enum.ReviewAwaiting {
+	if w.value.ReviewStatus == enum.ReviewPending {
 		if pass {
 			w.value.ReviewStatus = enum.ReviewPass
 		} else {

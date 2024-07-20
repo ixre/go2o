@@ -1,0 +1,147 @@
+syntax = "proto3";
+
+import "global.proto";
+
+option go_package = "./;proto";
+option java_package = "com.github.go2o.rpc";
+
+
+
+// 工单服务
+service WorkorderService {
+    // 保存工单
+    rpc SubmitWorkorder (SubmitWorkorderRequest) returns (SubmitWorkorderResponse) {
+    }
+    // 获取工单
+    rpc GetWorkorder (WorkorderId) returns (SWorkorder) {
+    }
+    // 删除工单
+    rpc DeleteWorkorder (WorkorderId) returns (ResultV2) {
+    }
+
+    // 分配客服
+    rpc AllocateAgentId(AllocateWorkorderAgentRequest) returns (ResultV2) {
+    }
+	// 完结
+	rpc Finish(WorkorderId) returns (ResultV2) {
+    }
+	// 用户关闭工单
+	rpc Close(WorkorderId) returns (ResultV2) {
+    }
+	// 评价
+    rpc Apprise(WorkorderAppriseRequest) returns (ResultV2) {
+    }
+
+	// 提交回复
+	rpc SubmitComment(SubmitWorkorderCommentRequest) returns (ResultV2) {
+    }
+
+}
+
+// 分配工单客服请求
+message AllocateWorkorderAgentRequest{
+   // 工单编号
+   int64 workorderId = 1;
+   // 用户编号
+   int64 userId  = 2;
+}
+
+// 工单评价请求
+message WorkorderAppriseRequest{
+   // 工单编号
+   int64 workorderId = 1;
+   // 是否有用
+   bool isUsefully = 2;
+   // 评分
+   int32 rank = 3;
+   // 评价
+   string apprise = 4;
+}
+
+// 提交工单评论请求
+message SubmitWorkorderCommentRequest{
+    // 工单编号
+    int64 workorderId = 1;
+    // 评论内容
+    string content= 2;
+    // 是否为回复
+    bool isReplay =3 ;
+    // 回复的评论编号
+    int32 refCommentId = 4;
+}
+// 提交工单请求
+message SubmitWorkorderRequest{
+    // 会员编号
+    int64 memberId = 1;
+    // 类型, 1: 建议 2:申诉
+    int32 classId = 2;
+    // 关联商户
+    int64 mchId = 3;
+    // 关联业务, 如:CHARGE:2014050060
+    string wip = 4;
+    // Subject
+    string subject = 5;
+    // 投诉内容
+    string content = 6;
+    // 是否开放评论
+    int32 isOpened = 7;
+    // 诉求描述
+    string hopeDesc = 8;
+    // 图片列表
+    string photoList = 9;
+}
+
+// 保存工单响应
+message SubmitWorkorderResponse{
+    int32 code = 1;
+    string msg = 2;
+    int64 workorderId = 3;
+}
+
+// 工单编号
+message WorkorderId{
+   // 工单编号
+   int64 workorderId = 1;
+}
+
+// 工单
+message SWorkorder{
+    // 编号
+    int64 id = 1;
+    // 会员编号
+    int64 memberId = 2;
+    // 类型, 1: 建议 2:申诉
+    int32 classId = 3;
+    // 关联商户
+    int64 mchId = 4;
+    // 标志, 1:用户关闭
+    int32 flag = 5;
+    // 关联业务, 如:CHARGE:2014050060
+    string wip = 6;
+    // Subject
+    string subject = 7;
+    // 投诉内容
+    string content = 8;
+    // 是否开放评论
+    int32 isOpened = 9;
+    // 诉求描述
+    string hopeDesc = 10;
+    // 图片
+    string firstPhoto = 11;
+    //m 
+    string photoList = 12;
+    // 状态,1:待处理 2:处理中 3:已完结
+    int32 status = 13;
+    // 分配的客服编号
+    int64 allocateAid = 14;
+    // 服务评分
+    int32 serviceRank = 15;
+    // 服务评价
+    string serviceApprise = 16;
+    // 是否有用 0:未评价 1:是 2:否
+    int32 isUsefully = 17;
+    // 创建时间
+    int64 createTime = 18;
+    // 更新时间
+    int64 updateTime = 19;
+}

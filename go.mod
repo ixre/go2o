@@ -10,26 +10,26 @@ require (
 	github.com/gomodule/redigo v1.9.2
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/ixre/alidayu v0.0.0-20160128071321-7eadea36c79c
-	github.com/ixre/gof v1.15.21
+	github.com/ixre/gof v1.16.1
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/nats-io/nats.go v1.36.0
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/smartwalle/resize v1.0.0
 	// indirect
-	google.golang.org/grpc v1.64.0
+	google.golang.org/grpc v1.65.0
 )
 
 require google.golang.org/protobuf v1.34.2
 
 require (
-	github.com/ClickHouse/clickhouse-go/v2 v2.25.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.26.0
 	github.com/google/wire v0.6.0
 	github.com/mozillazg/go-pinyin v0.20.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.942
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.959
 	go.etcd.io/etcd/client/v3 v3.5.14
-	golang.org/x/net v0.26.0
+	golang.org/x/net v0.27.0
 	golang.org/x/text v0.16.0
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.10
@@ -43,8 +43,8 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240610135401-a8a62080eff3 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240610135401-a8a62080eff3 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240708141625-4ad9e859172b // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240708141625-4ad9e859172b // indirect
 )
 
 require (
@@ -64,14 +64,14 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.942
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.959
 	go.etcd.io/etcd/api/v3 v3.5.14 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.14 // indirect
-	go.opentelemetry.io/otel v1.27.0 // indirect
-	go.opentelemetry.io/otel/trace v1.27.0 // indirect
+	go.opentelemetry.io/otel v1.28.0 // indirect
+	go.opentelemetry.io/otel/trace v1.28.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/crypto v0.25.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

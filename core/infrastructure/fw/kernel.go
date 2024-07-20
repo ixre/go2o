@@ -3,17 +3,24 @@ package fw
 import (
 	"bytes"
 	"fmt"
+	"log"
+	"reflect"
 
+	"github.com/ixre/go2o/core/infrastructure/fw/types"
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/typeconv"
 	"gorm.io/gorm"
 )
 
 type (
-	// ListOption 列表查询参数
-	ListOption struct {
+	// QueryOption 列表查询参数
+	QueryOption struct {
 		// 跳过条数
 		Skip int
 		// 限制条数
 		Limit int
+		// 排序
+		Order interface{}
 	}
 )
 
@@ -43,7 +50,7 @@ type (
 		// FindBy 根据条件获取实体
 		FindBy(where string, args ...interface{}) *M
 		// FindList 查找列表
-		FindList(opt *ListOption, where string, args ...interface{}) []*M
+		FindList(opt *QueryOption, where string, args ...interface{}) []*M
 		// Save 保存实体,如主键为空则新增
 		Save(v *M) (*M, error)
 		// Update 更新实体的非零字段
@@ -65,7 +72,7 @@ type (
 		// Save 保存
 		Save(v *M) (*M, error)
 		// FindList 查找列表
-		FindList(opt *ListOption, where string, args ...interface{}) []*M
+		FindList(opt *QueryOption, where string, args ...interface{}) []*M
 
 		// Delete 删除
 		Delete(v *M) error
@@ -109,14 +116,25 @@ func (r *BaseRepository[M]) FindBy(where string, v ...interface{}) *M {
 	return nil
 }
 
-func (r *BaseRepository[M]) FindList(opt *ListOption, where string, v ...interface{}) []*M {
+func (r *BaseRepository[M]) FindList(opt *QueryOption, where string, v ...interface{}) []*M {
 	list := make([]*M, 0)
-	var tx *gorm.DB
-	if opt != nil && opt.Limit > 0 {
-		tx = r.ORM.Limit(opt.Limit).Offset(opt.Skip)
-	} else {
-		tx = r.ORM
+	tx := r.ORM
+	if opt != nil {
+		if opt.Limit > 0 {
+			tx = tx.Limit(opt.Limit).Offset(opt.Skip)
+		}
+		if opt.Order != nil {
+			if v, ok := opt.Order.(string); ok {
+				// "id desc"
+				if len(v) > 0 {
+					tx = tx.Order(v)
+				}
+			} else {
+				tx = tx.Order(opt.Order)
+			}
+		}
 	}
+
 	tx.Find(&list, r.joinQueryParams(where, v...)...)
 	return list
 }
@@ -192,7 +210,7 @@ func (m *BaseService[M]) FindBy(where string, args ...interface{}) *M {
 	return m.Repo.FindBy(where, args...)
 }
 
-func (m *BaseService[M]) FindList(opt *ListOption, where string, args ...interface{}) []*M {
+func (m *BaseService[M]) FindList(opt *QueryOption, where string, args ...interface{}) []*M {
 	return m.Repo.FindList(opt, where, args...)
 }
 
@@ -239,12 +257,77 @@ func (p *PagingParams) where(field string, exp string, value interface{}) *Pagin
 	return p
 }
 
+// Equal 方法为 PagingParams 结构体添加了一个 Equal 功能
+// 用于在查询条件中添加等于某个字段值的条件
+//
+// 参数：
+// field string - 要进行比较的字段名
+// value interface{} - 要进行比较的值，可以是任意类型
+//
+// 返回值：
+// *PagingParams - 返回一个新的 PagingParams 指针，用于链式调用
 func (p *PagingParams) Equal(field string, value interface{}) *PagingParams {
-	return p.where(field, "=?", value)
+	return p.where(field, "= ?", value)
 }
 
+// NotEqual 方法用于在 PagingParams 结构体上添加一个不等于条件的查询参数
+//
+// 参数：
+//
+//	p *PagingParams - PagingParams 结构体指针，表示当前分页参数对象
+//	field string - 要进行不等于条件判断的字段名
+//	value interface{} - 要进行不等于条件判断的值
+//
+// 返回值：
+//
+//	*PagingParams - 返回修改后的 PagingParams 结构体指针
+func (p *PagingParams) NotEqual(field string, value interface{}) *PagingParams {
+	return p.where(field, " <> ?", value)
+}
+
+// In 函数向PagingParams结构体中添加一个IN查询条件
+//
+// 参数：
+//
+//	p *PagingParams - PagingParams结构体指针，用于存储查询条件
+//	field string - 要查询的字段名
+//	value ...interface{} - 要查询的值列表，可以为单个值或切片
+//
+// 返回值：
+//
+//	*PagingParams - 添加了IN查询条件的PagingParams结构体指针
+func (p *PagingParams) In(field string, value ...interface{}) *PagingParams {
+	l := len(value)
+	if l == 0 {
+		panic("value is empty")
+	}
+	if reflect.TypeOf(value[0]).Kind() == reflect.Slice {
+		if l > 1 {
+			panic("value is slice,but give more than one value")
+		}
+		return p.where(field, " IN ?", value[0])
+	}
+	return p.where(field, " IN ?", value)
+}
 func (p *PagingParams) Like(field string, value interface{}) *PagingParams {
 	return p.where(field, "LIKE ?", value)
+}
+
+func (p *PagingParams) And(where string, values ...interface{}) *PagingParams {
+	buf := bytes.NewBuffer(nil)
+	isBlank := len(p.Arguments) == 0
+	if !isBlank {
+		buf.WriteString(p.Arguments[0].(string))
+		buf.WriteString(" AND ")
+	}
+	buf.WriteString(where)
+	if isBlank {
+		p.Arguments = []interface{}{buf.String()}
+	} else {
+		p.Arguments[0] = buf.String()
+	}
+	p.Arguments = append(p.Arguments, values...)
+	return p
 }
 
 // 分页结果
@@ -258,10 +341,10 @@ type PagingResult struct {
 }
 
 // ReduceFinds 分次查询合并数组,用于分次查询出数量较多的数据
-func ReduceFinds[T any](fn func(opt *ListOption) []*T, size int) (arr []*T) {
+func ReduceFinds[T any](fn func(opt *QueryOption) []*T, size int) (arr []*T) {
 	begin := 0
 	for {
-		list := fn(&ListOption{
+		list := fn(&QueryOption{
 			Skip:  begin,
 			Limit: size,
 		})
@@ -275,4 +358,74 @@ func ReduceFinds[T any](fn func(opt *ListOption) []*T, size int) (arr []*T) {
 		}
 	}
 	return arr
+}
+
+// UnifinedPagingQuery 通用查询
+//
+//	tables Like: mm_member m ON m.id = o.member_id INNER JOIN mch_merchant mch ON mch.id = o.mch_id
+//	fields like: s.gender,m.nickname,certified_name
+func UnifinedPagingQuery(o ORM, p *PagingParams, tables string, fields string) (_ *PagingResult, err error) {
+	var ret PagingResult
+	from := `FROM ` + tables
+	// 查询条件
+	where, args := "", []interface{}{}
+	if len(p.Arguments) > 0 {
+		where = " WHERE " + p.Arguments[0].(string)
+		args = p.Arguments[1:]
+	}
+	// 查询条数
+	sql := fmt.Sprintf("SELECT COUNT(*) %s %s", from, where)
+	o.Raw(sql, args...).Scan(&ret.Total)
+	// 查询行数
+	order := types.Ternary(p.Order != "", " ORDER BY "+p.Order, "")
+	if ret.Total > 0 {
+		sql = fmt.Sprintf(`SELECT %s %s %s %s`, fields, from, where, order)
+		rows, err := o.Raw(sql, args...).Offset(p.Begin).Limit(p.Size).Rows()
+		if err != nil {
+			log.Println("paging query rows error: %s", err.Error())
+		} else {
+			for _, v := range db.RowsToMarshalMap(rows) {
+				ret.Rows = append(ret.Rows, v)
+			}
+			rows.Close()
+		}
+	}
+	return &ret, nil
+}
+
+// 分页行
+type pagingRow struct {
+	v map[string]interface{}
+}
+
+func ParsePagingRow(v interface{}) *pagingRow {
+	return &pagingRow{v: v.(map[string]interface{})}
+}
+
+// 转换为float类型
+func (p *pagingRow) AsFloat(keys ...string) {
+	for _, key := range keys {
+		v, ok := p.v[key].([]uint8)
+		if ok {
+			f := typeconv.MustFloat(string(v))
+			p.v[key] = f
+		}
+	}
+}
+
+// Excludes 排除字段
+func (p *pagingRow) Excludes(keys ...string) {
+	for _, key := range keys {
+		delete(p.v, key)
+	}
+}
+
+// Put 添加/更新字段
+func (p *pagingRow) Put(key string, v interface{}) {
+	p.v[key] = v
+}
+
+// Get 获取字段
+func (p *pagingRow) Get(key string) interface{} {
+	return p.v[key]
 }

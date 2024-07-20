@@ -497,7 +497,7 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 
 // 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMerchant, errCode int32, err error) {
+func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMerchantAggregateRoot, errCode int32, err error) {
 	if user == "" || pwd == "" {
 		return nil, 1, de.ErrCredential
 	}

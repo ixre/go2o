@@ -331,3 +331,21 @@ func InvoiceServiceClient() (*grpc.ClientConn, proto.InvoiceServiceClient, error
 	}
 	return conn, nil, err
 }
+
+// ChatServiceClient 聊天服务
+func ChatServiceClient() (*grpc.ClientConn, proto.ChatServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewChatServiceClient(conn), err
+	}
+	return conn, nil, err
+}
+
+// WorkorderServiceClient 工单服务
+func WorkorderServiceClient() (*grpc.ClientConn, proto.WorkorderServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewWorkorderServiceClient(conn), err
+	}
+	return conn, nil, err
+}

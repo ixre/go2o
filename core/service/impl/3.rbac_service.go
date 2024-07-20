@@ -3,7 +3,7 @@ package impl
 /**
  * Copyright (C) 2007-2020 56X.NET,All rights reserved.
  *
- * name : perm_dept_service.go
+ * name : rbac_dept_service.go
  * author : jarrysix (jarrysix#gmail.com)
  * date : 2020/12/02 13:02:38
  * description :
@@ -56,7 +56,7 @@ func NewRbacService(s storage.Interface, o orm.Orm, registryRepo registry.IRegis
 	}
 }
 
-func (p *rbacServiceImpl) createLoginLog(userId int64, ipAddress string, isSuccess int) {
+func (p *rbacServiceImpl) createLoginLog(userId int, ipAddress string, isSuccess int) {
 
 }
 
@@ -110,7 +110,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 	}
 	p.createLoginLog(usr.Id, r.IpAddress, 0) // 登录成功
 	dst := &proto.RbacLoginResponse{
-		UserId: usr.Id,
+		UserId: int64(usr.Id),
 	}
 	_, roles := p.getUserRoles(usr.Id)
 	for _, v := range roles {
@@ -219,13 +219,13 @@ func (p *rbacServiceImpl) GetJwtToken(_ context.Context, empty *proto.Empty) (*p
 }
 
 // 获取用户的角色和权限
-func (p *rbacServiceImpl) getUserRoles(userId int64) ([]int64, []*model.PermRole) {
+func (p *rbacServiceImpl) getUserRoles(userId int) ([]int64, []*model.RbacRole) {
 	userRoles := p.dao.GetUserRoles(userId)
 	// 绑定角色ID
 	roles := make([]int64, len(userRoles))
 	roleList := make([]int, len(userRoles))
 	for i, v := range userRoles {
-		roles[i] = v.RoleId
+		roles[i] = int64(v.RoleId)
 		roleList[i] = int(v.RoleId)
 	}
 	// 获取角色的权限
@@ -241,7 +241,7 @@ func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveRe
 		return p.error(errors.New("no such data")), nil
 	}
 	// 获取交换的对象
-	var swapRes *model.PermRes
+	var swapRes *model.RbacRes
 	if r.Direction == 0 { // 向上移,获取上一个
 		swapRes = p.dao.GetRbacResourceBy(
 			`sort_num < $1 AND pid = $2 AND depth=$3 WHERE is_forbidden <> 1 ORDER BY sort_num DESC`,
@@ -263,8 +263,8 @@ func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveRe
 }
 
 // 　如果上级菜单未加入,则加入上级菜单
-func (p *rbacServiceImpl) appendParentResource(arr *[]*model.PermRes) {
-	mp := make(map[int]*model.PermRes)
+func (p *rbacServiceImpl) appendParentResource(arr *[]*model.RbacRes) {
+	mp := make(map[int]*model.RbacRes)
 	for _, v := range *arr {
 		mp[int(v.Id)] = v
 	}
@@ -287,7 +287,7 @@ func (p *rbacServiceImpl) appendParentResource(arr *[]*model.PermRes) {
 // GetUserResource 获取用户的资源,在前端处理排序问题
 func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserResourceRequest) (*proto.RbacUserResourceResponse, error) {
 	dst := &proto.RbacUserResourceResponse{}
-	var resList []*model.PermRes
+	var resList []*model.RbacRes
 	rolePermMap := make(map[int]int, 0)
 	if r.UserId <= 0 { // master为超级管理员,拥有权限管理权限,admin为管理员
 		dst.Roles = []string{"master", "admin"}
@@ -297,7 +297,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 		if usr == nil {
 			return nil, fmt.Errorf("no such user %v", r.UserId)
 		}
-		_, userRoles := p.getUserRoles(r.UserId)
+		_, userRoles := p.getUserRoles(int(r.UserId))
 		roleList := make([]int, len(userRoles))
 		for i, v := range userRoles {
 			roleList[i] = int(v.Id)
@@ -313,8 +313,8 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 	// 获取菜单
 	root := proto.SUserMenu{}
 	wg := sync.WaitGroup{}
-	var f func(*sync.WaitGroup, *proto.SUserMenu, []*model.PermRes)
-	f = func(w *sync.WaitGroup, root *proto.SUserMenu, arr []*model.PermRes) {
+	var f func(*sync.WaitGroup, *proto.SUserMenu, []*model.RbacRes)
+	f = func(w *sync.WaitGroup, root *proto.SUserMenu, arr []*model.RbacRes) {
 		root.Children = []*proto.SUserMenu{}
 		for _, v := range arr {
 			if v.AppIndex != int(r.AppIndex) {
@@ -363,12 +363,12 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 	return dst, nil
 }
 
-func walkDepartTree(node *proto.SRbacTree, nodeList []*model.PermDept) {
+func walkDepartTree(node *proto.SRbacTree, nodeList []*model.RbacDepart) {
 	node.Children = []*proto.SRbacTree{}
 	for _, v := range nodeList {
-		if v.Pid == node.Id {
+		if v.Pid == int(node.Id) {
 			v := &proto.SRbacTree{
-				Id:       v.Id,
+				Id:       int64(v.Id),
 				Label:    v.Name,
 				Children: make([]*proto.SRbacTree, 0),
 			}
@@ -392,18 +392,18 @@ func (p *rbacServiceImpl) DepartTree(_ context.Context, empty *proto.Empty) (*pr
 
 // 保存部门
 func (p *rbacServiceImpl) SaveDepart(_ context.Context, r *proto.SaveDepartRequest) (*proto.SaveDepartResponse, error) {
-	var dst *model.PermDept
+	var dst *model.RbacDepart
 	if r.Id > 0 {
 		dst = p.dao.GetDepart(r.Id)
 	} else {
-		dst = &model.PermDept{}
-		dst.CreateTime = time.Now().Unix()
+		dst = &model.RbacDepart{}
+		dst.CreateTime = int(time.Now().Unix())
 	}
 
 	dst.Name = r.Name
 	dst.Code = r.Code
-	dst.Pid = r.Pid
-	dst.Enabled = int16(r.Enabled)
+	dst.Pid = int(r.Pid)
+	dst.Enabled = int(r.Enabled)
 
 	id, err := p.dao.SaveDepart(dst)
 	ret := &proto.SaveDepartResponse{
@@ -430,31 +430,31 @@ func (p *rbacServiceImpl) DeleteDepart(_ context.Context, id *proto.RbacDepartId
 	return p.error(err), nil
 }
 
-func (p *rbacServiceImpl) parsePermDept(v *model.PermDept) *proto.SPermDept {
+func (p *rbacServiceImpl) parsePermDept(v *model.RbacDepart) *proto.SPermDept {
 	return &proto.SPermDept{
-		Id:         v.Id,
+		Id:         int64(v.Id),
 		Name:       v.Name,
 		Code:       v.Code,
-		Pid:        v.Pid,
+		Pid:        int64(v.Pid),
 		Enabled:    int32(v.Enabled),
-		CreateTime: v.CreateTime,
+		CreateTime: int64(v.CreateTime),
 	}
 }
 
 // 保存岗位
 func (p *rbacServiceImpl) SaveJob(_ context.Context, r *proto.SaveJobRequest) (*proto.SaveJobResponse, error) {
-	var dst *model.PermJob
+	var dst *model.RbacJob
 	if r.Id > 0 {
 		dst = p.dao.GetJob(r.Id)
 	} else {
-		dst = &model.PermJob{}
-		dst.CreateTime = time.Now().Unix()
+		dst = &model.RbacJob{}
+		dst.CreateTime = int(time.Now().Unix())
 	}
 
 	dst.Name = r.Name
-	dst.Enabled = int16(r.Enabled)
+	dst.Enabled = int(r.Enabled)
 	dst.Sort = int(r.Sort)
-	dst.DeptId = r.DeptId
+	dst.DeptId = int(r.DeptId)
 
 	id, err := p.dao.SaveJob(dst)
 	ret := &proto.SaveJobResponse{
@@ -467,14 +467,14 @@ func (p *rbacServiceImpl) SaveJob(_ context.Context, r *proto.SaveJobRequest) (*
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) parsePermJob(v *model.PermJob) *proto.SRbacJob {
+func (p *rbacServiceImpl) parsePermJob(v *model.RbacJob) *proto.SRbacJob {
 	return &proto.SRbacJob{
-		Id:         v.Id,
+		Id:         int64(v.Id),
 		Name:       v.Name,
 		Enabled:    int32(v.Enabled),
 		Sort:       int32(v.Sort),
-		DeptId:     v.DeptId,
-		CreateTime: v.CreateTime,
+		DeptId:     int64(v.DeptId),
+		CreateTime: int64(v.CreateTime),
 	}
 }
 
@@ -527,8 +527,8 @@ func (p *rbacServiceImpl) PagingJobList(_ context.Context, r *proto.RbacJobPagin
 			Name:       typeconv.Stringify(v["name"]),
 			Enabled:    int32(typeconv.MustInt(v["enabled"])),
 			Sort:       int32(typeconv.MustInt(v["sort"])),
-			DeptName:   typeconv.Stringify(v["dept_name"]),
-			CreateTime: int64(typeconv.MustInt(v["create_time"])),
+			DeptName:   typeconv.Stringify(v["deptName"]),
+			CreateTime: int64(typeconv.MustInt(v["createTime"])),
 		}
 	}
 	return ret, nil
@@ -536,7 +536,7 @@ func (p *rbacServiceImpl) PagingJobList(_ context.Context, r *proto.RbacJobPagin
 
 // 保存系统用户
 func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserRequest) (*proto.SaveRbacUserResponse, error) {
-	var dst *model.PermUser
+	var dst *model.RbacUser
 	if r.Id > 0 {
 		dst = p.dao.GetUser(r.Id)
 		if dst == nil {
@@ -546,9 +546,9 @@ func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserReque
 			}, nil
 		}
 	} else {
-		dst = &model.PermUser{}
+		dst = &model.RbacUser{}
 		dst.Salt = util.RandString(4)
-		dst.CreateTime = time.Now().Unix()
+		dst.CreateTime = int(time.Now().Unix())
 	}
 	if l := len(r.Password); l > 0 {
 		if l != 32 {
@@ -560,15 +560,15 @@ func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserReque
 		dst.Password = crypto.Sha1([]byte(r.Password + dst.Salt))
 	}
 	dst.Flag = int(r.Flag)
-	dst.Avatar = r.Portrait
+	dst.Avatar = r.ProfilePhoto
 	dst.Nickname = r.Nickname
 	dst.Gender = int(r.Gender)
 	dst.Email = r.Email
 	dst.Phone = r.Phone
-	dst.DeptId = r.DeptId
-	dst.JobId = r.JobId
-	dst.Enabled = int16(r.Enabled)
-	dst.LastLogin = r.LastLogin
+	dst.DeptId = int(r.DeptId)
+	dst.JobId = int(r.JobId)
+	dst.Enabled = int(r.Enabled)
+	dst.LastLogin = int(r.LastLogin)
 	id, err := p.dao.SaveUser(dst)
 	ret := &proto.SaveRbacUserResponse{
 		Id: int64(id),
@@ -583,22 +583,22 @@ func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserReque
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) parsePermUser(v *model.PermUser) *proto.SRbacUser {
+func (p *rbacServiceImpl) parsePermUser(v *model.RbacUser) *proto.SRbacUser {
 	return &proto.SRbacUser{
-		Id:         v.Id,
-		Username:   v.Username,
-		Password:   v.Password,
-		Flag:       int32(v.Flag),
-		Portrait:   v.Avatar,
-		Nickname:   v.Nickname,
-		Gender:     int32(v.Gender),
-		Email:      v.Email,
-		Phone:      v.Phone,
-		DeptId:     v.DeptId,
-		JobId:      v.JobId,
-		Enabled:    int32(v.Enabled),
-		LastLogin:  v.LastLogin,
-		CreateTime: v.CreateTime,
+		Id:           int64(v.Id),
+		Username:     v.Username,
+		Password:     v.Password,
+		Flag:         int32(v.Flag),
+		ProfilePhoto: v.Avatar,
+		Nickname:     v.Nickname,
+		Gender:       int32(v.Gender),
+		Email:        v.Email,
+		Phone:        v.Phone,
+		DeptId:       int64(v.DeptId),
+		JobId:        int64(v.JobId),
+		Enabled:      int32(v.Enabled),
+		LastLogin:    int64(v.LastLogin),
+		CreateTime:   int64(v.CreateTime),
 	}
 }
 
@@ -651,20 +651,20 @@ func (p *rbacServiceImpl) PagingUser(_ context.Context, r *proto.PagingRbacUserR
 	}
 	for i, v := range rows {
 		ret.Value[i] = &proto.PagingUser{
-			Id:         int64(typeconv.MustInt(v["id"])),
-			Username:   typeconv.Stringify(v["username"]),
-			Password:   typeconv.Stringify(v["password"]),
-			Flag:       int32(typeconv.MustInt(v["flag"])),
-			Portrait:   typeconv.Stringify(v["avatar"]),
-			Nickname:   typeconv.Stringify(v["nickname"]),
-			Gender:     typeconv.Stringify(v["gender"]),
-			Email:      typeconv.Stringify(v["email"]),
-			Phone:      typeconv.Stringify(v["phone"]),
-			DeptId:     int64(typeconv.MustInt(v["dept_id"])),
-			JobId:      int64(typeconv.MustInt(v["job_id"])),
-			Enabled:    int32(typeconv.MustInt(v["enabled"])),
-			LastLogin:  int64(typeconv.MustInt(v["last_login"])),
-			CreateTime: int64(typeconv.MustInt(v["create_time"])),
+			Id:           int64(typeconv.MustInt(v["id"])),
+			Username:     typeconv.Stringify(v["username"]),
+			Password:     typeconv.Stringify(v["password"]),
+			Flag:         int32(typeconv.MustInt(v["flag"])),
+			ProfilePhoto: typeconv.Stringify(v["avatar"]),
+			Nickname:     typeconv.Stringify(v["nickname"]),
+			Gender:       typeconv.Stringify(v["gender"]),
+			Email:        typeconv.Stringify(v["email"]),
+			Phone:        typeconv.Stringify(v["phone"]),
+			DeptId:       int64(typeconv.MustInt(v["deptId"])),
+			JobId:        int64(typeconv.MustInt(v["jobId"])),
+			Enabled:      int32(typeconv.MustInt(v["enabled"])),
+			LastLogin:    int64(typeconv.MustInt(v["lastLogin"])),
+			CreateTime:   int64(typeconv.MustInt(v["createTime"])),
 		}
 	}
 	return ret, nil
@@ -672,12 +672,12 @@ func (p *rbacServiceImpl) PagingUser(_ context.Context, r *proto.PagingRbacUserR
 
 // 保存角色
 func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SaveRbacRoleRequest) (*proto.SaveRbacRoleResponse, error) {
-	var dst *model.PermRole
+	var dst *model.RbacRole
 	if r.Id > 0 {
 		dst = p.dao.GetRole(r.Id)
 	} else {
-		dst = &model.PermRole{}
-		dst.CreateTime = time.Now().Unix()
+		dst = &model.RbacRole{}
+		dst.CreateTime = int(time.Now().Unix())
 		dst.Code = r.Code
 	}
 	dst.Name = r.Name
@@ -715,7 +715,7 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 	dataList := p.dao.GetRoleResList([]int{int(r.RoleId)})
 	old := make([]int, len(dataList))
 	//　更新数组
-	mp := make(map[int]*model.PermRoleRes, 0)
+	mp := make(map[int]*model.RbacRoleRes, 0)
 	for i, v := range dataList {
 		old[i] = int(v.ResId)
 		mp[int(v.ResId)] = v
@@ -723,10 +723,10 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 	_, deleted := util.IntArrayDiff(old, arr, func(resId int, add bool) {
 		var id int64
 		if !add {
-			id = mp[resId].Id
+			id = int64(mp[resId].Id)
 		}
-		p.dao.SavePermRoleRes(&model.PermRoleRes{
-			Id:       id,
+		p.dao.SavePermRoleRes(&model.RbacRoleRes{
+			Id:       int(id),
 			ResId:    resId,
 			RoleId:   int(r.RoleId),
 			PermFlag: int(permMap[int(resId)]),
@@ -740,15 +740,15 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 	return p.error(nil), nil
 }
 
-func (p *rbacServiceImpl) parsePermRole(v *model.PermRole) *proto.SRbacRole {
+func (p *rbacServiceImpl) parsePermRole(v *model.RbacRole) *proto.SRbacRole {
 	return &proto.SRbacRole{
-		Id:         v.Id,
+		Id:         int64(v.Id),
 		Code:       v.Code,
 		Name:       v.Name,
 		Level:      int32(v.Level),
 		DataScope:  v.DataScope,
 		Remark:     v.Remark,
-		CreateTime: v.CreateTime,
+		CreateTime: int64(v.CreateTime),
 	}
 }
 
@@ -804,18 +804,18 @@ func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePag
 			Id:         int64(typeconv.MustInt(v["id"])),
 			Name:       typeconv.Stringify(v["name"]),
 			Level:      int32(typeconv.MustInt(v["level"])),
-			DataScope:  typeconv.Stringify(v["data_scope"]),
+			DataScope:  typeconv.Stringify(v["dataScope"]),
 			Code:       typeconv.Stringify(v["code"]),
 			Remark:     typeconv.Stringify(v["remark"]),
-			CreateTime: int64(typeconv.MustInt(v["create_time"])),
+			CreateTime: int64(typeconv.MustInt(v["createTime"])),
 		}
 	}
 	return ret, nil
 }
 
 // 验证上级资源是否合法
-func (p *rbacServiceImpl) checkParentResource(id int, currentPid int, pid int) (model.PermRes, error) {
-	var parentRes model.PermRes
+func (p *rbacServiceImpl) checkParentResource(id int, currentPid int, pid int) (model.RbacRes, error) {
+	var parentRes model.RbacRes
 	// 检测上级
 	if pid <= 0 {
 		return parentRes, nil
@@ -826,7 +826,7 @@ func (p *rbacServiceImpl) checkParentResource(id int, currentPid int, pid int) (
 	}
 	// 检测上级是否为下级
 	if currentPid > 0 {
-		var parent *model.PermRes = p.dao.GetRbacResource(pid)
+		var parent *model.RbacRes = p.dao.GetRbacResource(pid)
 		// 获取上级的Key,用于获取
 		if parent != nil {
 			parentRes = *parent
@@ -842,7 +842,7 @@ func (p *rbacServiceImpl) checkParentResource(id int, currentPid int, pid int) (
 }
 
 // 生成资源标识
-func (p *rbacServiceImpl) GenerateResourceKey(parent model.PermRes) string {
+func (p *rbacServiceImpl) GenerateResourceKey(parent model.RbacRes) string {
 	maxKey := p.dao.GetMaxResouceKey(int(parent.Id))
 	l := len(maxKey)
 	// 一级资源,如果未以字母命名,则启用规则,并依次命名
@@ -871,7 +871,7 @@ func (p *rbacServiceImpl) GenerateResourceKey(parent model.PermRes) string {
 
 // 保存PermRes
 func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacResRequest) (*proto.SaveRbacResResponse, error) {
-	var dst *model.PermRes
+	var dst *model.RbacRes
 	if r.Id > 0 {
 		if dst = p.dao.GetRbacResource(r.Id); dst == nil {
 			return &proto.SaveRbacResResponse{
@@ -880,8 +880,8 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 			}, nil
 		}
 	} else {
-		dst = &model.PermRes{}
-		dst.CreateTime = time.Now().Unix()
+		dst = &model.RbacRes{}
+		dst.CreateTime = int(time.Now().Unix())
 		dst.Pid = int(r.Pid) // 设置上级,用于生成资源key
 		dst.Depth = 0
 	}
@@ -949,7 +949,7 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) parseRbacRes(v *model.PermRes) *proto.SRbacRes {
+func (p *rbacServiceImpl) parseRbacRes(v *model.RbacRes) *proto.SRbacRes {
 	return &proto.SRbacRes{
 		Id:            int64(v.Id),
 		Name:          v.Name,
@@ -961,7 +961,7 @@ func (p *rbacServiceImpl) parseRbacRes(v *model.PermRes) *proto.SRbacRes {
 		SortNum:       int32(v.SortNum),
 		IsMenu:        v.IsMenu == 1,
 		IsEnabled:     v.IsEnabled == 1,
-		CreateTime:    v.CreateTime,
+		CreateTime:    int64(v.CreateTime),
 		ComponentName: v.ComponentName,
 		AppIndex:      int32(v.AppIndex),
 	}
@@ -992,7 +992,7 @@ func (p *rbacServiceImpl) QueryRbacResourceList(_ context.Context, r *proto.Quer
 
 	// 初始化已选择的节点
 	if r.ParentId <= 0 && r.InitialId > 0 {
-		findParent := func(pid int, arr []*model.PermRes) int {
+		findParent := func(pid int, arr []*model.RbacRes) int {
 			for _, v := range arr {
 				if v.Id == pid && v.Pid > 0 {
 					return int(v.Pid)
@@ -1016,7 +1016,7 @@ func (p *rbacServiceImpl) QueryRbacResourceList(_ context.Context, r *proto.Quer
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) queryResChildren(parentId int, arr []*model.PermRes) []*proto.SRbacRes {
+func (p *rbacServiceImpl) queryResChildren(parentId int, arr []*model.RbacRes) []*proto.SRbacRes {
 	var list []*proto.SRbacRes
 	for _, v := range arr {
 		if v.Pid != parentId {
@@ -1047,7 +1047,7 @@ func (p *rbacServiceImpl) DeleteRbacResource(_ context.Context, id *proto.PermRe
 }
 
 func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
-	dataList := p.dao.GetUserRoles(userId)
+	dataList := p.dao.GetUserRoles(int(userId))
 	old := make([]int, len(dataList))
 	arr := make([]int, len(roles))
 	// 旧数组
@@ -1059,9 +1059,9 @@ func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
 	}
 	_, deleted := util.IntArrayDiff(old, arr, func(v int, add bool) {
 		if add {
-			p.dao.SaveUserRole(&model.PermUserRole{
-				RoleId: int64(v),
-				UserId: userId,
+			p.dao.SaveUserRole(&model.RbacUserRole{
+				RoleId: int(v),
+				UserId: int(userId),
 			})
 		}
 	})
@@ -1087,7 +1087,7 @@ func (p *rbacServiceImpl) getResDepth(pid int) int {
 }
 
 // 更新资源及下级资源的深度
-func (p *rbacServiceImpl) updateResDepth(dst *model.PermRes, depth int) {
+func (p *rbacServiceImpl) updateResDepth(dst *model.RbacRes, depth int) {
 	dst.Depth = depth
 	_, _ = p.dao.SaveRbacResource(dst)
 	list := p.dao.SelectPermRes("pid=$1", dst.Id)
@@ -1110,12 +1110,12 @@ func (p *rbacServiceImpl) PagingLoginLog(_ context.Context, r *proto.LoginLogPag
 	for i, v := range rows {
 		ret.Value[i] = &proto.PagingLoginLog{
 			Id:         int64(typeconv.MustInt(v["id"])),
-			UserId:     int64(typeconv.MustInt(v["user_id"])),
+			UserId:     int64(typeconv.MustInt(v["userId"])),
 			Username:   typeconv.Stringify(v["username"]),
 			Nickname:   typeconv.Stringify(v["nickname"]),
 			Ip:         typeconv.Stringify(v["ip"]),
-			IsSuccess:  int32(typeconv.MustInt(v["is_success"])),
-			CreateTime: int64(typeconv.MustInt(v["create_time"])),
+			IsSuccess:  int32(typeconv.MustInt(v["isSuccess"])),
+			CreateTime: int64(typeconv.MustInt(v["createTime"])),
 		}
 		if r := ret.Value[i]; r.UserId == 0 {
 			r.Username = "master"

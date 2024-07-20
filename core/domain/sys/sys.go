@@ -62,7 +62,7 @@ type addressManagerImpl struct {
 // getDistrictList 获取地区列表
 func (a *addressManagerImpl) getDistrictList() []*sys.District {
 	if a.areaList == nil {
-		a.areaList = fw.ReduceFinds(func(opt *fw.ListOption) []*sys.District {
+		a.areaList = fw.ReduceFinds(func(opt *fw.QueryOption) []*sys.District {
 			return a.FindList(opt, "")
 		}, 1000)
 	}
@@ -166,7 +166,7 @@ func (o *optionManagerImpl) GetChildOptions(parentId int, typeName string) []*sy
 // getDistrictList 获取地区列表
 func (o *optionManagerImpl) getList() []*sys.GeneralOption {
 	if o.allList == nil {
-		o.allList = fw.ReduceFinds(func(opt *fw.ListOption) []*sys.GeneralOption {
+		o.allList = fw.ReduceFinds(func(opt *fw.QueryOption) []*sys.GeneralOption {
 			return o.FindList(opt, "")
 		}, 1000)
 	}

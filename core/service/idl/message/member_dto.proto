@@ -58,9 +58,9 @@ message LoginRequest {
 // 用户登录响应
 message LoginResponse{
   // 错误码
-  int32 errCode = 1;
+  int32 code = 1;
   // 错误消息
-  string errMsg = 2;
+  string msg = 2;
   // 会员编号
   int64 memberId = 3;
   // 用户代码
@@ -309,10 +309,12 @@ message AccountFreezeRequest {
   string title = 3;
   /** 冻结金额 */
   int64 amount =  4;
-  // 外部校译号
+  // 外部交易号
   string outerNo = 5;
+  // 交易流水编号,对冻结流水进行更新时,传递该参数
+  int64 tradeLogId = 6;
   // 备注
-  string remark = 6;
+  string remark = 7;
 }
 
 /** 冻结响应 */
@@ -321,8 +323,8 @@ message AccountFreezeResponse{
   int32 errCode = 1;
   /** 错误消息 */
   string errMsg = 2;
-  /** 日志ID */
-  int64 logId = 3;
+  /** 交易流水编号 */
+  int64 tradeLogId = 3;
 }
 
 /** 解冻请求 */
@@ -369,7 +371,7 @@ message SMemberLevel {
 }
 
 // 更换头像申请
-message ChangePortraitRequest {
+message ChangeProfilePhotoRequest {
   // 会员编号
   sint64 memberId = 1;
   // 头像
@@ -545,7 +547,7 @@ message MemberInviterResponse {
   // 邀请人姓名
   string inviterNickname = 3;
   // 邀请人头像
-  string inviterPortrait = 4;
+  string inviterProfilePhoto = 4;
   // 邀请人电话
   string inviterPhone = 5;
   // 邀请会员编号(depth2)
@@ -768,7 +770,7 @@ message SInvitationMember {
   // 等级
   int32 level = 3;
   // 头像
-  string portrait = 4;
+  string profilePhoto = 4;
   // 昵称
   string nickname = 5;
   // 电话

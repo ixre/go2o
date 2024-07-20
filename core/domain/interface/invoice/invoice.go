@@ -7,18 +7,22 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
+// 发票用户类型
 type TenantType int
 type IssueStatus int
 
 const (
-	// 发票用户类型: 普通
-	TenantUser     TenantType = 1
+	// 系统
+	TenantSystem TenantType = 0
+	// 用户
+	TenantUser TenantType = 1
+	// 商户
 	TenantMerchant TenantType = 2
 )
 
 const (
 	// 发票状态: 待开票
-	IssueAwaiting = 1
+	IssuePending = 1
 	// 发票状态: 开票完成
 	IssueSuccess = 2
 	// 发票状态: 开票失败
@@ -37,12 +41,12 @@ type (
 		TenantUserId() int
 		// Create 创建租户
 		Create() error
-		// GetInvoiceHeader 获取发票抬头
-		GetInvoiceHeader(id int) *InvoiceHeader
-		// SaveInvoiceHeader 保存发票抬头
-		SaveInvoiceHeader(header *InvoiceHeader) error
+		// GetInvoiceTitle 获取发票抬头
+		GetInvoiceTitle(id int) *InvoiceTitle
+		// CreateInvoiceTitle 保存发票抬头
+		CreateInvoiceTitle(title *InvoiceTitle) error
 		// CreateInvoice 创建发票
-		CreateInvoice(record *InvoiceRecord) InvoiceDomain
+		RequestInvoice(data *InvoiceRequestData) (InvoiceDomain, error)
 		// GetInvoice 获取发票
 		GetInvoice(id int) InvoiceDomain
 	}
@@ -66,13 +70,31 @@ type (
 	}
 )
 
+// 发票申请数据
+type InvoiceRequestData struct {
+	// 关联单号
+	OuterNo string `json:"outerNo"`
+	// 开票人ID
+	IssueTenantId int `json:"issueTenantId"`
+	// 发票抬头
+	TitleId int `json:"titleId"`
+	// 接收邮箱
+	ReceiveEmail string `json:"receiveEmail"`
+	// 发票内容
+	Subject string `json:"subject"`
+	// 备注
+	Remark string `json:"remark"`
+	// 开票项目
+	Items []*InvoiceItem `json:"items"`
+}
+
 var _ domain.IValueObject = new(InvoiceItem)
 
 // IInvoiceTenantRepo 发票租户仓储接口
 type IInvoiceTenantRepo interface {
 	fw.Repository[InvoiceTenant]
-	// Headers 获取发票抬头仓储接口
-	Header() IInvoiceHeaderRepo
+	// Title 获取发票抬头仓储接口
+	Title() IInvoiceTitleRepo
 	// Records 获取发票记录仓储接口
 	Records() IInvoiceRecordRepo
 	// Items 获取发票项目仓储接口
@@ -83,9 +105,9 @@ type IInvoiceTenantRepo interface {
 	CreateTenant(v *InvoiceTenant) InvoiceUserAggregateRoot
 }
 
-// IInvoiceHeadersRepo 发票抬头仓储接口
-type IInvoiceHeaderRepo interface {
-	fw.Repository[InvoiceHeader]
+// IInvoiceTitlesRepo 发票抬头仓储接口
+type IInvoiceTitleRepo interface {
+	fw.Repository[InvoiceTitle]
 }
 
 // IInvoiceRecordRepo 发票仓储接口
@@ -114,8 +136,8 @@ func (i InvoiceTenant) TableName() string {
 	return "invoice_tenant"
 }
 
-// InvoiceHeader 发票抬头
-type InvoiceHeader struct {
+// InvoiceTitle 发票抬头
+type InvoiceTitle struct {
 	// 编号
 	Id int `json:"id" db:"id" gorm:"column:id" bson:"id"`
 	// 租户编号
@@ -125,7 +147,7 @@ type InvoiceHeader struct {
 	// 开具类型, 1: 个人 2:企业
 	IssueType int `json:"issueType" db:"issue_type" gorm:"column:issue_type" bson:"issueType"`
 	// HeaderName
-	HeaderName string `json:"headerName" db:"header_name" gorm:"column:header_name" bson:"headerName"`
+	TitleName string `json:"titleName" db:"title_name" gorm:"column:title_name" bson:"titleName"`
 	// 纳税人识别号
 	TaxCode string `json:"taxCode" db:"tax_code" gorm:"column:tax_code" bson:"taxCode"`
 	// 注册场所地址
@@ -144,8 +166,8 @@ type InvoiceHeader struct {
 	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 }
 
-func (i InvoiceHeader) TableName() string {
-	return "invoice_header"
+func (i InvoiceTitle) TableName() string {
+	return "invoice_title"
 }
 
 // InvoiceRecord 发票
@@ -172,6 +194,8 @@ type InvoiceRecord struct {
 	PurchaserName string `json:"purchaserName" db:"purchaser_name" gorm:"column:purchaser_name" bson:"purchaserName"`
 	// 买方纳税人识别号
 	PurchaserTaxCode string `json:"purchaserTaxCode" db:"purchaser_tax_code" gorm:"column:purchaser_tax_code" bson:"purchaserTaxCode"`
+	// 发票内容
+	InvoiceSubject string `json:"invoiceSubject" db:"invoice_subject" gorm:"column:invoice_subject" bson:"invoiceSubject"`
 	// 合计金额
 	InvoiceAmount float64 `json:"invoiceAmount" db:"invoice_amount" gorm:"column:invoice_amount" bson:"invoiceAmount"`
 	// 合计税额

@@ -42,7 +42,7 @@ var _ shop.IShop = new(onlineShopImpl)
 var _ shop.IOnlineShop = new(onlineShopImpl)
 
 type onlineShopImpl struct {
-	_mch         merchant.IMerchant
+	_mch         merchant.IMerchantAggregateRoot
 	_shopVal     *shop.OnlineShop
 	valRepo      valueobject.IValueRepo
 	shopRepo     shop.IShopRepo

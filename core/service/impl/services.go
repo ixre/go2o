@@ -44,6 +44,14 @@ func (s serviceUtil) error(err error) *proto.Result {
 	return s.failResult(err.Error())
 }
 
+// 返回错误的结果
+func (s serviceUtil) errorV2(err error) *proto.ResultV2 {
+	if err == nil {
+		return &proto.ResultV2{Data: map[string]string{}}
+	}
+	return &proto.ResultV2{Code: 1, Msg: err.Error(), Data: map[string]string{}}
+}
+
 // 返回结果
 func (s serviceUtil) result(err error) *proto.Result {
 	if err == nil {

@@ -141,7 +141,7 @@ service MemberService {
     rpc ChangeNickname(ChangeNicknameRequest) returns (Result) {}
 
     // 上传会员头像
-    rpc ChangeHeadPortrait (ChangePortraitRequest) returns (Result) {
+    rpc ChangeProfilePhoto (ChangeProfilePhotoRequest) returns (Result) {
     }
     /** 更改密码 */
     rpc ChangePassword (ChangePasswordRequest) returns (Result) {

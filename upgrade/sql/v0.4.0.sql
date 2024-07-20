@@ -59,60 +59,6 @@ COMMENT ON COLUMN m_block_list.block_member_id IS '拉黑会员编号';
 COMMENT ON COLUMN m_block_list.block_flag IS '拉黑标志，1: 屏蔽  2: 拉黑';
 COMMENT ON COLUMN m_block_list.remark IS '备注';
 COMMENT ON COLUMN m_block_list.create_time IS '拉黑时间';
-DROP TABLE IF EXISTS m_complain_case;
-CREATE TABLE m_complain_case (
-  id               BIGSERIAL NOT NULL, 
-  member_id        int8 NOT NULL, 
-  complain_type    int4 NOT NULL, 
-  order_id         int8 NOT NULL, 
-  mch_id           int8 NOT NULL, 
-  target_member_id int8 NOT NULL, 
-  complain_desc    varchar(255) NOT NULL, 
-  hope_desc        varchar(120) NOT NULL, 
-  first_pic        varchar(80) NOT NULL, 
-  pic_list         varchar(350) NOT NULL, 
-  is_resolved      int4 NOT NULL, 
-  is_closed        int4 NOT NULL, 
-  status           int4 NOT NULL, 
-  service_agent_id int8 NOT NULL, 
-  service_rank     int4 NOT NULL, 
-  service_apprise  varchar(120) NOT NULL, 
-  create_time      int8 NOT NULL, 
-  update_time      int8 NOT NULL, 
-  PRIMARY KEY (id));
-COMMENT ON COLUMN m_complain_case.id IS '编号';
-COMMENT ON COLUMN m_complain_case.member_id IS '会员编号';
-COMMENT ON COLUMN m_complain_case.complain_type IS '投诉类型:  1:常规   11: 咨询服务';
-COMMENT ON COLUMN m_complain_case.order_id IS '订单号';
-COMMENT ON COLUMN m_complain_case.mch_id IS '商户编号';
-COMMENT ON COLUMN m_complain_case.target_member_id IS '投诉目标会员';
-COMMENT ON COLUMN m_complain_case.complain_desc IS '投诉内容';
-COMMENT ON COLUMN m_complain_case.hope_desc IS '诉求描述';
-COMMENT ON COLUMN m_complain_case.first_pic IS '图片';
-COMMENT ON COLUMN m_complain_case.pic_list IS '图片列表';
-COMMENT ON COLUMN m_complain_case.is_resolved IS '是否已解决 0:否 1:是';
-COMMENT ON COLUMN m_complain_case.is_closed IS '是否用户关闭 0:否 1:是';
-COMMENT ON COLUMN m_complain_case.status IS '状态,1:待处理 2:处理中 3:已完结';
-COMMENT ON COLUMN m_complain_case.service_agent_id IS '客服编号';
-COMMENT ON COLUMN m_complain_case.service_rank IS '服务评分';
-COMMENT ON COLUMN m_complain_case.service_apprise IS '服务评价';
-COMMENT ON COLUMN m_complain_case.create_time IS '创建时间';
-COMMENT ON COLUMN m_complain_case.update_time IS '更新时间';
-DROP TABLE IF EXISTS m_complain_details;
-CREATE TABLE m_complain_details (
-  id          BIGSERIAL NOT NULL, 
-  case_id     int8 NOT NULL, 
-  sender_type int4 NOT NULL, 
-  content     varchar(255) NOT NULL, 
-  is_revert   int4 NOT NULL, 
-  create_time int8 NOT NULL, 
-  PRIMARY KEY (id));
-COMMENT ON TABLE m_complain_details IS '投诉详情';
-COMMENT ON COLUMN m_complain_details.id IS '编号';
-COMMENT ON COLUMN m_complain_details.case_id IS '案件编号';
-COMMENT ON COLUMN m_complain_details.sender_type IS '发送类型: 1:发起人  2: 投诉对象  3: 平台客服';
-COMMENT ON COLUMN m_complain_details.is_revert IS '是否撤回 0:否 1:是';
-
 
 
 DROP TABLE IF EXISTS sys_general_option;
@@ -204,6 +150,7 @@ CREATE TABLE "public".mch_authenticate (
   mch_id            int4 NOT NULL, 
   org_name          varchar(45) NOT NULL, 
   org_no            varchar(45) NOT NULL, 
+  org_address          varchar(120) NOT NULL, 
   org_pic           varchar(120) NOT NULL, 
   work_city         int4 NOT NULL, 
   qualification_pic varchar(120) NOT NULL, 
@@ -226,6 +173,7 @@ COMMENT ON COLUMN "public".mch_authenticate.mch_id IS '商户编号';
 COMMENT ON COLUMN "public".mch_authenticate.org_name IS '公司名称';
 COMMENT ON COLUMN "public".mch_authenticate.org_no IS '营业执照编号';
 COMMENT ON COLUMN "public".mch_authenticate.org_pic IS '营业执照照片';
+COMMENT ON COLUMN "public".mch_authenticate.org_address IS '公司地址';
 COMMENT ON COLUMN "public".mch_authenticate.work_city IS '办公地';
 COMMENT ON COLUMN "public".mch_authenticate.qualification_pic IS '资质图片';
 COMMENT ON COLUMN "public".mch_authenticate.person_id IS '法人身份证号';
@@ -527,16 +475,30 @@ ALTER TABLE "public".article_list
 COMMENT ON COLUMN "public".article_list.like_count IS '喜欢的数量';
 COMMENT ON COLUMN "public".article_list.dislike_count IS '不喜欢的数量';
 
+-- 发票租户
+DROP TABLE IF EXISTS invoice_tenant CASCADE;
+CREATE TABLE invoice_tenant(
+   "id" BIGSERIAL NOT NULL,
+   "tenant_type" integer NOT NULL,
+   "tenant_uid" bigint NOT NULL,
+   "create_time" bigint NOT NULL,
+   PRIMARY KEY (id)
+);
+COMMENT ON TABLE invoice_tenant IS '发票租户';
+COMMENT ON COLUMN invoice_tenant.id IS '租户会员/商户编号';
+COMMENT ON COLUMN invoice_tenant.tenant_type IS '租户类型:1会员 2:商户';
+COMMENT ON COLUMN invoice_tenant.tenant_uid IS '会员/商户编号';
+COMMENT ON COLUMN invoice_tenant.create_time IS '创建时间';
 
 
 -- 发票抬头
-CREATE TABLE invoice_headers (
-  id           int8 NOT NULL UNIQUE, 
-  user_type    int4 NOT NULL, 
-  user_id      int8 NOT NULL, 
+DROP TABLE IF EXISTS invoice_title CASCADE;
+CREATE TABLE invoice_title (
+  id           BIGSERIAL NOT NULL, 
+  tenant_id      int8 NOT NULL, 
   invoice_type int4 NOT NULL, 
   issue_type   int4 NOT NULL, 
-  header_name  varchar(20) NOT NULL, 
+  title_name  varchar(20) NOT NULL, 
   tax_code   varchar(40) NOT NULL, 
   sign_address varchar(60) NOT NULL, 
   sign_tel     varchar(20) NOT NULL, 
@@ -544,68 +506,78 @@ CREATE TABLE invoice_headers (
   bank_account varchar(20) NOT NULL, 
   remarks      varchar(20) NOT NULL, 
   is_default   int4 NOT NULL, 
-  create_time  int8 NOT NULL);
-COMMENT ON TABLE invoice_headers IS '发票抬头';
-COMMENT ON COLUMN invoice_headers.id IS '编号';
-COMMENT ON COLUMN invoice_headers.user_type IS '用户类型,1:会员  2:商户';
-COMMENT ON COLUMN invoice_headers.user_id IS '会员/商户编号';
-COMMENT ON COLUMN invoice_headers.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
-COMMENT ON COLUMN invoice_headers.issue_type IS '开具类型, 1: 个人 2:企业';
-COMMENT ON COLUMN invoice_headers.tax_code IS '纳税人识别号';
-COMMENT ON COLUMN invoice_headers.sign_address IS '注册场所地址';
-COMMENT ON COLUMN invoice_headers.sign_tel IS '注册固定电话';
-COMMENT ON COLUMN invoice_headers.bank_name IS '基本户开户银行名';
-COMMENT ON COLUMN invoice_headers.bank_account IS '基本户开户账号';
-COMMENT ON COLUMN invoice_headers.remarks IS '备注';
-COMMENT ON COLUMN invoice_headers.is_default IS '是否默认';
+  create_time  int8 NOT NULL,
+  PRIMARY KEY (id)
+);
+COMMENT ON TABLE invoice_title IS '发票抬头';
+COMMENT ON COLUMN invoice_title.id IS '编号';
+COMMENT ON COLUMN invoice_title.tenant_id IS '租户会员/商户编号';
+COMMENT ON COLUMN invoice_title.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
+COMMENT ON COLUMN invoice_title.issue_type IS '开具类型, 1: 个人 2:企业';
+COMMENT ON COLUMN invoice_title.title_name IS '抬头名称';
+COMMENT ON COLUMN invoice_title.tax_code IS '纳税人识别号';
+COMMENT ON COLUMN invoice_title.sign_address IS '注册场所地址';
+COMMENT ON COLUMN invoice_title.sign_tel IS '注册固定电话';
+COMMENT ON COLUMN invoice_title.bank_name IS '基本户开户银行名';
+COMMENT ON COLUMN invoice_title.bank_account IS '基本户开户账号';
+COMMENT ON COLUMN invoice_title.remarks IS '备注';
+COMMENT ON COLUMN invoice_title.is_default IS '是否默认';
 
 -- 发票内容/ 发票备注 / 邮箱 / 留言
-CREATE TABLE invoice (
-  id           int8 NOT NULL UNIQUE, 
+DROP TABLE IF EXISTS invoice_record CASCADE;
+CREATE TABLE invoice_record (
+  id           BIGSERIAL NOT NULL, 
   invoice_code varchar(32) NOT NULL,
   invoice_no varchar(32) NOT NULL,
-  user_type    int4 NOT NULL, 
-  user_id      int8 NOT NULL, 
+  tenant_id int8 NOT NULL,
+  issue_tenant_id int8 NOT NULL,
   invoice_type int4 NOT NULL, 
   issue_type   int4 NOT NULL,
   seller_name varchar(20) NOT NULL,
   seller_tax_code varchar(64) NOT NULL,
   purchaser_name  varchar(20) NOT NULL, 
   purchaser_tax_code  varchar(40) NOT NULL, 
+  invoice_subject varchar(64) NOT NULL,
   invoice_amount decimal(10,2) NOT NULL,
   tax_amount decimal(10,2) NOT NULL,
   remark varchar(64) NOT NULL,
   issue_remark varchar(64) NOT NULL,
+  invoice_pic  varchar(128) NOT NULL,
   receive_email varchar(64) NOT NULL,
   invoice_status int4 NOT NULL,
   invoice_time int8 NOT NULL,
   create_time int8 NOT NULL,
-  update_time int8 NOT NULL);
+  update_time int8 NOT NULL,
+  PRIMARY KEY (id)
+);
 
-COMMENT ON TABLE invoice IS '发票';
-COMMENT ON COLUMN invoice.id IS '编号';
-COMMENT ON COLUMN invoice.invoice_code IS '发票代码';
-COMMENT ON COLUMN invoice.invoice_no IS '发票号码';
-COMMENT ON COLUMN invoice.user_type IS '用户类型,1:会员  2:商户';
-COMMENT ON COLUMN invoice.user_id IS '会员/商户编号';
-COMMENT ON COLUMN invoice.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
-COMMENT ON COLUMN invoice.issue_type IS '开具类型, 1: 个人 2:企业';
-COMMENT ON COLUMN invoice.seller_name IS '销售方名称';
-COMMENT ON COLUMN invoice.seller_tax_code IS  '销售方纳税人识别号';
-COMMENT ON COLUMN invoice.purchaser_name IS '买方名称';
-COMMENT ON COLUMN invoice.purchaser_tax_code IS '买方纳税人识别号';
-COMMENT ON COLUMN invoice.invoice_amount IS '合计金额';
-COMMENT ON COLUMN invoice.tax_amount IS '合计税额';
-COMMENT ON COLUMN invoice.remark IS '备注';
-COMMENT ON COLUMN invoice.issue_remark IS '开具备注/开票失败备注';
-COMMENT ON COLUMN invoice.receive_email IS '发票接收邮箱地址';
-COMMENT ON COLUMN invoice.invoice_status IS '发票状态,1:待开票 2:开票完成 3:未通过';
-COMMENT ON COLUMN invoice.invoice_time IS '开票时间';
-COMMENT ON COLUMN invoice.create_time IS '创建时间';
-COMMENT ON COLUMN invoice.update_time IS '更新时间';
+COMMENT ON TABLE invoice_record IS '发票';
+COMMENT ON COLUMN invoice_record.id IS '编号';
+COMMENT ON COLUMN invoice_record.invoice_code IS '发票代码';
+COMMENT ON COLUMN invoice_record.invoice_no IS '发票号码';
+COMMENT ON COLUMN invoice_record.tenant_id IS '申请人租户ID';
+COMMENT ON COLUMN invoice_record.issue_tenant_id IS '开票租户编号';
+COMMENT ON COLUMN invoice_record.invoice_type IS '发票类型: 1:增值税普通发票 2:增值税专用发票 3:形式发票';
+COMMENT ON COLUMN invoice_record.issue_type IS '开具类型, 1: 个人 2:企业';
+COMMENT ON COLUMN invoice_record.seller_name IS '销售方名称';
+COMMENT ON COLUMN invoice_record.seller_tax_code IS  '销售方纳税人识别号';
+COMMENT ON COLUMN invoice_record.purchaser_name IS '买方名称';
+COMMENT ON COLUMN invoice_record.purchaser_tax_code IS '买方纳税人识别号';
+COMMENT ON COLUMN invoice_record.invoice_subject IS '发票内容';
+COMMENT ON COLUMN invoice_record.invoice_amount IS '合计金额';
+COMMENT ON COLUMN invoice_record.tax_amount IS '合计税额';
+COMMENT ON COLUMN invoice_record.remark IS '备注';
+COMMENT ON COLUMN invoice_record.issue_remark IS '开具备注/开票失败备注';
+COMMENT ON COLUMN invoice_record.invoice_pic IS '发票图片';
+COMMENT ON COLUMN invoice_record.receive_email IS '发票接收邮箱地址';
+COMMENT ON COLUMN invoice_record.invoice_status IS '发票状态,1:待开票 2:开票完成 3:未通过';
+COMMENT ON COLUMN invoice_record.invoice_time IS '开票时间';
+COMMENT ON COLUMN invoice_record.create_time IS '创建时间';
+COMMENT ON COLUMN invoice_record.update_time IS '更新时间';
 
+DROP TABLE IF EXISTS invoice_item CASCADE;
 CREATE TABLE invoice_item (
-  id int8 NOT NULL UNIQUE, 
+  id BIGSERIAL NOT NULL, 
   invoice_id  int8 NOT NULL, 
   item_name varchar(50) NOT NULL,
   item_spec varchar(50) NOT NULL,
@@ -616,7 +588,8 @@ CREATE TABLE invoice_item (
   amount decimal(10,2) NOT NULL,
   tax_amount decimal(6,2) NOT NULL,
   create_time int8 NOT NULL,
-  update_time int8 NOT NULL
+  update_time int8 NOT NULL,
+  PRIMARY KEY (id)
 );
 
 COMMENT ON TABLE invoice_item IS '发票项目';
@@ -632,3 +605,150 @@ COMMENT ON COLUMN invoice_item.amount IS '总金额';
 COMMENT ON COLUMN invoice_item.tax_amount IS '税额';
 COMMENT ON COLUMN invoice_item.create_time IS '创建时间';
 COMMENT ON COLUMN invoice_item.update_time IS '更新时间';
+
+-- 聊天
+DROP TABLE IF EXISTS chat_conversation CASCADE;
+CREATE TABLE chat_conversation (
+  id             BIGSERIAL NOT NULL, 
+  "key"          varchar(20) NOT NULL, 
+  sid            int8 NOT NULL, 
+  rid            int8 NOT NULL, 
+  flag           int4 NOT NULL, 
+  chat_type      int4 NOT NULL, 
+  greet_word     varchar(20) NOT NULL, 
+  last_chat_time int8 NOT NULL, 
+  last_msg       varchar(120) NOT NULL, 
+  create_time    int8 NOT NULL, 
+  update_time    int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE chat_conversation IS '聊天会话';
+COMMENT ON COLUMN chat_conversation.id IS '编号';
+COMMENT ON COLUMN chat_conversation."key" IS '编码';
+COMMENT ON COLUMN chat_conversation.sid IS '会话发起人';
+COMMENT ON COLUMN chat_conversation.rid IS '会话回复人';
+COMMENT ON COLUMN chat_conversation.flag IS '预留标志';
+COMMENT ON COLUMN chat_conversation.chat_type IS '聊天类型,1:用户  2:客服';
+COMMENT ON COLUMN chat_conversation.greet_word IS '打招呼内容';
+COMMENT ON COLUMN chat_conversation.last_chat_time IS '最后聊天时间';
+COMMENT ON COLUMN chat_conversation.create_time IS '创建时间';
+COMMENT ON COLUMN chat_conversation.update_time IS '更新时间';
+
+-- 聊天消息
+DROP TABLE IF EXISTS chat_msg CASCADE;
+CREATE TABLE chat_msg (
+  id           BIGSERIAL NOT NULL, 
+  conv_id      int8 NOT NULL, 
+  sid          int8 NOT NULL, 
+  msg_type     int4 NOT NULL, 
+  msg_flag     int4 NOT NULL, 
+  content      varchar(255) NOT NULL, 
+  extra        varchar(512) NOT NULL, 
+  expires_time int8 NOT NULL, 
+  purge_time   int8 NOT NULL, 
+  create_time  int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE chat_msg IS '消息消息';
+COMMENT ON COLUMN chat_msg.id IS '编号';
+COMMENT ON COLUMN chat_msg.conv_id IS '会话编号';
+COMMENT ON COLUMN chat_msg.sid IS '发送人编号';
+COMMENT ON COLUMN chat_msg.msg_type IS '消息类型, 1: 文本  2: 图片  3: 表情  4: 文件  5:语音  6:位置  7:语音  8:红包  9:名片  11: 委托申请';
+COMMENT ON COLUMN chat_msg.msg_flag IS '消息标志: 1:撤回 2:删除';
+COMMENT ON COLUMN chat_msg.content IS '消息内容';
+COMMENT ON COLUMN chat_msg.extra IS '扩展数据';
+COMMENT ON COLUMN chat_msg.expires_time IS '过期时间';
+COMMENT ON COLUMN chat_msg.purge_time IS '消息清理时间,0表示永不清理';
+COMMENT ON COLUMN chat_msg.create_time IS '创建时间';
+
+/** 2024-07-15 rbac */
+ALTER TABLE "public"."perm_dept" RENAME TO "rbac_depart"; 
+ALTER TABLE "public"."perm_dict" RENAME TO "rbac_dict"; 
+ALTER TABLE "public"."perm_dict_detail" RENAME TO "rbac_dict_detail"; 
+
+ALTER TABLE "public"."perm_job" RENAME TO "rbac_job"; 
+ALTER TABLE "public"."perm_login_log" RENAME TO "rbac_login_log"; 
+ALTER TABLE "public"."perm_res" RENAME TO "rbac_res"; 
+ALTER TABLE "public"."perm_dict_detail" RENAME TO "rbac_dict_detail"; 
+ALTER TABLE "public"."perm_role" RENAME TO "rbac_role"; 
+ALTER TABLE "public"."perm_role_dept" RENAME TO "rbac_role_dept"; 
+ALTER TABLE "public"."perm_role_res" RENAME TO "rbac_role_res"; 
+ALTER TABLE "public"."perm_user" RENAME TO "rbac_user"; 
+ALTER TABLE "public"."perm_user_role" RENAME TO "rbac_user_role"; 
+
+/** 2024-07-16 merchant */
+DROP TABLE IF EXISTS mch_sign_up CASCADE;
+ALTER TABLE "public"."mm_member" RENAME COLUMN "portrait" TO "profile_photo";
+
+
+/** 2024-07-20 workorder */
+DROP TABLE IF EXISTS work_order CASCADE;
+DROP TABLE IF EXISTS workorder CASCADE;
+CREATE TABLE workorder (
+  id              BIGSERIAL NOT NULL, 
+  member_id       int8 NOT NULL, 
+  class_id        int4 NOT NULL, 
+  mch_id          int8 NOT NULL, 
+  flag            int4 NOT NULL, 
+  wip             varchar(40) NOT NULL, 
+  subject         varchar(120) NOT NULL, 
+  content         varchar(255) NOT NULL, 
+  is_opened       int4 NOT NULL, 
+  hope_desc       varchar(64) NOT NULL, 
+  first_photo     varchar(80) NOT NULL, 
+  photo_list      varchar(350) NOT NULL, 
+  status          int4 NOT NULL, 
+  allocate_aid    int8 NOT NULL, 
+  service_rank    int4 NOT NULL, 
+  service_apprise varchar(120) NOT NULL, 
+  is_usefully     int4 NOT NULL, 
+  create_time     int8 NOT NULL, 
+  update_time     int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE workorder IS '工单';
+COMMENT ON COLUMN workorder.id IS '编号';
+COMMENT ON COLUMN workorder.member_id IS '会员编号';
+COMMENT ON COLUMN workorder.class_id IS '类型, 1: 建议 2:申诉';
+COMMENT ON COLUMN workorder.mch_id IS '关联商户';
+COMMENT ON COLUMN workorder.flag IS '标志, 1:用户关闭';
+COMMENT ON COLUMN workorder.wip IS '关联业务, 如:CHARGE:2014050060';
+COMMENT ON COLUMN workorder.content IS '投诉内容';
+COMMENT ON COLUMN workorder.is_opened IS '是否开放评论';
+COMMENT ON COLUMN workorder.hope_desc IS '诉求描述';
+COMMENT ON COLUMN workorder.first_photo IS '图片';
+COMMENT ON COLUMN workorder.photo_list IS '图片列表';
+COMMENT ON COLUMN workorder.status IS '状态,1:待处理 2:处理中 3:已完结';
+COMMENT ON COLUMN workorder.allocate_aid IS '分配的客服编号';
+COMMENT ON COLUMN workorder.service_rank IS '服务评分';
+COMMENT ON COLUMN workorder.service_apprise IS '服务评价';
+COMMENT ON COLUMN workorder.is_usefully IS '是否有用 0:未评价 1:是 2:否';
+COMMENT ON COLUMN workorder.create_time IS '创建时间';
+COMMENT ON COLUMN workorder.update_time IS '更新时间';
+
+
+DROP TABLE IF EXISTS workorder_details CASCADE;
+
+
+DROP TABLE IF EXISTS workorder_comment CASCADE;
+CREATE TABLE workorder_comment (
+  id          BIGSERIAL NOT NULL, 
+  order_id    int8 NOT NULL, 
+  is_replay   int4 NOT NULL, 
+  content     varchar(255) NOT NULL, 
+  is_revert   int4 NOT NULL, 
+  ref_cid     int8 NOT NULL, 
+  create_time int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE workorder_comment IS '工单讨论';
+COMMENT ON COLUMN workorder_comment.id IS '编号';
+COMMENT ON COLUMN workorder_comment.order_id IS '案件编号';
+COMMENT ON COLUMN workorder_comment.is_replay IS '是否为回复信息,0:用户信息 1: 回复信息';
+COMMENT ON COLUMN workorder_comment.is_revert IS '是否撤回 0:否 1:是';
+COMMENT ON COLUMN workorder_comment.ref_cid IS '引用评论编号';
+COMMENT ON COLUMN workorder_comment.create_time IS '创建时间';
+
+
+
+
+
+
+
+

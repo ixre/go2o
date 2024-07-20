@@ -322,7 +322,7 @@ message SaveRbacUserRequest {
     // 标志
     int32 flag = 4;
     // 头像
-    string portrait = 5;
+    string profilePhoto = 5;
     // 昵称
     string nickname = 6;
     // 性别
@@ -365,7 +365,7 @@ message SRbacUser {
     // 标志
     int32 flag = 4;
     // 头像
-    string portrait = 5;
+    string profilePhoto = 5;
     // Nickname
     string nickname = 6;
     // Gender
@@ -406,7 +406,7 @@ message PagingUser {
     // 标志
     int32 flag = 4;
     // 头像
-    string portrait = 5;
+    string profilePhoto = 5;
     // 昵称
     string nickname = 6;
     // 性别

@@ -76,3 +76,19 @@ func (m *MerchantQuery) Verify(user, pwd string) int {
 	m.Connector.ExecScalar("SELECT id FROM mch_merchant WHERE login_user = $1 AND login_pwd= $2", &id, user, pwd)
 	return id
 }
+
+// QueryPagingMerchantList 查询分页的商户列表
+func (m *MerchantQuery) QueryPagingMerchantList(p *fw.PagingParams) (_ *fw.PagingResult, err error) {
+	tables := `mch_merchant p
+         LEFT JOIN mch_authenticate a ON a.mch_id=p.id AND a.version = 1`
+
+	ret, err := fw.UnifinedPagingQuery(m.ORM, p, tables, `
+			 p.*,p.mch_name,person_name,p.tel,
+        (SELECT COUNT(1) FROM mch_online_shop s WHERE s.vendor_id=p.id) as online_shops`)
+	// (SELECT COUNT(1) FROM mch_offline_shop s WHERE s.mch_id=p.id AND shop_type=2) as ofs_num`)
+	for _, v := range ret.Rows {
+		r := fw.ParsePagingRow(v)
+		r.Excludes("password")
+	}
+	return ret, err
+}

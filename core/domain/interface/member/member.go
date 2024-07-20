@@ -149,8 +149,8 @@ type (
 		ChangePhone(string) error
 		//　ChangeNickname 修改昵称
 		ChangeNickname(nickname string, limitTime bool) error
-		// ChangeHeadPortrait 设置头像
-		ChangeHeadPortrait(string) error
+		// ChangeProfilePhoto 设置头像
+		ChangeProfilePhoto(string) error
 		// ProfileCompleted 资料是否完善
 		ProfileCompleted() bool
 		// CheckProfileComplete 检查资料是否完善
@@ -252,7 +252,7 @@ type (
 		// 密码
 		Password string `db:"password"`
 		// 头像
-		Portrait string `db:"portrait"`
+		ProfilePhoto string `db:"profile_photo"`
 		// 交易密码
 		TradePassword string `db:"trade_pwd"`
 		// 经验值

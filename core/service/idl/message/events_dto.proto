@@ -84,7 +84,7 @@ message EVMemberPushEventData{
 	  /** 昵称 */
 	  string nickname = 9;
 	  /** 会员头像 */
-	  string portrait = 10;
+	  string profilePhoto = 10;
 	  /** 手机号  */
 	  string phone = 12;
 	  /** 电子邮箱 */

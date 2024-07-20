@@ -517,7 +517,7 @@ func (o *subOrderImpl) vendorSettle() error {
 }
 
 // 根据供货价进行商户结算
-func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
+func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggregateRoot) error {
 	_, refund := o.getOrderAmount()
 	sAmount := o.getOrderCost()
 	if sAmount > 0 {
@@ -532,7 +532,7 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
 }
 
 // 根据比例进行商户结算
-func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant) error {
+func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRoot) error {
 	rate := o.registryRepo.Get(registry.MchOrderSettleRate).FloatValue()
 	amount, refund := o.getOrderAmount()
 	sAmount := int64(float64(amount) * rate)
@@ -547,7 +547,7 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant) error {
 	}
 	return nil
 }
-func (o *subOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMerchant) error {
+func (o *subOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMerchantAggregateRoot) error {
 	fee := o.registryRepo.Get(registry.MchSingleOrderServiceFee).FloatValue()
 	amount, refund := o.getOrderAmount()
 	if fee > 0 {

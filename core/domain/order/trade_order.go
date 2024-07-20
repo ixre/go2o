@@ -335,7 +335,7 @@ func (o *tradeOrderImpl) vendorSettle() error {
 }
 
 // 根据比例进行商户结算
-func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float64) error {
+func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRoot, rate float64) error {
 	v := o.getValue()
 	sAmount := int64(float64(v.FinalAmount) * rate)
 	if sAmount > 0 {
