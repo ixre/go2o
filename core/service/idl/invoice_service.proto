@@ -31,7 +31,7 @@ service InvoiceService {
     rpc CreateInvoiceTitle (CreateInvoiceTitleRequest) returns (CreateInvoiceTitleResponse) {
     }
     // 保存发票
-    rpc RequestInvoice (InvoiceRequest) returns (SaveRecordResponse) {
+    rpc RequestInvoice (InvoiceRequest) returns (RequestInvoiceResponse) {
     }
     // 获取发票
     rpc GetInvoice (InvoiceId) returns (SInvoice) {
@@ -152,24 +152,26 @@ message InvoiceRequest{
     int64 issueTenantId = 2;
     // 发票抬头编号
     int64 titleId = 3;
+    // 发票内容
+    string subject = 4;
     // 发票项目
-    repeated SInvoiceItem items = 4;
+    repeated SInvoiceItem items = 5;
     // 发票接收邮箱地址
-    string receiveEmail = 5; 
+    string receiveEmail = 6; 
     // 关联单据编号
-    string outerNo = 6;
+    string outerNo = 7;
     // 备注
-    string remark = 7;
+    string remark = 8;
 }
 
 // 保存发票响应
-message SaveRecordResponse{
+message RequestInvoiceResponse{
     // 错误码
     int32 code = 1;
     // 错误信息
     string msg = 2;
     // 发票ID
-    int64 id = 3;
+    int64 invoiceId = 3;
 }
 
 // 发票编号

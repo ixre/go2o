@@ -41,10 +41,10 @@ func (i *invoiceServiceImpl) GetTenant(_ context.Context, req *proto.InvoiceTena
 }
 
 // RequestInvoice implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.InvoiceRequest) (*proto.SaveRecordResponse, error) {
+func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.InvoiceRequest) (*proto.RequestInvoiceResponse, error) {
 	tenant := i.repo.GetTenant(int(req.TenantId))
 	if tenant == nil {
-		return &proto.SaveRecordResponse{
+		return &proto.RequestInvoiceResponse{
 			Code: 2,
 			Msg:  "无法申请发票",
 		}, nil
@@ -54,6 +54,7 @@ func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.Invoic
 		IssueTenantId: int(req.IssueTenantId),
 		TitleId:       int(req.TitleId),
 		ReceiveEmail:  req.ReceiveEmail,
+		Subject:       req.Subject,
 		Remark:        req.Remark,
 		Items:         []*invoice.InvoiceItem{},
 	}
@@ -73,13 +74,13 @@ func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.Invoic
 		err = iv.Save()
 	}
 	if err != nil {
-		return &proto.SaveRecordResponse{
+		return &proto.RequestInvoiceResponse{
 			Code: 1,
 			Msg:  err.Error(),
 		}, nil
 	}
-	return &proto.SaveRecordResponse{
-		Id: int64(iv.GetDomainId()),
+	return &proto.RequestInvoiceResponse{
+		InvoiceId: int64(iv.GetDomainId()),
 	}, nil
 }
 

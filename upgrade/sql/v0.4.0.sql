@@ -591,6 +591,7 @@ CREATE TABLE invoice_record (
   seller_tax_code varchar(64) NOT NULL,
   purchaser_name  varchar(20) NOT NULL, 
   purchaser_tax_code  varchar(40) NOT NULL, 
+  invoice_subject varchar(64) NOT NULL,
   invoice_amount decimal(10,2) NOT NULL,
   tax_amount decimal(10,2) NOT NULL,
   remark varchar(64) NOT NULL,
@@ -616,6 +617,7 @@ COMMENT ON COLUMN invoice_record.seller_name IS '销售方名称';
 COMMENT ON COLUMN invoice_record.seller_tax_code IS  '销售方纳税人识别号';
 COMMENT ON COLUMN invoice_record.purchaser_name IS '买方名称';
 COMMENT ON COLUMN invoice_record.purchaser_tax_code IS '买方纳税人识别号';
+COMMENT ON COLUMN invoice_record.invoice_subject IS '发票内容';
 COMMENT ON COLUMN invoice_record.invoice_amount IS '合计金额';
 COMMENT ON COLUMN invoice_record.tax_amount IS '合计税额';
 COMMENT ON COLUMN invoice_record.remark IS '备注';

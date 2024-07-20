@@ -80,6 +80,8 @@ type InvoiceRequestData struct {
 	TitleId int `json:"titleId"`
 	// 接收邮箱
 	ReceiveEmail string `json:"receiveEmail"`
+	// 发票内容
+	Subject string `json:"subject"`
 	// 备注
 	Remark string `json:"remark"`
 	// 开票项目
@@ -192,6 +194,8 @@ type InvoiceRecord struct {
 	PurchaserName string `json:"purchaserName" db:"purchaser_name" gorm:"column:purchaser_name" bson:"purchaserName"`
 	// 买方纳税人识别号
 	PurchaserTaxCode string `json:"purchaserTaxCode" db:"purchaser_tax_code" gorm:"column:purchaser_tax_code" bson:"purchaserTaxCode"`
+	// 发票内容
+	InvoiceSubject string `json:"invoiceSubject" db:"invoice_subject" gorm:"column:invoice_subject" bson:"invoiceSubject"`
 	// 合计金额
 	InvoiceAmount float64 `json:"invoiceAmount" db:"invoice_amount" gorm:"column:invoice_amount" bson:"invoiceAmount"`
 	// 合计税额

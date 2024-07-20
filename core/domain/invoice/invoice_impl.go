@@ -6,23 +6,30 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/invoice"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/gof/domain/eventbus"
 )
 
 var _ invoice.InvoiceUserAggregateRoot = new(invoiceTenantAggregateRootImpl)
 
 type invoiceTenantAggregateRootImpl struct {
-	value *invoice.InvoiceTenant
-	repo  invoice.IInvoiceTenantRepo
+	value   *invoice.InvoiceTenant
+	repo    invoice.IInvoiceTenantRepo
+	mchRepo merchant.IMerchantRepo
 }
 
-func NewInvoiceTenant(v *invoice.InvoiceTenant, repo invoice.IInvoiceTenantRepo) invoice.InvoiceUserAggregateRoot {
+func NewInvoiceTenant(v *invoice.InvoiceTenant,
+	repo invoice.IInvoiceTenantRepo,
+	mchRepo merchant.IMerchantRepo,
+) invoice.InvoiceUserAggregateRoot {
 	return &invoiceTenantAggregateRootImpl{
-		value: v,
-		repo:  repo,
+		value:   v,
+		mchRepo: mchRepo,
+		repo:    repo,
 	}
 }
 
@@ -82,12 +89,13 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 	// 申请人信息
 	h := i.repo.Title().Get(v.TitleId)
 	if h == nil || h.Id <= 0 || h.TenantId != i.GetAggregateRootId() {
-		return nil, errors.New("invoice title is error")
+		return nil, errors.New("发票抬头不合法")
 	}
 	r.PurchaserName = h.TitleName
 	r.PurchaserTaxCode = h.TaxCode
 	r.IssueType = h.IssueType
 	r.InvoiceType = h.InvoiceType
+	r.InvoiceSubject = v.Subject
 	// 开具人信息
 	if v.IssueTenantId == 0 {
 		r.SellerName = "系统"
@@ -97,7 +105,12 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 		if tn == nil {
 			return nil, errors.New("issue tenant not exists")
 		}
-		r.SellerName = "商户"
+		mch := i.mchRepo.GetMerchant(tn.TenantUserId())
+		if mch == nil {
+			logger.Error("商户不存在,无法开具发票, tenantId:%d", tn.TenantUserId())
+			return nil, errors.New("商户不存在,无法开具发票")
+		}
+		r.SellerName = mch.GetValue().MchName
 		r.SellerTaxCode = ""
 	}
 	// 开票项目
@@ -194,12 +207,23 @@ func (i *invoiceRecordDomainImpl) Revert(reason string) error {
 	if i.value.InvoiceStatus == invoice.IssueRevert {
 		return errors.New("invoice status error")
 	}
-	return errors.New("not implemented")
+	i.value.InvoiceStatus = invoice.IssueRevert
+	i.value.IssueRemark = reason
+	i.value.UpdateTime = int(time.Now().Unix())
+	_,err := i.repo.Save(i.value)
+	return err
 }
 
 // Save implements invoice.InvoiceDomain.
 func (i *invoiceRecordDomainImpl) Save() error {
 	_, err := i.repo.Save(i.value)
+	if err == nil {
+		// 保存发票明细
+		for _, v := range i.GetItems() {
+			v.InvoiceId = i.value.Id
+			i.itemRepo.Save(v)
+		}
+	}
 	return err
 }
 

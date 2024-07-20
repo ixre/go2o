@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/gof/db"
@@ -256,10 +257,58 @@ func (p *PagingParams) where(field string, exp string, value interface{}) *Pagin
 	return p
 }
 
+// Equal 方法为 PagingParams 结构体添加了一个 Equal 功能
+// 用于在查询条件中添加等于某个字段值的条件
+//
+// 参数：
+// field string - 要进行比较的字段名
+// value interface{} - 要进行比较的值，可以是任意类型
+//
+// 返回值：
+// *PagingParams - 返回一个新的 PagingParams 指针，用于链式调用
 func (p *PagingParams) Equal(field string, value interface{}) *PagingParams {
-	return p.where(field, "=?", value)
+	return p.where(field, "= ?", value)
 }
 
+// NotEqual 方法用于在 PagingParams 结构体上添加一个不等于条件的查询参数
+//
+// 参数：
+//
+//	p *PagingParams - PagingParams 结构体指针，表示当前分页参数对象
+//	field string - 要进行不等于条件判断的字段名
+//	value interface{} - 要进行不等于条件判断的值
+//
+// 返回值：
+//
+//	*PagingParams - 返回修改后的 PagingParams 结构体指针
+func (p *PagingParams) NotEqual(field string, value interface{}) *PagingParams {
+	return p.where(field, " <> ?", value)
+}
+
+// In 函数向PagingParams结构体中添加一个IN查询条件
+//
+// 参数：
+//
+//	p *PagingParams - PagingParams结构体指针，用于存储查询条件
+//	field string - 要查询的字段名
+//	value ...interface{} - 要查询的值列表，可以为单个值或切片
+//
+// 返回值：
+//
+//	*PagingParams - 添加了IN查询条件的PagingParams结构体指针
+func (p *PagingParams) In(field string, value ...interface{}) *PagingParams {
+	l := len(value)
+	if l == 0 {
+		panic("value is empty")
+	}
+	if reflect.TypeOf(value[0]).Kind() == reflect.Slice {
+		if l > 1 {
+			panic("value is slice,but give more than one value")
+		}
+		return p.where(field, " IN ?", value[0])
+	}
+	return p.where(field, " IN ?", value)
+}
 func (p *PagingParams) Like(field string, value interface{}) *PagingParams {
 	return p.where(field, "LIKE ?", value)
 }
