@@ -74,7 +74,7 @@ func GetMemberQueryService() *query.MemberQuery {
 }
 
 // GetContentQuery 获取内容查询服务
-func GetContentQuery() *query.ContentQuery {
+func GetContentQueryService() *query.ContentQuery {
 	orm := provide.GetOrmInstance()
 	db := provide.GetGOrm()
 	app := provide.GetApp()
@@ -82,6 +82,12 @@ func GetContentQuery() *query.ContentQuery {
 	memberQuery := query.NewMemberQuery(orm, db)
 	contentQuery := query.NewContentQuery(orm, db, merchantQuery, memberQuery)
 	return contentQuery
+}
+
+func GetWorkQueryService() *query.WorkQuery {
+	db := provide.GetGOrm()
+	workQuery := query.NewWorkQuery(db)
+	return workQuery
 }
 
 // Injectors from repo.go:
@@ -1056,7 +1062,7 @@ func GetWorkorderService() proto.WorkorderServiceServer {
 var provideSets = wire.NewSet(provide.GetOrm, provide.GetGOrm, provide.GetOrmInstance, provide.GetStorageInstance, provide.GetApp, provide.GetDb, repos.NewSystemRepo, repos.NewRegistryRepo, repos.NewProModelRepo, repos.NewValueRepo, repos.NewUserRepo, repos.NewWalletRepo, repos.NewNotifyRepo, repos.NewMssRepo, repos.NewExpressRepo, repos.NewShipmentRepo, repos.NewMemberRepo, repos.NewProductRepo, repos.NewItemWholesaleRepo, repos.NewCategoryRepo, repos.NewShopRepo, repos.NewGoodsItemRepo, repos.NewAfterSalesRepo, repos.NewCartRepo, repos.NewArticleRepo, repos.NewMerchantRepo, repos.NewOrderRepo, repos.NewPaymentRepo, repos.NewPromotionRepo, repos.NewStationRepo, repos.NewTagSaleRepo, repos.NewWholesaleRepo, repos.NewPersonFinanceRepository, repos.NewDeliverRepo, repos.NewAdvertisementRepo, repos.NewJobRepository, repos.NewStaffRepo, repos.NewPageRepo, repos.NewArticleCategoryRepo, repos.NewInvoiceTenantRepo, repos.NewChatRepo, repos.NewWorkorderRepo)
 
 var queryProvideSets = wire.NewSet(
-	provideSets, query.NewStationQuery, query.NewMerchantQuery, query.NewOrderQuery, query.NewMemberQuery, query.NewShopQuery, query.NewItemQuery, query.NewAfterSalesQuery, query.NewContentQuery,
+	provideSets, query.NewStationQuery, query.NewMerchantQuery, query.NewOrderQuery, query.NewMemberQuery, query.NewShopQuery, query.NewItemQuery, query.NewAfterSalesQuery, query.NewContentQuery, query.NewWorkQuery,
 )
 
 var daoProvideSets = wire.NewSet(

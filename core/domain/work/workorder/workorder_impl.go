@@ -38,6 +38,13 @@ func (w *workorderAggregateRootImpl) Submit() error {
 	if w.value.MemberId == 0 {
 		return errors.New("workorder member is empty")
 	}
+	if w.value.ClassId == workorder.ClassSuggest {
+		// 建议不开放评论
+		w.value.IsOpened = 0
+	} else if w.value.ClassId == workorder.ClassAppeal {
+		// 投诉允许评论
+		w.value.IsOpened = 1
+	}
 	w.value.OrderNo = domain.NewTradeNo(7, w.value.MemberId)
 	w.value.Status = workorder.StatusPending
 	w.value.CreateTime = int(time.Now().Unix())
@@ -114,6 +121,10 @@ func (w *workorderAggregateRootImpl) SubmitComment(content string, isReplay bool
 	if w.value.ClassId == workorder.ClassSuggest && !isReplay {
 		// 建议不允许用户提交评论
 		return errors.New("suggest workorder only replay can be submitted")
+	}
+	if w.value.IsOpened == 0 && !isReplay {
+		// 未开放评论
+		return errors.New("工单未开放评论")
 	}
 	comment := &workorder.WorkorderComment{
 		Id:         refCommentId,

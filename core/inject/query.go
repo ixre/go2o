@@ -68,6 +68,7 @@ var queryProvideSets = wire.NewSet(
 	query.NewItemQuery,
 	query.NewAfterSalesQuery,
 	query.NewContentQuery,
+	query.NewWorkQuery,
 )
 
 var daoProvideSets = wire.NewSet(
@@ -131,6 +132,10 @@ func GetMemberQueryService() *query.MemberQuery {
 }
 
 // GetContentQuery 获取内容查询服务
-func GetContentQuery() *query.ContentQuery {
+func GetContentQueryService() *query.ContentQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+func GetWorkQueryService() *query.WorkQuery {
 	panic(wire.Build(queryProvideSets))
 }

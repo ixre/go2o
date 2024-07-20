@@ -330,6 +330,12 @@ func (p *PagingParams) And(where string, values ...interface{}) *PagingParams {
 	return p
 }
 
+// OrderBy 添加排序条件
+func (p *PagingParams) OrderBy(order string) *PagingParams {
+	p.Order = order
+	return p
+}
+
 // 分页结果
 type PagingResult struct {
 	// 总数量
