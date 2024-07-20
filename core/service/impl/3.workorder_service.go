@@ -43,7 +43,7 @@ func (w *workorderServiceImpl) Apprise(_ context.Context, req *proto.WorkorderAp
 			Msg:  "工单不存在",
 		}, nil
 	}
-	err := iw.Apprise(req.IsUsefully, int(req.Rank), req.Apprise)
+	err := iw.Apprise(req.IsUsefully, int(req.ServiceRank), req.ServiceApprise)
 	return w.ret(err)
 }
 

@@ -67,6 +67,10 @@ func (w *workorderAggregateRootImpl) Apprise(isUsefully bool, rank int, apprise 
 	if w.value.Status != workorder.StatusFinished {
 		return errors.New("workorder is not finished")
 	}
+	if (w.value.Flag & workorder.FlagUserClosed) == workorder.FlagUserClosed {
+		// 用户关闭后, 不能评价
+		return errors.New("workorder closed by user, can not apprise")
+	}
 	w.value.ServiceRank = rank
 	w.value.IsUsefully = types.Ternary(isUsefully, 1, 0)
 	w.value.ServiceApprise = apprise
@@ -83,6 +87,7 @@ func (w *workorderAggregateRootImpl) Close() error {
 	// 用户关闭
 	w.value.Status = workorder.StatusFinished
 	w.value.Flag |= workorder.FlagUserClosed
+	w.value.IsUsefully = 1
 	w.value.UpdateTime = int(time.Now().Unix())
 	_, err := w.repo.Save(w.value)
 	return err

@@ -53,9 +53,9 @@ message WorkorderAppriseRequest{
    // 是否有用
    bool isUsefully = 2;
    // 评分
-   int32 rank = 3;
+   int32 serviceRank = 3;
    // 评价
-   string apprise = 4;
+   string serviceApprise = 4;
 }
 
 // 提交工单评论请求
