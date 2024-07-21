@@ -682,6 +682,7 @@ ALTER TABLE "public"."mm_member" RENAME COLUMN "portrait" TO "profile_photo";
 /** 2024-07-20 workorder */
 DROP TABLE IF EXISTS work_order CASCADE;
 DROP TABLE IF EXISTS workorder CASCADE;
+
 CREATE TABLE workorder (
   id              BIGSERIAL NOT NULL, 
   order_no        varchar(20) NOT NULL, 
@@ -696,6 +697,7 @@ CREATE TABLE workorder (
   hope_desc       varchar(64) NOT NULL, 
   first_photo     varchar(80) NOT NULL, 
   photo_list      varchar(350) NOT NULL, 
+  contact_way     varchar(20) NOT NULL, 
   status          int4 NOT NULL, 
   allocate_aid    int8 NOT NULL, 
   service_rank    int4 NOT NULL, 
@@ -717,6 +719,7 @@ COMMENT ON COLUMN workorder.is_opened IS '是否开放评论';
 COMMENT ON COLUMN workorder.hope_desc IS '诉求描述';
 COMMENT ON COLUMN workorder.first_photo IS '图片';
 COMMENT ON COLUMN workorder.photo_list IS '图片列表';
+COMMENT ON COLUMN workorder.contact_way IS '联系方式';
 COMMENT ON COLUMN workorder.status IS '状态,1:待处理 2:处理中 3:已完结';
 COMMENT ON COLUMN workorder.allocate_aid IS '分配的客服编号';
 COMMENT ON COLUMN workorder.service_rank IS '服务评分';

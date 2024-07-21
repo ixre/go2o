@@ -89,6 +89,8 @@ type Workorder struct {
 	FirstPhoto string `json:"firstPhoto" db:"first_photo" gorm:"column:first_photo" bson:"firstPhoto"`
 	// 图片列表
 	PhotoList string `json:"photoList" db:"photo_list" gorm:"column:photo_list" bson:"photoList"`
+    // 联系方式
+    ContactWay string `json:"contactWay" db:"contact_way" gorm:"column:contact_way" bson:"contactWay"`
 	// 状态,1:待处理 2:处理中 3:已完结
 	Status int `json:"status" db:"status" gorm:"column:status" bson:"status"`
 	// 分配的客服编号

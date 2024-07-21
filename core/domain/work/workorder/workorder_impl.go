@@ -44,7 +44,12 @@ func (w *workorderAggregateRootImpl) Submit() error {
 	} else if w.value.ClassId == workorder.ClassAppeal {
 		// 投诉允许评论
 		w.value.IsOpened = 1
+		// 判断是否提供联系方式
+		if len(w.value.ContactWay) == 0 {
+			return errors.New("提交工单未提供联系方式")
+		}
 	}
+
 	w.value.OrderNo = domain.NewTradeNo(7, w.value.MemberId)
 	w.value.Status = workorder.StatusPending
 	w.value.CreateTime = int(time.Now().Unix())

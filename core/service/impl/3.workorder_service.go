@@ -117,6 +117,7 @@ func (w *workorderServiceImpl) GetWorkorder(_ context.Context, req *proto.Workor
 		HopeDesc:       iv.HopeDesc,
 		FirstPhoto:     iv.FirstPhoto,
 		PhotoList:      iv.PhotoList,
+		ContactWay:     iv.ContactWay,
 		Status:         int32(iv.Status),
 		AllocateAid:    int64(iv.AllocateAid),
 		ServiceRank:    int32(iv.ServiceRank),
@@ -152,6 +153,7 @@ func (w *workorderServiceImpl) SubmitWorkorder(_ context.Context, req *proto.Sub
 		IsOpened:  int(req.IsOpened),
 		HopeDesc:  req.HopeDesc,
 		PhotoList: req.PhotoList,
+		ContactWay: req.ContactWay,	
 	}
 	wo := w.repo.CreateWorkorder(dst)
 	err := wo.Submit()

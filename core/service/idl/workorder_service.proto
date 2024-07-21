@@ -89,6 +89,8 @@ message SubmitWorkorderRequest{
     string hopeDesc = 8;
     // 图片列表
     string photoList = 9;
+    // 联系方式
+    string contactWay = 10;
 }
 
 // 保存工单响应
@@ -146,4 +148,6 @@ message SWorkorder{
     int64 createTime = 19;
     // 更新时间
     int64 updateTime = 20;
+    // 联系方式
+    string contactWay = 21;
 }
