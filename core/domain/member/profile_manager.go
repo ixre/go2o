@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -666,9 +667,9 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	// 是否不需要审核, 自动通过
 	autoReviewPass := v.ManualReview == 0
 	if v.ManualReview < 0 {
-		// 如果外部未指定(默认值),则根据配置决定是否需要审核
+		// 如果外部未指定(默认值),则根据配置决定是否需要审核	
 		b, _ := p.registryRepo.GetValue(registry.MemberCertificationReviewOff)
-		autoReviewPass = b == "1"
+		autoReviewPass, _= strconv.ParseBool(b)
 		v.ManualReview = types.Ternary(autoReviewPass, 0, 1)
 	}
 	// 保存

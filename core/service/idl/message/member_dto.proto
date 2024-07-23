@@ -433,30 +433,30 @@ message SMemberRelation {
 
 /** 实名认证信息 */
 message SCertificationInfo {
-  // 会员编号
-  sint64 memberId = 1;
   /** 真实姓名 */
-  string realName = 2;
+  string realName = 1;
   /** 国家代码,如:CN */
-  string countryCode = 3;
+  string countryCode = 2;
   /** 证件类型 */
-  sint32 cardType = 4;
+  sint32 cardType = 3;
   /** 证件号码 */
-  string cardId = 5;
+  string cardId = 4;
   /** 证件正面照 */
-  string certImage = 6;
+  string certImage = 5;
   /** 证件反面照 */
-  string certReverseImage = 7;
+  string certReverseImage = 6;
   /** 认证人脸照 */
-  string trustImage = 8;
+  string trustImage = 7;
   // 其他认证资料
-  string extraCertFile = 9;
+  string extraCertFile = 8;
   /** 是否人工审核 */
-  sint32 manualReview = 10;
+  sint32 manualReview = 9;
   /** 审核状态 */
-  sint32 reviewStatus = 11;
+  sint32 reviewStatus = 10;
   /** 审核时间 */
-  sint64 reviewTime = 12;
+  sint64 reviewTime = 11;
+  /** 提交时间 */
+  sint64 createTime = 12;
   /** 备注 */
   string remark = 13;
   // 扩展认证资料1

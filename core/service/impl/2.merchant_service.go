@@ -505,21 +505,28 @@ func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMercha
 		return nil, 4, de.ErrNotMD5Format
 	}
 	//尝试作为独立的商户账号登陆
-	mch := m._mchRepo.GetMerchantByUsername(user)
-	if mch == nil {
-		// 使用会员身份登录
-		var id int64
-		id, err = m.testMemberLogin(user, domain.MemberSha1Pwd(pwd, ""))
-		if err != nil {
-			return nil, 2, err
-		}
-		mchId, _ := m.GetMerchantIdByMember(context.TODO(), &proto.MemberId{Value: id})
-		if mchId.Value > 0 {
-			mch = m._mchRepo.GetMerchant(int(mchId.Value))
-			return mch, 0, nil
-		}
-		return nil, 2, merchant.ErrNoSuchMerchant
+	mchList := m._mchRepo.FindList(nil, "username=?", user)
+	if l := len(mchList); l == 0 {
+		return nil, 5, merchant.ErrNoSuchMerchant
 	}
+	if len(mchList) > 1 {
+		return nil, 6, errors.New("存在多个相同用户名的商户")
+	}
+	// if mch == nil {
+	// 	// 使用会员身份登录
+	// 	var id int64
+	// 	id, err = m.testMemberLogin(user, domain.MemberSha1Pwd(pwd, ""))
+	// 	if err != nil {
+	// 		return nil, 2, err
+	// 	}
+	// 	mchId, _ := m.GetMerchantIdByMember(context.TODO(), &proto.MemberId{Value: id})
+	// 	if mchId.Value > 0 {
+	// 		mch = m._mchRepo.GetMerchant(int(mchId.Value))
+	// 		return mch, 0, nil
+	// 	}
+	// 	return nil, 2, merchant.ErrNoSuchMerchant
+	// }
+	mch := m._mchRepo.CreateMerchant(mchList[0])
 	mv := mch.GetValue()
 	if pwd := domain.MerchantSha1Pwd(pwd, mch.GetValue().Salt); pwd != mv.Password {
 		return nil, 1, de.ErrCredential

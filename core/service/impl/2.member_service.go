@@ -1030,6 +1030,7 @@ func (s *memberService) GetCertification(_ context.Context, id *proto.MemberIdRe
 		ManualReview:     int32(t.ManualReview),
 		ReviewStatus:     int32(t.ReviewStatus),
 		ReviewTime:       t.ReviewTime,
+		CreateTime:       t.UpdateTime,
 		Remark:           t.Remark,
 	}, nil
 }
@@ -1041,7 +1042,7 @@ func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCe
 		err = member.ErrNoSuchMember
 	} else {
 		err = m.Profile().SaveCertificationInfo(&member.CerticationInfo{
-			MemberId:         r.Info.MemberId,
+			MemberId:         r.MemberId,
 			RealName:         r.Info.RealName,
 			CountryCode:      r.Info.CountryCode,
 			CardType:         int(r.Info.CardType),

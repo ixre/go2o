@@ -685,7 +685,7 @@ func (m *memberImpl) prepare() (err error) {
 		if len(strings.TrimSpace(re)) == 0 {
 			// 如果未设置,则用系统内置头像
 			url, _ := m.registryRepo.GetValue(registry.FileServerUrl)
-			re = url + "/files/static/init/avatar.png"
+			re = url + "static/init/avatar.png"
 		}
 		m.value.ProfilePhoto = re
 	}

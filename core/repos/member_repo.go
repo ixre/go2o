@@ -806,6 +806,7 @@ func (m *MemberRepoImpl) SaveCertificationInfo(v *member.CerticationInfo) (int, 
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:CertificationInfo")
 	}
+	v.Id = int64(id)
 	return id, err
 }
 
