@@ -13,8 +13,8 @@ import (
 
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/infrastructure/logger"
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/util"
 )

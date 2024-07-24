@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
 )
 
 var _ content.IArticle = new(articleImpl)

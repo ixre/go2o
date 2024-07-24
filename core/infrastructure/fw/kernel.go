@@ -2,6 +2,7 @@ package fw
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
@@ -240,7 +241,7 @@ type PagingParams struct {
 }
 
 // Where 添加条件
-func (p *PagingParams) where(field string, exp string, value interface{}) *PagingParams {
+func (p *PagingParams) where(field string, exp string, value ...interface{}) *PagingParams {
 	buf := bytes.NewBuffer(nil)
 	isBlank := len(p.Arguments) == 0
 	if !isBlank {
@@ -249,11 +250,11 @@ func (p *PagingParams) where(field string, exp string, value interface{}) *Pagin
 	}
 	buf.WriteString(fmt.Sprintf("%s %s", field, exp))
 	if isBlank {
-		p.Arguments = []interface{}{buf.String(), value}
+		p.Arguments = []interface{}{buf.String()}
 	} else {
 		p.Arguments[0] = buf.String()
-		p.Arguments = append(p.Arguments, value)
 	}
+	p.Arguments = append(p.Arguments, value...)
 	return p
 }
 
@@ -329,6 +330,21 @@ func (p *PagingParams) And(where string, values ...interface{}) *PagingParams {
 	p.Arguments = append(p.Arguments, values...)
 	return p
 }
+
+func (p *PagingParams) Between(field string, arr []string) (*PagingParams, error) {
+	if len(arr) != 2 {
+		return nil, errors.New("between need two value")
+	}
+	return p.where(field, "BETWEEN ? AND ?", arr[0],arr[1]), nil
+}
+
+func (p *PagingParams) BetweenInts(field string, arr []int) (*PagingParams, error) {
+	if len(arr) != 2 {
+		return nil, errors.New("between need two value")
+	}
+	return p.where(field, "BETWEEN ? AND ?", arr[0],arr[1]), nil
+}
+
 
 // OrderBy 添加排序条件
 func (p *PagingParams) OrderBy(order string) *PagingParams {

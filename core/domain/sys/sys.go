@@ -5,7 +5,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/infrastructure/fw"
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 )
 
 var _ sys.ISystemAggregateRoot = new(systemAggregateRootImpl)

@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/sys"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

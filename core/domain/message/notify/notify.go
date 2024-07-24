@@ -16,7 +16,7 @@ import (
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/event/events"
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/infrastructure/util/sms"
 	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/log"
