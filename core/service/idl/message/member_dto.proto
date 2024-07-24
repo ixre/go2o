@@ -732,7 +732,7 @@ message ReviewWithdrawalRequest {
   // 会员编号
   int64 memberId = 1;
   // 提现申请流水Id
-  int64 logId = 2;
+  int64 transactionId = 2;
   // 是否通过审核
   bool pass = 3;
   // 备注
@@ -744,7 +744,7 @@ message FinishWithdrawalRequest {
   // 会员编号
   int64 memberId = 1;
   // 提现记录编号
-  int64 infoId = 2;
+  int64 transactionId = 2;
   // 汇款/交易单号
   string tradeNo = 3;
 }

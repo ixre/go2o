@@ -80,7 +80,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, valueFilter int32, 
 		for _rows.Next() {
 			e := proto.SMemberAccountLog{}
 			_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
-				&e.Value, &e.ProcedureFee, &e.Balance,
+				&e.Value, &e.TransactionFee, &e.Balance,
 				&e.ReviewStatus, &e.CreateTime)
 			rows = append(rows, &e)
 		}
@@ -160,7 +160,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 			for _rows.Next() {
 				e := proto.SMemberAccountLog{}
 				_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
-					&e.Value, &e.ProcedureFee, &e.Balance,
+					&e.Value, &e.TransactionFee, &e.Balance,
 					&e.ReviewStatus, &e.CreateTime)
 				rows = append(rows, &e)
 			}

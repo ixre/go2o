@@ -107,7 +107,7 @@ type WithdrawalPushEvent struct {
 	// 提现金额
 	Amount int
 	// 手续费
-	ProcedureFee int
+	TransactionFee int
 	// 是否为已审核通过的事件
 	IsReviewEvent bool
 	// 是否审核通过

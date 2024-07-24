@@ -418,8 +418,8 @@ func (w *WalletImpl) CarryTo(tx wallet.TransactionData, review bool) (int, error
 }
 
 // ReviewCarryTo 审核入账
-func (w *WalletImpl) ReviewCarryTo(requestId int, pass bool, reason string) error {
-	l := w._repo.GetLog(w.GetAggregateRootId(), int64(requestId))
+func (w *WalletImpl) ReviewCarryTo(transactionId int, pass bool, reason string) error {
+	l := w._repo.GetLog(w.GetAggregateRootId(), int64(transactionId))
 	if l.ReviewStatus != int(enum.ReviewPending) {
 		return wallet.ErrNotSupport
 	}
@@ -560,43 +560,46 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo, tit
 }
 
 // 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,transactionFee为手续费
-func (w *WalletImpl) RequestWithdrawal(amount int, transactionFee int, kind int, title string,
-	accountNo string, accountName string, bankName string) (int64, string, error) {
-	if amount == 0 {
+func (w *WalletImpl) RequestWithdrawal(tx wallet.WithdrawTransaction) (int64, string, error) {
+	if tx.Amount == 0 {
 		return 0, "", wallet.ErrAmountZero
 	}
-	if amount < 0 {
-		amount = -amount
+	if tx.Amount < 0 {
+		tx.Amount = -tx.Amount
 	}
-	if kind != wallet.KWithdrawToBankCard &&
-		kind != wallet.KWithdrawToThirdPart && kind < 20 {
-		return 0, "", wallet.ErrNotSupportTakeOutBusinessKind
+	if tx.Kind != wallet.KWithdrawToBankCard &&
+		tx.Kind != wallet.KWithdrawToPayWallet && tx.Kind < 30 {
+		return 0, "", wallet.ErrNotSupportWithdrawKind
 	}
 	// 判断是否暂停提现
-	if wallet.TakeOutPause {
+	if wallet.WithdrawIsPaused {
 		return 0, "", wallet.ErrTakeOutPause
 	}
 	// 判断最低提现和最高提现
-	if amount < wallet.MinTakeOutAmount {
-		return 0, "", wallet.ErrLessThanMinTakeAmount
+	if tx.Amount < wallet.MinWithdrawAmount {
+		return 0, "", wallet.ErrLessThanMinWithdrawAmount
 	}
-	if amount > wallet.MaxTakeOutAmount {
-		return 0, "", wallet.ErrMoreThanMinTakeAmount
+	if tx.Amount > wallet.MaxWithdrawAmount {
+		return 0, "", wallet.ErrMoreThanMinWithdrawAmount
 	}
 	// 余额是否不足
-	if w._value.Balance < int64(amount+transactionFee) {
+	if w._value.Balance < int64(tx.Amount+tx.TransactionFee) {
 		return 0, "", wallet.ErrOutOfAmount
 	}
-	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
-	w._value.Balance -= int64(amount)
-	l := w.createWalletLog(kind, -(amount - transactionFee), title, 0, "")
-	l.TransactionFee = -transactionFee
-	l.OuterNo = tradeNo
+	w._value.Balance -= int64(tx.Amount)
+	l := w.createWalletLog(
+		tx.Kind,
+		-(tx.Amount - tx.TransactionFee),
+		tx.TransactionTitle,
+		0,
+		"")
+	l.TransactionFee = -tx.TransactionFee
+	l.OuterNo = domain.NewTradeNo(8, int(w._value.UserId))
 	l.ReviewStatus = wallet.ReviewPending
 	l.ReviewRemark = ""
-	l.BankName = bankName
-	l.AccountNo = accountNo
-	l.AccountName = accountName
+	l.BankName = tx.BankName
+	l.AccountNo = tx.AccountNo
+	l.AccountName = tx.AccountName
 	l.Balance = w._value.Balance
 	err := w.saveWalletLog(l)
 	if err == nil {
@@ -605,15 +608,15 @@ func (w *WalletImpl) RequestWithdrawal(amount int, transactionFee int, kind int,
 	return l.Id, l.OuterNo, err
 }
 
-func (w *WalletImpl) ReviewWithdrawal(requestId int64, pass bool, remark string, operatorUid int, operatorName string) error {
+func (w *WalletImpl) ReviewWithdrawal(transactionId int, pass bool, remark string, operatorUid int, operatorName string) error {
 	if err := w.checkValueOpu(1, true, operatorUid, operatorName); err != nil {
 		return err
 	}
-	l := w.getLog(requestId)
+	l := w.getLog(int64(transactionId))
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
 	}
-	if l.Kind != wallet.KWithdrawToBankCard && l.Kind != wallet.KWithdrawToThirdPart {
+	if l.Kind != wallet.KWithdrawToBankCard && l.Kind != wallet.KWithdrawToPayWallet {
 		return wallet.ErrNotSupport
 	}
 	if l.ReviewStatus != wallet.ReviewPending {
@@ -637,8 +640,8 @@ func (w *WalletImpl) ReviewWithdrawal(requestId int64, pass bool, remark string,
 	return w.saveWalletLog(l)
 }
 
-func (w *WalletImpl) FinishWithdrawal(requestId int64, outerNo string) error {
-	l := w.getLog(requestId)
+func (w *WalletImpl) FinishWithdrawal(transactionId int, outerNo string) error {
+	l := w.getLog(int64(transactionId))
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
 	}

@@ -95,7 +95,7 @@ type (
 		CarryTo(account AccountType, d AccountOperateData, review bool, transactionFee int) (int, error)
 
 		// ReviewCarryTo 审核入账
-		ReviewCarryTo(account AccountType, requestId int, pass bool, reason string) error
+		ReviewCarryTo(account AccountType, transactionId int, pass bool, reason string) error
 
 		// Consume 消耗
 		Consume(account AccountType, title string, amount int, outerNo string, remark string) error
@@ -125,14 +125,13 @@ type (
 		GetWalletLog(id int64) wallet.WalletLog
 
 		// RequestWithdrawal 申请提现(只支持钱包),drawType：提现方式,返回info_id,交易号 及错误
-		RequestWithdrawal(drawType int, title string, amount int,
-			transactionFee int, bankAccountNo string) (int64, string, error)
+		RequestWithdrawal(w *wallet.WithdrawTransaction) (int64, string, error)
 
 		// ReviewWithdrawal 提现审核
-		ReviewWithdrawal(requestId int64, pass bool, reason string) error
+		ReviewWithdrawal(transactionId int, pass bool, reason string) error
 
-		// FinishWithdrawal 完成提现
-		FinishWithdrawal(requestId int64, tradeNo string) error
+		// FinishWithdrawal 完成提现(打款),outerTransactionNo为外部交易号
+		FinishWithdrawal(transactionId int, outerTransactionNo string) error
 
 		// TransferAccount 转账
 		TransferAccount(account AccountType, toMember int64, amount int,

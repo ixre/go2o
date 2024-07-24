@@ -122,7 +122,7 @@ func (q quickPayServiceImpl) DirectPayment(_ context.Context, r *proto.QPaymentR
 			NonceId: r.Nonce,
 		}, nil
 	}
-	rsp, err := q.qp.DirectPayment(r.OrderNo, r.TradeFee, r.Subject,
+	rsp, err := q.qp.DirectPayment(r.OrderNo, r.TransactionFee, r.Subject,
 		r.BankAuthToken, r.TradeUserIp, r.ReturnUrl, r.NotifyUrl)
 	if err != nil {
 		return &proto.QPaymentResponse{
@@ -211,7 +211,7 @@ func (q quickPayServiceImpl) parseBatchList(list []*proto.CardTransferRequest) [
 			OrderNo:         v.OrderNo,
 			BankCode:        v.BankCode,
 			PersonTransfer:  v.PersonTransfer,
-			TradeFee:        v.TradeFee,
+			TransactionFee:  v.TransactionFee,
 			BankCardNo:      v.BankCardNo,
 			BankAccountName: v.BankAccountName,
 			Subject:         v.Subject,

@@ -168,11 +168,11 @@ service WalletService {
     }
 
     /** 确认提现 */
-    rpc ReviewTakeOut (ReviewTakeOutRequest) returns (Result) {
+    rpc ReviewTakeOut (ReviewWithdrawRequest) returns (Result) {
     }
 
     /** 完成提现 */
-    rpc FinishWithdrawal (FinishTakeOutRequest) returns (Result) {
+    rpc FinishWithdrawal (FinishWithdrawRequest) returns (Result) {
     }
 
     /** 获取分页钱包日志 */
@@ -184,32 +184,35 @@ message PagingWalletLogRequest {
     sint64 walletId = 1;
     SPagingParams params = 2;
 }
-message FinishTakeOutRequest {
+message FinishWithdrawRequest {
     sint64 walletId = 1;
-    sint64 takeId = 2;
+    sint64 transactionId = 2;
     string outerNo = 3;
 }
 
+// 提现请求
 message RequestWithdrawalRequest {
     // 钱包编号
     int64 walletId = 1;
+    // 交易描述
+    string transactionTitle = 2;
     // 金额
-    int64 amount = 2;
+    int64 amount = 3;
     // 手续费
-    int32 transactionFee = 3;
+    int32 transactionFee = 4;
     // 提现方式
-    sint32 kind = 4;
-    // 银行名称
-    string bankName = 5;
-    // 银行账号
-    string bankAccountNo = 6;
-    // 银行账户
-    string bankAccountName = 7;
+    sint32 withdrawKind = 5;
+    // 银行名称，withdrawKind为32时传入
+    string bankName = 6;
+    // 账户名称
+    string accountName = 8;
+    // 账号
+    string accountNo = 7;
 }
 
-message ReviewTakeOutRequest {
+message ReviewWithdrawRequest {
     sint64 walletId = 1;
-    sint64 takeId = 2;
+    sint64 transactionId = 2;
     bool reviewPass = 3;
     string remark = 4;
     sint32 operatorUid = 5;

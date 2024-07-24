@@ -134,7 +134,7 @@ func (w *walletServiceImpl) Transfer(_ context.Context, r *proto.TransferRequest
 		toTitle := "钱包收款"
 		//todo: title
 		err = iw.Transfer(r.ToWalletId, int(r.Amount),
-			int(r.ProcedureFee), title, toTitle, r.Remark)
+			int(r.TransactionFee), title, toTitle, r.Remark)
 	}
 	return w.result(err), nil
 }
@@ -144,9 +144,16 @@ func (w *walletServiceImpl) RequestWithdrawal(_ context.Context, r *proto.Reques
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		_, tradeNo, err1 := iw.RequestWithdrawal(int(r.Amount),
-			int(r.Amount), int(r.Kind), "提现到银行卡",
-			r.BankName, r.BankAccountName, r.BankAccountNo)
+		_, tradeNo, err1 := iw.RequestWithdrawal(
+			wallet.WithdrawTransaction{
+				Amount:           int(r.Amount),
+				TransactionFee:   int(r.TransactionFee),
+				Kind:             int(r.WithdrawKind),
+				TransactionTitle: r.TransactionTitle,
+				BankName:         r.BankName,
+				AccountNo:        r.AccountNo,
+				AccountName:      r.AccountName,
+			})
 		if err1 != nil {
 			err = err1
 		} else {
@@ -158,22 +165,22 @@ func (w *walletServiceImpl) RequestWithdrawal(_ context.Context, r *proto.Reques
 	return w.result(err), nil
 }
 
-func (w *walletServiceImpl) ReviewTakeOut(_ context.Context, r *proto.ReviewTakeOutRequest) (ro *proto.Result, err error) {
+func (w *walletServiceImpl) ReviewTakeOut(_ context.Context, r *proto.ReviewWithdrawRequest) (ro *proto.Result, err error) {
 	iw := w._repo.GetWallet(r.WalletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.ReviewWithdrawal(r.TakeId, r.ReviewPass, r.Remark, int(r.OperatorUid), r.OperatorName)
+		err = iw.ReviewWithdrawal(int(r.TransactionId), r.ReviewPass, r.Remark, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
 }
 
-func (w *walletServiceImpl) FinishWithdrawal(_ context.Context, r *proto.FinishTakeOutRequest) (ro *proto.Result, err error) {
+func (w *walletServiceImpl) FinishWithdrawal(_ context.Context, r *proto.FinishWithdrawRequest) (ro *proto.Result, err error) {
 	iw := w._repo.GetWallet(r.WalletId)
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.FinishWithdrawal(r.TakeId, r.OuterNo)
+		err = iw.FinishWithdrawal(int(r.TransactionId), r.OuterNo)
 	}
 	return w.result(err), nil
 }
@@ -215,23 +222,23 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 }
 func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog {
 	return &proto.SWalletLog{
-		Id:           l.Id,
-		WalletId:     l.WalletId,
-		WalletUser:   l.WalletUser,
-		Kind:         int32(l.Kind),
-		Title:        l.Subject,
-		OuterChan:    l.OuterChan,
-		OuterNo:      l.OuterNo,
-		Value:        l.ChangeValue,
-		Balance:      l.Balance,
-		ProcedureFee: int64(l.TransactionFee),
-		OperatorUid:  int32(l.OperatorUid),
-		OperatorName: l.OperatorName,
-		Remark:       l.Remark,
-		ReviewStatus: int32(l.ReviewStatus),
-		ReviewRemark: l.ReviewRemark,
-		ReviewTime:   l.ReviewTime,
-		CreateTime:   l.CreateTime,
-		UpdateTime:   l.UpdateTime,
+		Id:             l.Id,
+		WalletId:       l.WalletId,
+		WalletUser:     l.WalletUser,
+		Kind:           int32(l.Kind),
+		Title:          l.Subject,
+		OuterChan:      l.OuterChan,
+		OuterNo:        l.OuterNo,
+		Value:          l.ChangeValue,
+		Balance:        l.Balance,
+		TransactionFee: int64(l.TransactionFee),
+		OperatorUid:    int32(l.OperatorUid),
+		OperatorName:   l.OperatorName,
+		Remark:         l.Remark,
+		ReviewStatus:   int32(l.ReviewStatus),
+		ReviewRemark:   l.ReviewRemark,
+		ReviewTime:     l.ReviewTime,
+		CreateTime:     l.CreateTime,
+		UpdateTime:     l.UpdateTime,
 	}
 }

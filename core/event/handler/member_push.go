@@ -68,12 +68,12 @@ func (h EventHandler) HandleWithdrawalPushEvent(data interface{}) {
 	isPush := h.registryRepo.Get(registry.MemberWithdrawalPushEnabled).BoolValue()
 	if isPush {
 		ev := &proto.EVMemberWithdrawalPushEventData{
-			MemberId:      v.MemberId,
-			RequestId:     int64(v.RequestId),
-			Amount:        int64(v.Amount),
-			ProcedureFee:  int64(v.ProcedureFee),
-			ReviewResult:  v.ReviewResult,
-			IsReviewEvent: v.IsReviewEvent,
+			MemberId:       v.MemberId,
+			RequestId:      int64(v.RequestId),
+			Amount:         int64(v.Amount),
+			TransactionFee: int64(v.TransactionFee),
+			ReviewResult:   v.ReviewResult,
+			IsReviewEvent:  v.IsReviewEvent,
 		}
 		msq.PushDelay(msq.MembertWithdrawalTopic, typeconv.MustJson(ev), 500)
 	}
@@ -87,18 +87,18 @@ func (h EventHandler) HandleMemberAccountLogPushEvent(data interface{}) {
 	isPush := h.registryRepo.Get(registry.MemberAccountLogPushEnabled).BoolValue()
 	if isPush {
 		ev := &proto.EVAccountLogPushEventData{
-			Account:       int32(v.Account),
-			IsUpdateEvent: v.IsUpdateEvent,
-			UserId:        int64(v.MemberId),
-			LogId:         int64(v.LogId),
-			LogKind:       int32(v.LogKind),
-			Subject:       v.Subject,
-			OuterNo:       v.OuterNo,
-			ChangeValue:   int64(v.ChangeValue),
-			Balance:       int64(v.Balance),
-			ProcedureFee:  int64(v.ProcedureFee),
-			ReviewStatus:  int32(v.ReviewStatus),
-			CreateTime:    int64(v.CreateTime),
+			Account:        int32(v.Account),
+			IsUpdateEvent:  v.IsUpdateEvent,
+			UserId:         int64(v.MemberId),
+			LogId:          int64(v.LogId),
+			LogKind:        int32(v.LogKind),
+			Subject:        v.Subject,
+			OuterNo:        v.OuterNo,
+			ChangeValue:    int64(v.ChangeValue),
+			Balance:        int64(v.Balance),
+			TransactionFee: int64(v.ProcedureFee),
+			ReviewStatus:   int32(v.ReviewStatus),
+			CreateTime:     int64(v.CreateTime),
 		}
 		msq.PushDelay(msq.MemberAccountLogTopic, typeconv.MustJson(ev), 500)
 	}

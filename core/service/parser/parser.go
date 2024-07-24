@@ -319,7 +319,7 @@ func ParentOrderDto(src *order.ComplexOrder) *proto.SParentOrder {
 			AdjustAmount:   0, //v.AdjustAmount,
 			ExpressFee:     v.ExpressFee,
 			PackageFee:     v.PackageFee,
-			ProcedureFee:   0, //v.ProcedureFee,
+			TransactionFee: 0, //v.ProcedureFee,
 			TotalAmount:    0,
 			FinalAmount:    v.FinalAmount,
 			BuyerComment:   v.BuyerComment,

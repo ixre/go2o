@@ -10,12 +10,13 @@ package merchant
 
 import (
 	"errors"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/gof/util"
-	"time"
 )
 
 var _ merchant.IConfManager = new(confManagerImpl)
@@ -196,27 +197,27 @@ func (c *confManagerImpl) GetAllTradeConf_() []*merchant.TradeConf {
 		if len(c.tradeConfList) == 0 {
 			// 零售订单费率
 			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
-				TradeType:   merchant.TKNormalOrder,
-				Flag:        merchant.TFlagNormal,
-				AmountBasis: enum.AmountBasisByPercent,
-				TradeFee:    0,
-				TradeRate:   int(0.2 * enum.RATE_PERCENT),
+				TradeType:      merchant.TKNormalOrder,
+				Flag:           merchant.TFlagNormal,
+				AmountBasis:    enum.AmountBasisByPercent,
+				TransactionFee: 0,
+				TradeRate:      int(0.2 * enum.RATE_PERCENT),
 			})
 			// 线下支付费率
 			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
-				TradeType:   merchant.TKTradeOrder,
-				Flag:        merchant.TFlagNormal,
-				AmountBasis: enum.AmountBasisByPercent,
-				TradeFee:    0,
-				TradeRate:   int(0.2 * enum.RATE_PERCENT),
+				TradeType:      merchant.TKTradeOrder,
+				Flag:           merchant.TFlagNormal,
+				AmountBasis:    enum.AmountBasisByPercent,
+				TransactionFee: 0,
+				TradeRate:      int(0.2 * enum.RATE_PERCENT),
 			})
 			// 批发订单费率
 			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
-				TradeType:   merchant.TKWholesaleOrder,
-				Flag:        merchant.TFlagNormal,
-				AmountBasis: enum.AmountBasisByPercent,
-				TradeFee:    0,
-				TradeRate:   int(0.1 * enum.RATE_PERCENT),
+				TradeType:      merchant.TKWholesaleOrder,
+				Flag:           merchant.TFlagNormal,
+				AmountBasis:    enum.AmountBasisByPercent,
+				TransactionFee: 0,
+				TradeRate:      int(0.1 * enum.RATE_PERCENT),
 			})
 
 		}
@@ -247,7 +248,7 @@ func (c *confManagerImpl) SaveTradeConf(arr []*merchant.TradeConf) error {
 		v.UpdateTime = unix
 		origin := c.GetTradeConf(v.TradeType)
 		if origin != nil {
-			origin.TradeFee = v.TradeFee
+			origin.TransactionFee = v.TransactionFee
 			origin.MchId = int64(c.mchId)
 			origin.AmountBasis = v.AmountBasis
 			origin.Flag = v.Flag

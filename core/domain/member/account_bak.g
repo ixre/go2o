@@ -123,7 +123,7 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	amount := float32(amount2) / 100
 	if takeKind != wallet.KWithdrawExchange &&
 		takeKind != wallet.KWithdrawToBankCard &&
-		takeKind != wallet.KWithdrawToThirdPart {
+		takeKind != wallet.KWithdrawToPayWallet {
 		return 0, "", member.ErrNotSupportTakeOutBusinessKind
 	}
 	if amount <= 0 || math.IsNaN(float64(amount)) {

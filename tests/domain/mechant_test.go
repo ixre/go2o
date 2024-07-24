@@ -227,11 +227,19 @@ func TestGroupRebateRate(t *testing.T) {
 // 测试结算订单到账户中
 func TestMchSettleOrder(t *testing.T) {
 	repo := inject.GetMerchantRepo()
-	mch := repo.GetMerchant(111)
-	err := mch.Account().SettleOrder("123", 1000, 20, 0, "零售订单结算")
+	mch := repo.GetMerchant(1)
+	sd := merchant.SettlementParams{
+		OuterNo:           "TS:202407241000001",
+		Amount:            10000,
+		TransactionFee:    1000,
+		RefundAmount:      0,
+		TransactionTitle:  "测试订单结算",
+		TransactionRemark: "虚拟订单",
+	}
+	txId, err := mch.Account().SettleOrder(sd)
 	if err != nil {
 		t.Log("结算订单出错：", err)
 		t.FailNow()
 	}
-	t.Log("结算成功")
+	t.Logf("结算成功,交易流水号:%d", txId)
 }

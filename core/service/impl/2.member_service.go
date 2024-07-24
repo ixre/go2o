@@ -344,18 +344,18 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 	m := s.repo.GetMember(r.MemberId)
 	v := m.GetAccount().GetWalletLog(r.LogId)
 	return &proto.WalletLogResponse{
-		LogId:        v.Id,
-		MemberId:     r.MemberId,
-		OuterNo:      v.OuterNo,
-		Kind:         int32(v.Kind),
-		Title:        v.Subject,
-		Amount:       float64(v.ChangeValue),
-		TradeFee:     float64(v.TransactionFee),
-		ReviewStatus: int32(v.ReviewStatus),
-		Remark:       v.Remark,
-		CreateTime:   v.CreateTime,
-		UpdateTime:   v.UpdateTime,
-		RelateUser:   int64(v.OperatorUid),
+		LogId:          v.Id,
+		MemberId:       r.MemberId,
+		OuterNo:        v.OuterNo,
+		Kind:           int32(v.Kind),
+		Title:          v.Subject,
+		Amount:         float64(v.ChangeValue),
+		TransactionFee: float64(v.TransactionFee),
+		ReviewStatus:   int32(v.ReviewStatus),
+		Remark:         v.Remark,
+		CreateTime:     v.CreateTime,
+		UpdateTime:     v.UpdateTime,
+		RelateUser:     int64(v.OperatorUid),
 	}, nil
 }
 
@@ -1317,7 +1317,7 @@ func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryR
 			Amount:  int(r.Amount),
 			OuterNo: r.OuterNo,
 			Remark:  r.Remark,
-		}, r.Freeze, int(r.ProcedureFee))
+		}, r.Freeze, int(r.TransactionFee))
 	if err != nil {
 		return &proto.AccountCarryResponse{
 			ErrCode: 1,
@@ -1410,14 +1410,22 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 		kind = wallet.KWithdrawToBankCard
 	case int(proto.EWithdrawalKind_WithdrawToThirdPart):
 		title = "充值到第三方账户"
-		kind = wallet.KWithdrawToThirdPart
+		kind = wallet.KWithdrawToPayWallet
 	case int(proto.EWithdrawalKind_WithdrawByExchange):
 		title = "提现到余额"
 		kind = wallet.KWithdrawExchange
 	}
 	acc := m.GetAccount()
-	_, tradeNo, err := acc.RequestWithdrawal(kind, title,
-		int(r.Amount), int(r.ProcedureFee), r.AccountNo)
+	_, tradeNo, err := acc.RequestWithdrawal(
+		&wallet.WithdrawTransaction{
+			Amount:           int(r.Amount),
+			TransactionFee:   int(r.GetTransactionFee()),
+			Kind:             kind,
+			TransactionTitle: title,
+			BankName:         "",
+			AccountNo:        r.AccountNo,
+			AccountName:      "",
+		})
 	if err != nil {
 		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
@@ -1455,17 +1463,17 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	ret := &proto.WithdrawalLogResponse{Data: make([]*proto.WithdrawalLog, 0)}
 	if latestApplyInfo != nil {
 		ret.Data = append(ret.Data, &proto.WithdrawalLog{
-			Id:           latestApplyInfo.Id,
-			OuterNo:      latestApplyInfo.OuterNo,
-			Kind:         int32(latestApplyInfo.Kind),
-			Title:        latestApplyInfo.Title,
-			Amount:       latestApplyInfo.Amount,
-			ProcedureFee: latestApplyInfo.ProcedureFee,
-			RelateUser:   latestApplyInfo.RelateUser,
-			ReviewStatus: latestApplyInfo.ReviewStatus,
-			Remark:       latestApplyInfo.Remark,
-			SubmitTime:   latestApplyInfo.CreateTime,
-			UpdateTime:   latestApplyInfo.UpdateTime,
+			Id:             latestApplyInfo.Id,
+			OuterNo:        latestApplyInfo.OuterNo,
+			Kind:           int32(latestApplyInfo.Kind),
+			Title:          latestApplyInfo.Title,
+			Amount:         latestApplyInfo.Amount,
+			TransactionFee: latestApplyInfo.ProcedureFee,
+			RelateUser:     latestApplyInfo.RelateUser,
+			ReviewStatus:   latestApplyInfo.ReviewStatus,
+			Remark:         latestApplyInfo.Remark,
+			SubmitTime:     latestApplyInfo.CreateTime,
+			UpdateTime:     latestApplyInfo.UpdateTime,
 		})
 	}
 	return ret, nil
@@ -1475,7 +1483,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithdrawalRequest) (*proto.Result, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		err = m.GetAccount().ReviewWithdrawal(r.LogId, r.Pass, r.Remark)
+		err = m.GetAccount().ReviewWithdrawal(int(r.TransactionId), r.Pass, r.Remark)
 	}
 	return s.error(err), nil
 }
@@ -1485,7 +1493,7 @@ func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithd
 	var err error
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
-		err = m.GetAccount().FinishWithdrawal(r.InfoId, r.TradeNo)
+		err = m.GetAccount().FinishWithdrawal(int(r.TransactionId), r.TradeNo)
 	}
 	return s.error(err), nil
 }
@@ -1507,7 +1515,7 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 			account = member.AccountIntegral
 		}
 		err = m.GetAccount().TransferAccount(account, r.ToMemberId,
-			int(r.Amount), int(r.ProcedureFee), r.Remark)
+			int(r.Amount), int(r.TransactionFee), r.Remark)
 	}
 	return s.error(err), nil
 }

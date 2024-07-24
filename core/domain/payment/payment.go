@@ -171,7 +171,7 @@ func (p *paymentOrderImpl) checkOrderFinalAmount() error {
 		// 修正支付单共计金额
 		//p.value.TotalAmount = p.value.ItemAmount - p.value.DiscountAmount + p.value.AdjustAmount
 		// 修正支付单金额
-		p.value.FinalAmount = p.value.TotalAmount - p.value.DeductAmount + p.value.ProcedureFee
+		p.value.FinalAmount = p.value.TotalAmount - p.value.DeductAmount + p.value.TransactionFee
 		// 如果支付完成,则更新订单状态
 		if p.value.FinalAmount == 0 {
 			p.value.State = payment.StateFinished

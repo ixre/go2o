@@ -35,7 +35,7 @@ func (s *SaleManagerImpl) MathTransactionFee(tradeType int, amount int) (int, er
 	case enum.AmountBasisNotSet: // 免费
 		return 0, nil
 	case enum.AmountBasisByAmount: // 按订单单数，收取金额
-		return conf.TradeFee, nil
+		return conf.TransactionFee, nil
 	case enum.AmountBasisByPercent: // 按订单金额，收取百分比
 		return int(float64(amount*conf.TradeRate) / enum.RATE_PERCENT), nil
 	default:

@@ -9,11 +9,11 @@ var (
 	// 金额放大比例
 	AmountRateSize = 100
 	// 提现暂停
-	TakeOutPause = false
+	WithdrawIsPaused = false
 	// 最低提现金额
-	MinTakeOutAmount = 100
+	MinWithdrawAmount = 100
 	// 最高提现金额
-	MaxTakeOutAmount = 10000000
+	MaxWithdrawAmount = 10000000
 )
 
 const (
@@ -95,12 +95,16 @@ const (
 	// KPaymentOrderRefund 支付单退款
 	KPaymentOrderRefund = 13
 
+	// todo: 充值用2开头， 提现用3开头
+
 	// KWithdrawExchange 提现并兑换到余额
-	KWithdrawExchange int = 21
+	KWithdrawExchange int = 30
 	// KWithdrawToBankCard 提现到银行卡(人工提现)
-	KWithdrawToBankCard = 22
-	// KWithdrawToThirdPart 提现到第三方
-	KWithdrawToThirdPart = 23
+	KWithdrawToBankCard = 31
+	// KWithdrawToPayWallet 提现到第三方支付钱包
+	KWithdrawToPayWallet = 32
+	// KWithdrawCustom 自定义提现
+	KWithdrawCustom = 33
 )
 
 var (
@@ -114,10 +118,10 @@ var (
 	ErrTargetWalletAccountNotService = domain.NewError("err_target_wallet_account_not_service", "对方账户不可用")
 	ErrWalletDisabled                = domain.NewError("err_wallet_disabled", "账户已被暂停")
 	ErrWalletClosed                  = domain.NewError("err_wallet_closed", "账户已被关闭")
-	ErrNotSupportTakeOutBusinessKind = domain.NewError("err_not_support_take_out_business_kind", "不支持的提现业务类型")
+	ErrNotSupportWithdrawKind        = domain.NewError("err_not_support_take_out_business_kind", "不支持的提现业务类型")
 	ErrTakeOutPause                  = domain.NewError("err_wallet_take_out_pause", "当前"+Alias+"暂停提现")
-	ErrLessThanMinTakeAmount         = domain.NewError("err_wallet_less_than_min_take_amount", "低于最低提现金额")
-	ErrMoreThanMinTakeAmount         = domain.NewError("err_wallet_more_than_min_take_amount", "超过最大提现金额")
+	ErrLessThanMinWithdrawAmount     = domain.NewError("err_wallet_less_than_min_take_amount", "低于最低提现金额")
+	ErrMoreThanMinWithdrawAmount     = domain.NewError("err_wallet_more_than_min_take_amount", "超过最大提现金额")
 	ErrNoSuchAccountLog              = domain.NewError("err_wallet_no_such_take_out_log", "钱包记录不存在")
 	ErrWithdrawState                 = domain.NewError("err_wallet_member_take_out_state", "提现申请状态错误")
 	ErrNotSupport                    = domain.NewError("err_wallet_not_support", "不支持该操作")
@@ -138,6 +142,24 @@ type (
 		TransactionRemark string
 		// 交易流水编号,对冻结流水进行更新时,传递该参数
 		TransactionId int
+	}
+
+	// TakeOutTransaction 提现交易
+	WithdrawTransaction struct {
+		// 提现金额
+		Amount int
+		// 提现手续费
+		TransactionFee int
+		// 提现类型
+		Kind int
+		// 提现标题
+		TransactionTitle string
+		// 银行名称
+		BankName string
+		// 账号
+		AccountNo string
+		// 账户名称
+		AccountName string
 	}
 	Operator struct {
 		OperatorUid  int
@@ -189,7 +211,7 @@ type (
 		CarryTo(tx TransactionData, freeze bool) (transactionId int, err error)
 
 		// ReviewCarryTo 审核入账
-		ReviewCarryTo(requestId int, pass bool, reason string) error
+		ReviewCarryTo(transactionId int, pass bool, reason string) error
 
 		// Charge 充值,kind: 业务类型
 		Charge(value int, kind int, title, outerNo string, remark string, operatorUid int, operatorName string) error
@@ -204,14 +226,13 @@ type (
 		ReceiveTransfer(fromWalletId int64, value int, tradeNo, title, remark string) error
 
 		// RequestWithdrawal 申请提现,kind：提现方式,返回info_id,交易号 及错误,amount为提现金额,transactionFee为手续费
-		RequestWithdrawal(amount int, transactionFee int, kind int, title string,
-			accountNo string, accountName string, bankName string) (int64, string, error)
+		RequestWithdrawal(tx WithdrawTransaction) (int64, string, error)
 
 		// ReviewWithdrawal 确认提现
-		ReviewWithdrawal(takeId int64, pass bool, remark string, operatorUid int, operatorName string) error
+		ReviewWithdrawal(takeId int, pass bool, remark string, operatorUid int, operatorName string) error
 
 		// FinishWithdrawal 完成提现
-		FinishWithdrawal(takeId int64, outerNo string) error
+		FinishWithdrawal(takeId int, outerNo string) error
 
 		// PagingLog 分页钱包日志
 		PagingLog(begin int, over int, opt map[string]string, sort string) (int, []*WalletLog)

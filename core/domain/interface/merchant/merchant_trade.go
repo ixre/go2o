@@ -34,7 +34,7 @@ type TradeConf struct {
 	// 交易手续费依据,1:未设置 2:按金额 3:按比例
 	AmountBasis int `db:"amount_basis"`
 	// 交易费，按单笔收取
-	TradeFee int `db:"trade_fee"`
+	TransactionFee int `db:"trade_fee"`
 	// 交易手续费比例
 	TradeRate int `db:"trade_rate"`
 	// 更新时间

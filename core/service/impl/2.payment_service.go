@@ -210,12 +210,12 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 		}
 		iv := ip.Get()
 		so := &proto.SPaymentOrderData{
-			OrderNo:      iv.OutOrderNo,
-			Subject:      iv.Subject,
-			TradeType:    iv.TradeType,
-			State:        int32(iv.State),
-			ProcedureFee: iv.ProcedureFee,
-			FinalAmount:  iv.FinalAmount,
+			OrderNo:        iv.OutOrderNo,
+			Subject:        iv.Subject,
+			TradeType:      iv.TradeType,
+			State:          int32(iv.State),
+			TransactionFee: iv.TransactionFee,
+			FinalAmount:    iv.FinalAmount,
 		}
 		// 更新支付状态
 		if so.State != payment.StateAwaitingPayment {
@@ -227,9 +227,9 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 		}
 		// 更新支付金额
 		d.TradeOrders = append(d.TradeOrders, so)
-		d.ProcedureFee += so.ProcedureFee // 手续费
-		d.FinalAmount += so.FinalAmount   // 最终金额
-		d.TotalAmount += iv.TotalAmount   // 累计金额
+		d.TransactionFee += so.TransactionFee // 手续费
+		d.FinalAmount += so.FinalAmount       // 最终金额
+		d.TotalAmount += iv.TotalAmount       // 累计金额
 	}
 	d.ErrCode = 0
 	d.TradeNo = tradeNo // 交易单号
@@ -262,9 +262,9 @@ func (p *paymentService) GatewayV2(_ context.Context, r *proto.PayGatewayV2Reque
 	}
 	for _, ip := range arr {
 		iv := ip.Get()
-		ret.ProcedureFee += iv.ProcedureFee // 手续费
-		ret.FinalAmount += iv.FinalAmount   // 最终金额
-		ret.TotalAmount += iv.TotalAmount   // 累计金额
+		ret.TransactionFee += iv.TransactionFee // 手续费
+		ret.FinalAmount += iv.FinalAmount       // 最终金额
+		ret.TotalAmount += iv.TotalAmount       // 累计金额
 	}
 	return &ret, nil
 }
@@ -276,29 +276,29 @@ func (p *paymentService) MixedPayment(_ context.Context, _ *proto.MixedPaymentRe
 
 func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Order {
 	dst := &payment.Order{
-		Id:           int(src.Id),
-		SellerId:     int(src.SellerId),
-		TradeType:    src.TradeType,
-		TradeNo:      src.TradeNo,
-		OrderType:    int(src.OrderType),
-		OutOrderNo:   src.OutOrderNo,
-		Subject:      src.Subject,
-		BuyerId:      src.BuyerId,
-		PayerId:      src.PayerId,
-		TotalAmount:  src.TotalAmount,
-		DeductAmount: src.DeductAmount,
-		AdjustAmount: src.AdjustAmount,
-		ProcedureFee: src.ProcedureFee,
-		FinalAmount:  src.FinalAmount,
-		PaidAmount:   src.PaidAmount,
-		PayFlag:      int(src.PayFlag),
-		FinalFlag:    int(src.FinalFlag),
-		ExtraData:    src.ExtraData,
-		State:        int(src.State),
-		SubmitTime:   src.SubmitTime,
-		ExpiresTime:  src.ExpiresTime,
-		PaidTime:     src.PaidTime,
-		TradeMethods: make([]*payment.TradeMethodData, 0),
+		Id:             int(src.Id),
+		SellerId:       int(src.SellerId),
+		TradeType:      src.TradeType,
+		TradeNo:        src.TradeNo,
+		OrderType:      int(src.OrderType),
+		OutOrderNo:     src.OutOrderNo,
+		Subject:        src.Subject,
+		BuyerId:        src.BuyerId,
+		PayerId:        src.PayerId,
+		TotalAmount:    src.TotalAmount,
+		DeductAmount:   src.DeductAmount,
+		AdjustAmount:   src.AdjustAmount,
+		TransactionFee: src.TransactionFee,
+		FinalAmount:    src.FinalAmount,
+		PaidAmount:     src.PaidAmount,
+		PayFlag:        int(src.PayFlag),
+		FinalFlag:      int(src.FinalFlag),
+		ExtraData:      src.ExtraData,
+		State:          int(src.State),
+		SubmitTime:     src.SubmitTime,
+		ExpiresTime:    src.ExpiresTime,
+		PaidTime:       src.PaidTime,
+		TradeMethods:   make([]*payment.TradeMethodData, 0),
 	}
 	if src.SubOrder {
 		dst.SubOrder = 1
@@ -308,30 +308,30 @@ func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Or
 
 func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymentOrder {
 	return &proto.SPaymentOrder{
-		Id:           int32(src.Id),
-		SellerId:     int32(src.SellerId),
-		TradeType:    src.TradeType,
-		TradeNo:      src.TradeNo,
-		Subject:      src.Subject,
-		BuyerId:      src.BuyerId,
-		PayerId:      src.PayerId,
-		TotalAmount:  src.TotalAmount,
-		DeductAmount: src.DeductAmount,
-		AdjustAmount: src.AdjustAmount,
-		ProcedureFee: src.ProcedureFee,
-		FinalAmount:  src.FinalAmount,
-		PaidAmount:   src.PaidAmount,
-		PayFlag:      int32(src.PayFlag),
-		FinalFlag:    int32(src.FinalFlag),
-		ExtraData:    src.ExtraData,
-		State:        int32(src.State),
-		SubmitTime:   src.SubmitTime,
-		ExpiresTime:  src.ExpiresTime,
-		PaidTime:     src.PaidTime,
-		SubOrder:     src.SubOrder == 1,
-		OrderType:    int32(src.OrderType),
-		OutOrderNo:   src.OutOrderNo,
-		TradeData:    make([]*proto.STradeChanData, 0),
+		Id:             int32(src.Id),
+		SellerId:       int32(src.SellerId),
+		TradeType:      src.TradeType,
+		TradeNo:        src.TradeNo,
+		Subject:        src.Subject,
+		BuyerId:        src.BuyerId,
+		PayerId:        src.PayerId,
+		TotalAmount:    src.TotalAmount,
+		DeductAmount:   src.DeductAmount,
+		AdjustAmount:   src.AdjustAmount,
+		TransactionFee: src.TransactionFee,
+		FinalAmount:    src.FinalAmount,
+		PaidAmount:     src.PaidAmount,
+		PayFlag:        int32(src.PayFlag),
+		FinalFlag:      int32(src.FinalFlag),
+		ExtraData:      src.ExtraData,
+		State:          int32(src.State),
+		SubmitTime:     src.SubmitTime,
+		ExpiresTime:    src.ExpiresTime,
+		PaidTime:       src.PaidTime,
+		SubOrder:       src.SubOrder == 1,
+		OrderType:      int32(src.OrderType),
+		OutOrderNo:     src.OutOrderNo,
+		TradeData:      make([]*proto.STradeChanData, 0),
 	}
 }
 
