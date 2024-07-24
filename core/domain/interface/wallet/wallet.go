@@ -196,13 +196,13 @@ type (
 		Refund(value int, kind int, title, outerNo string, operatorUid int, operatorName string) error
 
 		// Transfer 转账,title如:转账给xxx， toTitle: 转账收款xxx
-		Transfer(toWalletId int64, value int, tradeFee int, title, toTitle, remark string) error
+		Transfer(toWalletId int64, value int, transactionFee int, title, toTitle, remark string) error
 
 		// ReceiveTransfer 接收转账
 		ReceiveTransfer(fromWalletId int64, value int, tradeNo, title, remark string) error
 
-		// RequestWithdrawal 申请提现,kind：提现方式,返回info_id,交易号 及错误,amount为提现金额,tradeFee为手续费
-		RequestWithdrawal(amount int, tradeFee int, kind int, title string,
+		// RequestWithdrawal 申请提现,kind：提现方式,返回info_id,交易号 及错误,amount为提现金额,transactionFee为手续费
+		RequestWithdrawal(amount int, transactionFee int, kind int, title string,
 			accountNo string, accountName string, bankName string) (int64, string, error)
 
 		// ReviewWithdrawal 确认提现

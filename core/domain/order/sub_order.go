@@ -523,10 +523,10 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggregateRoot
 	if sAmount > 0 {
 		totalAmount := int(float32(sAmount) * float32(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
-			totalAmount, tradeFee, refundAmount, "零售订单结算")
+			totalAmount, transactionFee, refundAmount, "零售订单结算")
 	}
 	return nil
 }
@@ -539,10 +539,10 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRoot
 	if sAmount > 0 {
 		totalAmount := int(float32(sAmount) * float32(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
-			totalAmount, tradeFee, refundAmount, "零售订单结算")
+			totalAmount, transactionFee, refundAmount, "零售订单结算")
 
 	}
 	return nil
@@ -553,10 +553,10 @@ func (o *subOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMerchantAggr
 	if fee > 0 {
 		totalAmount := int(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.SaleManager().MathTradeFee(
 			merchant.TKNormalOrder, totalAmount)
 		return vendor.Account().SettleOrder(o.value.OrderNo,
-			totalAmount, tradeFee, refundAmount, "零售订单结算")
+			totalAmount, transactionFee, refundAmount, "零售订单结算")
 
 	}
 	return nil

@@ -191,7 +191,7 @@ func TestTransferWallet(t *testing.T) {
 	repo := inject.GetWalletRepo()
 	wlt := repo.GetWallet(walletId)
 	var amount = 10000
-	var tradeFee = 1000
+	var transactionFee = 1000
 	var toWalletId int64 = 2
 	var balance2 int64 = 0
 	wlt2 := repo.GetWallet(toWalletId)
@@ -202,13 +202,13 @@ func TestTransferWallet(t *testing.T) {
 		balance2 = wlt2.Get().Balance
 	}
 	balance := wlt.Get().Balance
-	err := wlt.Transfer(toWalletId, amount, -tradeFee, "转账给2", "收款1", "给你发个红包")
+	err := wlt.Transfer(toWalletId, amount, -transactionFee, "转账给2", "收款1", "给你发个红包")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	if v := wlt.Get().Balance; v != balance-int64(amount)-int64(tradeFee) {
-		t.Error("转账扣款不正确", balance-int64(amount)-int64(tradeFee), v)
+	if v := wlt.Get().Balance; v != balance-int64(amount)-int64(transactionFee) {
+		t.Error("转账扣款不正确", balance-int64(amount)-int64(transactionFee), v)
 		t.FailNow()
 	}
 	wlt2 = repo.GetWallet(toWalletId)

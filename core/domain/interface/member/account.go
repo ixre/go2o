@@ -126,7 +126,7 @@ type (
 
 		// RequestWithdrawal 申请提现(只支持钱包),drawType：提现方式,返回info_id,交易号 及错误
 		RequestWithdrawal(drawType int, title string, amount int,
-			tradeFee int, bankAccountNo string) (int64, string, error)
+			transactionFee int, bankAccountNo string) (int64, string, error)
 
 		// ReviewWithdrawal 提现审核
 		ReviewWithdrawal(requestId int64, pass bool, reason string) error
@@ -136,7 +136,7 @@ type (
 
 		// TransferAccount 转账
 		TransferAccount(account AccountType, toMember int64, amount int,
-			tradeFee int, remark string) error
+			transactionFee int, remark string) error
 
 		// ReceiveTransfer 接收转账
 		ReceiveTransfer(account AccountType, fromMember int64, tradeNo string,

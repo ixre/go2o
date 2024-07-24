@@ -62,7 +62,7 @@ type WalletServiceClient interface {
 	Charge(ctx context.Context, in *ChargeRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 转账,title如:转账给xxx， toTitle: 转账收款xxx
 	Transfer(ctx context.Context, in *TransferRequest, opts ...grpc.CallOption) (*Result, error)
-	// * 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
+	// * 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,transactionFee为手续费
 	RequestWithdrawal(ctx context.Context, in *RequestWithdrawalRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 确认提现
 	ReviewTakeOut(ctx context.Context, in *ReviewTakeOutRequest, opts ...grpc.CallOption) (*Result, error)
@@ -241,7 +241,7 @@ type WalletServiceServer interface {
 	Charge(context.Context, *ChargeRequest) (*Result, error)
 	// * 转账,title如:转账给xxx， toTitle: 转账收款xxx
 	Transfer(context.Context, *TransferRequest) (*Result, error)
-	// * 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
+	// * 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,transactionFee为手续费
 	RequestWithdrawal(context.Context, *RequestWithdrawalRequest) (*Result, error)
 	// * 确认提现
 	ReviewTakeOut(context.Context, *ReviewTakeOutRequest) (*Result, error)

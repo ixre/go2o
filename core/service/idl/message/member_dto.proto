@@ -604,7 +604,7 @@ message WalletLogResponse {
   // 金额
   double amount = 6;
   // 手续费
-  double tradeFee = 7;
+  double transactionFee = 7;
   // 状态
   int32 reviewStatus = 8;
   // 备注

@@ -456,7 +456,7 @@ type QPaymentRequest struct {
 	// 商户订单号
 	OrderNo string `protobuf:"bytes,1,opt,name=orderNo,proto3" json:"orderNo"`
 	// 支付金额,实际金额*100,无小数
-	TradeFee int32 `protobuf:"varint,2,opt,name=tradeFee,proto3" json:"tradeFee"`
+	TradeFee int32 `protobuf:"varint,2,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 支付商品名称
 	Subject string `protobuf:"bytes,3,opt,name=subject,proto3" json:"subject"`
 	// 银行授权码
@@ -897,7 +897,7 @@ type CardTransferRequest struct {
 	// 是否为对私转账
 	PersonTransfer bool `protobuf:"varint,3,opt,name=personTransfer,proto3" json:"personTransfer"`
 	// 付款金额,实际金额*100,无小数
-	TradeFee int32 `protobuf:"varint,4,opt,name=tradeFee,proto3" json:"tradeFee"`
+	TradeFee int32 `protobuf:"varint,4,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 银行账户
 	BankCardNo string `protobuf:"bytes,5,opt,name=bankCardNo,proto3" json:"bankCardNo"`
 	// 收款人姓名,如：张三

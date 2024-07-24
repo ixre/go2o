@@ -163,7 +163,7 @@ service WalletService {
     rpc Transfer (TransferRequest) returns (Result) {
     }
 
-    /** 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费 */
+    /** 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,transactionFee为手续费 */
     rpc RequestWithdrawal (RequestWithdrawalRequest) returns (Result) {
     }
 

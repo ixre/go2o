@@ -119,7 +119,7 @@ func (a *accountImpl) walletDiscount_(title string, amount float32, outerNo stri
 
 // 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
-	amount2 int, tradeFee int, bankAccountNo string) (int32, string, error) {
+	amount2 int, transactionFee int, bankAccountNo string) (int32, string, error) {
 	amount := float32(amount2) / 100
 	if takeKind != wallet.KWithdrawExchange &&
 		takeKind != wallet.KWithdrawToBankCard &&
@@ -176,7 +176,7 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	}
 
 	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
-	csnAmount := float32(tradeFee) / 100
+	csnAmount := float32(transactionFee) / 100
 	finalAmount := amount - csnAmount
 	if finalAmount > 0 {
 		finalAmount = -finalAmount

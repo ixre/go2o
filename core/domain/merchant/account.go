@@ -117,13 +117,13 @@ func (a *accountImpl) TakePayment(outerNo string, amount int, csn int, remark st
 }
 
 // 订单结账
-func (a *accountImpl) SettleOrder(orderNo string, amount int, tradeFee int,
+func (a *accountImpl) SettleOrder(orderNo string, amount int, transactionFee int,
 	refundAmount int, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return merchant.ErrAmount
 	}
 	fAmount := int64(amount / 100)
-	fTradeFee := int64(tradeFee / 100)
+	fTradeFee := int64(transactionFee / 100)
 	fRefund := int64(refundAmount / 100)
 	a.value.Balance += fAmount
 	a.value.SalesAmount += fTradeFee
@@ -134,7 +134,7 @@ func (a *accountImpl) SettleOrder(orderNo string, amount int, tradeFee int,
 		iw := a.getWallet()
 		_, err = iw.CarryTo(wallet.OperateData{
 			Title:  "订单结算",
-			Amount: amount - tradeFee, OuterNo: orderNo, Remark: remark}, false, tradeFee)
+			Amount: amount - transactionFee, OuterNo: orderNo, Remark: remark}, false, transactionFee)
 		// 记录旧日志,todo:可能去掉
 		l := a.createBalanceLog(merchant.KindAccountSettleOrder,
 			remark, orderNo, fAmount, fTradeFee, 1)

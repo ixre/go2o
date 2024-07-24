@@ -504,15 +504,15 @@ func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, operator
 	return err
 }
 
-func (w *WalletImpl) Transfer(toWalletId int64, value int, tradeFee int, title, toTitle, remark string) error {
+func (w *WalletImpl) Transfer(toWalletId int64, value int, transactionFee int, title, toTitle, remark string) error {
 	if value == 0 {
 		return wallet.ErrAmountZero
 	}
 	if value < 0 {
 		value = -value
 	}
-	if tradeFee < 0 {
-		tradeFee = -tradeFee
+	if transactionFee < 0 {
+		transactionFee = -transactionFee
 	}
 	var tw = w._repo.GetWallet(toWalletId)
 	err := w.checkWalletState(tw, true)
@@ -520,13 +520,13 @@ func (w *WalletImpl) Transfer(toWalletId int64, value int, tradeFee int, title, 
 		return err
 	}
 	// 验证金额
-	if w._value.Balance < int64(value+tradeFee) {
+	if w._value.Balance < int64(value+transactionFee) {
 		return wallet.ErrOutOfAmount
 	}
-	w._value.Balance -= int64(value + tradeFee)
+	w._value.Balance -= int64(value + transactionFee)
 	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
 	l := w.createWalletLog(wallet.KTransferOut, -value, title, 0, "")
-	l.ProcedureFee = -tradeFee
+	l.ProcedureFee = -transactionFee
 	l.OuterNo = tradeNo
 	l.Remark = remark
 	l.Balance = w._value.Balance
@@ -558,8 +558,8 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo, tit
 	return err
 }
 
-// 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
-func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title string,
+// 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,transactionFee为手续费
+func (w *WalletImpl) RequestWithdrawal(amount int, transactionFee int, kind int, title string,
 	accountNo string, accountName string, bankName string) (int64, string, error) {
 	if amount == 0 {
 		return 0, "", wallet.ErrAmountZero
@@ -583,13 +583,13 @@ func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title
 		return 0, "", wallet.ErrMoreThanMinTakeAmount
 	}
 	// 余额是否不足
-	if w._value.Balance < int64(amount+tradeFee) {
+	if w._value.Balance < int64(amount+transactionFee) {
 		return 0, "", wallet.ErrOutOfAmount
 	}
 	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
 	w._value.Balance -= int64(amount)
-	l := w.createWalletLog(kind, -(amount - tradeFee), title, 0, "")
-	l.ProcedureFee = -tradeFee
+	l := w.createWalletLog(kind, -(amount - transactionFee), title, 0, "")
+	l.ProcedureFee = -transactionFee
 	l.OuterNo = tradeNo
 	l.ReviewStatus = wallet.ReviewPending
 	l.ReviewRemark = ""

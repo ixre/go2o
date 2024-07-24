@@ -231,7 +231,7 @@ message STradeConf_ {
   // 交易方案，根据方案来自动调整比例  sint64 PlanId = 3;
   // 交易标志  sint32 Flag = 4;
   // 交易手续费依据,1:按金额 2:按比例  sint32 AmountBasis = 5;
-  // 交易费，按单笔收取  sint32 tradeFee = 6;
+  // 交易费，按单笔收取  sint32 transactionFee = 6;
   // 交易手续费比例  sint32 TradeRate = 7;
 }
 

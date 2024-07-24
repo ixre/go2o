@@ -1149,7 +1149,7 @@ func (a *accountImpl) getMemberName(m member.IMemberAggregateRoot) string {
 
 // TransferAccount 转账
 func (a *accountImpl) TransferAccount(account member.AccountType, toMember int64, amount int,
-	tradeFee int, remark string) error {
+	transactionFee int, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -1169,16 +1169,16 @@ func (a *accountImpl) TransferAccount(account member.AccountType, toMember int64
 
 	switch account {
 	case member.AccountWallet:
-		return a.transferWalletAccount(tm, tradeNo, amount, tradeFee, remark)
+		return a.transferWalletAccount(tm, tradeNo, amount, transactionFee, remark)
 	case member.AccountBalance:
-		return a.transferBalance(tm, tradeNo, amount, tradeFee, remark)
+		return a.transferBalance(tm, tradeNo, amount, transactionFee, remark)
 	}
 	return nil
 }
 
 func (a *accountImpl) transferBalance(tm member.IMemberAggregateRoot, tradeNo string,
-	tradeAmount, tradeFee int, remark string) error {
-	csnFee := tradeFee
+	tradeAmount, transactionFee int, remark string) error {
+	csnFee := transactionFee
 	amount := tradeAmount
 	if a.value.Balance < int64(amount+csnFee) {
 		return member.ErrAccountNotEnoughAmount
@@ -1213,8 +1213,8 @@ func (a *accountImpl) transferBalance(tm member.IMemberAggregateRoot, tradeNo st
 }
 
 func (a *accountImpl) transferWalletAccount(tm member.IMemberAggregateRoot, tradeNo string,
-	tradeAmount, tradeFee int, remark string) error {
-	csnFee := tradeFee
+	tradeAmount, transactionFee int, remark string) error {
+	csnFee := transactionFee
 	amount := tradeAmount
 	// 检测非正式会员转账
 	lv := a.mm.LevelManager().GetLevelById(a.member.GetValue().Level)
