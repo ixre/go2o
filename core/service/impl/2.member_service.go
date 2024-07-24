@@ -1313,7 +1313,7 @@ func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryR
 	}
 	id, err := acc.CarryTo(member.AccountType(r.AccountType),
 		member.AccountOperateData{
-			Title:   r.Title,
+			Title:   r.TransactionTitle,
 			Amount:  int(r.Amount),
 			OuterNo: r.OuterNo,
 			Remark:  r.Remark,
@@ -1397,23 +1397,30 @@ func (s *memberService) B4EAuth(_ context.Context, r *proto.B4EAuthRequest) (*pr
 }
 
 // Withdraw 提现并返回提现编号,交易号以及错误信息
-func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*proto.WithdrawalResponse, error) {
+func (s *memberService) Withdraw(_ context.Context, r *proto.UserWithdrawRequest) (*proto.UserWithdrawalResponse, error) {
 	m, err := s.getMember(r.MemberId)
 	if err != nil {
-		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+		return &proto.UserWithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
 	title := ""
 	kind := 0
 	switch int(r.WithdrawalKind) {
-	case int(proto.EWithdrawalKind_WithdrawToBankCard):
+	case int(proto.EUserWithdrawalKind_WithdrawToBankCard):
 		title = "提现到银行卡"
 		kind = wallet.KWithdrawToBankCard
-	case int(proto.EWithdrawalKind_WithdrawToThirdPart):
+		break
+	case int(proto.EUserWithdrawalKind_WithdrawToPayWallet):
 		title = "充值到第三方账户"
 		kind = wallet.KWithdrawToPayWallet
-	case int(proto.EWithdrawalKind_WithdrawByExchange):
+		break
+	case int(proto.EUserWithdrawalKind_WithdrawByExchange):
 		title = "提现到余额"
 		kind = wallet.KWithdrawExchange
+		break
+	case int(proto.EUserWithdrawalKind_WithdrawCustom):
+		title = "自定义提现"
+		kind = wallet.KWithdrawCustom
+		break
 	}
 	acc := m.GetAccount()
 	_, tradeNo, err := acc.RequestWithdrawal(
@@ -1427,9 +1434,9 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.WithdrawRequest) (*
 			AccountName:      "",
 		})
 	if err != nil {
-		return &proto.WithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+		return &proto.UserWithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
 	}
-	return &proto.WithdrawalResponse{
+	return &proto.UserWithdrawalResponse{
 		ErrCode: 0,
 		ErrMsg:  "",
 		TradeNo: tradeNo,
@@ -1480,8 +1487,8 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 }
 
 // ReviewWithdrawal 确认提现
-func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithdrawalRequest) (*proto.Result, error) {
-	m, err := s.getMember(r.MemberId)
+func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewUserWithdrawalRequest) (*proto.Result, error) {
+	m, err := s.getMember(r.UserId)
 	if err == nil {
 		err = m.GetAccount().ReviewWithdrawal(int(r.TransactionId), r.Pass, r.Remark)
 	}
@@ -1489,11 +1496,11 @@ func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewWithd
 }
 
 // 完成提现
-func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishWithdrawalRequest) (*proto.Result, error) {
+func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishUserWithdrawalRequest) (*proto.Result, error) {
 	var err error
-	m, err := s.getMember(r.MemberId)
+	m, err := s.getMember(r.UserId)
 	if err == nil {
-		err = m.GetAccount().FinishWithdrawal(int(r.TransactionId), r.TradeNo)
+		err = m.GetAccount().FinishWithdrawal(int(r.TransactionId), r.OuterTransactionNo)
 	}
 	return s.error(err), nil
 }

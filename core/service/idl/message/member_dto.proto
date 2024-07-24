@@ -286,7 +286,7 @@ message AccountCarryRequest{
   // 账户类型
   EAccountType accountType = 2;
   // 明细标题
-  string title = 3;
+  string transactionTitle = 3;
   // 已扣除手续费的金额
   int64 amount = 4;
   // 手续费
@@ -581,6 +581,17 @@ enum ECredentials {
   INVITE_CODE = 6;
 }
 
+ 
+// 获取提现记录
+message WithdrawalLogRequest {
+  // 会员编号
+  int64 memberId = 1;
+  // 数量
+  int32 number = 2;
+  // 仅返回完成的提现
+  bool onlyFinished = 3;
+}
+
 // 钱包日志请求
 message WalletLogRequest {
   // 会员编号
@@ -646,52 +657,8 @@ message AccountTransferRequest {
   string remark = 6;
 }
 
-// 提现方式
-enum EWithdrawalKind {
-  ___WithdrawKind = 0;
-  // 提现到银行卡
-  WithdrawToBankCard = 1;
-  // 提现到第三方账户
-  WithdrawToThirdPart = 2;
-  // 兑换为商城余额
-  WithdrawByExchange = 3;
-}
 
-// 提现申请
-message WithdrawRequest {
-  // 会员编号
-  sint64 memberId = 1;
-  // 提现金额
-  int64 amount = 2;
-  // 手续费
-  int64 transactionFee = 3;
-  // 提现方式,21:提现并兑换到余额  22:提现到银行卡(人工提现) 23:第三方钱包
-  EWithdrawalKind withdrawalKind = 4;
-  // 银行账号或第三方支付钱包
-  string accountNo = 5;
-}
 
-// 提现申请结果
-message WithdrawalResponse {
-  // 错误码
-  int32 errCode = 1;
-  // 错误消息
-  string errMsg = 2;
-  // 交易号
-  string tradeNo = 3;
-  // 提现流水Id
-  sint64 logId = 4;
-}
-
-// 获取提现记录
-message WithdrawalLogRequest {
-  // 会员编号
-  int64 memberId = 1;
-  // 数量
-  int32 number = 2;
-  // 仅返回完成的提现
-  bool onlyFinished = 3;
-}
 
 // 提现流水流水信息
 message WithdrawalLogResponse {
@@ -727,27 +694,6 @@ message WithdrawalLog {
   int64 updateTime = 11;
 }
 
-// 申请提现请求
-message ReviewWithdrawalRequest {
-  // 会员编号
-  int64 memberId = 1;
-  // 提现申请流水Id
-  int64 transactionId = 2;
-  // 是否通过审核
-  bool pass = 3;
-  // 备注
-  string remark = 4;
-}
-
-// 完成提现
-message FinishWithdrawalRequest {
-  // 会员编号
-  int64 memberId = 1;
-  // 提现记录编号
-  int64 transactionId = 2;
-  // 汇款/交易单号
-  string tradeNo = 3;
-}
 
 message MemberInvitationPagingRequest {
   int64 memberId = 1;

@@ -5,6 +5,7 @@ import "message/bank_dto.proto";
 import "message/member_dto.proto";
 import "message/member_query_dto.proto";
 import "message/payment_dto.proto";
+import "message/wallet_dto.proto";
 
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
@@ -220,7 +221,6 @@ service MemberService {
     /** 账户解冻 */
     rpc Unfreeze (AccountUnfreezeRequest) returns (Result) {
     }
-
     // 账户退款,amount精确到分
     rpc AccountRefund (AccountChangeRequest) returns (Result) {
     }
@@ -231,13 +231,13 @@ service MemberService {
     rpc AccountTransfer (AccountTransferRequest) returns (Result) {
     }
     // 提现并返回提现编号,交易号以及错误信息
-    rpc Withdraw (WithdrawRequest) returns (WithdrawalResponse) {
+    rpc RequestWithdraw (UserWithdrawRequest) returns (UserWithdrawalResponse) {
     }
     // 确认提现
-    rpc ReviewWithdrawal (ReviewWithdrawalRequest) returns (Result) {
+    rpc ReviewWithdrawal (ReviewUserWithdrawalRequest) returns (Result) {
     }
     // 收到款项,完成提现
-    rpc FinishWithdrawal (FinishWithdrawalRequest) returns (Result) {
+    rpc FinishWithdrawal (FinishUserWithdrawalRequest) returns (Result) {
     }
     // 查询提现记录
     rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogResponse) {

@@ -3,6 +3,7 @@ syntax = "proto3";
 import "global.proto";
 import "message/merchant_dto.proto";
 import "message/order_dto.proto";
+import "message/wallet_dto.proto";
 
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
@@ -97,9 +98,7 @@ service MerchantService {
     // 提到会员账户
     rpc WithdrawToMemberAccount (WithdrawToMemberAccountRequest) returns (Result) {
     }
-    // 账户充值
-    rpc ChargeAccount (MerchantChargeRequest) returns (Result) {
-    }
+   
 
     rpc GetMchBuyerGroup_ (MerchantBuyerGroupId) returns (SMerchantBuyerGroup) {
     }
@@ -124,6 +123,30 @@ service MerchantService {
     // 保存员工
     rpc SaveStaff(SaveStaffRequest)returns(Result){
 
+    }
+    // 账户充值
+    rpc ChargeAccount (MerchantChargeRequest) returns (Result) {
+    }
+    // 账户入账
+    rpc CarryToAccount(UserWalletCarryRequest) returns (UserWalletCarryResponse){
+    }
+    // 账户人工调整
+    rpc AdjustAccount (UserWalletAdjustRequest) returns (Result) {
+    }
+    /** 账户冻结 */
+    rpc Freeze (UserWalletFreezeRequest) returns (UserWalletFreezeResponse) {
+    }
+    /** 账户解冻 */
+    rpc Unfreeze (UserWalletUnfreezeRequest) returns (Result) {
+    }
+    // 提现并返回提现编号,交易号以及错误信息
+    rpc RequestWithdraw (UserWithdrawRequest) returns (UserWithdrawalResponse) {
+    }
+    // 确认提现
+    rpc ReviewWithdrawal (ReviewUserWithdrawalRequest) returns (Result) {
+    }
+    // 收到款项,完成提现
+    rpc FinishWithdrawal (FinishUserWithdrawalRequest) returns (Result) {
     }
 }
 
