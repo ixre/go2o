@@ -165,7 +165,7 @@ message PayGatewayResponse{
     // 总金额
     int64 totalAmount = 5;
     // 交易费用
-    int64 procedureFee = 6;
+    int64 transactionFee = 6;
     // 金额
     int64 finalAmount = 7;
     // 支付表单
@@ -241,7 +241,7 @@ message SPaymentOrder {
     /** 共计金额 */
     int64 totalAmount = 15;
     /** 手续费 */
-    int64 procedureFee = 16;
+    int64 transactionFee = 16;
     /** 实付金额 */
     int64 paidAmount = 17;
     /** 最终应付金额 */
@@ -315,7 +315,7 @@ message SPrepareTradeData {
     /** 累计金额 */
     int64 totalAmount = 7;
     /** 手续费 */
-    int64 procedureFee = 8;
+    int64 transactionFee = 8;
     /** 最终支付金额 */
     int64 finalAmount = 9;
 }
@@ -331,7 +331,7 @@ message SPaymentOrderData {
     /** 状态 */
     sint32 state = 4;
     /** 手续费 */
-    int64 procedureFee = 5;
+    int64 transactionFee = 5;
     /** 最终支付金额 */
     int64 finalAmount = 6;
 }

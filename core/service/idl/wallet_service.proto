@@ -115,7 +115,7 @@ message TransferRequest {
     /** 转账金额 */
     int64 amount = 3;
     /** 手续费 */
-    sint64 procedureFee = 4;
+    sint64 transactionFee = 4;
     /** 备注 */
     string remark = 5;
 }
@@ -196,7 +196,7 @@ message RequestWithdrawalRequest {
     // 金额
     int64 amount = 2;
     // 手续费
-    int32 procedureFee = 3;
+    int32 transactionFee = 3;
     // 提现方式
     sint32 kind = 4;
     // 银行名称
@@ -348,7 +348,7 @@ message SWalletLog {
     /** 余额 */
     int64 balance = 9;
     /** 交易手续费 */
-    int64 procedureFee = 10;
+    int64 transactionFee = 10;
     /** 操作人员用户编号 */
     sint32 operatorUid = 11;
     /** 操作人员名称 */

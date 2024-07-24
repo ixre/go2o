@@ -117,30 +117,33 @@ func (a *accountImpl) TakePayment(outerNo string, amount int, csn int, remark st
 }
 
 // 订单结账
-func (a *accountImpl) SettleOrder(orderNo string, amount int, transactionFee int,
-	refundAmount int, remark string) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return merchant.ErrAmount
+func (a *accountImpl) SettleOrder(p merchant.SettlementParams) (txId int, err error) {
+	if p.Amount <= 0 || math.IsNaN(float64(p.Amount)) {
+		return 0, merchant.ErrAmount
 	}
-	fAmount := int64(amount / 100)
-	fTradeFee := int64(transactionFee / 100)
-	fRefund := int64(refundAmount / 100)
+	fAmount := int64(p.Amount / 100)
+	fTradeFee := int64(p.TransactionFee / 100)
+	fRefund := int64(p.RefundAmount / 100)
 	a.value.Balance += fAmount
 	a.value.SalesAmount += fTradeFee
 	a.value.RefundAmount += fRefund
 	a.value.UpdateTime = time.Now().Unix()
-	err := a.Save()
+	err = a.Save()
 	if err == nil {
 		iw := a.getWallet()
-		_, err = iw.CarryTo(wallet.OperateData{
-			Title:  "订单结算",
-			Amount: amount - transactionFee, OuterNo: orderNo, Remark: remark}, false, transactionFee)
+		return iw.CarryTo(wallet.TransactionData{
+			TransactionTitle:  p.TransactionTitle,
+			Amount:            p.Amount,
+			TransactionFee:    p.TransactionFee,
+			OuterNo:           p.OuterNo,
+			TransactionRemark: p.TransactionRemark,
+		}, false)
 		// 记录旧日志,todo:可能去掉
-		l := a.createBalanceLog(merchant.KindAccountSettleOrder,
-			remark, orderNo, fAmount, fTradeFee, 1)
-		a.SaveBalanceLog(l)
+		// l := a.createBalanceLog(merchant.KindAccountSettleOrder,
+		// 	remark, orderNo, fAmount, fTradeFee, 1)
+		// a.SaveBalanceLog(l)
 	}
-	return err
+	return 0, err
 }
 
 func (a *accountImpl) getWallet() wallet.IWallet {

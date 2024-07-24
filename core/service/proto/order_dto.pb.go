@@ -499,7 +499,7 @@ type SSubOrder struct {
 	// 包装费
 	PackageFee int64 `protobuf:"varint,9,opt,name=packageFee,proto3" json:"packageFee"`
 	// 手续费
-	ProcedureFee int64 `protobuf:"varint,10,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,10,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 订单总金额
 	TotalAmount int64 `protobuf:"varint,11,opt,name=totalAmount,proto3" json:"totalAmount"`
 	// 最终金额
@@ -709,7 +709,7 @@ type SSingleOrder struct {
 	// 抵扣金额
 	DeductAmount int32 `protobuf:"zigzag32,13,opt,name=deductAmount,proto3" json:"deductAmount"`
 	// 手续费
-	ProcedureFee int32 `protobuf:"zigzag32,14,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int32 `protobuf:"zigzag32,14,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 调整金额
 	AdjustAmount int32 `protobuf:"varint,15,opt,name=adjustAmount,proto3" json:"adjustAmount"`
 	// 最终金额(订单总金额-抵扣金额+手续费+调整金额)
@@ -2389,7 +2389,7 @@ type PrepareOrderResponse struct {
 	// 包装费
 	PackageFee int64 `protobuf:"varint,12,opt,name=packageFee,proto3" json:"packageFee"`
 	// 手续费
-	ProcedureFee int32 `protobuf:"varint,13,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int32 `protobuf:"varint,13,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 订单总金额
 	TotalAmount int32 `protobuf:"varint,14,opt,name=totalAmount,proto3" json:"totalAmount"`
 	// 最终金额

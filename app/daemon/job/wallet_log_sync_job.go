@@ -70,7 +70,7 @@ update_time)`)
 			l.OuterNo,
 			l.ChangeValue,
 			l.Balance,
-			int32(l.ProcedureFee),
+			int32(l.TransactionFee),
 			int64(l.OperatorUid),
 			l.OperatorName,
 			l.AccountNo,

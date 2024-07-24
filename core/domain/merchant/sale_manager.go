@@ -20,7 +20,7 @@ func newSaleManagerImpl(id int, m *merchantImpl) merchant.ISaleManager {
 }
 
 // 计算交易手续费
-func (s *SaleManagerImpl) MathTradeFee(tradeType int, amount int) (int, error) {
+func (s *SaleManagerImpl) MathTransactionFee(tradeType int, amount int) (int, error) {
 	cm := s.mch.ConfManager()
 	conf := cm.GetTradeConf(tradeType)
 	if conf == nil {

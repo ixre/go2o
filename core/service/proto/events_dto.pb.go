@@ -856,7 +856,7 @@ type EVMemberWithdrawalPushEventData struct {
 	// 提现金额
 	Amount int64 `protobuf:"varint,3,opt,name=amount,proto3" json:"amount"`
 	// 手续费
-	ProcedureFee int64 `protobuf:"varint,4,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,4,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 是否为已审核通过的事件
 	IsReviewEvent bool `protobuf:"varint,5,opt,name=isReviewEvent,proto3" json:"isReviewEvent"`
 	// 是否审核通过
@@ -962,7 +962,7 @@ type EVAccountLogPushEventData struct {
 	// 余额
 	Balance int64 `protobuf:"varint,9,opt,name=balance,proto3" json:"balance"`
 	// 交易手续费
-	ProcedureFee int64 `protobuf:"varint,10,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,10,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 审核状态
 	ReviewStatus int32 `protobuf:"varint,11,opt,name=reviewStatus,proto3" json:"reviewStatus"`
 	// 创建时间

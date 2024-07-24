@@ -350,7 +350,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		Kind:         int32(v.Kind),
 		Title:        v.Subject,
 		Amount:       float64(v.ChangeValue),
-		TradeFee:     float64(v.ProcedureFee),
+		TradeFee:     float64(v.TransactionFee),
 		ReviewStatus: int32(v.ReviewStatus),
 		Remark:       v.Remark,
 		CreateTime:   v.CreateTime,
@@ -1016,7 +1016,7 @@ func (s *memberService) GetCertification(_ context.Context, id *proto.MemberIdRe
 	if m != nil {
 		t = m.Profile().GetCertificationInfo()
 	}
-	if t== nil || t.Id == 0{
+	if t == nil || t.Id == 0 {
 		// 如果未提交认证信息
 		t = &member.CerticationInfo{}
 	}

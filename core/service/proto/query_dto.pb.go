@@ -97,7 +97,7 @@ type SMemberAccountLog struct {
 	// * 余额
 	Balance int64 `protobuf:"varint,6,opt,name=balance,proto3" json:"balance"`
 	// * 交易手续费
-	ProcedureFee int64 `protobuf:"varint,7,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,7,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// * 外部订单号
 	OuterNo string `protobuf:"bytes,8,opt,name=outerNo,proto3" json:"outerNo"`
 	// * 备注

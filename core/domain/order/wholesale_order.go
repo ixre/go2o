@@ -711,10 +711,18 @@ func (o *wholesaleOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggrega
 	if sAmount > 0 {
 		totalAmount := sAmount
 		refundAmount := refund
-		transactionFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, int(totalAmount))
-		return vendor.Account().SettleOrder(o.OrderNo(),
-			int(totalAmount), transactionFee, refundAmount, "批发订单结算")
+		sd := merchant.SettlementParams{
+			OuterNo:           o.OrderNo(),
+			Amount:            refundAmount,
+			TransactionFee:    transactionFee,
+			RefundAmount:      refundAmount,
+			TransactionTitle:  "批发订单结算",
+			TransactionRemark: o.baseValue.Subject,
+		}
+		_, err := vendor.Account().SettleOrder(sd)
+		return err
 	}
 	return nil
 }
@@ -727,10 +735,18 @@ func (o *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggrega
 	if sAmount > 0 {
 		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		transactionFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, totalAmount)
-		return vendor.Account().SettleOrder(o.OrderNo(),
-			totalAmount, transactionFee, refundAmount, "批发订单结算")
+		sd := merchant.SettlementParams{
+			OuterNo:           o.OrderNo(),
+			Amount:            amount,
+			TransactionFee:    transactionFee,
+			RefundAmount:      refundAmount,
+			TransactionTitle:  "批发订单结算",
+			TransactionRemark: o.baseValue.Subject,
+		}
+		_, err := vendor.Account().SettleOrder(sd)
+		return err
 	}
 	return nil
 }
@@ -740,11 +756,18 @@ func (o *wholesaleOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMercha
 	if fee > 0 {
 		totalAmount := int(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		transactionFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, totalAmount)
-		return vendor.Account().SettleOrder(o.value.OrderNo,
-			totalAmount, transactionFee, refundAmount, "零售订单结算")
-
+		sd := merchant.SettlementParams{
+			OuterNo:           o.OrderNo(),
+			Amount:            amount,
+			TransactionFee:    transactionFee,
+			RefundAmount:      refundAmount,
+			TransactionTitle:  "批发订单结算",
+			TransactionRemark: o.baseValue.Subject,
+		}
+		_, err := vendor.Account().SettleOrder(sd)
+		return err
 	}
 	return nil
 }

@@ -80,11 +80,11 @@ func TestFreezeWallet(t *testing.T) {
 	var value = 10000
 	var freeze = wlt.Get().FreezeAmount
 	var balance = wlt.Get().Balance
-	_, err := wlt.Freeze(wallet.OperateData{
-		Title:   "冻结金额",
-		Amount:  value,
-		OuterNo: "",
-		Remark:  "",
+	_, err := wlt.Freeze(wallet.TransactionData{
+		TransactionTitle:  "冻结金额",
+		Amount:            value,
+		OuterNo:           "",
+		TransactionRemark: "",
 	}, wallet.Operator{OperatorUid: 0})
 	if err != nil {
 		t.Error(err)

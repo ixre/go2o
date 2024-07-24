@@ -27,7 +27,7 @@ message SMemberAccountLog {
     /** 余额 */
     int64 balance = 6;
     /** 交易手续费 */
-    int64 procedureFee = 7;
+    int64 transactionFee = 7;
     /** 外部订单号 */
     string outerNo = 8;
     /** 备注 */

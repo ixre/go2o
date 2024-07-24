@@ -746,7 +746,7 @@ type PayGatewayResponse struct {
 	// 总金额
 	TotalAmount int64 `protobuf:"varint,5,opt,name=totalAmount,proto3" json:"totalAmount"`
 	// 交易费用
-	ProcedureFee int64 `protobuf:"varint,6,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,6,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 金额
 	FinalAmount int64 `protobuf:"varint,7,opt,name=finalAmount,proto3" json:"finalAmount"`
 	// 支付表单
@@ -1047,7 +1047,7 @@ type SPaymentOrder struct {
 	// * 共计金额
 	TotalAmount int64 `protobuf:"varint,15,opt,name=totalAmount,proto3" json:"totalAmount"`
 	// * 手续费
-	ProcedureFee int64 `protobuf:"varint,16,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,16,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// * 实付金额
 	PaidAmount int64 `protobuf:"varint,17,opt,name=paidAmount,proto3" json:"paidAmount"`
 	// * 最终应付金额
@@ -1510,7 +1510,7 @@ type SPrepareTradeData struct {
 	// * 累计金额
 	TotalAmount int64 `protobuf:"varint,7,opt,name=totalAmount,proto3" json:"totalAmount"`
 	// * 手续费
-	ProcedureFee int64 `protobuf:"varint,8,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,8,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// * 最终支付金额
 	FinalAmount int64 `protobuf:"varint,9,opt,name=finalAmount,proto3" json:"finalAmount"`
 }
@@ -1625,7 +1625,7 @@ type SPaymentOrderData struct {
 	// * 状态
 	State int32 `protobuf:"zigzag32,4,opt,name=state,proto3" json:"state"`
 	// * 手续费
-	ProcedureFee int64 `protobuf:"varint,5,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,5,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// * 最终支付金额
 	FinalAmount int64 `protobuf:"varint,6,opt,name=finalAmount,proto3" json:"finalAmount"`
 }

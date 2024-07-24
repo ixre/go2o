@@ -2437,7 +2437,7 @@ type AccountCarryRequest struct {
 	// 已扣除手续费的金额
 	Amount int64 `protobuf:"varint,4,opt,name=amount,proto3" json:"amount"`
 	// 手续费
-	ProcedureFee int64 `protobuf:"varint,5,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,5,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 外部校译号
 	OuterNo string `protobuf:"bytes,6,opt,name=outerNo,proto3" json:"outerNo"`
 	// 备注
@@ -4396,7 +4396,7 @@ type AccountTransferRequest struct {
 	// 转账金额
 	Amount int64 `protobuf:"varint,4,opt,name=amount,proto3" json:"amount"`
 	// 手续费
-	ProcedureFee int64 `protobuf:"varint,5,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,5,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 备注
 	Remark string `protobuf:"bytes,6,opt,name=remark,proto3" json:"remark"`
 }
@@ -4486,7 +4486,7 @@ type WithdrawRequest struct {
 	// 提现金额
 	Amount int64 `protobuf:"varint,2,opt,name=amount,proto3" json:"amount"`
 	// 手续费
-	ProcedureFee int64 `protobuf:"varint,3,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,3,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 提现方式,21:提现并兑换到余额  22:提现到银行卡(人工提现) 23:第三方钱包
 	WithdrawalKind EWithdrawalKind `protobuf:"varint,4,opt,name=withdrawalKind,proto3,enum=EWithdrawalKind" json:"withdrawalKind"`
 	// 银行账号或第三方支付钱包
@@ -4778,7 +4778,7 @@ type WithdrawalLog struct {
 	// 金额
 	Amount int64 `protobuf:"varint,5,opt,name=amount,proto3" json:"amount"`
 	// 手续费
-	ProcedureFee int64 `protobuf:"varint,6,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,6,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 关联操作人,仅在客服操作时,记录操作人
 	RelateUser int64 `protobuf:"varint,7,opt,name=relateUser,proto3" json:"relateUser"`
 	// 状态

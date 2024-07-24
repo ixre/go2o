@@ -159,7 +159,7 @@ message EVMemberWithdrawalPushEventData {
 	// 提现金额
 	int64 amount = 3;
 	// 手续费
-	int64 procedureFee = 4;
+	int64 transactionFee = 4;
 	// 是否为已审核通过的事件
 	bool isReviewEvent = 5;
 	// 是否审核通过
@@ -187,7 +187,7 @@ message EVAccountLogPushEventData  {
 	// 余额
 	int64 balance = 9;
 	// 交易手续费
-	int64 procedureFee = 10;
+	int64 transactionFee = 10;
 	// 审核状态
 	int32 reviewStatus  = 11;
 	// 创建时间

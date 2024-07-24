@@ -215,7 +215,7 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 			OuterNo:       l.OuterNo,
 			ChangeValue:   int(l.ChangeValue),
 			Balance:       int(l.Balance),
-			ProcedureFee:  l.ProcedureFee,
+			ProcedureFee:  l.TransactionFee,
 			ReviewStatus:  l.ReviewStatus,
 			CreateTime:    int(l.CreateTime),
 		})
@@ -286,13 +286,13 @@ func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error
 	return err
 }
 
-func (w *WalletImpl) Freeze(data wallet.OperateData, operator wallet.Operator) (int, error) {
+func (w *WalletImpl) Freeze(data wallet.TransactionData, operator wallet.Operator) (int, error) {
 	err := w.checkValueOpu(data.Amount, false, operator.OperatorUid, operator.OperatorName)
 	if err == nil {
 		if data.Amount > 0 {
 			data.Amount = -data.Amount
 		}
-		if data.TradeLogId > 0 {
+		if data.TransactionId > 0 {
 			return w.refreeze(data)
 		}
 		return w.freeze(data, operator)
@@ -301,13 +301,13 @@ func (w *WalletImpl) Freeze(data wallet.OperateData, operator wallet.Operator) (
 }
 
 // 创建新的冻结记录
-func (w *WalletImpl) freeze(data wallet.OperateData, operator wallet.Operator) (int, error) {
+func (w *WalletImpl) freeze(data wallet.TransactionData, operator wallet.Operator) (int, error) {
 	if w._value.Balance < -int64(data.Amount) {
 		return 0, wallet.ErrOutOfAmount
 	}
 	w._value.Balance += int64(data.Amount)
 	w._value.FreezeAmount += -data.Amount
-	l := w.createWalletLog(wallet.KFreeze, data.Amount, data.Title, operator.OperatorUid, operator.OperatorName)
+	l := w.createWalletLog(wallet.KFreeze, data.Amount, data.TransactionTitle, operator.OperatorUid, operator.OperatorName)
 	l.OuterNo = data.OuterNo
 	l.Balance = w._value.Balance
 	err := w.saveWalletLog(l)
@@ -318,8 +318,8 @@ func (w *WalletImpl) freeze(data wallet.OperateData, operator wallet.Operator) (
 }
 
 // 对现有的冻结流水进行更新
-func (w *WalletImpl) refreeze(data wallet.OperateData) (int, error) {
-	l := w._repo.GetWalletLog_(data.TradeLogId)
+func (w *WalletImpl) refreeze(data wallet.TransactionData) (int, error) {
+	l := w._repo.GetWalletLog_(data.TransactionId)
 	if l == nil || l.WalletId != w.GetAggregateRootId() {
 		return 0, errors.New("冻结失败,交易日志不存在")
 	}
@@ -382,30 +382,31 @@ func (w *WalletImpl) FreezeExpired(value int, remark string) error {
 }
 
 // CarryTo 入账
-func (w *WalletImpl) CarryTo(d wallet.OperateData, review bool, procedureFee int) (int, error) {
-	err := w.checkValueOpu(d.Amount, false, 0, "")
+func (w *WalletImpl) CarryTo(tx wallet.TransactionData, review bool) (int, error) {
+	err := w.checkValueOpu(tx.Amount, false, 0, "")
 	if err == nil {
-		if d.Amount < 0 {
-			d.Amount = -d.Amount
+		if tx.Amount < 0 {
+			tx.Amount = -tx.Amount
 		}
-		procedureFee = int(math.Abs(float64(procedureFee)))
-		if procedureFee > 0 {
+		l := w.createWalletLog(wallet.KCarry, tx.Amount, tx.TransactionTitle, 0, "")
+		// 扣除手续费，手续费无需冻结
+		transactionFee := int(math.Abs(float64(tx.TransactionFee)))
+		if transactionFee > 0 {
 			// 减去手续费
-			d.Amount -= procedureFee
+			tx.Amount -= transactionFee
 		}
-		l := w.createWalletLog(wallet.KCarry, d.Amount, d.Title, 0, "")
 		if review {
-			w._value.FreezeAmount += d.Amount
+			w._value.FreezeAmount += tx.Amount
 			l.ReviewStatus = wallet.ReviewPending
 			l.ReviewRemark = "待审核"
 		} else {
-			w._value.Balance += int64(d.Amount)
+			w._value.Balance += int64(tx.Amount)
 			l.ReviewStatus = wallet.ReviewPass
+			l.ReviewTime = time.Now().Unix()
 		}
 		// 保存日志
-		l.OuterNo = d.OuterNo
-		l.ProcedureFee = -procedureFee
-		l.ReviewTime = time.Now().Unix()
+		l.OuterNo = tx.OuterNo
+		l.TransactionFee = -transactionFee
 		l.Balance = w._value.Balance
 		err = w.saveWalletLog(l)
 		if err == nil {
@@ -526,7 +527,7 @@ func (w *WalletImpl) Transfer(toWalletId int64, value int, transactionFee int, t
 	w._value.Balance -= int64(value + transactionFee)
 	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
 	l := w.createWalletLog(wallet.KTransferOut, -value, title, 0, "")
-	l.ProcedureFee = -transactionFee
+	l.TransactionFee = -transactionFee
 	l.OuterNo = tradeNo
 	l.Remark = remark
 	l.Balance = w._value.Balance
@@ -589,7 +590,7 @@ func (w *WalletImpl) RequestWithdrawal(amount int, transactionFee int, kind int,
 	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
 	w._value.Balance -= int64(amount)
 	l := w.createWalletLog(kind, -(amount - transactionFee), title, 0, "")
-	l.ProcedureFee = -transactionFee
+	l.TransactionFee = -transactionFee
 	l.OuterNo = tradeNo
 	l.ReviewStatus = wallet.ReviewPending
 	l.ReviewRemark = ""
@@ -624,7 +625,7 @@ func (w *WalletImpl) ReviewWithdrawal(requestId int64, pass bool, remark string,
 	} else {
 		l.ReviewRemark = remark
 		l.ReviewStatus = wallet.ReviewReject
-		err := w.Refund(-(l.ProcedureFee + int(l.ChangeValue)), wallet.KWithdrawRefund, "提现退回",
+		err := w.Refund(-(l.TransactionFee + int(l.ChangeValue)), wallet.KWithdrawRefund, "提现退回",
 			l.OuterNo, 0, "")
 		if err != nil {
 			return err

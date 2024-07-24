@@ -91,8 +91,8 @@ type (
 		// Charge 用户充值,金额放大100倍（应只充值钱包）
 		Charge(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// CarryTo 入账,review是否先冻结审核, procedureFee手续费; 返回日志ID
-		CarryTo(account AccountType, d AccountOperateData, review bool, procedureFee int) (int, error)
+		// CarryTo 入账,review是否先冻结审核, transactionFee手续费; 返回日志ID
+		CarryTo(account AccountType, d AccountOperateData, review bool, transactionFee int) (int, error)
 
 		// ReviewCarryTo 审核入账
 		ReviewCarryTo(account AccountType, requestId int, pass bool, reason string) error

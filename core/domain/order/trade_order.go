@@ -340,10 +340,18 @@ func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRo
 	sAmount := int64(float64(v.FinalAmount) * rate)
 	if sAmount > 0 {
 		totalAmount := int64(float64(sAmount) * enum.RATE_AMOUNT)
-		transactionFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, int(totalAmount))
-		return vendor.Account().SettleOrder(o.OrderNo(),
-			int(totalAmount), transactionFee, 0, "交易单结算-"+v.Subject)
+		sd := merchant.SettlementParams{
+			OuterNo:           o.OrderNo(),
+			Amount:            int(totalAmount),
+			TransactionFee:    transactionFee,
+			RefundAmount:      0,
+			TransactionTitle:  "交易单结算",
+			TransactionRemark: v.Subject,
+		}
+		_, err := vendor.Account().SettleOrder(sd)
+		return err
 	}
 	return nil
 }

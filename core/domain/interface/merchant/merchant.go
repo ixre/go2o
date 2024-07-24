@@ -103,8 +103,8 @@ type (
 		//GetBalanceLogByOuterNo(outerNo string) *BalanceLog
 		// SaveBalanceLog 保存余额变动信息
 		SaveBalanceLog(*BalanceLog) (int, error)
-		// SettleOrder 订单结账(商户结算)
-		SettleOrder(orderNo string, amount int, transactionFee int, refundAmount int, remark string) error
+		// SettleOrder 订单结账(商户结算),返回交易流水编号和错误
+		SettleOrder(p SettlementParams) (txId int, err error)
 		// TakePayment 支出
 		TakePayment(outerNo string, amount int, csn int, remark string) error
 
@@ -126,6 +126,21 @@ type (
 			relateUser int64) error
 	}
 
+	// 订单参数
+	SettlementParams struct {
+		// 外部订单号,非订单添加前缀，如:XT:100000
+		OuterNo string
+		// 订单金额(含交易费)
+		Amount int
+		// 交易费
+		TransactionFee int
+		// 退款金额
+		RefundAmount int
+		// 交易描述,如：订单结算
+		TransactionTitle string
+		// 交易备注,如：洗衣液
+		TransactionRemark string
+	}
 	IMerchantManager interface {
 		// GetMerchantByMemberId 获取会员关联的商户
 		GetMerchantByMemberId(memberId int) IMerchantAggregateRoot

@@ -157,7 +157,7 @@ func (a *accountImpl) Charge(account member.AccountType, title string,
 	return a.chargeWallet(title, amount, outerNo, remark)
 }
 
-func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperateData, freeze bool, procedureFee int) (int, error) {
+func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperateData, freeze bool, transactionFee int) (int, error) {
 	if d.Amount <= 0 || math.IsNaN(float64(d.Amount)) {
 		return 0, member.ErrIncorrectQuota
 	}
@@ -165,9 +165,9 @@ func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperat
 	case member.AccountIntegral:
 		return 0, a.carryToIntegral(d, freeze)
 	case member.AccountBalance:
-		return 0, a.carryToBalance(d, freeze, procedureFee)
+		return 0, a.carryToBalance(d, freeze, transactionFee)
 	case member.AccountWallet:
-		return a.carryToWallet(d, freeze, procedureFee)
+		return a.carryToWallet(d, freeze, transactionFee)
 	case member.AccountFlow:
 		return 0, a.chargeFlow(d)
 	}
@@ -187,13 +187,14 @@ func (a *accountImpl) ReviewCarryTo(account member.AccountType, requestId int, p
 	return member.ErrNotSupportAccountType
 }
 
-func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, procedureFee int) (int, error) {
-	id, err := a.wallet.CarryTo(wallet.OperateData{
-		Title:   d.Title,
-		Amount:  d.Amount,
-		OuterNo: d.OuterNo,
-		Remark:  d.Remark,
-	}, freeze, procedureFee)
+func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, transactionFee int) (int, error) {
+	id, err := a.wallet.CarryTo(wallet.TransactionData{
+		TransactionTitle:  d.Title,
+		Amount:            d.Amount,
+		OuterNo:           d.OuterNo,
+		TransactionFee:    transactionFee,
+		TransactionRemark: d.Remark,
+	}, freeze)
 	if err == nil {
 		err = a.asyncWallet()
 	}
@@ -370,12 +371,12 @@ func (a *accountImpl) createFlowAccountLog(kind int, title string, amount int, o
 }
 
 // 充值余额
-func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, procedureFee int) error {
+func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, transactionFee int) error {
 	if d.Amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
-	if procedureFee > 0 {
-		d.Amount -= procedureFee
+	if transactionFee > 0 {
+		d.Amount -= transactionFee
 	}
 	l, err := a.createBalanceLog(member.KindCarry, d.Title, d.Amount, d.OuterNo, true)
 	if freeze {
@@ -388,7 +389,7 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, p
 	}
 	if err == nil {
 		l.Remark = d.Remark
-		l.ProcedureFee = int64(procedureFee)
+		l.ProcedureFee = int64(transactionFee)
 		l.Balance = int(a.value.Balance)
 		_, err = a.rep.SaveBalanceLog(l)
 		if err == nil {
@@ -438,7 +439,7 @@ func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) 
 	if err == nil {
 		l.Remark = d.Remark
 		l.Balance = a.value.Integral
-		//l.ProcedureFee = procedureFee
+		//l.ProcedureFee = transactionFee
 		err = a.rep.SaveIntegralLog(l)
 		if err == nil {
 			_, err = a.Save()
@@ -721,12 +722,12 @@ func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int6
 
 // FreezeWallet 冻结钱包
 func (a *accountImpl) freezeWallet(p member.AccountOperateData, relateUser int64) (int, error) {
-	id, err := a.wallet.Freeze(wallet.OperateData{
-		Title:      p.Title,
-		Amount:     p.Amount,
-		OuterNo:    p.OuterNo,
-		Remark:     p.Remark,
-		TradeLogId: p.TradeLogId,
+	id, err := a.wallet.Freeze(wallet.TransactionData{
+		TransactionTitle:  p.Title,
+		Amount:            p.Amount,
+		OuterNo:           p.OuterNo,
+		TransactionRemark: p.Remark,
+		TransactionId:     p.TradeLogId,
 	}, wallet.Operator{
 		OperatorUid:  int(relateUser),
 		OperatorName: "",
@@ -943,7 +944,7 @@ func (a *accountImpl) unfreezesIntegral(d member.AccountOperateData, relateUser 
 
 // RequestWithdrawal 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
-	amount int, procedureFee int, accountNo string) (int64, string, error) {
+	amount int, transactionFee int, accountNo string) (int64, string, error) {
 	if takeKind != wallet.KWithdrawExchange &&
 		takeKind != wallet.KWithdrawToBankCard &&
 		takeKind != wallet.KWithdrawToThirdPart {
@@ -1011,11 +1012,11 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 		accountName = bank.AccountName
 		bankName = bank.BankName
 	}
-	finalAmount := amount - procedureFee
+	finalAmount := amount - transactionFee
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
 	}
-	id, tradeNo, err := a.wallet.RequestWithdrawal(finalAmount, procedureFee, takeKind,
+	id, tradeNo, err := a.wallet.RequestWithdrawal(finalAmount, transactionFee, takeKind,
 		title, accountNo, accountName, bankName)
 	if err == nil {
 		err = a.asyncWallet()
@@ -1028,7 +1029,7 @@ func (a *accountImpl) RequestWithdrawal(takeKind int, title string,
 			MemberId:      a.value.MemberId,
 			RequestId:     int(id),
 			Amount:        amount,
-			ProcedureFee:  procedureFee,
+			ProcedureFee:  transactionFee,
 			IsReviewEvent: false,
 		})
 	}
@@ -1048,7 +1049,7 @@ func (a *accountImpl) ReviewWithdrawal(requestId int64, pass bool, remark string
 				MemberId:      a.value.MemberId,
 				RequestId:     int(requestId),
 				Amount:        int(log.ChangeValue),
-				ProcedureFee:  log.ProcedureFee,
+				ProcedureFee:  log.TransactionFee,
 				ReviewResult:  log.ReviewStatus == int(enum.ReviewPass),
 				IsReviewEvent: true,
 			})

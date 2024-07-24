@@ -124,18 +124,20 @@ var (
 )
 
 type (
-	// OperateData 操作钱包的数据
-	OperateData struct {
+	// TransactionData 钱包交易数据
+	TransactionData struct {
 		// 描述
-		Title string
-		// 金额
+		TransactionTitle string
+		// 金额(含手续费)
 		Amount int
-		// 外部订单号
+		// 交易手续费
+		TransactionFee int
+		// 外部单号,如果非系统订单，添加前缀，如：XT:20140109345
 		OuterNo string
 		// 备注
-		Remark string
+		TransactionRemark string
 		// 交易流水编号,对冻结流水进行更新时,传递该参数
-		TradeLogId int
+		TransactionId int
 	}
 	Operator struct {
 		OperatorUid  int
@@ -175,7 +177,7 @@ type (
 		Discount(amount int, title, outerNo string, must bool) error
 
 		// Freeze 冻结余额,返回LogId
-		Freeze(data OperateData, operator Operator) (int, error)
+		Freeze(data TransactionData, operator Operator) (int, error)
 
 		// Unfreeze 解冻金额
 		Unfreeze(amount int, title, outerNo string, operatorUid int, operatorName string) error
@@ -183,8 +185,8 @@ type (
 		// FreezeExpired 将冻结金额标记为失效
 		FreezeExpired(amount int, remark string) error
 
-		// CarryTo 收入/入账, freeze是否先冻结, procedureFee手续费; 返回日志ID
-		CarryTo(d OperateData, freeze bool, procedureFee int) (int, error)
+		// CarryTo 收入/入账, freeze是否先冻结; 返回交易流水ID
+		CarryTo(tx TransactionData, freeze bool) (transactionId int, err error)
 
 		// ReviewCarryTo 审核入账
 		ReviewCarryTo(requestId int, pass bool, reason string) error
@@ -322,7 +324,7 @@ type (
 		// 余额
 		Balance int64 `db:"balance"`
 		// 交易手续费
-		ProcedureFee int `db:"procedure_fee"`
+		TransactionFee int `db:"procedure_fee"`
 		// 操作人员用户编号
 		OperatorUid int `db:"opr_uid"`
 		// 操作人员名称

@@ -1050,7 +1050,7 @@ type TransferRequest struct {
 	// * 转账金额
 	Amount int64 `protobuf:"varint,3,opt,name=amount,proto3" json:"amount"`
 	// * 手续费
-	ProcedureFee int64 `protobuf:"zigzag64,4,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"zigzag64,4,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// * 备注
 	Remark string `protobuf:"bytes,5,opt,name=remark,proto3" json:"remark"`
 }
@@ -1250,7 +1250,7 @@ type RequestWithdrawalRequest struct {
 	// 金额
 	Amount int64 `protobuf:"varint,2,opt,name=amount,proto3" json:"amount"`
 	// 手续费
-	ProcedureFee int32 `protobuf:"varint,3,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int32 `protobuf:"varint,3,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// 提现方式
 	Kind int32 `protobuf:"zigzag32,4,opt,name=kind,proto3" json:"kind"`
 	// 银行名称
@@ -1674,7 +1674,7 @@ type SWalletLog struct {
 	// * 余额
 	Balance int64 `protobuf:"varint,9,opt,name=balance,proto3" json:"balance"`
 	// * 交易手续费
-	ProcedureFee int64 `protobuf:"varint,10,opt,name=procedureFee,proto3" json:"procedureFee"`
+	ProcedureFee int64 `protobuf:"varint,10,opt,name=transactionFee,proto3" json:"transactionFee"`
 	// * 操作人员用户编号
 	OperatorUid int32 `protobuf:"zigzag32,11,opt,name=operatorUid,proto3" json:"operatorUid"`
 	// * 操作人员名称

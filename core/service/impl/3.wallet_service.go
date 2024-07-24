@@ -89,11 +89,11 @@ func (w *walletServiceImpl) Freeze(_ context.Context, r *proto.FreezeRequest) (r
 	if iw == nil {
 		return &proto.FreezeResponse{ErrCode: 1, ErrMsg: wallet.ErrNoSuchWalletAccount.Error()}, nil
 	}
-	id, err := iw.Freeze(wallet.OperateData{
-		Title:   r.Title,
-		Amount:  int(r.Amount),
-		OuterNo: r.OuterNo,
-		Remark:  "",
+	id, err := iw.Freeze(wallet.TransactionData{
+		TransactionTitle:  r.Title,
+		Amount:            int(r.Amount),
+		OuterNo:           r.OuterNo,
+		TransactionRemark: "",
 	}, wallet.Operator{
 		OperatorUid:  int(r.OperatorUid),
 		OperatorName: r.OperatorName,
@@ -224,7 +224,7 @@ func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog
 		OuterNo:      l.OuterNo,
 		Value:        l.ChangeValue,
 		Balance:      l.Balance,
-		ProcedureFee: int64(l.ProcedureFee),
+		ProcedureFee: int64(l.TransactionFee),
 		OperatorUid:  int32(l.OperatorUid),
 		OperatorName: l.OperatorName,
 		Remark:       l.Remark,

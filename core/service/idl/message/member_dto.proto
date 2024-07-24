@@ -290,7 +290,7 @@ message AccountCarryRequest{
   // 已扣除手续费的金额
   int64 amount = 4;
   // 手续费
-  int64 procedureFee = 5;
+  int64 transactionFee = 5;
   // 外部校译号
   string outerNo = 6;
   // 备注
@@ -641,7 +641,7 @@ message AccountTransferRequest {
   // 转账金额
   int64 amount = 4;
   // 手续费
-  int64 procedureFee = 5;
+  int64 transactionFee = 5;
   // 备注
   string remark = 6;
 }
@@ -664,7 +664,7 @@ message WithdrawRequest {
   // 提现金额
   int64 amount = 2;
   // 手续费
-  int64 procedureFee = 3;
+  int64 transactionFee = 3;
   // 提现方式,21:提现并兑换到余额  22:提现到银行卡(人工提现) 23:第三方钱包
   EWithdrawalKind withdrawalKind = 4;
   // 银行账号或第三方支付钱包
@@ -714,7 +714,7 @@ message WithdrawalLog {
   // 金额
   int64 amount = 5;
   // 手续费
-  int64 procedureFee = 6;
+  int64 transactionFee = 6;
   // 关联操作人,仅在客服操作时,记录操作人
   int64 relateUser = 7;
   // 状态
