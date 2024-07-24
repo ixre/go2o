@@ -126,9 +126,9 @@ type MemberServiceClient interface {
 	// 获取实名信息,memberId
 	GetCertification(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*SCertificationInfo, error)
 	// * 提交实名信息
-	SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*Result, error)
+	SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*ResultV2, error)
 	// * 审核实名认证,若重复审核将返回错误 *
-	ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*Result, error)
+	ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*ResultV2, error)
 	// * 获取会员等级信息,id
 	GetMemberLevel(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*SMemberLevel, error)
 	// * 保存等级
@@ -330,8 +330,8 @@ func (c *memberServiceClient) GetCertification(ctx context.Context, in *MemberId
 	return out, nil
 }
 
-func (c *memberServiceClient) SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*ResultV2, error) {
+	out := new(ResultV2)
 	err := c.cc.Invoke(ctx, MemberService_SubmitCertification_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -339,8 +339,8 @@ func (c *memberServiceClient) SubmitCertification(ctx context.Context, in *Submi
 	return out, nil
 }
 
-func (c *memberServiceClient) ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*ResultV2, error) {
+	out := new(ResultV2)
 	err := c.cc.Invoke(ctx, MemberService_ReviewCertification_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1030,9 +1030,9 @@ type MemberServiceServer interface {
 	// 获取实名信息,memberId
 	GetCertification(context.Context, *MemberIdRequest) (*SCertificationInfo, error)
 	// * 提交实名信息
-	SubmitCertification(context.Context, *SubmitCertificationRequest) (*Result, error)
+	SubmitCertification(context.Context, *SubmitCertificationRequest) (*ResultV2, error)
 	// * 审核实名认证,若重复审核将返回错误 *
-	ReviewCertification(context.Context, *ReviewCertificationRequest) (*Result, error)
+	ReviewCertification(context.Context, *ReviewCertificationRequest) (*ResultV2, error)
 	// * 获取会员等级信息,id
 	GetMemberLevel(context.Context, *Int32) (*SMemberLevel, error)
 	// * 保存等级
@@ -1201,10 +1201,10 @@ func (UnimplementedMemberServiceServer) GetLevels(context.Context, *Empty) (*SMe
 func (UnimplementedMemberServiceServer) GetCertification(context.Context, *MemberIdRequest) (*SCertificationInfo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCertification not implemented")
 }
-func (UnimplementedMemberServiceServer) SubmitCertification(context.Context, *SubmitCertificationRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) SubmitCertification(context.Context, *SubmitCertificationRequest) (*ResultV2, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitCertification not implemented")
 }
-func (UnimplementedMemberServiceServer) ReviewCertification(context.Context, *ReviewCertificationRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) ReviewCertification(context.Context, *ReviewCertificationRequest) (*ResultV2, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewCertification not implemented")
 }
 func (UnimplementedMemberServiceServer) GetMemberLevel(context.Context, *Int32) (*SMemberLevel, error) {

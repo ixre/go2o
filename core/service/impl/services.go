@@ -83,6 +83,14 @@ func (s serviceUtil) success(data map[string]string) *proto.Result {
 	return &proto.Result{ErrCode: 0, ErrMsg: "", Data: data}
 }
 
+// 返回成功的结果
+func (s serviceUtil) successV2(data map[string]string) *proto.ResultV2 {
+	if data == nil {
+		data = map[string]string{}
+	}
+	return &proto.ResultV2{Code: 0, Msg: "", Data: data}
+}
+
 // 将int32数组装换为int数组
 func (s serviceUtil) intArray(values []int32) []int {
 	arr := make([]int, len(values))

@@ -1016,6 +1016,10 @@ func (s *memberService) GetCertification(_ context.Context, id *proto.MemberIdRe
 	if m != nil {
 		t = m.Profile().GetCertificationInfo()
 	}
+	if t== nil || t.Id == 0{
+		// 如果未提交认证信息
+		t = &member.CerticationInfo{}
+	}
 	return &proto.SCertificationInfo{
 		RealName:         t.RealName,
 		CountryCode:      t.CountryCode,
@@ -1036,7 +1040,7 @@ func (s *memberService) GetCertification(_ context.Context, id *proto.MemberIdRe
 }
 
 // 保存实名认证信息
-func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCertificationRequest) (result *proto.Result, err error) {
+func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCertificationRequest) (result *proto.ResultV2, err error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		err = member.ErrNoSuchMember
@@ -1057,19 +1061,22 @@ func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCe
 		})
 	}
 	if err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.successV2(nil), nil
 }
 
 // 审核实名认证,若重复审核将返回错误
-func (s *memberService) ReviewCertification(_ context.Context, r *proto.ReviewCertificationRequest) (*proto.Result, error) {
+func (s *memberService) ReviewCertification(_ context.Context, r *proto.ReviewCertificationRequest) (*proto.ResultV2, error) {
 	m := s.repo.GetMember(r.MemberId)
+	if m == nil {
+		return s.errorV2(member.ErrNoSuchMember), nil
+	}
 	err := m.Profile().ReviewCertification(r.ReviewPass, r.Remark)
 	if err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.successV2(nil), nil
 }
 
 /*********** 收货地址 ***********/
