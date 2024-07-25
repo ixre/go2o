@@ -76,7 +76,7 @@ type (
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		//父类编号,如为一级栏目则为0
 		ParentId int `db:"parent_id"`
-		// 浏览权限
+		// 分类标志
 		PermFlag int `db:"perm_flag"`
 		// 名称(唯一)
 		Name string `db:"name"`

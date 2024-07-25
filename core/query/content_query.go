@@ -22,8 +22,9 @@ type ContentQuery struct {
 	db.Connector
 	o orm.Orm
 	fw.BaseRepository[content.Article]
-	mq  *MerchantQuery
-	mmq *MemberQuery
+	categoryRepo fw.BaseRepository[content.Category]
+	mq           *MerchantQuery
+	mmq          *MemberQuery
 }
 
 func NewContentQuery(o orm.Orm, fo fw.ORM, mq *MerchantQuery, mmq *MemberQuery) *ContentQuery {
@@ -34,6 +35,7 @@ func NewContentQuery(o orm.Orm, fo fw.ORM, mq *MerchantQuery, mmq *MemberQuery) 
 		mmq:       mmq,
 	}
 	c.ORM = fo
+	c.categoryRepo.ORM = fo
 	return c
 }
 
