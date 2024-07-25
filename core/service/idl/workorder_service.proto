@@ -16,24 +16,24 @@ service WorkorderService {
     rpc GetWorkorder (WorkorderId) returns (SWorkorder) {
     }
     // 删除工单
-    rpc DeleteWorkorder (WorkorderId) returns (ResultV2) {
+    rpc DeleteWorkorder (WorkorderId) returns (TxResult) {
     }
 
     // 分配客服
-    rpc AllocateAgentId(AllocateWorkorderAgentRequest) returns (ResultV2) {
+    rpc AllocateAgentId(AllocateWorkorderAgentRequest) returns (TxResult) {
     }
 	// 完结
-	rpc Finish(WorkorderId) returns (ResultV2) {
+	rpc Finish(WorkorderId) returns (TxResult) {
     }
 	// 用户关闭工单
-	rpc Close(WorkorderId) returns (ResultV2) {
+	rpc Close(WorkorderId) returns (TxResult) {
     }
 	// 评价
-    rpc Apprise(WorkorderAppriseRequest) returns (ResultV2) {
+    rpc Apprise(WorkorderAppriseRequest) returns (TxResult) {
     }
 
 	// 提交回复
-	rpc SubmitComment(SubmitWorkorderCommentRequest) returns (ResultV2) {
+	rpc SubmitComment(SubmitWorkorderCommentRequest) returns (TxResult) {
     }
 
 }

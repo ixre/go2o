@@ -135,9 +135,9 @@ func (a *accountImpl) SettleOrder(p merchant.SettlementParams) (txId int, err er
 			TransactionTitle:  p.TransactionTitle,
 			Amount:            p.Amount,
 			TransactionFee:    p.TransactionFee,
-			OuterNo:           p.OuterNo,
+			OuterNo:           p.OuterTxNo,
 			TransactionRemark: p.TransactionRemark,
-		}, false)
+		}, p.Freeze)
 		// 记录旧日志,todo:可能去掉
 		// l := a.createBalanceLog(merchant.KindAccountSettleOrder,
 		// 	remark, orderNo, fAmount, fTradeFee, 1)
@@ -186,10 +186,10 @@ func (a *accountImpl) TransferToMember(amount int) error {
 	if err == nil {
 		_, err = m.GetAccount().CarryTo(member.AccountWallet,
 			member.AccountOperateData{
-				Title:   variable.AliasMerchantBalanceAccount + "提现",
-				Amount:  amount * 100,
-				OuterNo: "",
-				Remark:  "sys",
+				TransactionTitle:   variable.AliasMerchantBalanceAccount + "提现",
+				Amount:             amount * 100,
+				OuterTransactionNo: "",
+				TransactionRemark:  "sys",
 			}, false, 0)
 		if err != nil {
 			return err
@@ -209,10 +209,10 @@ func (a *accountImpl) TransferToMember(amount int) error {
 				csn := float64(amount) * takeRate
 				_, err = m.GetAccount().CarryTo(member.AccountWallet,
 					member.AccountOperateData{
-						Title:   "返还商户提现手续费",
-						Amount:  int(csn * 100),
-						OuterNo: "",
-						Remark:  "",
+						TransactionTitle:   "返还商户提现手续费",
+						Amount:             int(csn * 100),
+						OuterTransactionNo: "",
+						TransactionRemark:  "",
 					}, false, 0)
 			}
 		}
@@ -241,10 +241,10 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 	if err == nil {
 		_, err = m.GetAccount().CarryTo(member.AccountWallet,
 			member.AccountOperateData{
-				Title:   variable.AliasMerchantBalanceAccount + "提现",
-				Amount:  int(amount * 100),
-				OuterNo: "",
-				Remark:  "sys",
+				TransactionTitle:   variable.AliasMerchantBalanceAccount + "提现",
+				Amount:             int(amount * 100),
+				OuterTransactionNo: "",
+				TransactionRemark:  "sys",
 			}, false, 0)
 		if err != nil {
 			return err
@@ -265,10 +265,10 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 				csn := float32(rate) * amount
 				_, err = m.GetAccount().CarryTo(member.AccountWallet,
 					member.AccountOperateData{
-						Title:   "返还商户提现手续费",
-						Amount:  int(csn * 100),
-						OuterNo: "",
-						Remark:  "",
+						TransactionTitle:   "返还商户提现手续费",
+						Amount:             int(csn * 100),
+						OuterTransactionNo: "",
+						TransactionRemark:  "",
 					}, false, 0)
 			}
 		}

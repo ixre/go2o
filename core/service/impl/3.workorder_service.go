@@ -22,10 +22,10 @@ func NewWorkorderService(repo workorder.IWorkorderRepo) proto.WorkorderServiceSe
 }
 
 // AllocateAgentId implements proto.WorkorderServiceServer.
-func (w *workorderServiceImpl) AllocateAgentId(_ context.Context, req *proto.AllocateWorkorderAgentRequest) (*proto.ResultV2, error) {
+func (w *workorderServiceImpl) AllocateAgentId(_ context.Context, req *proto.AllocateWorkorderAgentRequest) (*proto.TxResult, error) {
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
-		return &proto.ResultV2{
+		return &proto.TxResult{
 			Code: 1,
 			Msg:  "工单不存在",
 		}, nil
@@ -35,10 +35,10 @@ func (w *workorderServiceImpl) AllocateAgentId(_ context.Context, req *proto.All
 }
 
 // Apprise implements proto.WorkorderServiceServer.
-func (w *workorderServiceImpl) Apprise(_ context.Context, req *proto.WorkorderAppriseRequest) (*proto.ResultV2, error) {
+func (w *workorderServiceImpl) Apprise(_ context.Context, req *proto.WorkorderAppriseRequest) (*proto.TxResult, error) {
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
-		return &proto.ResultV2{
+		return &proto.TxResult{
 			Code: 1,
 			Msg:  "工单不存在",
 		}, nil
@@ -48,10 +48,10 @@ func (w *workorderServiceImpl) Apprise(_ context.Context, req *proto.WorkorderAp
 }
 
 // Close implements proto.WorkorderServiceServer.
-func (w *workorderServiceImpl) Close(_ context.Context, req *proto.WorkorderId) (*proto.ResultV2, error) {
+func (w *workorderServiceImpl) Close(_ context.Context, req *proto.WorkorderId) (*proto.TxResult, error) {
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
-		return &proto.ResultV2{
+		return &proto.TxResult{
 			Code: 1,
 			Msg:  "工单不存在",
 		}, nil
@@ -59,21 +59,21 @@ func (w *workorderServiceImpl) Close(_ context.Context, req *proto.WorkorderId) 
 	err := iw.Close()
 	return w.ret(err)
 }
-func (w *workorderServiceImpl) ret(err error) (*proto.ResultV2, error) {
+func (w *workorderServiceImpl) ret(err error) (*proto.TxResult, error) {
 	if err != nil {
-		return &proto.ResultV2{
+		return &proto.TxResult{
 			Code: 1,
 			Msg:  err.Error(),
 		}, nil
 	}
-	return &proto.ResultV2{}, nil
+	return &proto.TxResult{}, nil
 }
 
 // DeleteWorkorder implements proto.WorkorderServiceServer.
-func (w *workorderServiceImpl) DeleteWorkorder(_ context.Context, req *proto.WorkorderId) (*proto.ResultV2, error) {
+func (w *workorderServiceImpl) DeleteWorkorder(_ context.Context, req *proto.WorkorderId) (*proto.TxResult, error) {
 	// iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	// if iw == nil {
-	// 	return &proto.ResultV2{
+	// 	return &proto.TxResult{
 	// 		Code: 1,
 	// 		Msg:  "工单不存在",
 	// 	}, nil
@@ -84,10 +84,10 @@ func (w *workorderServiceImpl) DeleteWorkorder(_ context.Context, req *proto.Wor
 }
 
 // Finish implements proto.WorkorderServiceServer.
-func (w *workorderServiceImpl) Finish(_ context.Context, req *proto.WorkorderId) (*proto.ResultV2, error) {
+func (w *workorderServiceImpl) Finish(_ context.Context, req *proto.WorkorderId) (*proto.TxResult, error) {
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
-		return &proto.ResultV2{
+		return &proto.TxResult{
 			Code: 1,
 			Msg:  "工单不存在",
 		}, nil
@@ -129,10 +129,10 @@ func (w *workorderServiceImpl) GetWorkorder(_ context.Context, req *proto.Workor
 }
 
 // SubmitComment implements proto.WorkorderServiceServer.
-func (w *workorderServiceImpl) SubmitComment(_ context.Context, req *proto.SubmitWorkorderCommentRequest) (*proto.ResultV2, error) {
+func (w *workorderServiceImpl) SubmitComment(_ context.Context, req *proto.SubmitWorkorderCommentRequest) (*proto.TxResult, error) {
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
-		return &proto.ResultV2{
+		return &proto.TxResult{
 			Code: 1,
 			Msg:  "工单不存在",
 		}, nil
@@ -144,16 +144,16 @@ func (w *workorderServiceImpl) SubmitComment(_ context.Context, req *proto.Submi
 // SubmitWorkorder implements proto.WorkorderServiceServer.
 func (w *workorderServiceImpl) SubmitWorkorder(_ context.Context, req *proto.SubmitWorkorderRequest) (*proto.SubmitWorkorderResponse, error) {
 	dst := &workorder.Workorder{
-		MemberId:  int(req.MemberId),
-		ClassId:   int(req.ClassId),
-		MchId:     int(req.MchId),
-		Wip:       req.Wip,
-		Subject:   req.Subject,
-		Content:   req.Content,
-		IsOpened:  int(req.IsOpened),
-		HopeDesc:  req.HopeDesc,
-		PhotoList: req.PhotoList,
-		ContactWay: req.ContactWay,	
+		MemberId:   int(req.MemberId),
+		ClassId:    int(req.ClassId),
+		MchId:      int(req.MchId),
+		Wip:        req.Wip,
+		Subject:    req.Subject,
+		Content:    req.Content,
+		IsOpened:   int(req.IsOpened),
+		HopeDesc:   req.HopeDesc,
+		PhotoList:  req.PhotoList,
+		ContactWay: req.ContactWay,
 	}
 	wo := w.repo.CreateWorkorder(dst)
 	err := wo.Submit()

@@ -343,7 +343,7 @@ func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRo
 		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, int(totalAmount))
 		sd := merchant.SettlementParams{
-			OuterNo:           o.OrderNo(),
+			OuterTxNo:         o.OrderNo(),
 			Amount:            int(totalAmount),
 			TransactionFee:    transactionFee,
 			RefundAmount:      0,
@@ -386,10 +386,10 @@ func (o *tradeOrderImpl) updateAccountForOrder() error {
 	if integral > 0 {
 		_, err = acc.CarryTo(member.AccountIntegral,
 			member.AccountOperateData{
-				Title:   "购物消费赠送积分",
-				Amount:  integral,
-				OuterNo: o.OrderNo(),
-				Remark:  "sys",
+				TransactionTitle:   "购物消费赠送积分",
+				Amount:             integral,
+				OuterTransactionNo: o.OrderNo(),
+				TransactionRemark:  "sys",
 			}, false, 0)
 		if err != nil {
 			return err

@@ -344,18 +344,18 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 	m := s.repo.GetMember(r.MemberId)
 	v := m.GetAccount().GetWalletLog(r.LogId)
 	return &proto.WalletLogResponse{
-		LogId:          v.Id,
-		MemberId:       r.MemberId,
-		OuterNo:        v.OuterNo,
-		Kind:           int32(v.Kind),
-		Title:          v.Subject,
-		Amount:         float64(v.ChangeValue),
-		TransactionFee: float64(v.TransactionFee),
-		ReviewStatus:   int32(v.ReviewStatus),
-		Remark:         v.Remark,
-		CreateTime:     v.CreateTime,
-		UpdateTime:     v.UpdateTime,
-		RelateUser:     int64(v.OperatorUid),
+		LogId:              v.Id,
+		MemberId:           r.MemberId,
+		OuterTransactionNo: v.OuterNo,
+		Kind:               int32(v.Kind),
+		TransactionTitle:   v.Subject,
+		Amount:             float64(v.ChangeValue),
+		TransactionFee:     float64(v.TransactionFee),
+		ReviewStatus:       int32(v.ReviewStatus),
+		TransactionRemark:  v.Remark,
+		CreateTime:         v.CreateTime,
+		UpdateTime:         v.UpdateTime,
+		RelateUser:         int64(v.OperatorUid),
 	}, nil
 }
 
@@ -1040,7 +1040,7 @@ func (s *memberService) GetCertification(_ context.Context, id *proto.MemberIdRe
 }
 
 // 保存实名认证信息
-func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCertificationRequest) (result *proto.ResultV2, err error) {
+func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCertificationRequest) (result *proto.TxResult, err error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		err = member.ErrNoSuchMember
@@ -1067,7 +1067,7 @@ func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCe
 }
 
 // 审核实名认证,若重复审核将返回错误
-func (s *memberService) ReviewCertification(_ context.Context, r *proto.ReviewCertificationRequest) (*proto.ResultV2, error) {
+func (s *memberService) ReviewCertification(_ context.Context, r *proto.ReviewCertificationRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.errorV2(member.ErrNoSuchMember), nil
@@ -1245,122 +1245,111 @@ func (s *memberService) Complex(_ context.Context, id *proto.MemberIdRequest) (*
 	return nil, member.ErrNoSuchMember
 }
 
-func (s *memberService) Freeze(_ context.Context, r *proto.AccountFreezeRequest) (*proto.AccountFreezeResponse, error) {
+func (s *memberService) Freeze(_ context.Context, r *proto.AccountFreezeRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
-		return &proto.AccountFreezeResponse{ErrCode: 1, ErrMsg: member.ErrNoSuchMember.Error()}, nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	id, err := m.GetAccount().Freeze(member.AccountType(r.AccountType),
 		member.AccountOperateData{
-			Title:      r.Title,
-			Amount:     int(r.Amount),
-			OuterNo:    r.OuterNo,
-			Remark:     r.Remark,
-			TradeLogId: int(r.TradeLogId),
+			TransactionTitle:   r.TransactionTitle,
+			Amount:             int(r.Amount),
+			OuterTransactionNo: r.OuterTransactionNo,
+			TransactionRemark:  r.TransactionRemark,
+			TransactionId:      int(r.TransactionId),
 		}, 0)
 	if err != nil {
-		return &proto.AccountFreezeResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+		return s.errorV2(err), nil
 	}
-	return &proto.AccountFreezeResponse{TradeLogId: int64(id)}, nil
+	return s.txResult(id, nil), nil
 }
 
-func (s *memberService) Unfreeze(_ context.Context, r *proto.AccountUnfreezeRequest) (*proto.Result, error) {
+func (s *memberService) Unfreeze(_ context.Context, r *proto.AccountUnfreezeRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	err := m.GetAccount().Unfreeze(member.AccountType(r.AccountType),
 		member.AccountOperateData{
-			Title:   r.Title,
-			Amount:  int(r.Amount),
-			OuterNo: r.OuterNo,
-			Remark:  r.Remark,
+			TransactionTitle:   r.TransactionTitle,
+			Amount:             int(r.Amount),
+			OuterTransactionNo: r.OuterTransactionNo,
+			TransactionRemark:  r.TransactionRemark,
 		}, 0)
 	if err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.txResult(0, nil), nil
 }
 
 // AccountCharge 充值,account为账户类型,kind为业务类型
-func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
+func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeRequest) (*proto.TxResult, error) {
 	var err error
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	acc := m.GetAccount()
 	if acc == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		err = acc.Charge(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Charge(member.AccountType(r.AccountType), r.TransactionTitle, int(r.Amount), r.OuterTransactionNo, r.TransactionRemark)
 	}
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 // AccountCarryTo 账户入账
-func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryRequest) (*proto.AccountCarryResponse, error) {
+func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryRequest) (*proto.TxResult, error) {
 	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
 	if m == nil {
-		return &proto.AccountCarryResponse{
-			ErrCode: 1,
-			ErrMsg:  member.ErrNoSuchMember.Error(),
-		}, nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	acc := m.GetAccount()
 	if acc == nil {
-		return &proto.AccountCarryResponse{
-			ErrCode: 1,
-			ErrMsg:  member.ErrNoSuchMember.Error(),
-		}, nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	id, err := acc.CarryTo(member.AccountType(r.AccountType),
 		member.AccountOperateData{
-			Title:   r.TransactionTitle,
-			Amount:  int(r.Amount),
-			OuterNo: r.OuterNo,
-			Remark:  r.Remark,
+			TransactionTitle:   r.TransactionTitle,
+			Amount:             int(r.Amount),
+			OuterTransactionNo: r.OuterTransactionNo,
+			TransactionRemark:  r.TransactionRemark,
 		}, r.Freeze, int(r.TransactionFee))
 	if err != nil {
-		return &proto.AccountCarryResponse{
-			ErrCode: 1,
-			ErrMsg:  err.Error(),
-		}, nil
+		return s.errorV2(err), nil
 	}
-	return &proto.AccountCarryResponse{
-		LogId: int64(id),
-	}, nil
+	return s.txResult(id, nil), nil
 }
 
 // AccountDiscount 账户抵扣
-func (s *memberService) AccountDiscount(_ context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
+func (s *memberService) AccountDiscount(_ context.Context, r *proto.AccountChangeRequest) (*proto.TxResult, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Discount(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Discount(member.AccountType(r.AccountType), r.TransactionTitle, int(r.Amount), r.OuterTransactionNo, r.TransactionRemark)
 	}
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 // AccountConsume 账户消耗
-func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
+func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChangeRequest) (*proto.TxResult, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Consume(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Consume(member.AccountType(r.AccountType), r.TransactionTitle, int(r.Amount), r.OuterTransactionNo, r.TransactionRemark)
 	}
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 // AccountRefund 账户退款
-func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeRequest) (*proto.Result, error) {
+func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeRequest) (*proto.TxResult, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		acc := m.GetAccount()
-		err = acc.Refund(member.AccountType(r.AccountType), r.Title, int(r.Amount), r.OuterNo, r.Remark)
+		err = acc.Refund(member.AccountType(r.AccountType), r.TransactionTitle, int(r.Amount), r.OuterTransactionNo, r.TransactionRemark)
 	}
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 // AccountAdjust 调整账户
-func (s *memberService) AccountAdjust(_ context.Context, r *proto.AccountAdjustRequest) (*proto.Result, error) {
+func (s *memberService) AccountAdjust(_ context.Context, r *proto.AccountAdjustRequest) (*proto.TxResult, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
 		tit := "系统冲正"
@@ -1369,9 +1358,9 @@ func (s *memberService) AccountAdjust(_ context.Context, r *proto.AccountAdjustR
 			tit = "[KF]系统冲正"
 		}
 		acc := m.GetAccount()
-		err = acc.Adjust(member.AccountType(r.Account), tit, int(r.Value), r.Remark, r.RelateUser)
+		err = acc.Adjust(member.AccountType(r.Account), tit, int(r.Value), r.TransactionRemark, r.RelateUser)
 	}
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 // B4EAuth !银行四要素认证
@@ -1397,10 +1386,10 @@ func (s *memberService) B4EAuth(_ context.Context, r *proto.B4EAuthRequest) (*pr
 }
 
 // Withdraw 提现并返回提现编号,交易号以及错误信息
-func (s *memberService) Withdraw(_ context.Context, r *proto.UserWithdrawRequest) (*proto.UserWithdrawalResponse, error) {
-	m, err := s.getMember(r.MemberId)
+func (s *memberService) Withdraw(_ context.Context, r *proto.UserWithdrawRequest) (*proto.TxResult, error) {
+	m, err := s.getMember(r.UserId)
 	if err != nil {
-		return &proto.UserWithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+		return s.errorV2(err), nil
 	}
 	title := ""
 	kind := 0
@@ -1434,13 +1423,11 @@ func (s *memberService) Withdraw(_ context.Context, r *proto.UserWithdrawRequest
 			AccountName:      "",
 		})
 	if err != nil {
-		return &proto.UserWithdrawalResponse{ErrCode: 1, ErrMsg: err.Error()}, nil
+		return s.errorV2(err), nil
 	}
-	return &proto.UserWithdrawalResponse{
-		ErrCode: 0,
-		ErrMsg:  "",
-		TradeNo: tradeNo,
-	}, nil
+	return s.txResult(0, map[string]string{
+		"tradeNo": tradeNo,
+	}), nil
 }
 
 func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.WithdrawalLogRequest) (*proto.WithdrawalLogResponse, error) {
@@ -1470,43 +1457,43 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	ret := &proto.WithdrawalLogResponse{Data: make([]*proto.WithdrawalLog, 0)}
 	if latestApplyInfo != nil {
 		ret.Data = append(ret.Data, &proto.WithdrawalLog{
-			Id:             latestApplyInfo.Id,
-			OuterNo:        latestApplyInfo.OuterNo,
-			Kind:           int32(latestApplyInfo.Kind),
-			Title:          latestApplyInfo.Title,
-			Amount:         latestApplyInfo.Amount,
-			TransactionFee: latestApplyInfo.ProcedureFee,
-			RelateUser:     latestApplyInfo.RelateUser,
-			ReviewStatus:   latestApplyInfo.ReviewStatus,
-			Remark:         latestApplyInfo.Remark,
-			SubmitTime:     latestApplyInfo.CreateTime,
-			UpdateTime:     latestApplyInfo.UpdateTime,
+			Id:                 latestApplyInfo.Id,
+			OuterTransactionNo: latestApplyInfo.OuterNo,
+			Kind:               int32(latestApplyInfo.Kind),
+			TransactionTitle:   latestApplyInfo.Title,
+			Amount:             latestApplyInfo.Amount,
+			TransactionFee:     latestApplyInfo.ProcedureFee,
+			RelateUser:         latestApplyInfo.RelateUser,
+			ReviewStatus:       latestApplyInfo.ReviewStatus,
+			TransactionRemark:  latestApplyInfo.Remark,
+			SubmitTime:         latestApplyInfo.CreateTime,
+			UpdateTime:         latestApplyInfo.UpdateTime,
 		})
 	}
 	return ret, nil
 }
 
 // ReviewWithdrawal 确认提现
-func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewUserWithdrawalRequest) (*proto.Result, error) {
+func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewUserWithdrawalRequest) (*proto.TxResult, error) {
 	m, err := s.getMember(r.UserId)
 	if err == nil {
-		err = m.GetAccount().ReviewWithdrawal(int(r.TransactionId), r.Pass, r.Remark)
+		err = m.GetAccount().ReviewWithdrawal(int(r.TransactionId), r.Pass, r.TransactionRemark)
 	}
-	return s.error(err), nil
+	return s.errorV2(err), nil
 }
 
 // 完成提现
-func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishUserWithdrawalRequest) (*proto.Result, error) {
+func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishUserWithdrawalRequest) (*proto.TxResult, error) {
 	var err error
 	m, err := s.getMember(r.UserId)
 	if err == nil {
 		err = m.GetAccount().FinishWithdrawal(int(r.TransactionId), r.OuterTransactionNo)
 	}
-	return s.error(err), nil
+	return s.errorV2(err), nil
 }
 
 // AccountTransfer 转账余额到其他账户
-func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTransferRequest) (*proto.Result, error) {
+func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTransferRequest) (*proto.TxResult, error) {
 	var err error
 	m := s.repo.GetMember(r.FromMemberId)
 	if m == nil {
@@ -1522,9 +1509,9 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 			account = member.AccountIntegral
 		}
 		err = m.GetAccount().TransferAccount(account, r.ToMemberId,
-			int(r.Amount), int(r.TransactionFee), r.Remark)
+			int(r.Amount), int(r.TransactionFee), r.TransactionRemark)
 	}
-	return s.error(err), nil
+	return s.errorV2(err), nil
 }
 
 // GetMemberInviRank 会员推广排名
@@ -1556,15 +1543,15 @@ func (s *memberService) QueryCoupons(_ context.Context, r *proto.MemberCouponPag
 	}
 	for i, v := range list {
 		ret.Data[i] = &proto.SMemberCoupon{
-			CouponId:    int64(v.Id),
-			Number:      int32(v.Num),
-			Title:       v.Title,
-			Code:        v.Code,
-			DiscountFee: int32(v.Fee),
-			Discount:    int32(v.Discount),
-			IsUsed:      v.IsUsed == 1,
-			GetTime:     0, //todo: ???
-			OverTime:    v.OverTime,
+			CouponId:         int64(v.Id),
+			Number:           int32(v.Num),
+			TransactionTitle: v.Title,
+			Code:             v.Code,
+			DiscountFee:      int32(v.Fee),
+			Discount:         int32(v.Discount),
+			IsUsed:           v.IsUsed == 1,
+			GetTime:          0, //todo: ???
+			OverTime:         v.OverTime,
 		}
 	}
 	return ret, nil

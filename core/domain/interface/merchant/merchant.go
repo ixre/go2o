@@ -128,8 +128,10 @@ type (
 
 	// 订单参数
 	SettlementParams struct {
+		// 是否先冻结
+		Freeze bool
 		// 外部订单号,非订单添加前缀，如:XT:100000
-		OuterNo string
+		OuterTxNo string
 		// 订单金额(含交易费)
 		Amount int
 		// 交易费

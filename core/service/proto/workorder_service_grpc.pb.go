@@ -27,17 +27,17 @@ type WorkorderServiceClient interface {
 	// 获取工单
 	GetWorkorder(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*SWorkorder, error)
 	// 删除工单
-	DeleteWorkorder(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*ResultV2, error)
+	DeleteWorkorder(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error)
 	// 分配客服
-	AllocateAgentId(ctx context.Context, in *AllocateWorkorderAgentRequest, opts ...grpc.CallOption) (*ResultV2, error)
+	AllocateAgentId(ctx context.Context, in *AllocateWorkorderAgentRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 完结
-	Finish(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*ResultV2, error)
+	Finish(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error)
 	// 用户关闭工单
-	Close(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*ResultV2, error)
+	Close(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error)
 	// 评价
-	Apprise(ctx context.Context, in *WorkorderAppriseRequest, opts ...grpc.CallOption) (*ResultV2, error)
+	Apprise(ctx context.Context, in *WorkorderAppriseRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 提交回复
-	SubmitComment(ctx context.Context, in *SubmitWorkorderCommentRequest, opts ...grpc.CallOption) (*ResultV2, error)
+	SubmitComment(ctx context.Context, in *SubmitWorkorderCommentRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type workorderServiceClient struct {
@@ -66,8 +66,8 @@ func (c *workorderServiceClient) GetWorkorder(ctx context.Context, in *Workorder
 	return out, nil
 }
 
-func (c *workorderServiceClient) DeleteWorkorder(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*ResultV2, error) {
-	out := new(ResultV2)
+func (c *workorderServiceClient) DeleteWorkorder(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/WorkorderService/DeleteWorkorder", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -75,8 +75,8 @@ func (c *workorderServiceClient) DeleteWorkorder(ctx context.Context, in *Workor
 	return out, nil
 }
 
-func (c *workorderServiceClient) AllocateAgentId(ctx context.Context, in *AllocateWorkorderAgentRequest, opts ...grpc.CallOption) (*ResultV2, error) {
-	out := new(ResultV2)
+func (c *workorderServiceClient) AllocateAgentId(ctx context.Context, in *AllocateWorkorderAgentRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/WorkorderService/AllocateAgentId", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,8 +84,8 @@ func (c *workorderServiceClient) AllocateAgentId(ctx context.Context, in *Alloca
 	return out, nil
 }
 
-func (c *workorderServiceClient) Finish(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*ResultV2, error) {
-	out := new(ResultV2)
+func (c *workorderServiceClient) Finish(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/WorkorderService/Finish", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -93,8 +93,8 @@ func (c *workorderServiceClient) Finish(ctx context.Context, in *WorkorderId, op
 	return out, nil
 }
 
-func (c *workorderServiceClient) Close(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*ResultV2, error) {
-	out := new(ResultV2)
+func (c *workorderServiceClient) Close(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/WorkorderService/Close", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -102,8 +102,8 @@ func (c *workorderServiceClient) Close(ctx context.Context, in *WorkorderId, opt
 	return out, nil
 }
 
-func (c *workorderServiceClient) Apprise(ctx context.Context, in *WorkorderAppriseRequest, opts ...grpc.CallOption) (*ResultV2, error) {
-	out := new(ResultV2)
+func (c *workorderServiceClient) Apprise(ctx context.Context, in *WorkorderAppriseRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/WorkorderService/Apprise", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -111,8 +111,8 @@ func (c *workorderServiceClient) Apprise(ctx context.Context, in *WorkorderAppri
 	return out, nil
 }
 
-func (c *workorderServiceClient) SubmitComment(ctx context.Context, in *SubmitWorkorderCommentRequest, opts ...grpc.CallOption) (*ResultV2, error) {
-	out := new(ResultV2)
+func (c *workorderServiceClient) SubmitComment(ctx context.Context, in *SubmitWorkorderCommentRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/WorkorderService/SubmitComment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -129,17 +129,17 @@ type WorkorderServiceServer interface {
 	// 获取工单
 	GetWorkorder(context.Context, *WorkorderId) (*SWorkorder, error)
 	// 删除工单
-	DeleteWorkorder(context.Context, *WorkorderId) (*ResultV2, error)
+	DeleteWorkorder(context.Context, *WorkorderId) (*TxResult, error)
 	// 分配客服
-	AllocateAgentId(context.Context, *AllocateWorkorderAgentRequest) (*ResultV2, error)
+	AllocateAgentId(context.Context, *AllocateWorkorderAgentRequest) (*TxResult, error)
 	// 完结
-	Finish(context.Context, *WorkorderId) (*ResultV2, error)
+	Finish(context.Context, *WorkorderId) (*TxResult, error)
 	// 用户关闭工单
-	Close(context.Context, *WorkorderId) (*ResultV2, error)
+	Close(context.Context, *WorkorderId) (*TxResult, error)
 	// 评价
-	Apprise(context.Context, *WorkorderAppriseRequest) (*ResultV2, error)
+	Apprise(context.Context, *WorkorderAppriseRequest) (*TxResult, error)
 	// 提交回复
-	SubmitComment(context.Context, *SubmitWorkorderCommentRequest) (*ResultV2, error)
+	SubmitComment(context.Context, *SubmitWorkorderCommentRequest) (*TxResult, error)
 	mustEmbedUnimplementedWorkorderServiceServer()
 }
 
@@ -153,22 +153,22 @@ func (UnimplementedWorkorderServiceServer) SubmitWorkorder(context.Context, *Sub
 func (UnimplementedWorkorderServiceServer) GetWorkorder(context.Context, *WorkorderId) (*SWorkorder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWorkorder not implemented")
 }
-func (UnimplementedWorkorderServiceServer) DeleteWorkorder(context.Context, *WorkorderId) (*ResultV2, error) {
+func (UnimplementedWorkorderServiceServer) DeleteWorkorder(context.Context, *WorkorderId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteWorkorder not implemented")
 }
-func (UnimplementedWorkorderServiceServer) AllocateAgentId(context.Context, *AllocateWorkorderAgentRequest) (*ResultV2, error) {
+func (UnimplementedWorkorderServiceServer) AllocateAgentId(context.Context, *AllocateWorkorderAgentRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllocateAgentId not implemented")
 }
-func (UnimplementedWorkorderServiceServer) Finish(context.Context, *WorkorderId) (*ResultV2, error) {
+func (UnimplementedWorkorderServiceServer) Finish(context.Context, *WorkorderId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Finish not implemented")
 }
-func (UnimplementedWorkorderServiceServer) Close(context.Context, *WorkorderId) (*ResultV2, error) {
+func (UnimplementedWorkorderServiceServer) Close(context.Context, *WorkorderId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Close not implemented")
 }
-func (UnimplementedWorkorderServiceServer) Apprise(context.Context, *WorkorderAppriseRequest) (*ResultV2, error) {
+func (UnimplementedWorkorderServiceServer) Apprise(context.Context, *WorkorderAppriseRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Apprise not implemented")
 }
-func (UnimplementedWorkorderServiceServer) SubmitComment(context.Context, *SubmitWorkorderCommentRequest) (*ResultV2, error) {
+func (UnimplementedWorkorderServiceServer) SubmitComment(context.Context, *SubmitWorkorderCommentRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitComment not implemented")
 }
 func (UnimplementedWorkorderServiceServer) mustEmbedUnimplementedWorkorderServiceServer() {}

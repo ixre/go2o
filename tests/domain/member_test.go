@@ -304,11 +304,11 @@ func TestMemberWalletRefreeze(t *testing.T) {
 		t.FailNow()
 	}
 	tradeLogId, err := ic.Freeze(member.AccountWallet, member.AccountOperateData{
-		Title:      "测试冻结",
-		Amount:     10,
-		OuterNo:    "xxx",
-		Remark:     "",
-		TradeLogId: 0,
+		TransactionTitle:   "测试冻结",
+		Amount:             10,
+		OuterTransactionNo: "xxx",
+		TransactionRemark:  "",
+		TransactionId:      0,
 	}, 0)
 	if err != nil {
 		t.Error(err)
@@ -319,11 +319,11 @@ func TestMemberWalletRefreeze(t *testing.T) {
 	t.Logf("冻结金额:%d, 钱包余额:%d", l.ChangeValue, l.Balance)
 
 	tradeLogId, _ = ic.Freeze(member.AccountWallet, member.AccountOperateData{
-		Title:      "测试冻结",
-		Amount:     20,
-		OuterNo:    "xxx",
-		Remark:     "",
-		TradeLogId: tradeLogId,
+		TransactionTitle:   "测试冻结",
+		Amount:             20,
+		OuterTransactionNo: "xxx",
+		TransactionRemark:  "",
+		TransactionId:      tradeLogId,
 	}, 0)
 	l = wr.GetWalletLog_(tradeLogId)
 	t.Logf("冻结金额:%d, 钱包余额:%d", l.ChangeValue, l.Balance)

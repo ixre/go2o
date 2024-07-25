@@ -359,7 +359,7 @@ func (m *merchantService) WithdrawToMemberAccount(_ context.Context, r *proto.Wi
 }
 
 // 账户充值
-func (m *merchantService) ChargeAccount(_ context.Context, r *proto.MerchantChargeRequest) (*proto.Result, error) {
+func (m *merchantService) ChargeAccount(_ context.Context, r *proto.MerchantChargeRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
 	if mch == nil {
@@ -367,7 +367,7 @@ func (m *merchantService) ChargeAccount(_ context.Context, r *proto.MerchantChar
 	} else {
 		err = mch.Account().Charge(r.Kind, int(r.Amount), r.Title, r.OuterNo, r.RelateUserId)
 	}
-	return m.error(err), nil
+	return m.errorV2(err), nil
 }
 
 func (m *merchantService) GetMchBuyerGroup_(_ context.Context, id *proto.MerchantBuyerGroupId) (*proto.SMerchantBuyerGroup, error) {
@@ -1069,4 +1069,75 @@ func (m *merchantService) parseBuyerGroupDto(v *merchant.BuyerGroup) *proto.SMer
 		EnableWholesale: v.EnableWholesale,
 		RebatePeriod:    int32(v.RebatePeriod),
 	}
+}
+
+// AdjustAccount implements proto.MerchantServiceServer.
+func (m *merchantService) AdjustAccount(_ context.Context, req *proto.UserWalletAdjustRequest) (*proto.TxResult, error) {
+	// mch := m._mchRepo.GetMerchant(int(req.UserId))
+	// tit := "系统冲正"
+	// // 人工冲正带[KF]字样
+	// if req.ManualAdjust {
+	// 	tit = "[KF]系统冲正"
+	// }
+	// acc := mch.Account()
+	// err = acc.Adjust(member.AccountType(r.Account), tit, int(r.Value), r.TransactionRemark, r.RelateUser)
+
+	// return s.errorV2(err), nil
+	panic("unimplemented")
+}
+
+// CarryToAccount 商户账户入账
+func (m *merchantService) CarryToAccount(_ context.Context, req *proto.UserWalletCarryRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.UserId))
+	if mch == nil {
+		return m.errorV2(member.ErrNoSuchMember), nil
+	}
+	acc := mch.Account()
+	if acc == nil {
+		return m.errorV2(member.ErrNoSuchMember), nil
+	}
+	id, err := acc.SettleOrder(merchant.SettlementParams{
+		Freeze:            req.Freeze,
+		OuterTxNo:         req.OuterTransactionNo,
+		Amount:            int(req.Amount),
+		TransactionFee:    int(req.TransactionFee),
+		RefundAmount:      0,
+		TransactionTitle:  req.TransactionTitle,
+		TransactionRemark: req.TransactionRemark,
+	})
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(id, nil), nil
+}
+
+// FinishWithdrawal implements proto.MerchantServiceServer.
+func (m *merchantService) FinishWithdrawal(context.Context, *proto.FinishUserWithdrawalRequest) (*proto.TxResult, error) {
+	panic("unimplemented")
+}
+
+// Freeze implements proto.MerchantServiceServer.
+func (m *merchantService) Freeze(context.Context, *proto.UserWalletFreezeRequest) (*proto.TxResult, error) {
+	panic("unimplemented")
+}
+
+// RequestWithdraw implements proto.MerchantServiceServer.
+func (m *merchantService) RequestWithdraw(context.Context, *proto.UserWithdrawRequest) (*proto.TxResult, error) {
+	panic("unimplemented")
+}
+
+// ReviewWithdrawal implements proto.MerchantServiceServer.
+func (m *merchantService) ReviewWithdrawal(_ context.Context, req *proto.ReviewUserWithdrawalRequest) (*proto.TxResult, error) {
+	panic("unimplemented")
+	// mch := m._mchRepo.GetMerchant(int(req.UserId))
+	// if mch != nil {
+	// 	return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	// }
+	// err = mch.Account().ReviewWithdrawal(int(r.TransactionId), r.Pass, r.TransactionRemark)
+	// return s.errorV2(err), nil
+}
+
+// Unfreeze implements proto.MerchantServiceServer.
+func (m *merchantService) Unfreeze(context.Context, *proto.UserWalletUnfreezeRequest) (*proto.TxResult, error) {
+	panic("unimplemented")
 }

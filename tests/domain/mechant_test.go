@@ -229,7 +229,7 @@ func TestMchSettleOrder(t *testing.T) {
 	repo := inject.GetMerchantRepo()
 	mch := repo.GetMerchant(1)
 	sd := merchant.SettlementParams{
-		OuterNo:           "TS:202407241000001",
+		OuterTxNo:         "TS:202407241000001",
 		Amount:            10000,
 		TransactionFee:    1000,
 		RefundAmount:      0,

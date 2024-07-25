@@ -94,21 +94,21 @@ type MerchantServiceClient interface {
 	// 保存员工
 	SaveStaff(ctx context.Context, in *SaveStaffRequest, opts ...grpc.CallOption) (*Result, error)
 	// 账户充值
-	ChargeAccount(ctx context.Context, in *MerchantChargeRequest, opts ...grpc.CallOption) (*Result, error)
+	ChargeAccount(ctx context.Context, in *MerchantChargeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户入账
-	CarryToAccount(ctx context.Context, in *UserWalletCarryRequest, opts ...grpc.CallOption) (*UserWalletCarryResponse, error)
+	CarryToAccount(ctx context.Context, in *UserWalletCarryRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户人工调整
-	AdjustAccount(ctx context.Context, in *UserWalletAdjustRequest, opts ...grpc.CallOption) (*Result, error)
+	AdjustAccount(ctx context.Context, in *UserWalletAdjustRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 账户冻结
-	Freeze(ctx context.Context, in *UserWalletFreezeRequest, opts ...grpc.CallOption) (*UserWalletFreezeResponse, error)
+	Freeze(ctx context.Context, in *UserWalletFreezeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 账户解冻
-	Unfreeze(ctx context.Context, in *UserWalletUnfreezeRequest, opts ...grpc.CallOption) (*Result, error)
+	Unfreeze(ctx context.Context, in *UserWalletUnfreezeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 提现并返回提现编号,交易号以及错误信息
-	RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*UserWithdrawalResponse, error)
+	RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 确认提现
-	ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*Result, error)
+	ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 收到款项,完成提现
-	FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*Result, error)
+	FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type merchantServiceClient struct {
@@ -452,8 +452,8 @@ func (c *merchantServiceClient) SaveStaff(ctx context.Context, in *SaveStaffRequ
 	return out, nil
 }
 
-func (c *merchantServiceClient) ChargeAccount(ctx context.Context, in *MerchantChargeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *merchantServiceClient) ChargeAccount(ctx context.Context, in *MerchantChargeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/ChargeAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -461,8 +461,8 @@ func (c *merchantServiceClient) ChargeAccount(ctx context.Context, in *MerchantC
 	return out, nil
 }
 
-func (c *merchantServiceClient) CarryToAccount(ctx context.Context, in *UserWalletCarryRequest, opts ...grpc.CallOption) (*UserWalletCarryResponse, error) {
-	out := new(UserWalletCarryResponse)
+func (c *merchantServiceClient) CarryToAccount(ctx context.Context, in *UserWalletCarryRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/CarryToAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -470,8 +470,8 @@ func (c *merchantServiceClient) CarryToAccount(ctx context.Context, in *UserWall
 	return out, nil
 }
 
-func (c *merchantServiceClient) AdjustAccount(ctx context.Context, in *UserWalletAdjustRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *merchantServiceClient) AdjustAccount(ctx context.Context, in *UserWalletAdjustRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/AdjustAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -479,8 +479,8 @@ func (c *merchantServiceClient) AdjustAccount(ctx context.Context, in *UserWalle
 	return out, nil
 }
 
-func (c *merchantServiceClient) Freeze(ctx context.Context, in *UserWalletFreezeRequest, opts ...grpc.CallOption) (*UserWalletFreezeResponse, error) {
-	out := new(UserWalletFreezeResponse)
+func (c *merchantServiceClient) Freeze(ctx context.Context, in *UserWalletFreezeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/Freeze", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -488,8 +488,8 @@ func (c *merchantServiceClient) Freeze(ctx context.Context, in *UserWalletFreeze
 	return out, nil
 }
 
-func (c *merchantServiceClient) Unfreeze(ctx context.Context, in *UserWalletUnfreezeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *merchantServiceClient) Unfreeze(ctx context.Context, in *UserWalletUnfreezeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/Unfreeze", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -497,8 +497,8 @@ func (c *merchantServiceClient) Unfreeze(ctx context.Context, in *UserWalletUnfr
 	return out, nil
 }
 
-func (c *merchantServiceClient) RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*UserWithdrawalResponse, error) {
-	out := new(UserWithdrawalResponse)
+func (c *merchantServiceClient) RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/RequestWithdraw", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -506,8 +506,8 @@ func (c *merchantServiceClient) RequestWithdraw(ctx context.Context, in *UserWit
 	return out, nil
 }
 
-func (c *merchantServiceClient) ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *merchantServiceClient) ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/ReviewWithdrawal", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -515,8 +515,8 @@ func (c *merchantServiceClient) ReviewWithdrawal(ctx context.Context, in *Review
 	return out, nil
 }
 
-func (c *merchantServiceClient) FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *merchantServiceClient) FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/FinishWithdrawal", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -600,21 +600,21 @@ type MerchantServiceServer interface {
 	// 保存员工
 	SaveStaff(context.Context, *SaveStaffRequest) (*Result, error)
 	// 账户充值
-	ChargeAccount(context.Context, *MerchantChargeRequest) (*Result, error)
+	ChargeAccount(context.Context, *MerchantChargeRequest) (*TxResult, error)
 	// 账户入账
-	CarryToAccount(context.Context, *UserWalletCarryRequest) (*UserWalletCarryResponse, error)
+	CarryToAccount(context.Context, *UserWalletCarryRequest) (*TxResult, error)
 	// 账户人工调整
-	AdjustAccount(context.Context, *UserWalletAdjustRequest) (*Result, error)
+	AdjustAccount(context.Context, *UserWalletAdjustRequest) (*TxResult, error)
 	// * 账户冻结
-	Freeze(context.Context, *UserWalletFreezeRequest) (*UserWalletFreezeResponse, error)
+	Freeze(context.Context, *UserWalletFreezeRequest) (*TxResult, error)
 	// * 账户解冻
-	Unfreeze(context.Context, *UserWalletUnfreezeRequest) (*Result, error)
+	Unfreeze(context.Context, *UserWalletUnfreezeRequest) (*TxResult, error)
 	// 提现并返回提现编号,交易号以及错误信息
-	RequestWithdraw(context.Context, *UserWithdrawRequest) (*UserWithdrawalResponse, error)
+	RequestWithdraw(context.Context, *UserWithdrawRequest) (*TxResult, error)
 	// 确认提现
-	ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*Result, error)
+	ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*TxResult, error)
 	// 收到款项,完成提现
-	FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*Result, error)
+	FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*TxResult, error)
 	mustEmbedUnimplementedMerchantServiceServer()
 }
 
@@ -733,28 +733,28 @@ func (UnimplementedMerchantServiceServer) GetStaffByMember(context.Context, *Sta
 func (UnimplementedMerchantServiceServer) SaveStaff(context.Context, *SaveStaffRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveStaff not implemented")
 }
-func (UnimplementedMerchantServiceServer) ChargeAccount(context.Context, *MerchantChargeRequest) (*Result, error) {
+func (UnimplementedMerchantServiceServer) ChargeAccount(context.Context, *MerchantChargeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChargeAccount not implemented")
 }
-func (UnimplementedMerchantServiceServer) CarryToAccount(context.Context, *UserWalletCarryRequest) (*UserWalletCarryResponse, error) {
+func (UnimplementedMerchantServiceServer) CarryToAccount(context.Context, *UserWalletCarryRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CarryToAccount not implemented")
 }
-func (UnimplementedMerchantServiceServer) AdjustAccount(context.Context, *UserWalletAdjustRequest) (*Result, error) {
+func (UnimplementedMerchantServiceServer) AdjustAccount(context.Context, *UserWalletAdjustRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdjustAccount not implemented")
 }
-func (UnimplementedMerchantServiceServer) Freeze(context.Context, *UserWalletFreezeRequest) (*UserWalletFreezeResponse, error) {
+func (UnimplementedMerchantServiceServer) Freeze(context.Context, *UserWalletFreezeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Freeze not implemented")
 }
-func (UnimplementedMerchantServiceServer) Unfreeze(context.Context, *UserWalletUnfreezeRequest) (*Result, error) {
+func (UnimplementedMerchantServiceServer) Unfreeze(context.Context, *UserWalletUnfreezeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unfreeze not implemented")
 }
-func (UnimplementedMerchantServiceServer) RequestWithdraw(context.Context, *UserWithdrawRequest) (*UserWithdrawalResponse, error) {
+func (UnimplementedMerchantServiceServer) RequestWithdraw(context.Context, *UserWithdrawRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestWithdraw not implemented")
 }
-func (UnimplementedMerchantServiceServer) ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*Result, error) {
+func (UnimplementedMerchantServiceServer) ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewWithdrawal not implemented")
 }
-func (UnimplementedMerchantServiceServer) FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*Result, error) {
+func (UnimplementedMerchantServiceServer) FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishWithdrawal not implemented")
 }
 func (UnimplementedMerchantServiceServer) mustEmbedUnimplementedMerchantServiceServer() {}

@@ -75,17 +75,17 @@ func TestMemberFreeWallet(t *testing.T) {
 	m := inject.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
 	_, err := ic.CarryTo(member.AccountWallet, member.AccountOperateData{
-		Title:   "测试冻结1元",
-		Amount:  100,
-		OuterNo: "-",
-		Remark:  "",
+		TransactionTitle:   "测试冻结1元",
+		Amount:             100,
+		OuterTransactionNo: "-",
+		TransactionRemark:  "",
 	}, true, 0)
 	if err == nil {
 		err = ic.Unfreeze(member.AccountWallet, member.AccountOperateData{
-			Title:   "解冻",
-			Amount:  100,
-			OuterNo: "",
-			Remark:  "",
+			TransactionTitle:   "解冻",
+			Amount:             100,
+			OuterTransactionNo: "",
+			TransactionRemark:  "",
 		}, 0)
 	}
 	if err != nil {

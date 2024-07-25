@@ -612,10 +612,10 @@ func (m *memberImpl) memberInit() error {
 	regPresent := m.registryRepo.Get(registry.MemberRegisterPresentIntegral).IntValue()
 	if regPresent > 0 {
 		go m.GetAccount().CarryTo(member.AccountIntegral, member.AccountOperateData{
-			Title:   "新会员注册赠送积分",
-			Amount:  regPresent,
-			OuterNo: "-",
-			Remark:  "sys",
+			TransactionTitle:   "新会员注册赠送积分",
+			Amount:             regPresent,
+			OuterTransactionNo: "-",
+			TransactionRemark:  "sys",
 		}, false, 0)
 	}
 	go m.pushSaveEvent(true)

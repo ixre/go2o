@@ -109,13 +109,13 @@ message SubmitCertificationRequest {
 message ReviewCertificationRequest {
   int64 memberId = 1;
   bool reviewPass = 2;
-  string remark = 3;
+  string remark =3;
 }
 
 message LockRequest {
   sint64 memberId = 1;
   sint32 minutes = 2;
-  string remark = 3;
+  string remark =3;
 }
 message GrantFlagRequest {
   sint64 memberId = 1;
@@ -255,13 +255,13 @@ message AccountChangeRequest {
   // 账户类型
   EAccountType accountType = 2;
   // 明细标题
-  string title = 3;
+  string transactionTitle = 3;
   // 金额
   int64 amount = 4;
   // 外部校译号
-  string outerNo = 5;
+  string outerTransactionNo = 5;
   // 备注
-  string remark = 6;
+  string transactionRemark =6;
 }
 /** 账户调整请求 */
 message AccountAdjustRequest {
@@ -276,7 +276,7 @@ message AccountAdjustRequest {
   /** 关联用户 */
   int64 relateUser = 5;
   /** 备注 */
-  string remark = 6;
+  string transactionRemark =6;
 }
 
 /** 账户入账请求 */
@@ -292,9 +292,9 @@ message AccountCarryRequest{
   // 手续费
   int64 transactionFee = 5;
   // 外部校译号
-  string outerNo = 6;
+  string outerTransactionNo = 6;
   // 备注
-  string remark = 7;
+  string transactionRemark =7;
   // 是否先冻结
   bool freeze = 8;
 }
@@ -306,25 +306,15 @@ message AccountFreezeRequest {
   // 账户类型
   EAccountType accountType = 2;
   /** 标题 */
-  string title = 3;
+  string transactionTitle = 3;
   /** 冻结金额 */
   int64 amount =  4;
   // 外部交易号
-  string outerNo = 5;
+  string outerTransactionNo = 5;
   // 交易流水编号,对冻结流水进行更新时,传递该参数
-  int64 tradeLogId = 6;
+  int64 transactionId = 6;
   // 备注
-  string remark = 7;
-}
-
-/** 冻结响应 */
-message AccountFreezeResponse{
-  /** 错误码 */
-  int32 errCode = 1;
-  /** 错误消息 */
-  string errMsg = 2;
-  /** 交易流水编号 */
-  int64 tradeLogId = 3;
+  string transactionRemark =7;
 }
 
 /** 解冻请求 */
@@ -334,24 +324,15 @@ message AccountUnfreezeRequest {
   // 账户类型
   EAccountType accountType = 2;
   /** 标题 */
-  string title = 3;
+  string transactionTitle = 3;
   /** 冻结金额 */
   int64 amount =  4;
   // 外部校译号
-  string outerNo = 5;
+  string outerTransactionNo = 5;
   // 备注
-  string remark = 6;
+  string transactionRemark =6;
 }
 
-/** 账户入账响应 */
-message AccountCarryResponse{
-  /** 错误码 */
-  int32 errCode = 1;
-  /** 错误消息 */
-  string errMsg = 2;
-  /** 日志ID */
-  int64 logId = 3;
-}
 
 message B4EAuthRequest {
   sint64 memberId = 1;
@@ -458,7 +439,7 @@ message SCertificationInfo {
   /** 提交时间 */
   sint64 createTime = 12;
   /** 备注 */
-  string remark = 13;
+  string remark =13;
   // 扩展认证资料1
   string extraCertExt1 = 14;
   // 扩展认证资料2
@@ -607,11 +588,11 @@ message WalletLogResponse {
   // 会员编号
   int64 memberId = 2;
   // 外部单号
-  string outerNo = 3;
+  string outerTransactionNo = 3;
   // 业务类型
   int32 kind = 4;
   // 标题
-  string title = 5;
+  string transactionTitle = 5;
   // 金额
   double amount = 6;
   // 手续费
@@ -619,7 +600,7 @@ message WalletLogResponse {
   // 状态
   int32 reviewStatus = 8;
   // 备注
-  string remark = 9;
+  string transactionRemark =9;
   // 创建时间
   int64 createTime = 10;
   // 更新时间
@@ -654,7 +635,7 @@ message AccountTransferRequest {
   // 手续费
   int64 transactionFee = 5;
   // 备注
-  string remark = 6;
+  string transactionRemark =6;
 }
 
 
@@ -673,11 +654,11 @@ message WithdrawalLog {
   // 编号
   int64 id = 1;
   // 外部单号
-  string outerNo = 2;
+  string outerTransactionNo = 2;
   // 业务类型
   int32 kind = 3;
   // 标题
-  string title = 4;
+  string transactionTitle = 4;
   // 金额
   int64 amount = 5;
   // 手续费
@@ -687,7 +668,7 @@ message WithdrawalLog {
   // 状态
   int32 reviewStatus = 8;
   // 备注
-  string remark = 9;
+  string transactionRemark =9;
   // 创建时间
   int64 submitTime = 10;
   // 更新时间
@@ -760,7 +741,7 @@ message SMemberCoupon {
   // 数量
   int32 number = 2;
   // 优惠券标题
-  string title = 3;
+  string transactionTitle = 3;
   //优惠码
   string code = 4;
   //优惠金额

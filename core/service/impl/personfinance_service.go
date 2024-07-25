@@ -83,10 +83,10 @@ func (p *personFinanceService) RiseTransferOut(_ context.Context, r *proto.RiseT
 		if err == nil {
 			_, err = acc.CarryTo(member.AccountBalance,
 				member.AccountOperateData{
-					Title:   variable.AliasGrowthAccount + "转出",
-					Amount:  int(r.Amount * 100),
-					OuterNo: tradeNo,
-					Remark:  "sys",
+					TransactionTitle:   variable.AliasGrowthAccount + "转出",
+					Amount:             int(r.Amount * 100),
+					OuterTransactionNo: tradeNo,
+					TransactionRemark:  "sys",
 				}, false, 0)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
@@ -104,10 +104,10 @@ func (p *personFinanceService) RiseTransferOut(_ context.Context, r *proto.RiseT
 		if err == nil {
 			_, err = acc.CarryTo(member.AccountWallet,
 				member.AccountOperateData{
-					Title:   variable.AliasGrowthAccount + "转出",
-					Amount:  int(r.Amount * 100),
-					OuterNo: tradeNo,
-					Remark:  "sys",
+					TransactionTitle:   variable.AliasGrowthAccount + "转出",
+					Amount:             int(r.Amount * 100),
+					OuterTransactionNo: tradeNo,
+					TransactionRemark:  "sys",
 				}, false, 0)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())

@@ -125,28 +125,28 @@ service MerchantService {
 
     }
     // 账户充值
-    rpc ChargeAccount (MerchantChargeRequest) returns (Result) {
+    rpc ChargeAccount (MerchantChargeRequest) returns (TxResult) {
     }
     // 账户入账
-    rpc CarryToAccount(UserWalletCarryRequest) returns (UserWalletCarryResponse){
+    rpc CarryToAccount(UserWalletCarryRequest) returns (TxResult){
     }
     // 账户人工调整
-    rpc AdjustAccount (UserWalletAdjustRequest) returns (Result) {
+    rpc AdjustAccount (UserWalletAdjustRequest) returns (TxResult) {
     }
     /** 账户冻结 */
-    rpc Freeze (UserWalletFreezeRequest) returns (UserWalletFreezeResponse) {
+    rpc Freeze (UserWalletFreezeRequest) returns (TxResult) {
     }
     /** 账户解冻 */
-    rpc Unfreeze (UserWalletUnfreezeRequest) returns (Result) {
+    rpc Unfreeze (UserWalletUnfreezeRequest) returns (TxResult) {
     }
     // 提现并返回提现编号,交易号以及错误信息
-    rpc RequestWithdraw (UserWithdrawRequest) returns (UserWithdrawalResponse) {
+    rpc RequestWithdraw (UserWithdrawRequest) returns (TxResult) {
     }
     // 确认提现
-    rpc ReviewWithdrawal (ReviewUserWithdrawalRequest) returns (Result) {
+    rpc ReviewWithdrawal (ReviewUserWithdrawalRequest) returns (TxResult) {
     }
     // 收到款项,完成提现
-    rpc FinishWithdrawal (FinishUserWithdrawalRequest) returns (Result) {
+    rpc FinishWithdrawal (FinishUserWithdrawalRequest) returns (TxResult) {
     }
 }
 

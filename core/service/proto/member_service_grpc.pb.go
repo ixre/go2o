@@ -43,9 +43,9 @@ type MemberServiceClient interface {
 	// 获取实名信息,memberId
 	GetCertification(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*SCertificationInfo, error)
 	// * 提交实名信息
-	SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*ResultV2, error)
+	SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 审核实名认证,若重复审核将返回错误 *
-	ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*ResultV2, error)
+	ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 获取会员等级信息,id
 	GetMemberLevel(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*SMemberLevel, error)
 	// * 保存等级
@@ -149,29 +149,29 @@ type MemberServiceClient interface {
 	// 获取我邀请的会员及会员邀请的人数
 	GetPagingInvitationMembers(ctx context.Context, in *MemberInvitationPagingRequest, opts ...grpc.CallOption) (*MemberInvitationPagingResponse, error)
 	// 账户充值,amount精确到分
-	AccountCharge(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*Result, error)
+	AccountCharge(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户入账
-	AccountCarryTo(ctx context.Context, in *AccountCarryRequest, opts ...grpc.CallOption) (*AccountCarryResponse, error)
+	AccountCarryTo(ctx context.Context, in *AccountCarryRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户消耗,amount精确到分
-	AccountConsume(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*Result, error)
+	AccountConsume(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户抵扣,amount精确到分
-	AccountDiscount(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*Result, error)
+	AccountDiscount(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 账户冻结
-	Freeze(ctx context.Context, in *AccountFreezeRequest, opts ...grpc.CallOption) (*AccountFreezeResponse, error)
+	Freeze(ctx context.Context, in *AccountFreezeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 账户解冻
-	Unfreeze(ctx context.Context, in *AccountUnfreezeRequest, opts ...grpc.CallOption) (*Result, error)
+	Unfreeze(ctx context.Context, in *AccountUnfreezeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户退款,amount精确到分
-	AccountRefund(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*Result, error)
+	AccountRefund(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户人工调整
-	AccountAdjust(ctx context.Context, in *AccountAdjustRequest, opts ...grpc.CallOption) (*Result, error)
+	AccountAdjust(ctx context.Context, in *AccountAdjustRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 转账转账
-	AccountTransfer(ctx context.Context, in *AccountTransferRequest, opts ...grpc.CallOption) (*Result, error)
+	AccountTransfer(ctx context.Context, in *AccountTransferRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 提现并返回提现编号,交易号以及错误信息
-	RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*UserWithdrawalResponse, error)
+	RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 确认提现
-	ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*Result, error)
+	ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 收到款项,完成提现
-	FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*Result, error)
+	FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 查询提现记录
 	QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogResponse, error)
 	// 绑定第三方应用
@@ -247,8 +247,8 @@ func (c *memberServiceClient) GetCertification(ctx context.Context, in *MemberId
 	return out, nil
 }
 
-func (c *memberServiceClient) SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*ResultV2, error) {
-	out := new(ResultV2)
+func (c *memberServiceClient) SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/SubmitCertification", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -256,8 +256,8 @@ func (c *memberServiceClient) SubmitCertification(ctx context.Context, in *Submi
 	return out, nil
 }
 
-func (c *memberServiceClient) ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*ResultV2, error) {
-	out := new(ResultV2)
+func (c *memberServiceClient) ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/ReviewCertification", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -724,8 +724,8 @@ func (c *memberServiceClient) GetPagingInvitationMembers(ctx context.Context, in
 	return out, nil
 }
 
-func (c *memberServiceClient) AccountCharge(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) AccountCharge(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/AccountCharge", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -733,8 +733,8 @@ func (c *memberServiceClient) AccountCharge(ctx context.Context, in *AccountChan
 	return out, nil
 }
 
-func (c *memberServiceClient) AccountCarryTo(ctx context.Context, in *AccountCarryRequest, opts ...grpc.CallOption) (*AccountCarryResponse, error) {
-	out := new(AccountCarryResponse)
+func (c *memberServiceClient) AccountCarryTo(ctx context.Context, in *AccountCarryRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/AccountCarryTo", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -742,8 +742,8 @@ func (c *memberServiceClient) AccountCarryTo(ctx context.Context, in *AccountCar
 	return out, nil
 }
 
-func (c *memberServiceClient) AccountConsume(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) AccountConsume(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/AccountConsume", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -751,8 +751,8 @@ func (c *memberServiceClient) AccountConsume(ctx context.Context, in *AccountCha
 	return out, nil
 }
 
-func (c *memberServiceClient) AccountDiscount(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) AccountDiscount(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/AccountDiscount", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -760,8 +760,8 @@ func (c *memberServiceClient) AccountDiscount(ctx context.Context, in *AccountCh
 	return out, nil
 }
 
-func (c *memberServiceClient) Freeze(ctx context.Context, in *AccountFreezeRequest, opts ...grpc.CallOption) (*AccountFreezeResponse, error) {
-	out := new(AccountFreezeResponse)
+func (c *memberServiceClient) Freeze(ctx context.Context, in *AccountFreezeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/Freeze", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -769,8 +769,8 @@ func (c *memberServiceClient) Freeze(ctx context.Context, in *AccountFreezeReque
 	return out, nil
 }
 
-func (c *memberServiceClient) Unfreeze(ctx context.Context, in *AccountUnfreezeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) Unfreeze(ctx context.Context, in *AccountUnfreezeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/Unfreeze", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -778,8 +778,8 @@ func (c *memberServiceClient) Unfreeze(ctx context.Context, in *AccountUnfreezeR
 	return out, nil
 }
 
-func (c *memberServiceClient) AccountRefund(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) AccountRefund(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/AccountRefund", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -787,8 +787,8 @@ func (c *memberServiceClient) AccountRefund(ctx context.Context, in *AccountChan
 	return out, nil
 }
 
-func (c *memberServiceClient) AccountAdjust(ctx context.Context, in *AccountAdjustRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) AccountAdjust(ctx context.Context, in *AccountAdjustRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/AccountAdjust", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -796,8 +796,8 @@ func (c *memberServiceClient) AccountAdjust(ctx context.Context, in *AccountAdju
 	return out, nil
 }
 
-func (c *memberServiceClient) AccountTransfer(ctx context.Context, in *AccountTransferRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) AccountTransfer(ctx context.Context, in *AccountTransferRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/AccountTransfer", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -805,8 +805,8 @@ func (c *memberServiceClient) AccountTransfer(ctx context.Context, in *AccountTr
 	return out, nil
 }
 
-func (c *memberServiceClient) RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*UserWithdrawalResponse, error) {
-	out := new(UserWithdrawalResponse)
+func (c *memberServiceClient) RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/RequestWithdraw", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -814,8 +814,8 @@ func (c *memberServiceClient) RequestWithdraw(ctx context.Context, in *UserWithd
 	return out, nil
 }
 
-func (c *memberServiceClient) ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/ReviewWithdrawal", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -823,8 +823,8 @@ func (c *memberServiceClient) ReviewWithdrawal(ctx context.Context, in *ReviewUs
 	return out, nil
 }
 
-func (c *memberServiceClient) FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/FinishWithdrawal", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -947,9 +947,9 @@ type MemberServiceServer interface {
 	// 获取实名信息,memberId
 	GetCertification(context.Context, *MemberIdRequest) (*SCertificationInfo, error)
 	// * 提交实名信息
-	SubmitCertification(context.Context, *SubmitCertificationRequest) (*ResultV2, error)
+	SubmitCertification(context.Context, *SubmitCertificationRequest) (*TxResult, error)
 	// * 审核实名认证,若重复审核将返回错误 *
-	ReviewCertification(context.Context, *ReviewCertificationRequest) (*ResultV2, error)
+	ReviewCertification(context.Context, *ReviewCertificationRequest) (*TxResult, error)
 	// * 获取会员等级信息,id
 	GetMemberLevel(context.Context, *Int32) (*SMemberLevel, error)
 	// * 保存等级
@@ -1053,29 +1053,29 @@ type MemberServiceServer interface {
 	// 获取我邀请的会员及会员邀请的人数
 	GetPagingInvitationMembers(context.Context, *MemberInvitationPagingRequest) (*MemberInvitationPagingResponse, error)
 	// 账户充值,amount精确到分
-	AccountCharge(context.Context, *AccountChangeRequest) (*Result, error)
+	AccountCharge(context.Context, *AccountChangeRequest) (*TxResult, error)
 	// 账户入账
-	AccountCarryTo(context.Context, *AccountCarryRequest) (*AccountCarryResponse, error)
+	AccountCarryTo(context.Context, *AccountCarryRequest) (*TxResult, error)
 	// 账户消耗,amount精确到分
-	AccountConsume(context.Context, *AccountChangeRequest) (*Result, error)
+	AccountConsume(context.Context, *AccountChangeRequest) (*TxResult, error)
 	// 账户抵扣,amount精确到分
-	AccountDiscount(context.Context, *AccountChangeRequest) (*Result, error)
+	AccountDiscount(context.Context, *AccountChangeRequest) (*TxResult, error)
 	// * 账户冻结
-	Freeze(context.Context, *AccountFreezeRequest) (*AccountFreezeResponse, error)
+	Freeze(context.Context, *AccountFreezeRequest) (*TxResult, error)
 	// * 账户解冻
-	Unfreeze(context.Context, *AccountUnfreezeRequest) (*Result, error)
+	Unfreeze(context.Context, *AccountUnfreezeRequest) (*TxResult, error)
 	// 账户退款,amount精确到分
-	AccountRefund(context.Context, *AccountChangeRequest) (*Result, error)
+	AccountRefund(context.Context, *AccountChangeRequest) (*TxResult, error)
 	// 账户人工调整
-	AccountAdjust(context.Context, *AccountAdjustRequest) (*Result, error)
+	AccountAdjust(context.Context, *AccountAdjustRequest) (*TxResult, error)
 	// 转账转账
-	AccountTransfer(context.Context, *AccountTransferRequest) (*Result, error)
+	AccountTransfer(context.Context, *AccountTransferRequest) (*TxResult, error)
 	// 提现并返回提现编号,交易号以及错误信息
-	RequestWithdraw(context.Context, *UserWithdrawRequest) (*UserWithdrawalResponse, error)
+	RequestWithdraw(context.Context, *UserWithdrawRequest) (*TxResult, error)
 	// 确认提现
-	ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*Result, error)
+	ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*TxResult, error)
 	// 收到款项,完成提现
-	FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*Result, error)
+	FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*TxResult, error)
 	// 查询提现记录
 	QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error)
 	// 绑定第三方应用
@@ -1118,10 +1118,10 @@ func (UnimplementedMemberServiceServer) GetLevels(context.Context, *Empty) (*SMe
 func (UnimplementedMemberServiceServer) GetCertification(context.Context, *MemberIdRequest) (*SCertificationInfo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCertification not implemented")
 }
-func (UnimplementedMemberServiceServer) SubmitCertification(context.Context, *SubmitCertificationRequest) (*ResultV2, error) {
+func (UnimplementedMemberServiceServer) SubmitCertification(context.Context, *SubmitCertificationRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitCertification not implemented")
 }
-func (UnimplementedMemberServiceServer) ReviewCertification(context.Context, *ReviewCertificationRequest) (*ResultV2, error) {
+func (UnimplementedMemberServiceServer) ReviewCertification(context.Context, *ReviewCertificationRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewCertification not implemented")
 }
 func (UnimplementedMemberServiceServer) GetMemberLevel(context.Context, *Int32) (*SMemberLevel, error) {
@@ -1277,40 +1277,40 @@ func (UnimplementedMemberServiceServer) QueryInviteArray(context.Context, *Invit
 func (UnimplementedMemberServiceServer) GetPagingInvitationMembers(context.Context, *MemberInvitationPagingRequest) (*MemberInvitationPagingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPagingInvitationMembers not implemented")
 }
-func (UnimplementedMemberServiceServer) AccountCharge(context.Context, *AccountChangeRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) AccountCharge(context.Context, *AccountChangeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountCharge not implemented")
 }
-func (UnimplementedMemberServiceServer) AccountCarryTo(context.Context, *AccountCarryRequest) (*AccountCarryResponse, error) {
+func (UnimplementedMemberServiceServer) AccountCarryTo(context.Context, *AccountCarryRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountCarryTo not implemented")
 }
-func (UnimplementedMemberServiceServer) AccountConsume(context.Context, *AccountChangeRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) AccountConsume(context.Context, *AccountChangeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountConsume not implemented")
 }
-func (UnimplementedMemberServiceServer) AccountDiscount(context.Context, *AccountChangeRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) AccountDiscount(context.Context, *AccountChangeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountDiscount not implemented")
 }
-func (UnimplementedMemberServiceServer) Freeze(context.Context, *AccountFreezeRequest) (*AccountFreezeResponse, error) {
+func (UnimplementedMemberServiceServer) Freeze(context.Context, *AccountFreezeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Freeze not implemented")
 }
-func (UnimplementedMemberServiceServer) Unfreeze(context.Context, *AccountUnfreezeRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) Unfreeze(context.Context, *AccountUnfreezeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unfreeze not implemented")
 }
-func (UnimplementedMemberServiceServer) AccountRefund(context.Context, *AccountChangeRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) AccountRefund(context.Context, *AccountChangeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountRefund not implemented")
 }
-func (UnimplementedMemberServiceServer) AccountAdjust(context.Context, *AccountAdjustRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) AccountAdjust(context.Context, *AccountAdjustRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountAdjust not implemented")
 }
-func (UnimplementedMemberServiceServer) AccountTransfer(context.Context, *AccountTransferRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) AccountTransfer(context.Context, *AccountTransferRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountTransfer not implemented")
 }
-func (UnimplementedMemberServiceServer) RequestWithdraw(context.Context, *UserWithdrawRequest) (*UserWithdrawalResponse, error) {
+func (UnimplementedMemberServiceServer) RequestWithdraw(context.Context, *UserWithdrawRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestWithdraw not implemented")
 }
-func (UnimplementedMemberServiceServer) ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewWithdrawal not implemented")
 }
-func (UnimplementedMemberServiceServer) FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishWithdrawal not implemented")
 }
 func (UnimplementedMemberServiceServer) QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error) {

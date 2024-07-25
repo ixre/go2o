@@ -189,11 +189,11 @@ func (a *accountImpl) ReviewCarryTo(account member.AccountType, transactionId in
 
 func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, transactionFee int) (int, error) {
 	id, err := a.wallet.CarryTo(wallet.TransactionData{
-		TransactionTitle:  d.Title,
+		TransactionTitle:  d.TransactionTitle,
 		Amount:            d.Amount,
-		OuterNo:           d.OuterNo,
+		OuterNo:           d.OuterTransactionNo,
 		TransactionFee:    transactionFee,
-		TransactionRemark: d.Remark,
+		TransactionRemark: d.TransactionRemark,
 	}, freeze)
 	if err == nil {
 		err = a.asyncWallet()
@@ -378,7 +378,7 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, t
 	if transactionFee > 0 {
 		d.Amount -= transactionFee
 	}
-	l, err := a.createBalanceLog(member.KindCarry, d.Title, d.Amount, d.OuterNo, true)
+	l, err := a.createBalanceLog(member.KindCarry, d.TransactionTitle, d.Amount, d.OuterTransactionNo, true)
 	if freeze {
 		a.value.FreezeBalance += int64(d.Amount)
 		l.ReviewStatus = enum.ReviewPending
@@ -388,7 +388,7 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, t
 		l.ReviewStatus = enum.ReviewConfirm
 	}
 	if err == nil {
-		l.Remark = d.Remark
+		l.Remark = d.TransactionRemark
 		l.ProcedureFee = int64(transactionFee)
 		l.Balance = int(a.value.Balance)
 		_, err = a.rep.SaveBalanceLog(l)
@@ -427,7 +427,7 @@ func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) 
 	if d.Amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
-	l, err := a.createIntegralLog(member.KindCarry, d.Title, d.Amount, d.OuterNo, true)
+	l, err := a.createIntegralLog(member.KindCarry, d.TransactionTitle, d.Amount, d.OuterTransactionNo, true)
 	if freeze {
 		a.value.FreezeIntegral += d.Amount
 		l.ReviewStatus = int16(enum.ReviewPending)
@@ -437,7 +437,7 @@ func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) 
 		l.ReviewStatus = int16(enum.ReviewPass)
 	}
 	if err == nil {
-		l.Remark = d.Remark
+		l.Remark = d.TransactionRemark
 		l.Balance = a.value.Integral
 		//l.ProcedureFee = transactionFee
 		err = a.rep.SaveIntegralLog(l)
@@ -476,9 +476,9 @@ func (a *accountImpl) chargeFlow(d member.AccountOperateData) error {
 	if d.Amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
-	l, err := a.createFlowAccountLog(member.KindCharge, d.Title, d.Amount, d.OuterNo, true)
+	l, err := a.createFlowAccountLog(member.KindCharge, d.TransactionTitle, d.Amount, d.OuterTransactionNo, true)
 	if err == nil {
-		l.Remark = d.Remark
+		l.Remark = d.TransactionRemark
 		_, err = a.rep.SaveFlowAccountInfo(l)
 		if err == nil {
 			a.value.FlowBalance += int64(d.Amount)
@@ -695,18 +695,18 @@ func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int6
 	if a.value.Balance < int64(p.Amount) {
 		return 0, member.ErrAccountNotEnoughAmount
 	}
-	if len(p.Title) == 0 {
-		p.Title = "资金冻结"
+	if len(p.TransactionTitle) == 0 {
+		p.TransactionTitle = "资金冻结"
 	}
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
 		MemberId:     a.GetDomainId(),
 		Kind:         member.KindFreeze,
-		Title:        p.Title,
+		Title:        p.TransactionTitle,
 		Amount:       -int64(p.Amount),
-		OuterNo:      p.OuterNo,
+		OuterNo:      p.OuterTransactionNo,
 		RelateUser:   relateUser,
-		Remark:       p.Remark,
+		Remark:       p.TransactionRemark,
 		ReviewStatus: enum.ReviewPass,
 		CreateTime:   unix,
 		UpdateTime:   unix,
@@ -723,11 +723,11 @@ func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int6
 // FreezeWallet 冻结钱包
 func (a *accountImpl) freezeWallet(p member.AccountOperateData, relateUser int64) (int, error) {
 	id, err := a.wallet.Freeze(wallet.TransactionData{
-		TransactionTitle:  p.Title,
+		TransactionTitle:  p.TransactionTitle,
 		Amount:            p.Amount,
-		OuterNo:           p.OuterNo,
-		TransactionRemark: p.Remark,
-		TransactionId:     p.TradeLogId,
+		OuterNo:           p.OuterTransactionNo,
+		TransactionRemark: p.TransactionRemark,
+		TransactionId:     p.TransactionId,
 	}, wallet.Operator{
 		OperatorUid:  int(relateUser),
 		OperatorName: "",
@@ -782,10 +782,10 @@ func (a *accountImpl) freezesIntegral(p member.AccountOperateData, relateUser in
 		Id:           0,
 		MemberId:     int(a.value.MemberId),
 		Kind:         member.TypeIntegralFreeze,
-		Subject:      p.Title,
-		OuterNo:      p.OuterNo,
+		Subject:      p.TransactionTitle,
+		OuterNo:      p.OuterTransactionNo,
 		Value:        -p.Amount,
-		Remark:       p.Remark,
+		Remark:       p.TransactionRemark,
 		Balance:      a.value.Integral,
 		RelateUser:   int(relateUser),
 		ReviewStatus: int16(enum.ReviewPass),
@@ -820,8 +820,8 @@ func (a *accountImpl) unfreezeBalance(d member.AccountOperateData, relateUser in
 	if a.value.FreezeBalance < int64(d.Amount) {
 		return member.ErrAccountNotEnoughAmount
 	}
-	if len(d.Title) == 0 {
-		d.Title = "资金解结"
+	if len(d.TransactionTitle) == 0 {
+		d.TransactionTitle = "资金解结"
 	}
 	a.value.FreezeBalance -= int64(d.Amount)
 	a.value.Balance += int64(d.Amount)
@@ -829,10 +829,10 @@ func (a *accountImpl) unfreezeBalance(d member.AccountOperateData, relateUser in
 	v := &member.BalanceLog{
 		MemberId:     a.GetDomainId(),
 		Kind:         member.KindUnfreeze,
-		Title:        d.Title,
+		Title:        d.TransactionTitle,
 		RelateUser:   relateUser,
 		Amount:       int64(d.Amount),
-		OuterNo:      d.OuterNo,
+		OuterNo:      d.OuterTransactionNo,
 		Balance:      int(a.value.Balance),
 		ProcedureFee: 0,
 		ReviewStatus: enum.ReviewPass,
@@ -849,7 +849,7 @@ func (a *accountImpl) unfreezeBalance(d member.AccountOperateData, relateUser in
 
 // UnfreezeWallet 解冻赠送金额
 func (a *accountImpl) unfreezeWallet(d member.AccountOperateData, relateUser int64) error {
-	err := a.wallet.Unfreeze(d.Amount, d.Title, d.OuterNo, int(relateUser), "")
+	err := a.wallet.Unfreeze(d.Amount, d.TransactionTitle, d.OuterTransactionNo, int(relateUser), "")
 	if err == nil {
 		err = a.asyncWallet()
 	}
@@ -925,10 +925,10 @@ func (a *accountImpl) unfreezesIntegral(d member.AccountOperateData, relateUser 
 		Id:           0,
 		MemberId:     int(a.value.MemberId),
 		Kind:         member.TypeIntegralUnfreeze,
-		Subject:      d.Title,
-		OuterNo:      d.OuterNo,
+		Subject:      d.TransactionTitle,
+		OuterNo:      d.OuterTransactionNo,
 		Value:        d.Amount,
-		Remark:       d.Remark,
+		Remark:       d.TransactionRemark,
 		Balance:      a.value.Integral,
 		RelateUser:   int(relateUser),
 		ReviewStatus: int16(enum.ReviewPass),

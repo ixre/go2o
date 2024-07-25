@@ -1041,10 +1041,10 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchantAggr
 		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.MchName, fee)
 		_, err = acc.CarryTo(member.AccountWallet,
 			member.AccountOperateData{
-				Title:   tit,
-				Amount:  int(fee * 100),
-				OuterNo: orderNo,
-				Remark:  "sys",
+				TransactionTitle:   tit,
+				Amount:             int(fee * 100),
+				OuterTransactionNo: orderNo,
+				TransactionRemark:  "sys",
 			}, false, 0)
 	}
 	return err
@@ -1094,10 +1094,10 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchantAggregate
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, orderNo)
 		_, err = acc.CarryTo(member.AccountWallet, member.AccountOperateData{
-			Title:   tit,
-			Amount:  int(cpv.BackFee * 100),
-			OuterNo: orderNo,
-			Remark:  "sys",
+			TransactionTitle:   tit,
+			Amount:             int(cpv.BackFee * 100),
+			OuterTransactionNo: orderNo,
+			TransactionRemark:  "sys",
 		}, false, 0)
 	}
 	return err

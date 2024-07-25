@@ -203,15 +203,15 @@ type (
 	// 账户操作数据
 	AccountOperateData struct {
 		// 描述
-		Title string
+		TransactionTitle string
 		// 金额
 		Amount int
 		// 外部订单号
-		OuterNo string
+		OuterTransactionNo string
 		// 备注
-		Remark string
+		TransactionRemark string
 		// 交易流水编号,对冻结流水进行更新时,传递该参数
-		TradeLogId int
+		TransactionId int
 	}
 
 	// IntegralLog 积分记录

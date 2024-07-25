@@ -527,7 +527,7 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggregateRoot
 			merchant.TKNormalOrder, totalAmount)
 		// 结算到商户
 		sd := merchant.SettlementParams{
-			OuterNo:           o.value.OrderNo,
+			OuterTxNo:         o.value.OrderNo,
 			Amount:            totalAmount,
 			TransactionFee:    transactionFee,
 			RefundAmount:      refundAmount,
@@ -551,7 +551,7 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRoot
 		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKNormalOrder, totalAmount)
 		sd := merchant.SettlementParams{
-			OuterNo:           o.value.OrderNo,
+			OuterTxNo:         o.value.OrderNo,
 			Amount:            totalAmount,
 			TransactionFee:    transactionFee,
 			RefundAmount:      refundAmount,
@@ -572,7 +572,7 @@ func (o *subOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMerchantAggr
 		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKNormalOrder, totalAmount)
 		sd := merchant.SettlementParams{
-			OuterNo:           o.value.OrderNo,
+			OuterTxNo:         o.value.OrderNo,
 			Amount:            totalAmount,
 			TransactionFee:    transactionFee,
 			RefundAmount:      refundAmount,
@@ -651,10 +651,10 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMemberAggregateRoot) erro
 	if integral > 0 {
 		_, err = m.GetAccount().CarryTo(member.AccountIntegral,
 			member.AccountOperateData{
-				Title:   "购物消费赠送积分",
-				Amount:  integral,
-				OuterNo: o.value.OrderNo,
-				Remark:  "sys",
+				TransactionTitle:   "购物消费赠送积分",
+				Amount:             integral,
+				OuterTransactionNo: o.value.OrderNo,
+				TransactionRemark:  "sys",
 			}, false, 0)
 		if err != nil {
 			return err
@@ -921,10 +921,10 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
 	_, err := acc.CarryTo(member.AccountWallet,
 		member.AccountOperateData{
-			Title:   tit,
-			Amount:  int(fee * 100),
-			OuterNo: o.value.OrderNo,
-			Remark:  "sys",
+			TransactionTitle:   tit,
+			Amount:             int(fee * 100),
+			OuterTransactionNo: o.value.OrderNo,
+			TransactionRemark:  "sys",
 		}, false, 0)
 	return err
 }
