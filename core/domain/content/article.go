@@ -47,13 +47,24 @@ func (a *articleImpl) GetValue() content.Article {
 
 // SetValue 设置值
 func (a *articleImpl) SetValue(v *content.Article) error {
+	// 判断分类
+	if v.CatId <= 0 {
+		return content.ErrInvalidCategory
+	}
+	a._value.CatId = v.CatId
+	if v.MchId > 0 {
+		// 判断商户投搞，分类是否支持投稿
+		cat := a.Category()
+		if (cat.PermFlag & content.FCategoryPost) != content.FCategoryPost {
+			return content.ErrDisallowPostArticle
+		}
+	}
 	a._value.Title = v.Title
 	a._value.ShortTitle = v.ShortTitle
 	a._value.SortNum = v.SortNum
 	a._value.Location = v.Location
 	a._value.Content = v.Content
 	a._value.Thumbnail = v.Thumbnail
-	a._value.CatId = v.CatId
 	a._value.Flag = v.Flag
 	a._value.MchId = v.MchId
 	a._value.AccessToken = v.AccessToken
@@ -80,7 +91,7 @@ func (a *articleImpl) Category() *content.Category {
 // Save 保存文章
 func (a *articleImpl) Save() error {
 	if a.Category() == nil {
-		return content.NotSetCategory
+		return content.ErrInvalidCategory
 	}
 	_, err := a._repo.Save(a._value)
 	return err
@@ -182,7 +193,7 @@ func (a *articleManagerImpl) initSystemCategory() {
 		{
 			Alias:    "news",
 			Name:     "新闻资讯",
-			PermFlag: content.FCategorySupportPost,
+			PermFlag: content.FCategoryPost,
 		},
 		{
 			Alias: "notification",

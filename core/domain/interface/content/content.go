@@ -22,10 +22,10 @@ var (
 
 	ErrAliasHasExists = domain.NewError(
 		"err_content_alias_exists", "页面别名已存在")
-
-	NotSetCategory = domain.NewError(
-		"err_not_set_category", "请选择分类")
-
+	ErrInvalidCategory = domain.NewError(
+		"err_invalid_category", "文章分类不正确")
+	ErrDisallowPostArticle = domain.NewError(
+		"err_disallow_post_article", "分类不允许投稿")
 	ErrUserNotMatch = domain.NewError(
 		"err_content_user_not_match", "用户不匹配")
 
@@ -39,9 +39,9 @@ var (
 const (
 	// FlagInternal 是否内置
 	FCategoryInternal = 1 << iota
-	// FCategorySupportPost 是否支持投稿
-	FCategorySupportPost = 2
-	// FCategoryOpen 是否对会员开放
+	// FCategoryPost 是否支持投稿
+	FCategoryPost = 2
+	// FCategoryOpen 是否对会员显示
 	FCategoryOpen = 4
 )
 
