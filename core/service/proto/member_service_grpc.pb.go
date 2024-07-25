@@ -167,7 +167,7 @@ type MemberServiceClient interface {
 	// 转账转账
 	AccountTransfer(ctx context.Context, in *AccountTransferRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 提现并返回提现编号,交易号以及错误信息
-	RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error)
+	RequestWithdrawal(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 确认提现
 	ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 收到款项,完成提现
@@ -805,7 +805,7 @@ func (c *memberServiceClient) AccountTransfer(ctx context.Context, in *AccountTr
 	return out, nil
 }
 
-func (c *memberServiceClient) RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *memberServiceClient) RequestWithdrawal(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MemberService/RequestWithdraw", in, out, opts...)
 	if err != nil {
@@ -1071,7 +1071,7 @@ type MemberServiceServer interface {
 	// 转账转账
 	AccountTransfer(context.Context, *AccountTransferRequest) (*TxResult, error)
 	// 提现并返回提现编号,交易号以及错误信息
-	RequestWithdraw(context.Context, *UserWithdrawRequest) (*TxResult, error)
+	RequestWithdrawal(context.Context, *UserWithdrawRequest) (*TxResult, error)
 	// 确认提现
 	ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*TxResult, error)
 	// 收到款项,完成提现
@@ -1304,7 +1304,7 @@ func (UnimplementedMemberServiceServer) AccountAdjust(context.Context, *AccountA
 func (UnimplementedMemberServiceServer) AccountTransfer(context.Context, *AccountTransferRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountTransfer not implemented")
 }
-func (UnimplementedMemberServiceServer) RequestWithdraw(context.Context, *UserWithdrawRequest) (*TxResult, error) {
+func (UnimplementedMemberServiceServer) RequestWithdrawal(context.Context, *UserWithdrawRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestWithdraw not implemented")
 }
 func (UnimplementedMemberServiceServer) ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*TxResult, error) {
@@ -2568,14 +2568,14 @@ func _MemberService_RequestWithdraw_Handler(srv interface{}, ctx context.Context
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).RequestWithdraw(ctx, in)
+		return srv.(MemberServiceServer).RequestWithdrawal(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
 		FullMethod: "/MemberService/RequestWithdraw",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).RequestWithdraw(ctx, req.(*UserWithdrawRequest))
+		return srv.(MemberServiceServer).RequestWithdrawal(ctx, req.(*UserWithdrawRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

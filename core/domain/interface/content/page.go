@@ -1,7 +1,7 @@
 package content
 
 import (
-	"github.com/ixre/go2o/core/domain"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 

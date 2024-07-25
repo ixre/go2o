@@ -73,7 +73,7 @@ func (a *accountImpl) initWallet() {
 	}
 	//　创建新的钱包
 	a.wallet = a.walletRepo.CreateWallet(
-		a.member.GetAggregateRootId(),
+		int(a.member.GetAggregateRootId()),
 		a.member.value.Username,
 		1, "MemberWallet", flag)
 	if _, err := a.wallet.Save(); err != nil {
@@ -602,7 +602,7 @@ func (a *accountImpl) chargeWallet(title string, amount int, outerNo string, rem
 
 // 钱包消费
 func (a *accountImpl) walletConsume(title string, amount int, outerNo string, remark string) error {
-	if a.wallet.Get().Balance < int64(amount) {
+	if a.wallet.Get().Balance < amount {
 		return member.ErrAccountNotEnoughAmount
 	}
 	err := a.wallet.Consume(-amount, title, outerNo, remark)
@@ -615,7 +615,7 @@ func (a *accountImpl) walletConsume(title string, amount int, outerNo string, re
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 func (a *accountImpl) walletDiscount(title string, amount int, outerNo string, remark string) error {
 	mustLargeZero := false
-	if mustLargeZero && a.wallet.Get().Balance < int64(amount) {
+	if mustLargeZero && a.wallet.Get().Balance < amount {
 		return member.ErrAccountNotEnoughAmount
 	}
 	err := a.wallet.Discount(-amount, title, outerNo, false)
@@ -918,7 +918,7 @@ func (a *accountImpl) unfreezesIntegral(d member.AccountOperateData, relateUser 
 }
 
 // RequestWithdrawal 请求提现,返回info_id,交易号及错误
-func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int64, string, error) {
+func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int, string, error) {
 	if w.Kind != wallet.KWithdrawExchange &&
 		w.Kind != wallet.KWithdrawToBankCard &&
 		w.Kind != wallet.KWithdrawToPayWallet {
@@ -948,7 +948,7 @@ func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int64, s
 			member.ErrTakeOutLevelNoPerm.Error(), lv.Name))
 	}
 	// 检测余额
-	if a.wallet.Get().Balance < int64(w.Amount) {
+	if a.wallet.Get().Balance < w.Amount {
 		return 0, "", member.ErrOutOfBalance
 	}
 	// 检测提现金额是否超过限制

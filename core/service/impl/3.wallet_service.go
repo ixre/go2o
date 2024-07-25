@@ -23,7 +23,7 @@ type walletServiceImpl struct {
 }
 
 func (w *walletServiceImpl) CreateWallet(_ context.Context, r *proto.CreateWalletRequest) (*proto.Result, error) {
-	iw := w._repo.CreateWallet(r.UserId,
+	iw := w._repo.CreateWallet(int(r.UserId),
 		r.Username,
 		int(r.WalletType), r.WalletName, int(r.WalletFlag))
 	_, err := iw.Save()
@@ -33,13 +33,13 @@ func (w *walletServiceImpl) CreateWallet(_ context.Context, r *proto.CreateWalle
 func (w *walletServiceImpl) GetWalletId(_ context.Context, r *proto.GetWalletRequest) (*proto.Int64, error) {
 	iw := w._repo.GetWalletByUserId(r.UserId, int(r.WalletType))
 	if iw != nil {
-		return &proto.Int64{Value: iw.GetAggregateRootId()}, nil
+		return &proto.Int64{Value: int64(iw.GetAggregateRootId())}, nil
 	}
 	return &proto.Int64{Value: 0}, nil
 }
 
 func (w *walletServiceImpl) GetWallet(_ context.Context, walletId *proto.Int64) (*proto.SWallet, error) {
-	iw := w._repo.GetWallet(walletId.Value)
+	iw := w._repo.GetWallet(int(walletId.Value))
 	if iw != nil {
 		return w.parseWallet(iw.Get()), nil
 	}
@@ -56,7 +56,7 @@ func (w *walletServiceImpl) GetWalletByCode(_ context.Context, walletCode *proto
 }
 
 func (w *walletServiceImpl) GetWalletLog(_ context.Context, r *proto.WalletLogIDRequest) (*proto.SWalletLog, error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw != nil {
 		if l := iw.GetLog(r.Id); l.Id > 0 {
 			return w.parseWalletLog(l), nil
@@ -65,7 +65,7 @@ func (w *walletServiceImpl) GetWalletLog(_ context.Context, r *proto.WalletLogID
 	return nil, wallet.ErrNoSuchAccountLog
 }
 func (w *walletServiceImpl) Adjust(_ context.Context, r *proto.AdjustRequest) (ro *proto.Result, err error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
@@ -75,7 +75,7 @@ func (w *walletServiceImpl) Adjust(_ context.Context, r *proto.AdjustRequest) (r
 }
 
 func (w *walletServiceImpl) Discount(_ context.Context, r *proto.DiscountRequest) (ro *proto.Result, err error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
@@ -85,7 +85,7 @@ func (w *walletServiceImpl) Discount(_ context.Context, r *proto.DiscountRequest
 }
 
 func (w *walletServiceImpl) Freeze(_ context.Context, r *proto.FreezeRequest) (ro *proto.FreezeResponse, err error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		return &proto.FreezeResponse{ErrCode: 1, ErrMsg: wallet.ErrNoSuchWalletAccount.Error()}, nil
 	}
@@ -105,7 +105,7 @@ func (w *walletServiceImpl) Freeze(_ context.Context, r *proto.FreezeRequest) (r
 }
 
 func (w *walletServiceImpl) Unfreeze(_ context.Context, r *proto.UnfreezeRequest) (ro *proto.Result, err error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
@@ -115,7 +115,7 @@ func (w *walletServiceImpl) Unfreeze(_ context.Context, r *proto.UnfreezeRequest
 }
 
 func (w *walletServiceImpl) Charge(_ context.Context, r *proto.ChargeRequest) (ro *proto.Result, err error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
@@ -126,7 +126,7 @@ func (w *walletServiceImpl) Charge(_ context.Context, r *proto.ChargeRequest) (r
 }
 
 func (w *walletServiceImpl) Transfer(_ context.Context, r *proto.TransferRequest) (ro *proto.Result, err error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
@@ -140,7 +140,7 @@ func (w *walletServiceImpl) Transfer(_ context.Context, r *proto.TransferRequest
 }
 
 func (w *walletServiceImpl) RequestWithdrawal(_ context.Context, r *proto.RequestWithdrawalRequest) (ro *proto.Result, err error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
@@ -166,7 +166,7 @@ func (w *walletServiceImpl) RequestWithdrawal(_ context.Context, r *proto.Reques
 }
 
 func (w *walletServiceImpl) ReviewTakeOut(_ context.Context, r *proto.ReviewWithdrawRequest) (ro *proto.Result, err error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
@@ -176,7 +176,7 @@ func (w *walletServiceImpl) ReviewTakeOut(_ context.Context, r *proto.ReviewWith
 }
 
 func (w *walletServiceImpl) FinishWithdrawal(_ context.Context, r *proto.FinishWithdrawRequest) (ro *proto.Result, err error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
@@ -186,7 +186,7 @@ func (w *walletServiceImpl) FinishWithdrawal(_ context.Context, r *proto.FinishW
 }
 
 func (w *walletServiceImpl) PagingWalletLog(_ context.Context, r *proto.PagingWalletLogRequest) (ro *proto.SPagingResult, err error) {
-	iw := w._repo.GetWallet(r.WalletId)
+	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		return parser.PagingResult(0, nil, wallet.ErrNoSuchWalletAccount), nil
 	}
@@ -198,10 +198,10 @@ func (w *walletServiceImpl) PagingWalletLog(_ context.Context, r *proto.PagingWa
 
 func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 	return &proto.SWallet{
-		Id:             v.Id,
+		Id:             int64(v.Id),
 		HashCode:       v.HashCode,
 		NodeId:         int32(v.NodeId),
-		UserId:         v.UserId,
+		UserId:         int64(v.UserId),
 		Username:       v.Username,
 		WalletType:     int32(v.WalletType),
 		WalletFlag:     int32(v.WalletFlag),
@@ -216,29 +216,29 @@ func (w *walletServiceImpl) parseWallet(v wallet.Wallet) *proto.SWallet {
 		TotalPresent:   int32(v.TotalPresent),
 		TotalPay:       int32(v.TotalPay),
 		State:          int32(v.State),
-		CreateTime:     v.CreateTime,
-		UpdateTime:     v.UpdateTime,
+		CreateTime:     int64(v.CreateTime),
+		UpdateTime:     int64(v.UpdateTime),
 	}
 }
 func (w *walletServiceImpl) parseWalletLog(l wallet.WalletLog) *proto.SWalletLog {
 	return &proto.SWalletLog{
-		Id:             l.Id,
-		WalletId:       l.WalletId,
+		Id:             int64(l.Id),
+		WalletId:       int64(l.WalletId),
 		WalletUser:     l.WalletUser,
 		Kind:           int32(l.Kind),
 		Title:          l.Subject,
 		OuterChan:      l.OuterChan,
 		OuterNo:        l.OuterTxNo,
-		Value:          l.ChangeValue,
-		Balance:        l.Balance,
+		Value:          int64(l.ChangeValue),
+		Balance:        int64(l.Balance),
 		TransactionFee: int64(l.TransactionFee),
-		OperatorUid:    int32(l.OperatorUid),
-		OperatorName:   l.OperatorName,
+		OperatorUid:    int32(l.OprUid),
+		OperatorName:   l.OprName,
 		Remark:         l.Remark,
 		ReviewStatus:   int32(l.ReviewStatus),
 		ReviewRemark:   l.ReviewRemark,
-		ReviewTime:     l.ReviewTime,
-		CreateTime:     l.CreateTime,
-		UpdateTime:     l.UpdateTime,
+		ReviewTime:     int64(l.ReviewTime),
+		CreateTime:     int64(l.CreateTime),
+		UpdateTime:     int64(l.UpdateTime),
 	}
 }

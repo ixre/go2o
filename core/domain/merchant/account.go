@@ -152,7 +152,7 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 func (a *accountImpl) getWallet() wallet.IWallet {
 	iw := a.walletRepo.GetWalletByUserId(a.GetValue().MchId, wallet.TMerchant)
 	if iw == nil {
-		iw = a.walletRepo.CreateWallet(a.GetValue().MchId,
+		iw = a.walletRepo.CreateWallet(int(a.GetValue().MchId),
 			a.mchImpl._value.Username,
 			wallet.TMerchant,
 			"MchWallet",
@@ -312,7 +312,7 @@ func (a *accountImpl) FinishWithdrawal(transactionId int, outerTransactionNo str
 }
 
 // RequestWithdrawal implements merchant.IAccount.
-func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int64, string, error) {
+func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int, string, error) {
 	return a.getWallet().RequestWithdrawal(
 		wallet.WithdrawTransaction{
 			Amount:           w.Amount,

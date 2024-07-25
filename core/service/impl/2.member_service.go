@@ -344,7 +344,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 	m := s.repo.GetMember(r.MemberId)
 	v := m.GetAccount().GetWalletLog(r.LogId)
 	return &proto.WalletLogResponse{
-		LogId:              v.Id,
+		LogId:              int64(v.Id),
 		MemberId:           r.MemberId,
 		OuterTransactionNo: v.OuterTxNo,
 		Kind:               int32(v.Kind),
@@ -353,9 +353,9 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 		TransactionFee:     float64(v.TransactionFee),
 		ReviewStatus:       int32(v.ReviewStatus),
 		TransactionRemark:  v.Remark,
-		CreateTime:         v.CreateTime,
-		UpdateTime:         v.UpdateTime,
-		RelateUser:         int64(v.OperatorUid),
+		CreateTime:         int64(v.CreateTime),
+		UpdateTime:         int64(v.UpdateTime),
+		RelateUser:         int64(v.OprUid),
 	}, nil
 }
 

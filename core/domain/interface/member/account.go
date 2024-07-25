@@ -125,7 +125,7 @@ type (
 		GetWalletLog(id int64) wallet.WalletLog
 
 		// RequestWithdrawal 申请提现(只支持钱包),drawType：提现方式,返回info_id,交易号 及错误
-		RequestWithdrawal(w *wallet.WithdrawTransaction) (int64, string, error)
+		RequestWithdrawal(w *wallet.WithdrawTransaction) (int, string, error)
 
 		// ReviewWithdrawal 提现审核
 		ReviewWithdrawal(transactionId int, pass bool, reason string) error

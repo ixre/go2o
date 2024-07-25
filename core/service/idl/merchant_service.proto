@@ -53,8 +53,6 @@ service MerchantService {
     rpc ChangeMemberBind(ChangeMemberBindRequest)returns(Result){
     }
   
-    rpc GetAccount (MerchantId) returns (SMerchantAccount) {
-    }
     // 设置商户启用或停用
     rpc SetEnabled (MerchantDisableRequest) returns (Result) {
     }
@@ -124,17 +122,20 @@ service MerchantService {
     rpc SaveStaff(SaveStaffRequest)returns(Result){
 
     }
- 
+
+    // 获取钱包账户
+    rpc GetAccount (MerchantId) returns (SMerchantAccount) {
+    } 
     // 账户入账
     rpc CarryToAccount(UserWalletCarryRequest) returns (TxResult){
     }
     // 账户人工调整
     rpc AdjustAccount (UserWalletAdjustRequest) returns (TxResult) {
     }
-    /** 账户冻结 */
+    // 账户冻结
     rpc Freeze (UserWalletFreezeRequest) returns (TxResult) {
     }
-    /** 账户解冻 */
+    // 账户解冻
     rpc Unfreeze (UserWalletUnfreezeRequest) returns (TxResult) {
     }
     // 提现并返回提现编号,交易号以及错误信息

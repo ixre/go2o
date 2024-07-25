@@ -1111,7 +1111,7 @@ func (m *merchantService) FinishWithdrawal(_ context.Context, req *proto.FinishU
 }
 
 // RequestWithdraw implements proto.MerchantServiceServer.
-func (m *merchantService) RequestWithdraw(_ context.Context, req *proto.UserWithdrawRequest) (*proto.TxResult, error) {
+func (m *merchantService) RequestWithdrawal(_ context.Context, req *proto.UserWithdrawRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(req.UserId))
 	if mch == nil {
 		return m.errorV2(merchant.ErrNoSuchMerchant), nil

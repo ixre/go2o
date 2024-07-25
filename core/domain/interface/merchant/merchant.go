@@ -10,12 +10,12 @@
 package merchant
 
 import (
-	"github.com/ixre/go2o/core/domain"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 const (
@@ -121,7 +121,7 @@ type (
 		Adjust(title string, amount int, remark string, relateUser int64) error
 
 		// RequestWithdrawal 申请提现(只支持钱包),drawType：提现方式,返回info_id,交易号 及错误
-		RequestWithdrawal(w *wallet.WithdrawTransaction) (int64, string, error)
+		RequestWithdrawal(w *wallet.WithdrawTransaction) (int, string, error)
 
 		// ReviewWithdrawal 提现审核
 		ReviewWithdrawal(transactionId int, pass bool, reason string) error

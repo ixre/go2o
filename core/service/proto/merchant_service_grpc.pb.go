@@ -50,7 +50,6 @@ type MerchantServiceClient interface {
 	GetMerchantIdByMember(ctx context.Context, in *MemberId, opts ...grpc.CallOption) (*Int64, error)
 	// * 更换会员绑定
 	ChangeMemberBind(ctx context.Context, in *ChangeMemberBindRequest, opts ...grpc.CallOption) (*Result, error)
-	GetAccount(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantAccount, error)
 	// 设置商户启用或停用
 	SetEnabled(ctx context.Context, in *MerchantDisableRequest, opts ...grpc.CallOption) (*Result, error)
 	// 根据主机查询商户编号
@@ -93,16 +92,18 @@ type MerchantServiceClient interface {
 	GetStaffByMember(ctx context.Context, in *StaffRequest, opts ...grpc.CallOption) (*SStaff, error)
 	// 保存员工
 	SaveStaff(ctx context.Context, in *SaveStaffRequest, opts ...grpc.CallOption) (*Result, error)
+	// 获取钱包账户
+	GetAccount(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantAccount, error)
 	// 账户入账
 	CarryToAccount(ctx context.Context, in *UserWalletCarryRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户人工调整
 	AdjustAccount(ctx context.Context, in *UserWalletAdjustRequest, opts ...grpc.CallOption) (*TxResult, error)
-	// * 账户冻结
+	// 账户冻结
 	Freeze(ctx context.Context, in *UserWalletFreezeRequest, opts ...grpc.CallOption) (*TxResult, error)
-	// * 账户解冻
+	// 账户解冻
 	Unfreeze(ctx context.Context, in *UserWalletUnfreezeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 提现并返回提现编号,交易号以及错误信息
-	RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error)
+	RequestWithdrawal(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 确认提现
 	ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 收到款项,完成提现
@@ -237,15 +238,6 @@ func (c *merchantServiceClient) GetMerchantIdByMember(ctx context.Context, in *M
 func (c *merchantServiceClient) ChangeMemberBind(ctx context.Context, in *ChangeMemberBindRequest, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, "/MerchantService/ChangeMemberBind", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *merchantServiceClient) GetAccount(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantAccount, error) {
-	out := new(SMerchantAccount)
-	err := c.cc.Invoke(ctx, "/MerchantService/GetAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -450,6 +442,15 @@ func (c *merchantServiceClient) SaveStaff(ctx context.Context, in *SaveStaffRequ
 	return out, nil
 }
 
+func (c *merchantServiceClient) GetAccount(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantAccount, error) {
+	out := new(SMerchantAccount)
+	err := c.cc.Invoke(ctx, "/MerchantService/GetAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *merchantServiceClient) CarryToAccount(ctx context.Context, in *UserWalletCarryRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/CarryToAccount", in, out, opts...)
@@ -486,7 +487,7 @@ func (c *merchantServiceClient) Unfreeze(ctx context.Context, in *UserWalletUnfr
 	return out, nil
 }
 
-func (c *merchantServiceClient) RequestWithdraw(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *merchantServiceClient) RequestWithdrawal(ctx context.Context, in *UserWithdrawRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/RequestWithdraw", in, out, opts...)
 	if err != nil {
@@ -545,7 +546,6 @@ type MerchantServiceServer interface {
 	GetMerchantIdByMember(context.Context, *MemberId) (*Int64, error)
 	// * 更换会员绑定
 	ChangeMemberBind(context.Context, *ChangeMemberBindRequest) (*Result, error)
-	GetAccount(context.Context, *MerchantId) (*SMerchantAccount, error)
 	// 设置商户启用或停用
 	SetEnabled(context.Context, *MerchantDisableRequest) (*Result, error)
 	// 根据主机查询商户编号
@@ -588,16 +588,18 @@ type MerchantServiceServer interface {
 	GetStaffByMember(context.Context, *StaffRequest) (*SStaff, error)
 	// 保存员工
 	SaveStaff(context.Context, *SaveStaffRequest) (*Result, error)
+	// 获取钱包账户
+	GetAccount(context.Context, *MerchantId) (*SMerchantAccount, error)
 	// 账户入账
 	CarryToAccount(context.Context, *UserWalletCarryRequest) (*TxResult, error)
 	// 账户人工调整
 	AdjustAccount(context.Context, *UserWalletAdjustRequest) (*TxResult, error)
-	// * 账户冻结
+	// 账户冻结
 	Freeze(context.Context, *UserWalletFreezeRequest) (*TxResult, error)
-	// * 账户解冻
+	// 账户解冻
 	Unfreeze(context.Context, *UserWalletUnfreezeRequest) (*TxResult, error)
 	// 提现并返回提现编号,交易号以及错误信息
-	RequestWithdraw(context.Context, *UserWithdrawRequest) (*TxResult, error)
+	RequestWithdrawal(context.Context, *UserWithdrawRequest) (*TxResult, error)
 	// 确认提现
 	ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*TxResult, error)
 	// 收到款项,完成提现
@@ -650,9 +652,6 @@ func (UnimplementedMerchantServiceServer) GetMerchantIdByMember(context.Context,
 }
 func (UnimplementedMerchantServiceServer) ChangeMemberBind(context.Context, *ChangeMemberBindRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeMemberBind not implemented")
-}
-func (UnimplementedMerchantServiceServer) GetAccount(context.Context, *MerchantId) (*SMerchantAccount, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAccount not implemented")
 }
 func (UnimplementedMerchantServiceServer) SetEnabled(context.Context, *MerchantDisableRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetEnabled not implemented")
@@ -720,6 +719,9 @@ func (UnimplementedMerchantServiceServer) GetStaffByMember(context.Context, *Sta
 func (UnimplementedMerchantServiceServer) SaveStaff(context.Context, *SaveStaffRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveStaff not implemented")
 }
+func (UnimplementedMerchantServiceServer) GetAccount(context.Context, *MerchantId) (*SMerchantAccount, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccount not implemented")
+}
 func (UnimplementedMerchantServiceServer) CarryToAccount(context.Context, *UserWalletCarryRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CarryToAccount not implemented")
 }
@@ -732,7 +734,7 @@ func (UnimplementedMerchantServiceServer) Freeze(context.Context, *UserWalletFre
 func (UnimplementedMerchantServiceServer) Unfreeze(context.Context, *UserWalletUnfreezeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unfreeze not implemented")
 }
-func (UnimplementedMerchantServiceServer) RequestWithdraw(context.Context, *UserWithdrawRequest) (*TxResult, error) {
+func (UnimplementedMerchantServiceServer) RequestWithdrawal(context.Context, *UserWithdrawRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestWithdraw not implemented")
 }
 func (UnimplementedMerchantServiceServer) ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*TxResult, error) {
@@ -1002,24 +1004,6 @@ func _MerchantService_ChangeMemberBind_Handler(srv interface{}, ctx context.Cont
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MerchantServiceServer).ChangeMemberBind(ctx, req.(*ChangeMemberBindRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MerchantService_GetAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MerchantId)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MerchantServiceServer).GetAccount(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/MerchantService/GetAccount",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).GetAccount(ctx, req.(*MerchantId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1420,6 +1404,24 @@ func _MerchantService_SaveStaff_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_GetAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/MerchantService/GetAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetAccount(ctx, req.(*MerchantId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MerchantService_CarryToAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserWalletCarryRequest)
 	if err := dec(in); err != nil {
@@ -1498,14 +1500,14 @@ func _MerchantService_RequestWithdraw_Handler(srv interface{}, ctx context.Conte
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MerchantServiceServer).RequestWithdraw(ctx, in)
+		return srv.(MerchantServiceServer).RequestWithdrawal(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
 		FullMethod: "/MerchantService/RequestWithdraw",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).RequestWithdraw(ctx, req.(*UserWithdrawRequest))
+		return srv.(MerchantServiceServer).RequestWithdrawal(ctx, req.(*UserWithdrawRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1610,10 +1612,6 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MerchantService_ChangeMemberBind_Handler,
 		},
 		{
-			MethodName: "GetAccount",
-			Handler:    _MerchantService_GetAccount_Handler,
-		},
-		{
 			MethodName: "SetEnabled",
 			Handler:    _MerchantService_SetEnabled_Handler,
 		},
@@ -1700,6 +1698,10 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveStaff",
 			Handler:    _MerchantService_SaveStaff_Handler,
+		},
+		{
+			MethodName: "GetAccount",
+			Handler:    _MerchantService_GetAccount_Handler,
 		},
 		{
 			MethodName: "CarryToAccount",

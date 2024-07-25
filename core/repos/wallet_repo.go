@@ -25,7 +25,7 @@ type WalletRepoImpl struct {
 	_conn db.Connector
 }
 
-func (w *WalletRepoImpl) CreateWallet(userId int64,
+func (w *WalletRepoImpl) CreateWallet(userId int,
 	username string, walletType int,
 	walletName string, flag int) wallet.IWallet {
 	return w.createWallet1(&wallet.Wallet{
@@ -44,7 +44,7 @@ func (w *WalletRepoImpl) createWallet1(v *wallet.Wallet) wallet.IWallet {
 	return nil
 }
 
-func (w *WalletRepoImpl) GetWallet(walletId int64) wallet.IWallet {
+func (w *WalletRepoImpl) GetWallet(walletId int) wallet.IWallet {
 	return w.createWallet1(w.getWallet_(walletId))
 }
 
@@ -64,7 +64,7 @@ func (w *WalletRepoImpl) CheckWalletUserMatch(userId int64, walletType int, wall
 	return l == nil
 }
 
-func (w *WalletRepoImpl) GetLog(walletId int64, logId int64) *wallet.WalletLog {
+func (w *WalletRepoImpl) GetLog(walletId int, logId int64) *wallet.WalletLog {
 	l := w.GetWalletLog_(logId)
 	if l != nil && l.WalletId == walletId {
 		return l
