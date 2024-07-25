@@ -118,3 +118,9 @@ type PagingArticleDto struct {
 	UpdateTime   int                    `json:"updateTime"`
 	Ext          map[string]interface{} `json:"ext"`
 }
+
+// QueryMerchantArticles 查询商户文章列表
+func (c *ContentQuery) QueryMerchantArticles(mchId int, p *fw.PagingParams) (*fw.PagingResult, error) {
+	p.Equal("mch_id", mchId)
+	return c.BaseRepository.PagingQuery(p)
+}
