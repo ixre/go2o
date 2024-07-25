@@ -137,7 +137,7 @@ type (
 		// 交易手续费
 		TransactionFee int
 		// 外部单号,如果非系统订单，添加前缀，如：XT:20140109345
-		OuterNo string
+		OuterTxNo string
 		// 备注
 		TransactionRemark string
 		// 交易流水编号,对冻结流水进行更新时,传递该参数
@@ -229,10 +229,10 @@ type (
 		RequestWithdrawal(tx WithdrawTransaction) (int64, string, error)
 
 		// ReviewWithdrawal 确认提现
-		ReviewWithdrawal(takeId int, pass bool, remark string, operatorUid int, operatorName string) error
+		ReviewWithdrawal(transactionId int, pass bool, remark string, operatorUid int, operatorName string) error
 
 		// FinishWithdrawal 完成提现
-		FinishWithdrawal(takeId int, outerNo string) error
+		FinishWithdrawal(transactionId int, outerTxNo string) error
 
 		// PagingLog 分页钱包日志
 		PagingLog(begin int, over int, opt map[string]string, sort string) (int, []*WalletLog)
@@ -339,13 +339,13 @@ type (
 		// 外部通道
 		OuterChan string `db:"outer_chan"`
 		// 外部订单号
-		OuterNo string `db:"outer_no"`
+		OuterTxNo string `db:"outer_tx_no"`
 		// 变动金额
 		ChangeValue int64 `db:"change_value"`
 		// 余额
 		Balance int64 `db:"balance"`
 		// 交易手续费
-		TransactionFee int `db:"procedure_fee"`
+		TransactionFee int `db:"transaction_fee"`
 		// 操作人员用户编号
 		OperatorUid int `db:"opr_uid"`
 		// 操作人员名称

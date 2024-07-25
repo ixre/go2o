@@ -93,8 +93,8 @@ func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int, error) {
 	return a.mchImpl._repo.SaveBalanceAccountLog(v)
 }
 
-// 支出
-func (a *accountImpl) TakePayment(outerNo string, amount int, csn int, remark string) error {
+// Consume 消耗商户支出，例如广告费、提现等
+func (a *accountImpl) Consume(transactionTitle string, amount int, outerTxNo string, transactionRemark string) error {
 	if amount <= 0 {
 		return merchant.ErrAmount
 	}
@@ -102,7 +102,7 @@ func (a *accountImpl) TakePayment(outerNo string, amount int, csn int, remark st
 		return merchant.ErrNoMoreAmount
 	}
 	l := a.createBalanceLog(merchant.KindAccountTakePayment,
-		remark, outerNo, -int64(amount), int64(csn), 1)
+		transactionRemark, outerTxNo, -int64(amount), 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
 		a.value.Balance -= int64(amount)
@@ -110,14 +110,17 @@ func (a *accountImpl) TakePayment(outerNo string, amount int, csn int, remark st
 		err = a.Save()
 		if err == nil {
 			iw := a.getWallet()
-			err = iw.Discount(int(amount), remark, outerNo, true)
+			err = iw.Consume(int(amount),
+				transactionTitle,
+				outerTxNo,
+				transactionRemark)
 		}
 	}
 	return err
 }
 
 // 订单结账
-func (a *accountImpl) SettleOrder(p merchant.SettlementParams) (txId int, err error) {
+func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 	if p.Amount <= 0 || math.IsNaN(float64(p.Amount)) {
 		return 0, merchant.ErrAmount
 	}
@@ -135,11 +138,11 @@ func (a *accountImpl) SettleOrder(p merchant.SettlementParams) (txId int, err er
 			TransactionTitle:  p.TransactionTitle,
 			Amount:            p.Amount,
 			TransactionFee:    p.TransactionFee,
-			OuterNo:           p.OuterTxNo,
+			OuterTxNo:         p.OuterTxNo,
 			TransactionRemark: p.TransactionRemark,
 		}, p.Freeze)
 		// 记录旧日志,todo:可能去掉
-		// l := a.createBalanceLog(merchant.KindAccountSettleOrder,
+		// l := a.createBalanceLog(merchant.KindAccountCarry,
 		// 	remark, orderNo, fAmount, fTradeFee, 1)
 		// a.SaveBalanceLog(l)
 	}
@@ -277,38 +280,52 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 	return err
 }
 
-// 赠送
-func (a *accountImpl) Present(amount int, remark string) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return merchant.ErrAmount
-	}
-	l := a.createBalanceLog(merchant.KindAccountPresent,
-		remark, "", int64(amount), 0, 1)
-	_, err := a.SaveBalanceLog(l)
-	if err == nil {
-		a.value.PresentAmount += int64(amount)
-		a.value.UpdateTime = time.Now().Unix()
-		err = a.Save()
-	}
-	return err
+// FreezeWallet 冻结钱包
+func (a *accountImpl) Freeze(p wallet.TransactionData, relateUser int64) (int, error) {
+	id, err := a.getWallet().Freeze(wallet.TransactionData{
+		TransactionTitle:  p.TransactionTitle,
+		Amount:            p.Amount,
+		OuterTxNo:         p.OuterTxNo,
+		TransactionRemark: p.TransactionRemark,
+		TransactionId:     p.TransactionId,
+	}, wallet.Operator{
+		OperatorUid:  int(relateUser),
+		OperatorName: "",
+	})
+	return id, err
 }
 
-// 充值
-func (a *accountImpl) Charge(kind int32, amount int,
-	title, outerNo string, relateUser int64) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return merchant.ErrAmount
-	}
-	l := a.createBalanceLog(merchant.KindAccountCharge,
-		title, outerNo, int64(amount), 0, 1)
-	_, err := a.SaveBalanceLog(l)
-	if err == nil {
-		a.value.Balance += int64(amount)
-		a.value.UpdateTime = time.Now().Unix()
-		err = a.Save()
-		if err != nil {
-			return err
-		}
-	}
-	return err
+// UnfreezeWallet 解冻赠送金额
+func (a *accountImpl) Unfreeze(d wallet.TransactionData, relateUser int64) error {
+	return a.getWallet().Unfreeze(d.Amount, d.TransactionTitle, d.OuterTxNo, int(relateUser), "")
+}
+
+// 调整钱包余额
+func (a *accountImpl) Adjust(title string, amount int, remark string, relateUser int64) error {
+	return a.getWallet().Adjust(amount, title, "", remark, int(relateUser), "-")
+}
+
+// FinishWithdrawal implements merchant.IAccount.
+func (a *accountImpl) FinishWithdrawal(transactionId int, outerTransactionNo string) error {
+	//todo: opr_uid
+	return a.getWallet().FinishWithdrawal(transactionId, outerTransactionNo)
+}
+
+// RequestWithdrawal implements merchant.IAccount.
+func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int64, string, error) {
+	return a.getWallet().RequestWithdrawal(
+		wallet.WithdrawTransaction{
+			Amount:           w.Amount,
+			TransactionFee:   w.TransactionFee,
+			Kind:             w.Kind,
+			TransactionTitle: w.TransactionTitle,
+			BankName:         w.BankName,
+			AccountNo:        w.AccountNo,
+			AccountName:      w.AccountName,
+		})
+}
+
+// ReviewWithdrawal implements merchant.IAccount.
+func (a *accountImpl) ReviewWithdrawal(transactionId int, pass bool, remark string) error {
+	return a.getWallet().ReviewWithdrawal(transactionId, pass, remark, 1, "系统")
 }

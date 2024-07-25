@@ -383,14 +383,7 @@ message WithdrawToMemberAccountRequest {
   int64 amount = 2;
 }
 
-message MerchantChargeRequest {
-  int64 merchantId = 1;
-  int32 kind = 2;
-  int64 amount = 3;
-  string title = 4;
-  string outerNo = 5;
-  int64 relateUserId = 6;
-}
+
 
 message MerchantBuyerGroupId {
   int64 merchantId = 1;

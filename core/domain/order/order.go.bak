@@ -1228,7 +1228,7 @@ func (s *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
 	_, refund := s.getOrderAmount()
 	sAmount := s.getOrderCost()
 	if sAmount > 0 {
-		return vendor.Account().SettleOrder(s.value.OrderNo,
+		return vendor.Account().Carry(s.value.OrderNo,
 			sAmount, 0, refund, "订单结算")
 	}
 	return nil
@@ -1239,7 +1239,7 @@ func (s *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float3
 	amount, refund := s.getOrderAmount()
 	sAmount := amount * rate
 	if sAmount > 0 {
-		return vendor.Account().SettleOrder(s.value.OrderNo,
+		return vendor.Account().Carry(s.value.OrderNo,
 			sAmount, 0, refund, "订单结算")
 	}
 	return nil

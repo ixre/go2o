@@ -526,7 +526,7 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggregateRoot
 		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKNormalOrder, totalAmount)
 		// 结算到商户
-		sd := merchant.SettlementParams{
+		sd := merchant.CarryParams{
 			OuterTxNo:         o.value.OrderNo,
 			Amount:            totalAmount,
 			TransactionFee:    transactionFee,
@@ -534,7 +534,7 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggregateRoot
 			TransactionTitle:  "零售订单结算",
 			TransactionRemark: o.value.Subject,
 		}
-		_, err := vendor.Account().SettleOrder(sd)
+		_, err := vendor.Account().Carry(sd)
 		return err
 	}
 	return nil
@@ -550,7 +550,7 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRoot
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
 		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKNormalOrder, totalAmount)
-		sd := merchant.SettlementParams{
+		sd := merchant.CarryParams{
 			OuterTxNo:         o.value.OrderNo,
 			Amount:            totalAmount,
 			TransactionFee:    transactionFee,
@@ -558,7 +558,7 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRoot
 			TransactionTitle:  "零售订单结算",
 			TransactionRemark: o.value.Subject,
 		}
-		_, err := vendor.Account().SettleOrder(sd)
+		_, err := vendor.Account().Carry(sd)
 		return err
 	}
 	return nil
@@ -571,7 +571,7 @@ func (o *subOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMerchantAggr
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
 		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKNormalOrder, totalAmount)
-		sd := merchant.SettlementParams{
+		sd := merchant.CarryParams{
 			OuterTxNo:         o.value.OrderNo,
 			Amount:            totalAmount,
 			TransactionFee:    transactionFee,
@@ -579,7 +579,7 @@ func (o *subOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMerchantAggr
 			TransactionTitle:  "零售订单结算",
 			TransactionRemark: o.value.Subject,
 		}
-		_, err := vendor.Account().SettleOrder(sd)
+		_, err := vendor.Account().Carry(sd)
 		return err
 
 	}

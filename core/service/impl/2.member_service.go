@@ -346,7 +346,7 @@ func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogReques
 	return &proto.WalletLogResponse{
 		LogId:              v.Id,
 		MemberId:           r.MemberId,
-		OuterTransactionNo: v.OuterNo,
+		OuterTransactionNo: v.OuterTxNo,
 		Kind:               int32(v.Kind),
 		TransactionTitle:   v.Subject,
 		Amount:             float64(v.ChangeValue),

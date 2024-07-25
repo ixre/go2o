@@ -713,7 +713,7 @@ func (o *wholesaleOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggrega
 		refundAmount := refund
 		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, int(totalAmount))
-		sd := merchant.SettlementParams{
+		sd := merchant.CarryParams{
 			OuterTxNo:         o.OrderNo(),
 			Amount:            refundAmount,
 			TransactionFee:    transactionFee,
@@ -721,7 +721,7 @@ func (o *wholesaleOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggrega
 			TransactionTitle:  "批发订单结算",
 			TransactionRemark: o.baseValue.Subject,
 		}
-		_, err := vendor.Account().SettleOrder(sd)
+		_, err := vendor.Account().Carry(sd)
 		return err
 	}
 	return nil
@@ -737,7 +737,7 @@ func (o *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggrega
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
 		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, totalAmount)
-		sd := merchant.SettlementParams{
+		sd := merchant.CarryParams{
 			OuterTxNo:         o.OrderNo(),
 			Amount:            amount,
 			TransactionFee:    transactionFee,
@@ -745,7 +745,7 @@ func (o *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggrega
 			TransactionTitle:  "批发订单结算",
 			TransactionRemark: o.baseValue.Subject,
 		}
-		_, err := vendor.Account().SettleOrder(sd)
+		_, err := vendor.Account().Carry(sd)
 		return err
 	}
 	return nil
@@ -758,7 +758,7 @@ func (o *wholesaleOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMercha
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
 		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, totalAmount)
-		sd := merchant.SettlementParams{
+		sd := merchant.CarryParams{
 			OuterTxNo:         o.OrderNo(),
 			Amount:            amount,
 			TransactionFee:    transactionFee,
@@ -766,7 +766,7 @@ func (o *wholesaleOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMercha
 			TransactionTitle:  "批发订单结算",
 			TransactionRemark: o.baseValue.Subject,
 		}
-		_, err := vendor.Account().SettleOrder(sd)
+		_, err := vendor.Account().Carry(sd)
 		return err
 	}
 	return nil

@@ -124,9 +124,7 @@ service MerchantService {
     rpc SaveStaff(SaveStaffRequest)returns(Result){
 
     }
-    // 账户充值
-    rpc ChargeAccount (MerchantChargeRequest) returns (TxResult) {
-    }
+ 
     // 账户入账
     rpc CarryToAccount(UserWalletCarryRequest) returns (TxResult){
     }

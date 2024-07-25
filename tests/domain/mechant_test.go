@@ -225,10 +225,10 @@ func TestGroupRebateRate(t *testing.T) {
 }
 
 // 测试结算订单到账户中
-func TestMchSettleOrder(t *testing.T) {
+func TestMchCarry(t *testing.T) {
 	repo := inject.GetMerchantRepo()
 	mch := repo.GetMerchant(1)
-	sd := merchant.SettlementParams{
+	sd := merchant.CarryParams{
 		OuterTxNo:         "TS:202407241000001",
 		Amount:            10000,
 		TransactionFee:    1000,
@@ -236,7 +236,7 @@ func TestMchSettleOrder(t *testing.T) {
 		TransactionTitle:  "测试订单结算",
 		TransactionRemark: "虚拟订单",
 	}
-	txId, err := mch.Account().SettleOrder(sd)
+	txId, err := mch.Account().Carry(sd)
 	if err != nil {
 		t.Log("结算订单出错：", err)
 		t.FailNow()

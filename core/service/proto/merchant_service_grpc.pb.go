@@ -93,8 +93,6 @@ type MerchantServiceClient interface {
 	GetStaffByMember(ctx context.Context, in *StaffRequest, opts ...grpc.CallOption) (*SStaff, error)
 	// 保存员工
 	SaveStaff(ctx context.Context, in *SaveStaffRequest, opts ...grpc.CallOption) (*Result, error)
-	// 账户充值
-	ChargeAccount(ctx context.Context, in *MerchantChargeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户入账
 	CarryToAccount(ctx context.Context, in *UserWalletCarryRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户人工调整
@@ -452,15 +450,6 @@ func (c *merchantServiceClient) SaveStaff(ctx context.Context, in *SaveStaffRequ
 	return out, nil
 }
 
-func (c *merchantServiceClient) ChargeAccount(ctx context.Context, in *MerchantChargeRequest, opts ...grpc.CallOption) (*TxResult, error) {
-	out := new(TxResult)
-	err := c.cc.Invoke(ctx, "/MerchantService/ChargeAccount", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *merchantServiceClient) CarryToAccount(ctx context.Context, in *UserWalletCarryRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, "/MerchantService/CarryToAccount", in, out, opts...)
@@ -599,8 +588,6 @@ type MerchantServiceServer interface {
 	GetStaffByMember(context.Context, *StaffRequest) (*SStaff, error)
 	// 保存员工
 	SaveStaff(context.Context, *SaveStaffRequest) (*Result, error)
-	// 账户充值
-	ChargeAccount(context.Context, *MerchantChargeRequest) (*TxResult, error)
 	// 账户入账
 	CarryToAccount(context.Context, *UserWalletCarryRequest) (*TxResult, error)
 	// 账户人工调整
@@ -732,9 +719,6 @@ func (UnimplementedMerchantServiceServer) GetStaffByMember(context.Context, *Sta
 }
 func (UnimplementedMerchantServiceServer) SaveStaff(context.Context, *SaveStaffRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveStaff not implemented")
-}
-func (UnimplementedMerchantServiceServer) ChargeAccount(context.Context, *MerchantChargeRequest) (*TxResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ChargeAccount not implemented")
 }
 func (UnimplementedMerchantServiceServer) CarryToAccount(context.Context, *UserWalletCarryRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CarryToAccount not implemented")
@@ -1436,24 +1420,6 @@ func _MerchantService_SaveStaff_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MerchantService_ChargeAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MerchantChargeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MerchantServiceServer).ChargeAccount(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/MerchantService/ChargeAccount",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).ChargeAccount(ctx, req.(*MerchantChargeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _MerchantService_CarryToAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserWalletCarryRequest)
 	if err := dec(in); err != nil {
@@ -1734,10 +1700,6 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveStaff",
 			Handler:    _MerchantService_SaveStaff_Handler,
-		},
-		{
-			MethodName: "ChargeAccount",
-			Handler:    _MerchantService_ChargeAccount_Handler,
 		},
 		{
 			MethodName: "CarryToAccount",

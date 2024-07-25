@@ -191,7 +191,7 @@ func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, tr
 	id, err := a.wallet.CarryTo(wallet.TransactionData{
 		TransactionTitle:  d.TransactionTitle,
 		Amount:            d.Amount,
-		OuterNo:           d.OuterTransactionNo,
+		OuterTxNo:         d.OuterTransactionNo,
 		TransactionFee:    transactionFee,
 		TransactionRemark: d.TransactionRemark,
 	}, freeze)
@@ -725,7 +725,7 @@ func (a *accountImpl) freezeWallet(p member.AccountOperateData, relateUser int64
 	id, err := a.wallet.Freeze(wallet.TransactionData{
 		TransactionTitle:  p.TransactionTitle,
 		Amount:            p.Amount,
-		OuterNo:           p.OuterTransactionNo,
+		OuterTxNo:         p.OuterTransactionNo,
 		TransactionRemark: p.TransactionRemark,
 		TransactionId:     p.TransactionId,
 	}, wallet.Operator{
@@ -854,31 +854,6 @@ func (a *accountImpl) unfreezeWallet(d member.AccountOperateData, relateUser int
 		err = a.asyncWallet()
 	}
 	return err
-	//if a.value.FreezeWallet < int64(amount) {
-	//	return member.ErrAccountNotEnoughAmount
-	//}
-	//if len(title) == 0 {
-	//	title = "(赠送)资金解冻"
-	//}
-	//unix := time.Now().Unix()
-	//v := &member.WalletAccountLog{
-	//	MemberId:    a.GetDomainId(),
-	//	Kind:        member.KindUnfreeze,
-	//	Title:       title,
-	//	RelateUser:  relateUser,
-	//	Amount:      int64(amount),
-	//	OuterNo:     outerNo,
-	//	ReviewStatus: enum.ReviewPass,
-	//	CreateTime:  unix,
-	//	UpdateTime:  unix,
-	//}
-	//a.value.WalletBalance += int64(amount)
-	//a.value.FreezeWallet -= int64(amount)
-	//_, err := a.Save()
-	//if err == nil {
-	//	_, err = a.rep.SaveWalletAccountLog(v)
-	//}
-	//return err
 }
 
 // PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号

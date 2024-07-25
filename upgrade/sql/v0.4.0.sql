@@ -751,6 +751,10 @@ COMMENT ON COLUMN workorder_comment.is_revert IS '是否撤回 0:否 1:是';
 COMMENT ON COLUMN workorder_comment.ref_cid IS '引用评论编号';
 COMMENT ON COLUMN workorder_comment.create_time IS '创建时间';
 
+/** 2024-07-25 */
+ALTER TABLE "public"."wal_wallet_log" RENAME COLUMN "outer_no" TO "outer_tx_no";
+ALTER TABLE "public"."wal_wallet_log" RENAME COLUMN "procedure_fee" TO "transaction_fee"; 
+
 
 
 

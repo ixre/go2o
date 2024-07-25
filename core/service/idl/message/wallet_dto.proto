@@ -59,6 +59,8 @@ message UserWalletFreezeRequest {
 message UserWalletUnfreezeRequest {
   // 会员编号
   sint64 userId = 1;
+  // 交易流水号
+  sint64 transactionId = 2;
   /** 标题 */
   string transactionTitle = 3;
   /** 冻结金额 */

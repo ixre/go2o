@@ -83,7 +83,7 @@ func TestFreezeWallet(t *testing.T) {
 	_, err := wlt.Freeze(wallet.TransactionData{
 		TransactionTitle:  "冻结金额",
 		Amount:            value,
-		OuterNo:           "",
+		OuterTxNo:         "",
 		TransactionRemark: "",
 	}, wallet.Operator{OperatorUid: 0})
 	if err != nil {

@@ -67,7 +67,7 @@ update_time)`)
 			int32(l.Kind),
 			l.Subject,
 			l.OuterChan,
-			l.OuterNo,
+			l.OuterTxNo,
 			l.ChangeValue,
 			l.Balance,
 			int32(l.TransactionFee),

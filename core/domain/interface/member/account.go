@@ -115,11 +115,11 @@ type (
 		// Unfreeze 账户解冻
 		Unfreeze(account AccountType, p AccountOperateData, relateUser int64) error
 
-		// PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号
-		PaymentDiscount(tradeNo string, amount int, remark string) error
-
 		// FreezeExpired 将冻结金额标记为失效
 		FreezeExpired(account AccountType, amount int, remark string) error
+
+		// PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号
+		PaymentDiscount(tradeNo string, amount int, remark string) error
 
 		// GetWalletLog 获取钱包账户日志
 		GetWalletLog(id int64) wallet.WalletLog

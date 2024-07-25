@@ -229,8 +229,10 @@ func (o *tradeOrderImpl) CashPay() error {
 	vp := (1 - v.TradeRate) * float64(pv.TotalAmount)
 	if vp > 0 {
 		va := o.mchRepo.GetMerchant(int(v.VendorId))
-		err := va.Account().TakePayment(o.OrderNo(), int(vp), 0,
-			"交易费-"+o.value.Subject)
+		err := va.Account().Consume(
+			"交易费-"+o.value.Subject,
+			int(vp),
+			o.OrderNo(), o.value.Subject)
 		if err != nil {
 			return err
 		}
@@ -342,7 +344,7 @@ func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRo
 		totalAmount := int64(float64(sAmount) * enum.RATE_AMOUNT)
 		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, int(totalAmount))
-		sd := merchant.SettlementParams{
+		sd := merchant.CarryParams{
 			OuterTxNo:         o.OrderNo(),
 			Amount:            int(totalAmount),
 			TransactionFee:    transactionFee,
@@ -350,7 +352,7 @@ func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRo
 			TransactionTitle:  "交易单结算",
 			TransactionRemark: v.Subject,
 		}
-		_, err := vendor.Account().SettleOrder(sd)
+		_, err := vendor.Account().Carry(sd)
 		return err
 	}
 	return nil

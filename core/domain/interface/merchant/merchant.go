@@ -15,11 +15,12 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
 )
 
 const (
 	KindAccountCharge           = 1
-	KindAccountSettleOrder      = 2
+	KindAccountCarry            = 2
 	KindAccountPresent          = 3
 	KindAccountTakePayment      = 4
 	KindAccountTransferToMember = 5
@@ -103,13 +104,30 @@ type (
 		//GetBalanceLogByOuterNo(outerNo string) *BalanceLog
 		// SaveBalanceLog 保存余额变动信息
 		SaveBalanceLog(*BalanceLog) (int, error)
-		// SettleOrder 订单结账(商户结算),返回交易流水编号和错误
-		SettleOrder(p SettlementParams) (txId int, err error)
-		// TakePayment 支出
-		TakePayment(outerNo string, amount int, csn int, remark string) error
 
-		// 提现
-		//todo:???
+		// Carry 订单结账(商户结算),返回交易流水编号和错误
+		Carry(p CarryParams) (txId int, err error)
+
+		// Consume 消耗商户支出，例如广告费、提现等
+		Consume(transactionTitle string, amount int, outerTxNo string, transactionRemark string) error
+
+		// Freeze 账户冻结
+		Freeze(d wallet.TransactionData, relateUser int64) (int, error)
+
+		// Unfreeze 账户解冻
+		Unfreeze(d wallet.TransactionData, relateUser int64) error
+
+		// Adjust 客服调整
+		Adjust(title string, amount int, remark string, relateUser int64) error
+
+		// RequestWithdrawal 申请提现(只支持钱包),drawType：提现方式,返回info_id,交易号 及错误
+		RequestWithdrawal(w *wallet.WithdrawTransaction) (int64, string, error)
+
+		// ReviewWithdrawal 提现审核
+		ReviewWithdrawal(transactionId int, pass bool, reason string) error
+
+		// FinishWithdrawal 完成提现(打款),outerTransactionNo为外部交易号
+		FinishWithdrawal(transactionId int, outerTransactionNo string) error
 
 		// TransferToMember todo: 以下需要重构或移除
 		// 转到会员账户
@@ -117,17 +135,10 @@ type (
 
 		// TransferToMember1 商户积分转会员积分
 		TransferToMember1(amount float32) error
-
-		// Present 赠送
-		Present(amount int, remark string) error
-
-		// Charge 充值
-		Charge(kind int32, amount int, title, outerNo string,
-			relateUser int64) error
 	}
 
 	// 订单参数
-	SettlementParams struct {
+	CarryParams struct {
 		// 是否先冻结
 		Freeze bool
 		// 外部订单号,非订单添加前缀，如:XT:100000
