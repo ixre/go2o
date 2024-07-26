@@ -225,7 +225,7 @@ func (c *contentService) parseArticleCategoryDto(v content.Category) *proto.SArt
 	return &proto.SArticleCategory{
 		Id:          int64(v.Id),
 		ParentId:    int64(v.ParentId),
-		PermFlag:    int32(v.PermFlag),
+		Flag:        int32(v.PermFlag),
 		Name:        v.Name,
 		Alias:       v.Alias,
 		SortNum:     int32(v.SortNum),
@@ -240,7 +240,7 @@ func (c *contentService) parseArticleCategory(r *proto.SArticleCategory) *conten
 	return &content.Category{
 		Id:          int(r.Id),
 		ParentId:    int(r.ParentId),
-		PermFlag:    int(r.PermFlag),
+		PermFlag:    int(r.Flag),
 		Name:        r.Name,
 		Alias:       r.Alias,
 		SortNum:     int(r.SortNum),

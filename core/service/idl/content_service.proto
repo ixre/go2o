@@ -54,7 +54,7 @@ message SArticleCategory {
     //父类编号,如为一级栏目则为0
     int64 parentId = 2;
     // 浏览权限
-    int32 permFlag = 3;
+    int32 flag = 3;
     // 名称(唯一)
     string name = 4;
     // 别名

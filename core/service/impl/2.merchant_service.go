@@ -1153,7 +1153,7 @@ func (m *merchantService) RequestWithdrawal(_ context.Context, req *proto.UserWi
 	return m.txResult(
 		int(transactionId),
 		map[string]string{
-			"transationId": txNo,
+			"transationNo": txNo,
 		}), nil
 }
 

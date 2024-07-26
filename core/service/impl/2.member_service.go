@@ -1386,7 +1386,7 @@ func (s *memberService) B4EAuth(_ context.Context, r *proto.B4EAuthRequest) (*pr
 }
 
 // Withdraw 提现并返回提现编号,交易号以及错误信息
-func (s *memberService) Withdraw(_ context.Context, r *proto.UserWithdrawRequest) (*proto.TxResult, error) {
+func (s *memberService) Withdrawal(_ context.Context, r *proto.UserWithdrawRequest) (*proto.TxResult, error) {
 	m, err := s.getMember(r.UserId)
 	if err != nil {
 		return s.errorV2(err), nil

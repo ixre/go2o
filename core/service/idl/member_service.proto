@@ -231,7 +231,7 @@ service MemberService {
     rpc AccountTransfer (AccountTransferRequest) returns (TxResult) {
     }
     // 提现并返回提现编号,交易号以及错误信息
-    rpc RequestWithdraw (UserWithdrawRequest) returns (TxResult) {
+    rpc RequestWithdrawal (UserWithdrawRequest) returns (TxResult) {
     }
     // 确认提现
     rpc ReviewWithdrawal (ReviewUserWithdrawalRequest) returns (TxResult) {
