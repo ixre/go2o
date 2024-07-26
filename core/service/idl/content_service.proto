@@ -11,10 +11,10 @@ service ContentService {
     rpc GetPage (IdOrName) returns (SPage) {
     }
     // 保存页面
-    rpc SavePage (SPage) returns (Result) {
+    rpc SavePage (SPage) returns (TxResult) {
     }
     // 删除页面
-    rpc DeletePage (Int64) returns (Result) {
+    rpc DeletePage (Int64) returns (TxResult) {
     }
 
     // 获取所有栏目
@@ -24,23 +24,23 @@ service ContentService {
     rpc GetArticleCategory (IdOrName) returns (SArticleCategory) {
     }
     // 保存文章栏目
-    rpc SaveArticleCategory (SArticleCategory) returns (Result) {
+    rpc SaveArticleCategory (SArticleCategory) returns (TxResult) {
     }
     // 删除文章分类
-    rpc DeleteArticleCategory (Int64) returns (Result) {
+    rpc DeleteArticleCategory (Int64) returns (TxResult) {
     }
     // 获取文章
     rpc GetArticle (IdOrName) returns (SArticle) {
     }
     // 更新文章浏览次数
-    rpc UpdateArticleViewsCount(ArticleViewsRequest) returns (Result){} 
+    rpc UpdateArticleViewsCount(ArticleViewsRequest) returns (TxResult){} 
     // 喜欢/不喜欢文章
-    rpc LikeArticle(ArticleLikeRequest) returns (Result){} 
+    rpc LikeArticle(ArticleLikeRequest) returns (TxResult){} 
     // 删除文章
-    rpc DeleteArticle (Int64) returns (Result) {
+    rpc DeleteArticle (Int64) returns (TxResult) {
     }
     // 保存文章
-    rpc SaveArticle (SArticle) returns (Result) {
+    rpc SaveArticle (SArticle) returns (TxResult) {
     } 
 }
 

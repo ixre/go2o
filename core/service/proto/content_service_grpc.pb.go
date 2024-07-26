@@ -40,27 +40,27 @@ type ContentServiceClient interface {
 	// 获取页面
 	GetPage(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*SPage, error)
 	// 保存页面
-	SavePage(ctx context.Context, in *SPage, opts ...grpc.CallOption) (*Result, error)
+	SavePage(ctx context.Context, in *SPage, opts ...grpc.CallOption) (*TxResult, error)
 	// 删除页面
-	DeletePage(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	DeletePage(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取所有栏目
 	GetArticleCategories(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ArticleCategoriesResponse, error)
 	// 获取文章栏目,可传入ID或者别名
 	GetArticleCategory(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*SArticleCategory, error)
 	// 保存文章栏目
-	SaveArticleCategory(ctx context.Context, in *SArticleCategory, opts ...grpc.CallOption) (*Result, error)
+	SaveArticleCategory(ctx context.Context, in *SArticleCategory, opts ...grpc.CallOption) (*TxResult, error)
 	// 删除文章分类
-	DeleteArticleCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	DeleteArticleCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取文章
 	GetArticle(ctx context.Context, in *IdOrName, opts ...grpc.CallOption) (*SArticle, error)
 	// 更新文章浏览次数
-	UpdateArticleViewsCount(ctx context.Context, in *ArticleViewsRequest, opts ...grpc.CallOption) (*Result, error)
+	UpdateArticleViewsCount(ctx context.Context, in *ArticleViewsRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 喜欢/不喜欢文章
-	LikeArticle(ctx context.Context, in *ArticleLikeRequest, opts ...grpc.CallOption) (*Result, error)
+	LikeArticle(ctx context.Context, in *ArticleLikeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 删除文章
-	DeleteArticle(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error)
+	DeleteArticle(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*TxResult, error)
 	// 保存文章
-	SaveArticle(ctx context.Context, in *SArticle, opts ...grpc.CallOption) (*Result, error)
+	SaveArticle(ctx context.Context, in *SArticle, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type contentServiceClient struct {
@@ -80,8 +80,8 @@ func (c *contentServiceClient) GetPage(ctx context.Context, in *IdOrName, opts .
 	return out, nil
 }
 
-func (c *contentServiceClient) SavePage(ctx context.Context, in *SPage, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *contentServiceClient) SavePage(ctx context.Context, in *SPage, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ContentService_SavePage_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -89,8 +89,8 @@ func (c *contentServiceClient) SavePage(ctx context.Context, in *SPage, opts ...
 	return out, nil
 }
 
-func (c *contentServiceClient) DeletePage(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *contentServiceClient) DeletePage(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ContentService_DeletePage_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -116,8 +116,8 @@ func (c *contentServiceClient) GetArticleCategory(ctx context.Context, in *IdOrN
 	return out, nil
 }
 
-func (c *contentServiceClient) SaveArticleCategory(ctx context.Context, in *SArticleCategory, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *contentServiceClient) SaveArticleCategory(ctx context.Context, in *SArticleCategory, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ContentService_SaveArticleCategory_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -125,8 +125,8 @@ func (c *contentServiceClient) SaveArticleCategory(ctx context.Context, in *SArt
 	return out, nil
 }
 
-func (c *contentServiceClient) DeleteArticleCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *contentServiceClient) DeleteArticleCategory(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ContentService_DeleteArticleCategory_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -143,8 +143,8 @@ func (c *contentServiceClient) GetArticle(ctx context.Context, in *IdOrName, opt
 	return out, nil
 }
 
-func (c *contentServiceClient) UpdateArticleViewsCount(ctx context.Context, in *ArticleViewsRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *contentServiceClient) UpdateArticleViewsCount(ctx context.Context, in *ArticleViewsRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ContentService_UpdateArticleViewsCount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -152,8 +152,8 @@ func (c *contentServiceClient) UpdateArticleViewsCount(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *contentServiceClient) LikeArticle(ctx context.Context, in *ArticleLikeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *contentServiceClient) LikeArticle(ctx context.Context, in *ArticleLikeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ContentService_LikeArticle_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -161,8 +161,8 @@ func (c *contentServiceClient) LikeArticle(ctx context.Context, in *ArticleLikeR
 	return out, nil
 }
 
-func (c *contentServiceClient) DeleteArticle(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *contentServiceClient) DeleteArticle(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ContentService_DeleteArticle_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -170,8 +170,8 @@ func (c *contentServiceClient) DeleteArticle(ctx context.Context, in *Int64, opt
 	return out, nil
 }
 
-func (c *contentServiceClient) SaveArticle(ctx context.Context, in *SArticle, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *contentServiceClient) SaveArticle(ctx context.Context, in *SArticle, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ContentService_SaveArticle_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -186,27 +186,27 @@ type ContentServiceServer interface {
 	// 获取页面
 	GetPage(context.Context, *IdOrName) (*SPage, error)
 	// 保存页面
-	SavePage(context.Context, *SPage) (*Result, error)
+	SavePage(context.Context, *SPage) (*TxResult, error)
 	// 删除页面
-	DeletePage(context.Context, *Int64) (*Result, error)
+	DeletePage(context.Context, *Int64) (*TxResult, error)
 	// 获取所有栏目
 	GetArticleCategories(context.Context, *Empty) (*ArticleCategoriesResponse, error)
 	// 获取文章栏目,可传入ID或者别名
 	GetArticleCategory(context.Context, *IdOrName) (*SArticleCategory, error)
 	// 保存文章栏目
-	SaveArticleCategory(context.Context, *SArticleCategory) (*Result, error)
+	SaveArticleCategory(context.Context, *SArticleCategory) (*TxResult, error)
 	// 删除文章分类
-	DeleteArticleCategory(context.Context, *Int64) (*Result, error)
+	DeleteArticleCategory(context.Context, *Int64) (*TxResult, error)
 	// 获取文章
 	GetArticle(context.Context, *IdOrName) (*SArticle, error)
 	// 更新文章浏览次数
-	UpdateArticleViewsCount(context.Context, *ArticleViewsRequest) (*Result, error)
+	UpdateArticleViewsCount(context.Context, *ArticleViewsRequest) (*TxResult, error)
 	// 喜欢/不喜欢文章
-	LikeArticle(context.Context, *ArticleLikeRequest) (*Result, error)
+	LikeArticle(context.Context, *ArticleLikeRequest) (*TxResult, error)
 	// 删除文章
-	DeleteArticle(context.Context, *Int64) (*Result, error)
+	DeleteArticle(context.Context, *Int64) (*TxResult, error)
 	// 保存文章
-	SaveArticle(context.Context, *SArticle) (*Result, error)
+	SaveArticle(context.Context, *SArticle) (*TxResult, error)
 	mustEmbedUnimplementedContentServiceServer()
 }
 
@@ -217,10 +217,10 @@ type UnimplementedContentServiceServer struct {
 func (UnimplementedContentServiceServer) GetPage(context.Context, *IdOrName) (*SPage, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPage not implemented")
 }
-func (UnimplementedContentServiceServer) SavePage(context.Context, *SPage) (*Result, error) {
+func (UnimplementedContentServiceServer) SavePage(context.Context, *SPage) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SavePage not implemented")
 }
-func (UnimplementedContentServiceServer) DeletePage(context.Context, *Int64) (*Result, error) {
+func (UnimplementedContentServiceServer) DeletePage(context.Context, *Int64) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePage not implemented")
 }
 func (UnimplementedContentServiceServer) GetArticleCategories(context.Context, *Empty) (*ArticleCategoriesResponse, error) {
@@ -229,25 +229,25 @@ func (UnimplementedContentServiceServer) GetArticleCategories(context.Context, *
 func (UnimplementedContentServiceServer) GetArticleCategory(context.Context, *IdOrName) (*SArticleCategory, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetArticleCategory not implemented")
 }
-func (UnimplementedContentServiceServer) SaveArticleCategory(context.Context, *SArticleCategory) (*Result, error) {
+func (UnimplementedContentServiceServer) SaveArticleCategory(context.Context, *SArticleCategory) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveArticleCategory not implemented")
 }
-func (UnimplementedContentServiceServer) DeleteArticleCategory(context.Context, *Int64) (*Result, error) {
+func (UnimplementedContentServiceServer) DeleteArticleCategory(context.Context, *Int64) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteArticleCategory not implemented")
 }
 func (UnimplementedContentServiceServer) GetArticle(context.Context, *IdOrName) (*SArticle, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetArticle not implemented")
 }
-func (UnimplementedContentServiceServer) UpdateArticleViewsCount(context.Context, *ArticleViewsRequest) (*Result, error) {
+func (UnimplementedContentServiceServer) UpdateArticleViewsCount(context.Context, *ArticleViewsRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateArticleViewsCount not implemented")
 }
-func (UnimplementedContentServiceServer) LikeArticle(context.Context, *ArticleLikeRequest) (*Result, error) {
+func (UnimplementedContentServiceServer) LikeArticle(context.Context, *ArticleLikeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LikeArticle not implemented")
 }
-func (UnimplementedContentServiceServer) DeleteArticle(context.Context, *Int64) (*Result, error) {
+func (UnimplementedContentServiceServer) DeleteArticle(context.Context, *Int64) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteArticle not implemented")
 }
-func (UnimplementedContentServiceServer) SaveArticle(context.Context, *SArticle) (*Result, error) {
+func (UnimplementedContentServiceServer) SaveArticle(context.Context, *SArticle) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveArticle not implemented")
 }
 func (UnimplementedContentServiceServer) mustEmbedUnimplementedContentServiceServer() {}

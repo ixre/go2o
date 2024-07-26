@@ -54,7 +54,7 @@ func (c *contentService) GetPage(_ context.Context, id *proto.IdOrName) (*proto.
 }
 
 // 保存页面
-func (c *contentService) SavePage(_ context.Context, v *proto.SPage) (*proto.Result, error) {
+func (c *contentService) SavePage(_ context.Context, v *proto.SPage) (*proto.TxResult, error) {
 	ic := c._contentRepo.GetContent(0)
 	var ip content.IPage
 	var err error
@@ -68,14 +68,14 @@ func (c *contentService) SavePage(_ context.Context, v *proto.SPage) (*proto.Res
 	if err == nil {
 		_, err = ip.Save()
 	}
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 // 删除页面
-func (c *contentService) DeletePage(_ context.Context, id *proto.Int64) (*proto.Result, error) {
+func (c *contentService) DeletePage(_ context.Context, id *proto.Int64) (*proto.TxResult, error) {
 	ic := c._contentRepo.GetContent(0)
 	err := ic.PageManager().DeletePage(int(id.Value))
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 // 获取所有栏目
@@ -106,17 +106,17 @@ func (c *contentService) GetArticleCategory(_ context.Context, name *proto.IdOrN
 }
 
 // 保存文章栏目
-func (c *contentService) SaveArticleCategory(_ context.Context, r *proto.SArticleCategory) (*proto.Result, error) {
+func (c *contentService) SaveArticleCategory(_ context.Context, r *proto.SArticleCategory) (*proto.TxResult, error) {
 	m := c._sysContent.ArticleManager()
 	v := c.parseArticleCategory(r)
 	err := m.SaveCategory(v)
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 // 删除文章分类
-func (c *contentService) DeleteArticleCategory(_ context.Context, id *proto.Int64) (*proto.Result, error) {
+func (c *contentService) DeleteArticleCategory(_ context.Context, id *proto.Int64) (*proto.TxResult, error) {
 	err := c._sysContent.ArticleManager().DeleteCategory(int(id.Value))
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 // GetArticle 获取文章
@@ -136,17 +136,17 @@ func (c *contentService) GetArticle(_ context.Context, id *proto.IdOrName) (*pro
 }
 
 // DeleteArticle 删除文章
-func (c *contentService) DeleteArticle(_ context.Context, id *proto.Int64) (*proto.Result, error) {
+func (c *contentService) DeleteArticle(_ context.Context, id *proto.Int64) (*proto.TxResult, error) {
 	art := c._sysContent.ArticleManager().GetArticle(int(id.Value))
 	if art == nil {
-		return c.error(fmt.Errorf("no such article")), nil
+		return c.errorV2(fmt.Errorf("no such article")), nil
 	}
 	err := art.Destory()
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 // SaveArticle 保存文章
-func (c *contentService) SaveArticle(_ context.Context, r *proto.SArticle) (*proto.Result, error) {
+func (c *contentService) SaveArticle(_ context.Context, r *proto.SArticle) (*proto.TxResult, error) {
 	m := c._sysContent.ArticleManager()
 	v := c.parseArticle(r)
 	var ia content.IArticle
@@ -159,14 +159,14 @@ func (c *contentService) SaveArticle(_ context.Context, r *proto.SArticle) (*pro
 	if err == nil {
 		err = ia.Save()
 	}
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 // LikeArticle implements proto.ContentServiceServer.
-func (c *contentService) LikeArticle(_ context.Context, req *proto.ArticleLikeRequest) (*proto.Result, error) {
+func (c *contentService) LikeArticle(_ context.Context, req *proto.ArticleLikeRequest) (*proto.TxResult, error) {
 	art := c._sysContent.ArticleManager().GetArticle(int(req.Id))
 	if art == nil {
-		return c.error(fmt.Errorf("no such article")), nil
+		return c.errorV2(fmt.Errorf("no such article")), nil
 	}
 	var err error
 	if req.IsDislike {
@@ -174,17 +174,17 @@ func (c *contentService) LikeArticle(_ context.Context, req *proto.ArticleLikeRe
 	} else {
 		err = art.Like(int(req.MemberId))
 	}
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 // UpdateArticleViewsCount implements proto.ContentServiceServer.
-func (c *contentService) UpdateArticleViewsCount(_ context.Context, req *proto.ArticleViewsRequest) (*proto.Result, error) {
+func (c *contentService) UpdateArticleViewsCount(_ context.Context, req *proto.ArticleViewsRequest) (*proto.TxResult, error) {
 	art := c._sysContent.ArticleManager().GetArticle(int(req.Id))
 	if art == nil {
-		return c.error(fmt.Errorf("no such article")), nil
+		return c.errorV2(fmt.Errorf("no such article")), nil
 	}
 	err := art.IncreaseViewCount(int(req.MemberId), int(req.Count))
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 func (c *contentService) parsePageDto(src *content.Page) *proto.SPage {
