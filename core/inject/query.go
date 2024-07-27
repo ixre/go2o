@@ -70,6 +70,7 @@ var queryProvideSets = wire.NewSet(
 	query.NewContentQuery,
 	query.NewWorkQuery,
 	query.NewWalletQuery,
+	query.NewInvoiceQuery,
 )
 
 var daoProvideSets = wire.NewSet(
@@ -143,5 +144,10 @@ func GetWorkQueryService() *query.WorkQuery {
 
 // GetWalletQueryService 获取钱包查询服务
 func GetWalletQueryService() *query.WalletQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+// GetInvoiceQueryService 获取发票查询服务
+func GetInvoiceQueryService() *query.InvoiceQuery {
 	panic(wire.Build(queryProvideSets))
 }
