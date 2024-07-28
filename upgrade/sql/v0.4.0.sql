@@ -757,8 +757,11 @@ ALTER TABLE "public"."wal_wallet_log" RENAME COLUMN "procedure_fee" TO "transact
 
 
 
+ALTER TABLE "public"."article_category" RENAME COLUMN "parent_id" TO "pid";
+ALTER TABLE "public"."article_category" RENAME COLUMN "perm_flag" TO "flag";
+ALTER TABLE "public"."article_category" RENAME COLUMN "cat_alias" TO "alias";
+ALTER TABLE "public"."article_category" RENAME COLUMN "sort_num" TO "sort_no";
 
-
-
+ALTER TABLE "public"."article_category" RENAME COLUMN "describe" TO "description";
 
 

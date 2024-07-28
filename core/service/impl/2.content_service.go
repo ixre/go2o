@@ -224,11 +224,11 @@ func (c *contentService) parsePage(v *proto.SPage) *content.Page {
 func (c *contentService) parseArticleCategoryDto(v content.Category) *proto.SArticleCategory {
 	return &proto.SArticleCategory{
 		Id:          int64(v.Id),
-		ParentId:    int64(v.ParentId),
-		Flag:        int32(v.PermFlag),
+		Pid:         int64(v.Pid),
+		Flag:        int32(v.Flag),
 		Name:        v.Name,
 		Alias:       v.Alias,
-		SortNum:     int32(v.SortNum),
+		SortNo:      int32(v.SortNo),
 		Location:    v.Location,
 		Title:       v.Title,
 		Keywords:    v.Keywords,
@@ -239,11 +239,11 @@ func (c *contentService) parseArticleCategoryDto(v content.Category) *proto.SArt
 func (c *contentService) parseArticleCategory(r *proto.SArticleCategory) *content.Category {
 	return &content.Category{
 		Id:          int(r.Id),
-		ParentId:    int(r.ParentId),
-		PermFlag:    int(r.Flag),
+		Pid:         int(r.Pid),
+		Flag:        int(r.Flag),
 		Name:        r.Name,
 		Alias:       r.Alias,
-		SortNum:     int(r.SortNum),
+		SortNo:      int(r.SortNo),
 		Location:    r.Location,
 		Title:       r.Title,
 		Keywords:    r.Keywords,

@@ -10,6 +10,7 @@ package content
 
 import (
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/content"
@@ -55,7 +56,7 @@ func (a *articleImpl) SetValue(v *content.Article) error {
 	if v.MchId > 0 {
 		// 判断商户投搞，分类是否支持投稿
 		cat := a.Category()
-		if (cat.PermFlag & content.FCategoryPost) != content.FCategoryPost {
+		if (cat.Flag & content.FCategoryPost) != content.FCategoryPost {
 			return content.ErrDisallowPostArticle
 		}
 	}
@@ -123,6 +124,8 @@ func (a *articleImpl) Destory() error {
 
 var _ content.IArticleManager = new(articleManagerImpl)
 
+var locker sync.RWMutex
+
 type articleManagerImpl struct {
 	_rep         content.IArticleCategoryRepo
 	_artRepo     content.IArticleRepo
@@ -141,11 +144,17 @@ func newArticleManagerImpl(userId int64, rep content.IArticleCategoryRepo, artRe
 // GetAllCategory 获取所有的栏目
 func (a *articleManagerImpl) GetAllCategory() []content.Category {
 	if a.categoryList == nil {
+		locker.RLock()
+		defer locker.RUnlock()
 		list := a._rep.FindList(nil, "")
 		l := len(list)
 		//如果没有分类,则为系统初始化数据
 		if l == 0 && a._userId <= 0 {
+			locker.RUnlock()
+			locker.Lock()
 			a.initSystemCategory()
+			locker.Unlock()
+			locker.RLock()
 			list = a._rep.FindList(nil, "")
 			l = len(list)
 		}
@@ -174,9 +183,9 @@ func (a *articleManagerImpl) initSystemCategory() {
 			Name:  "批发公告",
 		},
 		{
-			Alias:    "member",
-			Name:     "会员公告",
-			PermFlag: content.FCategoryOpen,
+			Alias: "member",
+			Name:  "会员公告",
+			Flag:  content.FCategoryOpen,
 		},
 		{
 			Alias: "merchant",
@@ -191,9 +200,9 @@ func (a *articleManagerImpl) initSystemCategory() {
 			Name:  "帮助中心",
 		},
 		{
-			Alias:    "news",
-			Name:     "新闻资讯",
-			PermFlag: content.FCategoryPost,
+			Alias: "news",
+			Name:  "新闻资讯",
+			Flag:  content.FCategoryPost,
 		},
 		{
 			Alias: "notification",
@@ -201,7 +210,7 @@ func (a *articleManagerImpl) initSystemCategory() {
 		},
 	}
 	for _, v := range list {
-		v.PermFlag = v.PermFlag | content.FCategoryInternal
+		v.Flag = v.Flag | content.FCategoryInternal
 		a.SaveCategory(v)
 	}
 }
@@ -243,17 +252,17 @@ func (a *articleManagerImpl) SaveCategory(v *content.Category) error {
 	r.Alias = v.Alias
 	r.Location = v.Location
 	r.Title = v.Title
-	r.SortNum = v.SortNum
-	r.ParentId = v.ParentId
+	r.SortNo = v.SortNo
+	r.Pid = v.Pid
 	r.Title = v.Title
 	r.Keywords = v.Keywords
 	r.Description = v.Description
 
 	// 设置访问权限
-	if v.PermFlag > 0 {
-		r.PermFlag = v.PermFlag
+	if v.Flag > 0 {
+		r.Flag = v.Flag
 	}
-	r.UpdateTime = time.Now().Unix()
+	r.UpdateTime = int(time.Now().Unix())
 	_, err := a._rep.Save(r)
 	if err == nil {
 		a.categoryList = nil

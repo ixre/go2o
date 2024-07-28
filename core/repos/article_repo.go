@@ -10,6 +10,7 @@ package repos
 
 import (
 	"errors"
+	"sync"
 
 	impl "github.com/ixre/go2o/core/domain/content"
 	"github.com/ixre/go2o/core/domain/interface/content"
@@ -20,6 +21,8 @@ import (
 
 var _ content.IArticleRepo = new(contentRepo)
 var _ content.IPageRepo = new(pageRepoImpl)
+var once sync.Once
+var _articleRepo content.IArticleRepo
 
 type contentRepo struct {
 	fw.BaseRepository[content.Article]
@@ -33,14 +36,17 @@ type contentRepo struct {
 func NewArticleRepo(o orm.Orm, wo fw.ORM,
 	catRepo content.IArticleCategoryRepo,
 	pageRepo content.IPageRepo) content.IArticleRepo {
-	r := &contentRepo{
-		Connector: o.Connector(),
-		pageRepo:  pageRepo,
-		catRepo:   catRepo,
-		o:         o,
-	}
-	r.ORM = wo
-	return r
+	once.Do(func() {
+		r := &contentRepo{
+			Connector: o.Connector(),
+			pageRepo:  pageRepo,
+			catRepo:   catRepo,
+			o:         o,
+		}
+		r.ORM = wo
+		_articleRepo = r
+	})
+	return _articleRepo
 }
 
 // 获取内容
