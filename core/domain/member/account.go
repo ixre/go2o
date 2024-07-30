@@ -194,7 +194,7 @@ func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, tr
 		OuterTxNo:         d.OuterTransactionNo,
 		TransactionFee:    transactionFee,
 		TransactionRemark: d.TransactionRemark,
-		OuterTxUid: d.OuterTxUid,
+		OuterTxUid:        d.OuterTxUid,
 	}, freeze)
 	if err == nil {
 		err = a.asyncWallet()
@@ -249,6 +249,19 @@ func (a *accountImpl) Consume(account member.AccountType, title string, amount i
 		return a.flowAccountConsume(title, amount, outerNo, remark)
 	}
 	return member.ErrNotSupportAccountType
+}
+
+// PrefreezeConsume implements member.IAccount.
+func (a *accountImpl) PrefreezeConsume(transactionId int, transactionTitle string, transactionRemark string) error {
+	return a.wallet.PrefreezeConsume(wallet.TransactionData{
+		TransactionTitle:  transactionTitle,
+		Amount:            0,
+		TransactionFee:    0,
+		OuterTxNo:         "",
+		TransactionRemark: transactionRemark,
+		TransactionId:     transactionId,
+		OuterTxUid:        0,
+	})
 }
 
 func (a *accountImpl) Discount(account member.AccountType, title string, amount int, outerNo string, remark string) error {
@@ -729,7 +742,7 @@ func (a *accountImpl) freezeWallet(p member.AccountOperateData, relateUser int64
 		OuterTxNo:         p.OuterTransactionNo,
 		TransactionRemark: p.TransactionRemark,
 		TransactionId:     p.TransactionId,
-		OuterTxUid: p.OuterTxUid,
+		OuterTxUid:        p.OuterTxUid,
 	}, wallet.Operator{
 		OperatorUid:  int(relateUser),
 		OperatorName: "",

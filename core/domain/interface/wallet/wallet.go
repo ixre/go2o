@@ -196,6 +196,9 @@ type (
 		// Consume 消费
 		Consume(amount int, title string, outerNo string, remark string) error
 
+		// 预扣消费,将冻结转为消费,扣款后不自动退回余额
+		PrefreezeConsume(data TransactionData) error
+
 		// Discount 抵扣,must是否必须大于0
 		Discount(amount int, title, outerNo string, must bool) error
 

@@ -130,6 +130,7 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 	if p.Amount <= 0 || math.IsNaN(float64(p.Amount)) {
 		return 0, merchant.ErrAmount
 	}
+	// 计算金额
 	fAmount := int64(p.Amount / 100)
 	fTradeFee := int64(p.TransactionFee / 100)
 	fRefund := int64(p.RefundAmount / 100)

@@ -115,6 +115,9 @@ type (
 		// Unfreeze 账户解冻, isRefundBalance 是否退回到余额
 		Unfreeze(account AccountType, p AccountOperateData, isRefundBalance bool, relateUser int64) error
 
+		// 预扣消费,将冻结转为消费,扣款后不自动退回余额
+		PrefreezeConsume(transactionId int, transactionTitle string, transactionRemark string) error
+
 		// FreezeExpired 将冻结金额标记为失效
 		FreezeExpired(account AccountType, amount int, remark string) error
 

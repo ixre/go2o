@@ -25,6 +25,18 @@ message UserWalletCarryRequest{
 }
 
 
+/** 账户预扣消费请求 */
+message UserPrefreezeConsumeRequest{
+  // 会员编号
+  sint64 userId = 1;
+  // 交易流水编号,对冻结流水进行更新时,传递该参数
+  int64 transactionId = 2;
+  /** 标题 */
+  string transactionTitle = 3;
+    // 备注
+  string transactionRemark = 4;
+}
+
 /** 账户调整请求 */
 message UserWalletAdjustRequest {
   /** 会员编号 */

@@ -80,6 +80,7 @@ const (
 	MemberService_AccountCharge_FullMethodName              = "/MemberService/AccountCharge"
 	MemberService_AccountCarryTo_FullMethodName             = "/MemberService/AccountCarryTo"
 	MemberService_AccountConsume_FullMethodName             = "/MemberService/AccountConsume"
+	MemberService_PrefreezeConsume_FullMethodName           = "/MemberService/PrefreezeConsume"
 	MemberService_AccountDiscount_FullMethodName            = "/MemberService/AccountDiscount"
 	MemberService_Freeze_FullMethodName                     = "/MemberService/Freeze"
 	MemberService_Unfreeze_FullMethodName                   = "/MemberService/Unfreeze"
@@ -237,6 +238,8 @@ type MemberServiceClient interface {
 	AccountCarryTo(ctx context.Context, in *AccountCarryRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户消耗,amount精确到分
 	AccountConsume(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// 账户预扣消耗,amount精确到分
+	PrefreezeConsume(ctx context.Context, in *UserPrefreezeConsumeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户抵扣,amount精确到分
 	AccountDiscount(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 账户冻结
@@ -834,6 +837,15 @@ func (c *memberServiceClient) AccountConsume(ctx context.Context, in *AccountCha
 	return out, nil
 }
 
+func (c *memberServiceClient) PrefreezeConsume(ctx context.Context, in *UserPrefreezeConsumeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MemberService_PrefreezeConsume_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *memberServiceClient) AccountDiscount(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_AccountDiscount_FullMethodName, in, out, opts...)
@@ -1141,6 +1153,8 @@ type MemberServiceServer interface {
 	AccountCarryTo(context.Context, *AccountCarryRequest) (*TxResult, error)
 	// 账户消耗,amount精确到分
 	AccountConsume(context.Context, *AccountChangeRequest) (*TxResult, error)
+	// 账户预扣消耗,amount精确到分
+	PrefreezeConsume(context.Context, *UserPrefreezeConsumeRequest) (*TxResult, error)
 	// 账户抵扣,amount精确到分
 	AccountDiscount(context.Context, *AccountChangeRequest) (*TxResult, error)
 	// * 账户冻结
@@ -1368,6 +1382,9 @@ func (UnimplementedMemberServiceServer) AccountCarryTo(context.Context, *Account
 }
 func (UnimplementedMemberServiceServer) AccountConsume(context.Context, *AccountChangeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountConsume not implemented")
+}
+func (UnimplementedMemberServiceServer) PrefreezeConsume(context.Context, *UserPrefreezeConsumeRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrefreezeConsume not implemented")
 }
 func (UnimplementedMemberServiceServer) AccountDiscount(context.Context, *AccountChangeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountDiscount not implemented")
@@ -2537,6 +2554,24 @@ func _MemberService_AccountConsume_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemberService_PrefreezeConsume_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserPrefreezeConsumeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).PrefreezeConsume(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemberService_PrefreezeConsume_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).PrefreezeConsume(ctx, req.(*UserPrefreezeConsumeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MemberService_AccountDiscount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AccountChangeRequest)
 	if err := dec(in); err != nil {
@@ -3129,6 +3164,10 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AccountConsume",
 			Handler:    _MemberService_AccountConsume_Handler,
+		},
+		{
+			MethodName: "PrefreezeConsume",
+			Handler:    _MemberService_PrefreezeConsume_Handler,
 		},
 		{
 			MethodName: "AccountDiscount",

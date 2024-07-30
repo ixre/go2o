@@ -1339,6 +1339,16 @@ func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChange
 	return s.errorV2(err), nil
 }
 
+// PrefreezeConsume implements proto.MemberServiceServer.
+func (s *memberService) PrefreezeConsume(_ context.Context, r *proto.UserPrefreezeConsumeRequest) (*proto.TxResult, error) {
+	m, err := s.getMember(r.UserId)
+	if err == nil {
+		acc := m.GetAccount()
+		err = acc.PrefreezeConsume(int(r.TransactionId), r.TransactionTitle, r.TransactionRemark)
+	}
+	return s.errorV2(err), nil
+}
+
 // AccountRefund 账户退款
 func (s *memberService) AccountRefund(_ context.Context, r *proto.AccountChangeRequest) (*proto.TxResult, error) {
 	m, err := s.getMember(r.MemberId)

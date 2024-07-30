@@ -263,6 +263,26 @@ func (w *WalletImpl) Consume(amount int, title string, outerNo string, remark st
 	return err
 }
 
+// PrefreezeConsume implements wallet.IWallet.
+func (w *WalletImpl) PrefreezeConsume(data wallet.TransactionData) error {
+	l := w.getLog(int64(data.TransactionId))
+	if l == nil {
+		return wallet.ErrNoSuchAccountLog
+	}
+	if l.Kind != wallet.KFreeze {
+		return errors.New("交易流水类型错误: 非冻结")
+	}
+	l.Kind = wallet.KConsume
+	l.UpdateTime = int(time.Now().Unix())
+	if len(data.TransactionTitle) > 0 {
+		l.Subject = data.TransactionTitle
+	}
+	if len(data.TransactionRemark) > 0 {
+		l.Remark = data.TransactionRemark
+	}
+	return w.saveWalletLog(l)
+}
+
 // Discount 支付抵扣,must是否必须大于0
 func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error {
 	err := w.checkValueOpu(value, false, 0, "")

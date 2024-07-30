@@ -212,6 +212,9 @@ service MemberService {
     // 账户消耗,amount精确到分
     rpc AccountConsume (AccountChangeRequest) returns (TxResult) {
     }
+    // 账户预扣消耗,amount精确到分
+    rpc PrefreezeConsume (UserPrefreezeConsumeRequest) returns (TxResult) {
+    }
     // 账户抵扣,amount精确到分
     rpc AccountDiscount (AccountChangeRequest) returns (TxResult) {
     }

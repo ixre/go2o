@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"testing"
 
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/gof/db"
@@ -457,4 +458,12 @@ type Error struct {
 	Code int `json:"code"`
 	// 错误信息
 	Message string `json:"message"`
+}
+
+// 断言错误
+func AssertError(t *testing.T, err error) {
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 }
