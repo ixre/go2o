@@ -1122,19 +1122,15 @@ func (m *merchantService) RequestWithdrawal(_ context.Context, req *proto.UserWi
 	case int(proto.EUserWithdrawalKind_WithdrawToBankCard):
 		title = "提现到银行卡"
 		kind = wallet.KWithdrawToBankCard
-		break
 	case int(proto.EUserWithdrawalKind_WithdrawToPayWallet):
 		title = "充值到第三方账户"
 		kind = wallet.KWithdrawToPayWallet
-		break
 	case int(proto.EUserWithdrawalKind_WithdrawByExchange):
 		title = "提现到余额"
 		kind = wallet.KWithdrawExchange
-		break
 	case int(proto.EUserWithdrawalKind_WithdrawCustom):
 		title = "自定义提现"
 		kind = wallet.KWithdrawCustom
-		break
 	}
 	acc := mch.Account()
 	transactionId, txNo, err := acc.RequestWithdrawal(
@@ -1205,9 +1201,32 @@ func (m *merchantService) Unfreeze(_ context.Context, req *proto.UserWalletUnfre
 			OuterTxNo:         req.OuterTransactionNo,
 			TransactionRemark: req.TransactionRemark,
 			TransactionId:     int(req.TransactionId),
-		}, 0)
+		},req.IsRefundBalance, 0)
 	if err != nil {
 		return m.errorV2(err), nil
 	}
 	return m.txResult(0, nil), nil
+}
+
+// GetWalletTxLog 获取会员钱包交易记录
+func (m *merchantService) GetWalletTxLog(_ context.Context, r *proto.UserWalletTxId) (*proto.UserWalletTxResponse, error) {
+	mch := m._mchRepo.GetMerchant(int(r.UserId))
+	v := mch.Account().GetWalletLog(r.TxId)
+	if v == nil {
+		return nil, errors.New("交易不存在")
+	}
+	return &proto.UserWalletTxResponse{
+		TxId:               int64(v.Id),
+		UserId:             r.UserId,
+		OuterTransactionNo: v.OuterTxNo,
+		Kind:               int32(v.Kind),
+		TransactionTitle:   v.Subject,
+		Amount:             float64(v.ChangeValue),
+		TransactionFee:     float64(v.TransactionFee),
+		ReviewStatus:       int32(v.ReviewStatus),
+		TransactionRemark:  v.Remark,
+		CreateTime:         int64(v.CreateTime),
+		UpdateTime:         int64(v.UpdateTime),
+		RelateUser:         int64(v.OprUid),
+	}, nil
 }

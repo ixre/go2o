@@ -735,7 +735,7 @@ var file_merchant_service_proto_rawDesc = []byte{
 	0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38,
-	0x01, 0x32, 0x9d, 0x13, 0x0a, 0x0f, 0x4d, 0x65, 0x72, 0x63, 0x68, 0x61, 0x6e, 0x74, 0x53, 0x65,
+	0x01, 0x32, 0xd7, 0x13, 0x0a, 0x0f, 0x4d, 0x65, 0x72, 0x63, 0x68, 0x61, 0x6e, 0x74, 0x53, 0x65,
 	0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x23, 0x0a, 0x0b, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x72, 0x63,
 	0x68, 0x61, 0x6e, 0x74, 0x12, 0x06, 0x2e, 0x49, 0x6e, 0x74, 0x36, 0x34, 0x1a, 0x0a, 0x2e, 0x51,
 	0x4d, 0x65, 0x72, 0x63, 0x68, 0x61, 0x6e, 0x74, 0x22, 0x00, 0x12, 0x2c, 0x0a, 0x17, 0x47, 0x65,
@@ -889,9 +889,13 @@ var file_merchant_service_proto_rawDesc = []byte{
 	0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x12, 0x1c, 0x2e, 0x46, 0x69, 0x6e, 0x69, 0x73, 0x68, 0x55,
 	0x73, 0x65, 0x72, 0x57, 0x69, 0x74, 0x68, 0x64, 0x72, 0x61, 0x77, 0x61, 0x6c, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x1a, 0x09, 0x2e, 0x54, 0x78, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22,
-	0x00, 0x42, 0x1f, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x67, 0x6f, 0x32, 0x6f, 0x2e, 0x72, 0x70, 0x63, 0x5a, 0x08, 0x2e, 0x2f, 0x3b, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x00, 0x12, 0x38, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x54, 0x78,
+	0x4c, 0x6f, 0x67, 0x12, 0x0f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74,
+	0x54, 0x78, 0x49, 0x64, 0x1a, 0x15, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x57, 0x61, 0x6c, 0x6c, 0x65,
+	0x74, 0x54, 0x78, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x1f, 0x0a, 0x13, 0x63,
+	0x6f, 0x6d, 0x2e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x67, 0x6f, 0x32, 0x6f, 0x2e, 0x72,
+	0x70, 0x63, 0x5a, 0x08, 0x2e, 0x2f, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -944,20 +948,22 @@ var file_merchant_service_proto_goTypes = []interface{}{
 	(*UserWithdrawRequest)(nil),             // 33: UserWithdrawRequest
 	(*ReviewUserWithdrawalRequest)(nil),     // 34: ReviewUserWithdrawalRequest
 	(*FinishUserWithdrawalRequest)(nil),     // 35: FinishUserWithdrawalRequest
-	(*QMerchant)(nil),                       // 36: QMerchant
-	(*MerchantCreateResponse)(nil),          // 37: MerchantCreateResponse
-	(*Result)(nil),                          // 38: Result
-	(*MchLoginResponse)(nil),                // 39: MchLoginResponse
-	(*SyncWSItemsResponse)(nil),             // 40: SyncWSItemsResponse
-	(*STradeConfListResponse)(nil),          // 41: STradeConfListResponse
-	(*STradeConf_)(nil),                     // 42: STradeConf_
-	(*SMerchantSaleConf)(nil),               // 43: SMerchantSaleConf
-	(*SMerchantApiInfo)(nil),                // 44: SMerchantApiInfo
-	(*SMerchantBuyerGroup)(nil),             // 45: SMerchantBuyerGroup
-	(*MerchantBuyerGroupListResponse)(nil),  // 46: MerchantBuyerGroupListResponse
-	(*WholesaleRebateRateListResponse)(nil), // 47: WholesaleRebateRateListResponse
-	(*SMerchantAccount)(nil),                // 48: SMerchantAccount
-	(*TxResult)(nil),                        // 49: TxResult
+	(*UserWalletTxId)(nil),                  // 36: UserWalletTxId
+	(*QMerchant)(nil),                       // 37: QMerchant
+	(*MerchantCreateResponse)(nil),          // 38: MerchantCreateResponse
+	(*Result)(nil),                          // 39: Result
+	(*MchLoginResponse)(nil),                // 40: MchLoginResponse
+	(*SyncWSItemsResponse)(nil),             // 41: SyncWSItemsResponse
+	(*STradeConfListResponse)(nil),          // 42: STradeConfListResponse
+	(*STradeConf_)(nil),                     // 43: STradeConf_
+	(*SMerchantSaleConf)(nil),               // 44: SMerchantSaleConf
+	(*SMerchantApiInfo)(nil),                // 45: SMerchantApiInfo
+	(*SMerchantBuyerGroup)(nil),             // 46: SMerchantBuyerGroup
+	(*MerchantBuyerGroupListResponse)(nil),  // 47: MerchantBuyerGroupListResponse
+	(*WholesaleRebateRateListResponse)(nil), // 48: WholesaleRebateRateListResponse
+	(*SMerchantAccount)(nil),                // 49: SMerchantAccount
+	(*TxResult)(nil),                        // 50: TxResult
+	(*UserWalletTxResponse)(nil),            // 51: UserWalletTxResponse
 }
 var file_merchant_service_proto_depIdxs = []int32{
 	7,  // 0: MerchantOrderRequest.params:type_name -> SPagingParams
@@ -1008,52 +1014,54 @@ var file_merchant_service_proto_depIdxs = []int32{
 	33, // 45: MerchantService.RequestWithdrawal:input_type -> UserWithdrawRequest
 	34, // 46: MerchantService.ReviewWithdrawal:input_type -> ReviewUserWithdrawalRequest
 	35, // 47: MerchantService.FinishWithdrawal:input_type -> FinishUserWithdrawalRequest
-	36, // 48: MerchantService.GetMerchant:output_type -> QMerchant
-	9,  // 49: MerchantService.GetMerchantIdByUsername:output_type -> Int64
-	37, // 50: MerchantService.CreateMerchant:output_type -> MerchantCreateResponse
-	38, // 51: MerchantService.SaveMerchant:output_type -> Result
-	38, // 52: MerchantService.SaveAuthenticate:output_type -> Result
-	38, // 53: MerchantService.ReviewAuthenticate:output_type -> Result
-	39, // 54: MerchantService.CheckLogin:output_type -> MchLoginResponse
-	38, // 55: MerchantService.Stat:output_type -> Result
-	40, // 56: MerchantService.SyncWholesaleItem:output_type -> SyncWSItemsResponse
-	41, // 57: MerchantService.GetAllTradeConf_:output_type -> STradeConfListResponse
-	42, // 58: MerchantService.GetTradeConf:output_type -> STradeConf_
-	38, // 59: MerchantService.SaveTradeConf:output_type -> Result
-	9,  // 60: MerchantService.GetMerchantIdByMember:output_type -> Int64
-	38, // 61: MerchantService.ChangeMemberBind:output_type -> Result
-	38, // 62: MerchantService.SetEnabled:output_type -> Result
-	9,  // 63: MerchantService.GetMerchantIdByHost:output_type -> Int64
-	10, // 64: MerchantService.GetMerchantMajorHost:output_type -> String
-	38, // 65: MerchantService.SaveSaleConf:output_type -> Result
-	43, // 66: MerchantService.GetSaleConf:output_type -> SMerchantSaleConf
-	9,  // 67: MerchantService.GetShopId:output_type -> Int64
-	38, // 68: MerchantService.ChangePassword:output_type -> Result
-	44, // 69: MerchantService.GetApiInfo:output_type -> SMerchantApiInfo
-	38, // 70: MerchantService.ToggleApiPerm:output_type -> Result
-	9,  // 71: MerchantService.GetMerchantIdByApiId:output_type -> Int64
-	4,  // 72: MerchantService.PagedNormalOrderOfVendor:output_type -> PagingMerchantOrderListResponse
-	4,  // 73: MerchantService.PagedWholesaleOrderOfVendor:output_type -> PagingMerchantOrderListResponse
-	4,  // 74: MerchantService.PagedTradeOrderOfVendor:output_type -> PagingMerchantOrderListResponse
-	38, // 75: MerchantService.WithdrawToMemberAccount:output_type -> Result
-	45, // 76: MerchantService.GetMchBuyerGroup_:output_type -> SMerchantBuyerGroup
-	38, // 77: MerchantService.SaveMchBuyerGroup:output_type -> Result
-	46, // 78: MerchantService.GetBuyerGroups:output_type -> MerchantBuyerGroupListResponse
-	47, // 79: MerchantService.GetRebateRate:output_type -> WholesaleRebateRateListResponse
-	38, // 80: MerchantService.SaveGroupRebateRate:output_type -> Result
-	1,  // 81: MerchantService.GetStaff:output_type -> SStaff
-	1,  // 82: MerchantService.GetStaffByMember:output_type -> SStaff
-	38, // 83: MerchantService.SaveStaff:output_type -> Result
-	48, // 84: MerchantService.GetAccount:output_type -> SMerchantAccount
-	49, // 85: MerchantService.CarryToAccount:output_type -> TxResult
-	49, // 86: MerchantService.AdjustAccount:output_type -> TxResult
-	49, // 87: MerchantService.Freeze:output_type -> TxResult
-	49, // 88: MerchantService.Unfreeze:output_type -> TxResult
-	49, // 89: MerchantService.RequestWithdrawal:output_type -> TxResult
-	49, // 90: MerchantService.ReviewWithdrawal:output_type -> TxResult
-	49, // 91: MerchantService.FinishWithdrawal:output_type -> TxResult
-	48, // [48:92] is the sub-list for method output_type
-	4,  // [4:48] is the sub-list for method input_type
+	36, // 48: MerchantService.GetWalletTxLog:input_type -> UserWalletTxId
+	37, // 49: MerchantService.GetMerchant:output_type -> QMerchant
+	9,  // 50: MerchantService.GetMerchantIdByUsername:output_type -> Int64
+	38, // 51: MerchantService.CreateMerchant:output_type -> MerchantCreateResponse
+	39, // 52: MerchantService.SaveMerchant:output_type -> Result
+	39, // 53: MerchantService.SaveAuthenticate:output_type -> Result
+	39, // 54: MerchantService.ReviewAuthenticate:output_type -> Result
+	40, // 55: MerchantService.CheckLogin:output_type -> MchLoginResponse
+	39, // 56: MerchantService.Stat:output_type -> Result
+	41, // 57: MerchantService.SyncWholesaleItem:output_type -> SyncWSItemsResponse
+	42, // 58: MerchantService.GetAllTradeConf_:output_type -> STradeConfListResponse
+	43, // 59: MerchantService.GetTradeConf:output_type -> STradeConf_
+	39, // 60: MerchantService.SaveTradeConf:output_type -> Result
+	9,  // 61: MerchantService.GetMerchantIdByMember:output_type -> Int64
+	39, // 62: MerchantService.ChangeMemberBind:output_type -> Result
+	39, // 63: MerchantService.SetEnabled:output_type -> Result
+	9,  // 64: MerchantService.GetMerchantIdByHost:output_type -> Int64
+	10, // 65: MerchantService.GetMerchantMajorHost:output_type -> String
+	39, // 66: MerchantService.SaveSaleConf:output_type -> Result
+	44, // 67: MerchantService.GetSaleConf:output_type -> SMerchantSaleConf
+	9,  // 68: MerchantService.GetShopId:output_type -> Int64
+	39, // 69: MerchantService.ChangePassword:output_type -> Result
+	45, // 70: MerchantService.GetApiInfo:output_type -> SMerchantApiInfo
+	39, // 71: MerchantService.ToggleApiPerm:output_type -> Result
+	9,  // 72: MerchantService.GetMerchantIdByApiId:output_type -> Int64
+	4,  // 73: MerchantService.PagedNormalOrderOfVendor:output_type -> PagingMerchantOrderListResponse
+	4,  // 74: MerchantService.PagedWholesaleOrderOfVendor:output_type -> PagingMerchantOrderListResponse
+	4,  // 75: MerchantService.PagedTradeOrderOfVendor:output_type -> PagingMerchantOrderListResponse
+	39, // 76: MerchantService.WithdrawToMemberAccount:output_type -> Result
+	46, // 77: MerchantService.GetMchBuyerGroup_:output_type -> SMerchantBuyerGroup
+	39, // 78: MerchantService.SaveMchBuyerGroup:output_type -> Result
+	47, // 79: MerchantService.GetBuyerGroups:output_type -> MerchantBuyerGroupListResponse
+	48, // 80: MerchantService.GetRebateRate:output_type -> WholesaleRebateRateListResponse
+	39, // 81: MerchantService.SaveGroupRebateRate:output_type -> Result
+	1,  // 82: MerchantService.GetStaff:output_type -> SStaff
+	1,  // 83: MerchantService.GetStaffByMember:output_type -> SStaff
+	39, // 84: MerchantService.SaveStaff:output_type -> Result
+	49, // 85: MerchantService.GetAccount:output_type -> SMerchantAccount
+	50, // 86: MerchantService.CarryToAccount:output_type -> TxResult
+	50, // 87: MerchantService.AdjustAccount:output_type -> TxResult
+	50, // 88: MerchantService.Freeze:output_type -> TxResult
+	50, // 89: MerchantService.Unfreeze:output_type -> TxResult
+	50, // 90: MerchantService.RequestWithdrawal:output_type -> TxResult
+	50, // 91: MerchantService.ReviewWithdrawal:output_type -> TxResult
+	50, // 92: MerchantService.FinishWithdrawal:output_type -> TxResult
+	51, // 93: MerchantService.GetWalletTxLog:output_type -> UserWalletTxResponse
+	49, // [49:94] is the sub-list for method output_type
+	4,  // [4:49] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name

@@ -255,9 +255,9 @@ service MemberService {
     // !银行四要素认证
     rpc B4EAuth (B4EAuthRequest) returns (Result) {
     }
-
     // 获取钱包流水记录
-    rpc GetWalletLog (WalletLogRequest) returns (WalletLogResponse);
+    rpc GetWalletTxLog (UserWalletTxId) returns (UserWalletTxResponse);
+
     // 取消收藏
     rpc RemoveFavorite (FavoriteRequest) returns (Result) {
     }

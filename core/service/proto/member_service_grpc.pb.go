@@ -94,7 +94,7 @@ const (
 	MemberService_UnbindOAuthApp_FullMethodName             = "/MemberService/UnbindOAuthApp"
 	MemberService_GetOAuthBindInfo_FullMethodName           = "/MemberService/GetOAuthBindInfo"
 	MemberService_B4EAuth_FullMethodName                    = "/MemberService/B4EAuth"
-	MemberService_GetWalletLog_FullMethodName               = "/MemberService/GetWalletLog"
+	MemberService_GetWalletTxLog_FullMethodName             = "/MemberService/GetWalletTxLog"
 	MemberService_RemoveFavorite_FullMethodName             = "/MemberService/RemoveFavorite"
 	MemberService_Favorite_FullMethodName                   = "/MemberService/Favorite"
 	MemberService_IsFavored_FullMethodName                  = "/MemberService/IsFavored"
@@ -266,7 +266,7 @@ type MemberServiceClient interface {
 	// !银行四要素认证
 	B4EAuth(ctx context.Context, in *B4EAuthRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取钱包流水记录
-	GetWalletLog(ctx context.Context, in *WalletLogRequest, opts ...grpc.CallOption) (*WalletLogResponse, error)
+	GetWalletTxLog(ctx context.Context, in *UserWalletTxId, opts ...grpc.CallOption) (*UserWalletTxResponse, error)
 	// 取消收藏
 	RemoveFavorite(ctx context.Context, in *FavoriteRequest, opts ...grpc.CallOption) (*Result, error)
 	// 收藏商品
@@ -960,9 +960,9 @@ func (c *memberServiceClient) B4EAuth(ctx context.Context, in *B4EAuthRequest, o
 	return out, nil
 }
 
-func (c *memberServiceClient) GetWalletLog(ctx context.Context, in *WalletLogRequest, opts ...grpc.CallOption) (*WalletLogResponse, error) {
-	out := new(WalletLogResponse)
-	err := c.cc.Invoke(ctx, MemberService_GetWalletLog_FullMethodName, in, out, opts...)
+func (c *memberServiceClient) GetWalletTxLog(ctx context.Context, in *UserWalletTxId, opts ...grpc.CallOption) (*UserWalletTxResponse, error) {
+	out := new(UserWalletTxResponse)
+	err := c.cc.Invoke(ctx, MemberService_GetWalletTxLog_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1170,7 +1170,7 @@ type MemberServiceServer interface {
 	// !银行四要素认证
 	B4EAuth(context.Context, *B4EAuthRequest) (*Result, error)
 	// 获取钱包流水记录
-	GetWalletLog(context.Context, *WalletLogRequest) (*WalletLogResponse, error)
+	GetWalletTxLog(context.Context, *UserWalletTxId) (*UserWalletTxResponse, error)
 	// 取消收藏
 	RemoveFavorite(context.Context, *FavoriteRequest) (*Result, error)
 	// 收藏商品
@@ -1411,8 +1411,8 @@ func (UnimplementedMemberServiceServer) GetOAuthBindInfo(context.Context, *Membe
 func (UnimplementedMemberServiceServer) B4EAuth(context.Context, *B4EAuthRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method B4EAuth not implemented")
 }
-func (UnimplementedMemberServiceServer) GetWalletLog(context.Context, *WalletLogRequest) (*WalletLogResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetWalletLog not implemented")
+func (UnimplementedMemberServiceServer) GetWalletTxLog(context.Context, *UserWalletTxId) (*UserWalletTxResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetWalletTxLog not implemented")
 }
 func (UnimplementedMemberServiceServer) RemoveFavorite(context.Context, *FavoriteRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveFavorite not implemented")
@@ -2789,20 +2789,20 @@ func _MemberService_B4EAuth_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemberService_GetWalletLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(WalletLogRequest)
+func _MemberService_GetWalletTxLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserWalletTxId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemberServiceServer).GetWalletLog(ctx, in)
+		return srv.(MemberServiceServer).GetWalletTxLog(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MemberService_GetWalletLog_FullMethodName,
+		FullMethod: MemberService_GetWalletTxLog_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemberServiceServer).GetWalletLog(ctx, req.(*WalletLogRequest))
+		return srv.(MemberServiceServer).GetWalletTxLog(ctx, req.(*UserWalletTxId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3187,8 +3187,8 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemberService_B4EAuth_Handler,
 		},
 		{
-			MethodName: "GetWalletLog",
-			Handler:    _MemberService_GetWalletLog_Handler,
+			MethodName: "GetWalletTxLog",
+			Handler:    _MemberService_GetWalletTxLog_Handler,
 		},
 		{
 			MethodName: "RemoveFavorite",

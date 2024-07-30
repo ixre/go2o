@@ -331,6 +331,8 @@ message AccountUnfreezeRequest {
   string outerTransactionNo = 5;
   // 备注
   string transactionRemark =6;
+  // 是否退回余额
+  bool isRefundBalance = 7;
 }
 
 
@@ -573,41 +575,7 @@ message WithdrawalLogRequest {
   bool onlyFinished = 3;
 }
 
-// 钱包日志请求
-message WalletLogRequest {
-  // 会员编号
-  int64 memberId = 1;
-  // 流水号Id
-  int64 logId = 2;
-}
 
-// 钱包账户日志
-message WalletLogResponse {
-  // 日志编号
-  int64 logId = 1;
-  // 会员编号
-  int64 memberId = 2;
-  // 外部单号
-  string outerTransactionNo = 3;
-  // 业务类型
-  int32 kind = 4;
-  // 标题
-  string transactionTitle = 5;
-  // 金额
-  double amount = 6;
-  // 手续费
-  double transactionFee = 7;
-  // 状态
-  int32 reviewStatus = 8;
-  // 备注
-  string transactionRemark =9;
-  // 创建时间
-  int64 createTime = 10;
-  // 更新时间
-  int64 updateTime = 11;
-  // 关联操作人,仅在客服操作时,记录操作人
-  int64 relateUser = 12;
-}
 
 // 账户类型
 enum EAccountType {

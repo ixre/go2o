@@ -340,12 +340,13 @@ func (s *memberService) GetHighestLevel() member.Level {
 	return member.Level{}
 }
 
-func (s *memberService) GetWalletLog(_ context.Context, r *proto.WalletLogRequest) (*proto.WalletLogResponse, error) {
-	m := s.repo.GetMember(r.MemberId)
-	v := m.GetAccount().GetWalletLog(r.LogId)
-	return &proto.WalletLogResponse{
-		LogId:              int64(v.Id),
-		MemberId:           r.MemberId,
+// GetWalletTxLog 获取会员钱包交易记录
+func (s *memberService) GetWalletTxLog(_ context.Context, r *proto.UserWalletTxId) (*proto.UserWalletTxResponse, error) {
+	m := s.repo.GetMember(r.UserId)
+	v := m.GetAccount().GetWalletLog(r.TxId)
+	return &proto.UserWalletTxResponse{
+		TxId:               int64(v.Id),
+		UserId:             r.UserId,
 		OuterTransactionNo: v.OuterTxNo,
 		Kind:               int32(v.Kind),
 		TransactionTitle:   v.Subject,
@@ -1275,7 +1276,7 @@ func (s *memberService) Unfreeze(_ context.Context, r *proto.AccountUnfreezeRequ
 			Amount:             int(r.Amount),
 			OuterTransactionNo: r.OuterTransactionNo,
 			TransactionRemark:  r.TransactionRemark,
-		}, 0)
+		}, r.IsRefundBalance, 0)
 	if err != nil {
 		return s.errorV2(err), nil
 	}

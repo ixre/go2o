@@ -63,6 +63,7 @@ const (
 	MerchantService_RequestWithdrawal_FullMethodName           = "/MerchantService/RequestWithdrawal"
 	MerchantService_ReviewWithdrawal_FullMethodName            = "/MerchantService/ReviewWithdrawal"
 	MerchantService_FinishWithdrawal_FullMethodName            = "/MerchantService/FinishWithdrawal"
+	MerchantService_GetWalletTxLog_FullMethodName              = "/MerchantService/GetWalletTxLog"
 )
 
 // MerchantServiceClient is the client API for MerchantService service.
@@ -155,6 +156,8 @@ type MerchantServiceClient interface {
 	ReviewWithdrawal(ctx context.Context, in *ReviewUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 收到款项,完成提现
 	FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// 获取钱包流水记录
+	GetWalletTxLog(ctx context.Context, in *UserWalletTxId, opts ...grpc.CallOption) (*UserWalletTxResponse, error)
 }
 
 type merchantServiceClient struct {
@@ -561,6 +564,15 @@ func (c *merchantServiceClient) FinishWithdrawal(ctx context.Context, in *Finish
 	return out, nil
 }
 
+func (c *merchantServiceClient) GetWalletTxLog(ctx context.Context, in *UserWalletTxId, opts ...grpc.CallOption) (*UserWalletTxResponse, error) {
+	out := new(UserWalletTxResponse)
+	err := c.cc.Invoke(ctx, MerchantService_GetWalletTxLog_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MerchantServiceServer is the server API for MerchantService service.
 // All implementations must embed UnimplementedMerchantServiceServer
 // for forward compatibility
@@ -651,6 +663,8 @@ type MerchantServiceServer interface {
 	ReviewWithdrawal(context.Context, *ReviewUserWithdrawalRequest) (*TxResult, error)
 	// 收到款项,完成提现
 	FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*TxResult, error)
+	// 获取钱包流水记录
+	GetWalletTxLog(context.Context, *UserWalletTxId) (*UserWalletTxResponse, error)
 	mustEmbedUnimplementedMerchantServiceServer()
 }
 
@@ -789,6 +803,9 @@ func (UnimplementedMerchantServiceServer) ReviewWithdrawal(context.Context, *Rev
 }
 func (UnimplementedMerchantServiceServer) FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishWithdrawal not implemented")
+}
+func (UnimplementedMerchantServiceServer) GetWalletTxLog(context.Context, *UserWalletTxId) (*UserWalletTxResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetWalletTxLog not implemented")
 }
 func (UnimplementedMerchantServiceServer) mustEmbedUnimplementedMerchantServiceServer() {}
 
@@ -1595,6 +1612,24 @@ func _MerchantService_FinishWithdrawal_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_GetWalletTxLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserWalletTxId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetWalletTxLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GetWalletTxLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetWalletTxLog(ctx, req.(*UserWalletTxId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MerchantService_ServiceDesc is the grpc.ServiceDesc for MerchantService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1777,6 +1812,10 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FinishWithdrawal",
 			Handler:    _MerchantService_FinishWithdrawal_Handler,
+		},
+		{
+			MethodName: "GetWalletTxLog",
+			Handler:    _MerchantService_GetWalletTxLog_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

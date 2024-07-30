@@ -93,6 +93,12 @@ func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int, error) {
 	return a.mchImpl._repo.SaveBalanceAccountLog(v)
 }
 
+// GetWalletLog implements merchant.IAccount.
+func (a *accountImpl) GetWalletLog(txId int64) *wallet.WalletLog {
+	v := a.getWallet().GetLog(txId)
+	return &v
+}
+
 // Consume 消耗商户支出，例如广告费、提现等
 func (a *accountImpl) Consume(transactionTitle string, amount int, outerTxNo string, transactionRemark string) error {
 	if amount <= 0 {
@@ -296,8 +302,8 @@ func (a *accountImpl) Freeze(p wallet.TransactionData, relateUser int64) (int, e
 }
 
 // UnfreezeWallet 解冻赠送金额
-func (a *accountImpl) Unfreeze(d wallet.TransactionData, relateUser int64) error {
-	return a.getWallet().Unfreeze(d.Amount, d.TransactionTitle, d.OuterTxNo, int(relateUser), "")
+func (a *accountImpl) Unfreeze(d wallet.TransactionData, isRefundBalance bool, relateUser int64) error {
+	return a.getWallet().Unfreeze(d.Amount, d.TransactionTitle, d.OuterTxNo, isRefundBalance, int(relateUser), "")
 }
 
 // 调整钱包余额

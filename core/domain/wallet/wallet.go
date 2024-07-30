@@ -339,7 +339,7 @@ func (w *WalletImpl) refreeze(data wallet.TransactionData) (int, error) {
 	return int(l.Id), err
 }
 
-func (w *WalletImpl) Unfreeze(value int, title, outerNo string, operatorUid int, operatorName string) error {
+func (w *WalletImpl) Unfreeze(value int, title, outerNo string, isRefundBalance bool, operatorUid int, operatorName string) error {
 	err := w.checkValueOpu(value, false, operatorUid, operatorName)
 	if err == nil {
 		if value < 0 {
@@ -348,12 +348,15 @@ func (w *WalletImpl) Unfreeze(value int, title, outerNo string, operatorUid int,
 		if w._value.FreezeAmount < value {
 			return wallet.ErrOutOfAmount
 		}
-		w._value.Balance += value
+		if isRefundBalance {
+			w._value.Balance += value
+		}
 		w._value.FreezeAmount += -value
 		l := w.createWalletLog(wallet.KUnfreeze, value, title, operatorUid, operatorName)
 		l.OuterTxNo = outerNo
 		l.Balance = w._value.Balance
-		err := w.saveWalletLog(l)
+		l.Remark = ""
+		err = w.saveWalletLog(l)
 		if err == nil {
 			_, err = w.Save()
 		}

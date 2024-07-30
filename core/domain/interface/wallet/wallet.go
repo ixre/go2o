@@ -200,8 +200,8 @@ type (
 		// Freeze 冻结余额,返回LogId
 		Freeze(data TransactionData, operator Operator) (int, error)
 
-		// Unfreeze 解冻金额
-		Unfreeze(amount int, title, outerNo string, operatorUid int, operatorName string) error
+		// Unfreeze 解冻金额, 传入isRefundBalance是否退回余额,如果为true，则解冻金额后，将自动退回余额
+		Unfreeze(amount int, title, outerNo string, isRefundBalance bool, operatorUid int, operatorName string) error
 
 		// FreezeExpired 将冻结金额标记为失效
 		FreezeExpired(amount int, remark string) error

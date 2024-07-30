@@ -93,6 +93,8 @@ message UnfreezeRequest {
     sint32 operatorUid = 6;
     /** 操作人员名称 */
     string operatorName = 7;
+    // 是否退回余额
+    bool isRefundBalance = 8;
 }
 
 message ChargeRequest {

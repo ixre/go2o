@@ -801,7 +801,7 @@ func (a *accountImpl) freezesIntegral(p member.AccountOperateData, relateUser in
 
 // Unfreeze 解冻金额
 
-func (a *accountImpl) Unfreeze(account member.AccountType, d member.AccountOperateData, relateUser int64) error {
+func (a *accountImpl) Unfreeze(account member.AccountType, d member.AccountOperateData, isRefundBalance bool, relateUser int64) error {
 	if d.Amount <= 0 || math.IsNaN(float64(d.Amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -809,7 +809,7 @@ func (a *accountImpl) Unfreeze(account member.AccountType, d member.AccountOpera
 	case member.AccountBalance:
 		return a.unfreezeBalance(d, relateUser)
 	case member.AccountWallet:
-		return a.unfreezeWallet(d, relateUser)
+		return a.unfreezeWallet(d, isRefundBalance, relateUser)
 	case member.AccountIntegral:
 		return a.unfreezesIntegral(d, relateUser)
 	}
@@ -848,8 +848,8 @@ func (a *accountImpl) unfreezeBalance(d member.AccountOperateData, relateUser in
 }
 
 // UnfreezeWallet 解冻赠送金额
-func (a *accountImpl) unfreezeWallet(d member.AccountOperateData, relateUser int64) error {
-	err := a.wallet.Unfreeze(d.Amount, d.TransactionTitle, d.OuterTransactionNo, int(relateUser), "")
+func (a *accountImpl) unfreezeWallet(d member.AccountOperateData, isRefundBalance bool, relateUser int64) error {
+	err := a.wallet.Unfreeze(d.Amount, d.TransactionTitle, d.OuterTransactionNo, isRefundBalance, int(relateUser), "")
 	if err == nil {
 		err = a.asyncWallet()
 	}

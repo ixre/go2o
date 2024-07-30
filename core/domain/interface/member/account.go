@@ -112,8 +112,8 @@ type (
 		// Freeze 账户冻结
 		Freeze(account AccountType, p AccountOperateData, relateUser int64) (int, error)
 
-		// Unfreeze 账户解冻
-		Unfreeze(account AccountType, p AccountOperateData, relateUser int64) error
+		// Unfreeze 账户解冻, isRefundBalance 是否退回到余额
+		Unfreeze(account AccountType, p AccountOperateData, isRefundBalance bool, relateUser int64) error
 
 		// FreezeExpired 将冻结金额标记为失效
 		FreezeExpired(account AccountType, amount int, remark string) error

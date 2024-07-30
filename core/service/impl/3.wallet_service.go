@@ -109,7 +109,7 @@ func (w *walletServiceImpl) Unfreeze(_ context.Context, r *proto.UnfreezeRequest
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Unfreeze(int(r.Amount), r.Title, r.OuterNo, int(r.OperatorUid), r.OperatorName)
+		err = iw.Unfreeze(int(r.Amount), r.Title, r.OuterNo,r.IsRefundBalance, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
 }

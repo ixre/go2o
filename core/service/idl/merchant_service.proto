@@ -147,6 +147,9 @@ service MerchantService {
     // 收到款项,完成提现
     rpc FinishWithdrawal (FinishUserWithdrawalRequest) returns (TxResult) {
     }
+    // 获取钱包流水记录
+    rpc GetWalletTxLog (UserWalletTxId) returns (UserWalletTxResponse);
+
 }
 
 // 员工请求

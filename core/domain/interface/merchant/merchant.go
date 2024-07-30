@@ -105,6 +105,9 @@ type (
 		// SaveBalanceLog 保存余额变动信息
 		SaveBalanceLog(*BalanceLog) (int, error)
 
+		// GetWalletLog 获取钱包账户日志
+		GetWalletLog(txId int64) *wallet.WalletLog
+
 		// Carry 订单结账(商户结算),返回交易流水编号和错误
 		Carry(p CarryParams) (txId int, err error)
 
@@ -114,8 +117,8 @@ type (
 		// Freeze 账户冻结
 		Freeze(d wallet.TransactionData, relateUser int64) (int, error)
 
-		// Unfreeze 账户解冻
-		Unfreeze(d wallet.TransactionData, relateUser int64) error
+		// Unfreeze 账户解冻, isRefundBalance 是否退回余额
+		Unfreeze(d wallet.TransactionData, isRefundBalance bool, relateUser int64) error
 
 		// Adjust 客服调整
 		Adjust(title string, amount int, remark string, relateUser int64) error
