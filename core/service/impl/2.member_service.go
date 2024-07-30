@@ -775,7 +775,7 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 		Code: code,
 	}
 	if err != nil {
-		ret.Msg = err.Error()
+		ret.Message = err.Error()
 		return ret, nil
 	} else {
 		ret.MemberId = v.Id

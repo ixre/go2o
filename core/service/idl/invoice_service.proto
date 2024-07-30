@@ -104,7 +104,7 @@ message SInvoiceTenant{
     // 错误码
     int32 code = 1;
     // 错误信息
-    string msg = 2;
+    string message = 2;
     // 租户编号
     int64 tenantId = 3; 
 }
@@ -138,7 +138,7 @@ message CreateInvoiceTitleResponse{
     // 错误码
     int32 code = 1;
     // 错误信息
-    string msg = 2;
+    string message = 2;
     // 编号
     int64 id = 3;
 }
@@ -169,7 +169,7 @@ message RequestInvoiceResponse{
     // 错误码
     int32 code = 1;
     // 错误信息
-    string msg = 2;
+    string message = 2;
     // 发票ID
     int64 invoiceId = 3;
 }

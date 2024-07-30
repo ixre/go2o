@@ -26,8 +26,8 @@ func (w *workorderServiceImpl) AllocateAgentId(_ context.Context, req *proto.All
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
 		return &proto.TxResult{
-			Code: 1,
-			Msg:  "工单不存在",
+			Code:    1,
+			Message: "工单不存在",
 		}, nil
 	}
 	err := iw.AllocateAgentId(int(req.UserId))
@@ -39,8 +39,8 @@ func (w *workorderServiceImpl) Apprise(_ context.Context, req *proto.WorkorderAp
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
 		return &proto.TxResult{
-			Code: 1,
-			Msg:  "工单不存在",
+			Code:    1,
+			Message: "工单不存在",
 		}, nil
 	}
 	err := iw.Apprise(req.IsUsefully, int(req.ServiceRank), req.ServiceApprise)
@@ -52,8 +52,8 @@ func (w *workorderServiceImpl) Close(_ context.Context, req *proto.WorkorderId) 
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
 		return &proto.TxResult{
-			Code: 1,
-			Msg:  "工单不存在",
+			Code:    1,
+			Message: "工单不存在",
 		}, nil
 	}
 	err := iw.Close()
@@ -62,8 +62,8 @@ func (w *workorderServiceImpl) Close(_ context.Context, req *proto.WorkorderId) 
 func (w *workorderServiceImpl) ret(err error) (*proto.TxResult, error) {
 	if err != nil {
 		return &proto.TxResult{
-			Code: 1,
-			Msg:  err.Error(),
+			Code:    1,
+			Message: err.Error(),
 		}, nil
 	}
 	return &proto.TxResult{}, nil
@@ -88,8 +88,8 @@ func (w *workorderServiceImpl) Finish(_ context.Context, req *proto.WorkorderId)
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
 		return &proto.TxResult{
-			Code: 1,
-			Msg:  "工单不存在",
+			Code:    1,
+			Message: "工单不存在",
 		}, nil
 	}
 	err := iw.Finish()
@@ -133,8 +133,8 @@ func (w *workorderServiceImpl) SubmitComment(_ context.Context, req *proto.Submi
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
 		return &proto.TxResult{
-			Code: 1,
-			Msg:  "工单不存在",
+			Code:    1,
+			Message: "工单不存在",
 		}, nil
 	}
 	err := iw.SubmitComment(req.Content, req.IsReplay, int(req.RefCommentId))
@@ -163,7 +163,7 @@ func (w *workorderServiceImpl) SubmitWorkorder(_ context.Context, req *proto.Sub
 	}
 	if err != nil {
 		ret.Code = 1
-		ret.Msg = err.Error()
+		ret.Message = err.Error()
 	}
 	return ret, nil
 }

@@ -49,7 +49,7 @@ func (s serviceUtil) errorV2(err error) *proto.TxResult {
 	if err == nil {
 		return &proto.TxResult{Data: map[string]string{}}
 	}
-	return &proto.TxResult{Code: 1, Msg: err.Error(), Data: map[string]string{}}
+	return &proto.TxResult{Code: 1, Message: err.Error(), Data: map[string]string{}}
 }
 
 // 返回结果
@@ -86,7 +86,8 @@ func (s serviceUtil) success(data map[string]string) *proto.Result {
 // 返回成功的结果
 func (s serviceUtil) txResult(txId int, data map[string]string) *proto.TxResult {
 	return &proto.TxResult{
-		Code: 0, Msg: "",
+		Code: 0,
+		Message: "",
 		TxId: int64(txId),
 		Data: data,
 	}
@@ -97,7 +98,7 @@ func (s serviceUtil) successV2(data map[string]string) *proto.TxResult {
 	if data == nil {
 		data = map[string]string{}
 	}
-	return &proto.TxResult{Code: 0, Msg: "", Data: data}
+	return &proto.TxResult{Code: 0, Message: "", Data: data}
 }
 
 // 将int32数组装换为int数组

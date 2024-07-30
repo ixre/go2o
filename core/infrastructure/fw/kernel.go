@@ -335,16 +335,15 @@ func (p *PagingParams) Between(field string, arr []string) (*PagingParams, error
 	if len(arr) != 2 {
 		return nil, errors.New("between need two value")
 	}
-	return p.where(field, "BETWEEN ? AND ?", arr[0],arr[1]), nil
+	return p.where(field, "BETWEEN ? AND ?", arr[0], arr[1]), nil
 }
 
 func (p *PagingParams) BetweenInts(field string, arr []int) (*PagingParams, error) {
 	if len(arr) != 2 {
 		return nil, errors.New("between need two value")
 	}
-	return p.where(field, "BETWEEN ? AND ?", arr[0],arr[1]), nil
+	return p.where(field, "BETWEEN ? AND ?", arr[0], arr[1]), nil
 }
-
 
 // OrderBy 添加排序条件
 func (p *PagingParams) OrderBy(order string) *PagingParams {
@@ -450,4 +449,12 @@ func (p *pagingRow) Put(key string, v interface{}) {
 // Get 获取字段
 func (p *pagingRow) Get(key string) interface{} {
 	return p.v[key]
+}
+
+/** 错误处理 */
+type Error struct {
+	// 错误码
+	Code int `json:"code"`
+	// 错误信息
+	Message string `json:"message"`
 }

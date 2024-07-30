@@ -96,7 +96,7 @@ message SubmitWorkorderRequest{
 // 保存工单响应
 message SubmitWorkorderResponse{
     int32 code = 1;
-    string msg = 2;
+    string message = 2;
     int64 workorderId = 3;
 }
 
