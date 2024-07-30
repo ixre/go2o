@@ -142,6 +142,8 @@ type (
 		TransactionRemark string
 		// 交易流水编号,对冻结流水进行更新时,传递该参数
 		TransactionId int
+		// 外部交易用户编号,可为空
+		OuterTxUid int
 	}
 
 	// TakeOutTransaction 提现交易
@@ -329,7 +331,7 @@ func (w Wallet) TableName() string {
 	return "wal_wallet"
 }
 
-// WalletLog WalletLog
+// WalletLog 钱包流水明细
 type WalletLog struct {
 	// 编号
 	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
@@ -373,6 +375,8 @@ type WalletLog struct {
 	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 	// 钱包用户
 	WalletUser string `json:"walletUser" db:"wallet_user" gorm:"column:wallet_user" bson:"walletUser"`
+	// 交易外部用户
+	OuterTxUid int `json:"outerTxUid" db:"outer_tx_uid" gorm:"column:outer_tx_uid" bson:"outerTxUid"`
 }
 
 func (w WalletLog) TableName() string {

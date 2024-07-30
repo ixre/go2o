@@ -9,18 +9,21 @@ message UserWalletCarryRequest{
   // 会员编号
   sint64 userId = 1;
   // 明细标题
-  string transactionTitle = 3;
+  string transactionTitle = 2;
   // 已扣除手续费的金额
-  int64 amount = 4;
+  int64 amount = 3;
   // 手续费
-  int64 transactionFee = 5;
+  int64 transactionFee = 4;
   // 外部校译号
-  string outerTransactionNo = 6;
+  string outerTransactionNo = 5;
   // 备注
-  string transactionRemark = 7;
+  string transactionRemark = 6;
   // 是否先冻结
-  bool freeze = 8;
+  bool freeze = 7;
+  // 外部交易用户编号
+  int64 outerTxUid = 8;
 }
+
 
 /** 账户调整请求 */
 message UserWalletAdjustRequest {
@@ -145,9 +148,9 @@ message UserWalletTxResponse {
   // 标题
   string transactionTitle = 5;
   // 金额
-  double amount = 6;
+  int64 amount = 6;
   // 手续费
-  double transactionFee = 7;
+  int64 transactionFee = 7;
   // 状态
   int32 reviewStatus = 8;
   // 备注

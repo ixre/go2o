@@ -1091,6 +1091,7 @@ func (m *merchantService) CarryToAccount(_ context.Context, req *proto.UserWalle
 		RefundAmount:      0,
 		TransactionTitle:  req.TransactionTitle,
 		TransactionRemark: req.TransactionRemark,
+		OuterTxUid:        int(req.OuterTxUid),
 	})
 	if err != nil {
 		return m.errorV2(err), nil
@@ -1180,6 +1181,7 @@ func (m *merchantService) Freeze(_ context.Context, req *proto.UserWalletFreezeR
 			OuterTxNo:         req.OuterTransactionNo,
 			TransactionRemark: req.TransactionRemark,
 			TransactionId:     int(req.TransactionId),
+			OuterTxUid:        0,
 		}, 0)
 	if err != nil {
 		return m.errorV2(err), nil
@@ -1201,7 +1203,8 @@ func (m *merchantService) Unfreeze(_ context.Context, req *proto.UserWalletUnfre
 			OuterTxNo:         req.OuterTransactionNo,
 			TransactionRemark: req.TransactionRemark,
 			TransactionId:     int(req.TransactionId),
-		},req.IsRefundBalance, 0)
+			OuterTxUid:        0,
+		}, req.IsRefundBalance, 0)
 	if err != nil {
 		return m.errorV2(err), nil
 	}
@@ -1221,8 +1224,8 @@ func (m *merchantService) GetWalletTxLog(_ context.Context, r *proto.UserWalletT
 		OuterTransactionNo: v.OuterTxNo,
 		Kind:               int32(v.Kind),
 		TransactionTitle:   v.Subject,
-		Amount:             float64(v.ChangeValue),
-		TransactionFee:     float64(v.TransactionFee),
+		Amount:             int64(v.ChangeValue),
+		TransactionFee:     int64(v.TransactionFee),
 		ReviewStatus:       int32(v.ReviewStatus),
 		TransactionRemark:  v.Remark,
 		CreateTime:         int64(v.CreateTime),

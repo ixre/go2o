@@ -194,6 +194,7 @@ func (a *accountImpl) carryToWallet(d member.AccountOperateData, freeze bool, tr
 		OuterTxNo:         d.OuterTransactionNo,
 		TransactionFee:    transactionFee,
 		TransactionRemark: d.TransactionRemark,
+		OuterTxUid: d.OuterTxUid,
 	}, freeze)
 	if err == nil {
 		err = a.asyncWallet()
@@ -728,6 +729,7 @@ func (a *accountImpl) freezeWallet(p member.AccountOperateData, relateUser int64
 		OuterTxNo:         p.OuterTransactionNo,
 		TransactionRemark: p.TransactionRemark,
 		TransactionId:     p.TransactionId,
+		OuterTxUid: p.OuterTxUid,
 	}, wallet.Operator{
 		OperatorUid:  int(relateUser),
 		OperatorName: "",

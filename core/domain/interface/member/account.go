@@ -212,6 +212,8 @@ type (
 		TransactionRemark string
 		// 交易流水编号,对冻结流水进行更新时,传递该参数
 		TransactionId int
+		// 关联的外部用户编号,可为空
+		OuterTxUid int
 	}
 
 	// IntegralLog 积分记录

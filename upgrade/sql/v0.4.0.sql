@@ -764,4 +764,8 @@ ALTER TABLE "public"."article_category" RENAME COLUMN "sort_num" TO "sort_no";
 
 ALTER TABLE "public"."article_category" RENAME COLUMN "describe" TO "description";
 
+ALTER TABLE "public"."wal_wallet_log" ADD COLUMN "outer_tx_uid" BIGINT NOT NULL DEFAULT 0;
+COMMENT ON COLUMN wal_wallet_log.outer_tx_uid IS '交易外部用户';
+
+
 

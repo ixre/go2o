@@ -310,6 +310,7 @@ func (w *WalletImpl) freeze(data wallet.TransactionData, operator wallet.Operato
 	l := w.createWalletLog(wallet.KFreeze, data.Amount, data.TransactionTitle, operator.OperatorUid, operator.OperatorName)
 	l.OuterTxNo = data.OuterTxNo
 	l.Balance = w._value.Balance
+	l.OuterTxUid = data.OuterTxUid
 	err := w.saveWalletLog(l)
 	if err == nil {
 		_, err = w.Save()
@@ -332,6 +333,7 @@ func (w *WalletImpl) refreeze(data wallet.TransactionData) (int, error) {
 	l.OuterTxNo = data.OuterTxNo
 	l.ChangeValue = data.Amount
 	l.Balance = w._value.Balance
+	l.OuterTxUid = data.OuterTxUid
 	err := w.saveWalletLog(l)
 	if err == nil {
 		_, err = w.Save()
@@ -411,6 +413,7 @@ func (w *WalletImpl) CarryTo(tx wallet.TransactionData, review bool) (int, error
 		l.OuterTxNo = tx.OuterTxNo
 		l.TransactionFee = -transactionFee
 		l.Balance = w._value.Balance
+		l.OuterTxUid = tx.OuterTxUid
 		err = w.saveWalletLog(l)
 		if err == nil {
 			_, err = w.Save()

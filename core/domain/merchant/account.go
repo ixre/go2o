@@ -146,6 +146,7 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 			TransactionFee:    p.TransactionFee,
 			OuterTxNo:         p.OuterTxNo,
 			TransactionRemark: p.TransactionRemark,
+			OuterTxUid:        p.OuterTxUid,
 		}, p.Freeze)
 		// 记录旧日志,todo:可能去掉
 		// l := a.createBalanceLog(merchant.KindAccountCarry,
@@ -288,13 +289,7 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 
 // FreezeWallet 冻结钱包
 func (a *accountImpl) Freeze(p wallet.TransactionData, relateUser int64) (int, error) {
-	id, err := a.getWallet().Freeze(wallet.TransactionData{
-		TransactionTitle:  p.TransactionTitle,
-		Amount:            p.Amount,
-		OuterTxNo:         p.OuterTxNo,
-		TransactionRemark: p.TransactionRemark,
-		TransactionId:     p.TransactionId,
-	}, wallet.Operator{
+	id, err := a.getWallet().Freeze(p, wallet.Operator{
 		OperatorUid:  int(relateUser),
 		OperatorName: "",
 	})

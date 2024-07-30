@@ -156,6 +156,8 @@ type (
 		TransactionTitle string
 		// 交易备注,如：洗衣液
 		TransactionRemark string
+		// 关联的外部用户编号,可为空
+		OuterTxUid int
 	}
 	IMerchantManager interface {
 		// GetMerchantByMemberId 获取会员关联的商户
