@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
@@ -401,8 +402,9 @@ func UnifinedPagingQuery(o ORM, p *PagingParams, tables string, fields string) (
 	// 查询行数
 	order := types.Ternary(p.Order != "", " ORDER BY "+p.Order, "")
 	if ret.Total > 0 {
-		sql = fmt.Sprintf(`SELECT %s %s %s %s`, fields, from, where, order)
-		rows, err := o.Raw(sql, args...).Offset(p.Begin).Limit(p.Size).Rows()
+		skipper := getSkipperSQL(o, p)
+		sql = strings.Join([]string{"SELECT", fields, from, where, order, skipper}, " ")
+		rows, err := o.Offset(p.Begin).Limit(p.Size).Raw(sql, args...).Rows()
 		if err != nil {
 			log.Println("paging query rows error: %s", err.Error())
 		} else {
@@ -413,6 +415,24 @@ func UnifinedPagingQuery(o ORM, p *PagingParams, tables string, fields string) (
 		}
 	}
 	return &ret, nil
+}
+
+// 生成分页条件
+func getSkipperSQL(o ORM, p *PagingParams) string {
+	if p.Size <= 0 {
+		return ""
+	}
+	switch o.Dialector.Name() {
+	case "mysql":
+		return fmt.Sprintf("LIMIT %d,%d", p.Begin, p.Size)
+	case "postgres":
+		return fmt.Sprintf("OFFSET %d LIMIT %d", p.Begin, p.Size)
+	case "sqlite3":
+		return fmt.Sprintf("LIMIT %d OFFSET %d", p.Size, p.Begin)
+	case "mssql":
+		return fmt.Sprintf("OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", p.Begin, p.Size)
+	}
+	panic("not support dialect")
 }
 
 // 分页行

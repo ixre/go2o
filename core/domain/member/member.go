@@ -675,7 +675,7 @@ func (m *memberImpl) prepare() (err error) {
 	m.value.RealName = strings.TrimSpace(m.value.RealName)
 	//如果未设置昵称,则默认为用户名
 	if len(m.value.Nickname) == 0 {
-		m.value.Nickname = "User" + m.value.Username
+		m.value.Nickname = "用户" + util.RandString(4)
 	}
 	// 初始化头像
 	m.value.ProfilePhoto = strings.TrimSpace(m.value.ProfilePhoto)

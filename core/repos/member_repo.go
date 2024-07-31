@@ -249,7 +249,6 @@ func (m *MemberRepoImpl) GetMember(memberId int64) member.IMemberAggregateRoot {
 	e := &member.Member{}
 	key := m.getMemberCk(memberId)
 	if err := m.storage.Get(key, &e); err != nil {
-		//log.("-- mm",err)
 		err = m._orm.Get(memberId, e)
 		if err != nil {
 			return nil
