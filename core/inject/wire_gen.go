@@ -570,7 +570,8 @@ func GetSystemService() proto.SystemServiceServer {
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iNotifyRepo := repos.NewNotifyRepo(orm, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
-	systemServiceServer := impl2.NewSystemService(iValueRepo, iRegistryRepo, iSystemRepo, storageInterface, iMessageRepo)
+	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
+	systemServiceServer := impl2.NewSystemService(iValueRepo, iRegistryRepo, iSystemRepo, storageInterface, iMessageRepo, iStationRepo)
 	return systemServiceServer
 }
 

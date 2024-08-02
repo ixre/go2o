@@ -81,6 +81,8 @@ service SystemService {
     // 获取下级区域,code
     rpc GetChildAreas (Int32) returns (AreaListResponse) {
     }
+    // 查找城市信息
+    rpc FindCity(FindAreaRequest) returns (SArea){}
     // 获取移动应用设置
     rpc GetMoAppConf (Empty) returns (SMobileAppConfig) {
     }
@@ -140,4 +142,22 @@ message SOption {
     string value = 3;
     // 是否为叶子节点
     bool isLeaf = 4;
+}
+
+// 获取地区名称请求
+message FindAreaRequest{
+    // 名称
+    string name = 1;
+    // 编号
+    int64 code = 2;
+}
+
+// 查询地区
+message SArea{
+    // 编码
+    int64 code = 1;
+    // 名称
+    string name = 2;
+    // 站点编号
+    int64 stationId = 3;
 }

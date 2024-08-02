@@ -2,6 +2,7 @@ package sp
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/infrastructure/lbs"
 	"github.com/ixre/go2o/core/infrastructure/util/sms"
 	"github.com/ixre/go2o/core/sp/tencent"
 )
@@ -22,4 +23,6 @@ func NewSPConfig(registryRepo registry.IRegistryRepo) *ServiceProviderConfigurat
 func (c *ServiceProviderConfiguration) Configure() {
 	// 注册腾讯云短信服务商
 	sms.RegisterProvider(tencent.NewTencentSms(c.registryRepo))
+	// 注册腾讯位置服务
+	lbs.Configure(tencent.NewLbsService(c.registryRepo))
 }

@@ -15,6 +15,7 @@ import (
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -35,6 +36,7 @@ type foundationService struct {
 	notifyRepo   mss.IMessageRepo
 	sysRepo      sys.ISystemRepo
 	_s           storage.Interface
+	stationRepo  station.IStationRepo
 	serviceUtil
 	proto.UnimplementedSystemServiceServer
 }
@@ -43,13 +45,16 @@ func NewSystemService(rep valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo,
 	sysRepo sys.ISystemRepo,
 	s storage.Interface,
-	notifyRepo mss.IMessageRepo) proto.SystemServiceServer {
+	notifyRepo mss.IMessageRepo,
+	stationRepo station.IStationRepo,
+) proto.SystemServiceServer {
 	return &foundationService{
 		_rep:         rep,
 		_s:           s,
 		notifyRepo:   notifyRepo,
 		sysRepo:      sysRepo,
 		registryRepo: registryRepo,
+		stationRepo:  stationRepo,
 	}
 }
 
@@ -399,6 +404,25 @@ func (s *foundationService) GetAreaString(_ context.Context, r *proto.AreaString
 	}
 	str := s._rep.GetAreaString(r.Province, r.City, r.District)
 	return &proto.String{Value: str}, nil
+}
+
+// FindCity implements proto.SystemServiceServer.
+func (s *foundationService) FindCity(_ context.Context, req *proto.FindAreaRequest) (*proto.SArea, error) {
+	isa := s.sysRepo.GetSystemAggregateRoot().Address()
+	city := isa.FindCity(req.Name)
+	if city == nil {
+		return &proto.SArea{}, nil
+	}
+	ret := &proto.SArea{
+		Code:      int64(city.Code),
+		Name:      city.Name,
+		StationId: 0,
+	}
+	isn := s.stationRepo.GetStationByCity(city.Code)
+	if isn != nil {
+		ret.StationId = int64(isn.GetAggregateRootId())
+	}
+	return ret, nil
 }
 
 // GetPayPlatform 获取支付平台

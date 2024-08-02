@@ -31,6 +31,8 @@ type (
 		GetDistrictList(parentId int) []*District
 		// GetDistricts 获取区域名称
 		GetDistrictNames(code ...int) map[int]string
+		// FindCity 查找城市
+		FindCity(name string)*District
 	}
 
 	// IOptionManager 选项管理器

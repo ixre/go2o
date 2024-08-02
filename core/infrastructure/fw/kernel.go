@@ -480,6 +480,17 @@ type Error struct {
 	Message string `json:"message"`
 }
 
+// 解析错误
+func ParseError(err error) *Error {
+	if err != nil {
+		return &Error{
+			Code:    1,
+			Message: err.Error(),
+		}
+	}
+	return nil
+}
+
 // 断言错误
 func AssertError(t *testing.T, err error) {
 	if err != nil {

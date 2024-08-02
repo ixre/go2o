@@ -59,6 +59,13 @@ type addressManagerImpl struct {
 	areaList []*sys.District
 }
 
+// FindCity 查找城市
+func (a *addressManagerImpl) FindCity(name string) *sys.District {
+	return collections.FindArray(a.GetAllCities(), func(d *sys.District) bool {
+		return d.Name == name
+	})
+}
+
 // getDistrictList 获取地区列表
 func (a *addressManagerImpl) getDistrictList() []*sys.District {
 	if a.areaList == nil {
