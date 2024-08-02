@@ -149,7 +149,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	}
 
 	pro.Name = strings.TrimSpace(pro.Name)
-	pro.Avatar = strings.TrimSpace(pro.Avatar)
+	pro.ProfilePhoto = strings.TrimSpace(pro.ProfilePhoto)
 	if len(pro.Name) == 0 {
 		//如果未设置昵称,则默认为用户名
 		pro.Name = v.Username

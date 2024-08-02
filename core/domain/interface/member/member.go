@@ -298,7 +298,7 @@ type (
 		//昵称
 		Name string `db:"name"`
 		//头像
-		Avatar string `db:"avatar"`
+		ProfilePhoto string `db:"profile_photo"`
 		//性别
 		Gender int32 `db:"gender"`
 		//生日

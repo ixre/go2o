@@ -46,7 +46,7 @@ func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
 	}
 	if len(ids) > 0 {
 		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
-		query := fmt.Sprintf(`SELECT m.id,m.user,m.nick_name,m.avatar,m.exp,m.level,
+		query := fmt.Sprintf(`SELECT m.id,m.user,m.nick_name,m.profile_photo,m.exp,m.level,
 				lv.name as level_name,a.integral,a.balance,a.wallet_balance,
 				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
 				m.update_time FROM mm_member m INNER JOIN mm_level lv
@@ -189,7 +189,7 @@ func (m *MemberQuery) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember 
 	var id int
 	var user, name, phone, portrait string
 	m.Query(`SELECT id,user,mm_profile.name,mm_profile.phone,
-        mm_profile.avatar FROM mm_member
+        mm_profile.profile_photo FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
         WHERE user LIKE $1 OR mm_profile.name LIKE $2 OR
         mm_profile.phone LIKE $3`, func(rows *sql.Rows) {
@@ -210,7 +210,7 @@ func (m *MemberQuery) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember 
 func (m *MemberQuery) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
 	e := dto.SimpleMember{}
 	err := m.QueryRow(`SELECT id,user,mm_profile.name,mm_profile.phone,
-        mm_profile.avatar FROM mm_member
+        mm_profile.profile_photo FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
         WHERE user = $1 OR mm_profile.phone = $2`, func(rows *sql.Row) error {
 		er := rows.Scan(&e.Id, &e.User, &e.Name, &e.Phone, &e.Avatar)

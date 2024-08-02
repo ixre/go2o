@@ -186,8 +186,8 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	dst.Ext4 = v.Ext4
 	dst.Ext5 = v.Ext5
 	dst.Ext6 = v.Ext6
-	if v.Avatar != "" {
-		dst.Avatar = v.Avatar
+	if v.ProfilePhoto != "" {
+		dst.ProfilePhoto = v.ProfilePhoto
 	}
 	return nil
 }
@@ -302,19 +302,19 @@ func (p *profileManagerImpl) ChangeNickname(nickname string, limitTime bool) err
 }
 
 // 设置头像
-func (p *profileManagerImpl) ChangeProfilePhoto(portrait string) error {
-	if portrait == "" {
+func (p *profileManagerImpl) ChangeProfilePhoto(profilePhoto string) error {
+	if profilePhoto == "" {
 		return member.ErrInvalidHeadPortrait
 	}
 	v := p.GetProfile()
 	if p.profile != nil {
-		p.profile.Avatar = portrait
+		p.profile.ProfilePhoto = profilePhoto
 	}
-	v.Avatar = portrait
+	v.ProfilePhoto = profilePhoto
 	err := p.repo.SaveProfile(&v)
 	if err == nil {
 		//todo: phone as user
-		p.member.value.Phone = portrait
+		p.member.value.Phone = profilePhoto
 		_, err = p.member.Save()
 	}
 	return err

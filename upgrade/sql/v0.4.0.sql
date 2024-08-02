@@ -768,4 +768,10 @@ ALTER TABLE "public"."wal_wallet_log" ADD COLUMN "outer_tx_uid" BIGINT NOT NULL 
 COMMENT ON COLUMN wal_wallet_log.outer_tx_uid IS '交易外部用户';
 
 
+/** 2024-08-02 更改头像 */
+ALTER TABLE "public"."mm_member" ALTER COLUMN "profile_photo" TYPE character varying(180);
 
+ALTER TABLE "public"."mm_profile" RENAME COLUMN "avatar" TO "profile_photo"; 
+ALTER TABLE "public"."mm_profile" ALTER COLUMN "profile_photo" TYPE character varying(180);
+
+ALTER TABLE "public"."rbac_user" RENAME COLUMN "avatar" TO "profile_photo";
