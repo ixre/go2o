@@ -25,8 +25,8 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
-	"github.com/ixre/go2o/core/infrastructure/domain/validate"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/initial/provide"
 )
 
@@ -126,13 +126,13 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 		return member.ErrAddress
 	}
 	// 检查邮箱
-	if len(v.Email) != 0 && !validate.IsEmail(v.Email) {
+	if len(v.Email) != 0 && !regex.IsEmail(v.Email) {
 		return member.ErrInvalidEmail
 	}
 	// 检查手机
 	checkPhone := p.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
 	if len(v.Phone) != 0 && checkPhone {
-		if !validate.IsPhone(v.Phone) {
+		if !regex.IsPhone(v.Phone) {
 			return member.ErrInvalidPhone
 		}
 	}

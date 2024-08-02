@@ -26,8 +26,8 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/infrastructure/domain/validate"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/util"
 )
@@ -591,7 +591,7 @@ func (m *memberImpl) checkUser(user string) error {
 	if len([]rune(user)) < 6 {
 		return member.ErrUserLength
 	}
-	if !validate.IsUser(user) {
+	if !regex.IsUser(user) {
 		return member.ErrUserValidErr
 	}
 	if m.repo.CheckUserExist(user, m.GetAggregateRootId()) {
@@ -657,7 +657,7 @@ func (m *memberImpl) prepare() (err error) {
 	}
 	if lp > 0 {
 		checkPhone := m.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
-		if checkPhone && !validate.IsPhone(m.value.Phone) {
+		if checkPhone && !regex.IsPhone(m.value.Phone) {
 			return member.ErrInvalidPhone
 		}
 		if m.checkPhoneBind(m.value.Phone, m.GetAggregateRootId()) != nil {

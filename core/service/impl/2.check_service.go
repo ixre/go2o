@@ -17,6 +17,7 @@ import (
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/service/proto"
 	api "github.com/ixre/gof/ext/jwt-api"
 	"github.com/ixre/gof/storage"
@@ -269,11 +270,21 @@ func (c *checkServiceImpl) CompareCode(_ context.Context, r *proto.CompareCheckC
 }
 
 func (c *checkServiceImpl) notifyCheckCode(code string, r *proto.SendCheckCodeRequest) error {
-	// 创建参数
-	data := []string{code, strconv.Itoa(int(r.Effective))}
-	// 构造并发送短信
-	mg := c.notifyRepo.NotifyManager()
-	return mg.SendPhoneMessage(r.ReceptAccount, mss.PhoneMessage(""), data, r.TemplateCode)
+	if regex.IsPhone(r.ReceptAccount) {
+		// 创建参数
+		data := []string{code, strconv.Itoa(int(r.Effective))}
+		// 构造并发送短信
+		mg := c.notifyRepo.NotifyManager()
+		return mg.SendPhoneMessage(r.ReceptAccount, mss.PhoneMessage(""), data, r.TemplateCode)
+	}
+	if regex.IsEmail(r.ReceptAccount) {
+		// 创建参数
+		data := []string{code, strconv.Itoa(int(r.Effective))}
+		// 构造并发送短信
+		mg := c.notifyRepo.NotifyManager()
+		return mg.SendEmail(r.ReceptAccount, nil, data, r.TemplateCode)
+	}
+	return errors.New("not support recept account type")
 }
 
 // GrantAccessToken 发放访问令牌

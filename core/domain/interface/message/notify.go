@@ -33,6 +33,7 @@ var (
 		TypePhoneMessage,
 	}
 
+	//todo: 已过期
 	// 默认通知项
 	DefaultNotifyItems = NotifyItemSet{
 		&NotifyItem{
@@ -113,7 +114,7 @@ type (
 		// 发送手机短信
 		SendPhoneMessage(phone string, msg PhoneMessage, data []string, templateId string) error
 		// 发送邮件
-		SendEmail(to string, msg *MailMessage, data []string) error
+		SendEmail(to string, msg *MailMessage, data []string, templateId string) error
 	}
 
 	INotifyRepo interface {

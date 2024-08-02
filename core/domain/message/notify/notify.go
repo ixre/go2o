@@ -157,6 +157,6 @@ func (n *notifyManagerImpl) getSmsTemplate(templateId string) *mss.NotifyTemplat
 
 // 发送邮件
 func (n *notifyManagerImpl) SendEmail(to string,
-	msg *mss.MailMessage, data []string) error {
+	msg *mss.MailMessage, data []string, templateId string) error {
 	return errors.New("not implement message via mail")
 }

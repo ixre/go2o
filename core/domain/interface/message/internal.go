@@ -1,3 +1,13 @@
+/**
+ * Copyright (C) 2007-2024 fze.NET, All rights reserved.
+ *
+ * name : internal.go
+ * author : jarrysix (jarrysix#gmail.com)
+ * date : 2024-08-03 00:33
+ * description :
+ * history :
+ */
+
 package mss
 
 var SMS_CHECK_CODE = "SMS_CHECK_CODE"
@@ -14,5 +24,13 @@ var InternalSmsTemplate = []*NotifyTemplate{
 		SpCode:   "TENCENT",
 		SpTid:    "",
 		Labels:   "验证码;有效时间",
+	},
+}
+
+// InternalMailTemplate 内置邮件模板
+var InternalMailTemplate = []*NotifyTemplate{
+	{
+		Code:     "EMAIL_CHECK_CODE",
+		TempName: "邮件验证码",
 	},
 }
