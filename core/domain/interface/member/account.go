@@ -341,7 +341,7 @@ type (
 		// 第三方应用认证令牌
 		AuthToken string `db:"auth_token" json:"auth_token"`
 		// 头像地址
-		HeadImgUrl string `db:"head_img_url" json:"headImgUrl"`
+		ProfilePhoto string `db:"profile_photo" json:"profilePhoto"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 	}

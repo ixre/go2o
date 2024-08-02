@@ -495,7 +495,7 @@ func (s *memberService) ChangeProfilePhoto(_ context.Context, r *proto.ChangePro
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	err := m.Profile().ChangeProfilePhoto(r.PortraitUrl)
+	err := m.Profile().ChangeProfilePhoto(r.ProfilePhotoUrl)
 	return s.result(err), nil
 }
 
@@ -1749,11 +1749,11 @@ func (m *memberService) GetOAuthBindInfo(_ context.Context, req *proto.MemberOAu
 		return &proto.SMemberOAuthAccount{}, nil
 	}
 	return &proto.SMemberOAuthAccount{
-		MemberId:    req.MemberId,
-		AppCode:     req.AppCode,
-		OpenId:      bind.OpenId,
-		AuthToken:   bind.AuthToken,
-		PortraitUrl: bind.HeadImgUrl,
+		MemberId:     req.MemberId,
+		AppCode:      req.AppCode,
+		OpenId:       bind.OpenId,
+		AuthToken:    bind.AuthToken,
+		ProfilePhoto: bind.ProfilePhoto,
 	}, nil
 }
 

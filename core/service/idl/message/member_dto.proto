@@ -358,7 +358,7 @@ message ChangeProfilePhotoRequest {
   // 会员编号
   sint64 memberId = 1;
   // 头像
-  string portraitUrl = 2;
+  string profilePhotoUrl = 2;
 }
 
 
@@ -780,5 +780,5 @@ message SMemberOAuthAccount{
    /** 第三方应用认证令牌 */
    string authToken = 4;
    /** 头像地址 */
-   string portraitUrl = 5;
+   string profilePhoto = 5;
 }

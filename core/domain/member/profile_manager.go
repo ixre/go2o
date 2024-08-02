@@ -736,12 +736,12 @@ func (p *profileManagerImpl) BindOAuthApp(app string, openId string, authToken s
 		return fmt.Errorf("app %s aready has binding info", app)
 	}
 	b = &member.OAuthAccount{
-		MemberId:   p.memberId,
-		AppCode:    app,
-		OpenId:     openId,
-		AuthToken:  authToken,
-		HeadImgUrl: "",
-		UpdateTime: time.Now().Unix(),
+		MemberId:     p.memberId,
+		AppCode:      app,
+		OpenId:       openId,
+		AuthToken:    authToken,
+		ProfilePhoto: "",
+		UpdateTime:   time.Now().Unix(),
 	}
 	_, err := p.repo.SaveOAuthAccount(b)
 	return err
