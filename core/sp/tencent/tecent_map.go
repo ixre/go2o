@@ -17,7 +17,7 @@ import (
 	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/infrastructure/lbs"
+	"github.com/ixre/go2o/core/infrastructure/util/lbs"
 	"github.com/ixre/gof/crypto"
 	api "github.com/ixre/gof/ext/api"
 )
