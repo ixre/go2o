@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"log"
@@ -108,7 +109,7 @@ func (c *CheckCodeVerifier) CheckDuration(token string) error {
 	if len(s) > 0 {
 		data := parseCheckData(s)
 		if now-int64(data.SendTime) < c.resendLimit {
-			return errors.New("请勿在短时间内获取短信验证码")
+			return errors.New("请勿在短时间内获取验证码")
 		}
 	}
 	return nil
@@ -192,28 +193,28 @@ func NewCheckService(repo member.IMemberRepo,
 func (c *checkServiceImpl) SendCode(_ context.Context, r *proto.SendCheckCodeRequest) (*proto.SendCheckCodeResponse, error) {
 	if len(r.Token) == 0 {
 		return &proto.SendCheckCodeResponse{
-			ErrCode: 1001,
-			ErrMsg:  "非法请求",
+			Code:    1001,
+			Message: "非法请求",
 		}, nil
 	}
 	if len(r.Operation) == 0 {
 		return &proto.SendCheckCodeResponse{
-			ErrCode: 1002,
-			ErrMsg:  "操作名称不能为空",
+			Code:    1002,
+			Message: "操作名称不能为空",
 		}, nil
 	}
 	if len(r.TemplateCode) == 0 {
 		return &proto.SendCheckCodeResponse{
-			ErrCode: 1003,
-			ErrMsg:  "模板不能为空",
+			Code:    1003,
+			Message: "模板不能为空",
 		}, nil
 	}
 	// 检查短信验证码是否频繁发送
 	err := c.CheckCodeVerifier.CheckDuration(r.Token)
 	if err != nil {
 		return &proto.SendCheckCodeResponse{
-			ErrCode: 1004,
-			ErrMsg:  err.Error(),
+			Code:    1004,
+			Message: err.Error(),
 		}, nil
 	}
 	if r.Effective <= 0 {
@@ -221,10 +222,6 @@ func (c *checkServiceImpl) SendCode(_ context.Context, r *proto.SendCheckCodeReq
 		r.Effective = 5
 	}
 	code := domain.NewCheckCode()
-	// 发送验证码,如果失败,则输出错误信息
-	if err := c.notifyCheckCode(code, r); err != nil {
-		log.Println("[ Go2o][ ERROR]: 发送验证码失败:", err.Error())
-	}
 	// 保存校验码信息
 	unix := time.Now().Unix()
 	c.CheckCodeVerifier.SaveData(r.Token,
@@ -234,6 +231,10 @@ func (c *checkServiceImpl) SendCode(_ context.Context, r *proto.SendCheckCodeReq
 			UserId:      int(r.UserId),
 			CheckCode:   code,
 		})
+	// 发送验证码,如果失败,则输出错误信息
+	if err := c.notifyCheckCode(code, r); err != nil {
+		log.Println("[ Go2o][ ERROR]: 发送验证码失败:", err.Error())
+	}
 	// 输出验证码调试信息
 	v, _ := c.registryRepo.GetValue(registry.EnableDebugMode)
 	if b, _ := strconv.ParseBool(v); b {
@@ -249,15 +250,15 @@ func (c *checkServiceImpl) SendCode(_ context.Context, r *proto.SendCheckCodeReq
 func (c *checkServiceImpl) CompareCode(_ context.Context, r *proto.CompareCheckCodeRequest) (*proto.CompareCheckCodeResponse, error) {
 	if len(r.Token) == 0 {
 		return &proto.CompareCheckCodeResponse{
-			ErrCode: 1001,
-			ErrMsg:  "非法请求",
+			Code:    1001,
+			Message: "非法请求",
 		}, nil
 	}
 	userId, err := c.CheckCodeVerifier.Validate(r.Token, r.ReceptAccount, r.CheckCode)
 	if err != nil {
 		return &proto.CompareCheckCodeResponse{
-			ErrCode: 1002,
-			ErrMsg:  err.Error(),
+			Code:    1002,
+			Message: err.Error(),
 		}, nil
 	}
 	if r.ResetIfOk {
@@ -279,7 +280,10 @@ func (c *checkServiceImpl) notifyCheckCode(code string, r *proto.SendCheckCodeRe
 	}
 	if regex.IsEmail(r.ReceptAccount) {
 		// 创建参数
-		data := []string{code, strconv.Itoa(int(r.Effective))}
+		data, err := c.prepareCheck(r, []string{code, strconv.Itoa(int(r.Effective))})
+		if err != nil {
+			return err
+		}
 		// 构造并发送短信
 		mg := c.notifyRepo.NotifyManager()
 		return mg.SendEmail(r.ReceptAccount, nil, data, r.TemplateCode)
@@ -287,23 +291,44 @@ func (c *checkServiceImpl) notifyCheckCode(code string, r *proto.SendCheckCodeRe
 	return errors.New("not support recept account type")
 }
 
+// 准备消息参数参数
+func (c *checkServiceImpl) prepareCheck(r *proto.SendCheckCodeRequest, data []string) ([]string, error) {
+	if r.TemplateCode == mss.EMAIL_MCH_REGISTER {
+		// 生成商户注册的链接
+		domain, _ := c.registryRepo.GetValue(registry.Domain)
+		if len(domain) == 0 {
+			return nil, errors.New("系统未配置域名")
+		}
+		params := fmt.Sprintf("token=%s&account=%s&code=%s", r.Token, r.ReceptAccount, data[0])
+		encode := base64.StdEncoding.EncodeToString([]byte(params))
+		link := fmt.Sprintf(domain+"/merchant/register?token=%s", encode)
+		return []string{link, data[1]}, nil
+	}
+	return data, nil
+}
+
 // GrantAccessToken 发放访问令牌
 func (s *checkServiceImpl) GrantAccessToken(_ context.Context, request *proto.GrantAccessTokenRequest) (*proto.GrantAccessTokenResponse, error) {
 	now := time.Now().Unix()
 	if request.ExpiresTime <= now {
 		return &proto.GrantAccessTokenResponse{
-			ErrMsg: fmt.Sprintf("令牌有效时间已过有效期: value=%d", request.ExpiresTime),
+			Code:    1001,
+			Message: fmt.Sprintf("令牌有效时间已过有效期: value=%d", request.ExpiresTime),
 		}, nil
 	}
 	if len(request.Sub) == 0 {
 		return &proto.GrantAccessTokenResponse{
-			ErrMsg: "令牌主题不能为空",
+			Code:    1002,
+			Message: "令牌主题不能为空",
 		}, nil
 	}
 	// 校验发放令牌
 	err := s.checkGrantAccessToken(request)
 	if err != nil {
-		return &proto.GrantAccessTokenResponse{ErrMsg: err.Error()}, nil
+		return &proto.GrantAccessTokenResponse{
+			Code:    1003,
+			Message: err.Error(),
+		}, nil
 	}
 	// 创建token并返回
 	aud := fmt.Sprintf("%d@%d", request.UserId, request.UserType)
@@ -311,12 +336,18 @@ func (s *checkServiceImpl) GrantAccessToken(_ context.Context, request *proto.Gr
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
-		return &proto.GrantAccessTokenResponse{ErrMsg: err.Error()}, nil
+		return &proto.GrantAccessTokenResponse{
+			Code:    1004,
+			Message: err.Error(),
+		}, nil
 	}
 	token, err := api.AccessToken(claims, []byte(jwtSecret))
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
-		return &proto.GrantAccessTokenResponse{ErrMsg: err.Error()}, nil
+		return &proto.GrantAccessTokenResponse{
+			Code:    1005,
+			Message: err.Error(),
+		}, nil
 	}
 	return &proto.GrantAccessTokenResponse{
 		AccessToken: token,
@@ -359,17 +390,24 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 		request.AccessToken = request.AccessToken[7:]
 	}
 	if len(request.AccessToken) == 0 {
-		return &proto.CheckAccessTokenResponse{ErrMsg: "令牌不能为空"}, nil
+		return &proto.CheckAccessTokenResponse{
+			Code:    1001,
+			Message: "令牌不能为空",
+		}, nil
 	}
 	if len(request.Sub) == 0 {
 		return &proto.CheckAccessTokenResponse{
-			ErrMsg: "令牌主题不能为空",
+			Code:    1002,
+			Message: "令牌主题不能为空",
 		}, nil
 	}
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
-		return &proto.CheckAccessTokenResponse{ErrMsg: err.Error()}, nil
+		return &proto.CheckAccessTokenResponse{
+			Code:    1003,
+			Message: err.Error(),
+		}, nil
 	}
 	// 转换token
 	dstClaims := jwt.MapClaims{} // 可以用实现了Claim接口的自定义结构
@@ -377,11 +415,17 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 		return []byte(jwtSecret), nil
 	})
 	if tk == nil {
-		return &proto.CheckAccessTokenResponse{ErrMsg: "令牌无效"}, nil
+		return &proto.CheckAccessTokenResponse{
+			Code:    1004,
+			Message: "令牌无效",
+		}, nil
 	}
 	if !dstClaims.VerifyIssuer("go2o", true) ||
 		dstClaims["sub"] != request.Sub {
-		return &proto.CheckAccessTokenResponse{ErrMsg: "未知颁发者的令牌"}, nil
+		return &proto.CheckAccessTokenResponse{
+			Code:    1005,
+			Message: "未知颁发者的令牌",
+		}, nil
 	}
 	// 令牌过期时间
 	exp := int64(dstClaims["exp"].(float64))
@@ -390,16 +434,23 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 		ve, _ := err.(*jwt.ValidationError)
 		if ve.Errors&jwt.ValidationErrorExpired != 0 {
 			return &proto.CheckAccessTokenResponse{
-				ErrMsg:           "令牌已过期",
+				Code:             1006,
+				Message:          "令牌已过期",
 				IsExpires:        true,
 				TokenExpiresTime: exp,
 			}, nil
 		}
-		return &proto.CheckAccessTokenResponse{ErrMsg: "令牌无效:" + ve.Error()}, nil
+		return &proto.CheckAccessTokenResponse{
+			Code:    1007,
+			Message: "令牌无效:" + ve.Error(),
+		}, nil
 	}
 	audArray := strings.Split(dstClaims["aud"].(string), "@")
 	if len(audArray) != 2 {
-		return &proto.CheckAccessTokenResponse{ErrMsg: "令牌用户无效"}, nil
+		return &proto.CheckAccessTokenResponse{
+			Code:    1008,
+			Message: "令牌用户无效",
+		}, nil
 	}
 	userId := typeconv.MustInt(audArray[0])
 	userType := typeconv.MustInt(audArray[1])
@@ -419,7 +470,8 @@ func (s *checkServiceImpl) renewAccessToken(request *proto.CheckAccessTokenReque
 	userId int, userType int, exp int64) *proto.CheckAccessTokenResponse {
 	if request.RenewExpiresTime < request.CheckExpireTime {
 		return &proto.CheckAccessTokenResponse{
-			ErrMsg: "令牌续期过期时间必须在检测过期时间之后",
+			Code:    1009,
+			Message: "令牌续期过期时间必须在检测过期时间之后",
 		}
 	}
 	ret, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
@@ -427,9 +479,10 @@ func (s *checkServiceImpl) renewAccessToken(request *proto.CheckAccessTokenReque
 		UserType:    int32(userType),
 		ExpiresTime: request.RenewExpiresTime,
 	})
-	if len(ret.ErrMsg) > 0 {
+	if len(ret.Message) > 0 {
 		return &proto.CheckAccessTokenResponse{
-			ErrMsg: ret.ErrMsg,
+			Code:    1010,
+			Message: ret.Message,
 		}
 	}
 	return &proto.CheckAccessTokenResponse{

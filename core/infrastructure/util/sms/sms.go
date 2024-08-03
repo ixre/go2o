@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
+	"github.com/ixre/go2o/core/infrastructure/util"
 )
 
 // 短信服务商
@@ -69,7 +70,7 @@ func Send(t Template, phone string, params ...string) error {
 	}
 	if len(t.TemplateId) == 0 {
 		// 自定义短信内容
-		c := ResolveMessage(t.TemplateContent, params)
+		c := util.ResolveMessage(t.TemplateContent, params)
 		return p.SendContent(phone, c)
 	}
 	// 根据短信验证码发送短信

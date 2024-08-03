@@ -192,11 +192,20 @@ func initPages(repo content.IPageRepo) {
 func (h *EventHandler) initNotifyTemplate() {
 	arr := h.messageRepo.GetAllNotifyTemplate()
 	// 初始化短信模板
-	smsArray := collections.FilterArray(arr, func(t *mss.NotifyTemplate) bool {
+	tplArr := collections.FilterArray(arr, func(t *mss.NotifyTemplate) bool {
 		return t.TempType == 2
 	})
-	if len(smsArray) == 0 {
+	if len(tplArr) == 0 {
 		for _, v := range mss.InternalSmsTemplate {
+			h.messageRepo.SaveNotifyTemplate(v)
+		}
+	}
+	// 初始化邮件模板
+	tplArr = collections.FilterArray(arr, func(t *mss.NotifyTemplate) bool {
+		return t.TempType == 3
+	})
+	if len(tplArr) == 0 {
+		for _, v := range mss.InternalMailTemplate {
 			h.messageRepo.SaveNotifyTemplate(v)
 		}
 	}

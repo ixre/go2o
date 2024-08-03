@@ -11,6 +11,7 @@
 package mss
 
 var SMS_CHECK_CODE = "SMS_CHECK_CODE"
+var EMAIL_MCH_REGISTER = "EMAIL_MCH_REGISTER"
 
 // InternalSmsTemplate 内置短信模板
 var InternalSmsTemplate = []*NotifyTemplate{
@@ -30,7 +31,14 @@ var InternalSmsTemplate = []*NotifyTemplate{
 // InternalMailTemplate 内置邮件模板
 var InternalMailTemplate = []*NotifyTemplate{
 	{
-		Code:     "EMAIL_CHECK_CODE",
-		TempName: "邮件验证码",
+		Code:     EMAIL_MCH_REGISTER,
+		TempName: "商户注册验证",
+		TempType: 3,
+		Content: `您正在注册成为商户，请点击以下链接完成注册： <br /><a href="${注册链接}">${注册链接}</a>
+		 			<br />
+		 		此链接有效期为${有效时间}分钟`,
+		SpCode: "",
+		SpTid:  "",
+		Labels: "注册链接;有效时间",
 	},
 }

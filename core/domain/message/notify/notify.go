@@ -17,7 +17,9 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
+	"github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/go2o/core/infrastructure/util/sms"
+	"github.com/ixre/go2o/core/infrastructure/util/smtp"
 	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/log"
 )
@@ -154,9 +156,22 @@ func (n *notifyManagerImpl) getSmsTemplate(templateId string) *mss.NotifyTemplat
 		return t.TempType == 2 && t.Code == templateId
 	})
 }
+func (n *notifyManagerImpl) getMailTemplate(templateId string) *mss.NotifyTemplate {
+	arr := n.mssRepo.GetAllNotifyTemplate()
+	return collections.FindArray(arr, func(t *mss.NotifyTemplate) bool {
+		return t.TempType == 3 && t.Code == templateId
+	})
+}
 
-// 发送邮件
+// SendEmail 发送邮件
 func (n *notifyManagerImpl) SendEmail(to string,
 	msg *mss.MailMessage, data []string, templateId string) error {
-	return errors.New("not implement message via mail")
+	tpl := n.getMailTemplate(templateId)
+	if tpl == nil {
+		return fmt.Errorf(mss.ErrNoSuchTemplate.Error(), templateId)
+	}
+	ptName, _ := n.registryRepo.GetValue(registry.PlatformName)
+	message := util.ResolveMessage(tpl.Content, data)
+	subject := fmt.Sprintf("【%s】%s", ptName, tpl.TempName)
+	return smtp.SendMail(subject, []string{to}, message)
 }

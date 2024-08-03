@@ -10,12 +10,10 @@ package sms
 
 import (
 	"errors"
-	"fmt"
-	"regexp"
-	"strconv"
 	"strings"
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
+	"github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/go2o/core/infrastructure/util/sms/aliyu"
 	"github.com/ixre/go2o/core/infrastructure/util/sms/cl253"
 )
@@ -48,7 +46,7 @@ func SendSms(setting *mss.SmsApiPerm, phoneNum string, content string,
 	if setting.Signature != "" && !strings.Contains(content, setting.Signature) {
 		content = setting.Signature + content
 	}
-	c := ResolveMessage(content, params)
+	c := util.ResolveMessage(content, params)
 	switch mss.SmsProvider(setting.Provider) {
 	case mss.HTTP:
 		return sendPhoneMsgByHttpApi(setting, phoneNum, c, params, "")
@@ -89,21 +87,4 @@ func CheckSmsApiPerm(s *mss.SmsApiPerm) error {
 		}
 	}
 	return nil
-}
-
-// 解析模板中的参数
-func ResolveMessage(templateContent string, param []string) string {
-	//　替换字符标签{name}标签为{0}
-	re := regexp.MustCompile(`\$*{(.+?)}`)
-	holders := re.FindAllString(templateContent, -1)
-	for i, v := range holders {
-		if _, err := strconv.Atoi(v); err != nil {
-			templateContent = strings.ReplaceAll(templateContent, v, fmt.Sprintf("{%d}", i))
-		}
-	}
-	// 替换值
-	for k, v := range param {
-		templateContent = strings.ReplaceAll(templateContent, fmt.Sprintf("{%d}", k), v)
-	}
-	return templateContent
 }
