@@ -172,12 +172,10 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 
 // 检查商户注册信息是否正确
 func (m *merchantImpl) check(v *merchant.Merchant) error {
-	if v.MemberId <= 0 {
-		return errors.New("会员不存在")
-	}
 	//todo: validate and check merchant name exists
-	if v.MchName == "" {
-		return merchant.ErrMissingMerchantName
+	if len(v.MchName) > 0 {
+		//todo: 检查商户名称是否存在
+		//return merchant.ErrMissingMerchantName
 	}
 	// if v.CompanyName == "" {
 	// 	return merchant.ErrMissingCompanyName

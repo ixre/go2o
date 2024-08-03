@@ -18,7 +18,6 @@ import (
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/domain/interface/order"
@@ -90,17 +89,17 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.CreateMerch
 		_, err = im.Save()
 		if err == nil {
 			// todo: 商城默认开通店铺，应单独提供方法开通店铺
-			o := shop.OnlineShop{
-				ShopName:   mch.MchName,
-				Logo:       mch.Logo,
-				Host:       "",
-				Alias:      "",
-				Telephone:  "",
-				Addr:       "",
-				ShopTitle:  "",
-				ShopNotice: "",
-			}
-			_, err = im.ShopManager().CreateOnlineShop(&o)
+			// o := shop.OnlineShop{
+			// 	ShopName:   mch.MchName,
+			// 	Logo:       mch.Logo,
+			// 	Host:       "",
+			// 	Alias:      "",
+			// 	Telephone:  "",
+			// 	Addr:       "",
+			// 	ShopTitle:  "",
+			// 	ShopNotice: "",
+			// }
+			// _, err = im.ShopManager().CreateOnlineShop(&o)
 		}
 	}
 	rsp := &proto.MerchantCreateResponse{}
@@ -878,7 +877,7 @@ func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {
 
 func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto.QMerchant {
 	return &proto.QMerchant{
-		MchId:         src.MemberId,
+		MchId:         int64(src.Id),
 		MchName:       src.Name,
 		MemberId:      src.MemberId,
 		MailAddr:      src.Usr,
