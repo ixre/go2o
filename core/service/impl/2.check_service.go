@@ -301,7 +301,7 @@ func (c *checkServiceImpl) prepareCheck(r *proto.SendCheckCodeRequest, data []st
 		}
 		params := fmt.Sprintf("token=%s&account=%s&code=%s", r.Token, r.ReceptAccount, data[0])
 		encode := base64.StdEncoding.EncodeToString([]byte(params))
-		link := fmt.Sprintf(domain+"/merchant/register?token=%s", encode)
+		link := fmt.Sprintf(domain+"/merchant/signup?token=%s", encode)
 		return []string{link, data[1]}, nil
 	}
 	return data, nil
