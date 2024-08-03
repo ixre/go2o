@@ -6,8 +6,14 @@ var (
 	/** 域名 */
 	// 访问协议,https或http
 	// HttpProtocols = KeyFormat("HttpProtocols")
+
 	// 根域名
 	Domain = KeyFormat("DomainBaseUrl")
+	// 文件(上传)服务器前缀
+	FileServerUrl = KeyFormat("DomainFileServerUrl")
+	// 商户端URL
+	MchServerUrl = KeyFormat("DomainMchServerUrl")
+
 	// // 控制面板前缀
 	// DomainPrefixDashboard = KeyFormat("DomainPrefixDashboard")
 	// // 零售门户前缀
@@ -28,8 +34,6 @@ var (
 	// DomainPrefixApi = KeyFormat("DomainPrefixApi")
 	// // HAPI前缀
 	// DomainPrefixHApi = KeyFormat("DomainPrefixHApi")
-	// 文件(上传)服务器前缀
-	FileServerUrl = KeyFormat("DomainFileServerUrl")
 	// // 静态服务器前缀
 	// DomainPrefixStatic = KeyFormat("DomainPrefixStatic")
 	// // 图片服务器前缀

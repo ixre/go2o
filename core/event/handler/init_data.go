@@ -41,11 +41,15 @@ func initSystemConfig(repo registry.IRegistryRepo) {
 	// 初始化系统配置
 	re := repo.Get(registry.Domain)
 	if re != nil && re.StringValue() == re.Value().DefaultValue {
-		logger.Error("domain is not initialized, please set the domain in registry.")
+		logger.Error("主域未配置，会导致部分功能无法使用, 请在系统设置中配置")
 	}
 	re = repo.Get(registry.FileServerUrl)
 	if re != nil && re.StringValue() == re.Value().DefaultValue {
-		logger.Error("file server url is not initialized, please set the domain in registry.")
+		logger.Error("文件服务器地址未配置，会导致图片无法上传, 请在系统设置中配置")
+	}
+	re = repo.Get(registry.MchServerUrl)
+	if re != nil && re.StringValue() == re.Value().DefaultValue {
+		logger.Error("B端商户服务器地址未配置，会导致商户部分功能不能正常使用, 请在系统设置中配置")
 	}
 }
 

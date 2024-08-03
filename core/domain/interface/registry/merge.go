@@ -27,6 +27,7 @@ func MergeRegistries() []*Registry {
 	/** 域名 */
 	mergeAdd("域名", Domain, "http://localhost:1428", "")
 	mergeAdd("文件服务器域名", FileServerUrl, "http://localhost:1428/files/", "")
+	mergeAdd("商户端URL", MchServerUrl, "https://b.56x.net", "")
 
 	// mergeAdd("访问协议", HttpProtocols, "http", "")
 	// mergeAdd("管理面板前缀", DomainPrefixDashboard, "board.", "")

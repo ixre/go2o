@@ -295,9 +295,9 @@ func (c *checkServiceImpl) notifyCheckCode(code string, r *proto.SendCheckCodeRe
 func (c *checkServiceImpl) prepareCheck(r *proto.SendCheckCodeRequest, data []string) ([]string, error) {
 	if r.TemplateCode == mss.EMAIL_MCH_REGISTER {
 		// 生成商户注册的链接
-		domain, _ := c.registryRepo.GetValue(registry.Domain)
+		domain, _ := c.registryRepo.GetValue(registry.MchServerUrl)
 		if len(domain) == 0 {
-			return nil, errors.New("系统未配置域名")
+			return nil, errors.New("系统未配置商户端域名")
 		}
 		params := fmt.Sprintf("token=%s&account=%s&code=%s", r.Token, r.ReceptAccount, data[0])
 		encode := base64.StdEncoding.EncodeToString([]byte(params))
