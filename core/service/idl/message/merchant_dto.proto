@@ -31,42 +31,44 @@ message SSaveMerchantParams{
 message SaveAuthenticateRequest{
   // 商户编号
   int64 mchId = 1;
+  // 商户名称号
+  string mchName = 2;
   // 公司名称
-  string orgName = 2;
+  string orgName = 3;
   // 营业执照编号
-  string orgNo = 3;
+  string orgNo = 4;
   // 营业执照照片
-  string orgPic = 4;
+  string orgPic = 5;
   // 办公地
-  int32 workCity = 5;
+  int32 workCity = 6;
   // 资质图片
-  string qualificationPic = 6;
+  string qualificationPic = 7;
   // 法人身份证号
-  string personId = 7;
+  string personId = 8;
   // 法人姓名
-  string personName = 8;
+  string personName = 9;
   // 法人身份证照片
-  string personPic = 9;
+  string personPic = 10;
   // 授权书
-  string authorityPic = 10;
+  string authorityPic = 11;
   // 开户银行
-  string bankName = 11;
+  string bankName = 12;
   // 开户户名
-  string bankAccount = 12;
+  string bankAccount = 13;
   // 开户账号
-  string bankNo = 13;
+  string bankNo = 14;
   // 扩展数据
-  string extraData = 14;
+  string extraData = 15;
   // 审核时间
-  int32 reviewTime = 15;
+  int32 reviewTime = 16;
   // 审核状态
-  int32 reviewStatus = 16;
+  int32 reviewStatus = 17;
   // 审核备注
-  string reviewRemark = 17;
+  string reviewRemark = 18;
   // 更新时间
-  int64 updateTime = 18;
+  int64 updateTime = 19;
   // 联系人手机
-  string personPhone = 19;
+  string personPhone = 20;
 }
 
 
@@ -235,54 +237,6 @@ message STradeConf_ {
   // 交易手续费比例  sint32 TradeRate = 7;
 }
 
-// 商户申请信息
-message SMchSignUp {
-  int64 id = 1;
-  // 申请单号
-  string signNo = 2;
-  // 会员编号
-  int64 memberId = 3;
-  // 用户名
-  string username = 4;
-  // 密码
-  string password = 5;
-  // 盐
-  string salt = 6;
-  // 商户名称号
-  string mchName = 7;
-  // 省
-  int32 province = 8;
-  // 市
-  int32 city = 9;
-  // 区
-  int32 district = 10;
-  // 详细地址
-  string address = 11;
-  // 店铺店铺
-  string shopName = 12;
-  // 公司名称
-  string companyName = 13;
-  // 营业执照编号
-  string companyNo = 14;
-  // 法人
-  string personName = 15;
-  // 法人身份证
-  string personId = 16;
-  // 法人身份证
-  string personImage = 17;
-  // 联系电话
-  string phone = 18;
-  // 营业执照图片
-  string companyImage = 19;
-  // 委托书
-  string authDoc = 20;
-  // 备注
-  string remark = 21;
-  // 是否通过
-  int32 reviewStatus = 22;
-  // 提交时间
-  int64 submitTime = 23;
-}
 
 // 商户审核请求
 message MerchantReviewRequest {

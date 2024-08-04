@@ -15,6 +15,8 @@ type (
 		Id int `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
 		// 商户编号
 		MchId int `db:"mch_id" json:"mchId" bson:"mchId"`
+		// 商户名称
+		MchName string `json:"mchName" db:"mch_name" gorm:"column:mch_name" bson:"mchName"`
 		// 公司名称
 		OrgName string `db:"org_name" json:"orgName" bson:"orgName"`
 		// 营业执照编号

@@ -775,3 +775,7 @@ ALTER TABLE "public"."mm_profile" RENAME COLUMN "avatar" TO "profile_photo";
 ALTER TABLE "public"."mm_profile" ALTER COLUMN "profile_photo" TYPE character varying(180);
 
 ALTER TABLE "public"."rbac_user" RENAME COLUMN "avatar" TO "profile_photo";
+
+
+ALTER TABLE "public"."mch_authenticate" ADD COLUMN "mch_name" CHARACTER VARYING(20) NOT NULL;
+COMMENT ON COLUMN mch_authenticate.mch_name IS '商户名称';

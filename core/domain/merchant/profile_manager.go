@@ -69,7 +69,10 @@ func (p *profileManagerImpl) applyMerchantInitial() error {
 
 // 检查企业认证信息
 func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
-	if v == nil || len(v.OrgName) < 2 {
+	if v == nil || len(v.MchName) < 2 {
+		return errors.New("商户名称不能为空")
+	}
+	if len(v.OrgName) < 2 {
 		return errors.New("企业名称不能为空")
 	}
 	if len(v.OrgNo) == 0 {
@@ -117,7 +120,7 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 			}
 			// 保存商户信息
 			v := p.merchantImpl.GetValue()
-			v.MchName = e.OrgName
+			v.MchName = e.MchName
 			if v.Status == 0 {
 				// 如果商户状态为待认证,则设置商户已开通
 				v.Status = 1
