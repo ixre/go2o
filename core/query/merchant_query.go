@@ -9,7 +9,7 @@
 package query
 
 import (
-		"regexp"
+	"regexp"
 
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/infrastructure/fw"
@@ -24,6 +24,7 @@ type MerchantQuery struct {
 	db.Connector
 	Storage storage.Interface
 	fw.BaseRepository[merchant.Merchant]
+	AuthRepo fw.BaseRepository[merchant.Authenticate]
 }
 
 func NewMerchantQuery(c gof.App, fo fw.ORM) *MerchantQuery {
@@ -32,6 +33,7 @@ func NewMerchantQuery(c gof.App, fo fw.ORM) *MerchantQuery {
 		Storage:   c.Storage(),
 	}
 	q.ORM = fo
+	q.AuthRepo.ORM = fo
 	return q
 }
 
