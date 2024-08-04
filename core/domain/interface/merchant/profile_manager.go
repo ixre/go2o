@@ -17,6 +17,12 @@ type (
 		MchId int `db:"mch_id" json:"mchId" bson:"mchId"`
 		// 商户名称
 		MchName string `json:"mchName" db:"mch_name" gorm:"column:mch_name" bson:"mchName"`
+		// 省
+		Province int `json:"province" db:"province" gorm:"column:province" bson:"province"`
+		// 市
+		City int `json:"city" db:"city" gorm:"column:city" bson:"city"`
+		// 区
+		District int `json:"district" db:"district" gorm:"column:district" bson:"district"`
 		// 公司名称
 		OrgName string `db:"org_name" json:"orgName" bson:"orgName"`
 		// 营业执照编号

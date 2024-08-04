@@ -33,42 +33,40 @@ message SaveAuthenticateRequest{
   int64 mchId = 1;
   // 商户名称号
   string mchName = 2;
+      // 省
+  int32  province = 3;
+    // 市
+  int32 city  = 4;
+    // 区
+  int32  district = 5;
   // 公司名称
-  string orgName = 3;
+  string orgName = 6;
   // 营业执照编号
-  string orgNo = 4;
+  string orgNo = 7;
   // 营业执照照片
-  string orgPic = 5;
+  string orgPic = 8;
   // 办公地
-  int32 workCity = 6;
+  int32 workCity = 19;
   // 资质图片
-  string qualificationPic = 7;
+  string qualificationPic = 10;
   // 法人身份证号
-  string personId = 8;
+  string personId = 11;
   // 法人姓名
-  string personName = 9;
+  string personName = 12;
   // 法人身份证照片
-  string personPic = 10;
+  string personPic = 13;
   // 授权书
-  string authorityPic = 11;
+  string authorityPic = 14;
   // 开户银行
-  string bankName = 12;
+  string bankName = 15;
   // 开户户名
-  string bankAccount = 13;
+  string bankAccount = 16;
   // 开户账号
-  string bankNo = 14;
+  string bankNo = 17;
   // 扩展数据
-  string extraData = 15;
-  // 审核时间
-  int32 reviewTime = 16;
-  // 审核状态
-  int32 reviewStatus = 17;
-  // 审核备注
-  string reviewRemark = 18;
-  // 更新时间
-  int64 updateTime = 19;
+  string extraData = 18;
   // 联系人手机
-  string personPhone = 20;
+  string personPhone = 9;
 }
 
 

@@ -779,3 +779,9 @@ ALTER TABLE "public"."rbac_user" RENAME COLUMN "avatar" TO "profile_photo";
 
 ALTER TABLE "public"."mch_authenticate" ADD COLUMN "mch_name" CHARACTER VARYING(20) NOT NULL;
 COMMENT ON COLUMN mch_authenticate.mch_name IS '商户名称';
+
+ALTER TABLE "public"."mch_authenticate" ADD COLUMN "province" INTEGER NOT NULL , 
+ADD COLUMN "city" INTEGER NOT NULL , ADD COLUMN "district" INTEGER NOT NULL ,
+COMMENT ON COLUMN mch_authenticate.province IS '省';
+COMMENT ON COLUMN mch_authenticate.city IS '市';
+COMMENT ON COLUMN mch_authenticate.district IS '区';

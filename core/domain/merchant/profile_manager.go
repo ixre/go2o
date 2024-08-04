@@ -72,6 +72,9 @@ func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 	if v == nil || len(v.MchName) < 2 {
 		return errors.New("商户名称不能为空")
 	}
+	if v.Province == 0 || v.City == 0 || v.District == 0 {
+		return errors.New("请选择所在地区")
+	}
 	if len(v.OrgName) < 2 {
 		return errors.New("企业名称不能为空")
 	}
