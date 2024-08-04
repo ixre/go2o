@@ -12,9 +12,9 @@ type (
 	// Authenticate 商户认证信息
 	Authenticate struct {
 		// Id
-		Id int `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
+		Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
 		// 商户编号
-		MchId int `db:"mch_id" json:"mchId" bson:"mchId"`
+		MchId int `json:"mchId" db:"mch_id" gorm:"column:mch_id" bson:"mchId"`
 		// 商户名称
 		MchName string `json:"mchName" db:"mch_name" gorm:"column:mch_name" bson:"mchName"`
 		// 省
@@ -24,45 +24,45 @@ type (
 		// 区
 		District int `json:"district" db:"district" gorm:"column:district" bson:"district"`
 		// 公司名称
-		OrgName string `db:"org_name" json:"orgName" bson:"orgName"`
+		OrgName string `json:"orgName" db:"org_name" gorm:"column:org_name" bson:"orgName"`
 		// 营业执照编号
-		OrgNo string `db:"org_no" json:"orgNo" bson:"orgNo"`
+		OrgNo string `json:"orgNo" db:"org_no" gorm:"column:org_no" bson:"orgNo"`
+		// 公司地址
+		OrgAddress string `json:"orgAddress" db:"org_address" gorm:"column:org_address" bson:"orgAddress"`
 		// 营业执照照片
-		OrgPic string `db:"org_pic" json:"orgPic" bson:"orgPic"`
-		// 营业执照地址
-		OrgAddress string `db:"org_address" json:"orgAddress" bson:"orgAddress"`
+		OrgPic string `json:"orgPic" db:"org_pic" gorm:"column:org_pic" bson:"orgPic"`
 		// 办公地
-		WorkCity int `db:"work_city" json:"workCity" bson:"workCity"`
+		WorkCity int `json:"workCity" db:"work_city" gorm:"column:work_city" bson:"workCity"`
 		// 资质图片
-		QualificationPic string `db:"qualification_pic" json:"qualificationPic" bson:"qualificationPic"`
+		QualificationPic string `json:"qualificationPic" db:"qualification_pic" gorm:"column:qualification_pic" bson:"qualificationPic"`
 		// 法人身份证号
-		PersonId string `db:"person_id" json:"personId" bson:"personId"`
+		PersonId string `json:"personId" db:"person_id" gorm:"column:person_id" bson:"personId"`
 		// 法人姓名
-		PersonName string `db:"person_name" json:"personName" bson:"personName"`
+		PersonName string `json:"personName" db:"person_name" gorm:"column:person_name" bson:"personName"`
 		// 法人身份证照片
-		PersonPic string `db:"person_pic" json:"personPic" bson:"personPic"`
+		PersonPic string `json:"personPic" db:"person_pic" gorm:"column:person_pic" bson:"personPic"`
 		// 联系人手机
-		PersonPhone string `db:"person_phone" json:"personPhone" bson:"personPhone"`
+		PersonPhone string `json:"personPhone" db:"person_phone" gorm:"column:person_phone" bson:"personPhone"`
 		// 授权书
-		AuthorityPic string `db:"authority_pic" json:"authorityPic" bson:"authorityPic"`
+		AuthorityPic string `json:"authorityPic" db:"authority_pic" gorm:"column:authority_pic" bson:"authorityPic"`
 		// 开户银行
-		BankName string `db:"bank_name" json:"bankName" bson:"bankName"`
+		BankName string `json:"bankName" db:"bank_name" gorm:"column:bank_name" bson:"bankName"`
 		// 开户户名
-		BankAccount string `db:"bank_account" json:"bankAccount" bson:"bankAccount"`
+		BankAccount string `json:"bankAccount" db:"bank_account" gorm:"column:bank_account" bson:"bankAccount"`
 		// 开户账号
-		BankNo string `db:"bank_no" json:"bankNo" bson:"bankNo"`
+		BankNo string `json:"bankNo" db:"bank_no" gorm:"column:bank_no" bson:"bankNo"`
 		// 扩展数据
-		ExtraData string `db:"extra_data" json:"extraData" bson:"extraData"`
-		// 审核状态
-		ReviewStatus int `db:"review_status" json:"reviewStatus" bson:"reviewStatus"`
-		// 审核备注
-		ReviewRemark string `db:"review_remark" json:"reviewRemark" bson:"reviewRemark"`
+		ExtraData string `json:"extraData" db:"extra_data" gorm:"column:extra_data" bson:"extraData"`
 		// 审核时间
-		ReviewTime int `db:"review_time" json:"reviewTime" bson:"reviewTime"`
+		ReviewTime int `json:"reviewTime" db:"review_time" gorm:"column:review_time" bson:"reviewTime"`
+		// 审核状态
+		ReviewStatus int `json:"reviewStatus" db:"review_status" gorm:"column:review_status" bson:"reviewStatus"`
+		// 审核备注
+		ReviewRemark string `json:"reviewRemark" db:"review_remark" gorm:"column:review_remark" bson:"reviewRemark"`
 		// 版本号: 0: 待审核 1: 已审核
-		Version int `db:"version" json:"version" bson:"version"`
+		Version int `json:"version" db:"version" gorm:"column:version" bson:"version"`
 		// 更新时间
-		UpdateTime int `db:"update_time" json:"updateTime" bson:"updateTime"`
+		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 	}
 
 	// 基本资料管理器

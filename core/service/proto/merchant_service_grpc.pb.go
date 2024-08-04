@@ -79,9 +79,9 @@ type MerchantServiceClient interface {
 	// 保存商户
 	SaveMerchant(ctx context.Context, in *SaveMerchantRequest, opts ...grpc.CallOption) (*Result, error)
 	// 保存商户认证信息
-	SaveAuthenticate(ctx context.Context, in *SaveAuthenticateRequest, opts ...grpc.CallOption) (*Result, error)
+	SaveAuthenticate(ctx context.Context, in *SaveAuthenticateRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 审核商户申请信息
-	ReviewAuthenticate(ctx context.Context, in *MerchantReviewRequest, opts ...grpc.CallOption) (*Result, error)
+	ReviewAuthenticate(ctx context.Context, in *MerchantReviewRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 验证用户密码,并返回编号。可传入商户或会员的账号密码
 	CheckLogin(ctx context.Context, in *MchUserPwdRequest, opts ...grpc.CallOption) (*MchLoginResponse, error)
 	// 验证商户状态,mchId
@@ -204,8 +204,8 @@ func (c *merchantServiceClient) SaveMerchant(ctx context.Context, in *SaveMercha
 	return out, nil
 }
 
-func (c *merchantServiceClient) SaveAuthenticate(ctx context.Context, in *SaveAuthenticateRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *merchantServiceClient) SaveAuthenticate(ctx context.Context, in *SaveAuthenticateRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MerchantService_SaveAuthenticate_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -213,8 +213,8 @@ func (c *merchantServiceClient) SaveAuthenticate(ctx context.Context, in *SaveAu
 	return out, nil
 }
 
-func (c *merchantServiceClient) ReviewAuthenticate(ctx context.Context, in *MerchantReviewRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *merchantServiceClient) ReviewAuthenticate(ctx context.Context, in *MerchantReviewRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MerchantService_ReviewAuthenticate_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -586,9 +586,9 @@ type MerchantServiceServer interface {
 	// 保存商户
 	SaveMerchant(context.Context, *SaveMerchantRequest) (*Result, error)
 	// 保存商户认证信息
-	SaveAuthenticate(context.Context, *SaveAuthenticateRequest) (*Result, error)
+	SaveAuthenticate(context.Context, *SaveAuthenticateRequest) (*TxResult, error)
 	// 审核商户申请信息
-	ReviewAuthenticate(context.Context, *MerchantReviewRequest) (*Result, error)
+	ReviewAuthenticate(context.Context, *MerchantReviewRequest) (*TxResult, error)
 	// 验证用户密码,并返回编号。可传入商户或会员的账号密码
 	CheckLogin(context.Context, *MchUserPwdRequest) (*MchLoginResponse, error)
 	// 验证商户状态,mchId
@@ -684,10 +684,10 @@ func (UnimplementedMerchantServiceServer) CreateMerchant(context.Context, *Creat
 func (UnimplementedMerchantServiceServer) SaveMerchant(context.Context, *SaveMerchantRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveMerchant not implemented")
 }
-func (UnimplementedMerchantServiceServer) SaveAuthenticate(context.Context, *SaveAuthenticateRequest) (*Result, error) {
+func (UnimplementedMerchantServiceServer) SaveAuthenticate(context.Context, *SaveAuthenticateRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveAuthenticate not implemented")
 }
-func (UnimplementedMerchantServiceServer) ReviewAuthenticate(context.Context, *MerchantReviewRequest) (*Result, error) {
+func (UnimplementedMerchantServiceServer) ReviewAuthenticate(context.Context, *MerchantReviewRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewAuthenticate not implemented")
 }
 func (UnimplementedMerchantServiceServer) CheckLogin(context.Context, *MchUserPwdRequest) (*MchLoginResponse, error) {

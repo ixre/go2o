@@ -23,10 +23,10 @@ service MerchantService {
     rpc SaveMerchant (SaveMerchantRequest) returns (Result) {
     }
     // 保存商户认证信息
-    rpc SaveAuthenticate (SaveAuthenticateRequest) returns (Result) {
+    rpc SaveAuthenticate (SaveAuthenticateRequest) returns (TxResult) {
     }
     // 审核商户申请信息
-    rpc ReviewAuthenticate (MerchantReviewRequest) returns (Result) {
+    rpc ReviewAuthenticate (MerchantReviewRequest) returns (TxResult) {
     }
     // 验证用户密码,并返回编号。可传入商户或会员的账号密码
     rpc CheckLogin (MchUserPwdRequest) returns (MchLoginResponse) {

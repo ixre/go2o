@@ -45,8 +45,10 @@ message SaveAuthenticateRequest{
   string orgNo = 7;
   // 营业执照照片
   string orgPic = 8;
+  // 公司地址
+  string orgAddress = 9;
   // 办公地
-  int32 workCity = 19;
+  int32 workCity = 20;
   // 资质图片
   string qualificationPic = 10;
   // 法人身份证号
@@ -66,7 +68,7 @@ message SaveAuthenticateRequest{
   // 扩展数据
   string extraData = 18;
   // 联系人手机
-  string personPhone = 9;
+  string personPhone = 19;
 }
 
 

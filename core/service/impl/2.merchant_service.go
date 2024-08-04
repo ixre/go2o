@@ -113,16 +113,17 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.CreateMerch
 }
 
 // SaveAuthenticate 提交商户认证信息
-func (m *merchantService) SaveAuthenticate(_ context.Context, r *proto.SaveAuthenticateRequest) (*proto.Result, error) {
+func (m *merchantService) SaveAuthenticate(_ context.Context, r *proto.SaveAuthenticateRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MchId))
 	if mch == nil {
-		return m.error(merchant.ErrNoSuchMerchant), nil
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
 	v := &merchant.Authenticate{
 		OrgName:          r.OrgName,
 		MchName:          r.MchName,
 		OrgNo:            r.OrgNo,
 		OrgPic:           r.OrgPic,
+		OrgAddress:       r.OrgAddress,
 		Province:         int(r.Province),
 		City:             int(r.City),
 		District:         int(r.District),
@@ -140,17 +141,17 @@ func (m *merchantService) SaveAuthenticate(_ context.Context, r *proto.SaveAuthe
 		Version:          0,
 	}
 	_, err := mch.ProfileManager().SaveAuthenticate(v)
-	return m.error(err), nil
+	return m.errorV2(err), nil
 }
 
 // ReviewAuthenticate 审核商户申请信息
-func (m *merchantService) ReviewAuthenticate(_ context.Context, r *proto.MerchantReviewRequest) (*proto.Result, error) {
+func (m *merchantService) ReviewAuthenticate(_ context.Context, r *proto.MerchantReviewRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MchId))
 	if mch == nil {
-		return m.error(merchant.ErrNoSuchMerchant), nil
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
 	err := mch.ProfileManager().ReviewAuthenticate(r.Pass, r.Remark)
-	return m.error(err), nil
+	return m.errorV2(err), nil
 }
 
 // ChangeMemberBind 更换会员绑定

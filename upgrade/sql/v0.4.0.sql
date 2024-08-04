@@ -148,6 +148,10 @@ DROP TABLE IF EXISTS mch_authenticate;
 CREATE TABLE "public".mch_authenticate (
   id                BIGSERIAL NOT NULL, 
   mch_id            int4 NOT NULL, 
+  mch_name          CHARACTER VARYING(20) NOT NULL,
+  province          int4 NOT NULL, 
+  city              int4 NOT NULL,
+  district          int4 NOT NULL,
   org_name          varchar(45) NOT NULL, 
   org_no            varchar(45) NOT NULL, 
   org_address          varchar(120) NOT NULL, 
@@ -157,6 +161,7 @@ CREATE TABLE "public".mch_authenticate (
   person_id         varchar(20) NOT NULL, 
   person_name       varchar(10) NOT NULL, 
   person_pic        varchar(120) NOT NULL, 
+  person_phone      varchar(11) NOT NULL,
   authority_pic     varchar(120) NOT NULL, 
   bank_name         varchar(20) NOT NULL, 
   bank_account      varchar(20) NOT NULL, 
@@ -165,6 +170,7 @@ CREATE TABLE "public".mch_authenticate (
   review_time       int4 NOT NULL, 
   review_status     int4 NOT NULL, 
   review_remark     varchar(45) NOT NULL, 
+  version int4 NOT NULL DEFAULT 0,
   update_time       int8 NOT NULL, 
   CONSTRAINT mch_authenticate_pkey 
     PRIMARY KEY (id));
@@ -188,15 +194,16 @@ COMMENT ON COLUMN "public".mch_authenticate.review_time IS '审核时间';
 COMMENT ON COLUMN "public".mch_authenticate.review_status IS '审核状态';
 COMMENT ON COLUMN "public".mch_authenticate.review_remark IS '审核备注';
 COMMENT ON COLUMN "public".mch_authenticate.update_time IS '更新时间';
-
-
-ALTER TABLE "public".mch_authenticate 
-  ADD COLUMN person_phone varchar(11) NOT NULL;
+COMMENT ON COLUMN mch_authenticate.province IS '省';
+COMMENT ON COLUMN mch_authenticate.city IS '市';
+COMMENT ON COLUMN mch_authenticate.district IS '区';
+COMMENT ON COLUMN mch_authenticate.mch_name IS '商户名称';
+COMMENT ON COLUMN "public".mch_authenticate.version IS '版本号: 0: 待审核 1: 已审核';
 COMMENT ON COLUMN "public".mch_authenticate.person_phone IS '联系人手机';
 
-ALTER TABLE "public".mch_authenticate 
-  ADD COLUMN version int4 NOT NULL DEFAULT 0;
-COMMENT ON COLUMN "public".mch_authenticate.version IS '版本号: 0: 待审核 1: 已审核';
+
+
+
 
 ALTER TABLE "public".mm_member 
   ADD COLUMN role_flag int4 DEFAULT 0 NOT NULL;
@@ -777,11 +784,11 @@ ALTER TABLE "public"."mm_profile" ALTER COLUMN "profile_photo" TYPE character va
 ALTER TABLE "public"."rbac_user" RENAME COLUMN "avatar" TO "profile_photo";
 
 
-ALTER TABLE "public"."mch_authenticate" ADD COLUMN "mch_name" CHARACTER VARYING(20) NOT NULL;
-COMMENT ON COLUMN mch_authenticate.mch_name IS '商户名称';
+-- ALTER TABLE "public"."mch_authenticate" ADD COLUMN "mch_name" CHARACTER VARYING(20) NOT NULL;
+-- COMMENT ON COLUMN mch_authenticate.mch_name IS '商户名称';
 
-ALTER TABLE "public"."mch_authenticate" ADD COLUMN "province" INTEGER NOT NULL , 
-ADD COLUMN "city" INTEGER NOT NULL , ADD COLUMN "district" INTEGER NOT NULL ,
-COMMENT ON COLUMN mch_authenticate.province IS '省';
-COMMENT ON COLUMN mch_authenticate.city IS '市';
-COMMENT ON COLUMN mch_authenticate.district IS '区';
+-- ALTER TABLE "public"."mch_authenticate" ADD COLUMN "province" INTEGER NOT NULL , 
+-- ADD COLUMN "city" INTEGER NOT NULL , ADD COLUMN "district" INTEGER NOT NULL ,
+-- COMMENT ON COLUMN mch_authenticate.province IS '省';
+-- COMMENT ON COLUMN mch_authenticate.city IS '市';
+-- COMMENT ON COLUMN mch_authenticate.district IS '区';
