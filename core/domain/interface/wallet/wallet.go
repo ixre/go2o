@@ -70,30 +70,33 @@ const (
 	KCharge = 1
 	// KCarry 钱包收入
 	KCarry = 2
-	// KExpired 失效
-	KExpired = 3
+	// KConsume 消费
+	KConsume = 3
 	// KAdjust 客服调整
 	KAdjust = 4
-	// KConsume 消费
-	KConsume = 5
 	// KDiscount 扣除
-	KDiscount = 6
-	// KTransferIn 转入
-	KTransferIn = 7
-	// KTransferOut 转出
-	KTransferOut = 8
-
+	KDiscount = 5
+	// KindRefund 退款
+	KRefund = 6
 	// KFreeze 冻结
-	KFreeze = 9
+	KFreeze = 7
 	// KUnfreeze 解冻
-	KUnfreeze = 10
+	KUnfreeze = 8
+	// KTransferIn 转入
+	KTransfer = 9
+	// 提现(预留，应增加提现方式)
+	KWithdraw = 10
+	// KExpired 失效
+	KExpired = 11
+	// KindExchange 兑换充值, 比如将钱包充值到余额
+	KExchange = 12
 
 	// KTransferRefund 转账退款
-	KTransferRefund = 11
+	KTransferRefund = 13
 	// KWithdrawRefund 提现退还到银行卡
-	KWithdrawRefund = 12
+	KWithdrawRefund = 14
 	// KPaymentOrderRefund 支付单退款
-	KPaymentOrderRefund = 13
+	KPaymentOrderRefund = 15
 
 	// todo: 充值用2开头， 提现用3开头
 

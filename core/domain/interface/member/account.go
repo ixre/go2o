@@ -29,29 +29,29 @@ const (
 	// KindCustom 自定义的业务类型
 	KindCustom int = 30
 	// KindCharge 会员充值
-	KindCharge = 1
+	KindCharge = wallet.KCharge
 	// KindCarry 入账
-	KindCarry = 2
+	KindCarry = wallet.KCarry
 	// KindConsume 消耗
-	KindConsume = 3
+	KindConsume = wallet.KConsume
 	// KindAdjust 客服调整
-	KindAdjust = 4
+	KindAdjust = wallet.KAdjust
 	// KindDiscount 支付抵扣
-	KindDiscount = 5
+	KindDiscount = wallet.KDiscount
 	// KindRefund 退款
-	KindRefund int = 6
+	KindRefund int = wallet.KRefund
 	// KindExchange 兑换充值, 比如将钱包充值到余额
-	KindExchange int = 7
+	KindExchange int = wallet.KExchange
 	// KindTransferIn 转入
-	KindTransferIn int = 8
+	KindTransferIn int = wallet.KTransfer
 	// KindTransferOut 转出
-	KindTransferOut int = 9
+	KindTransferOut int = wallet.KTransfer
 	// KindExpired 失效
-	KindExpired int = 10
+	KindExpired int = wallet.KExpired
 	// KindFreeze 冻结
-	KindFreeze int = 11
+	KindFreeze int = wallet.KFreeze
 	// KindUnfreeze 解冻
-	KindUnfreeze int = 12
+	KindUnfreeze int = wallet.KUnfreeze
 )
 
 const (

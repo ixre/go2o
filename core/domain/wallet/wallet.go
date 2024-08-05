@@ -552,7 +552,7 @@ func (w *WalletImpl) Transfer(toWalletId int64, value int, transactionFee int, t
 	}
 	w._value.Balance -= value + transactionFee
 	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
-	l := w.createWalletLog(wallet.KTransferOut, -value, title, 0, "")
+	l := w.createWalletLog(wallet.KTransfer, -value, title, 0, "")
 	l.TransactionFee = -transactionFee
 	l.OuterTxNo = tradeNo
 	l.Remark = remark
@@ -574,7 +574,7 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo, tit
 		value = -value
 	}
 	w._value.Balance += value
-	l := w.createWalletLog(wallet.KTransferIn, value, title, 0, "")
+	l := w.createWalletLog(wallet.KTransfer, value, title, 0, "")
 	l.OuterTxNo = tradeNo
 	l.Remark = remark
 	l.Balance = w._value.Balance
