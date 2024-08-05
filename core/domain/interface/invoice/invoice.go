@@ -58,7 +58,7 @@ type (
 		// GetItems 获取发票明细
 		GetItems() []*InvoiceItem
 		// Issue 开具发票,更新发票图片
-		Issue(picture string) error
+		Issue(picture string, remark string) error
 		// Issue 发票开具失败
 		IssueFail(reason string) error
 		// SendMail 发送发票到邮件中

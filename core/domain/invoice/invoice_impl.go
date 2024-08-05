@@ -183,14 +183,18 @@ func (i *invoiceRecordDomainImpl) GetItems() []*invoice.InvoiceItem {
 }
 
 // Issue implements invoice.InvoiceDomain.
-func (i *invoiceRecordDomainImpl) Issue(picture string) error {
+func (i *invoiceRecordDomainImpl) Issue(picture string, remark string) error {
 	if i.value.InvoiceStatus != invoice.IssuePending {
 		return errors.New("invoice status error")
 	}
+	if len(picture) == 0 {
+		return errors.New("发票图片不能为空")
+	}
 	i.value.InvoiceStatus = invoice.IssueSuccess
 	i.value.InvoicePic = picture
-	i.value.IssueRemark = ""
+	i.value.IssueRemark = remark
 	i.value.UpdateTime = int(time.Now().Unix())
+	i.value.InvoiceTime = int(time.Now().Unix())
 	return i.Save()
 }
 

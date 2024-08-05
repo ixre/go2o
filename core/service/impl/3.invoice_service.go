@@ -31,8 +31,8 @@ func (i *invoiceServiceImpl) GetTenant(_ context.Context, req *proto.InvoiceTena
 	})
 	if tenant == nil {
 		return &proto.SInvoiceTenant{
-			Code: 1,
-			Message:  "无法创建租户",
+			Code:    1,
+			Message: "无法创建租户",
 		}, nil
 	}
 	return &proto.SInvoiceTenant{
@@ -45,8 +45,8 @@ func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.Invoic
 	tenant := i.repo.GetTenant(int(req.TenantId))
 	if tenant == nil {
 		return &proto.RequestInvoiceResponse{
-			Code: 2,
-			Message:  "无法申请发票",
+			Code:    2,
+			Message: "无法申请发票",
 		}, nil
 	}
 	rd := &invoice.InvoiceRequestData{
@@ -75,8 +75,8 @@ func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.Invoic
 	}
 	if err != nil {
 		return &proto.RequestInvoiceResponse{
-			Code: 1,
-			Message:  err.Error(),
+			Code:    1,
+			Message: err.Error(),
 		}, nil
 	}
 	return &proto.RequestInvoiceResponse{
@@ -151,7 +151,7 @@ func (i *invoiceServiceImpl) Issue(_ context.Context, req *proto.InvoiceIssueReq
 			Message: "no any tenant or invoice",
 		}, nil
 	}
-	err := iv.Issue(req.InvoicePic)
+	err := iv.Issue(req.InvoicePic, req.IssueRemark)
 	return i.errorV2(err), nil
 }
 
@@ -202,8 +202,8 @@ func (i *invoiceServiceImpl) CreateInvoiceTitle(_ context.Context, req *proto.Cr
 	err := t.CreateInvoiceTitle(v)
 	if err != nil {
 		return &proto.CreateInvoiceTitleResponse{
-			Code: 1,
-			Message:  err.Error(),
+			Code:    1,
+			Message: err.Error(),
 		}, nil
 	}
 	return &proto.CreateInvoiceTitleResponse{
