@@ -58,6 +58,8 @@ type (
 		Save(v *M) (*M, error)
 		// Update 更新实体的非零字段
 		Update(v *M) (*M, error)
+		// 统计数量
+		Count(where string, v ...interface{}) (int, error)
 		// Delete 删除
 		Delete(v *M) error
 		// DeleteBy 根据条件删除
@@ -76,7 +78,8 @@ type (
 		Save(v *M) (*M, error)
 		// FindList 查找列表
 		FindList(opt *QueryOption, where string, args ...interface{}) []*M
-
+		// 统计数量
+		Count(where string, v ...interface{}) (int, error)
 		// Delete 删除
 		Delete(v *M) error
 		// PagingQuery 查询分页数据
@@ -154,6 +157,13 @@ func (r *BaseRepository[M]) Update(v *M) (*M, error) {
 	return v, ctx.Error
 }
 
+func (r *BaseRepository[M]) Count(where string, v ...interface{}) (int, error) {
+	var count int64
+	var m M
+	tx := r.ORM.Model(&m).Where(where, v...).Count(&count)
+	return int(count), tx.Error
+}
+
 func (r *BaseRepository[M]) Delete(v *M) error {
 	tx := r.ORM.Delete(v)
 	return tx.Error
@@ -215,6 +225,10 @@ func (m *BaseService[M]) FindBy(where string, args ...interface{}) *M {
 
 func (m *BaseService[M]) FindList(opt *QueryOption, where string, args ...interface{}) []*M {
 	return m.Repo.FindList(opt, where, args...)
+}
+
+func (m *BaseService[M]) Count(where string, args ...interface{}) (int, error) {
+	return m.Repo.Count(where, args...)
 }
 
 func (m *BaseService[M]) Delete(v *M) error {
