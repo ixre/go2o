@@ -37,3 +37,18 @@ func (m *WalletQuery) QueryMerchantPagingAccountLog(mchId int, p *fw.PagingParam
 	p.OrderBy("create_time desc")
 	return m.walletLogRepo.PagingQuery(p)
 }
+
+// 查询总收入金额
+func (m *WalletQuery) QueryTotalCarryAmount(walletId int) int {
+	count, _ := m.walletLogRepo.Count("wallet_id = ? and kind = ?",
+		walletId, wallet.KCarry)
+	return count
+}
+
+// 查询月度总收入金额
+func (m *WalletQuery) QueryMonthCarryAmount(walletId int, unix int) int {
+	count, _ := m.walletLogRepo.Count(`wallet_id = ? and kind = ?
+	AND DATE_TRUNC('month',to_timestamp(create_time)) = DATE_TRUNC('month',?)`,
+		walletId, wallet.KCarry, unix)
+	return count
+}
