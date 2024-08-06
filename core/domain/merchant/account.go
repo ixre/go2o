@@ -41,6 +41,13 @@ func (a *accountImpl) GetValue() *merchant.Account {
 	return a.value
 }
 
+// 同步到账户余额
+func (a *accountImpl) asyncWallet() error {
+	a.value.Balance = int64(a.getWallet().Get().Balance)
+	a.value.FreezeAmount = int64(a.getWallet().Get().FreezeAmount)
+	return a.Save()
+}
+
 // 保存
 func (a *accountImpl) Save() error {
 	_, err := a.mchImpl._repo.SaveAccount(a.value)
@@ -122,6 +129,9 @@ func (a *accountImpl) Consume(transactionTitle string, amount int, outerTxNo str
 				transactionRemark)
 		}
 	}
+	if err == nil {
+		return a.asyncWallet()
+	}
 	return err
 }
 
@@ -141,7 +151,7 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 	err = a.Save()
 	if err == nil {
 		iw := a.getWallet()
-		return iw.CarryTo(wallet.TransactionData{
+		txId, err := iw.CarryTo(wallet.TransactionData{
 			TransactionTitle:  p.TransactionTitle,
 			Amount:            p.Amount,
 			TransactionFee:    p.TransactionFee,
@@ -149,6 +159,12 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 			TransactionRemark: p.TransactionRemark,
 			OuterTxUid:        p.OuterTxUid,
 		}, p.Freeze)
+		if err == nil {
+			// 添加收入金额
+			a.value.SalesAmount += (int64(p.Amount) - int64(p.TransactionFee))
+			err = a.asyncWallet()
+		}
+		return txId, err
 		// 记录旧日志,todo:可能去掉
 		// l := a.createBalanceLog(merchant.KindAccountCarry,
 		// 	remark, orderNo, fAmount, fTradeFee, 1)
@@ -294,28 +310,43 @@ func (a *accountImpl) Freeze(p wallet.TransactionData, relateUser int64) (int, e
 		OperatorUid:  int(relateUser),
 		OperatorName: "",
 	})
+	if err == nil {
+		return id, a.asyncWallet()
+	}
 	return id, err
 }
 
 // UnfreezeWallet 解冻赠送金额
 func (a *accountImpl) Unfreeze(d wallet.TransactionData, isRefundBalance bool, relateUser int64) error {
-	return a.getWallet().Unfreeze(d.Amount, d.TransactionTitle, d.OuterTxNo, isRefundBalance, int(relateUser), "")
+	err := a.getWallet().Unfreeze(d.Amount, d.TransactionTitle, d.OuterTxNo, isRefundBalance, int(relateUser), "")
+	if err == nil {
+		return a.asyncWallet()
+	}
+	return err
 }
 
 // 调整钱包余额
 func (a *accountImpl) Adjust(title string, amount int, remark string, relateUser int64) error {
-	return a.getWallet().Adjust(amount, title, "", remark, int(relateUser), "-")
+	err := a.getWallet().Adjust(amount, title, "", remark, int(relateUser), "-")
+	if err == nil {
+		return a.asyncWallet()
+	}
+	return err
 }
 
 // FinishWithdrawal implements merchant.IAccount.
 func (a *accountImpl) FinishWithdrawal(transactionId int, outerTransactionNo string) error {
 	//todo: opr_uid
-	return a.getWallet().FinishWithdrawal(transactionId, outerTransactionNo)
+	err := a.getWallet().FinishWithdrawal(transactionId, outerTransactionNo)
+	if err == nil {
+		return a.asyncWallet()
+	}
+	return err
 }
 
 // RequestWithdrawal implements merchant.IAccount.
 func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int, string, error) {
-	return a.getWallet().RequestWithdrawal(
+	txId, orderNo, err := a.getWallet().RequestWithdrawal(
 		wallet.WithdrawTransaction{
 			Amount:           w.Amount,
 			TransactionFee:   w.TransactionFee,
@@ -325,9 +356,17 @@ func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int, str
 			AccountNo:        w.AccountNo,
 			AccountName:      w.AccountName,
 		})
+	if err == nil {
+		err = a.asyncWallet()
+	}
+	return txId, orderNo, err
 }
 
 // ReviewWithdrawal implements merchant.IAccount.
 func (a *accountImpl) ReviewWithdrawal(transactionId int, pass bool, remark string) error {
-	return a.getWallet().ReviewWithdrawal(transactionId, pass, remark, 1, "系统")
+	err := a.getWallet().ReviewWithdrawal(transactionId, pass, remark, 1, "系统")
+	if err == nil {
+		return a.asyncWallet()
+	}
+	return err
 }
