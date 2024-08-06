@@ -692,7 +692,7 @@ func (s *memberService) ChangePassword(_ context.Context, r *proto.ChangePasswor
 	}
 	v := m.GetValue()
 	pwd := r.NewPassword
-	old := r.OriginPassword
+	old := r.OldPassword
 	if l := len(r.NewPassword); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil
 	} else {
@@ -703,7 +703,6 @@ func (s *memberService) ChangePassword(_ context.Context, r *proto.ChangePasswor
 	} else {
 		old = domain.MemberSha1Pwd(old, v.Salt)
 	}
-	log.Println("--password", pwd, v.Password, v.Salt, typeconv.MustJson(v))
 	err := m.Profile().ChangePassword(pwd, old)
 	if err != nil {
 		return s.error(err), nil
@@ -717,7 +716,7 @@ func (s *memberService) ChangeTradePassword(_ context.Context, r *proto.ChangePa
 	if m == nil {
 		return s.error(member.ErrNoSuchMember), nil
 	}
-	pwd, old := r.NewPassword, r.OriginPassword
+	pwd, old := r.NewPassword, r.OldPassword
 	v := m.GetValue()
 	if l := len(pwd); l != 32 {
 		return s.error(de.ErrNotMD5Format), nil

@@ -254,12 +254,12 @@ func (m *merchantService) ChangePassword(_ context.Context, r *proto.ModifyMerch
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
-		if l := len(r.Origin); l > 0 && l < 32 {
+		if l := len(r.OldPassword); l > 0 && l < 32 {
 			err = de.ErrNotMD5Format
-		} else if len(r.Password) != 32 {
+		} else if len(r.NewPassword) != 32 {
 			err = de.ErrNotMD5Format
 		} else {
-			err = mch.ProfileManager().ChangePassword(r.Password, r.Origin)
+			err = mch.ProfileManager().ChangePassword(r.NewPassword, r.OldPassword)
 		}
 	}
 	return m.error(err), nil

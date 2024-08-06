@@ -307,11 +307,14 @@ message SaveMerchantSaleConfRequest {
   SMerchantSaleConf value = 2;
 }
 
+/** 修改商户密码 */
 message ModifyMerchantPasswordRequest {
+  /** 商户编号 */
   int64 merchantId = 1;
-  string origin = 2;
-  // Md5编码后的密码
-  string password = 3;
+  /** 旧密码 */
+  string oldPassword = 2;
+  /** 新密码 */
+  string newPassword = 3;
 }
 
 // 商户接口信息

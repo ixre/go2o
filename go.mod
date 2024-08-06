@@ -31,6 +31,7 @@ require (
 	go.etcd.io/etcd/client/v3 v3.5.14
 	golang.org/x/net v0.27.0
 	golang.org/x/text v0.16.0
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.10
 )
@@ -46,7 +47,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240708141625-4ad9e859172b // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240708141625-4ad9e859172b // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
-	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 )
 
 require (

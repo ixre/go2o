@@ -74,7 +74,7 @@ type (
 		ReviewAuthenticate(reviewed bool, message string) error
 
 		// 修改密码
-		ChangePassword(newPassword, oldPwd string) error
+		ChangePassword(newPassword, oldPassword string) error
 	}
 )
 

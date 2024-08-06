@@ -197,7 +197,7 @@ message ChangeNicknameRequest{
 
 message ChangePasswordRequest {
   sint64 memberId = 1;
-  string originPassword = 2;
+  string oldPassword = 2;
   string newPassword = 3;
 }
 message SetInviterRequest {

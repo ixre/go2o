@@ -179,20 +179,20 @@ func (p *profileManagerImpl) saveMerchantAuthenticate(v *merchant.Authenticate) 
 }
 
 // ChangePassword 修改密码
-func (p *profileManagerImpl) ChangePassword(newPwd, oldPwd string) error {
-	if len(newPwd) != 32 {
+func (p *profileManagerImpl) ChangePassword(newPassword, oldPassword string) error {
+	if len(newPassword) != 32 {
 		return errors.New("密码必须32位Md5")
 	}
-	if len(oldPwd) != 0 {
-		if newPwd == oldPwd {
+	if len(oldPassword) != 0 {
+		if newPassword == oldPassword {
 			return domain.ErrPwdCannotSame
 		}
-		oldPwd = dm.MerchantSha1Pwd(oldPwd, p.merchantImpl.GetValue().Salt)
-		if oldPwd != p._value.Password {
+		oldPassword = dm.MerchantSha1Pwd(oldPassword, p.merchantImpl.GetValue().Salt)
+		if oldPassword != p._value.Password {
 			return domain.ErrPwdOldPwdNotRight
 		}
 	}
-	p._value.Password = dm.MerchantSha1Pwd(newPwd, p.merchantImpl.GetValue().Salt)
+	p._value.Password = dm.MerchantSha1Pwd(newPassword, p.merchantImpl.GetValue().Salt)
 	_, err := p.Save()
 	return err
 }
