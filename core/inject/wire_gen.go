@@ -902,7 +902,7 @@ func GetContentService() proto.ContentServiceServer {
 }
 
 // 广告服务
-func GetAdService() proto.AdvertisementServiceServer {
+func GetAdvertisementService() proto.AdvertisementServiceServer {
 	orm := provide.GetOrmInstance()
 	storageInterface := provide.GetStorageInstance()
 	iAdRepo := repos.NewAdvertisementRepo(orm, storageInterface)

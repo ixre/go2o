@@ -11,7 +11,7 @@ import (
 )
 
 func TestQueryHyperLinkAdvertisementData(t *testing.T) {
-	ret, _ := inject.GetAdService().GetAdvertisement(context.TODO(), &proto.AdIdRequest{
+	ret, _ := inject.GetAdvertisementService().GetAdvertisement(context.TODO(), &proto.AdIdRequest{
 		AdUserId:   0,
 		AdId:       8,
 		AdKey:      "",

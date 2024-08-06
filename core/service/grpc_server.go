@@ -49,7 +49,7 @@ func ServeRPC(ch chan bool, cfg *clientv3.Config, port int) {
 
 	proto.RegisterAfterSalesServiceServer(s, inject.GetAfterSalesService())
 	proto.RegisterExpressServiceServer(s, inject.GetExpressService())
-	proto.RegisterAdvertisementServiceServer(s, inject.GetAdService())
+	proto.RegisterAdvertisementServiceServer(s, inject.GetAdvertisementService())
 	proto.RegisterPortalServiceServer(s, inject.GetPortalService())
 	proto.RegisterExecutionServiceServer(s, inject.GetExecuteService())
 

@@ -82,7 +82,7 @@ message SAdvertisementDto {
   // 广告编号
   int64 id = 1;
   // 广告类型
-  int32 adType = 2;
+  int32 type = 2;
   // 文本广告数据
   STextAdData text = 3;
   // 图片广告数据
@@ -165,11 +165,34 @@ message QueryAdvertisementDataRequest{
   repeated string keys = 2;
 }
 
+
+// 广告数据包装传输对象
+message SAdvertisementPackage{
+  // 广告编号
+  int64 id = 1;
+  // 广告类型
+  int32 type = 2;
+  // 广告媒体数据
+  repeated SAdvertisementMedia media = 3;
+}
+
+/** 广告媒体 */
+message SAdvertisementMedia{
+  /** 标题 */
+  string title = 1;
+  /** 点击执行命令 */
+  string cmd = 2;
+  /** 链接地址 */
+  string linkUrl = 3; 
+  // 媒体资源地址，如图片视频
+  string mediaUrl = 4;
+}
+
 // 查询广告数据
 message QueryAdvertisementDataResponse{
   // 广告用户编号
-  int64 adUserId = 1;
+  int64 userId = 1;
   //　广告位键
-  map<string,SAdvertisementDto> value = 2;
+  map<string,SAdvertisementPackage> value = 2;
 }
 

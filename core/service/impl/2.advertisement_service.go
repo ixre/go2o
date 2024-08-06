@@ -115,9 +115,54 @@ func (a *advertisementService) GetAdvertisement(_ context.Context, r *proto.AdId
 }
 
 // 获取广告数据传输对象
+func (a *advertisementService) getAdvertisementPackage(ia ad.IAdAggregateRoot) *proto.SAdvertisementPackage {
+	dto := ia.Dto()
+	ret := &proto.SAdvertisementPackage{
+		Id:    dto.Id,
+		Type:  int32(dto.AdType),
+		Media: make([]*proto.SAdvertisementMedia, 0),
+	}
+	switch dto.AdType {
+	case ad.TypeText:
+		v := dto.Data.(*ad.HyperLink)
+		if v != nil {
+			ret.Media = append(ret.Media, &proto.SAdvertisementMedia{
+				Title:    v.Title,
+				Cmd:      "LINK",
+				LinkUrl:  v.LinkUrl,
+				MediaUrl: "",
+			})
+		}
+	case ad.TypeImage:
+		v := dto.Data.(*ad.Image)
+		if v != nil {
+			ret.Media = append(ret.Media, &proto.SAdvertisementMedia{
+				Title:    v.Title,
+				Cmd:      "LINK",
+				LinkUrl:  v.LinkUrl,
+				MediaUrl: v.ImageUrl,
+			})
+		}
+	case ad.TypeSwiper:
+		images := dto.Data.(ad.SwiperAd)
+		for _, v := range images {
+			ret.Media = append(ret.Media, &proto.SAdvertisementMedia{
+				Title:    v.Title,
+				Cmd:      "LINK",
+				LinkUrl:  v.LinkUrl,
+				MediaUrl: v.ImageUrl,
+			})
+		}
+	default:
+		panic("not support ad type")
+	}
+	return ret
+}
+
+// 获取广告数据传输对象
 func (a *advertisementService) getAdvertisementDto(ia ad.IAdAggregateRoot) *proto.SAdvertisementDto {
 	dto := ia.Dto()
-	ret := &proto.SAdvertisementDto{Id: dto.Id, AdType: int32(dto.AdType)}
+	ret := &proto.SAdvertisementDto{Id: dto.Id, Type: int32(dto.AdType)}
 	switch dto.AdType {
 	case ad.TypeText:
 		ret.Text = a.parseTextDto(dto)
@@ -134,18 +179,18 @@ func (a *advertisementService) getAdvertisementDto(ia ad.IAdAggregateRoot) *prot
 func (a *advertisementService) QueryAdvertisementData(_ context.Context, r *proto.QueryAdvertisementDataRequest) (*proto.QueryAdvertisementDataResponse, error) {
 	iu := a.getUserAd(r.AdUserId)
 	var list = iu.QueryAdvertisement(r.Keys)
-	arr := make(map[string]*proto.SAdvertisementDto, len(r.Keys))
+	arr := make(map[string]*proto.SAdvertisementPackage, len(r.Keys))
 	for _, k := range r.Keys {
 		v := list[k]
 		if v == nil {
 			arr[k] = nil
 		} else {
-			arr[k] = a.getAdvertisementDto(v)
+			arr[k] = a.getAdvertisementPackage(v)
 		}
 	}
 	return &proto.QueryAdvertisementDataResponse{
-		AdUserId: r.AdUserId,
-		Value:    arr,
+		UserId: r.AdUserId,
+		Value:  arr,
 	}, nil
 }
 

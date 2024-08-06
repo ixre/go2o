@@ -108,7 +108,7 @@ func GetContentService() proto.ContentServiceServer {
 }
 
 // 广告服务
-func GetAdService() proto.AdvertisementServiceServer {
+func GetAdvertisementService() proto.AdvertisementServiceServer {
 	panic(wire.Build(InjectProvideSets))
 }
 
