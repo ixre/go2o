@@ -39,8 +39,8 @@ func TestGetMember(t *testing.T) {
 func TestChangeProfilePhoto(t *testing.T) {
 	r, _ := inject.GetMemberService().ChangeProfilePhoto(context.TODO(),
 		&proto.ChangeProfilePhotoRequest{
-			MemberId:    702,
-			PortraitUrl: "",
+			MemberId:        702,
+			ProfilePhotoUrl: "",
 		})
 	if r.ErrCode > 0 {
 		t.Log(r.ErrMsg)
@@ -86,8 +86,8 @@ func TestChangePasswordAndCheckLogin(t *testing.T) {
 		Username: "13162222872",
 		Password: pwd,
 	})
-	if ret.ErrCode > 0 {
-		t.Error(ret.ErrMsg)
+	if ret.Code > 0 {
+		t.Error(ret.Message)
 	}
 }
 
@@ -96,8 +96,8 @@ func TestCheckUserLogin(t *testing.T) {
 		Username: "13162222872",
 		Password: "14e1b600b1fd579f47433b88e8d85291",
 	})
-	if ret.ErrCode > 0 {
-		t.Error(ret.ErrMsg)
+	if ret.Code > 0 {
+		t.Error(ret.Message)
 	}
 }
 

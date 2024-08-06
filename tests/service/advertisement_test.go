@@ -19,3 +19,17 @@ func TestQueryHyperLinkAdvertisementData(t *testing.T) {
 	})
 	t.Log("广告数据:", typeconv.MustJson(ret))
 }
+
+// 测试获取广告数据
+func TestQueryAdvertisementData(t *testing.T) {
+	keys := []string{
+		"mobile-index-swiper-1",
+		"mobile-index-image-1",
+		"mobile-index-image-2",
+	}
+	ret, _ := inject.GetAdvertisementService().QueryAdvertisementData(context.TODO(), &proto.QueryAdvertisementDataRequest{
+		AdUserId: 0,
+		Keys:     keys,
+	})
+	t.Log("广告数据:", typeconv.MustJson(ret))
+}
