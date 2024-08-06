@@ -293,47 +293,50 @@ type (
 
 	// 会员资料
 	Profile struct {
-		//会员编号
-		MemberId int64 `db:"member_id" pk:"yes" auto:"no"`
-		//昵称
-		Name string `db:"name"`
-		//头像
-		ProfilePhoto string `db:"profile_photo"`
-		//性别
-		Gender int32 `db:"gender"`
-		//生日
-		BirthDay string `db:"birthday"`
-		//电话
-		Phone string `db:"phone"`
-		//地址
-		Address string `db:"address"`
-		//即时通讯
-		Im string `db:"im"`
-		//电子邮件
-		Email string `db:"email"`
-		// 省
-		Province int32 `db:"province"`
-		// 市
-		City int32 `db:"city"`
-		// 区
-		District int32 `db:"district"`
-		//备注
-		Remark string `db:"remark"`
-
-		// 扩展1
-		Ext1 string `db:"ext_1"`
-		// 扩展2
-		Ext2 string `db:"ext_2"`
-		// 扩展3
-		Ext3 string `db:"ext_3"`
-		// 扩展4
-		Ext4 string `db:"ext_4"`
-		// 扩展5
-		Ext5 string `db:"ext_5"`
-		// 扩展6
-		Ext6 string `db:"ext_6"`
-		//更新时间
-		UpdateTime int64 `db:"update_time"`
+		// MemberId
+		MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" pk:"yes" bson:"memberId"`
+		// Name
+		Name string `json:"name" db:"name" gorm:"column:name" bson:"name"`
+		// Gender
+		Gender int `json:"gender" db:"gender" gorm:"column:gender" bson:"gender"`
+		// ProfilePhoto
+		ProfilePhoto string `json:"profilePhoto" db:"profile_photo" gorm:"column:profile_photo" bson:"profilePhoto"`
+		// Birthday
+		Birthday string `json:"birthday" db:"birthday" gorm:"column:birthday" bson:"birthday"`
+		// Phone
+		Phone string `json:"phone" db:"phone" gorm:"column:phone" bson:"phone"`
+		// Address
+		Address string `json:"address" db:"address" gorm:"column:address" bson:"address"`
+		// Im
+		Im string `json:"im" db:"im" gorm:"column:im" bson:"im"`
+		// Email
+		Email string `json:"email" db:"email" gorm:"column:email" bson:"email"`
+		// Province
+		Province int `json:"province" db:"province" gorm:"column:province" bson:"province"`
+		// City
+		City int `json:"city" db:"city" gorm:"column:city" bson:"city"`
+		// District
+		District int `json:"district" db:"district" gorm:"column:district" bson:"district"`
+		// Ext1
+		Ext1 string `json:"ext1" db:"ext_1" gorm:"column:ext_1" bson:"ext1"`
+		// Ext2
+		Ext2 string `json:"ext2" db:"ext_2" gorm:"column:ext_2" bson:"ext2"`
+		// Ext3
+		Ext3 string `json:"ext3" db:"ext_3" gorm:"column:ext_3" bson:"ext3"`
+		// Ext4
+		Ext4 string `json:"ext4" db:"ext_4" gorm:"column:ext_4" bson:"ext4"`
+		// Ext5
+		Ext5 string `json:"ext5" db:"ext_5" gorm:"column:ext_5" bson:"ext5"`
+		// Ext6
+		Ext6 string `json:"ext6" db:"ext_6" gorm:"column:ext_6" bson:"ext6"`
+		// Remark
+		Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
+		// UpdateTime
+		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+		// PhotoPhoto
+		PhotoPhoto string `json:"photoPhoto" db:"photo_photo" gorm:"column:photo_photo" bson:"photoPhoto"`
+		// 个人签名
+		Signature string `json:"signature" db:"signature" gorm:"column:signature" bson:"signature"`
 	}
 
 	// 会员邀请关联表
@@ -355,41 +358,41 @@ type (
 	// 实名认证信息
 	CerticationInfo struct {
 		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
-		// 会员编号
-		MemberId int64 `db:"member_id" pk:"yes"`
-		// 真实姓名
-		RealName string `db:"real_name"`
+		Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+		// MemberId
+		MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
 		// 国家代码
-		CountryCode string `db:"country_code"`
+		CountryCode string `json:"countryCode" db:"country_code" gorm:"column:country_code" bson:"countryCode"`
+		// 真实姓名
+		RealName string `json:"realName" db:"real_name" gorm:"column:real_name" bson:"realName"`
 		// 证件类型
-		CardType int `db:"card_type"`
-		// 证件号码
-		CardId string `db:"card_id"`
+		CardType int `json:"cardType" db:"card_type" gorm:"column:card_type" bson:"cardType"`
+		// 证件编号
+		CardId string `json:"cardId" db:"card_id" gorm:"column:card_id" bson:"cardId"`
 		// 证件图片
-		CertImage string `db:"cert_image" json:"certImage" bson:"certImage"`
+		CertFrontPic string `json:"certFrontPic" db:"cert_front_pic" gorm:"column:cert_front_pic" bson:"certFrontPic"`
 		// 证件反面图片
-		CertReverseImage string `db:"cert_reverse_image" json:"certReverseImage" bson:"certReverseImage"`
+		CertBackPic string `json:"certBackPic" db:"cert_back_pic" gorm:"column:cert_back_pic" bson:"certBackPic"`
 		// 认证图片,人与身份证的图像等
-		TrustImage string `db:"trust_image"`
+		TrustImage string `json:"trustImage" db:"trust_image" gorm:"column:trust_image" bson:"trustImage"`
 		// 其他认证资料
-		ExtraCertFile string `db:"extra_cert_file" json:"extraCertFile" bson:"extraCertFile"`
+		ExtraCertFile string `json:"extraCertFile" db:"extra_cert_file" gorm:"column:extra_cert_file" bson:"extraCertFile"`
 		// 扩展认证资料1
-		ExtraCertExt1 string `db:"extra_cert_ext1" json:"extraCertExt1" bson:"extraCertExt1"`
+		ExtraCertExt1 string `json:"extraCertExt1" db:"extra_cert_ext1" gorm:"column:extra_cert_ext1" bson:"extraCertExt1"`
 		// 扩展认证资料2
-		ExtraCertExt2 string `db:"extra_cert_ext2" json:"extraCertExt2" bson:"extraCertExt2"`
-		// 是否人工审核认证
-		ManualReview int `db:"manual_review"`
-		// 是否审核通过
-		ReviewStatus int `db:"review_status"`
-		// 审核时间
-		ReviewTime int64 `db:"review_time"`
-		// 审核备注
-		Remark string `db:"remark"`
+		ExtraCertExt2 string `json:"extraCertExt2" db:"extra_cert_ext2" gorm:"column:extra_cert_ext2" bson:"extraCertExt2"`
 		// 版本
-		Version int `db:"version" json:"version" bson:"version"`
+		Version int `json:"version" db:"version" gorm:"column:version" bson:"version"`
+		// 人工审核
+		ManualReview int `json:"manualReview" db:"manual_review" gorm:"column:manual_review" bson:"manualReview"`
+		// 审核状态
+		ReviewStatus int16 `json:"reviewStatus" db:"review_status" gorm:"column:review_status" bson:"reviewStatus"`
+		// 审核时间
+		ReviewTime int `json:"reviewTime" db:"review_time" gorm:"column:review_time" bson:"reviewTime"`
+		// 备注
+		Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
 		// 更新时间
-		UpdateTime int64 `db:"update_time"`
+		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 	}
 
 	// 银行卡信息,因为重要且非频繁更新的数据

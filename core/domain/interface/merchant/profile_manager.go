@@ -39,8 +39,8 @@ type (
 		PersonId string `json:"personId" db:"person_id" gorm:"column:person_id" bson:"personId"`
 		// 法人姓名
 		PersonName string `json:"personName" db:"person_name" gorm:"column:person_name" bson:"personName"`
-		// 法人身份证照片
-		PersonPic string `json:"personPic" db:"person_pic" gorm:"column:person_pic" bson:"personPic"`
+		// 法人身份证照片(正反面)
+		PersonFrontPic string `json:"personFrontPic" db:"person_front_pic" gorm:"column:person_front_pic" bson:"personFrontPic"`
 		// 联系人手机
 		PersonPhone string `json:"personPhone" db:"person_phone" gorm:"column:person_phone" bson:"personPhone"`
 		// 授权书
@@ -63,6 +63,10 @@ type (
 		Version int `json:"version" db:"version" gorm:"column:version" bson:"version"`
 		// 更新时间
 		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+		// 身份证背面照片
+		PersonBackPic string `json:"personBackPic" db:"person_back_pic" gorm:"column:person_back_pic" bson:"personBackPic"`
+		// 开户许可证(企业)/银行卡(个体)
+		BankAccountPic string `json:"bankAccountPic" db:"bank_account_pic" gorm:"column:bank_account_pic" bson:"bankAccountPic"`
 	}
 
 	// 基本资料管理器

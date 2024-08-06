@@ -762,6 +762,10 @@ COMMENT ON COLUMN workorder_comment.create_time IS '创建时间';
 ALTER TABLE "public"."wal_wallet_log" RENAME COLUMN "outer_no" TO "outer_tx_no";
 ALTER TABLE "public"."wal_wallet_log" RENAME COLUMN "procedure_fee" TO "transaction_fee"; 
 
+ALTER TABLE "public"."wal_wallet_log" ADD COLUMN "outer_tx_uid" BIGINT NOT NULL DEFAULT 0;
+COMMENT ON COLUMN wal_wallet_log.outer_tx_uid IS '交易外部用户';
+
+
 
 
 ALTER TABLE "public"."article_category" RENAME COLUMN "parent_id" TO "pid";
@@ -770,10 +774,6 @@ ALTER TABLE "public"."article_category" RENAME COLUMN "cat_alias" TO "alias";
 ALTER TABLE "public"."article_category" RENAME COLUMN "sort_num" TO "sort_no";
 
 ALTER TABLE "public"."article_category" RENAME COLUMN "describe" TO "description";
-
-ALTER TABLE "public"."wal_wallet_log" ADD COLUMN "outer_tx_uid" BIGINT NOT NULL DEFAULT 0;
-COMMENT ON COLUMN wal_wallet_log.outer_tx_uid IS '交易外部用户';
-
 
 /** 2024-08-02 更改头像 */
 ALTER TABLE "public"."mm_member" ALTER COLUMN "profile_photo" TYPE character varying(180);
@@ -792,3 +792,40 @@ ALTER TABLE "public"."rbac_user" RENAME COLUMN "avatar" TO "profile_photo";
 -- COMMENT ON COLUMN mch_authenticate.province IS '省';
 -- COMMENT ON COLUMN mch_authenticate.city IS '市';
 -- COMMENT ON COLUMN mch_authenticate.district IS '区';
+
+
+ALTER TABLE "public".mch_authenticate 
+  RENAME COLUMN person_pic TO person_front_pic;
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN person_back_pic varchar(128) DEFAULT '' NOT NULL;
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN bank_account_pic varchar(128) DEFAULT '' NOT NULL;
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN bank_card_pic varchar(128) DEFAULT '' NOT NULL;
+COMMENT ON COLUMN "public".mch_authenticate.person_front_pic IS '法人身份证照片(正反面)';
+COMMENT ON COLUMN "public".mch_authenticate.person_back_pic IS '身份证背面照片';
+COMMENT ON COLUMN "public".mch_authenticate.bank_account_pic IS '开户许可证(企业)';
+COMMENT ON COLUMN "public".mch_authenticate.bank_card_pic IS '银行卡照片(个体)';
+
+
+ALTER TABLE "public".mch_authenticate 
+  ALTER COLUMN person_front_pic SET DATA TYPE varchar(128);
+COMMENT ON COLUMN "public".mch_authenticate.bank_account_pic IS '开户许可证(企业)/银行卡(个体)';
+
+
+ALTER TABLE "public".mm_cert_info 
+  ALTER COLUMN cert_image SET DATA TYPE varchar(128);
+ALTER TABLE "public".mm_cert_info 
+  ALTER COLUMN cert_reverse_image SET DATA TYPE varchar(128);
+  
+ALTER TABLE "public".mm_cert_info 
+  RENAME COLUMN cert_image TO cert_front_pic;
+ALTER TABLE "public".mm_cert_info 
+  RENAME COLUMN cert_reverse_image TO cert_back_pic;
+
+
+ALTER TABLE "public".mm_profile 
+  ADD COLUMN photo_photo varchar(180);
+ALTER TABLE "public".mm_profile 
+  ADD COLUMN signature varchar(80) DEFAULT '';
+COMMENT ON COLUMN "public".mm_profile.signature IS '个人签名';
