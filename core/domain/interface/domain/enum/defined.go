@@ -15,8 +15,8 @@ const (
 )
 
 const (
-	// 未设置
-	ReviewNotSet int32 = 0
+	// 未提交审核
+	ReviewNone int32 = 0
 	// 待审核
 	ReviewPending int32 = 1
 	// 审核未通过
@@ -31,7 +31,7 @@ const (
 
 // 审核文本字典
 var ReviewTextMap = map[int32]string{
-	ReviewNotSet:  "未提交",
+	ReviewNone:    "未提交",
 	ReviewPending: "待审核",
 	ReviewReject:  "审核未通过",
 	ReviewPass:    "审核通过",

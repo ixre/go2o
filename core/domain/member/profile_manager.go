@@ -307,14 +307,10 @@ func (p *profileManagerImpl) ChangeProfilePhoto(profilePhoto string) error {
 		return member.ErrInvalidHeadPortrait
 	}
 	v := p.GetProfile()
-	if p.profile != nil {
-		p.profile.ProfilePhoto = profilePhoto
-	}
 	v.ProfilePhoto = profilePhoto
 	err := p.repo.SaveProfile(&v)
 	if err == nil {
-		//todo: phone as user
-		p.member.value.Phone = profilePhoto
+		p.member.value.ProfilePhoto = profilePhoto
 		_, err = p.member.Save()
 	}
 	return err

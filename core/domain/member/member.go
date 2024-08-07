@@ -286,7 +286,7 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 		OriginLevel:  origin,
 		TargetLevel:  level,
 		PaymentId:    paymentId,
-		ReviewStatus: int(enum.ReviewNotSet),
+		ReviewStatus: int(enum.ReviewNone),
 		UpgradeMode:  member.LServiceAgentUpgrade,
 		CreateTime:   unix,
 	}

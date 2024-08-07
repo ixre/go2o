@@ -11,6 +11,7 @@ service AdvertisementService {
     }
     rpc GetPosition (AdPositionId) returns (SAdPosition) {
     }
+    /** 更新广告位 */
     rpc SaveAdPosition (SAdPosition) returns (Result) {
     }
     rpc DeleteAdPosition (AdPositionId) returns (Result) {
