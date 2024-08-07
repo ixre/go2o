@@ -48,7 +48,7 @@ message SaveAuthenticateRequest{
   // 公司地址
   string orgAddress = 9;
   // 办公地
-  int32 workCity = 20;
+  int32 workCity = 21;
   // 资质图片
   string qualificationPic = 10;
   // 法人身份证号
@@ -56,19 +56,23 @@ message SaveAuthenticateRequest{
   // 法人姓名
   string personName = 12;
   // 法人身份证照片
-  string personPic = 13;
+  string personFrontPic = 13;
+  // 身份证反面
+  string personBackPic = 14;
+  // 银行账户证明
+  string bankAccountPic = 22;
   // 授权书
-  string authorityPic = 14;
+  string authorityPic = 15;
   // 开户银行
-  string bankName = 15;
+  string bankName = 16;
   // 开户户名
-  string bankAccount = 16;
+  string bankAccount = 17;
   // 开户账号
-  string bankNo = 17;
+  string bankNo = 18;
   // 扩展数据
-  string extraData = 18;
+  string extraData = 19;
   // 联系人手机
-  string personPhone = 19;
+  string personPhone = 20;
 }
 
 
@@ -162,7 +166,11 @@ message QAuthenticate{
  // 法人姓名
  string personName = 9;
  // 法人身份证照片
- string personPic = 10;
+ string personFrontPic = 10;
+ // 身份证反面
+ string personBackPic = 21;
+ // 银行账户证明
+ string bankAccountPic = 22;
  // 联系人手机
  string personPhone = 11;
  // 授权书

@@ -825,7 +825,11 @@ ALTER TABLE "public".mm_cert_info
 
 
 ALTER TABLE "public".mm_profile 
-  ADD COLUMN photo_photo varchar(180);
-ALTER TABLE "public".mm_profile 
   ADD COLUMN signature varchar(80) DEFAULT '';
 COMMENT ON COLUMN "public".mm_profile.signature IS '个人签名';
+
+/** 2-24-08-07 */
+
+ALTER TABLE "public"."mm_cert_info" ADD COLUMN "extra_cert_no" CHARACTER VARYING(40) NOT NULL DEFAULT '' ;
+
+COMMENT ON COLUMN "public".mm_cert_info.extra_cert_no IS '额外资质证书编号';

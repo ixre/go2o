@@ -52,7 +52,7 @@ message SProfile {
     string nickname = 2;
     string profilePhoto = 3;
     sint32 gender = 4;
-    string birthDay = 5;
+    string birthday = 5;
     string phone = 6;
     string address = 7;
     string im = 8;
@@ -68,6 +68,8 @@ message SProfile {
     string ext5 = 18;
     string ext6 = 19;
     sint64 updateTime = 20;
+    /** 签名 */
+    string signature = 21;
 }
 
 

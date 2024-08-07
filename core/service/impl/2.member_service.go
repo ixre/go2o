@@ -1021,21 +1021,22 @@ func (s *memberService) GetCertification(_ context.Context, id *proto.MemberIdRe
 		t = &member.CerticationInfo{}
 	}
 	return &proto.SCertificationInfo{
-		RealName:         t.RealName,
-		CountryCode:      t.CountryCode,
-		CardType:         int32(t.CardType),
-		CardId:           t.CardId,
-		CertImage:        t.CertImage,
-		CertReverseImage: t.CertReverseImage,
-		ExtraCertFile:    t.ExtraCertFile,
-		ExtraCertExt1:    t.ExtraCertExt1,
-		ExtraCertExt2:    t.ExtraCertExt2,
-		TrustImage:       t.TrustImage,
-		ManualReview:     int32(t.ManualReview),
-		ReviewStatus:     int32(t.ReviewStatus),
-		ReviewTime:       t.ReviewTime,
-		CreateTime:       t.UpdateTime,
-		Remark:           t.Remark,
+		RealName:      t.RealName,
+		CountryCode:   t.CountryCode,
+		CardType:      int32(t.CardType),
+		CardId:        t.CardId,
+		CertFrontPic:  t.CertFrontPic,
+		CertBackPic:   t.CertBackPic,
+		ExtraCertFile: t.ExtraCertFile,
+		ExtraCertNo:   t.ExtraCertNo,
+		ExtraCertExt1: t.ExtraCertExt1,
+		ExtraCertExt2: t.ExtraCertExt2,
+		TrustImage:    t.TrustImage,
+		ManualReview:  int32(t.ManualReview),
+		ReviewStatus:  int32(t.ReviewStatus),
+		ReviewTime:    int64(t.ReviewTime),
+		CreateTime:    int64(t.UpdateTime),
+		Remark:        t.Remark,
 	}, nil
 }
 
@@ -1046,18 +1047,19 @@ func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCe
 		err = member.ErrNoSuchMember
 	} else {
 		err = m.Profile().SaveCertificationInfo(&member.CerticationInfo{
-			MemberId:         r.MemberId,
-			RealName:         r.Info.RealName,
-			CountryCode:      r.Info.CountryCode,
-			CardType:         int(r.Info.CardType),
-			CardId:           r.Info.CardId,
-			CertImage:        r.Info.CertImage,
-			CertReverseImage: r.Info.CertReverseImage,
-			ExtraCertFile:    r.Info.ExtraCertFile,
-			ExtraCertExt1:    r.Info.ExtraCertExt1,
-			ExtraCertExt2:    r.Info.ExtraCertExt2,
-			TrustImage:       r.Info.TrustImage,
-			ManualReview:     int(r.Info.ManualReview),
+			MemberId:      int(r.MemberId),
+			RealName:      r.Info.RealName,
+			CountryCode:   r.Info.CountryCode,
+			CardType:      int(r.Info.CardType),
+			CardId:        r.Info.CardId,
+			CertFrontPic:  r.Info.CertFrontPic,
+			CertBackPic:   r.Info.CertBackPic,
+			ExtraCertFile: r.Info.ExtraCertFile,
+			ExtraCertNo:   r.Info.ExtraCertNo,
+			ExtraCertExt1: r.Info.ExtraCertExt1,
+			ExtraCertExt2: r.Info.ExtraCertExt2,
+			TrustImage:    r.Info.TrustImage,
+			ManualReview:  int(r.Info.ManualReview),
 		})
 	}
 	if err != nil {
@@ -1136,7 +1138,6 @@ func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressReque
 	if err == nil {
 		err = v.Save()
 		ret.AddressId = v.GetDomainId()
-		log.Println("---address", e.IsDefault)
 		// 设置默认收货地址
 		if e.IsDefault == 1 && err == nil {
 			err = m.Profile().SetDefaultAddress(v.GetDomainId())
@@ -1612,18 +1613,19 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 
 func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile {
 	return &proto.SProfile{
-		MemberId:     src.MemberId,
+		MemberId:     int64(src.MemberId),
 		Nickname:     src.Name,
 		ProfilePhoto: src.ProfilePhoto,
-		BirthDay:     src.BirthDay,
+		Birthday:     src.Birthday,
 		Phone:        src.Phone,
-		Gender:       src.Gender,
+		Gender:       int32(src.Gender),
 		Address:      src.Address,
 		Im:           src.Im,
 		Email:        src.Email,
-		Province:     src.Province,
-		City:         src.City,
-		District:     src.District,
+		Province:     int32(src.Province),
+		City:         int32(src.City),
+		District:     int32(src.District),
+		Signature:    src.Signature,
 		Remark:       src.Remark,
 		Ext1:         src.Ext1,
 		Ext2:         src.Ext2,
@@ -1631,7 +1633,7 @@ func (s *memberService) parseMemberProfile(src *member.Profile) *proto.SProfile 
 		Ext4:         src.Ext4,
 		Ext5:         src.Ext5,
 		Ext6:         src.Ext6,
-		UpdateTime:   src.UpdateTime,
+		UpdateTime:   int64(src.UpdateTime),
 	}
 }
 
@@ -1690,18 +1692,19 @@ func (s *memberService) parseAccountDto(src *member.Account) *proto.SAccount {
 
 func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile {
 	return &member.Profile{
-		MemberId:     src.MemberId,
+		MemberId:     int(src.MemberId),
 		Name:         src.Nickname,
 		ProfilePhoto: src.ProfilePhoto,
-		BirthDay:     src.BirthDay,
+		Birthday:     src.Birthday,
 		Phone:        src.Phone,
 		Address:      src.Address,
+		Signature:    src.Signature,
 		Im:           src.Im,
 		Email:        src.Email,
-		Province:     src.Province,
-		Gender:       src.Gender,
-		City:         src.City,
-		District:     src.District,
+		Province:     int(src.Province),
+		Gender:       int(src.Gender),
+		City:         int(src.City),
+		District:     int(src.District),
 		Remark:       src.Remark,
 		Ext1:         src.Ext1,
 		Ext2:         src.Ext2,
@@ -1709,7 +1712,7 @@ func (s *memberService) parseMemberProfile2(src *proto.SProfile) *member.Profile
 		Ext4:         src.Ext4,
 		Ext5:         src.Ext5,
 		Ext6:         src.Ext6,
-		UpdateTime:   src.UpdateTime,
+		UpdateTime:   int(src.UpdateTime),
 	}
 }
 

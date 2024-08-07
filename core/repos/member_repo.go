@@ -88,7 +88,7 @@ func (m *MemberRepoImpl) GetProfile(memberId int64) *member.Profile {
 		if err := m._orm.Get(memberId, e); err != nil {
 			if err == sql.ErrNoRows {
 				//todo: 没有资料应该到会员注册时候创建
-				e.MemberId = memberId
+				e.MemberId = int(memberId)
 				orm.Save(m._orm, e, 0)
 			}
 		} else {
@@ -102,7 +102,7 @@ func (m *MemberRepoImpl) GetProfile(memberId int64) *member.Profile {
 func (m *MemberRepoImpl) SaveProfile(v *member.Profile) error {
 	_, _, err := m._orm.Save(v.MemberId, v)
 	if err == nil {
-		err = m.storage.Set(m.getProfileCk(v.MemberId), *v)
+		err = m.storage.Set(m.getProfileCk(int64(v.MemberId)), *v)
 	}
 	return err
 }
@@ -805,7 +805,7 @@ func (m *MemberRepoImpl) SaveCertificationInfo(v *member.CerticationInfo) (int, 
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:CertificationInfo")
 	}
-	v.Id = int64(id)
+	v.Id = id
 	return id, err
 }
 

@@ -169,10 +169,10 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	dst.City = v.City
 	dst.District = v.District
 	dst.Address = v.Address
-	dst.BirthDay = v.BirthDay
+	dst.Birthday = v.Birthday
 	dst.Im = v.Im
 	dst.Email = v.Email
-
+	dst.Signature = v.Signature
 	//todo: 如果手机不需要验证，则可以随意设置
 	if dst.Phone == "" {
 		dst.Phone = v.Phone
@@ -195,7 +195,7 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 func (p *profileManagerImpl) ProfileCompleted() bool {
 	v := p.GetProfile()
 	r := len(v.Name) != 0 &&
-		len(v.BirthDay) != 0 && len(v.Address) != 0 && v.Gender != 0 &&
+		len(v.Birthday) != 0 && len(v.Address) != 0 && v.Gender != 0 &&
 		v.Province != 0 && v.City != 0 && v.District != 0
 	if r {
 		imRequire := p.registryRepo.Get(registry.MemberImRequired).BoolValue()
@@ -211,7 +211,7 @@ func (p *profileManagerImpl) CheckProfileComplete() error {
 	if v.Phone == "" {
 		return errors.New("phone")
 	}
-	if v.BirthDay == "" {
+	if v.Birthday == "" {
 		return errors.New("birthday")
 	}
 	if v.Province <= 0 || v.City <= 0 || v.District <= 0 || v.Address == "" {
@@ -239,7 +239,7 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 	ptr := p.GetProfile()
 	err := p.copyProfile(v, &ptr)
 	if err == nil {
-		ptr.MemberId = p.memberId
+		ptr.MemberId = int(p.memberId)
 		err = p.repo.SaveProfile(&ptr)
 		if err == nil {
 			// 完善资料通知
@@ -577,7 +577,7 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 func (p *profileManagerImpl) copyCertificationInfo(src member.CerticationInfo, dst *member.CerticationInfo) error {
 	if dst == nil {
 		dst = &member.CerticationInfo{
-			MemberId:     p.memberId,
+			MemberId:     int(p.memberId),
 			ReviewStatus: int(enum.ReviewPending),
 		}
 	}
@@ -585,9 +585,10 @@ func (p *profileManagerImpl) copyCertificationInfo(src member.CerticationInfo, d
 	dst.CountryCode = src.CountryCode
 	dst.CardId = src.CardId
 	dst.CardType = src.CardType
-	dst.CertImage = src.CertImage
-	dst.CertReverseImage = src.CertReverseImage
+	dst.CertFrontPic = src.CertFrontPic
+	dst.CertBackPic = src.CertBackPic
 	dst.ExtraCertFile = src.ExtraCertFile
+	dst.ExtraCertNo = src.ExtraCertNo
 	dst.ExtraCertExt1 = src.ExtraCertExt1
 	dst.ExtraCertExt2 = src.ExtraCertExt2
 	dst.TrustImage = src.TrustImage
@@ -601,7 +602,7 @@ func (p *profileManagerImpl) GetCertificationInfo() *member.CerticationInfo {
 		p.trustedInfo = p.repo.GetCertificationInfo(int(p.memberId))
 		if p.trustedInfo == nil {
 			p.trustedInfo = &member.CerticationInfo{
-				MemberId:     p.memberId,
+				MemberId:     int(p.memberId),
 				ReviewStatus: int(enum.ReviewPending),
 			}
 		}
@@ -624,9 +625,10 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	v.CardId = strings.TrimSpace(v.CardId)
 	v.RealName = strings.TrimSpace(v.RealName)
 	v.TrustImage = strings.TrimSpace(v.TrustImage)
-	v.CertImage = strings.TrimSpace(v.CertImage)
-	v.CertReverseImage = strings.TrimSpace(v.CertReverseImage)
+	v.CertFrontPic = strings.TrimSpace(v.CertFrontPic)
+	v.CertBackPic = strings.TrimSpace(v.CertBackPic)
 	v.ExtraCertFile = strings.TrimSpace(v.ExtraCertFile)
+	v.ExtraCertNo = strings.TrimSpace(v.ExtraCertNo)
 	v.ExtraCertExt1 = strings.TrimSpace(v.ExtraCertExt1)
 	v.ExtraCertExt2 = strings.TrimSpace(v.ExtraCertExt2)
 	if len(v.RealName) == 0 || len(v.CardId) == 0 {
@@ -657,8 +659,8 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	}
 	// 检测证件照片
 	requireCardImg := p.registryRepo.Get(registry.MemberTrustRequireCardImage).BoolValue()
-	if v.CertImage != "" {
-		if len(v.CertImage) < 10 {
+	if v.CertFrontPic != "" {
+		if len(v.CertFrontPic) < 10 {
 			return member.ErrTrustMissingCardImage
 		}
 	} else if requireCardImg {
@@ -678,7 +680,7 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	if err == nil {
 		current.Remark = ""
 		current.ReviewStatus = int(enum.ReviewPending) //标记为待处理
-		current.UpdateTime = time.Now().Unix()
+		current.UpdateTime = int(time.Now().Unix())
 		p.trustedInfo = current
 		_, err = p.repo.SaveCertificationInfo(p.trustedInfo)
 		if err == nil {
@@ -711,7 +713,7 @@ func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error
 	}
 	unix := time.Now().Unix()
 	p.trustedInfo.Remark = remark
-	p.trustedInfo.ReviewTime = unix
+	p.trustedInfo.ReviewTime = int(unix)
 	_, err := p.repo.SaveCertificationInfo(p.trustedInfo)
 	if err == nil {
 		_, err = p.member.Save()

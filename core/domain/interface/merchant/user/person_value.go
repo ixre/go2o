@@ -15,6 +15,6 @@ type PersonValue struct {
 	RealName string `db:"real_name"`
 	Phone    string `db:"phone"`
 	Gender   int    `db:"gender"`
-	BirthDay int    `db:"birth_day"`
+	Birthday int    `db:"birth_day"`
 	Enabled  int    `db:"enabled`
 }

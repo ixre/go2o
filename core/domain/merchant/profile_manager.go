@@ -90,8 +90,11 @@ func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 	if len(v.PersonId) != 18 {
 		return errors.New("法人身份证号不正确")
 	}
-	if len(v.PersonPic) == 0 {
-		return errors.New("法人身份证照片不能为空")
+	if len(v.PersonFrontPic) == 0 {
+		return errors.New("法人身份证正面照片不能为空")
+	}
+	if len(v.PersonBackPic) == 0 {
+		return errors.New("法人身份证背面照片不能为空")
 	}
 	// if len(v.AuthorityPic) == 0 {
 	// 	return errors.New("未上传授权书")
@@ -157,7 +160,8 @@ func (p *profileManagerImpl) saveMerchantAuthenticate(v *merchant.Authenticate) 
 		QualificationPic: v.QualificationPic,
 		PersonId:         v.PersonId,
 		PersonName:       v.PersonName,
-		PersonPic:        v.PersonPic,
+		PersonFrontPic:   v.PersonFrontPic,
+		PersonBackPic:    v.PersonBackPic,
 		PersonPhone:      v.PersonPhone,
 		AuthorityPic:     v.AuthorityPic,
 		BankName:         v.BankName,

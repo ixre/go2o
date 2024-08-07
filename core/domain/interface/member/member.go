@@ -333,8 +333,6 @@ type (
 		Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
 		// UpdateTime
 		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
-		// PhotoPhoto
-		PhotoPhoto string `json:"photoPhoto" db:"photo_photo" gorm:"column:photo_photo" bson:"photoPhoto"`
 		// 个人签名
 		Signature string `json:"signature" db:"signature" gorm:"column:signature" bson:"signature"`
 	}
@@ -377,6 +375,8 @@ type (
 		TrustImage string `json:"trustImage" db:"trust_image" gorm:"column:trust_image" bson:"trustImage"`
 		// 其他认证资料
 		ExtraCertFile string `json:"extraCertFile" db:"extra_cert_file" gorm:"column:extra_cert_file" bson:"extraCertFile"`
+		// 额外资质证书编号
+		ExtraCertNo string `json:"extraCertNo" db:"extra_cert_no" gorm:"column:extra_cert_no" bson:"extraCertNo"`
 		// 扩展认证资料1
 		ExtraCertExt1 string `json:"extraCertExt1" db:"extra_cert_ext1" gorm:"column:extra_cert_ext1" bson:"extraCertExt1"`
 		// 扩展认证资料2
@@ -386,7 +386,7 @@ type (
 		// 人工审核
 		ManualReview int `json:"manualReview" db:"manual_review" gorm:"column:manual_review" bson:"manualReview"`
 		// 审核状态
-		ReviewStatus int16 `json:"reviewStatus" db:"review_status" gorm:"column:review_status" bson:"reviewStatus"`
+		ReviewStatus int `json:"reviewStatus" db:"review_status" gorm:"column:review_status" bson:"reviewStatus"`
 		// 审核时间
 		ReviewTime int `json:"reviewTime" db:"review_time" gorm:"column:review_time" bson:"reviewTime"`
 		// 备注

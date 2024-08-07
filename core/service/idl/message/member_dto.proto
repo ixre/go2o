@@ -425,13 +425,15 @@ message SCertificationInfo {
   /** 证件号码 */
   string cardId = 4;
   /** 证件正面照 */
-  string certImage = 5;
+  string certFrontPic = 5;
   /** 证件反面照 */
-  string certReverseImage = 6;
+  string certBackPic = 6;
   /** 认证人脸照 */
   string trustImage = 7;
   // 其他认证资料
   string extraCertFile = 8;
+  // 其他认证证书编号
+  string extraCertNo = 16;
   /** 是否人工审核 */
   sint32 manualReview = 9;
   /** 审核状态 */
