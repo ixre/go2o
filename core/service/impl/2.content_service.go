@@ -195,11 +195,11 @@ func (c *contentService) parsePageDto(src *content.Page) *proto.SPage {
 		Code:        src.Code,
 		Flag:        int32(src.Flag),
 		AccessKey:   src.AccessKey,
-		KeyWord:     src.KeyWord,
+		Keyword:     src.Keyword,
 		Description: src.Description,
 		CssPath:     src.CssPath,
 		Content:     src.Content,
-		UpdateTime:  src.UpdateTime,
+		UpdateTime:  int64(src.UpdateTime),
 		Enabled:     src.Enabled == 1,
 	}
 }
@@ -212,11 +212,11 @@ func (c *contentService) parsePage(v *proto.SPage) *content.Page {
 		Code:        v.Code,
 		Flag:        int(v.Flag),
 		AccessKey:   v.AccessKey,
-		KeyWord:     v.KeyWord,
+		Keyword:     v.Keyword,
 		Description: v.Description,
 		CssPath:     v.CssPath,
 		Content:     v.Content,
-		UpdateTime:  v.UpdateTime,
+		UpdateTime:  int(v.UpdateTime),
 		Enabled:     types.ElseInt(v.Enabled, 1, 0),
 	}
 }

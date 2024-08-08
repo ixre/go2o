@@ -186,7 +186,7 @@ func initPages(repo content.IPageRepo) {
 		for _, v := range pages {
 			v.Flag |= content.FCategoryInternal
 			v.Enabled = 1
-			v.UpdateTime = time.Now().Unix()
+			v.UpdateTime = int(time.Now().Unix())
 			repo.SavePage(0, v)
 		}
 	}

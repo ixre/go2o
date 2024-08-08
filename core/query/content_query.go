@@ -37,6 +37,8 @@ func NewContentQuery(o orm.Orm, fo fw.ORM, mq *MerchantQuery, mmq *MemberQuery) 
 	}
 	c.ORM = fo
 	c.categoryRepo.ORM = fo
+	c.pageRepo.ORM = fo
+	c.BaseRepository.ORM = fo
 	return c
 }
 

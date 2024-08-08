@@ -129,7 +129,7 @@ message SPage {
     // 浏览钥匙
     string accessKey = 6;
     // 关键词
-    string keyWord = 7;
+    string keyword = 7;
     // 描述
     string description = 8;
     // 样式表地址
