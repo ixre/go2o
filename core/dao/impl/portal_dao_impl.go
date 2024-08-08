@@ -18,11 +18,12 @@ package impl
 import (
 	"database/sql"
 	"fmt"
+	"log"
+
 	"github.com/ixre/go2o/core/dao"
 	"github.com/ixre/go2o/core/dao/model"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
-	"log"
 )
 
 var _ dao.IPortalDao = new(portalNavDaoImpl)
@@ -114,7 +115,7 @@ func (p *portalNavDaoImpl) BatchDeleteNav(where string, v ...interface{}) (int64
 }
 
 // Query paging data
-func (p *portalNavDaoImpl) PagingQueryNav(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *portalNavDaoImpl) QueryPagingNav(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}

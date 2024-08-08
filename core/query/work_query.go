@@ -21,17 +21,17 @@ func NewWorkQuery(orm fw.ORM) *WorkQuery {
 // 查询会员的提交的工单
 func (q *WorkQuery) QueryMemberPagingWorkOrder(memberId int, p *fw.PagingParams) (*fw.PagingResult, error) {
 	p.Equal("member_id", memberId)
-	return q.PagingQuery(p)
+	return q.QueryPaging(p)
 	// tables := ""
 	// fields := ""
-	// return fw.UnifinedPagingQuery(q.ORM,p,tables,fields)
+	// return fw.UnifinedQueryPaging(q.ORM,p,tables,fields)
 }
 
 // 查询会员工单评论
 func (q *WorkQuery) QueryPagingWorkorderComments(workorderId int, p *fw.PagingParams) (*fw.PagingResult, error) {
 	p.Equal("order_id", workorderId)
 	p.OrderBy("create_time desc")
-	ret, err := q.commentRepo.PagingQuery(p)
+	ret, err := q.commentRepo.QueryPaging(p)
 	for i, v := range ret.Rows {
 		d, _ := types.ParseJSONObject(v)
 		r := fw.ParsePagingRow(d)

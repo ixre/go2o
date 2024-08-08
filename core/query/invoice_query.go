@@ -15,5 +15,5 @@ func NewInvoiceQuery(o fw.ORM) *InvoiceQuery {
 func (i *InvoiceQuery) QueryMerchantIssueInvoices(p *fw.PagingParams) (*fw.PagingResult, error) {
 	tables := ""
 	fields := ""
-	return fw.UnifinedPagingQuery(i.orm,p,tables,fields)
+	return fw.UnifinedQueryPaging(i.orm, p, tables, fields)
 }

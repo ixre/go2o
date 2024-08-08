@@ -35,7 +35,7 @@ func (m *WalletQuery) QueryMerchantPagingAccountLog(mchId int, p *fw.PagingParam
 	}
 	p.Equal("wallet_id", walletId)
 	p.OrderBy("create_time desc")
-	return m.walletLogRepo.PagingQuery(p)
+	return m.walletLogRepo.QueryPaging(p)
 }
 
 // 查询总收入金额

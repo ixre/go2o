@@ -181,7 +181,7 @@ func (p *rbacDaoImpl) BatchDeleteJob(where string, v ...interface{}) (int64, err
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryJob(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingJob(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -276,7 +276,7 @@ func (p *rbacDaoImpl) BatchDeleteUser(where string, v ...interface{}) (int64, er
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryPermUser(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingPermUser(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -370,7 +370,7 @@ func (p *rbacDaoImpl) BatchDeletePermRole(where string, v ...interface{}) (int64
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryPermRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingPermRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -549,7 +549,7 @@ func (p *rbacDaoImpl) BatchDeleteUserRole(where string, v ...interface{}) (int64
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryPermUserRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingPermUserRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -643,7 +643,7 @@ func (p *rbacDaoImpl) BatchDeletePermRoleRes(where string, v ...interface{}) (in
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryPermRoleRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingPermRoleRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -737,7 +737,7 @@ func (p *rbacDaoImpl) BatchDeletePermRoleDept(where string, v ...interface{}) (i
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryPermRoleDept(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingPermRoleDept(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -778,8 +778,8 @@ func (p *rbacDaoImpl) GetRoleResources(roles []int) []*model.RbacRes {
 	return arr
 }
 
-// PagingQueryLoginLog Query paging data
-func (p *rbacDaoImpl) PagingQueryLoginLog(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+// QueryPagingLoginLog Query paging data
+func (p *rbacDaoImpl) QueryPagingLoginLog(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}

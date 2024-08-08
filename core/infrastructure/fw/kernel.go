@@ -64,8 +64,8 @@ type (
 		Delete(v *M) error
 		// DeleteBy 根据条件删除
 		DeleteBy(where string, v ...interface{}) (int, error)
-		// PagingQuery 查询分页数据
-		PagingQuery(p *PagingParams) (r *PagingResult, err error)
+		// QueryPaging 查询分页数据
+		QueryPaging(p *PagingParams) (r *PagingResult, err error)
 		// Count 统计条数
 		//Count(where string, v ...interface{}) (int, error)
 	}
@@ -82,8 +82,8 @@ type (
 		Count(where string, v ...interface{}) (int, error)
 		// Delete 删除
 		Delete(v *M) error
-		// PagingQuery 查询分页数据
-		PagingQuery(p *PagingParams) (r *PagingResult, err error)
+		// QueryPaging 查询分页数据
+		QueryPaging(p *PagingParams) (r *PagingResult, err error)
 	}
 )
 
@@ -175,7 +175,7 @@ func (r *BaseRepository[M]) DeleteBy(where string, v ...interface{}) (int, error
 	return int(tx.RowsAffected), nil
 }
 
-func (r *BaseRepository[M]) PagingQuery(p *PagingParams) (ret *PagingResult, err error) {
+func (r *BaseRepository[M]) QueryPaging(p *PagingParams) (ret *PagingResult, err error) {
 	var m M
 	var t int64
 	wh := func(tx *gorm.DB) *gorm.DB {
@@ -235,8 +235,8 @@ func (m *BaseService[M]) Delete(v *M) error {
 	return m.Repo.Delete(v)
 }
 
-func (m *BaseService[M]) PagingQuery(p *PagingParams) (ret *PagingResult, err error) {
-	return m.Repo.PagingQuery(p)
+func (m *BaseService[M]) QueryPaging(p *PagingParams) (ret *PagingResult, err error) {
+	return m.Repo.QueryPaging(p)
 }
 
 // 分页参数
@@ -397,11 +397,11 @@ func ReduceFinds[T any](fn func(opt *QueryOption) []*T, size int) (arr []*T) {
 	return arr
 }
 
-// UnifinedPagingQuery 通用查询
+// UnifinedQueryPaging 通用查询
 //
 //	tables Like: mm_member m ON m.id = o.member_id INNER JOIN mch_merchant mch ON mch.id = o.mch_id
 //	fields like: s.gender,m.nickname,certified_name
-func UnifinedPagingQuery(o ORM, p *PagingParams, tables string, fields string) (_ *PagingResult, err error) {
+func UnifinedQueryPaging(o ORM, p *PagingParams, tables string, fields string) (_ *PagingResult, err error) {
 	var ret PagingResult
 	from := `FROM ` + tables
 	// 查询条件

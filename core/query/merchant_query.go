@@ -84,7 +84,7 @@ func (m *MerchantQuery) QueryPagingMerchantList(p *fw.PagingParams) (_ *fw.Pagin
 	tables := `mch_merchant p
          LEFT JOIN mch_authenticate a ON a.mch_id=p.id AND a.version = 1`
 
-	ret, err := fw.UnifinedPagingQuery(m.ORM, p, tables, `
+	ret, err := fw.UnifinedQueryPaging(m.ORM, p, tables, `
 			 p.*,p.mch_name,person_name,p.tel,
         (SELECT COUNT(1) FROM mch_online_shop s WHERE s.vendor_id=p.id) as online_shops`)
 	// (SELECT COUNT(1) FROM mch_offline_shop s WHERE s.mch_id=p.id AND shop_type=2) as ofs_num`)
@@ -96,10 +96,10 @@ func (m *MerchantQuery) QueryPagingMerchantList(p *fw.PagingParams) (_ *fw.Pagin
 }
 
 // 查询分页商户待审核记录
-func (m *MerchantQuery) PagingQueryAuthenticates(p *fw.PagingParams) (_ *fw.PagingResult, err error) {
+func (m *MerchantQuery) QueryPagingAuthenticates(p *fw.PagingParams) (_ *fw.PagingResult, err error) {
 	tables := `mch_authenticate a
          LEFT JOIN mch_merchant p ON p.id=a.mch_id`
-	ret, err := fw.UnifinedPagingQuery(m.ORM, p, tables, `
+	ret, err := fw.UnifinedQueryPaging(m.ORM, p, tables, `
 			 a.*,p.mch_name`)
 	for _, v := range ret.Rows {
 		r := fw.ParsePagingRow(v)

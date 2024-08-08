@@ -23,6 +23,7 @@ type ContentQuery struct {
 	o orm.Orm
 	fw.BaseRepository[content.Article]
 	categoryRepo fw.BaseRepository[content.Category]
+	pageRepo     fw.BaseRepository[content.Page]
 	mq           *MerchantQuery
 	mmq          *MemberQuery
 }
@@ -40,7 +41,7 @@ func NewContentQuery(o orm.Orm, fo fw.ORM, mq *MerchantQuery, mmq *MemberQuery) 
 }
 
 func (c *ContentQuery) PagedArticleList(p *fw.PagingParams) (ret *fw.PagingResult, err error) {
-	ret, err = c.PagingQuery(p)
+	ret, err = c.QueryPaging(p)
 	var mchIds []int
 	var memberIds []int
 	for _, v := range ret.Rows {
@@ -122,5 +123,19 @@ type PagingArticleDto struct {
 // QueryMerchantArticles 查询商户文章列表
 func (c *ContentQuery) QueryMerchantArticles(mchId int, p *fw.PagingParams) (*fw.PagingResult, error) {
 	p.Equal("mch_id", mchId)
-	return c.BaseRepository.PagingQuery(p)
+	return c.BaseRepository.QueryPaging(p)
+}
+
+func (c *ContentQuery) QueryPagingArticleCategories(p *fw.PagingParams) (*fw.PagingResult, error) {
+	return c.categoryRepo.QueryPaging(p)
+}
+
+// 系统查询文章列表
+func (c *ContentQuery) QueryPagingArticles(p *fw.PagingParams) (*fw.PagingResult, error) {
+	return c.BaseRepository.QueryPaging(p)
+}
+
+// 系统查询页面列表
+func (c *ContentQuery) QueryPagingPages(p *fw.PagingParams) (*fw.PagingResult, error) {
+	return c.pageRepo.QueryPaging(p)
 }

@@ -513,7 +513,7 @@ func (p *rbacServiceImpl) DeleteJob(_ context.Context, id *proto.RbacJobId) (*pr
 }
 
 func (p *rbacServiceImpl) PagingJobList(_ context.Context, r *proto.RbacJobPagingRequest) (*proto.PagingRbacJobResponse, error) {
-	total, rows := p.dao.PagingQueryJob(int(r.Params.Begin),
+	total, rows := p.dao.QueryPagingJob(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
 		r.Params.SortBy)
@@ -641,7 +641,7 @@ func (p *rbacServiceImpl) PagingUser(_ context.Context, r *proto.PagingRbacUserR
 		}
 		r.Params.Where += " dept_id IN (" + util.JoinIntArray(arr, ",") + ")"
 	}
-	total, rows := p.dao.PagingQueryPermUser(int(r.Params.Begin),
+	total, rows := p.dao.QueryPagingPermUser(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
 		r.Params.SortBy)
@@ -791,7 +791,7 @@ func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.RbacRoleId
 
 // PagingPermRole 角色分页信息
 func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePagingRequest) (*proto.PagingRbacRoleResponse, error) {
-	total, rows := p.dao.PagingQueryPermRole(int(r.Params.Begin),
+	total, rows := p.dao.QueryPagingPermRole(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
 		r.Params.SortBy)
@@ -1099,7 +1099,7 @@ func (p *rbacServiceImpl) updateResDepth(dst *model.RbacRes, depth int) {
 // PagingLoginLog implements proto.RbacServiceServer.
 func (p *rbacServiceImpl) PagingLoginLog(_ context.Context, r *proto.LoginLogPagingRequest) (*proto.LoginLogPagingResponse, error) {
 	//todo:  keyword
-	total, rows := p.dao.PagingQueryLoginLog(int(r.Params.Begin),
+	total, rows := p.dao.QueryPagingLoginLog(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
 		r.Params.SortBy)
