@@ -94,3 +94,16 @@ func (m *MerchantQuery) QueryPagingMerchantList(p *fw.PagingParams) (_ *fw.Pagin
 	}
 	return ret, err
 }
+
+// 查询分页商户待审核记录
+func (m *MerchantQuery) PagingQueryAuthenticates(p *fw.PagingParams) (_ *fw.PagingResult, err error) {
+	tables := `mch_authenticate a
+         LEFT JOIN mch_merchant p ON p.id=a.mch_id`
+	ret, err := fw.UnifinedPagingQuery(m.ORM, p, tables, `
+			 a.*,p.mch_name`)
+	for _, v := range ret.Rows {
+		r := fw.ParsePagingRow(v)
+		r.Excludes("password")
+	}
+	return ret, err
+}
