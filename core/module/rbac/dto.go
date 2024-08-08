@@ -16,4 +16,6 @@ type UserInfoResponse struct {
 	Roles []string `json:"roles"`
 	// 菜单数据
 	MenuData []*proto.SUserMenu `json:"menuData"`
+	// 用户设置
+	Settings map[string]interface{} `json:"settings"`
 }
