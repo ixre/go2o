@@ -611,7 +611,7 @@ func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 	_db := provide.GetDb()
 	_db.ExecScalar(`SELECT COUNT(1) FROM mm_cert_info WHERE 
 			review_status= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1`,
-		&mId, enum.ReviewPass, cardId, memberId)
+		&mId, enum.ReviewApproved, cardId, memberId)
 	return mId == 0
 }
 
@@ -694,7 +694,7 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error {
 	p.GetCertificationInfo()
 	if pass {
-		p.trustedInfo.ReviewStatus = int(enum.ReviewPass)
+		p.trustedInfo.ReviewStatus = int(enum.ReviewApproved)
 		p.member.value.UserFlag |= member.FlagTrusted
 		p.member.value.RealName = p.trustedInfo.RealName
 	} else {

@@ -170,7 +170,7 @@ type (
 		// 关联的会员编号,作为结算账户
 		MemberId int64
 		// 用户
-		Usr string
+		Username string
 		// 密码
 		Pwd string
 		// 商户名称
@@ -180,7 +180,10 @@ type (
 		// 商户等级
 		Level int32
 		// 标志
-		Logo string
+		Logo    string
+		Address string
+		// 电话
+		Telephone string
 		// 公司名称
 		CompanyName string
 		// 省
@@ -195,6 +198,7 @@ type (
 		ExpiresTime int64
 		// 注册时间
 		JoinTime int64
+		Status   int
 		// 更新时间
 		UpdateTime int64
 		// 登录时间

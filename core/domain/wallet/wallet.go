@@ -179,7 +179,7 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, operator
 		OprUid:       int(operatorUid),
 		OprName:      strings.TrimSpace(operatorName),
 		Remark:       "",
-		ReviewStatus: wallet.ReviewPass,
+		ReviewStatus: wallet.ReviewApproved,
 		ReviewRemark: "",
 		ReviewTime:   0,
 		CreateTime:   int(unix),
@@ -426,7 +426,7 @@ func (w *WalletImpl) CarryTo(tx wallet.TransactionData, review bool) (int, error
 			l.ReviewRemark = "待审核"
 		} else {
 			w._value.Balance += tx.Amount
-			l.ReviewStatus = wallet.ReviewPass
+			l.ReviewStatus = wallet.ReviewApproved
 			l.ReviewTime = int(time.Now().Unix())
 		}
 		// 保存日志
@@ -453,7 +453,7 @@ func (w *WalletImpl) ReviewCarryTo(transactionId int, pass bool, reason string) 
 	l.UpdateTime = int(time.Now().Unix())
 	if pass {
 		w._value.Balance += l.ChangeValue
-		l.ReviewStatus = int(enum.ReviewPass)
+		l.ReviewStatus = int(enum.ReviewApproved)
 		l.Remark = "系统审核通过"
 	} else {
 		l.ReviewStatus = int(enum.ReviewReject)
@@ -650,7 +650,7 @@ func (w *WalletImpl) ReviewWithdrawal(transactionId int, pass bool, remark strin
 	}
 	l.ReviewTime = int(time.Now().Unix())
 	if pass {
-		l.ReviewStatus = wallet.ReviewPass
+		l.ReviewStatus = wallet.ReviewApproved
 	} else {
 		l.ReviewRemark = remark
 		l.ReviewStatus = wallet.ReviewReject
@@ -671,7 +671,7 @@ func (w *WalletImpl) FinishWithdrawal(transactionId int, outerNo string) error {
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
 	}
-	if l.ReviewStatus != wallet.ReviewPass {
+	if l.ReviewStatus != wallet.ReviewApproved {
 		return wallet.ErrWithdrawState
 	}
 	l.OuterTxNo = outerNo

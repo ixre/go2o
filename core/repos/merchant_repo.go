@@ -41,6 +41,7 @@ var mchMerchantDaoImplMapped = false
 
 type merchantRepo struct {
 	fw.BaseRepository[merchant.Merchant]
+	authRepo fw.BaseRepository[merchant.Authenticate]
 	db.Connector
 	_orm          orm.Orm
 	storage       storage.Interface
@@ -61,7 +62,7 @@ type merchantRepo struct {
 
 // GetBalanceAccountLog implements merchant.IMerchantRepo
 
-func NewMerchantRepo(o orm.Orm,on fw.ORM, storage storage.Interface,
+func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
 	employeeRepo staff.IStaffRepo,
@@ -93,6 +94,7 @@ func NewMerchantRepo(o orm.Orm,on fw.ORM, storage storage.Interface,
 		mux:           &sync.RWMutex{},
 	}
 	r.ORM = on
+	r.authRepo.ORM = on
 	return r
 }
 
@@ -540,4 +542,9 @@ func (m *merchantRepo) GetMerchantAuthenticate(mchId int, version int) *merchant
 		log.Printf("[ Orm][ Error]: %s; Entity:Authenticate\n", err.Error())
 	}
 	return nil
+}
+
+func (m *merchantRepo) DeleteOthersAuthenticate(mchId int, id int) error {
+	_, err := m.authRepo.DeleteBy("mch_id = $1 AND id <> $2", mchId, id)
+	return err
 }

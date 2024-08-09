@@ -24,7 +24,7 @@ message SSaveMerchantParams{
   // 标志
   string logo = 9;
   // 公司电话
-  string tel = 10;
+  string telephone = 10;
 }
 
 // 保存商户认证信息请求
@@ -136,7 +136,7 @@ message QMerchant{
   // 标志
   string logo = 13;
   // 公司电话
-  string tel = 14;
+  string telephone = 14;
   // 状态: 0:待审核 1:已开通  2:停用  3: 关闭
   int32 status = 15;
   // 过期时间

@@ -126,4 +126,6 @@ type IMerchantRepo interface {
 	SaveAuthenticate(v *Authenticate) (int, error)
 	// GetAuthenticateBy 获取商户认证信息
 	GetMerchantAuthenticate(mchId int, version int) *Authenticate
+	// DeleteOthersAuthenticate 删除其他认证信息
+	DeleteOthersAuthenticate(mchId int, id int) error
 }

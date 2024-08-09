@@ -106,7 +106,7 @@ func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId int64, tagId int32,
 		 WHERE product.review_status= $1 AND product.shelve_state= $2 AND product.id IN (
 			SELECT g.item_id FROM product_tag g INNER JOIN gs_sale_label t
 			 ON t.id = g.sale_tag_id WHERE t.mch_id= $3 AND t.id= $4) `+sortBy+`
-			LIMIT $6 OFFSET $5`, enum.ReviewPass, item.ShelvesOn, mchId, tagId, begin, end)
+			LIMIT $6 OFFSET $5`, enum.ReviewApproved, item.ShelvesOn, mchId, tagId, begin, end)
 	return arr
 }
 
@@ -121,7 +121,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId int64, tagId int32,
 	    INNER JOIN product ON product.id = item_info.product_id
 		 WHERE product.review_status= $1 AND product.shelve_state= $2 AND product.id IN (
 			SELECT g.item_id FROM product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
-			WHERE t.mch_id= $3 AND t.id= $4)`, &total, enum.ReviewPass,
+			WHERE t.mch_id= $3 AND t.id= $4)`, &total, enum.ReviewApproved,
 		item.ShelvesOn, mchId, tagId)
 	var arr []*valueobject.Goods
 	if total > 0 {
@@ -130,7 +130,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId int64, tagId int32,
 		 WHERE product.review_status= $1 AND product.shelve_state= $2 AND product.id IN (
 			SELECT g.item_id FROM product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
 			WHERE t.mch_id= $3 AND t.id= $4) `+sortBy+` LIMIT $6 OFFSET $5`,
-			enum.ReviewPass, item.ShelvesOn,
+			enum.ReviewApproved, item.ShelvesOn,
 			mchId, tagId, begin, end)
 	}
 	return total, arr

@@ -106,7 +106,7 @@ message SShopConfig {
     /** 个性化域名 */
     string alias = 6;
     /** 电话 */
-    string tel = 7;
+    string telephone = 7;
 }
 
 // 获取店铺

@@ -40,14 +40,14 @@ const (
 )
 
 const (
-	// 未设置
-	ReviewNotSet = 0
+	// 待提交审核
+	ReviewStaging = 0
 	// ReviewPending 等待审核
 	ReviewPending = 1
 	// ReviewReject 审核失败
 	ReviewReject = 2
-	// ReviewPass 审核成功
-	ReviewPass = 3
+	// ReviewApproved 审核成功
+	ReviewApproved = 3
 	// ReviewConfirm 已确认
 	ReviewConfirm = 4
 	// ReviewAbort 审核终止

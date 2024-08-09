@@ -115,30 +115,35 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 	e.ReviewTime = int(time.Now().Unix())
 	// 通过审核,将审批的记录删除,同时更新到审核数据
 	if pass {
-		e.ReviewStatus = int(enum.ReviewPass)
+		e.ReviewStatus = int(enum.ReviewApproved)
 		e.ReviewRemark = ""
-		_, err = p._repo.SaveAuthenticate(e)
+
+		// 更新企业认证信息
+		err = p.saveMerchantAuthenticate(e)
+		if err != nil {
+			return err
+		}
+		// 保存商户信息
+		v := p.merchantImpl.GetValue()
+		v.MchName = e.MchName
+		v.Address = e.OrgAddress
+		v.Province = e.Province
+		v.City = e.City
+		v.District = e.District
+		if len(v.Tel) == 0 {
+			v.Tel = e.PersonPhone
+		}
+		if v.Status == 0 {
+			// 如果商户状态为待认证,则设置商户已开通
+			v.Status = 1
+		}
+		if err = p.SetValue(&v); err != nil {
+			return err
+		}
+		// 去除待认证标记
+		err = p.merchantImpl.GrantFlag(-merchant.FlagAuthenticate)
 		if err == nil {
-			// 更新企业认证信息
-			err = p.saveMerchantAuthenticate(e)
-			if err != nil {
-				return err
-			}
-			// 保存商户信息
-			v := p.merchantImpl.GetValue()
-			v.MchName = e.MchName
-			if v.Status == 0 {
-				// 如果商户状态为待认证,则设置商户已开通
-				v.Status = 1
-			}
-			if err = p.SetValue(&v); err != nil {
-				return err
-			}
-			// 去除待认证标记
-			err = p.merchantImpl.GrantFlag(-merchant.FlagAuthenticate)
-			if err == nil {
-				_, err = p.merchantImpl.Save()
-			}
+			_, err = p.merchantImpl.Save()
 		}
 	} else {
 		e.ReviewStatus = int(enum.ReviewReject)
@@ -150,35 +155,11 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 
 // 保存企业认证信息
 func (p *profileManagerImpl) saveMerchantAuthenticate(v *merchant.Authenticate) error {
-	dst := &merchant.Authenticate{
-		Id:               0,
-		MchId:            p.GetAggregateRootId(),
-		OrgName:          v.OrgName,
-		OrgNo:            v.OrgNo,
-		OrgPic:           v.OrgPic,
-		WorkCity:         v.WorkCity,
-		QualificationPic: v.QualificationPic,
-		PersonId:         v.PersonId,
-		PersonName:       v.PersonName,
-		PersonFrontPic:   v.PersonFrontPic,
-		PersonBackPic:    v.PersonBackPic,
-		PersonPhone:      v.PersonPhone,
-		AuthorityPic:     v.AuthorityPic,
-		BankName:         v.BankName,
-		BankAccount:      v.BankAccount,
-		BankNo:           v.BankNo,
-		ExtraData:        v.ExtraData,
-		ReviewStatus:     v.ReviewStatus,
-		ReviewRemark:     "",
-		ReviewTime:       v.ReviewTime,
-		Version:          1,
-		UpdateTime:       v.ReviewTime,
-	}
-	e := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 1)
-	if e != nil {
-		dst.Id = e.Id
-	}
-	_, err := p._repo.SaveAuthenticate(dst)
+	// 删除之前已认证过的信息
+	p._repo.DeleteOthersAuthenticate(p.GetAggregateRootId(), v.Id)
+	// 将当前信息作为审核通过的信息
+	v.Version = 1
+	_, err := p._repo.SaveAuthenticate(v)
 	return err
 }
 

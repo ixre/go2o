@@ -300,7 +300,7 @@ func (a *accountImpl) createIntegralLog(kind int, title string, value int, outer
 		Value:        value,
 		Remark:       "",
 		RelateUser:   0,
-		ReviewStatus: int16(enum.ReviewPass),
+		ReviewStatus: int16(enum.ReviewApproved),
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}, nil
@@ -324,7 +324,7 @@ func (a *accountImpl) createBalanceLog(kind int, title string, amount int, outer
 		Title:        title,
 		OuterNo:      outerNo,
 		Amount:       int64(amount),
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		RelateUser:   0,
 		CreateTime:   unix,
 		UpdateTime:   unix,
@@ -376,7 +376,7 @@ func (a *accountImpl) createFlowAccountLog(kind int, title string, amount int, o
 		Title:        title,
 		OuterNo:      outerNo,
 		Amount:       int64(amount),
-		ReviewStatus: int(enum.ReviewPass),
+		ReviewStatus: int(enum.ReviewApproved),
 		RelateUser:   0,
 		CreateTime:   unix,
 		UpdateTime:   unix,
@@ -422,7 +422,7 @@ func (a *accountImpl) reviewBalanceCarryTo(transactionId int, pass bool, reason 
 	l.UpdateTime = time.Now().Unix()
 	if pass {
 		a.value.Balance += l.Amount
-		l.ReviewStatus = int32(enum.ReviewPass)
+		l.ReviewStatus = int32(enum.ReviewApproved)
 		l.Remark = "系统审核通过"
 	} else {
 		l.ReviewStatus = int32(enum.ReviewReject)
@@ -448,7 +448,7 @@ func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) 
 		l.Remark = "待审核"
 	} else {
 		a.value.Integral += d.Amount
-		l.ReviewStatus = int16(enum.ReviewPass)
+		l.ReviewStatus = int16(enum.ReviewApproved)
 	}
 	if err == nil {
 		l.Remark = d.TransactionRemark
@@ -471,7 +471,7 @@ func (a *accountImpl) reviewIntegralCarryTo(transactionId int, pass bool, reason
 	l.UpdateTime = time.Now().Unix()
 	if pass {
 		a.value.Integral += l.Value
-		l.ReviewStatus = int16(enum.ReviewPass)
+		l.ReviewStatus = int16(enum.ReviewApproved)
 		l.Remark = "系统审核通过"
 	} else {
 		l.ReviewStatus = int16(enum.ReviewReject)
@@ -513,7 +513,7 @@ func (a *accountImpl) adjustBalanceAccount(title string, amount int, remark stri
 		Amount:       int64(amount),
 		Remark:       remark,
 		RelateUser:   relateUser,
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -538,7 +538,7 @@ func (a *accountImpl) chargeBalanceNoLimit(kind int, title string, outerNo strin
 		Title:        title,
 		OuterNo:      outerNo,
 		Amount:       int64(amount),
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		RelateUser:   relateUser,
 		CreateTime:   unix,
 		UpdateTime:   unix,
@@ -721,7 +721,7 @@ func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int6
 		OuterNo:      p.OuterTransactionNo,
 		RelateUser:   relateUser,
 		Remark:       p.TransactionRemark,
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -803,7 +803,7 @@ func (a *accountImpl) freezesIntegral(p member.AccountOperateData, relateUser in
 		Remark:       p.TransactionRemark,
 		Balance:      a.value.Integral,
 		RelateUser:   int(relateUser),
-		ReviewStatus: int16(enum.ReviewPass),
+		ReviewStatus: int16(enum.ReviewApproved),
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -850,7 +850,7 @@ func (a *accountImpl) unfreezeBalance(d member.AccountOperateData, relateUser in
 		OuterNo:      d.OuterTransactionNo,
 		Balance:      int(a.value.Balance),
 		ProcedureFee: 0,
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -890,7 +890,7 @@ func (a *accountImpl) PaymentDiscount(tradeNo string, amount int, remark string)
 		Title:        remark,
 		OuterNo:      tradeNo,
 		Amount:       -int64(amount),
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		RelateUser:   member.DefaultRelateUser,
 		CreateTime:   unix,
 		UpdateTime:   unix,
@@ -921,7 +921,7 @@ func (a *accountImpl) unfreezesIntegral(d member.AccountOperateData, relateUser 
 		Remark:       d.TransactionRemark,
 		Balance:      a.value.Integral,
 		RelateUser:   int(relateUser),
-		ReviewStatus: int16(enum.ReviewPass),
+		ReviewStatus: int16(enum.ReviewApproved),
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -952,7 +952,7 @@ func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int, str
 	mustTrust, _ := a.registryRepo.GetValue(registry.MemberWithdrawalMustVerification)
 	if mustTrust == "true" {
 		trust := a.member.Profile().GetCertificationInfo()
-		if trust.ReviewStatus != int(enum.ReviewPass) {
+		if trust.ReviewStatus != int(enum.ReviewApproved) {
 			return 0, "", member.ErrTakeOutNotTrust
 		}
 	}
@@ -1047,7 +1047,7 @@ func (a *accountImpl) ReviewWithdrawal(transactionId int, pass bool, remark stri
 				RequestId:      int(transactionId),
 				Amount:         int(log.ChangeValue),
 				TransactionFee: log.TransactionFee,
-				ReviewResult:   log.ReviewStatus == int(enum.ReviewPass),
+				ReviewResult:   log.ReviewStatus == int(enum.ReviewApproved),
 				IsReviewEvent:  true,
 			})
 		}
@@ -1094,7 +1094,7 @@ func (a *accountImpl) balanceFreezeExpired(amount int, remark string) error {
 		OuterNo:      "",
 		Amount:       int64(amount),
 		ProcedureFee: 0,
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -1122,7 +1122,7 @@ func (a *accountImpl) walletFreezeExpired(amount int, remark string) error {
 		OuterNo:      "",
 		Amount:       int64(amount),
 		ProcedureFee: 0,
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -1138,7 +1138,7 @@ func (a *accountImpl) walletFreezeExpired(amount int, remark string) error {
 // 获取会员名称
 func (a *accountImpl) getMemberName(m member.IMemberAggregateRoot) string {
 	if tr := m.Profile().GetCertificationInfo(); tr.RealName != "" &&
-		tr.ReviewStatus == int(enum.ReviewPass) {
+		tr.ReviewStatus == int(enum.ReviewApproved) {
 		return tr.RealName
 	} else {
 		return m.GetValue().Username
@@ -1191,7 +1191,7 @@ func (a *accountImpl) transferBalance(tm member.IMemberAggregateRoot, tradeNo st
 		OuterNo:      tradeNo,
 		Amount:       -int64(amount),
 		ProcedureFee: int64(csnFee),
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -1233,7 +1233,7 @@ func (a *accountImpl) transferWalletAccount(tm member.IMemberAggregateRoot, trad
 		OuterNo:      tradeNo,
 		Amount:       -int64(amount),
 		ProcedureFee: int64(csnFee),
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -1279,7 +1279,7 @@ func (a *accountImpl) receivePresentTransfer(fromMember int64, tradeNo string,
 		OuterNo:      tradeNo,
 		Amount:       int64(amount),
 		ProcedureFee: 0,
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -1305,7 +1305,7 @@ func (a *accountImpl) receiveBalanceTransfer(fromMember int64, tradeNo string,
 		OuterNo:      tradeNo,
 		Amount:       int64(amount),
 		ProcedureFee: 0,
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		RelateUser:   member.DefaultRelateUser,
 		Remark:       remark,
 		CreateTime:   unix,
@@ -1336,7 +1336,7 @@ func (a *accountImpl) TransferBalance(account member.AccountType, amount int,
 				Title:        toTitle,
 				Amount:       -int64(amount),
 				OuterNo:      tradeNo,
-				ReviewStatus: int(enum.ReviewPass),
+				ReviewStatus: int(enum.ReviewApproved),
 			})
 
 			a.rep.SaveFlowAccountInfo(&member.FlowAccountLog{
@@ -1344,7 +1344,7 @@ func (a *accountImpl) TransferBalance(account member.AccountType, amount int,
 				Title:        fromTitle,
 				Amount:       int64(amount),
 				OuterNo:      tradeNo,
-				ReviewStatus: int(enum.ReviewPass),
+				ReviewStatus: int(enum.ReviewApproved),
 			})
 		}
 		return err
@@ -1376,7 +1376,7 @@ func (a *accountImpl) TransferFlow(kind int, amount int, commission float32,
 			Amount:       -int64(amount),
 			OuterNo:      tradeNo,
 			CsnFee:       csnAmount,
-			ReviewStatus: int(enum.ReviewPass),
+			ReviewStatus: int(enum.ReviewApproved),
 		})
 
 		a.rep.SaveFlowAccountInfo(&member.FlowAccountLog{
@@ -1384,7 +1384,7 @@ func (a *accountImpl) TransferFlow(kind int, amount int, commission float32,
 			Title:        fromTitle,
 			Amount:       finalAmount,
 			OuterNo:      tradeNo,
-			ReviewStatus: int(enum.ReviewPass),
+			ReviewStatus: int(enum.ReviewApproved),
 		})
 	}
 	return err

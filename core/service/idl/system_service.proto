@@ -72,7 +72,7 @@ service SystemService {
     // 创建同步登录的地址,returnUrl
     rpc GetSyncLoginUrl (String) returns (String) {
     }
-    // 获取地区名称
+    // 获取地区名称,如:获取多个城市对应的名称
     rpc GetDistrictNames (GetNamesRequest) returns (IntStringMapResponse) {
     }
     // 获取省市区字符串

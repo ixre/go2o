@@ -68,7 +68,7 @@ func (b *Bank4E) GetBasicInfo(memberId int64) map[string]string {
 		data["BankCardNo"] = bankCards[0].BankAccount
 	}
 	data["Remark"] = info.Remark
-	if info.ReviewStatus == int(enum.ReviewPass) {
+	if info.ReviewStatus == int(enum.ReviewApproved) {
 		data["Reviewed"] = "true"
 	} else {
 		data["Reviewed"] = "false"
@@ -125,7 +125,7 @@ func (b *Bank4E) UpdateInfo(memberId int64, realName, idCard, phone, bankAccount
 		return errors.New("手机号码非法`")
 	}
 	info := m.Profile().GetCertificationInfo()
-	if info.ReviewStatus == int(enum.ReviewPass) {
+	if info.ReviewStatus == int(enum.ReviewApproved) {
 		return errors.New("您已通过实名认证")
 	}
 

@@ -118,16 +118,19 @@ func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
 	return &merchant.ComplexMerchant{
 		Id:        int32(src.Id),
 		MemberId:  int64(src.MemberId),
-		Usr:       src.Username,
+		Username:  src.Username,
 		Pwd:       src.Password,
 		Name:      src.MchName,
 		SelfSales: int32(src.IsSelf),
 		Level:     int32(src.Level),
+		Address:   src.Address,
 		//Logo:          src.Logo,
 		//CompanyName:   src.CompanyName,
-		Province: int32(src.Province),
-		City:     int32(src.City),
-		District: int32(src.District),
+		Province:  int32(src.Province),
+		City:      int32(src.City),
+		District:  int32(src.District),
+		Telephone: src.Tel,
+		Status:    int(src.Status),
 		// Enabled:       int32(src.Enabled),
 		// ExpiresTime:   src.ExpiresTime,
 		// JoinTime:      src.CreateTime,
@@ -151,6 +154,7 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 		tv.Province = v.Province
 		tv.City = v.City
 		tv.District = v.District
+		tv.Address = v.Address
 	}
 
 	if m.GetAggregateRootId() <= 0 {
@@ -166,6 +170,7 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 		tv.Logo = v.Logo
 	}
 	tv.IsSelf = v.IsSelf
+	tv.Status = v.Status
 	tv.ExpiresTime = v.ExpiresTime
 	return nil
 }
@@ -345,7 +350,7 @@ func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 	v := &wholesaler.WsWholesaler{
 		MchId:        int64(m.GetAggregateRootId()),
 		Rate:         1,
-		ReviewStatus: enum.ReviewPass,
+		ReviewStatus: enum.ReviewApproved,
 		//ReviewStatus: enum.ReviewPending,
 	}
 	_, err := m._wsRepo.SaveWsWholesaler(v, true)

@@ -914,7 +914,7 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 		} else {
 			buf.WriteString(" <> ")
 		}
-		trustOk := strconv.Itoa(int(enum.ReviewPass))
+		trustOk := strconv.Itoa(int(enum.ReviewApproved))
 		buf.WriteString(trustOk)
 	}
 	return buf.String()

@@ -53,7 +53,7 @@ func (i ItemQuery) GetPagingOnShelvesItem(catId int32,
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_snapshot
 		 WHERE item_snapshot.review_status= $1
 		 AND item_snapshot.shelve_state= $2 %s`, where), &total,
-		enum.ReviewPass, item.ShelvesOn)
+		enum.ReviewApproved, item.ShelvesOn)
 	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_snapshot
@@ -62,7 +62,7 @@ func (i ItemQuery) GetPagingOnShelvesItem(catId int32,
 		 ORDER BY %s item_snapshot.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.o.SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, start, end-start)
+			enum.ReviewApproved, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }
@@ -91,7 +91,7 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM item_snapshot
 		 WHERE item_snapshot.review_status= $1
 		 AND item_snapshot.shelve_state= $2 %s`, where), &total,
-		enum.ReviewPass, item.ShelvesOn)
+		enum.ReviewApproved, item.ShelvesOn)
 	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_snapshot
@@ -100,7 +100,7 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
 		 ORDER BY %s item_snapshot.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.o.SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, start, end-start)
+			enum.ReviewApproved, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }
@@ -155,8 +155,8 @@ func (i ItemQuery) GetRandomItem(catIdArr []int, begin, end int, where string) [
 		 AND item_info.shelve_state= ? %s LIMIT ? OFFSET $3`,
 		search, search)
 	i.o.SelectByQuery(&list, sql,
-		enum.ReviewPass, item.ShelvesOn,
-		enum.ReviewPass, item.ShelvesOn, begin, end-begin)
+		enum.ReviewApproved, item.ShelvesOn,
+		enum.ReviewApproved, item.ShelvesOn, begin, end-begin)
 	return list
 }
 
@@ -269,7 +269,7 @@ func (i ItemQuery) GetPagingOnShelvesItemForWholesale(catId int32,
          INNER JOIN product ON product.id = item_info.product_id
 		 WHERE ws_item.review_status= $1
 		 AND ws_item.shelve_state= $2 %s`, where), &total,
-		enum.ReviewPass, item.ShelvesOn)
+		enum.ReviewApproved, item.ShelvesOn)
 	var list []*item.GoodsItem
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM  ws_item
@@ -280,7 +280,7 @@ func (i ItemQuery) GetPagingOnShelvesItemForWholesale(catId int32,
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.o.SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, start, end-start)
+			enum.ReviewApproved, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }
@@ -311,7 +311,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
          INNER JOIN product ON product.id = item_info.product_id
 		 WHERE ws_item.review_status= $1
 		 AND ws_item.shelve_state= $2  %s`, where), &total,
-		enum.ReviewPass, item.ShelvesOn)
+		enum.ReviewApproved, item.ShelvesOn)
 	var list []*item.GoodsItem
 
 	if total > 0 {
@@ -331,7 +331,7 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		 ORDER BY %s item_info.update_time DESC LIMIT $4 OFFSET $3`,
 			where, orderBy)
 		i.o.SelectByQuery(&list, sql,
-			enum.ReviewPass, item.ShelvesOn, start, end-start)
+			enum.ReviewApproved, item.ShelvesOn, start, end-start)
 	}
 	return total, list
 }

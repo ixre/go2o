@@ -20,9 +20,9 @@ const (
 	// 待审核
 	ReviewPending int32 = 1
 	// 审核未通过
-	ReviewReject int32 = 2
+	ReviewReject int32 = 3
 	// 审核成功
-	ReviewPass int32 = 3
+	ReviewApproved int32 = 2
 	// 已复核
 	ReviewConfirm int32 = 4
 	// 审核作废
@@ -31,12 +31,12 @@ const (
 
 // 审核文本字典
 var ReviewTextMap = map[int32]string{
-	ReviewNone:    "未提交",
-	ReviewPending: "待审核",
-	ReviewReject:  "审核未通过",
-	ReviewPass:    "审核通过",
-	ReviewConfirm: "已确认",
-	ReviewAbort:   "已取消",
+	ReviewNone:     "未提交",
+	ReviewPending:  "待审核",
+	ReviewReject:   "审核未通过",
+	ReviewApproved: "审核通过",
+	ReviewConfirm:  "已确认",
+	ReviewAbort:    "已取消",
 }
 
 // 审核状态名称

@@ -337,7 +337,7 @@ func (m *memberImpl) TestFlag(flag int) bool {
 func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 	l := m.repo.GetLevelUpLog(id)
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
-		if l.ReviewStatus == int(enum.ReviewPass) {
+		if l.ReviewStatus == int(enum.ReviewApproved) {
 			return member.ErrLevelUpPass
 		}
 		if l.ReviewStatus == int(enum.ReviewReject) {
@@ -350,7 +350,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 			return member.ErrLevelUpLaterConfirm
 		}
 		if pass {
-			l.ReviewStatus = int(enum.ReviewPass)
+			l.ReviewStatus = int(enum.ReviewApproved)
 			_, err := m.repo.SaveLevelUpLog(l)
 			if err == nil {
 				lv := m.manager.LevelManager().GetLevelById(l.TargetLevel)
@@ -379,7 +379,7 @@ func (m *memberImpl) ConfirmLevelUp(id int) error {
 		if l.ReviewStatus == int(enum.ReviewConfirm) {
 			return member.ErrLevelUpConfirm
 		}
-		if l.ReviewStatus != int(enum.ReviewPass) {
+		if l.ReviewStatus != int(enum.ReviewApproved) {
 			return member.ErrLevelUpReject
 		}
 		l.ReviewStatus = int(enum.ReviewConfirm)

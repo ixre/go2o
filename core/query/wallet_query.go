@@ -1,8 +1,6 @@
 package query
 
 import (
-	"errors"
-
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
@@ -19,8 +17,8 @@ func NewWalletQuery(o fw.ORM) *WalletQuery {
 	return w
 }
 
-func (m *WalletQuery) getWalletId(mchId int) int {
-	v := m.walletRepo.FindBy("user_id = ? and wallet_type = 2", mchId)
+func (m *WalletQuery) GetWalletId(userId int, walletType int) int {
+	v := m.walletRepo.FindBy("user_id = ? and wallet_type = ?", userId, walletType)
 	if v != nil {
 		return int(v.Id)
 	}
@@ -28,11 +26,7 @@ func (m *WalletQuery) getWalletId(mchId int) int {
 }
 
 // QueryPagingAccountLog 查询商户账户钱包明细
-func (m *WalletQuery) QueryMerchantPagingAccountLog(mchId int, p *fw.PagingParams) (*fw.PagingResult, error) {
-	walletId := m.getWalletId(mchId)
-	if walletId == 0 {
-		return nil, errors.New("商户钱包不存在")
-	}
+func (m *WalletQuery) QueryMerchantPagingAccountLog(walletId int, p *fw.PagingParams) (*fw.PagingResult, error) {
 	p.Equal("wallet_id", walletId)
 	p.OrderBy("create_time desc")
 	return m.walletLogRepo.QueryPaging(p)
