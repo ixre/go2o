@@ -61,6 +61,11 @@ func (s serviceUtil) result(err error) *proto.Result {
 }
 
 // 返回自定义编码的结果
+func (s serviceUtil) resultWithCodeV2(code int, message string) *proto.TxResult {
+	return &proto.TxResult{Code: int32(code), Message: message, Data: map[string]string{}}
+}
+
+// 返回自定义编码的结果
 func (s serviceUtil) resultWithCode(code int, message string) *proto.Result {
 	return &proto.Result{ErrCode: int32(code), ErrMsg: message, Data: map[string]string{}}
 }
@@ -86,10 +91,10 @@ func (s serviceUtil) success(data map[string]string) *proto.Result {
 // 返回成功的结果
 func (s serviceUtil) txResult(txId int, data map[string]string) *proto.TxResult {
 	return &proto.TxResult{
-		Code: 0,
+		Code:    0,
 		Message: "",
-		TxId: int64(txId),
-		Data: data,
+		TxId:    int64(txId),
+		Data:    data,
 	}
 }
 

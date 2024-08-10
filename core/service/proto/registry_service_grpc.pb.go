@@ -42,11 +42,11 @@ type RegistryServiceClient interface {
 	// * 获取注册表键值,key
 	GetValue(ctx context.Context, in *String, opts ...grpc.CallOption) (*RegistryValueResponse, error)
 	// * 更新注册表值
-	UpdateValue(ctx context.Context, in *RegistryPair, opts ...grpc.CallOption) (*Result, error)
+	UpdateValue(ctx context.Context, in *RegistryPair, opts ...grpc.CallOption) (*TxResult, error)
 	// * 获取键值存储数据字典,keys
 	GetValues(ctx context.Context, in *StringArray, opts ...grpc.CallOption) (*StringMap, error)
 	// * 更新注册表键值
-	UpdateValues(ctx context.Context, in *StringMap, opts ...grpc.CallOption) (*Result, error)
+	UpdateValues(ctx context.Context, in *StringMap, opts ...grpc.CallOption) (*TxResult, error)
 	// * 搜索键值
 	Search(ctx context.Context, in *RegistrySearchRequest, opts ...grpc.CallOption) (*StringMap, error)
 	// * 按键前缀获取键数据,prefix
@@ -54,7 +54,7 @@ type RegistryServiceClient interface {
 	// * 搜索注册表,keyword
 	SearchRegistry(ctx context.Context, in *String, opts ...grpc.CallOption) (*RegistriesResponse, error)
 	// * 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法
-	CreateRegistry(ctx context.Context, in *RegistryCreateRequest, opts ...grpc.CallOption) (*Result, error)
+	CreateRegistry(ctx context.Context, in *RegistryCreateRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type registryServiceClient struct {
@@ -92,8 +92,8 @@ func (c *registryServiceClient) GetValue(ctx context.Context, in *String, opts .
 	return out, nil
 }
 
-func (c *registryServiceClient) UpdateValue(ctx context.Context, in *RegistryPair, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *registryServiceClient) UpdateValue(ctx context.Context, in *RegistryPair, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RegistryService_UpdateValue_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -110,8 +110,8 @@ func (c *registryServiceClient) GetValues(ctx context.Context, in *StringArray, 
 	return out, nil
 }
 
-func (c *registryServiceClient) UpdateValues(ctx context.Context, in *StringMap, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *registryServiceClient) UpdateValues(ctx context.Context, in *StringMap, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RegistryService_UpdateValues_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -146,8 +146,8 @@ func (c *registryServiceClient) SearchRegistry(ctx context.Context, in *String, 
 	return out, nil
 }
 
-func (c *registryServiceClient) CreateRegistry(ctx context.Context, in *RegistryCreateRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *registryServiceClient) CreateRegistry(ctx context.Context, in *RegistryCreateRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RegistryService_CreateRegistry_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -166,11 +166,11 @@ type RegistryServiceServer interface {
 	// * 获取注册表键值,key
 	GetValue(context.Context, *String) (*RegistryValueResponse, error)
 	// * 更新注册表值
-	UpdateValue(context.Context, *RegistryPair) (*Result, error)
+	UpdateValue(context.Context, *RegistryPair) (*TxResult, error)
 	// * 获取键值存储数据字典,keys
 	GetValues(context.Context, *StringArray) (*StringMap, error)
 	// * 更新注册表键值
-	UpdateValues(context.Context, *StringMap) (*Result, error)
+	UpdateValues(context.Context, *StringMap) (*TxResult, error)
 	// * 搜索键值
 	Search(context.Context, *RegistrySearchRequest) (*StringMap, error)
 	// * 按键前缀获取键数据,prefix
@@ -178,7 +178,7 @@ type RegistryServiceServer interface {
 	// * 搜索注册表,keyword
 	SearchRegistry(context.Context, *String) (*RegistriesResponse, error)
 	// * 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法
-	CreateRegistry(context.Context, *RegistryCreateRequest) (*Result, error)
+	CreateRegistry(context.Context, *RegistryCreateRequest) (*TxResult, error)
 	mustEmbedUnimplementedRegistryServiceServer()
 }
 
@@ -195,13 +195,13 @@ func (UnimplementedRegistryServiceServer) GetRegistry(context.Context, *String) 
 func (UnimplementedRegistryServiceServer) GetValue(context.Context, *String) (*RegistryValueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValue not implemented")
 }
-func (UnimplementedRegistryServiceServer) UpdateValue(context.Context, *RegistryPair) (*Result, error) {
+func (UnimplementedRegistryServiceServer) UpdateValue(context.Context, *RegistryPair) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValue not implemented")
 }
 func (UnimplementedRegistryServiceServer) GetValues(context.Context, *StringArray) (*StringMap, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValues not implemented")
 }
-func (UnimplementedRegistryServiceServer) UpdateValues(context.Context, *StringMap) (*Result, error) {
+func (UnimplementedRegistryServiceServer) UpdateValues(context.Context, *StringMap) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateValues not implemented")
 }
 func (UnimplementedRegistryServiceServer) Search(context.Context, *RegistrySearchRequest) (*StringMap, error) {
@@ -213,7 +213,7 @@ func (UnimplementedRegistryServiceServer) FindRegistries(context.Context, *Strin
 func (UnimplementedRegistryServiceServer) SearchRegistry(context.Context, *String) (*RegistriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchRegistry not implemented")
 }
-func (UnimplementedRegistryServiceServer) CreateRegistry(context.Context, *RegistryCreateRequest) (*Result, error) {
+func (UnimplementedRegistryServiceServer) CreateRegistry(context.Context, *RegistryCreateRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRegistry not implemented")
 }
 func (UnimplementedRegistryServiceServer) mustEmbedUnimplementedRegistryServiceServer() {}

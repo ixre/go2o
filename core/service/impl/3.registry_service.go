@@ -51,7 +51,7 @@ func (s *registryService) GetValue(_ context.Context, key *proto.String) (*proto
 	return rsp, nil
 }
 
-func (s *registryService) UpdateValue(_ context.Context, pair *proto.RegistryPair) (r *proto.Result, err error) {
+func (s *registryService) UpdateValue(_ context.Context, pair *proto.RegistryPair) (r *proto.TxResult, err error) {
 	e := s.registryRepo.Get(pair.Key)
 	if e == nil {
 		err = errors.New("not exists key")
@@ -61,9 +61,9 @@ func (s *registryService) UpdateValue(_ context.Context, pair *proto.RegistryPai
 		}
 	}
 	if err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.successV2(nil), nil
 }
 
 // 获取键值存储数据
@@ -130,9 +130,9 @@ func (s *registryService) parseRegistryDto(a registry.Registry) *proto.SRegistry
 }
 
 // 创建用户自定义注册项
-func (s *registryService) CreateRegistry(_ context.Context, r *proto.RegistryCreateRequest) (*proto.Result, error) {
+func (s *registryService) CreateRegistry(_ context.Context, r *proto.RegistryCreateRequest) (*proto.TxResult, error) {
 	if s.registryRepo.Get(r.Key) != nil {
-		return s.resultWithCode(-1, "registry is exist"), nil
+		return s.resultWithCodeV2(-1, "registry is exist"), nil
 	}
 	rv := &registry.Registry{
 		Key:          r.Key,
@@ -146,13 +146,13 @@ func (s *registryService) CreateRegistry(_ context.Context, r *proto.RegistryCre
 	ir := s.registryRepo.Create(rv)
 	err := ir.Save()
 	if err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.successV2(nil), nil
 }
 
 // UpdateValues 更新注册表数据
-func (s *registryService) UpdateValues(_ context.Context, registries *proto.StringMap) (*proto.Result, error) {
+func (s *registryService) UpdateValues(_ context.Context, registries *proto.StringMap) (*proto.TxResult, error) {
 	for k, v := range registries.Value {
 		if ir := s.registryRepo.Get(k); ir != nil {
 			err := ir.Update(v)
@@ -160,9 +160,9 @@ func (s *registryService) UpdateValues(_ context.Context, registries *proto.Stri
 				err = ir.Save()
 			}
 			if err != nil {
-				return s.error(err), nil
+				return s.errorV2(err), nil
 			}
 		}
 	}
-	return s.success(map[string]string{}), nil
+	return s.successV2(map[string]string{}), nil
 }
