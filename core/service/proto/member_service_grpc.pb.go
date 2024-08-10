@@ -45,7 +45,7 @@ const (
 	MemberService_GrantFlag_FullMethodName                  = "/MemberService/GrantFlag"
 	MemberService_Complex_FullMethodName                    = "/MemberService/Complex"
 	MemberService_SendCode_FullMethodName                   = "/MemberService/SendCode"
-	MemberService_CompareCode_FullMethodName                = "/MemberService/CompareCode"
+	MemberService_CompareCode_FullMethodName                = "/MemberService/compareCode"
 	MemberService_ReceiptsCodes_FullMethodName              = "/MemberService/ReceiptsCodes"
 	MemberService_SaveReceiptsCode_FullMethodName           = "/MemberService/SaveReceiptsCode"
 	MemberService_SetPayPriority_FullMethodName             = "/MemberService/SetPayPriority"
@@ -157,19 +157,19 @@ type MemberServiceClient interface {
 	// 移除绑定的银行卡
 	RemoveBankCard(ctx context.Context, in *BankCardRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 激活会员,memberId
-	Active(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*Result, error)
+	Active(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 锁定,minutes锁定分钟数,默认:-1永久锁定
-	Lock(ctx context.Context, in *LockRequest, opts ...grpc.CallOption) (*Result, error)
+	Lock(ctx context.Context, in *LockRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 解锁会员
-	Unlock(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*Result, error)
+	Unlock(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 标志赋值, 如果flag小于零, 则异或运算
-	GrantFlag(ctx context.Context, in *GrantFlagRequest, opts ...grpc.CallOption) (*Result, error)
+	GrantFlag(ctx context.Context, in *GrantFlagRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 获取会员汇总信息,memberId
 	Complex(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*SComplexMember, error)
 	// * 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
 	SendCode(ctx context.Context, in *SendCodeRequest, opts ...grpc.CallOption) (*SendCodeResponse, error)
 	// * 比较验证码是否正确
-	CompareCode(ctx context.Context, in *CompareCodeRequest, opts ...grpc.CallOption) (*Result, error)
+	CompareCode(ctx context.Context, in *CompareCodeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 获取收款码
 	ReceiptsCodes(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*SReceiptsCodeListResponse, error)
 	// * 保存收款码
@@ -181,27 +181,27 @@ type MemberServiceClient interface {
 	// * 获取会员等级信息
 	MemberLevelInfo(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*SMemberLevelInfo, error)
 	// 更改会员等级
-	ChangeLevel(ctx context.Context, in *ChangeLevelRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangeLevel(ctx context.Context, in *ChangeLevelRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 审核升级申请
 	ReviewLevelUpRequest(ctx context.Context, in *LevelUpReviewRequest, opts ...grpc.CallOption) (*Result, error)
 	// 确认升级申请
 	ConfirmLevelUpRequest(ctx context.Context, in *LevelUpConfirmRequest, opts ...grpc.CallOption) (*Result, error)
 	// 更改手机号码，不验证手机格式
-	ChangePhone(ctx context.Context, in *ChangePhoneRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangePhone(ctx context.Context, in *ChangePhoneRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 更改用户名
-	ChangeUsername(ctx context.Context, in *ChangeUsernameRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangeUsername(ctx context.Context, in *ChangeUsernameRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 更改昵称
-	ChangeNickname(ctx context.Context, in *ChangeNicknameRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangeNickname(ctx context.Context, in *ChangeNicknameRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 上传会员头像
-	ChangeProfilePhoto(ctx context.Context, in *ChangeProfilePhotoRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangeProfilePhoto(ctx context.Context, in *ChangeProfilePhotoRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 更改密码
-	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 更改交易密码
-	ChangeTradePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangeTradePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 检查资料是否完善
 	CheckProfileCompleted(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*Bool, error)
 	// * 设置或更改邀请人
-	SetInviter(ctx context.Context, in *SetInviterRequest, opts ...grpc.CallOption) (*Result, error)
+	SetInviter(ctx context.Context, in *SetInviterRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 升级为高级会员
 	Premium(ctx context.Context, in *PremiumRequest, opts ...grpc.CallOption) (*Result, error)
 	// 获取会员的会员Token,reset表示是否重置token
@@ -468,8 +468,8 @@ func (c *memberServiceClient) RemoveBankCard(ctx context.Context, in *BankCardRe
 	return out, nil
 }
 
-func (c *memberServiceClient) Active(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) Active(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_Active_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -477,8 +477,8 @@ func (c *memberServiceClient) Active(ctx context.Context, in *MemberIdRequest, o
 	return out, nil
 }
 
-func (c *memberServiceClient) Lock(ctx context.Context, in *LockRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) Lock(ctx context.Context, in *LockRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_Lock_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -486,8 +486,8 @@ func (c *memberServiceClient) Lock(ctx context.Context, in *LockRequest, opts ..
 	return out, nil
 }
 
-func (c *memberServiceClient) Unlock(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) Unlock(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_Unlock_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -495,8 +495,8 @@ func (c *memberServiceClient) Unlock(ctx context.Context, in *MemberIdRequest, o
 	return out, nil
 }
 
-func (c *memberServiceClient) GrantFlag(ctx context.Context, in *GrantFlagRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) GrantFlag(ctx context.Context, in *GrantFlagRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_GrantFlag_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -522,8 +522,8 @@ func (c *memberServiceClient) SendCode(ctx context.Context, in *SendCodeRequest,
 	return out, nil
 }
 
-func (c *memberServiceClient) CompareCode(ctx context.Context, in *CompareCodeRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) CompareCode(ctx context.Context, in *CompareCodeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_CompareCode_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -576,8 +576,8 @@ func (c *memberServiceClient) MemberLevelInfo(ctx context.Context, in *MemberIdR
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangeLevel(ctx context.Context, in *ChangeLevelRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) ChangeLevel(ctx context.Context, in *ChangeLevelRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_ChangeLevel_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -603,8 +603,8 @@ func (c *memberServiceClient) ConfirmLevelUpRequest(ctx context.Context, in *Lev
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangePhone(ctx context.Context, in *ChangePhoneRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) ChangePhone(ctx context.Context, in *ChangePhoneRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_ChangePhone_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -612,8 +612,8 @@ func (c *memberServiceClient) ChangePhone(ctx context.Context, in *ChangePhoneRe
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangeUsername(ctx context.Context, in *ChangeUsernameRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) ChangeUsername(ctx context.Context, in *ChangeUsernameRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_ChangeUsername_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -621,8 +621,8 @@ func (c *memberServiceClient) ChangeUsername(ctx context.Context, in *ChangeUser
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangeNickname(ctx context.Context, in *ChangeNicknameRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) ChangeNickname(ctx context.Context, in *ChangeNicknameRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_ChangeNickname_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -630,8 +630,8 @@ func (c *memberServiceClient) ChangeNickname(ctx context.Context, in *ChangeNick
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangeProfilePhoto(ctx context.Context, in *ChangeProfilePhotoRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) ChangeProfilePhoto(ctx context.Context, in *ChangeProfilePhotoRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_ChangeProfilePhoto_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -639,8 +639,8 @@ func (c *memberServiceClient) ChangeProfilePhoto(ctx context.Context, in *Change
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_ChangePassword_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -648,8 +648,8 @@ func (c *memberServiceClient) ChangePassword(ctx context.Context, in *ChangePass
 	return out, nil
 }
 
-func (c *memberServiceClient) ChangeTradePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) ChangeTradePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_ChangeTradePassword_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -666,8 +666,8 @@ func (c *memberServiceClient) CheckProfileCompleted(ctx context.Context, in *Int
 	return out, nil
 }
 
-func (c *memberServiceClient) SetInviter(ctx context.Context, in *SetInviterRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *memberServiceClient) SetInviter(ctx context.Context, in *SetInviterRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_SetInviter_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1072,19 +1072,19 @@ type MemberServiceServer interface {
 	// 移除绑定的银行卡
 	RemoveBankCard(context.Context, *BankCardRequest) (*Result, error)
 	// * 激活会员,memberId
-	Active(context.Context, *MemberIdRequest) (*Result, error)
+	Active(context.Context, *MemberIdRequest) (*TxResult, error)
 	// * 锁定,minutes锁定分钟数,默认:-1永久锁定
-	Lock(context.Context, *LockRequest) (*Result, error)
+	Lock(context.Context, *LockRequest) (*TxResult, error)
 	// * 解锁会员
-	Unlock(context.Context, *MemberIdRequest) (*Result, error)
+	Unlock(context.Context, *MemberIdRequest) (*TxResult, error)
 	// * 标志赋值, 如果flag小于零, 则异或运算
-	GrantFlag(context.Context, *GrantFlagRequest) (*Result, error)
+	GrantFlag(context.Context, *GrantFlagRequest) (*TxResult, error)
 	// * 获取会员汇总信息,memberId
 	Complex(context.Context, *MemberIdRequest) (*SComplexMember, error)
 	// * 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取
 	SendCode(context.Context, *SendCodeRequest) (*SendCodeResponse, error)
 	// * 比较验证码是否正确
-	CompareCode(context.Context, *CompareCodeRequest) (*Result, error)
+	CompareCode(context.Context, *CompareCodeRequest) (*TxResult, error)
 	// * 获取收款码
 	ReceiptsCodes(context.Context, *MemberIdRequest) (*SReceiptsCodeListResponse, error)
 	// * 保存收款码
@@ -1096,27 +1096,27 @@ type MemberServiceServer interface {
 	// * 获取会员等级信息
 	MemberLevelInfo(context.Context, *MemberIdRequest) (*SMemberLevelInfo, error)
 	// 更改会员等级
-	ChangeLevel(context.Context, *ChangeLevelRequest) (*Result, error)
+	ChangeLevel(context.Context, *ChangeLevelRequest) (*TxResult, error)
 	// 审核升级申请
 	ReviewLevelUpRequest(context.Context, *LevelUpReviewRequest) (*Result, error)
 	// 确认升级申请
 	ConfirmLevelUpRequest(context.Context, *LevelUpConfirmRequest) (*Result, error)
 	// 更改手机号码，不验证手机格式
-	ChangePhone(context.Context, *ChangePhoneRequest) (*Result, error)
+	ChangePhone(context.Context, *ChangePhoneRequest) (*TxResult, error)
 	// 更改用户名
-	ChangeUsername(context.Context, *ChangeUsernameRequest) (*Result, error)
+	ChangeUsername(context.Context, *ChangeUsernameRequest) (*TxResult, error)
 	// 更改昵称
-	ChangeNickname(context.Context, *ChangeNicknameRequest) (*Result, error)
+	ChangeNickname(context.Context, *ChangeNicknameRequest) (*TxResult, error)
 	// 上传会员头像
-	ChangeProfilePhoto(context.Context, *ChangeProfilePhotoRequest) (*Result, error)
+	ChangeProfilePhoto(context.Context, *ChangeProfilePhotoRequest) (*TxResult, error)
 	// * 更改密码
-	ChangePassword(context.Context, *ChangePasswordRequest) (*Result, error)
+	ChangePassword(context.Context, *ChangePasswordRequest) (*TxResult, error)
 	// * 更改交易密码
-	ChangeTradePassword(context.Context, *ChangePasswordRequest) (*Result, error)
+	ChangeTradePassword(context.Context, *ChangePasswordRequest) (*TxResult, error)
 	// 检查资料是否完善
 	CheckProfileCompleted(context.Context, *Int64) (*Bool, error)
 	// * 设置或更改邀请人
-	SetInviter(context.Context, *SetInviterRequest) (*Result, error)
+	SetInviter(context.Context, *SetInviterRequest) (*TxResult, error)
 	// 升级为高级会员
 	Premium(context.Context, *PremiumRequest) (*Result, error)
 	// 获取会员的会员Token,reset表示是否重置token
@@ -1260,16 +1260,16 @@ func (UnimplementedMemberServiceServer) AddBankCard(context.Context, *BankCardAd
 func (UnimplementedMemberServiceServer) RemoveBankCard(context.Context, *BankCardRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveBankCard not implemented")
 }
-func (UnimplementedMemberServiceServer) Active(context.Context, *MemberIdRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) Active(context.Context, *MemberIdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Active not implemented")
 }
-func (UnimplementedMemberServiceServer) Lock(context.Context, *LockRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) Lock(context.Context, *LockRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Lock not implemented")
 }
-func (UnimplementedMemberServiceServer) Unlock(context.Context, *MemberIdRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) Unlock(context.Context, *MemberIdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unlock not implemented")
 }
-func (UnimplementedMemberServiceServer) GrantFlag(context.Context, *GrantFlagRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) GrantFlag(context.Context, *GrantFlagRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GrantFlag not implemented")
 }
 func (UnimplementedMemberServiceServer) Complex(context.Context, *MemberIdRequest) (*SComplexMember, error) {
@@ -1278,7 +1278,7 @@ func (UnimplementedMemberServiceServer) Complex(context.Context, *MemberIdReques
 func (UnimplementedMemberServiceServer) SendCode(context.Context, *SendCodeRequest) (*SendCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendCode not implemented")
 }
-func (UnimplementedMemberServiceServer) CompareCode(context.Context, *CompareCodeRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) CompareCode(context.Context, *CompareCodeRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompareCode not implemented")
 }
 func (UnimplementedMemberServiceServer) ReceiptsCodes(context.Context, *MemberIdRequest) (*SReceiptsCodeListResponse, error) {
@@ -1296,7 +1296,7 @@ func (UnimplementedMemberServiceServer) CheckProfileComplete(context.Context, *M
 func (UnimplementedMemberServiceServer) MemberLevelInfo(context.Context, *MemberIdRequest) (*SMemberLevelInfo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MemberLevelInfo not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangeLevel(context.Context, *ChangeLevelRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) ChangeLevel(context.Context, *ChangeLevelRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeLevel not implemented")
 }
 func (UnimplementedMemberServiceServer) ReviewLevelUpRequest(context.Context, *LevelUpReviewRequest) (*Result, error) {
@@ -1305,28 +1305,28 @@ func (UnimplementedMemberServiceServer) ReviewLevelUpRequest(context.Context, *L
 func (UnimplementedMemberServiceServer) ConfirmLevelUpRequest(context.Context, *LevelUpConfirmRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfirmLevelUpRequest not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangePhone(context.Context, *ChangePhoneRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) ChangePhone(context.Context, *ChangePhoneRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangePhone not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangeUsername(context.Context, *ChangeUsernameRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) ChangeUsername(context.Context, *ChangeUsernameRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeUsername not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangeNickname(context.Context, *ChangeNicknameRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) ChangeNickname(context.Context, *ChangeNicknameRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeNickname not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangeProfilePhoto(context.Context, *ChangeProfilePhotoRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) ChangeProfilePhoto(context.Context, *ChangeProfilePhotoRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeProfilePhoto not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangePassword(context.Context, *ChangePasswordRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) ChangePassword(context.Context, *ChangePasswordRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
 }
-func (UnimplementedMemberServiceServer) ChangeTradePassword(context.Context, *ChangePasswordRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) ChangeTradePassword(context.Context, *ChangePasswordRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeTradePassword not implemented")
 }
 func (UnimplementedMemberServiceServer) CheckProfileCompleted(context.Context, *Int64) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckProfileCompleted not implemented")
 }
-func (UnimplementedMemberServiceServer) SetInviter(context.Context, *SetInviterRequest) (*Result, error) {
+func (UnimplementedMemberServiceServer) SetInviter(context.Context, *SetInviterRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetInviter not implemented")
 }
 func (UnimplementedMemberServiceServer) Premium(context.Context, *PremiumRequest) (*Result, error) {
@@ -3026,7 +3026,7 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemberService_SendCode_Handler,
 		},
 		{
-			MethodName: "CompareCode",
+			MethodName: "compareCode",
 			Handler:    _MemberService_CompareCode_Handler,
 		},
 		{

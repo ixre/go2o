@@ -190,18 +190,6 @@ func (m *merchantService) GetAccount(_ context.Context, id *proto.MerchantId) (*
 	return nil, fmt.Errorf("no such merchant account")
 }
 
-// SetEnabled 设置商户启用或停用
-func (m *merchantService) SetEnabled(_ context.Context, r *proto.MerchantDisableRequest) (*proto.Result, error) {
-	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
-	var err error
-	if mch == nil {
-		err = merchant.ErrNoSuchMerchant
-	} else {
-		err = mch.SetEnabled(r.Enabled)
-	}
-	return m.error(err), nil
-}
-
 // GetMerchantIdByHost 根据主机查询商户编号
 func (m *merchantService) GetMerchantIdByHost(_ context.Context, host *proto.String) (*proto.Int64, error) {
 	id := m._query.QueryMerchantIdByHost(host.Value)
@@ -249,8 +237,23 @@ func (m *merchantService) GetShopId(_ context.Context, id *proto.MerchantId) (*p
 	return &proto.Int64{}, nil
 }
 
+// UpdateLockStatus implements proto.MerchantServiceServer.
+func (m *merchantService) UpdateLockStatus(_ context.Context, req *proto.MerchantLockStatusRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MerchantId))
+	if mch != nil {
+		if req.Lock {
+			err := mch.Lock()
+			return m.errorV2(err), nil
+		} else {
+			err := mch.Unlock()
+			return m.errorV2(err), nil
+		}
+	}
+	return m.errorV2(merchant.ErrNoSuchMerchant), nil
+}
+
 // ChangePassword 修改密码
-func (m *merchantService) ChangePassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
+func (m *merchantService) ChangePassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
 	if mch == nil {
@@ -264,7 +267,7 @@ func (m *merchantService) ChangePassword(_ context.Context, r *proto.ModifyMerch
 			err = mch.ProfileManager().ChangePassword(r.NewPassword, r.OldPassword)
 		}
 	}
-	return m.error(err), nil
+	return m.errorV2(err), nil
 }
 
 // GetApiInfo 获取API接口
@@ -890,7 +893,7 @@ func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto
 		MemberId:      src.MemberId,
 		MailAddr:      src.Username,
 		IsSelf:        src.SelfSales,
-		Flag:          0,
+		Flag:          int32(src.Flag),
 		Level:         src.Level,
 		Province:      src.Province,
 		City:          src.City,

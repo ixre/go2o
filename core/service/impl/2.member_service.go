@@ -194,33 +194,33 @@ func (s *memberService) RemoveToken(_ context.Context, id *proto.MemberIdRequest
 }
 
 // ChangePhone 更改手机号码，不验证手机格式
-func (s *memberService) ChangePhone(_ context.Context, r *proto.ChangePhoneRequest) (*proto.Result, error) {
+func (s *memberService) ChangePhone(_ context.Context, r *proto.ChangePhoneRequest) (*proto.TxResult, error) {
 	err := s.changePhone(r.MemberId, r.Phone)
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 // ChangeNickname 更改昵称
-func (s *memberService) ChangeNickname(_ context.Context, req *proto.ChangeNicknameRequest) (*proto.Result, error) {
+func (s *memberService) ChangeNickname(_ context.Context, req *proto.ChangeNicknameRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(req.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	err := m.Profile().ChangeNickname(req.Nickname, req.LimitTime)
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 // ChangeInviterId 更改邀请人
-func (s *memberService) SetInviter(_ context.Context, r *proto.SetInviterRequest) (*proto.Result, error) {
+func (s *memberService) SetInviter(_ context.Context, r *proto.SetInviterRequest) (*proto.TxResult, error) {
 	im := s.repo.GetMember(r.MemberId)
 	if im == nil {
-		return s.result(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	inviterId := s.repo.GetMemberIdByCode(r.InviterCode)
 	if inviterId <= 0 {
-		return s.result(member.ErrInvalidInviter), nil
+		return s.errorV2(member.ErrInvalidInviter), nil
 	}
 	err := im.BindInviter(inviterId, r.AllowChange)
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 // RemoveFavorite 取消收藏
@@ -394,19 +394,19 @@ func (s *memberService) SendCode(_ context.Context, r *proto.SendCodeRequest) (*
 }
 
 // CompareCode 比较验证码是否正确
-func (s *memberService) CompareCode(_ context.Context, r *proto.CompareCodeRequest) (*proto.Result, error) {
+func (s *memberService) CompareCode(_ context.Context, r *proto.CompareCodeRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	if err := m.CompareCode(r.Code); err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.successV2(nil), nil
 }
 
 // ChangeUsername 更改会员用户名
-func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUsernameRequest) (*proto.Result, error) {
+func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUsernameRequest) (*proto.TxResult, error) {
 	var err error
 	m := s.repo.GetMember(int64(r.MemberId))
 	if m == nil {
@@ -415,10 +415,10 @@ func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUsernam
 		log.Println("222", r.Username)
 
 		if err = m.ChangeUsername(r.Username); err == nil {
-			return s.success(nil), nil
+			return s.successV2(nil), nil
 		}
 	}
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 // MemberLevelInfo 获取会员等级信息
@@ -446,14 +446,14 @@ func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.MemberIdReq
 }
 
 // ChangeLevel 更改会员等级
-func (s *memberService) ChangeLevel(_ context.Context, r *proto.ChangeLevelRequest) (*proto.Result, error) {
+func (s *memberService) ChangeLevel(_ context.Context, r *proto.ChangeLevelRequest) (*proto.TxResult, error) {
 	if len(r.LevelCode) > 0 {
 		if r.Level != 0 {
-			return s.error(errors.New("levelCode和level不能同时设置")), nil
+			return s.errorV2(errors.New("levelCode和level不能同时设置")), nil
 		}
 		lv := s.repo.GetManager().LevelManager().GetLevelByProgramSign(r.LevelCode)
 		if lv == nil {
-			return s.error(fmt.Errorf("no such level, code=%s", r.LevelCode)), nil
+			return s.errorV2(fmt.Errorf("no such level, code=%s", r.LevelCode)), nil
 		}
 		r.Level = int32(lv.Id)
 	}
@@ -464,7 +464,7 @@ func (s *memberService) ChangeLevel(_ context.Context, r *proto.ChangeLevelReque
 	} else {
 		err = m.ChangeLevel(int(r.Level), int(r.PaymentOrderId), r.Review)
 	}
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 func (s *memberService) ReviewLevelUpRequest(_ context.Context, r *proto.LevelUpReviewRequest) (*proto.Result, error) {
@@ -490,13 +490,13 @@ func (s *memberService) ConfirmLevelUpRequest(_ context.Context, r *proto.LevelU
 }
 
 // ChangeProfilePhoto 上传会员头像
-func (s *memberService) ChangeProfilePhoto(_ context.Context, r *proto.ChangeProfilePhotoRequest) (*proto.Result, error) {
+func (s *memberService) ChangeProfilePhoto(_ context.Context, r *proto.ChangeProfilePhotoRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	err := m.Profile().ChangeProfilePhoto(r.ProfilePhotoUrl)
-	return s.result(err), nil
+	return s.errorV2(err), nil
 }
 
 // Register 注册会员
@@ -614,41 +614,41 @@ func (s *memberService) GetInviteCount(_ context.Context, req *proto.MemberIdReq
 }
 
 // Active 激活会员
-func (s *memberService) Active(_ context.Context, id *proto.MemberIdRequest) (*proto.Result, error) {
+func (s *memberService) Active(_ context.Context, id *proto.MemberIdRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(id.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	err := m.Active()
 	if err == nil {
 		_, err = m.Save()
 	}
-	return s.error(err), nil
+	return s.errorV2(err), nil
 
 }
 
 // Lock 锁定/解锁会员
-func (s *memberService) Lock(_ context.Context, r *proto.LockRequest) (*proto.Result, error) {
+func (s *memberService) Lock(_ context.Context, r *proto.LockRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	if err := m.Lock(int(r.Minutes), r.Remark); err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.successV2(nil), nil
 }
 
 // 解锁会员
-func (s *memberService) Unlock(_ context.Context, id *proto.MemberIdRequest) (*proto.Result, error) {
+func (s *memberService) Unlock(_ context.Context, id *proto.MemberIdRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(id.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	if err := m.Unlock(); err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.successV2(nil), nil
 }
 
 // CheckProfileCompleted 判断资料是否完善
@@ -685,54 +685,54 @@ func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.Member
 }
 
 // ChangePassword 更改密码
-func (s *memberService) ChangePassword(_ context.Context, r *proto.ChangePasswordRequest) (*proto.Result, error) {
+func (s *memberService) ChangePassword(_ context.Context, r *proto.ChangePasswordRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	v := m.GetValue()
 	pwd := r.NewPassword
 	old := r.OldPassword
 	if l := len(r.NewPassword); l != 32 {
-		return s.error(de.ErrNotMD5Format), nil
+		return s.errorV2(de.ErrNotMD5Format), nil
 	} else {
 		pwd = domain.MemberSha1Pwd(pwd, v.Salt)
 	}
 	if l := len(old); l > 0 && l != 32 {
-		return s.error(de.ErrNotMD5Format), nil
+		return s.errorV2(de.ErrNotMD5Format), nil
 	} else {
 		old = domain.MemberSha1Pwd(old, v.Salt)
 	}
 	err := m.Profile().ChangePassword(pwd, old)
 	if err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.successV2(nil), nil
 }
 
 // ChangeTradePassword 更改交易密码
-func (s *memberService) ChangeTradePassword(_ context.Context, r *proto.ChangePasswordRequest) (*proto.Result, error) {
+func (s *memberService) ChangeTradePassword(_ context.Context, r *proto.ChangePasswordRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	pwd, old := r.NewPassword, r.OldPassword
 	v := m.GetValue()
 	if l := len(pwd); l != 32 {
-		return s.error(de.ErrNotMD5Format), nil
+		return s.errorV2(de.ErrNotMD5Format), nil
 	} else {
 		pwd = domain.TradePassword(pwd, v.Salt)
 	}
 	if l := len(old); l > 0 && l != 32 {
-		return s.error(de.ErrNotMD5Format), nil
+		return s.errorV2(de.ErrNotMD5Format), nil
 	} else {
 		old = domain.TradePassword(old, v.Salt)
 	}
 	err := m.Profile().ChangeTradePassword(pwd, old)
 	if err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.successV2(nil), nil
 }
 
 // 登录，返回结果(Result_)和会员编号(Id);
@@ -1225,15 +1225,15 @@ func (s *memberService) GetMemberLatestUpdateTime(memberId int64) int64 {
 }
 
 // GrantFlag 标志赋值, 如果flag小于零, 则异或运算
-func (s *memberService) GrantFlag(_ context.Context, r *proto.GrantFlagRequest) (*proto.Result, error) {
+func (s *memberService) GrantFlag(_ context.Context, r *proto.GrantFlagRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
-		return s.error(member.ErrNoSuchMember), nil
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	if err := m.GrantFlag(int(r.Flag)); err != nil {
-		return s.error(err), nil
+		return s.errorV2(err), nil
 	}
-	return s.success(nil), nil
+	return s.successV2(nil), nil
 }
 
 // Complex 获取会员汇总信息

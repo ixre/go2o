@@ -96,7 +96,7 @@ type SystemServiceClient interface {
 	FlushSuperPwd(ctx context.Context, in *UserPwd, opts ...grpc.CallOption) (*Result, error)
 	// 创建同步登录的地址,returnUrl
 	GetSyncLoginUrl(ctx context.Context, in *String, opts ...grpc.CallOption) (*String, error)
-	// 获取地区名称
+	// 获取地区名称,如:获取多个城市对应的名称
 	GetDistrictNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error)
 	// 获取省市区字符串
 	GetAreaString(ctx context.Context, in *AreaStringRequest, opts ...grpc.CallOption) (*String, error)
@@ -427,7 +427,7 @@ type SystemServiceServer interface {
 	FlushSuperPwd(context.Context, *UserPwd) (*Result, error)
 	// 创建同步登录的地址,returnUrl
 	GetSyncLoginUrl(context.Context, *String) (*String, error)
-	// 获取地区名称
+	// 获取地区名称,如:获取多个城市对应的名称
 	GetDistrictNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error)
 	// 获取省市区字符串
 	GetAreaString(context.Context, *AreaStringRequest) (*String, error)

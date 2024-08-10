@@ -88,16 +88,16 @@ service MemberService {
     rpc RemoveBankCard (BankCardRequest) returns (Result) {
     }
     /** 激活会员,memberId */
-    rpc Active (MemberIdRequest) returns (Result) {
+    rpc Active (MemberIdRequest) returns (TxResult) {
     }
     /** 锁定,minutes锁定分钟数,默认:-1永久锁定 */
-    rpc Lock (LockRequest) returns (Result) {
+    rpc Lock (LockRequest) returns (TxResult) {
     }
     /** 解锁会员 */
-    rpc Unlock (MemberIdRequest) returns (Result) {
+    rpc Unlock (MemberIdRequest) returns (TxResult) {
     }
     /** 标志赋值, 如果flag小于零, 则异或运算 */
-    rpc GrantFlag (GrantFlagRequest) returns (Result) {
+    rpc GrantFlag (GrantFlagRequest) returns (TxResult) {
     }
     /** 获取会员汇总信息,memberId */
     rpc Complex (MemberIdRequest) returns (SComplexMember) {
@@ -106,7 +106,7 @@ service MemberService {
     rpc SendCode (SendCodeRequest) returns (SendCodeResponse) {
     }
     /** 比较验证码是否正确 */
-    rpc CompareCode (CompareCodeRequest) returns (Result) {
+    rpc compareCode (CompareCodeRequest) returns (TxResult) {
     }
     /** 获取收款码 */
     rpc ReceiptsCodes (MemberIdRequest) returns (SReceiptsCodeListResponse) {
@@ -124,7 +124,7 @@ service MemberService {
     rpc MemberLevelInfo (MemberIdRequest) returns (SMemberLevelInfo) {
     }
     // 更改会员等级
-    rpc ChangeLevel (ChangeLevelRequest) returns (Result) {
+    rpc ChangeLevel (ChangeLevelRequest) returns (TxResult) {
     }
     // 审核升级申请
     rpc ReviewLevelUpRequest (LevelUpReviewRequest) returns (Result) {
@@ -133,28 +133,28 @@ service MemberService {
     rpc ConfirmLevelUpRequest (LevelUpConfirmRequest) returns (Result) {
     }
     /* 更改手机号码，不验证手机格式 */
-    rpc ChangePhone (ChangePhoneRequest) returns (Result) {
+    rpc ChangePhone (ChangePhoneRequest) returns (TxResult) {
     }
     /* 更改用户名 */
-    rpc ChangeUsername (ChangeUsernameRequest) returns (Result) {
+    rpc ChangeUsername (ChangeUsernameRequest) returns (TxResult) {
     }
     // 更改昵称
-    rpc ChangeNickname(ChangeNicknameRequest) returns (Result) {}
+    rpc ChangeNickname(ChangeNicknameRequest) returns (TxResult) {}
 
     // 上传会员头像
-    rpc ChangeProfilePhoto (ChangeProfilePhotoRequest) returns (Result) {
+    rpc ChangeProfilePhoto (ChangeProfilePhotoRequest) returns (TxResult) {
     }
     /** 更改密码 */
-    rpc ChangePassword (ChangePasswordRequest) returns (Result) {
+    rpc ChangePassword (ChangePasswordRequest) returns (TxResult) {
     }
     /** 更改交易密码 */
-    rpc ChangeTradePassword (ChangePasswordRequest) returns (Result) {
+    rpc ChangeTradePassword (ChangePasswordRequest) returns (TxResult) {
     }
     // 检查资料是否完善
     rpc CheckProfileCompleted (Int64) returns (Bool) {
     }
     /** 设置或更改邀请人 */
-    rpc SetInviter (SetInviterRequest) returns (Result) {
+    rpc SetInviter (SetInviterRequest) returns (TxResult) {
     }
    
 

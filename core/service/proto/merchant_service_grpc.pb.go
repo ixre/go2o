@@ -33,13 +33,13 @@ const (
 	MerchantService_SaveTradeConf_FullMethodName               = "/MerchantService/SaveTradeConf"
 	MerchantService_GetMerchantIdByMember_FullMethodName       = "/MerchantService/GetMerchantIdByMember"
 	MerchantService_ChangeMemberBind_FullMethodName            = "/MerchantService/ChangeMemberBind"
-	MerchantService_SetEnabled_FullMethodName                  = "/MerchantService/SetEnabled"
+	MerchantService_UpdateLockStatus_FullMethodName            = "/MerchantService/updateLockStatus"
 	MerchantService_GetMerchantIdByHost_FullMethodName         = "/MerchantService/GetMerchantIdByHost"
 	MerchantService_GetMerchantMajorHost_FullMethodName        = "/MerchantService/GetMerchantMajorHost"
 	MerchantService_SaveSaleConf_FullMethodName                = "/MerchantService/SaveSaleConf"
 	MerchantService_GetSaleConf_FullMethodName                 = "/MerchantService/GetSaleConf"
 	MerchantService_GetShopId_FullMethodName                   = "/MerchantService/GetShopId"
-	MerchantService_ChangePassword_FullMethodName              = "/MerchantService/ChangePassword"
+	MerchantService_ChangePassword_FullMethodName              = "/MerchantService/changePassword"
 	MerchantService_GetApiInfo_FullMethodName                  = "/MerchantService/GetApiInfo"
 	MerchantService_ToggleApiPerm_FullMethodName               = "/MerchantService/ToggleApiPerm"
 	MerchantService_GetMerchantIdByApiId_FullMethodName        = "/MerchantService/GetMerchantIdByApiId"
@@ -99,7 +99,7 @@ type MerchantServiceClient interface {
 	// * 更换会员绑定
 	ChangeMemberBind(ctx context.Context, in *ChangeMemberBindRequest, opts ...grpc.CallOption) (*Result, error)
 	// 设置商户启用或停用
-	SetEnabled(ctx context.Context, in *MerchantDisableRequest, opts ...grpc.CallOption) (*Result, error)
+	UpdateLockStatus(ctx context.Context, in *MerchantLockStatusRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 根据主机查询商户编号
 	GetMerchantIdByHost(ctx context.Context, in *String, opts ...grpc.CallOption) (*Int64, error)
 	// 获取商户的域名
@@ -108,7 +108,7 @@ type MerchantServiceClient interface {
 	GetSaleConf(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantSaleConf, error)
 	GetShopId(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*Int64, error)
 	// 修改密码
-	ChangePassword(ctx context.Context, in *ModifyMerchantPasswordRequest, opts ...grpc.CallOption) (*Result, error)
+	ChangePassword(ctx context.Context, in *ModifyMerchantPasswordRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 保存API信息
 	// rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
 	// 获取API接口
@@ -294,9 +294,9 @@ func (c *merchantServiceClient) ChangeMemberBind(ctx context.Context, in *Change
 	return out, nil
 }
 
-func (c *merchantServiceClient) SetEnabled(ctx context.Context, in *MerchantDisableRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, MerchantService_SetEnabled_FullMethodName, in, out, opts...)
+func (c *merchantServiceClient) UpdateLockStatus(ctx context.Context, in *MerchantLockStatusRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MerchantService_UpdateLockStatus_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -348,8 +348,8 @@ func (c *merchantServiceClient) GetShopId(ctx context.Context, in *MerchantId, o
 	return out, nil
 }
 
-func (c *merchantServiceClient) ChangePassword(ctx context.Context, in *ModifyMerchantPasswordRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *merchantServiceClient) ChangePassword(ctx context.Context, in *ModifyMerchantPasswordRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MerchantService_ChangePassword_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -606,7 +606,7 @@ type MerchantServiceServer interface {
 	// * 更换会员绑定
 	ChangeMemberBind(context.Context, *ChangeMemberBindRequest) (*Result, error)
 	// 设置商户启用或停用
-	SetEnabled(context.Context, *MerchantDisableRequest) (*Result, error)
+	UpdateLockStatus(context.Context, *MerchantLockStatusRequest) (*TxResult, error)
 	// 根据主机查询商户编号
 	GetMerchantIdByHost(context.Context, *String) (*Int64, error)
 	// 获取商户的域名
@@ -615,7 +615,7 @@ type MerchantServiceServer interface {
 	GetSaleConf(context.Context, *MerchantId) (*SMerchantSaleConf, error)
 	GetShopId(context.Context, *MerchantId) (*Int64, error)
 	// 修改密码
-	ChangePassword(context.Context, *ModifyMerchantPasswordRequest) (*Result, error)
+	ChangePassword(context.Context, *ModifyMerchantPasswordRequest) (*TxResult, error)
 	// 保存API信息
 	// rpc SaveApiInfo(mchId int64, d *merchant.ApiInfo) error
 	// 获取API接口
@@ -714,8 +714,8 @@ func (UnimplementedMerchantServiceServer) GetMerchantIdByMember(context.Context,
 func (UnimplementedMerchantServiceServer) ChangeMemberBind(context.Context, *ChangeMemberBindRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeMemberBind not implemented")
 }
-func (UnimplementedMerchantServiceServer) SetEnabled(context.Context, *MerchantDisableRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetEnabled not implemented")
+func (UnimplementedMerchantServiceServer) UpdateLockStatus(context.Context, *MerchantLockStatusRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateLockStatus not implemented")
 }
 func (UnimplementedMerchantServiceServer) GetMerchantIdByHost(context.Context, *String) (*Int64, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMerchantIdByHost not implemented")
@@ -732,7 +732,7 @@ func (UnimplementedMerchantServiceServer) GetSaleConf(context.Context, *Merchant
 func (UnimplementedMerchantServiceServer) GetShopId(context.Context, *MerchantId) (*Int64, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetShopId not implemented")
 }
-func (UnimplementedMerchantServiceServer) ChangePassword(context.Context, *ModifyMerchantPasswordRequest) (*Result, error) {
+func (UnimplementedMerchantServiceServer) ChangePassword(context.Context, *ModifyMerchantPasswordRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
 }
 func (UnimplementedMerchantServiceServer) GetApiInfo(context.Context, *MerchantId) (*SMerchantApiInfo, error) {
@@ -1072,20 +1072,20 @@ func _MerchantService_ChangeMemberBind_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MerchantService_SetEnabled_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MerchantDisableRequest)
+func _MerchantService_UpdateLockStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantLockStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MerchantServiceServer).SetEnabled(ctx, in)
+		return srv.(MerchantServiceServer).UpdateLockStatus(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MerchantService_SetEnabled_FullMethodName,
+		FullMethod: MerchantService_UpdateLockStatus_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).SetEnabled(ctx, req.(*MerchantDisableRequest))
+		return srv.(MerchantServiceServer).UpdateLockStatus(ctx, req.(*MerchantLockStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1694,8 +1694,8 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MerchantService_ChangeMemberBind_Handler,
 		},
 		{
-			MethodName: "SetEnabled",
-			Handler:    _MerchantService_SetEnabled_Handler,
+			MethodName: "updateLockStatus",
+			Handler:    _MerchantService_UpdateLockStatus_Handler,
 		},
 		{
 			MethodName: "GetMerchantIdByHost",
@@ -1718,7 +1718,7 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MerchantService_GetShopId_Handler,
 		},
 		{
-			MethodName: "ChangePassword",
+			MethodName: "changePassword",
 			Handler:    _MerchantService_ChangePassword_Handler,
 		},
 		{

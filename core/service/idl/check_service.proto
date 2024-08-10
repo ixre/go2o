@@ -16,17 +16,17 @@
 // 校验服务
 service CheckService {
     // 发送会员验证码消息, 并返回验证码, 验证码通过data.CheckCode获取
-    rpc SendCode (SendCheckCodeRequest) returns (SendCheckCodeResponse) {
+    rpc sendCode (SendCheckCodeRequest) returns (SendCheckCodeResponse) {
     }
     // 比较验证码是否正确, 正确则返回用户编号
-    rpc CompareCode (CompareCheckCodeRequest) returns (CompareCheckCodeResponse) {
+    rpc compareCode (CompareCheckCodeRequest) returns (CompareCheckCodeResponse) {
     }
 
     // 发放访问令牌,续期即重新颁发
-    rpc GrantAccessToken(GrantAccessTokenRequest) returns(GrantAccessTokenResponse){}
+    rpc grantAccessToken(GrantAccessTokenRequest) returns(GrantAccessTokenResponse){}
 
     // 检查令牌是否有效并返回新的令牌
-    rpc CheckAccessToken(CheckAccessTokenRequest) returns(CheckAccessTokenResponse){}
+    rpc checkAccessToken(CheckAccessTokenRequest) returns(CheckAccessTokenResponse){}
  
 }
 

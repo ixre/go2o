@@ -279,11 +279,12 @@ message SMerchantAccount {
   int64 updateTime = 9;
 }
 
-message MerchantDisableRequest {
+/** 商户锁定状态请求 */
+message MerchantLockStatusRequest {
   // 商户编号
   int64 merchantId = 1;
-  // 是否启用
-  bool enabled = 2;
+  // 是否锁定, false为解锁
+  bool lock = 2;
 }
 
 // 销售设置

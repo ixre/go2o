@@ -31,6 +31,15 @@ const (
 	KindＭachTakOutRefund = 101
 )
 
+const (
+	// FSelfSales 是否自营
+	FSelfSales = 1 << iota
+	// FLocked 停用
+	FLocked
+	// 已认证
+	FAuthenticated
+)
+
 type (
 	// IMerchantAggregateRoot 商户接口
 	//todo: 实现商户等级,商户的品牌
@@ -48,8 +57,10 @@ type (
 		// Stat 获取商户的状态,判断 过期时间、判断是否停用。
 		// 过期时间通常按: 试合作期,即1个月, 后面每年延长一次。或者会员付费开通。
 		Stat() error
-		// SetEnabled 设置商户启用或停用
-		SetEnabled(enabled bool) error
+		// Lock 锁定
+		Lock() error
+		// Unlock 解锁
+		Unlock() error
 		// SelfSales 是否自营
 		SelfSales() bool
 		// Member 返回对应的会员编号
@@ -177,6 +188,7 @@ type (
 		Name string
 		// 是否自营
 		SelfSales int32
+		Flag      int
 		// 商户等级
 		Level int32
 		// 标志

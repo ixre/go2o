@@ -123,6 +123,7 @@ func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
 		Name:      src.MchName,
 		SelfSales: int32(src.IsSelf),
 		Level:     int32(src.Level),
+		Flag:      src.Flag,
 		Address:   src.Address,
 		//Logo:          src.Logo,
 		//CompanyName:   src.CompanyName,
@@ -221,6 +222,26 @@ func (m *merchantImpl) GrantFlag(flag int) error {
 	return err
 }
 
+// Lock implements merchant.IMerchantAggregateRoot.
+func (m *merchantImpl) Lock() error {
+	f := m._value.Flag
+	err := m.GrantFlag(merchant.FLocked)
+	if err == nil && f != m._value.Flag {
+		_, err = m.Save()
+	}
+	return err
+}
+
+// Unlock implements merchant.IMerchantAggregateRoot.
+func (m *merchantImpl) Unlock() error {
+	f := m._value.Flag
+	err := m.GrantFlag(-merchant.FLocked)
+	if err == nil && f != m._value.Flag {
+		_, err = m.Save()
+	}
+	return err
+}
+
 // ContainFlag implements merchant.IMerchant.
 func (m *merchantImpl) ContainFlag(flag int) bool {
 	return domain.TestFlag(m._value.Flag, flag)
@@ -296,18 +317,6 @@ func (m *merchantImpl) Stat() error {
 		return merchant.ErrMerchantExpires
 	}
 	return nil
-}
-
-// SetEnabled 设置商户启用或停用
-func (m *merchantImpl) SetEnabled(enabled bool) error {
-	panic("implement me")
-	// if enabled {
-	// 	m._value.Enabled = 1
-	// } else {
-	// 	m._value.Enabled = 0
-	// }
-	// _, err := m.Save()
-	// return err
 }
 
 // Member 返回对应的会员编号

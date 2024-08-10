@@ -54,7 +54,7 @@ service MerchantService {
     }
   
     // 设置商户启用或停用
-    rpc SetEnabled (MerchantDisableRequest) returns (Result) {
+    rpc updateLockStatus (MerchantLockStatusRequest) returns (TxResult) {
     }
     // 根据主机查询商户编号
     rpc GetMerchantIdByHost (String) returns (Int64) {
@@ -70,7 +70,7 @@ service MerchantService {
     rpc GetShopId (MerchantId) returns (Int64) {
     }
     // 修改密码
-    rpc ChangePassword (ModifyMerchantPasswordRequest) returns (Result) {
+    rpc changePassword (ModifyMerchantPasswordRequest) returns (TxResult) {
     }
 
     // 保存API信息

@@ -28,10 +28,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CheckService_SendCode_FullMethodName         = "/CheckService/SendCode"
-	CheckService_CompareCode_FullMethodName      = "/CheckService/CompareCode"
-	CheckService_GrantAccessToken_FullMethodName = "/CheckService/GrantAccessToken"
-	CheckService_CheckAccessToken_FullMethodName = "/CheckService/CheckAccessToken"
+	CheckService_SendCode_FullMethodName         = "/CheckService/sendCode"
+	CheckService_CompareCode_FullMethodName      = "/CheckService/compareCode"
+	CheckService_GrantAccessToken_FullMethodName = "/CheckService/grantAccessToken"
+	CheckService_CheckAccessToken_FullMethodName = "/CheckService/checkAccessToken"
 )
 
 // CheckServiceClient is the client API for CheckService service.
@@ -216,19 +216,19 @@ var CheckService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CheckServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SendCode",
+			MethodName: "sendCode",
 			Handler:    _CheckService_SendCode_Handler,
 		},
 		{
-			MethodName: "CompareCode",
+			MethodName: "compareCode",
 			Handler:    _CheckService_CompareCode_Handler,
 		},
 		{
-			MethodName: "GrantAccessToken",
+			MethodName: "grantAccessToken",
 			Handler:    _CheckService_GrantAccessToken_Handler,
 		},
 		{
-			MethodName: "CheckAccessToken",
+			MethodName: "checkAccessToken",
 			Handler:    _CheckService_CheckAccessToken_Handler,
 		},
 	},
