@@ -227,6 +227,9 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 func (w *WalletImpl) Adjust(value int, title, outerNo string,
 	remark string, operatorUid int, operatorName string) error {
 	err := w.checkValueOpu(value, true, operatorUid, operatorName)
+	if len(remark) == 0 {
+		return errors.New("remark can't be empty")
+	}
 	if err == nil {
 		w._value.AdjustAmount += value
 		w._value.Balance += value

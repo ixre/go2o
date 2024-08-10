@@ -335,3 +335,7 @@ type (
 func (m Merchant) TableName() string {
 	return "mch_merchant"
 }
+
+func (a Account) TableName() string {
+	return "mch_account"
+}

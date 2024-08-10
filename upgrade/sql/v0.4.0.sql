@@ -828,8 +828,34 @@ ALTER TABLE "public".mm_profile
   ADD COLUMN signature varchar(80) DEFAULT '';
 COMMENT ON COLUMN "public".mm_profile.signature IS '个人签名';
 
-/** 2-24-08-07 */
+/** 2024-08-07 */
 
 ALTER TABLE "public"."mm_cert_info" ADD COLUMN "extra_cert_no" CHARACTER VARYING(40) NOT NULL DEFAULT '' ;
 
 COMMENT ON COLUMN "public".mm_cert_info.extra_cert_no IS '额外资质证书编号';
+
+
+/** 2024-08-10 */
+ALTER TABLE "public"."mch_account" ALTER COLUMN "mch_id" TYPE bigint USING "mch_id"::bigint,
+ALTER COLUMN "mch_id" SET NOT NULL, 
+ALTER COLUMN "mch_id" SET DEFAULT nextval('mch_account_mch_id_seq'::regclass),
+ALTER COLUMN "balance" TYPE bigint USING "balance"::bigint, 
+ALTER COLUMN "balance" SET NOT NULL, ALTER COLUMN "balance" DROP DEFAULT,
+ALTER COLUMN "freeze_amount" TYPE bigint USING "freeze_amount"::bigint, 
+ALTER COLUMN "freeze_amount" SET NOT NULL,
+ALTER COLUMN "freeze_amount" DROP DEFAULT, 
+ALTER COLUMN "await_amount" TYPE bigint USING "await_amount"::bigint,
+ALTER COLUMN "await_amount" SET NOT NULL, ALTER COLUMN "await_amount" DROP DEFAULT, 
+ALTER COLUMN "present_amount" TYPE bigint USING "present_amount"::bigint, 
+ALTER COLUMN "present_amount" SET NOT NULL, ALTER COLUMN "present_amount" DROP DEFAULT,
+ALTER COLUMN "sales_amount" TYPE bigint USING "sales_amount"::bigint,
+ALTER COLUMN "sales_amount" SET NOT NULL, ALTER COLUMN "sales_amount" DROP DEFAULT, 
+ALTER COLUMN "refund_amount" TYPE bigint USING "refund_amount"::bigint, 
+ALTER COLUMN "refund_amount" SET NOT NULL, ALTER COLUMN "refund_amount" DROP DEFAULT,
+ALTER COLUMN "take_amount" TYPE bigint USING "take_amount"::bigint, 
+ALTER COLUMN "take_amount" SET NOT NULL, ALTER COLUMN "take_amount" DROP DEFAULT, 
+ALTER COLUMN "offline_sales" TYPE bigint USING "offline_sales"::bigint,
+ALTER COLUMN "offline_sales" SET NOT NULL, ALTER COLUMN "offline_sales" DROP DEFAULT, 
+ALTER COLUMN "update_time" TYPE bigint USING "update_time"::bigint,
+ALTER COLUMN "update_time" SET NOT NULL,
+ALTER COLUMN "update_time" DROP DEFAULT; 
