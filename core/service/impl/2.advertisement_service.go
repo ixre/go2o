@@ -43,13 +43,13 @@ func (a *advertisementService) GetPosition(_ context.Context, id *proto.AdPositi
 	return nil, ad.ErrNoSuchAdPosition
 }
 
-func (a *advertisementService) SaveAdPosition(_ context.Context, r *proto.SAdPosition) (*proto.Result, error) {
+func (a *advertisementService) SaveAdPosition(_ context.Context, r *proto.SAdPosition) (*proto.TxResult, error) {
 	v := a.parseAdPosition(r)
 	var ap ad.IAdPosition
 	if r.Id > 0 {
 		ap = a._rep.GetPosition(r.Id)
 		if ap == nil {
-			return a.error(ad.ErrNoSuchAdPosition), nil
+			return a.errorV2(ad.ErrNoSuchAdPosition), nil
 		}
 	} else {
 		ap = a._rep.CreateAdPosition(v)
@@ -58,12 +58,12 @@ func (a *advertisementService) SaveAdPosition(_ context.Context, r *proto.SAdPos
 	if err == nil {
 		err = ap.Save()
 	}
-	return a.error(err), nil
+	return a.errorV2(err), nil
 }
 
-func (a *advertisementService) DeleteAdPosition(_ context.Context, id *proto.AdPositionId) (*proto.Result, error) {
+func (a *advertisementService) DeleteAdPosition(_ context.Context, id *proto.AdPositionId) (*proto.TxResult, error) {
 	err := a._rep.DeleteAdPosition(id.PositionId)
-	return a.error(err), nil
+	return a.errorV2(err), nil
 }
 
 func (a *advertisementService) QueryAd(_ context.Context, request *proto.QueryAdRequest) (*proto.QueryAdResponse, error) {
@@ -84,21 +84,21 @@ func (a *advertisementService) QueryAd(_ context.Context, request *proto.QueryAd
 }
 
 // PutDefaultAd 设置广告位的默认广告
-func (a *advertisementService) PutDefaultAd(_ context.Context, r *proto.SetDefaultAdRequest) (*proto.Result, error) {
+func (a *advertisementService) PutDefaultAd(_ context.Context, r *proto.SetDefaultAdRequest) (*proto.TxResult, error) {
 	ig := a._rep.GetAdManager().GetPosition(r.PositionId)
 	if ig == nil {
-		return a.error(ad.ErrNoSuchAdPosition), nil
+		return a.errorV2(ad.ErrNoSuchAdPosition), nil
 	}
 	err := ig.PutAd(r.AdId)
-	return a.error(err), nil
+	return a.errorV2(err), nil
 }
 
 // 用户投放广告
-func (a *advertisementService) SetUserAd(_ context.Context, r *proto.SetUserAdRequest) (*proto.Result, error) {
+func (a *advertisementService) SetUserAd(_ context.Context, r *proto.SetUserAdRequest) (*proto.TxResult, error) {
 	defer a.cleanCache(r.AdUserId)
 	ua := a._rep.GetAdManager().GetUserAd(r.AdUserId)
 	err := ua.SetAd(r.PosId, r.AdId)
-	return a.error(err), nil
+	return a.errorV2(err), nil
 }
 
 // 获取广告
@@ -222,10 +222,10 @@ func (a *advertisementService) SaveAd(_ context.Context, req *proto.SaveAdReques
 	return a.errorV2(err), nil
 }
 
-func (a *advertisementService) DeleteAd(_ context.Context, r *proto.AdIdRequest) (*proto.Result, error) {
+func (a *advertisementService) DeleteAd(_ context.Context, r *proto.AdIdRequest) (*proto.TxResult, error) {
 	defer a.cleanCache(r.AdUserId)
 	err := a.getUserAd(r.AdUserId).DeleteAd(r.AdId)
-	return a.error(err), nil
+	return a.errorV2(err), nil
 }
 
 // 保存图片广告

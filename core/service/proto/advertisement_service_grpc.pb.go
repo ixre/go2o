@@ -41,23 +41,23 @@ type AdvertisementServiceClient interface {
 	// * 获取广告位
 	GetPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*SAdPosition, error)
 	// * 更新广告位
-	SaveAdPosition(ctx context.Context, in *SAdPosition, opts ...grpc.CallOption) (*Result, error)
+	SaveAdPosition(ctx context.Context, in *SAdPosition, opts ...grpc.CallOption) (*TxResult, error)
 	// * 删除广告位
-	DeleteAdPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*Result, error)
+	DeleteAdPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*TxResult, error)
 	// 投放广告位的默认广告
-	PutDefaultAd(ctx context.Context, in *SetDefaultAdRequest, opts ...grpc.CallOption) (*Result, error)
+	PutDefaultAd(ctx context.Context, in *SetDefaultAdRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 查询广告
 	QueryAd(ctx context.Context, in *QueryAdRequest, opts ...grpc.CallOption) (*QueryAdResponse, error)
 	// 查询广告并返回广告数据
 	QueryAdvertisementData(ctx context.Context, in *QueryAdvertisementDataRequest, opts ...grpc.CallOption) (*QueryAdvertisementDataResponse, error)
 	// 用户投放广告
-	SetUserAd(ctx context.Context, in *SetUserAdRequest, opts ...grpc.CallOption) (*Result, error)
+	SetUserAd(ctx context.Context, in *SetUserAdRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取广告,returnData=true返回数据传输对象
 	GetAdvertisement(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAdDto, error)
 	// 保存广告,更新时不允许修改类型
 	SaveAd(ctx context.Context, in *SaveAdRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 删除广告
-	DeleteAd(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*Result, error)
+	DeleteAd(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type advertisementServiceClient struct {
@@ -86,8 +86,8 @@ func (c *advertisementServiceClient) GetPosition(ctx context.Context, in *AdPosi
 	return out, nil
 }
 
-func (c *advertisementServiceClient) SaveAdPosition(ctx context.Context, in *SAdPosition, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *advertisementServiceClient) SaveAdPosition(ctx context.Context, in *SAdPosition, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, AdvertisementService_SaveAdPosition_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -95,8 +95,8 @@ func (c *advertisementServiceClient) SaveAdPosition(ctx context.Context, in *SAd
 	return out, nil
 }
 
-func (c *advertisementServiceClient) DeleteAdPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *advertisementServiceClient) DeleteAdPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, AdvertisementService_DeleteAdPosition_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -104,8 +104,8 @@ func (c *advertisementServiceClient) DeleteAdPosition(ctx context.Context, in *A
 	return out, nil
 }
 
-func (c *advertisementServiceClient) PutDefaultAd(ctx context.Context, in *SetDefaultAdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *advertisementServiceClient) PutDefaultAd(ctx context.Context, in *SetDefaultAdRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, AdvertisementService_PutDefaultAd_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -131,8 +131,8 @@ func (c *advertisementServiceClient) QueryAdvertisementData(ctx context.Context,
 	return out, nil
 }
 
-func (c *advertisementServiceClient) SetUserAd(ctx context.Context, in *SetUserAdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *advertisementServiceClient) SetUserAd(ctx context.Context, in *SetUserAdRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, AdvertisementService_SetUserAd_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -158,8 +158,8 @@ func (c *advertisementServiceClient) SaveAd(ctx context.Context, in *SaveAdReque
 	return out, nil
 }
 
-func (c *advertisementServiceClient) DeleteAd(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *advertisementServiceClient) DeleteAd(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, AdvertisementService_DeleteAd_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -176,23 +176,23 @@ type AdvertisementServiceServer interface {
 	// * 获取广告位
 	GetPosition(context.Context, *AdPositionId) (*SAdPosition, error)
 	// * 更新广告位
-	SaveAdPosition(context.Context, *SAdPosition) (*Result, error)
+	SaveAdPosition(context.Context, *SAdPosition) (*TxResult, error)
 	// * 删除广告位
-	DeleteAdPosition(context.Context, *AdPositionId) (*Result, error)
+	DeleteAdPosition(context.Context, *AdPositionId) (*TxResult, error)
 	// 投放广告位的默认广告
-	PutDefaultAd(context.Context, *SetDefaultAdRequest) (*Result, error)
+	PutDefaultAd(context.Context, *SetDefaultAdRequest) (*TxResult, error)
 	// 查询广告
 	QueryAd(context.Context, *QueryAdRequest) (*QueryAdResponse, error)
 	// 查询广告并返回广告数据
 	QueryAdvertisementData(context.Context, *QueryAdvertisementDataRequest) (*QueryAdvertisementDataResponse, error)
 	// 用户投放广告
-	SetUserAd(context.Context, *SetUserAdRequest) (*Result, error)
+	SetUserAd(context.Context, *SetUserAdRequest) (*TxResult, error)
 	// 获取广告,returnData=true返回数据传输对象
 	GetAdvertisement(context.Context, *AdIdRequest) (*SAdDto, error)
 	// 保存广告,更新时不允许修改类型
 	SaveAd(context.Context, *SaveAdRequest) (*TxResult, error)
 	// 删除广告
-	DeleteAd(context.Context, *AdIdRequest) (*Result, error)
+	DeleteAd(context.Context, *AdIdRequest) (*TxResult, error)
 	mustEmbedUnimplementedAdvertisementServiceServer()
 }
 
@@ -206,13 +206,13 @@ func (UnimplementedAdvertisementServiceServer) GetGroups(context.Context, *Empty
 func (UnimplementedAdvertisementServiceServer) GetPosition(context.Context, *AdPositionId) (*SAdPosition, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPosition not implemented")
 }
-func (UnimplementedAdvertisementServiceServer) SaveAdPosition(context.Context, *SAdPosition) (*Result, error) {
+func (UnimplementedAdvertisementServiceServer) SaveAdPosition(context.Context, *SAdPosition) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveAdPosition not implemented")
 }
-func (UnimplementedAdvertisementServiceServer) DeleteAdPosition(context.Context, *AdPositionId) (*Result, error) {
+func (UnimplementedAdvertisementServiceServer) DeleteAdPosition(context.Context, *AdPositionId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAdPosition not implemented")
 }
-func (UnimplementedAdvertisementServiceServer) PutDefaultAd(context.Context, *SetDefaultAdRequest) (*Result, error) {
+func (UnimplementedAdvertisementServiceServer) PutDefaultAd(context.Context, *SetDefaultAdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PutDefaultAd not implemented")
 }
 func (UnimplementedAdvertisementServiceServer) QueryAd(context.Context, *QueryAdRequest) (*QueryAdResponse, error) {
@@ -221,7 +221,7 @@ func (UnimplementedAdvertisementServiceServer) QueryAd(context.Context, *QueryAd
 func (UnimplementedAdvertisementServiceServer) QueryAdvertisementData(context.Context, *QueryAdvertisementDataRequest) (*QueryAdvertisementDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryAdvertisementData not implemented")
 }
-func (UnimplementedAdvertisementServiceServer) SetUserAd(context.Context, *SetUserAdRequest) (*Result, error) {
+func (UnimplementedAdvertisementServiceServer) SetUserAd(context.Context, *SetUserAdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetUserAd not implemented")
 }
 func (UnimplementedAdvertisementServiceServer) GetAdvertisement(context.Context, *AdIdRequest) (*SAdDto, error) {
@@ -230,7 +230,7 @@ func (UnimplementedAdvertisementServiceServer) GetAdvertisement(context.Context,
 func (UnimplementedAdvertisementServiceServer) SaveAd(context.Context, *SaveAdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveAd not implemented")
 }
-func (UnimplementedAdvertisementServiceServer) DeleteAd(context.Context, *AdIdRequest) (*Result, error) {
+func (UnimplementedAdvertisementServiceServer) DeleteAd(context.Context, *AdIdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAd not implemented")
 }
 func (UnimplementedAdvertisementServiceServer) mustEmbedUnimplementedAdvertisementServiceServer() {}
