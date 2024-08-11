@@ -36,6 +36,7 @@ const (
 	RbacService_PagingJobList_FullMethodName         = "/RbacService/PagingJobList"
 	RbacService_SaveUser_FullMethodName              = "/RbacService/SaveUser"
 	RbacService_GetUser_FullMethodName               = "/RbacService/GetUser"
+	RbacService_UpdateUserPassword_FullMethodName    = "/RbacService/updateUserPassword"
 	RbacService_DeleteUser_FullMethodName            = "/RbacService/DeleteUser"
 	RbacService_PagingUser_FullMethodName            = "/RbacService/PagingUser"
 	RbacService_SavePermRole_FullMethodName          = "/RbacService/SavePermRole"
@@ -88,6 +89,8 @@ type RbacServiceClient interface {
 	SaveUser(ctx context.Context, in *SaveRbacUserRequest, opts ...grpc.CallOption) (*SaveRbacUserResponse, error)
 	// 获取系统用户
 	GetUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*SRbacUser, error)
+	// 更新用户密码
+	UpdateUserPassword(ctx context.Context, in *RbacPasswordRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 删除系统用户
 	DeleteUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*Result, error)
 	// 获取系统用户分页数据
@@ -275,6 +278,15 @@ func (c *rbacServiceClient) GetUser(ctx context.Context, in *RbacUserId, opts ..
 	return out, nil
 }
 
+func (c *rbacServiceClient) UpdateUserPassword(ctx context.Context, in *RbacPasswordRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, RbacService_UpdateUserPassword_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rbacServiceClient) DeleteUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, RbacService_DeleteUser_FullMethodName, in, out, opts...)
@@ -421,6 +433,8 @@ type RbacServiceServer interface {
 	SaveUser(context.Context, *SaveRbacUserRequest) (*SaveRbacUserResponse, error)
 	// 获取系统用户
 	GetUser(context.Context, *RbacUserId) (*SRbacUser, error)
+	// 更新用户密码
+	UpdateUserPassword(context.Context, *RbacPasswordRequest) (*TxResult, error)
 	// 删除系统用户
 	DeleteUser(context.Context, *RbacUserId) (*Result, error)
 	// 获取系统用户分页数据
@@ -502,6 +516,9 @@ func (UnimplementedRbacServiceServer) SaveUser(context.Context, *SaveRbacUserReq
 }
 func (UnimplementedRbacServiceServer) GetUser(context.Context, *RbacUserId) (*SRbacUser, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+}
+func (UnimplementedRbacServiceServer) UpdateUserPassword(context.Context, *RbacPasswordRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserPassword not implemented")
 }
 func (UnimplementedRbacServiceServer) DeleteUser(context.Context, *RbacUserId) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
@@ -858,6 +875,24 @@ func _RbacService_GetUser_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RbacService_UpdateUserPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RbacPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RbacServiceServer).UpdateUserPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RbacService_UpdateUserPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RbacServiceServer).UpdateUserPassword(ctx, req.(*RbacPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RbacService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RbacUserId)
 	if err := dec(in); err != nil {
@@ -1148,6 +1183,10 @@ var RbacService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUser",
 			Handler:    _RbacService_GetUser_Handler,
+		},
+		{
+			MethodName: "updateUserPassword",
+			Handler:    _RbacService_UpdateUserPassword_Handler,
 		},
 		{
 			MethodName: "DeleteUser",

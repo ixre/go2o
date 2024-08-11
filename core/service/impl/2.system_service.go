@@ -180,35 +180,20 @@ func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.Boar
 //	}, nil
 //}
 
-// 验证超级用户账号和密码
-func (s *foundationService) SuperValidate(_ context.Context, user *proto.UserPwd) (*proto.SuperLoginResponse, error) {
-	if len(user.Password) != 32 {
-		return &proto.SuperLoginResponse{
-			ErrMsg:  de.ErrNotMD5Format.Error(),
-			ErrCode: 2}, nil
-	}
-	superPwd, _ := s.registryRepo.GetValue(registry.SysSuperLoginToken)
-	encPwd := domain.Sha1Pwd(user.Username+user.Password, "")
-	if superPwd != encPwd {
-		return &proto.SuperLoginResponse{
-			ErrMsg:  de.ErrCredential.Error(),
-			ErrCode: 1}, nil
-	}
-	return &proto.SuperLoginResponse{
-		ErrCode: 0,
-		Role:    1,
-	}, nil
-}
-
 // 保存超级用户账号和密码
-func (s *foundationService) FlushSuperPwd(_ context.Context, user *proto.UserPwd) (*proto.Result, error) {
-	if len(user.Password) != 32 {
-		return s.error(de.ErrNotMD5Format), nil
+func (s *foundationService) UpdateSuperCredential(_ context.Context, user *proto.SuperPassswordRequest) (*proto.TxResult, error) {
+	if len(user.NewPassword) != 32 || len(user.OldPassword) != 32 {
+		return s.errorV2(de.ErrNotMD5Format), nil
 	}
-	encPwd := domain.Sha1Pwd(user.Username+user.Password, "")
-	err := s.registryRepo.UpdateValue(registry.SysSuperLoginToken,
-		encPwd)
-	return s.error(err), nil
+	username := "master"
+	oldPassword := domain.Sha1Pwd(username+user.OldPassword, "")
+	pwd, _ := s.registryRepo.GetValue(registry.SysSuperLoginToken)
+	if pwd != oldPassword {
+		return s.errorV2(de.ErrPasswordNotMatch), nil
+	}
+	newPwd := domain.Sha1Pwd(username+user.NewPassword, "")
+	err := s.registryRepo.UpdateValue(registry.SysSuperLoginToken, newPwd)
+	return s.errorV2(err), nil
 }
 
 // 注册单点登录应用,返回值：

@@ -484,7 +484,7 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 	if val.Password != pwd {
 		//todo: 兼容旧密码
 		if val.Password != domain.Sha1(pwd) {
-			return 0, de.ErrCredential
+			return 0, de.ErrPasswordNotMatch
 		}
 	}
 	if (val.UserFlag & member.FlagLocked) == member.FlagLocked {
@@ -497,7 +497,7 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMerchantAggregateRoot, errCode int32, err error) {
 	if user == "" || pwd == "" {
-		return nil, 1, de.ErrCredential
+		return nil, 1, de.ErrPasswordNotMatch
 	}
 	if len(pwd) != 32 {
 		return nil, 4, de.ErrNotMD5Format
@@ -527,7 +527,7 @@ func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMercha
 	mch := m._mchRepo.CreateMerchant(mchList[0])
 	mv := mch.GetValue()
 	if pwd := domain.MerchantSha1Pwd(pwd, mch.GetValue().Salt); pwd != mv.Password {
-		return nil, 1, de.ErrCredential
+		return nil, 1, de.ErrPasswordNotMatch
 	}
 	return mch, 0, nil
 }

@@ -53,7 +53,9 @@ service RbacService {
     // 获取系统用户
     rpc GetUser (RbacUserId) returns (SRbacUser) {
     }
-
+    // 更新用户密码
+    rpc updateUserPassword(RbacPasswordRequest)returns (TxResult){
+    }
     // 删除系统用户
     rpc DeleteUser (RbacUserId) returns (Result) {
     }
@@ -138,6 +140,17 @@ message RbacCheckTokenResponse{
     // 重新生成的令牌
     string renewAccessToken = 5;
 }
+
+// 更改密码
+message RbacPasswordRequest{
+    // 会员编号
+    int64 userId = 1;
+    // 旧密码
+    string oldPassword = 2;
+    // 新密码
+    string newPassword = 3;
+}
+
 // 用户资源响应,如果无用户则默认为超级管理员
 message RbacUserResourceResponse {
     // 角色编号

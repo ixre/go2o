@@ -19,34 +19,33 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	SystemService_CheckSensitive_FullMethodName       = "/SystemService/CheckSensitive"
-	SystemService_ReplaceSensitive_FullMethodName     = "/SystemService/ReplaceSensitive"
-	SystemService_GetSystemInfo_FullMethodName        = "/SystemService/GetSystemInfo"
-	SystemService_FlushCache_FullMethodName           = "/SystemService/FlushCache"
-	SystemService_GetOptionNames_FullMethodName       = "/SystemService/GetOptionNames"
-	SystemService_GetChildOptions_FullMethodName      = "/SystemService/GetChildOptions"
-	SystemService_GetSmsSetting_FullMethodName        = "/SystemService/GetSmsSetting"
-	SystemService_SaveSmsSetting_FullMethodName       = "/SystemService/SaveSmsSetting"
-	SystemService_CleanCache_FullMethodName           = "/SystemService/CleanCache"
-	SystemService_SaveBoardHook_FullMethodName        = "/SystemService/SaveBoardHook"
-	SystemService_ResourceUrl_FullMethodName          = "/SystemService/ResourceUrl"
-	SystemService_RegisterApp_FullMethodName          = "/SystemService/RegisterApp"
-	SystemService_GetApp_FullMethodName               = "/SystemService/GetApp"
-	SystemService_GetAllSsoApp_FullMethodName         = "/SystemService/GetAllSsoApp"
-	SystemService_SuperValidate_FullMethodName        = "/SystemService/SuperValidate"
-	SystemService_FlushSuperPwd_FullMethodName        = "/SystemService/FlushSuperPwd"
-	SystemService_GetSyncLoginUrl_FullMethodName      = "/SystemService/GetSyncLoginUrl"
-	SystemService_GetDistrictNames_FullMethodName     = "/SystemService/GetDistrictNames"
-	SystemService_GetAreaString_FullMethodName        = "/SystemService/GetAreaString"
-	SystemService_GetChildAreas_FullMethodName        = "/SystemService/GetChildAreas"
-	SystemService_FindCity_FullMethodName             = "/SystemService/FindCity"
-	SystemService_GetMoAppConf_FullMethodName         = "/SystemService/GetMoAppConf"
-	SystemService_SaveMoAppConf_FullMethodName        = "/SystemService/SaveMoAppConf"
-	SystemService_GetWxApiConfig_FullMethodName       = "/SystemService/GetWxApiConfig"
-	SystemService_SaveWxApiConfig_FullMethodName      = "/SystemService/SaveWxApiConfig"
-	SystemService_GetPayPlatform_FullMethodName       = "/SystemService/GetPayPlatform"
-	SystemService_GetGlobMchSaleConf__FullMethodName  = "/SystemService/GetGlobMchSaleConf_"
-	SystemService_SaveGlobMchSaleConf__FullMethodName = "/SystemService/SaveGlobMchSaleConf_"
+	SystemService_CheckSensitive_FullMethodName        = "/SystemService/CheckSensitive"
+	SystemService_ReplaceSensitive_FullMethodName      = "/SystemService/ReplaceSensitive"
+	SystemService_GetSystemInfo_FullMethodName         = "/SystemService/GetSystemInfo"
+	SystemService_FlushCache_FullMethodName            = "/SystemService/FlushCache"
+	SystemService_GetOptionNames_FullMethodName        = "/SystemService/GetOptionNames"
+	SystemService_GetChildOptions_FullMethodName       = "/SystemService/GetChildOptions"
+	SystemService_GetSmsSetting_FullMethodName         = "/SystemService/GetSmsSetting"
+	SystemService_SaveSmsSetting_FullMethodName        = "/SystemService/SaveSmsSetting"
+	SystemService_CleanCache_FullMethodName            = "/SystemService/CleanCache"
+	SystemService_SaveBoardHook_FullMethodName         = "/SystemService/SaveBoardHook"
+	SystemService_ResourceUrl_FullMethodName           = "/SystemService/ResourceUrl"
+	SystemService_RegisterApp_FullMethodName           = "/SystemService/RegisterApp"
+	SystemService_GetApp_FullMethodName                = "/SystemService/GetApp"
+	SystemService_GetAllSsoApp_FullMethodName          = "/SystemService/GetAllSsoApp"
+	SystemService_UpdateSuperCredential_FullMethodName = "/SystemService/updateSuperCredential"
+	SystemService_GetSyncLoginUrl_FullMethodName       = "/SystemService/GetSyncLoginUrl"
+	SystemService_GetDistrictNames_FullMethodName      = "/SystemService/GetDistrictNames"
+	SystemService_GetAreaString_FullMethodName         = "/SystemService/GetAreaString"
+	SystemService_GetChildAreas_FullMethodName         = "/SystemService/GetChildAreas"
+	SystemService_FindCity_FullMethodName              = "/SystemService/FindCity"
+	SystemService_GetMoAppConf_FullMethodName          = "/SystemService/GetMoAppConf"
+	SystemService_SaveMoAppConf_FullMethodName         = "/SystemService/SaveMoAppConf"
+	SystemService_GetWxApiConfig_FullMethodName        = "/SystemService/GetWxApiConfig"
+	SystemService_SaveWxApiConfig_FullMethodName       = "/SystemService/SaveWxApiConfig"
+	SystemService_GetPayPlatform_FullMethodName        = "/SystemService/GetPayPlatform"
+	SystemService_GetGlobMchSaleConf__FullMethodName   = "/SystemService/GetGlobMchSaleConf_"
+	SystemService_SaveGlobMchSaleConf__FullMethodName  = "/SystemService/SaveGlobMchSaleConf_"
 )
 
 // SystemServiceClient is the client API for SystemService service.
@@ -90,10 +89,8 @@ type SystemServiceClient interface {
 	GetApp(ctx context.Context, in *String, opts ...grpc.CallOption) (*SSsoApp, error)
 	// 获取单点登录应用
 	GetAllSsoApp(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*StringListResponse, error)
-	// 验证超级用户账号和密码
-	SuperValidate(ctx context.Context, in *UserPwd, opts ...grpc.CallOption) (*SuperLoginResponse, error)
 	// 保存超级用户账号和密码
-	FlushSuperPwd(ctx context.Context, in *UserPwd, opts ...grpc.CallOption) (*Result, error)
+	UpdateSuperCredential(ctx context.Context, in *SuperPassswordRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 创建同步登录的地址,returnUrl
 	GetSyncLoginUrl(ctx context.Context, in *String, opts ...grpc.CallOption) (*String, error)
 	// 获取地区名称,如:获取多个城市对应的名称
@@ -254,18 +251,9 @@ func (c *systemServiceClient) GetAllSsoApp(ctx context.Context, in *Empty, opts 
 	return out, nil
 }
 
-func (c *systemServiceClient) SuperValidate(ctx context.Context, in *UserPwd, opts ...grpc.CallOption) (*SuperLoginResponse, error) {
-	out := new(SuperLoginResponse)
-	err := c.cc.Invoke(ctx, SystemService_SuperValidate_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *systemServiceClient) FlushSuperPwd(ctx context.Context, in *UserPwd, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, SystemService_FlushSuperPwd_FullMethodName, in, out, opts...)
+func (c *systemServiceClient) UpdateSuperCredential(ctx context.Context, in *SuperPassswordRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, SystemService_UpdateSuperCredential_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -421,10 +409,8 @@ type SystemServiceServer interface {
 	GetApp(context.Context, *String) (*SSsoApp, error)
 	// 获取单点登录应用
 	GetAllSsoApp(context.Context, *Empty) (*StringListResponse, error)
-	// 验证超级用户账号和密码
-	SuperValidate(context.Context, *UserPwd) (*SuperLoginResponse, error)
 	// 保存超级用户账号和密码
-	FlushSuperPwd(context.Context, *UserPwd) (*Result, error)
+	UpdateSuperCredential(context.Context, *SuperPassswordRequest) (*TxResult, error)
 	// 创建同步登录的地址,returnUrl
 	GetSyncLoginUrl(context.Context, *String) (*String, error)
 	// 获取地区名称,如:获取多个城市对应的名称
@@ -498,11 +484,8 @@ func (UnimplementedSystemServiceServer) GetApp(context.Context, *String) (*SSsoA
 func (UnimplementedSystemServiceServer) GetAllSsoApp(context.Context, *Empty) (*StringListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllSsoApp not implemented")
 }
-func (UnimplementedSystemServiceServer) SuperValidate(context.Context, *UserPwd) (*SuperLoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SuperValidate not implemented")
-}
-func (UnimplementedSystemServiceServer) FlushSuperPwd(context.Context, *UserPwd) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FlushSuperPwd not implemented")
+func (UnimplementedSystemServiceServer) UpdateSuperCredential(context.Context, *SuperPassswordRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSuperCredential not implemented")
 }
 func (UnimplementedSystemServiceServer) GetSyncLoginUrl(context.Context, *String) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSyncLoginUrl not implemented")
@@ -805,38 +788,20 @@ func _SystemService_GetAllSsoApp_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SystemService_SuperValidate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserPwd)
+func _SystemService_UpdateSuperCredential_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SuperPassswordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SystemServiceServer).SuperValidate(ctx, in)
+		return srv.(SystemServiceServer).UpdateSuperCredential(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: SystemService_SuperValidate_FullMethodName,
+		FullMethod: SystemService_UpdateSuperCredential_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SystemServiceServer).SuperValidate(ctx, req.(*UserPwd))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _SystemService_FlushSuperPwd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserPwd)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SystemServiceServer).FlushSuperPwd(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: SystemService_FlushSuperPwd_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SystemServiceServer).FlushSuperPwd(ctx, req.(*UserPwd))
+		return srv.(SystemServiceServer).UpdateSuperCredential(ctx, req.(*SuperPassswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1121,12 +1086,8 @@ var SystemService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SystemService_GetAllSsoApp_Handler,
 		},
 		{
-			MethodName: "SuperValidate",
-			Handler:    _SystemService_SuperValidate_Handler,
-		},
-		{
-			MethodName: "FlushSuperPwd",
-			Handler:    _SystemService_FlushSuperPwd_Handler,
+			MethodName: "updateSuperCredential",
+			Handler:    _SystemService_UpdateSuperCredential_Handler,
 		},
 		{
 			MethodName: "GetSyncLoginUrl",

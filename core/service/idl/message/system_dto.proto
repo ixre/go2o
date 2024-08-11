@@ -67,12 +67,7 @@ message GetSmsSettingRequest{
     ESmsProvider provider = 1; 
 }
 
-//  登录结果
-message SuperLoginResponse {
-    int32 errCode = 1;
-    string errMsg = 2;
-    int32 role = 3;
-}
+
 message BoardHookSaveRequest {
     string hookURL = 1;
     string token = 2;
@@ -100,9 +95,12 @@ message GetNamesRequest {
     repeated sint32 value =  1;
 }
 
-message UserPwd {
-    string username = 1;
-    string password = 2;
+/** 超级管理员密码修改请求 */
+message SuperPassswordRequest {
+    /** 旧密码 */
+    string oldPassword = 1;
+    /** 新密码 */
+    string newPassword = 2;
 }
 
 // 单点登录应用

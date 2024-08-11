@@ -583,6 +583,28 @@ func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserReque
 	return ret, nil
 }
 
+// UpdateUserPassword implements proto.RbacServiceServer.
+func (p *rbacServiceImpl) UpdateUserPassword(_ context.Context, req *proto.RbacPasswordRequest) (*proto.TxResult, error) {
+	iu := p.dao.GetUser(req.UserId)
+	if iu == nil {
+		return p.errorV2(errors.New("no such user")), nil
+	}
+	if len(req.NewPassword) != 32 {
+		return p.errorV2(errors.New("非32位md5密码")), nil
+	}
+	if l := len(req.OldPassword); l > 0 {
+		if l != 32 {
+			return p.errorV2(errors.New("非32位md5密码")), nil
+		}
+		origin := crypto.Sha1([]byte(req.NewPassword + iu.Salt))
+		if origin != iu.Password {
+			return p.errorV2(errors.New("原密码不正确")), nil
+		}
+	}
+	iu.Password = crypto.Sha1([]byte(req.NewPassword + iu.Salt))
+	_, err := p.dao.SaveUser(iu)
+	return p.errorV2(err), nil
+}
 func (p *rbacServiceImpl) parsePermUser(v *model.RbacUser) *proto.SRbacUser {
 	return &proto.SRbacUser{
 		Id:           int64(v.Id),

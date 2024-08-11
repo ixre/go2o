@@ -750,13 +750,13 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 		}
 	}
 	if memberId <= 0 {
-		return nil, 2, de.ErrCredential // 用户不存在,也返回用户或密码不正确
+		return nil, 2, de.ErrPasswordNotMatch // 用户不存在,也返回用户或密码不正确
 	}
 	im := s.repo.GetMember(memberId)
 	val := im.GetValue()
 
 	if s := domain.Sha1Pwd(pwd, val.Salt); s != val.Password {
-		return nil, 1, de.ErrCredential
+		return nil, 1, de.ErrPasswordNotMatch
 	}
 	if val.UserFlag&member.FlagLocked == member.FlagLocked {
 		return nil, 3, member.ErrMemberLocked

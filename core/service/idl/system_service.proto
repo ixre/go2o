@@ -63,11 +63,8 @@ service SystemService {
     // 获取单点登录应用
     rpc GetAllSsoApp (Empty) returns (StringListResponse) {
     }
-    // 验证超级用户账号和密码
-    rpc SuperValidate (UserPwd) returns (SuperLoginResponse) {
-    }
     // 保存超级用户账号和密码
-    rpc FlushSuperPwd (UserPwd) returns (Result) {
+    rpc updateSuperCredential (SuperPassswordRequest) returns (TxResult) {
     }
     // 创建同步登录的地址,returnUrl
     rpc GetSyncLoginUrl (String) returns (String) {
