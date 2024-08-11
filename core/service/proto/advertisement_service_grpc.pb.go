@@ -30,19 +30,19 @@ const (
 	AdvertisementService_GetAdvertisement_FullMethodName       = "/AdvertisementService/GetAdvertisement"
 	AdvertisementService_SaveAd_FullMethodName                 = "/AdvertisementService/SaveAd"
 	AdvertisementService_DeleteAd_FullMethodName               = "/AdvertisementService/DeleteAd"
-	AdvertisementService_SaveSwiperAdImage_FullMethodName      = "/AdvertisementService/SaveSwiperAdImage"
-	AdvertisementService_GetSwiperAdImage_FullMethodName       = "/AdvertisementService/GetSwiperAdImage"
-	AdvertisementService_DeleteSwiperAdImage_FullMethodName    = "/AdvertisementService/DeleteSwiperAdImage"
 )
 
 // AdvertisementServiceClient is the client API for AdvertisementService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AdvertisementServiceClient interface {
+	// * 获取广告组
 	GetGroups(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*AdGroupResponse, error)
+	// * 获取广告位
 	GetPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*SAdPosition, error)
 	// * 更新广告位
 	SaveAdPosition(ctx context.Context, in *SAdPosition, opts ...grpc.CallOption) (*Result, error)
+	// * 删除广告位
 	DeleteAdPosition(ctx context.Context, in *AdPositionId, opts ...grpc.CallOption) (*Result, error)
 	// 投放广告位的默认广告
 	PutDefaultAd(ctx context.Context, in *SetDefaultAdRequest, opts ...grpc.CallOption) (*Result, error)
@@ -55,15 +55,9 @@ type AdvertisementServiceClient interface {
 	// 获取广告,returnData=true返回数据传输对象
 	GetAdvertisement(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAdDto, error)
 	// 保存广告,更新时不允许修改类型
-	SaveAd(ctx context.Context, in *SaveAdRequest, opts ...grpc.CallOption) (*Result, error)
+	SaveAd(ctx context.Context, in *SaveAdRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 删除广告
 	DeleteAd(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*Result, error)
-	// 保存图片广告
-	SaveSwiperAdImage(ctx context.Context, in *SaveSwiperImageRequest, opts ...grpc.CallOption) (*Result, error)
-	// 获取广告图片
-	GetSwiperAdImage(ctx context.Context, in *ImageIdRequest, opts ...grpc.CallOption) (*SImageAdData, error)
-	// 删除广告图片
-	DeleteSwiperAdImage(ctx context.Context, in *ImageIdRequest, opts ...grpc.CallOption) (*Result, error)
 }
 
 type advertisementServiceClient struct {
@@ -155,8 +149,8 @@ func (c *advertisementServiceClient) GetAdvertisement(ctx context.Context, in *A
 	return out, nil
 }
 
-func (c *advertisementServiceClient) SaveAd(ctx context.Context, in *SaveAdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *advertisementServiceClient) SaveAd(ctx context.Context, in *SaveAdRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, AdvertisementService_SaveAd_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -173,41 +167,17 @@ func (c *advertisementServiceClient) DeleteAd(ctx context.Context, in *AdIdReque
 	return out, nil
 }
 
-func (c *advertisementServiceClient) SaveSwiperAdImage(ctx context.Context, in *SaveSwiperImageRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, AdvertisementService_SaveSwiperAdImage_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *advertisementServiceClient) GetSwiperAdImage(ctx context.Context, in *ImageIdRequest, opts ...grpc.CallOption) (*SImageAdData, error) {
-	out := new(SImageAdData)
-	err := c.cc.Invoke(ctx, AdvertisementService_GetSwiperAdImage_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *advertisementServiceClient) DeleteSwiperAdImage(ctx context.Context, in *ImageIdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
-	err := c.cc.Invoke(ctx, AdvertisementService_DeleteSwiperAdImage_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // AdvertisementServiceServer is the server API for AdvertisementService service.
 // All implementations must embed UnimplementedAdvertisementServiceServer
 // for forward compatibility
 type AdvertisementServiceServer interface {
+	// * 获取广告组
 	GetGroups(context.Context, *Empty) (*AdGroupResponse, error)
+	// * 获取广告位
 	GetPosition(context.Context, *AdPositionId) (*SAdPosition, error)
 	// * 更新广告位
 	SaveAdPosition(context.Context, *SAdPosition) (*Result, error)
+	// * 删除广告位
 	DeleteAdPosition(context.Context, *AdPositionId) (*Result, error)
 	// 投放广告位的默认广告
 	PutDefaultAd(context.Context, *SetDefaultAdRequest) (*Result, error)
@@ -220,15 +190,9 @@ type AdvertisementServiceServer interface {
 	// 获取广告,returnData=true返回数据传输对象
 	GetAdvertisement(context.Context, *AdIdRequest) (*SAdDto, error)
 	// 保存广告,更新时不允许修改类型
-	SaveAd(context.Context, *SaveAdRequest) (*Result, error)
+	SaveAd(context.Context, *SaveAdRequest) (*TxResult, error)
 	// 删除广告
 	DeleteAd(context.Context, *AdIdRequest) (*Result, error)
-	// 保存图片广告
-	SaveSwiperAdImage(context.Context, *SaveSwiperImageRequest) (*Result, error)
-	// 获取广告图片
-	GetSwiperAdImage(context.Context, *ImageIdRequest) (*SImageAdData, error)
-	// 删除广告图片
-	DeleteSwiperAdImage(context.Context, *ImageIdRequest) (*Result, error)
 	mustEmbedUnimplementedAdvertisementServiceServer()
 }
 
@@ -263,20 +227,11 @@ func (UnimplementedAdvertisementServiceServer) SetUserAd(context.Context, *SetUs
 func (UnimplementedAdvertisementServiceServer) GetAdvertisement(context.Context, *AdIdRequest) (*SAdDto, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAdvertisement not implemented")
 }
-func (UnimplementedAdvertisementServiceServer) SaveAd(context.Context, *SaveAdRequest) (*Result, error) {
+func (UnimplementedAdvertisementServiceServer) SaveAd(context.Context, *SaveAdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveAd not implemented")
 }
 func (UnimplementedAdvertisementServiceServer) DeleteAd(context.Context, *AdIdRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAd not implemented")
-}
-func (UnimplementedAdvertisementServiceServer) SaveSwiperAdImage(context.Context, *SaveSwiperImageRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveSwiperAdImage not implemented")
-}
-func (UnimplementedAdvertisementServiceServer) GetSwiperAdImage(context.Context, *ImageIdRequest) (*SImageAdData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSwiperAdImage not implemented")
-}
-func (UnimplementedAdvertisementServiceServer) DeleteSwiperAdImage(context.Context, *ImageIdRequest) (*Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteSwiperAdImage not implemented")
 }
 func (UnimplementedAdvertisementServiceServer) mustEmbedUnimplementedAdvertisementServiceServer() {}
 
@@ -489,60 +444,6 @@ func _AdvertisementService_DeleteAd_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AdvertisementService_SaveSwiperAdImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveSwiperImageRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).SaveSwiperAdImage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AdvertisementService_SaveSwiperAdImage_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).SaveSwiperAdImage(ctx, req.(*SaveSwiperImageRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdvertisementService_GetSwiperAdImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ImageIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).GetSwiperAdImage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AdvertisementService_GetSwiperAdImage_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).GetSwiperAdImage(ctx, req.(*ImageIdRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdvertisementService_DeleteSwiperAdImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ImageIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdvertisementServiceServer).DeleteSwiperAdImage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AdvertisementService_DeleteSwiperAdImage_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).DeleteSwiperAdImage(ctx, req.(*ImageIdRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // AdvertisementService_ServiceDesc is the grpc.ServiceDesc for AdvertisementService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -593,18 +494,6 @@ var AdvertisementService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteAd",
 			Handler:    _AdvertisementService_DeleteAd_Handler,
-		},
-		{
-			MethodName: "SaveSwiperAdImage",
-			Handler:    _AdvertisementService_SaveSwiperAdImage_Handler,
-		},
-		{
-			MethodName: "GetSwiperAdImage",
-			Handler:    _AdvertisementService_GetSwiperAdImage_Handler,
-		},
-		{
-			MethodName: "DeleteSwiperAdImage",
-			Handler:    _AdvertisementService_DeleteSwiperAdImage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

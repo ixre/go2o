@@ -15,12 +15,12 @@ import (
 var _ ad.IImageAd = new(ImageAdImpl)
 
 type ImageAdImpl struct {
-	extValue *ad.Image
+	extValue *ad.Data
 	*adImpl
 }
 
 // 获取链接广告值
-func (i *ImageAdImpl) getData() *ad.Image {
+func (i *ImageAdImpl) getData() *ad.Data {
 	if i.extValue == nil {
 		gallery := i._rep.GetSwiperAd(i.GetDomainId())
 		if gallery.Len() > 0 {
@@ -30,7 +30,7 @@ func (i *ImageAdImpl) getData() *ad.Image {
 	return i.extValue
 }
 
-func (i *ImageAdImpl) SetData(d *ad.Image) error {
+func (i *ImageAdImpl) SetData(d *ad.Data) error {
 	v := i.getData()
 	v.LinkUrl = d.LinkUrl
 	v.Title = d.Title
@@ -45,7 +45,7 @@ func (i *ImageAdImpl) Save() (int64, error) {
 	if err == nil {
 		v := i.getData()
 		if v == nil {
-			v = &ad.Image{
+			v = &ad.Data{
 				ImageUrl: "",
 			}
 		}

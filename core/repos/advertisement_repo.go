@@ -164,8 +164,8 @@ func (a *advertisementRepo) SaveAdValue(v *ad.Ad) (int64, error) {
 }
 
 // 获取超链接广告数据
-func (a *advertisementRepo) GetTextAdData(adId int64) *ad.HyperLink {
-	e := ad.HyperLink{}
+func (a *advertisementRepo) GetTextAdData(adId int64) *ad.Data {
+	e := ad.Data{}
 	if err := a.o.GetBy(&e, "ad_id=$1", adId); err != nil {
 		handleError(err)
 		return nil
@@ -174,12 +174,12 @@ func (a *advertisementRepo) GetTextAdData(adId int64) *ad.HyperLink {
 }
 
 // 保存超链接广告数据
-func (a *advertisementRepo) SaveTextAdData(v *ad.HyperLink) (int64, error) {
+func (a *advertisementRepo) SaveTextAdData(v *ad.Data) (int64, error) {
 	return orm.I64(orm.Save(a.o, v, int(v.Id)))
 }
 
 // 保存广告图片
-func (a *advertisementRepo) SaveImageAdData(v *ad.Image) (int64, error) {
+func (a *advertisementRepo) SaveImageAdData(v *ad.Data) (int64, error) {
 	return orm.I64(orm.Save(a.o, v, int(v.Id)))
 }
 
@@ -207,7 +207,7 @@ func (a *advertisementRepo) GetAdByKey(userId int64, key string) *ad.Ad {
 
 // 获取轮播广告
 func (a *advertisementRepo) GetSwiperAd(adId int64) ad.SwiperAd {
-	var list = []*ad.Image{}
+	var list = []*ad.Data{}
 	if err := a.o.Select(&list, "ad_id=$1 ORDER BY sort_num ASC LIMIT 20", adId); err == nil {
 		return list
 	}
@@ -215,8 +215,8 @@ func (a *advertisementRepo) GetSwiperAd(adId int64) ad.SwiperAd {
 }
 
 // 获取图片项
-func (a *advertisementRepo) GetSwiperAdImage(adId, id int64) *ad.Image {
-	var e ad.Image
+func (a *advertisementRepo) GetSwiperAdImage(adId, id int64) *ad.Data {
+	var e ad.Data
 	if err := a.o.GetBy(&e, "ad_id=$1 and id=$2", adId, id); err == nil {
 		return &e
 	}
@@ -225,7 +225,7 @@ func (a *advertisementRepo) GetSwiperAdImage(adId, id int64) *ad.Image {
 
 // 删除图片项
 func (a *advertisementRepo) DeleteSwiperAdImage(adId, imgId int64) error {
-	_, err := a.o.Delete(ad.Image{}, "ad_id=$1 and id=$2", adId, imgId)
+	_, err := a.o.Delete(ad.Data{}, "ad_id=$1 and id=$2", adId, imgId)
 	return err
 }
 
@@ -241,13 +241,13 @@ func (a *advertisementRepo) DeleteAd(userId, adId int64) error {
 
 // 删除广告的图片数据
 func (a *advertisementRepo) DeleteImageAdData(adId int64) error {
-	_, err := a.o.Delete(ad.Image{}, "ad_id=$1", adId)
+	_, err := a.o.Delete(ad.Data{}, "ad_id=$1", adId)
 	return err
 }
 
 // 删除广告的文字数据
 func (a *advertisementRepo) DeleteTextAdData(adId int64) error {
-	_, err := a.o.Delete(ad.HyperLink{}, "ad_id=$1", adId)
+	_, err := a.o.Delete(ad.Data{}, "ad_id=$1", adId)
 	return err
 }
 

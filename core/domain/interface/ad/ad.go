@@ -198,13 +198,13 @@ type (
 		/* ===============  广告类型 ================*/
 
 		// GetTextAdData  获取超链接广告数据
-		GetTextAdData(adId int64) *HyperLink
+		GetTextAdData(adId int64) *Data
 
 		// SaveTextAdData  保存超链接广告数据
-		SaveTextAdData(value *HyperLink) (int64, error)
+		SaveTextAdData(value *Data) (int64, error)
 
 		// SaveImageAdData  保存广告图片
-		SaveImageAdData(*Image) (int64, error)
+		SaveImageAdData(*Data) (int64, error)
 
 		// GetAd  获取广告
 		GetAd(id int64) *Ad
@@ -216,7 +216,7 @@ type (
 		GetSwiperAd(adId int64) SwiperAd
 
 		// GetSwiperAdImage 获取图片项
-		GetSwiperAdImage(adId, id int64) *Image
+		GetSwiperAdImage(adId, id int64) *Data
 
 		// DeleteSwiperAdImage 删除图片项
 		DeleteSwiperAdImage(adId, id int64) error

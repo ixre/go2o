@@ -74,32 +74,11 @@ message SAdDto {
   // 修改时间
   int64 updateTime = 8;
   // 广告数据
-  SAdvertisementDto data = 9;
-}
-
-// 广告数据传输对象
-message SAdvertisementDto {
-  // 广告编号
-  int64 id = 1;
-  // 广告类型
-  int32 type = 2;
-  // 文本广告数据
-  STextAdData text = 3;
-  // 图片广告数据
-  SImageAdData image = 4;
-  // 轮播广告数据
-  SSwiperAdData swiper = 5;
-}
-
-// 文本广告数据
-message STextAdData {
-  int64 id = 1;
-  string title = 2;
-  string linkUrl = 3;
+  repeated SAdData data = 9;
 }
 
 // 图片广告数据
-message SImageAdData {
+message SAdData {
   // 图片编号
   int64 id = 1;
   // 图片标题
@@ -112,11 +91,6 @@ message SImageAdData {
   int32 enabled = 5;
   // 排列序号
   int32 sortNum = 6;
-}
-
-// 轮播广告数据
-message SSwiperAdData{
-  repeated SImageAdData images = 1;
 }
 
 message SetDefaultAdRequest {
@@ -140,15 +114,24 @@ message AdIdRequest {
 }
 
 message SaveAdRequest {
-  int64 adUserId = 1;
-  SAdDto value = 2;
-  SAdvertisementDto data = 3;
+  /** 广告用户 */
+  int64 userId = 1;
+  /** 广告ID */
+  int64 adId = 2;
+  /** 广告名称 */
+  string name = 3;
+  /** 广告类型 */
+  int32 adType = 4;
+  /** 广告状态 */
+  int32 status = 5;
+  /** 广告数据 */
+  repeated SAdData data = 6;
 }
 
 message SaveSwiperImageRequest {
   int64 adUserId = 1;
   int64 adId = 2;
-  SImageAdData value = 3;
+  SAdData value = 3;
 }
 
 message ImageIdRequest {

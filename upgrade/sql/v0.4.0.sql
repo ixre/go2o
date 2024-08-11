@@ -859,3 +859,8 @@ ALTER COLUMN "offline_sales" SET NOT NULL, ALTER COLUMN "offline_sales" DROP DEF
 ALTER COLUMN "update_time" TYPE bigint USING "update_time"::bigint,
 ALTER COLUMN "update_time" SET NOT NULL,
 ALTER COLUMN "update_time" DROP DEFAULT; 
+
+/** 2024-08-11 -ad */
+ALTER TABLE ad_image RENAME TO ad_data;
+DROP TABLE ad_hyperlink;
+DROP TABLE ad_image_ad;

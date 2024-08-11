@@ -13,24 +13,15 @@ import "sort"
 type (
 	// 文本广告
 	IHyperLinkAd interface {
-		SetData(v *HyperLink) error
+		SetData(v *Data) error
 	}
-
-	//  超链接
-	HyperLink struct {
-		Id      int64  `db:"id" auto:"yes" pk:"yes"`
-		AdId    int64  `db:"ad_id"`
-		Title   string `db:"title"`
-		LinkUrl string `db:"link_url"`
-	}
-
 	// 图片广告
 	IImageAd interface {
-		SetData(v *Image) error
+		SetData(v *Data) error
 	}
 
 	// 广告图片
-	Image struct {
+	Data struct {
 		// 图片编号
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
 
@@ -62,20 +53,17 @@ type (
 		GetEnabledAdValue() SwiperAd
 
 		// 保存广告图片
-		SaveImage(v *Image) (int64, error)
+		SaveImage(v []*Data) error
 
 		// 获取图片项
-		GetImage(id int64) *Image
-
-		// 删除图片项
-		DeleteItem(id int64) error
+		GetImage(id int64) *Data
 	}
 )
 
 var _ sort.Interface = SwiperAd{}
 
 // 轮播广告图片集合
-type SwiperAd []*Image
+type SwiperAd []*Data
 
 func (v SwiperAd) Len() int {
 	return len(v)

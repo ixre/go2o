@@ -77,7 +77,6 @@ func (a *articleImpl) SetValue(v *content.Article) error {
 	a._value.AccessToken = v.AccessToken
 	a._value.Priority = v.Priority
 	a._value.UpdateTime = int(time.Now().Unix())
-
 	if a._value.CreateTime == 0 {
 		a._value.CreateTime = a._value.UpdateTime
 	}
@@ -89,7 +88,6 @@ func (a *articleImpl) SetValue(v *content.Article) error {
 		url, _ := a._registryRepo.GetValue(registry.FileServerUrl)
 		a._value.Thumbnail = path.Join(url, "static/init/nopic.jpg")
 	}
-
 	return nil
 }
 
