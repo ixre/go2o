@@ -14,6 +14,7 @@ import (
 
 	impl "github.com/ixre/go2o/core/domain/content"
 	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -27,21 +28,24 @@ var _articleRepo content.IArticleRepo
 type contentRepo struct {
 	fw.BaseRepository[content.Article]
 	db.Connector
-	o        orm.Orm
-	pageRepo content.IPageRepo
-	catRepo  content.IArticleCategoryRepo
+	o             orm.Orm
+	pageRepo      content.IPageRepo
+	catRepo       content.IArticleCategoryRepo
+	_registryRepo registry.IRegistryRepo
 }
 
 // 内容仓储
 func NewArticleRepo(o orm.Orm, wo fw.ORM,
 	catRepo content.IArticleCategoryRepo,
-	pageRepo content.IPageRepo) content.IArticleRepo {
+	pageRepo content.IPageRepo,
+	_registryRepo registry.IRegistryRepo) content.IArticleRepo {
 	once.Do(func() {
 		r := &contentRepo{
-			Connector: o.Connector(),
-			pageRepo:  pageRepo,
-			catRepo:   catRepo,
-			o:         o,
+			Connector:     o.Connector(),
+			pageRepo:      pageRepo,
+			catRepo:       catRepo,
+			o:             o,
+			_registryRepo: _registryRepo,
 		}
 		r.ORM = wo
 		_articleRepo = r
@@ -51,7 +55,7 @@ func NewArticleRepo(o orm.Orm, wo fw.ORM,
 
 // 获取内容
 func (c *contentRepo) GetContent(userId int64) content.IContentAggregateRoot {
-	return impl.NewContent(userId, c, c.catRepo, c.pageRepo)
+	return impl.NewContent(userId, c, c.catRepo, c.pageRepo, c._registryRepo)
 }
 
 // 获取文章数量

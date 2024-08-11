@@ -13,6 +13,7 @@ package member
 
 import (
 	"errors"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -685,7 +686,7 @@ func (m *memberImpl) prepare() (err error) {
 		if len(strings.TrimSpace(re)) == 0 {
 			// 如果未设置,则用系统内置头像
 			url, _ := m.registryRepo.GetValue(registry.FileServerUrl)
-			re = url + "static/init/avatar.png"
+			re = path.Join(url, "static/init/avatar.jpg")
 		}
 		m.value.ProfilePhoto = re
 	}

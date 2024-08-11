@@ -155,12 +155,12 @@ func (p *rbacServiceImpl) createAccessToken(userId int64, username string, perm 
 // 检查令牌是否有效并返回新的令牌
 func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.RbacCheckTokenRequest) (*proto.RbacCheckTokenResponse, error) {
 	if len(request.AccessToken) == 0 {
-		return &proto.RbacCheckTokenResponse{Error: "令牌不能为空"}, nil
+		return &proto.RbacCheckTokenResponse{Code: 1001, Message: "令牌不能为空"}, nil
 	}
 	jwtSecret, err := p.registryRepo.GetValue(registry.SysJWTSecret)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
-		return &proto.RbacCheckTokenResponse{Error: err.Error()}, nil
+		return &proto.RbacCheckTokenResponse{Code: 1002, Message: err.Error()}, nil
 	}
 	// 去掉"Bearer "
 	if len(request.AccessToken) > 6 &&
@@ -173,11 +173,13 @@ func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.RbacC
 		return []byte(jwtSecret), nil
 	})
 	if tk == nil {
-		return &proto.RbacCheckTokenResponse{Error: "令牌无效"}, nil
+		return &proto.RbacCheckTokenResponse{
+			Code: 1003, Message: "令牌无效"}, nil
 	}
 	if !dstClaims.VerifyIssuer("go2o", true) ||
 		dstClaims["sub"] != "go2o-rbac-token" {
-		return &proto.RbacCheckTokenResponse{Error: "未知颁发者的令牌"}, nil
+		return &proto.RbacCheckTokenResponse{
+			Code: 1004, Message: "未知颁发者的令牌"}, nil
 	}
 	// 令牌过期时间
 	exp := int64(dstClaims["exp"].(float64))
@@ -186,12 +188,15 @@ func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.RbacC
 		ve, _ := err.(*jwt.ValidationError)
 		if ve.Errors&jwt.ValidationErrorExpired != 0 {
 			return &proto.RbacCheckTokenResponse{
-				Error:            "令牌已过期",
+				Code:             1005,
+				Message:          "令牌已过期",
 				IsExpires:        true,
 				TokenExpiresTime: exp,
 			}, nil
 		}
-		return &proto.RbacCheckTokenResponse{Error: "令牌无效:" + ve.Error()}, nil
+		return &proto.RbacCheckTokenResponse{
+			Code:    1006,
+			Message: "令牌无效:" + ve.Error()}, nil
 	}
 	aud := int64(typeconv.MustInt(dstClaims["aud"]))
 	// 如果设置了续期参数

@@ -9,11 +9,14 @@
 package content
 
 import (
+	"path"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 )
@@ -21,18 +24,21 @@ import (
 var _ content.IArticle = new(articleImpl)
 
 type articleImpl struct {
-	_repo     content.IArticleRepo
-	_value    *content.Article
-	_category *content.Category
-	_manager  content.IArticleManager
+	_repo         content.IArticleRepo
+	_value        *content.Article
+	_category     *content.Category
+	_manager      content.IArticleManager
+	_registryRepo registry.IRegistryRepo
 }
 
 func NewArticle(v *content.Article, m content.IArticleManager,
-	rep content.IArticleRepo) content.IArticle {
+	rep content.IArticleRepo,
+	registryRepo registry.IRegistryRepo) content.IArticle {
 	return &articleImpl{
-		_repo:    rep,
-		_value:   v,
-		_manager: m,
+		_repo:         rep,
+		_value:        v,
+		_manager:      m,
+		_registryRepo: registryRepo,
 	}
 }
 
@@ -65,7 +71,7 @@ func (a *articleImpl) SetValue(v *content.Article) error {
 	a._value.SortNum = v.SortNum
 	a._value.Location = v.Location
 	a._value.Content = v.Content
-	a._value.Thumbnail = v.Thumbnail
+	a._value.Thumbnail = strings.TrimSpace(v.Thumbnail)
 	a._value.Flag = v.Flag
 	a._value.MchId = v.MchId
 	a._value.AccessToken = v.AccessToken
@@ -78,6 +84,12 @@ func (a *articleImpl) SetValue(v *content.Article) error {
 	if a._value.PublisherId <= 0 {
 		a._value.PublisherId = v.PublisherId
 	}
+	if len(a._value.Thumbnail) == 0 {
+		// 如果未设置,则用系统内置头像
+		url, _ := a._registryRepo.GetValue(registry.FileServerUrl)
+		a._value.Thumbnail = path.Join(url, "static/init/nopic.jpg")
+	}
+
 	return nil
 }
 
@@ -127,17 +139,20 @@ var _ content.IArticleManager = new(articleManagerImpl)
 var locker sync.RWMutex
 
 type articleManagerImpl struct {
-	_rep         content.IArticleCategoryRepo
-	_artRepo     content.IArticleRepo
-	_userId      int64
-	categoryList []*content.Category
+	_rep          content.IArticleCategoryRepo
+	_artRepo      content.IArticleRepo
+	_registryRepo registry.IRegistryRepo
+	_userId       int64
+	categoryList  []*content.Category
 }
 
-func newArticleManagerImpl(userId int64, rep content.IArticleCategoryRepo, artRepo content.IArticleRepo) content.IArticleManager {
+func newArticleManagerImpl(userId int64, rep content.IArticleCategoryRepo, artRepo content.IArticleRepo,
+	_registryRepo registry.IRegistryRepo) content.IArticleManager {
 	return &articleManagerImpl{
-		_rep:     rep,
-		_userId:  userId,
-		_artRepo: artRepo,
+		_rep:          rep,
+		_userId:       userId,
+		_artRepo:      artRepo,
+		_registryRepo: _registryRepo,
 	}
 }
 
@@ -286,14 +301,14 @@ func (a *articleManagerImpl) DeleteCategory(id int) error {
 
 // CreateArticle 创建文章
 func (a *articleManagerImpl) CreateArticle(v *content.Article) content.IArticle {
-	return NewArticle(v, a, a._artRepo)
+	return NewArticle(v, a, a._artRepo, a._registryRepo)
 }
 
 // GetArticle 获取文章
 func (a *articleManagerImpl) GetArticle(id int) content.IArticle {
 	v := a._artRepo.Get(id)
 	if v != nil {
-		return NewArticle(v, a, a._artRepo)
+		return NewArticle(v, a, a._artRepo, a._registryRepo)
 	}
 	return nil
 }

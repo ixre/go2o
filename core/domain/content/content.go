@@ -8,7 +8,10 @@
  */
 package content
 
-import "github.com/ixre/go2o/core/domain/interface/content"
+import (
+	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/domain/interface/registry"
+)
 
 var _ content.IContentAggregateRoot = new(Content)
 
@@ -19,16 +22,19 @@ type Content struct {
 	articleManager content.IArticleManager
 	pageManager    content.IPageManager
 	pageRepo       content.IPageRepo
+	_registryRepo  registry.IRegistryRepo
 }
 
 func NewContent(userId int64, rep content.IArticleRepo,
 	catRepo content.IArticleCategoryRepo,
-	pageRepo content.IPageRepo) content.IContentAggregateRoot {
+	pageRepo content.IPageRepo,
+	_registryRepo registry.IRegistryRepo) content.IContentAggregateRoot {
 	return &Content{
-		artRepo:  rep,
-		pageRepo: pageRepo,
-		userId:   userId,
-		catRepo:  catRepo,
+		artRepo:       rep,
+		pageRepo:      pageRepo,
+		userId:        userId,
+		catRepo:       catRepo,
+		_registryRepo: _registryRepo,
 	}
 }
 
@@ -40,7 +46,7 @@ func (c *Content) GetAggregateRootId() int {
 // ArticleManager 文章服务
 func (c *Content) ArticleManager() content.IArticleManager {
 	if c.articleManager == nil {
-		c.articleManager = newArticleManagerImpl(c.userId, c.catRepo, c.artRepo)
+		c.articleManager = newArticleManagerImpl(c.userId, c.catRepo, c.artRepo, c._registryRepo)
 	}
 	return c.articleManager
 }
@@ -49,7 +55,7 @@ func (c *Content) ArticleManager() content.IArticleManager {
 func (c *Content) PageManager() content.IPageManager {
 	if c.pageManager == nil {
 		c.pageManager = &pageManagerImpl{
-			tenantId:   int(c.userId),
+			tenantId: int(c.userId),
 			pageRepo: c.pageRepo,
 		}
 	}
