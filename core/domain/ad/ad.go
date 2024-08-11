@@ -68,8 +68,8 @@ func (a *adManagerImpl) GetAdByPositionKey(key string) ad.IAdAggregateRoot {
 	}
 
 	pos := a.GetPositionByKey(key)
-	if pos != nil && pos.PutAdId > 0 {
-		iv = a.defaultAd.GetById(pos.PutAdId)
+	if pos != nil && pos.PutAid > 0 {
+		iv = a.defaultAd.GetById(int64(pos.PutAid))
 	}
 	if iv != nil {
 		a.cache[key] = iv
@@ -135,10 +135,10 @@ func (a *userAdImpl) QueryAdvertisement(keys []string) map[string]ad.IAdAggregat
 	mp := make(map[string]ad.IAdAggregateRoot, 0)
 	for _, v := range arr {
 		if _, ok := keyMap[v.Key]; ok {
-			if v.PutAdId <= 0 {
+			if v.PutAid <= 0 {
 				continue
 			}
-			if ia := a.GetById(v.PutAdId); ia != nil {
+			if ia := a.GetById(int64(v.PutAid)); ia != nil {
 				mp[v.Key] = ia
 			}
 		}
@@ -197,7 +197,7 @@ func (a *userAdImpl) CreateAd(v *ad.Ad) ad.IAdAggregateRoot {
 		_rep:   a._rep,
 		_value: v,
 	}
-	switch v.AdType {
+	switch v.TypeId {
 	case ad.TypeSwiper:
 		// 轮播广告
 		return &GalleryAd{
@@ -258,7 +258,7 @@ type adImpl struct {
 // 获取领域对象编号
 func (a *adImpl) GetDomainId() int64 {
 	if a._value != nil {
-		return a._value.Id
+		return int64(a._value.Id)
 	}
 	return 0
 }
@@ -270,7 +270,7 @@ func (a *adImpl) System() bool {
 
 // 广告类型
 func (a *adImpl) Type() int {
-	return a._value.AdType
+	return a._value.TypeId
 }
 
 // 广告名称
@@ -280,10 +280,10 @@ func (a *adImpl) Name() string {
 
 // 设置值
 func (a *adImpl) SetValue(v *ad.Ad) error {
-	if v.AdType == 0 {
+	if v.TypeId == 0 {
 		return ad.ErrAdType
 	}
-	if v.AdType != a.Type() {
+	if v.TypeId != a.Type() {
 		return ad.ErrDisallowModifyAdType
 	}
 	a._value.Name = v.Name
@@ -301,7 +301,7 @@ func (a *adImpl) Save() (int64, error) {
 	//if id > 0 && id != a.GetDomainId() {
 	//	return a.GetDomainId(), ad.ErrNameExists
 	//}
-	a._value.UpdateTime = time.Now().Unix()
+	a._value.UpdateTime = int(time.Now().Unix())
 	return a._rep.SaveAdValue(a._value)
 }
 
