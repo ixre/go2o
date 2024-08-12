@@ -8,6 +8,11 @@
  */
 package ad
 
+import (
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/fw"
+)
+
 //todo: 文字和图片广告待实现
 
 const (
@@ -29,7 +34,7 @@ type (
 		// 根据广告位KEY获取默认广告
 		GetAdByPositionKey(key string) IAdAggregateRoot
 		// 获取用户的广告管理
-		GetUserAd(adUserId int64) IUserAd
+		GetUserAd(adUserId int) IUserAd
 		// 获取广告分组
 		GetGroups() []string
 		// QueryAd 查询广告列表
@@ -38,7 +43,7 @@ type (
 
 	// IAdPosition 广告位
 	IAdPosition interface {
-		GetAggregateRootId() int64
+		domain.IAggregateRoot
 		SetValue(v *Position) error
 		Save() error
 		// 设置广告
@@ -48,27 +53,25 @@ type (
 
 	// IUserAd 商户广告聚合根
 	IUserAd interface {
-		// 获取聚合根标识
-		GetAggregateRootId() int64
+		domain.IAggregateRoot
 		// 删除广告
 		DeleteAd(adId int64) error
 		//获取广告关联的广告位
 		GetAdPositionsByAdId(adId int64) []*Position
 		// 根据编号获取广告
-		GetById(id int64) IAdAggregateRoot
+		GetById(id int) IAdAggregateRoot
 		// 根据KEY获取广告
 		GetByPositionKey(key string) IAdAggregateRoot
 		// 创建广告对象
 		CreateAd(*Ad) IAdAggregateRoot
 		// 设置广告
-		SetAd(posId, adId int64) error
+		SetAd(posId, adId int) error
 		QueryAdvertisement(keys []string) map[string]IAdAggregateRoot
 	}
 
 	// IAdAggregateRoot 广告接口
 	IAdAggregateRoot interface {
-		// 获取领域对象编号
-		GetDomainId() int64
+		domain.IDomain
 		// 是否为系统发布的广告
 		System() bool
 		// 广告类型
@@ -93,13 +96,14 @@ type (
 
 	// 广告数据传输对象
 	AdDto struct {
-		Id     int64       `json:"id"`
+		Id     int         `json:"id"`
 		AdType int         `json:"type"`
 		Data   interface{} `json:"data"`
 	}
 
 	// 广告仓储
 	IAdRepo interface {
+		fw.Repository[Ad]
 		// 获取广告管理器
 		GetAdManager() IAdvertisementManager
 
@@ -122,7 +126,7 @@ type (
 		SaveAdPosition(a *Position) (int64, error)
 
 		// 设置用户的广告
-		SetUserAd(adUserId, posId, adId int64) error
+		SetUserAd(adUserId, posId, adId int) error
 
 		// 根据名称获取广告编号
 		GetIdByName(mchId int64, name string) int

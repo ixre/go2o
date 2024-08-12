@@ -69,7 +69,7 @@ func (a *adManagerImpl) GetAdByPositionKey(key string) ad.IAdAggregateRoot {
 
 	pos := a.GetPositionByKey(key)
 	if pos != nil && pos.PutAid > 0 {
-		iv = a.defaultAd.GetById(int64(pos.PutAid))
+		iv = a.defaultAd.GetById(pos.PutAid)
 	}
 	if iv != nil {
 		a.cache[key] = iv
@@ -78,19 +78,19 @@ func (a *adManagerImpl) GetAdByPositionKey(key string) ad.IAdAggregateRoot {
 }
 
 // 获取用户的广告管理
-func (a *adManagerImpl) GetUserAd(adUserId int64) ad.IUserAd {
+func (a *adManagerImpl) GetUserAd(adUserId int) ad.IUserAd {
 	return newUserAd(a, a.rep, adUserId)
 }
 
 type userAdImpl struct {
 	_rep      ad.IAdRepo
 	_manager  ad.IAdvertisementManager
-	_adUserId int64
+	_adUserId int
 	_cache    map[string]ad.IAdAggregateRoot
 	_mux      sync.Mutex
 }
 
-func newUserAd(m ad.IAdvertisementManager, rep ad.IAdRepo, adUserId int64) ad.IUserAd {
+func newUserAd(m ad.IAdvertisementManager, rep ad.IAdRepo, adUserId int) ad.IUserAd {
 	return &userAdImpl{
 		_rep:      rep,
 		_manager:  m,
@@ -99,13 +99,13 @@ func newUserAd(m ad.IAdvertisementManager, rep ad.IAdRepo, adUserId int64) ad.IU
 }
 
 // 获取聚合根标识
-func (a *userAdImpl) GetAggregateRootId() int64 {
+func (a *userAdImpl) GetAggregateRootId() int {
 	return a._adUserId
 }
 
 // 根据编号获取广告
-func (a *userAdImpl) GetById(id int64) ad.IAdAggregateRoot {
-	v := a._rep.GetAd(id)
+func (a *userAdImpl) GetById(id int) ad.IAdAggregateRoot {
+	v := a._rep.GetAd(int64(id))
 	if v != nil {
 		return a.CreateAd(v)
 	}
@@ -138,7 +138,7 @@ func (a *userAdImpl) QueryAdvertisement(keys []string) map[string]ad.IAdAggregat
 			if v.PutAid <= 0 {
 				continue
 			}
-			if ia := a.GetById(int64(v.PutAid)); ia != nil {
+			if ia := a.GetById(v.PutAid); ia != nil {
 				mp[v.Key] = ia
 			}
 		}
@@ -148,12 +148,12 @@ func (a *userAdImpl) QueryAdvertisement(keys []string) map[string]ad.IAdAggregat
 
 // 删除广告
 func (a *userAdImpl) DeleteAd(adId int64) error {
-	adv := a.GetById(adId)
+	adv := a.GetById(int(adId))
 	if adv != nil {
 		if len(a.GetAdPositionsByAdId(adId)) > 0 {
 			return ad.ErrAdUsed
 		}
-		err := a._rep.DeleteAd(a._adUserId, adId)
+		err := a._rep.DeleteAd(int64(a._adUserId), adId)
 		a._rep.DeleteImageAdData(adId)
 		a._rep.DeleteTextAdData(adId)
 		if err == nil {
@@ -178,7 +178,7 @@ func (a *userAdImpl) GetByPositionKey(key string) ad.IAdAggregateRoot {
 		return iv
 	}
 	//获取用户的设定,如果没有,则获取平台的设定
-	v := a._rep.GetAdByKey(a._adUserId, key)
+	v := a._rep.GetAdByKey(int64(a._adUserId), key)
 	if v == nil {
 		iv = a._manager.GetAdByPositionKey(key)
 	} else {
@@ -227,18 +227,18 @@ func (a *userAdImpl) checkPositionBind(posId int64, adId int64) bool {
 }
 
 // 设置广告
-func (a *userAdImpl) SetAd(posId, adId int64) error {
-	ap := a._manager.GetPosition(posId)
+func (a *userAdImpl) SetAd(posId, adId int) error {
+	ap := a._manager.GetPosition(int64(posId))
 	if ap == nil {
 		return ad.ErrNoSuchAdPosition
 	}
 	if ap.GetValue().Opened == 0 {
 		return ad.ErrNotOpened
 	}
-	if !a.checkPositionBind(posId, adId) {
+	if !a.checkPositionBind(int64(posId), int64(adId)) {
 		return ad.ErrUserPositionIsBind
 	}
-	if a._rep.GetAd(adId) == nil {
+	if a._rep.GetAd(int64(adId)) == nil {
 		return ad.ErrNoSuchAd
 	}
 	err := a._rep.SetUserAd(a.GetAggregateRootId(), posId, adId)
@@ -256,9 +256,9 @@ type adImpl struct {
 }
 
 // 获取领域对象编号
-func (a *adImpl) GetDomainId() int64 {
+func (a *adImpl) GetDomainId() int {
 	if a._value != nil {
-		return int64(a._value.Id)
+		return a._value.Id
 	}
 	return 0
 }

@@ -104,6 +104,13 @@ func GetInvoiceQueryService() *query.InvoiceQuery {
 	return invoiceQuery
 }
 
+// GetOrderQueryService 获取广告查询服务
+func GetAdvertisementQueryService() *query.AdvertisementQuery {
+	db := provide.GetGOrm()
+	advertisementQuery := query.NewAdvertisementQuery(db)
+	return advertisementQuery
+}
+
 // Injectors from repo.go:
 
 func GetProModelRepo() promodel.IProductModelRepo {
@@ -362,8 +369,9 @@ func GetArticleCategoryRepo() content.IArticleCategoryRepo {
 
 func GetAdRepo() ad.IAdRepo {
 	orm := provide.GetOrmInstance()
+	db := provide.GetGOrm()
 	storageInterface := provide.GetStorageInstance()
-	iAdRepo := repos.NewAdvertisementRepo(orm, storageInterface)
+	iAdRepo := repos.NewAdvertisementRepo(orm, db, storageInterface)
 	return iAdRepo
 }
 
@@ -908,8 +916,9 @@ func GetContentService() proto.ContentServiceServer {
 // 广告服务
 func GetAdvertisementService() proto.AdvertisementServiceServer {
 	orm := provide.GetOrmInstance()
+	db := provide.GetGOrm()
 	storageInterface := provide.GetStorageInstance()
-	iAdRepo := repos.NewAdvertisementRepo(orm, storageInterface)
+	iAdRepo := repos.NewAdvertisementRepo(orm, db, storageInterface)
 	advertisementServiceServer := impl2.NewAdvertisementService(iAdRepo, storageInterface)
 	return advertisementServiceServer
 }
@@ -941,7 +950,8 @@ func GetPersonFinanceService() proto.FinanceServiceServer {
 func GetPortalService() proto.PortalServiceServer {
 	orm := provide.GetOrmInstance()
 	storageInterface := provide.GetStorageInstance()
-	iAdRepo := repos.NewAdvertisementRepo(orm, storageInterface)
+	db := provide.GetGOrm()
+	iAdRepo := repos.NewAdvertisementRepo(orm, db, storageInterface)
 	iProductModelRepo := repos.NewProModelRepo(orm)
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
 	iCategoryRepo := repos.NewCategoryRepo(orm, iProductModelRepo, iRegistryRepo, storageInterface)
@@ -1081,7 +1091,7 @@ func GetWorkorderService() proto.WorkorderServiceServer {
 var provideSets = wire.NewSet(provide.GetOrm, provide.GetGOrm, provide.GetOrmInstance, provide.GetStorageInstance, provide.GetApp, provide.GetDb, repos.NewSystemRepo, repos.NewRegistryRepo, repos.NewProModelRepo, repos.NewValueRepo, repos.NewUserRepo, repos.NewWalletRepo, repos.NewNotifyRepo, repos.NewMssRepo, repos.NewExpressRepo, repos.NewShipmentRepo, repos.NewMemberRepo, repos.NewProductRepo, repos.NewItemWholesaleRepo, repos.NewCategoryRepo, repos.NewShopRepo, repos.NewGoodsItemRepo, repos.NewAfterSalesRepo, repos.NewCartRepo, repos.NewArticleRepo, repos.NewMerchantRepo, repos.NewOrderRepo, repos.NewPaymentRepo, repos.NewPromotionRepo, repos.NewStationRepo, repos.NewTagSaleRepo, repos.NewWholesaleRepo, repos.NewPersonFinanceRepository, repos.NewDeliverRepo, repos.NewAdvertisementRepo, repos.NewJobRepository, repos.NewStaffRepo, repos.NewPageRepo, repos.NewArticleCategoryRepo, repos.NewInvoiceTenantRepo, repos.NewChatRepo, repos.NewWorkorderRepo)
 
 var queryProvideSets = wire.NewSet(
-	provideSets, query.NewStationQuery, query.NewMerchantQuery, query.NewOrderQuery, query.NewMemberQuery, query.NewShopQuery, query.NewItemQuery, query.NewAfterSalesQuery, query.NewContentQuery, query.NewWorkQuery, query.NewWalletQuery, query.NewInvoiceQuery,
+	provideSets, query.NewStationQuery, query.NewMerchantQuery, query.NewOrderQuery, query.NewMemberQuery, query.NewShopQuery, query.NewItemQuery, query.NewAfterSalesQuery, query.NewContentQuery, query.NewWorkQuery, query.NewWalletQuery, query.NewInvoiceQuery, query.NewAdvertisementQuery,
 )
 
 var daoProvideSets = wire.NewSet(

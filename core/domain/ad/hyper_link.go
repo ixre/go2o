@@ -22,7 +22,7 @@ type HyperLinkAdImpl struct {
 // 获取链接广告值
 func (h *HyperLinkAdImpl) getData() *ad.Data {
 	if h.extValue == nil {
-		h.extValue = h._rep.GetTextAdData(h.GetDomainId())
+		h.extValue = h._rep.GetTextAdData(int64(h.GetDomainId()))
 	}
 	return h.extValue
 }
@@ -43,7 +43,7 @@ func (h *HyperLinkAdImpl) Save() (int64, error) {
 		if v == nil {
 			v = &ad.Data{}
 		}
-		v.AdId = id
+		v.AdId = int(id)
 		_, err = h._rep.SaveTextAdData(v)
 	}
 	return id, err

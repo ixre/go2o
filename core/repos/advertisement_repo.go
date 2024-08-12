@@ -15,6 +15,7 @@ import (
 
 	adImpl "github.com/ixre/go2o/core/domain/ad"
 	"github.com/ixre/go2o/core/domain/interface/ad"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
@@ -26,15 +27,18 @@ type advertisementRepo struct {
 	db.Connector
 	storage storage.Interface
 	o       orm.Orm
+	fw.BaseRepository[ad.Ad]
 }
 
 // 广告仓储
-func NewAdvertisementRepo(o orm.Orm, storage storage.Interface) ad.IAdRepo {
-	return &advertisementRepo{
+func NewAdvertisementRepo(o orm.Orm, fo fw.ORM, storage storage.Interface) ad.IAdRepo {
+	r := &advertisementRepo{
 		Connector: o.Connector(),
 		storage:   storage,
 		o:         o,
 	}
+	r.ORM = fo
+	return r
 }
 
 // 获取广告管理器
@@ -120,11 +124,11 @@ func (a *advertisementRepo) SaveAdPosition(v *ad.Position) (int64, error) {
 }
 
 // 设置用户的广告
-func (a *advertisementRepo) SetUserAd(adUserId, posId, adId int64) error {
+func (a *advertisementRepo) SetUserAd(adUserId, posId, adId int) error {
 	v := &ad.AdUserSet{
-		AdUserId: adUserId,
-		PosId:    posId,
-		AdId:     adId,
+		UserId: adUserId,
+		PosId:  posId,
+		AdId:   adId,
 	}
 	a.ExecScalar("SELECT id FROM ad_userset WHERE user_id=$1 AND ad_id=$2", &v.Id, adUserId, adId)
 	v.PosId = posId

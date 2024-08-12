@@ -27,7 +27,7 @@ type GalleryAd struct {
 func (g *GalleryAd) GetAdValue() ad.SwiperAd {
 	if g.adValue == nil {
 		if g.GetDomainId() > 0 {
-			g.adValue = g._rep.GetSwiperAd(g.GetDomainId())
+			g.adValue = g._rep.GetSwiperAd(int64(g.GetDomainId()))
 			sort.Sort(g.adValue)
 		} else {
 			g.adValue = []*ad.Data{}
@@ -50,7 +50,7 @@ func (g *GalleryAd) GetEnabledAdValue() ad.SwiperAd {
 
 // 保存广告图片
 func (g *GalleryAd) SaveImage(items []*ad.Data) error {
-	nowMap := collections.ToMap(items, func(a *ad.Data) (int64, *ad.Data) {
+	nowMap := collections.ToMap(items, func(a *ad.Data) (int, *ad.Data) {
 		return a.Id, a
 	})
 	// 从旧的数据中筛选出要删除的项
@@ -59,7 +59,7 @@ func (g *GalleryAd) SaveImage(items []*ad.Data) error {
 	})
 	// 删除项
 	for _, v := range delList {
-		g._rep.DeleteSwiperAdImage(g.GetDomainId(), v.Id)
+		g._rep.DeleteSwiperAdImage(int64(g.GetDomainId()), int64(v.Id))
 	}
 	// 保存项
 	for _, v := range items {
@@ -77,7 +77,7 @@ func (g *GalleryAd) SaveImage(items []*ad.Data) error {
 
 // 获取图片项
 func (g *GalleryAd) GetImage(id int64) *ad.Data {
-	return g._rep.GetSwiperAdImage(g.GetDomainId(), id)
+	return g._rep.GetSwiperAdImage(int64(g.GetDomainId()), id)
 }
 
 // 转换为数据传输对象
