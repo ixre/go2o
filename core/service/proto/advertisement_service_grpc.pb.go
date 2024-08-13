@@ -53,9 +53,9 @@ type AdvertisementServiceClient interface {
 	// 用户投放广告
 	SetUserAd(ctx context.Context, in *SetUserAdRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取广告,returnData=true返回数据传输对象
-	GetAdvertisement(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAdDto, error)
+	GetAdvertisement(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAd, error)
 	// 保存广告,更新时不允许修改类型
-	SaveAd(ctx context.Context, in *SaveAdRequest, opts ...grpc.CallOption) (*TxResult, error)
+	SaveAd(ctx context.Context, in *SAd, opts ...grpc.CallOption) (*TxResult, error)
 	// 删除广告
 	DeleteAd(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
@@ -140,8 +140,8 @@ func (c *advertisementServiceClient) SetUserAd(ctx context.Context, in *SetUserA
 	return out, nil
 }
 
-func (c *advertisementServiceClient) GetAdvertisement(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAdDto, error) {
-	out := new(SAdDto)
+func (c *advertisementServiceClient) GetAdvertisement(ctx context.Context, in *AdIdRequest, opts ...grpc.CallOption) (*SAd, error) {
+	out := new(SAd)
 	err := c.cc.Invoke(ctx, AdvertisementService_GetAdvertisement_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ func (c *advertisementServiceClient) GetAdvertisement(ctx context.Context, in *A
 	return out, nil
 }
 
-func (c *advertisementServiceClient) SaveAd(ctx context.Context, in *SaveAdRequest, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *advertisementServiceClient) SaveAd(ctx context.Context, in *SAd, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, AdvertisementService_SaveAd_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -188,9 +188,9 @@ type AdvertisementServiceServer interface {
 	// 用户投放广告
 	SetUserAd(context.Context, *SetUserAdRequest) (*TxResult, error)
 	// 获取广告,returnData=true返回数据传输对象
-	GetAdvertisement(context.Context, *AdIdRequest) (*SAdDto, error)
+	GetAdvertisement(context.Context, *AdIdRequest) (*SAd, error)
 	// 保存广告,更新时不允许修改类型
-	SaveAd(context.Context, *SaveAdRequest) (*TxResult, error)
+	SaveAd(context.Context, *SAd) (*TxResult, error)
 	// 删除广告
 	DeleteAd(context.Context, *AdIdRequest) (*TxResult, error)
 	mustEmbedUnimplementedAdvertisementServiceServer()
@@ -224,10 +224,10 @@ func (UnimplementedAdvertisementServiceServer) QueryAdvertisementData(context.Co
 func (UnimplementedAdvertisementServiceServer) SetUserAd(context.Context, *SetUserAdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetUserAd not implemented")
 }
-func (UnimplementedAdvertisementServiceServer) GetAdvertisement(context.Context, *AdIdRequest) (*SAdDto, error) {
+func (UnimplementedAdvertisementServiceServer) GetAdvertisement(context.Context, *AdIdRequest) (*SAd, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAdvertisement not implemented")
 }
-func (UnimplementedAdvertisementServiceServer) SaveAd(context.Context, *SaveAdRequest) (*TxResult, error) {
+func (UnimplementedAdvertisementServiceServer) SaveAd(context.Context, *SAd) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveAd not implemented")
 }
 func (UnimplementedAdvertisementServiceServer) DeleteAd(context.Context, *AdIdRequest) (*TxResult, error) {
@@ -409,7 +409,7 @@ func _AdvertisementService_GetAdvertisement_Handler(srv interface{}, ctx context
 }
 
 func _AdvertisementService_SaveAd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveAdRequest)
+	in := new(SAd)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -421,7 +421,7 @@ func _AdvertisementService_SaveAd_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: AdvertisementService_SaveAd_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdvertisementServiceServer).SaveAd(ctx, req.(*SaveAdRequest))
+		return srv.(AdvertisementServiceServer).SaveAd(ctx, req.(*SAd))
 	}
 	return interceptor(ctx, in, info, handler)
 }

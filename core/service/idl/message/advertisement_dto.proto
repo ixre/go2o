@@ -40,7 +40,7 @@ message QueryAdRequest{
 
 // 查询广告响应
 message QueryAdResponse{
-  repeated SAdDto value = 1;
+  repeated SAd value = 1;
 }
 
 // 广告用户设置
@@ -55,27 +55,6 @@ message SAdUserSet {
   int64 adId = 4;
 }
 
-// 广告
-message SAdDto {
-  // 编号
-  int64 id = 1;
-  //广告用户编号
-  int64 userId =  2;
-  // 名称
-  string name = 3;
-  // 广告类型
-  int32 adType = 4;
-  // 展现次数
-  int32 showTimes = 5;
-  // 点击次数
-  int32 clickTimes = 6;
-  // 展现天数
-  int32 showDays = 7;
-  // 修改时间
-  int64 updateTime = 8;
-  // 广告数据
-  repeated SAdData data = 9;
-}
 
 // 图片广告数据
 message SAdData {
@@ -113,7 +92,8 @@ message AdIdRequest {
   bool returnData = 4;
 }
 
-message SaveAdRequest {
+// 广告
+message SAd {
   /** 广告用户 */
   int64 userId = 1;
   /** 广告ID */
@@ -127,7 +107,6 @@ message SaveAdRequest {
   /** 广告数据 */
   repeated SAdData data = 6;
 }
-
 message SaveSwiperImageRequest {
   int64 adUserId = 1;
   int64 adId = 2;

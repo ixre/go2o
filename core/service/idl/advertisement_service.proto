@@ -35,10 +35,10 @@ service AdvertisementService {
     rpc SetUserAd (SetUserAdRequest) returns (TxResult) {
     }
     // 获取广告,returnData=true返回数据传输对象
-    rpc GetAdvertisement (AdIdRequest) returns (SAdDto) {
+    rpc GetAdvertisement (AdIdRequest) returns (SAd) {
     }
     // 保存广告,更新时不允许修改类型
-    rpc SaveAd (SaveAdRequest) returns (TxResult) {
+    rpc SaveAd (SAd) returns (TxResult) {
     }
     // 删除广告
     rpc DeleteAd (AdIdRequest) returns (TxResult) {
