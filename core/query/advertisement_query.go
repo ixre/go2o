@@ -26,9 +26,10 @@ func (a *AdvertisementQuery) QueryPagingPositions(p *fw.PagingParams) (*fw.Pagin
 }
 
 func (a *AdvertisementQuery) QueryPagingAdList(p *fw.PagingParams) (*fw.PagingResult, error) {
-	tables := `ad_position
-        LEFT JOIN ad_list ON ad_list.id = ad_position.put_aid`
-	fields := `ad_position.*,
-        ad_list.name AS ad_title`
+	tables := `ad_list
+        LEFT JOIN ad_position ON ad_list.id = ad_position.put_aid`
+	fields := `ad_list.*,
+        ad_position.name AS position_name,
+		ad_position.id AS position_id`
 	return fw.UnifinedQueryPaging(a.ORM, p, tables, fields)
 }

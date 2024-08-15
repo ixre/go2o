@@ -206,6 +206,9 @@ func (a *advertisementService) SaveAd(_ context.Context, req *proto.SAd) (*proto
 	}
 	if req.AdId > 0 {
 		adv = pa.GetById(v.Id)
+		if adv == nil {
+			return a.errorV2(ad.ErrNoSuchAd), nil
+		}
 	} else {
 		adv = pa.CreateAd(v)
 	}
