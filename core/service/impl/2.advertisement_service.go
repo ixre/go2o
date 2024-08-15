@@ -107,11 +107,57 @@ func (a *advertisementService) GetAdvertisement(_ context.Context, r *proto.AdId
 	if ia != nil {
 		ret := a.parseAdDto(ia.GetValue())
 		if r.ReturnData {
-			//ret.Data = a.getAdvertisementDto(ia)
+			ret.Data = a.getAdvertisementData(ia)
 		}
 		return ret, nil
 	}
 	return nil, ad.ErrNoSuchAd
+}
+
+func (a *advertisementService) getAdvertisementData(ia ad.IAdAggregateRoot) (media []*proto.SAdData) {
+
+	dto := ia.Dto()
+	switch ia.Type() {
+	case ad.TypeText:
+		v := dto.Data.(*ad.Data)
+		if v != nil {
+			media = append(media, &proto.SAdData{
+				Id:       int64(v.Id),
+				Title:    v.Title,
+				LinkUrl:  v.LinkUrl,
+				ImageUrl: v.ImageUrl,
+				Enabled:  int32(v.Enabled),
+				SortNum:  int32(v.SortNum),
+			})
+		}
+	case ad.TypeImage:
+		v := dto.Data.(*ad.Data)
+		if v != nil {
+			media = append(media, &proto.SAdData{
+				Id:       int64(v.Id),
+				Title:    v.Title,
+				LinkUrl:  v.LinkUrl,
+				ImageUrl: v.ImageUrl,
+				Enabled:  int32(v.Enabled),
+				SortNum:  int32(v.SortNum),
+			})
+		}
+	case ad.TypeSwiper:
+		images := dto.Data.(ad.SwiperAd)
+		for _, v := range images {
+			media = append(media, &proto.SAdData{
+				Id:       int64(v.Id),
+				Title:    v.Title,
+				LinkUrl:  v.LinkUrl,
+				ImageUrl: v.ImageUrl,
+				Enabled:  int32(v.Enabled),
+				SortNum:  int32(v.SortNum),
+			})
+		}
+	default:
+		panic("not support ad type")
+	}
+	return media
 }
 
 // 获取广告数据传输对象
@@ -159,23 +205,6 @@ func (a *advertisementService) getAdvertisementPackage(ia ad.IAdAggregateRoot) *
 	return ret
 }
 
-// // 获取广告数据传输对象
-// func (a *advertisementService) getAdvertisementDto(ia ad.IAdAggregateRoot) *proto.SAdvertisementDto {
-// 	dto := ia.Dto()
-// 	ret := &proto.SAdvertisementDto{Id: dto.Id, Type: int32(dto.AdType)}
-// 	switch dto.AdType {
-// 	case ad.TypeText:
-// 		ret.Text = a.parseTextDto(dto)
-// 	case ad.TypeImage:
-// 		ret.Image = a.parseImageDto(dto)
-// 	case ad.TypeSwiper:
-// 		ret.Swiper = a.parseSwiperDto(dto)
-// 	default:
-// 		panic("not support ad type")
-// 	}
-// 	return ret
-// }
-
 func (a *advertisementService) QueryAdvertisementData(_ context.Context, r *proto.QueryAdvertisementDataRequest) (*proto.QueryAdvertisementDataResponse, error) {
 	iu := a.getUserAd(r.AdUserId)
 	var list = iu.QueryAdvertisement(r.Keys)
@@ -200,6 +229,7 @@ func (a *advertisementService) SaveAd(_ context.Context, req *proto.SAd) (*proto
 	pa := a.getUserAd(req.UserId)
 	var adv ad.IAdAggregateRoot
 	v := &ad.Ad{
+		Id:     int(req.AdId),
 		UserId: int(req.UserId),
 		Name:   req.Name,
 		TypeId: int(req.AdType),
