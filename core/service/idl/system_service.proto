@@ -111,8 +111,12 @@ message SSystemInfo{
 
 /** 替换敏感词请求 */
 message ReplaceSensitiveRequest {
+    /** 文本 */
     string text = 1;
+    /** 替换文本 */
     string replacement = 2;
+    /** 增强替换用户敏感信息,如手机,身份证,邮箱等 */
+    bool extra = 3;
 }
 
 // 获取下级选项请求

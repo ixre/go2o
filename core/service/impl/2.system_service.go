@@ -20,6 +20,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/infrastructure/util/sensitive"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/module/bank"
@@ -82,6 +83,14 @@ func (s *foundationService) CheckSensitive(_ context.Context, r *proto.String) (
 // 替换敏感词
 func (s *foundationService) ReplaceSensitive(_ context.Context, r *proto.ReplaceSensitiveRequest) (*proto.String, error) {
 	v := sensitive.Singleton().ReplaceAll(r.Text, r.Replacement)
+	if r.Extra {
+		v = regex.ContainPhoneRegex.ReplaceAllString(v, "***")
+		v = regex.ContainEmailRegex.ReplaceAllString(v, "***")
+		v = regex.ContainUrlRegex.ReplaceAllString(v, "***")
+		v = regex.ContainChinaIDCardRegex.ReplaceAllString(v, "***")
+		v = regex.ContainBankCardRegex.ReplaceAllString(v, "***")
+		v = regex.ContainTelphoneRegex.ReplaceAllString(v, "***")
+	}
 	return &proto.String{Value: v}, nil
 }
 
