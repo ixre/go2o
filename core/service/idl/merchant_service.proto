@@ -122,6 +122,9 @@ service MerchantService {
     rpc SaveStaff(SaveStaffRequest)returns(Result){
 
     }
+    // 员工转商户,生成审批请求
+    rpc TransferStaff(TransferStaffRequest)returns(TxResult){
+    }
 
     // 获取钱包账户
     rpc GetAccount (MerchantId) returns (SMerchantAccount) {
@@ -243,4 +246,12 @@ message SMerchantOrder {
     int64 createTime = 15;
     repeated SOrderItem items = 16;
     map<string, string> data = 17;
+}
+
+// 员工转商户请求
+message TransferStaffRequest{
+    // 员工编号
+    int64 staffId = 1;
+    // 商户编号
+    int64 mchId = 2;
 }

@@ -37,3 +37,16 @@ func (m *staffRepoImpl) GetStaffByMemberId(memberId int) *staff.Staff {
 	return m.FindBy("member_id = $1 and work_status <> $2", memberId,
 		staff.WorkStatusOff)
 }
+
+var _ staff.IStaffTransferRepo = new(mchStaffTransferRepoImpl)
+
+type mchStaffTransferRepoImpl struct {
+	fw.BaseRepository[staff.StaffTransfer]
+}
+
+// NewStaffTransferRepo 创建员工转商户仓储
+func NewStaffTransferRepo(o fw.ORM) staff.IStaffTransferRepo {
+	r := &mchStaffTransferRepoImpl{}
+	r.ORM = o
+	return r
+}

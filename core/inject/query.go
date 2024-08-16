@@ -52,6 +52,7 @@ var provideSets = wire.NewSet(
 	repos.NewAdvertisementRepo,
 	repos.NewJobRepository,
 	repos.NewStaffRepo,
+	repos.NewStaffTransferRepo,
 	repos.NewPageRepo,
 	repos.NewArticleCategoryRepo,
 	repos.NewInvoiceTenantRepo,

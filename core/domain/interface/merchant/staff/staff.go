@@ -13,11 +13,22 @@ var (
 	WorkStatusOff = 4
 )
 
+var (
+	// 审核状态
+	ReviewStatusPending = 1
+	// 审核通过
+	ReviewStatusApproved = 2
+	// 审核拒绝
+	ReviewStatusRejected = 3
+)
+
 type (
 	// IStaffManager 员工管理接口
 	IStaffManager interface {
 		// Create 创建员工
 		Create(memberId int) error
+		// RequestTransfer 请求转商户
+		RequestTransfer(staffId, mchId int) error
 	}
 
 	// IStaffRepo 员工数据访问接口
@@ -27,6 +38,10 @@ type (
 		GetStaffByMemberId(memberId int) *Staff
 	}
 
+	// IMchStaffTransferRepo 员工转商户仓储
+	IStaffTransferRepo interface {
+		fw.Repository[StaffTransfer]
+	}
 	// MchStaff 商户代理人坐席(员工)
 	Staff struct {
 		// 编号
@@ -66,4 +81,30 @@ type (
 
 func (s *Staff) TableName() string {
 	return "mch_staff"
+}
+
+// StaffTransfer 员工转商户
+type StaffTransfer struct {
+	// Id
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 员工编号
+	StaffId int `json:"staffId" db:"staff_id" gorm:"column:staff_id" bson:"staffId"`
+	// 原商户
+	OriginMchId int `json:"originMchId" db:"origin_mch_id" gorm:"column:origin_mch_id" bson:"originMchId"`
+	// 转移商户
+	TransferMchId int `json:"transferMchId" db:"transfer_mch_id" gorm:"column:transfer_mch_id" bson:"transferMchId"`
+	// 审批编号
+	ApprovalId int `json:"approvalId" db:"approval_id" gorm:"column:approval_id" bson:"approvalId"`
+	// 审核状态
+	ReviewStatus int `json:"reviewStatus" db:"review_status" gorm:"column:review_status" bson:"reviewStatus"`
+	// 审核备注
+	ReviewRemark string `json:"reviewRemark" db:"review_remark" gorm:"column:review_remark" bson:"reviewRemark"`
+	// 创建时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+}
+
+func (m StaffTransfer) TableName() string {
+	return "mch_staff_transfer"
 }

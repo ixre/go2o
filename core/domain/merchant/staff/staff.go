@@ -1,8 +1,10 @@
 package employee
 
 import (
+	"errors"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
@@ -12,21 +14,27 @@ import (
 var _ staff.IStaffManager = new(staffManagerImpl)
 
 type staffManagerImpl struct {
-	_mch         merchant.IMerchantAggregateRoot
-	_repo        staff.IStaffRepo
-	_memberRepo  member.IMemberRepo
-	_stationRepo station.IStationRepo
+	_mch               merchant.IMerchantAggregateRoot
+	_repo              staff.IStaffRepo
+	_staffTransferRepo staff.IStaffTransferRepo
+	_memberRepo        member.IMemberRepo
+	_stationRepo       station.IStationRepo
+	_mchRepo           merchant.IMerchantRepo
 }
 
 func NewStaffManager(mch merchant.IMerchantAggregateRoot,
 	staffRepo staff.IStaffRepo,
+	staffTransferRepo staff.IStaffTransferRepo,
 	memberRepo member.IMemberRepo,
-	stationRepo station.IStationRepo) staff.IStaffManager {
+	stationRepo station.IStationRepo,
+	mchRepo merchant.IMerchantRepo) staff.IStaffManager {
 	return &staffManagerImpl{
-		_mch:         mch,
-		_repo:        staffRepo,
-		_memberRepo:  memberRepo,
-		_stationRepo: stationRepo,
+		_mch:               mch,
+		_repo:              staffRepo,
+		_staffTransferRepo: staffTransferRepo,
+		_memberRepo:        memberRepo,
+		_stationRepo:       stationRepo,
+		_mchRepo:           mchRepo,
 	}
 }
 
@@ -76,4 +84,33 @@ func (e *staffManagerImpl) Create(memberId int) error {
 	}
 	_, err := e._repo.Save(v)
 	return err
+}
+
+// RequestTransfer implements staff.IStaffManager.
+func (e *staffManagerImpl) RequestTransfer(staffId int, mchId int) error {
+	count, _ := e._staffTransferRepo.Count("staff_id=? and review_status = ?", staffId, enum.ReviewPending)
+	if count > 0 {
+		return errors.New("员工存在未审核的转移请求")
+	}
+	mch := e._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		return errors.New("商户不存在")
+	}
+	// 创建转移请求
+	transferRequest := &staff.StaffTransfer{
+		Id:            0,
+		StaffId:       staffId,
+		OriginMchId:   e._mch.GetAggregateRootId(),
+		TransferMchId: mchId,
+		ApprovalId:    0,
+		ReviewStatus:  int(enum.ReviewPending),
+		ReviewRemark:  "",
+		CreateTime:    int(time.Now().Unix()),
+		UpdateTime:    int(time.Now().Unix()),
+	}
+	_, err := e._staffTransferRepo.Save(transferRequest)
+	if err != nil {
+		return errors.New("创建转移请求失败")
+	}
+	return nil
 }

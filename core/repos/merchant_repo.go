@@ -43,21 +43,22 @@ type merchantRepo struct {
 	fw.BaseRepository[merchant.Merchant]
 	authRepo fw.BaseRepository[merchant.Authenticate]
 	db.Connector
-	_orm          orm.Orm
-	storage       storage.Interface
-	manager       merchant.IMerchantManager
-	_wsRepo       wholesaler.IWholesaleRepo
-	_itemRepo     item.IItemRepo
-	_userRepo     user.IUserRepo
-	_employeeRepo staff.IStaffRepo
-	_mssRepo      mss.IMessageRepo
-	_shopRepo     shop.IShopRepo
-	_valRepo      valueobject.IValueRepo
-	_memberRepo   member.IMemberRepo
-	_stationRepo  station.IStationRepo
-	_walletRepo   wallet.IWalletRepo
-	_registryRepo registry.IRegistryRepo
-	mux           *sync.RWMutex
+	_orm               orm.Orm
+	storage            storage.Interface
+	manager            merchant.IMerchantManager
+	_wsRepo            wholesaler.IWholesaleRepo
+	_itemRepo          item.IItemRepo
+	_userRepo          user.IUserRepo
+	_employeeRepo      staff.IStaffRepo
+	_mssRepo           mss.IMessageRepo
+	_shopRepo          shop.IShopRepo
+	_valRepo           valueobject.IValueRepo
+	_memberRepo        member.IMemberRepo
+	_stationRepo       station.IStationRepo
+	_walletRepo        wallet.IWalletRepo
+	_registryRepo      registry.IRegistryRepo
+	_staffTransferRepo staff.IStaffTransferRepo
+	mux                *sync.RWMutex
 }
 
 // GetBalanceAccountLog implements merchant.IMerchantRepo
@@ -69,7 +70,11 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 	memberRepo member.IMemberRepo,
 	stationRepo station.IStationRepo,
 	mssRepo mss.IMessageRepo,
-	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantRepo {
+	walletRepo wallet.IWalletRepo,
+	valRepo valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo,
+	staffTransferRepo staff.IStaffTransferRepo,
+) merchant.IMerchantRepo {
 	if !mchMerchantDaoImplMapped {
 		// 映射实体
 		o.Mapping(merchant.Merchant{}, "mch_merchant")
@@ -77,21 +82,22 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 		mchMerchantDaoImplMapped = true
 	}
 	r := &merchantRepo{
-		Connector:     o.Connector(),
-		_orm:          o,
-		storage:       storage,
-		_wsRepo:       wsRepo,
-		_itemRepo:     itemRepo,
-		_userRepo:     userRepo,
-		_employeeRepo: employeeRepo,
-		_mssRepo:      mssRepo,
-		_shopRepo:     shopRepo,
-		_stationRepo:  stationRepo,
-		_valRepo:      valRepo,
-		_memberRepo:   memberRepo,
-		_walletRepo:   walletRepo,
-		_registryRepo: registryRepo,
-		mux:           &sync.RWMutex{},
+		Connector:          o.Connector(),
+		_orm:               o,
+		storage:            storage,
+		_wsRepo:            wsRepo,
+		_itemRepo:          itemRepo,
+		_userRepo:          userRepo,
+		_employeeRepo:      employeeRepo,
+		_mssRepo:           mssRepo,
+		_shopRepo:          shopRepo,
+		_stationRepo:       stationRepo,
+		_valRepo:           valRepo,
+		_memberRepo:        memberRepo,
+		_walletRepo:        walletRepo,
+		_registryRepo:      registryRepo,
+		_staffTransferRepo: staffTransferRepo,
+		mux:                &sync.RWMutex{},
 	}
 	r.ORM = on
 	r.authRepo.ORM = on
@@ -107,12 +113,17 @@ func (m *merchantRepo) GetManager() merchant.IMerchantManager {
 }
 
 func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchantAggregateRoot {
-	return merchantImpl.NewMerchant(v, m, m._wsRepo, m._itemRepo,
-		m._shopRepo, m._userRepo,
+	return merchantImpl.NewMerchant(v,
+		m, m._wsRepo,
+		m._itemRepo,
+		m._shopRepo,
+		m._userRepo,
 		m._employeeRepo,
+		m._staffTransferRepo,
 		m._memberRepo,
 		m._stationRepo,
-		m._walletRepo, m._valRepo,
+		m._walletRepo,
+		m._valRepo,
 		m._registryRepo)
 }
 
