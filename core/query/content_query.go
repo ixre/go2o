@@ -141,3 +141,23 @@ func (c *ContentQuery) QueryPagingArticles(p *fw.PagingParams) (*fw.PagingResult
 func (c *ContentQuery) QueryPagingPages(p *fw.PagingParams) (*fw.PagingResult, error) {
 	return c.pageRepo.QueryPaging(p)
 }
+
+// 查询分类编号列表
+func (c *ContentQuery) QueryCategoryIdList(s []string) []int {
+	arr := c.categoryRepo.FindList(nil, "alias IN ?", s)
+	return collections.MapList(arr, func(v *content.Category) int {
+		return v.Id
+	})
+}
+
+func (c *ContentQuery) QueryRecommendArticles(p *fw.PagingParams) (*fw.PagingResult, error) {
+	//.. 推荐条件
+	row, err := c.BaseRepository.QueryPaging(p)
+	for _, row := range row.Rows {
+		art := row.(*content.Article)
+		if art != nil {
+			art.Content = ""
+		}
+	}
+	return row, err
+}
