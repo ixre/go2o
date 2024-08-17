@@ -127,19 +127,24 @@ func (m *MerchantQuery) QueryMerchantAuthenticates(mchId int) []*merchant.Authen
 // GetStaffTransferInfo 获取转商户信息
 func (m *MerchantQuery) GetStaffTransferInfo(staffId int64) (ret struct {
 	TxId            int                     `json:"txId"`
+	StaffName       string                  `json:"staffName"`
 	MchName         string                  `json:"mchName"`
 	TransferMchName string                  `json:"transferMchName"`
+	CreateTime      int                     `json:"createTime"`
 	ApprovalLogs    []*approval.ApprovalLog `json:"approvalLogs"`
 }) {
 	sf := m._staffRepo.TransferRepo().FindBy("staff_id = ? ORDER BY id DESC", staffId)
 	if sf == nil {
 		return ret
 	}
+	staff := m._staffRepo.Get(staffId)
 	ret.TxId = sf.Id
 	mch := m.Get(sf.OriginMchId)
 	tarMch := m.Get(sf.TransferMchId)
 	ret.MchName = mch.MchName
+	ret.StaffName = staff.CertifiedName
 	ret.TransferMchName = tarMch.MchName
+	ret.CreateTime = sf.CreateTime
 	ret.ApprovalLogs = m._approvalRepo.GetLogRepo().FindList(&fw.QueryOption{
 		Skip:  0,
 		Limit: 10,
@@ -161,7 +166,7 @@ func (m *MerchantQuery) QueryMerchantByName(name string) []map[string]interface{
 }
 
 // 查询商户员工转商户信息
-func (m *MerchantQuery) QueryTransferStaffs(mchId int) (*fw.PagingResult, error) {
+func (m *MerchantQuery) QueryTransferStaffs(mchId int, transferType int) (*fw.PagingResult, error) {
 	tables := `mch_staff_transfer t
 		INNER JOIN mch_staff s ON s.id = t.staff_id
 		INNER JOIN approval a ON a.id = t.approval_id
@@ -180,11 +185,16 @@ func (m *MerchantQuery) QueryTransferStaffs(mchId int) (*fw.PagingResult, error)
 		Size:  100,
 		Order: "id DESC",
 	}
-	p.And("(origin_mch_id = ? OR transfer_mch_id = ?)", mchId, mchId)
+	if transferType == 1 {
+		p.And("transfer_mch_id = ?", mchId)
+	} else {
+		p.And("origin_mch_id = ?", mchId)
+	}
 	rows, err := fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
 	for _, row := range rows.Rows {
 		r := fw.ParsePagingRow(row)
-		r.Put("isApproval", r.Get("assignUid").(int64) == int64(mchId))
+		isApproval := r.Get("assignUid").(int64) == int64(mchId) && r.Get("reviewStatus").(int64) == 1
+		r.Put("isApproval", isApproval)
 		r.Put("isTransferIn", r.Get("transferMchId").(int64) == int64(mchId))
 	}
 	return rows, err
