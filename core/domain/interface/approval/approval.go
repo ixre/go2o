@@ -82,6 +82,16 @@ type (
 		// GetCurrentNodeLog 获取当前节点审核日志
 		GetCurrentNodeLog(approvalId int) *ApprovalLog
 	}
+
+	// ApprovalProcessEvent 审批处理事件
+	ApprovalProcessEvent struct {
+		// 审批聚合根
+		Approval IApprovalAggregateRoot
+		// 当前审核节点Key
+		NodeKey string
+		// 当前审核节点
+		Tx *ApprovalLog
+	}
 )
 
 // Approval 审批表

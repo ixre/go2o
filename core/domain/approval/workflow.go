@@ -20,12 +20,14 @@ var staffTransferApprovalFlow = approval.ApprovalFlow{
 	Nodes: []*approval.ApprovalFlowNode{
 		{
 			Id:       1,
+			NodeKey:  "aggree",
 			NodeName: "商户同意",
 			NodeDesc: "原商户同意转出",
 			NodeType: 1,
 		},
 		{
 			Id:       2,
+			NodeKey:  "finish",
 			NodeName: "新商户同意",
 			NodeDesc: "新商户同意转入",
 			NodeType: 2,

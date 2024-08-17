@@ -24,11 +24,13 @@ var _ staff.IStaffRepo = new(staffRepoImpl)
 
 type staffRepoImpl struct {
 	fw.BaseRepository[staff.Staff]
+	transRepo fw.BaseRepository[staff.StaffTransfer]
 }
 
 func NewStaffRepo(o fw.ORM) staff.IStaffRepo {
 	s := &staffRepoImpl{}
 	s.ORM = o
+	s.transRepo.ORM = o
 	return s
 }
 
@@ -38,15 +40,6 @@ func (m *staffRepoImpl) GetStaffByMemberId(memberId int) *staff.Staff {
 		staff.WorkStatusOff)
 }
 
-var _ staff.IStaffTransferRepo = new(mchStaffTransferRepoImpl)
-
-type mchStaffTransferRepoImpl struct {
-	fw.BaseRepository[staff.StaffTransfer]
-}
-
-// NewStaffTransferRepo 创建员工转商户仓储
-func NewStaffTransferRepo(o fw.ORM) staff.IStaffTransferRepo {
-	r := &mchStaffTransferRepoImpl{}
-	r.ORM = o
-	return r
+func (m *staffRepoImpl) TransferRepo() fw.Repository[staff.StaffTransfer] {
+	return &m.transRepo
 }

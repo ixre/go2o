@@ -1,6 +1,7 @@
 package event
 
 import (
+	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/event/handler"
@@ -28,4 +29,6 @@ func (e *EventSource) Init() {
 	eventbus.SubscribeAsync(events.MemberPushEvent{}, h.HandleMemberPushEvent)
 	eventbus.SubscribeAsync(events.MemberAccountPushEvent{}, h.HandleMemberAccountPushEvent)
 	eventbus.SubscribeAsync(events.WithdrawalPushEvent{}, h.HandleWithdrawalPushEvent)
+
+	eventbus.Subscribe(approval.ApprovalProcessEvent{}, h.OnApprovalProcess)
 }

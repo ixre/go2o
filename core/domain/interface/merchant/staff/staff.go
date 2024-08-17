@@ -1,6 +1,9 @@
 package staff
 
-import "github.com/ixre/go2o/core/infrastructure/fw"
+import (
+	"github.com/ixre/go2o/core/domain/interface/approval"
+	"github.com/ixre/go2o/core/infrastructure/fw"
+)
 
 var (
 	// 离线
@@ -29,6 +32,8 @@ type (
 		Create(memberId int) error
 		// RequestTransfer 请求转商户
 		RequestTransfer(staffId, mchId int) (int, error)
+		// TransferApproval 处理转商户审批
+		TransferApproval(trans *StaffTransfer, event *approval.ApprovalProcessEvent) error
 	}
 
 	// IStaffRepo 员工数据访问接口
@@ -36,11 +41,8 @@ type (
 		fw.Repository[Staff]
 		// GetStaffBy GetBy 商户代理人坐席(员工)
 		GetStaffByMemberId(memberId int) *Staff
-	}
-
-	// IMchStaffTransferRepo 员工转商户仓储
-	IStaffTransferRepo interface {
-		fw.Repository[StaffTransfer]
+		// TransferRepo 员工转商户仓储
+		TransferRepo() fw.Repository[StaffTransfer]
 	}
 	// MchStaff 商户代理人坐席(员工)
 	Staff struct {

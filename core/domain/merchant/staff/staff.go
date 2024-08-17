@@ -10,36 +10,34 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 )
 
 var _ staff.IStaffManager = new(staffManagerImpl)
 
 type staffManagerImpl struct {
-	_mch               merchant.IMerchantAggregateRoot
-	_repo              staff.IStaffRepo
-	_staffTransferRepo staff.IStaffTransferRepo
-	_memberRepo        member.IMemberRepo
-	_stationRepo       station.IStationRepo
-	_mchRepo           merchant.IMerchantRepo
-	_approvalRepo      approval.IApprovalRepository
+	_mch          merchant.IMerchantAggregateRoot
+	_repo         staff.IStaffRepo
+	_memberRepo   member.IMemberRepo
+	_stationRepo  station.IStationRepo
+	_mchRepo      merchant.IMerchantRepo
+	_approvalRepo approval.IApprovalRepository
 }
 
 func NewStaffManager(mch merchant.IMerchantAggregateRoot,
 	staffRepo staff.IStaffRepo,
-	staffTransferRepo staff.IStaffTransferRepo,
 	memberRepo member.IMemberRepo,
 	stationRepo station.IStationRepo,
 	mchRepo merchant.IMerchantRepo,
 	approvalRepo approval.IApprovalRepository,
 ) staff.IStaffManager {
 	return &staffManagerImpl{
-		_mch:               mch,
-		_repo:              staffRepo,
-		_staffTransferRepo: staffTransferRepo,
-		_memberRepo:        memberRepo,
-		_stationRepo:       stationRepo,
-		_mchRepo:           mchRepo,
-		_approvalRepo:      approvalRepo,
+		_mch:          mch,
+		_repo:         staffRepo,
+		_memberRepo:   memberRepo,
+		_stationRepo:  stationRepo,
+		_mchRepo:      mchRepo,
+		_approvalRepo: approvalRepo,
 	}
 }
 
@@ -91,9 +89,14 @@ func (e *staffManagerImpl) Create(memberId int) error {
 	return err
 }
 
+func (e *staffManagerImpl) GetStaff(staffId int) *staff.Staff {
+	return e._repo.Get(staffId)
+}
+
 // RequestTransfer implements staff.IStaffManager.
 func (e *staffManagerImpl) RequestTransfer(staffId int, mchId int) (int, error) {
-	count, _ := e._staffTransferRepo.Count("staff_id=? and review_status = ?", staffId, enum.ReviewPending)
+	transRepo := e._repo.TransferRepo()
+	count, _ := transRepo.Count("staff_id=? and review_status = ?", staffId, enum.ReviewPending)
 	if count > 0 {
 		return 0, errors.New("员工存在未审核的转移请求")
 	}
@@ -113,13 +116,16 @@ func (e *staffManagerImpl) RequestTransfer(staffId int, mchId int) (int, error) 
 		CreateTime:    int(time.Now().Unix()),
 		UpdateTime:    int(time.Now().Unix()),
 	}
-	ret, err := e._staffTransferRepo.Save(transferRequest)
+	ret, err := transRepo.Save(transferRequest)
 	if err == nil {
 		transferRequest.Id = ret.Id
 		// 创建审批单
 		ia := e._approvalRepo.Create(approval.FlowStaffTransfer, transferRequest.Id)
 		err = ia.Save()
 		if err == nil {
+			// 设置审批单ID
+			transferRequest.ApprovalId = ia.GetAggregateRootId()
+			transRepo.Save(transferRequest)
 			// 分配审批人
 			err = ia.Assign(e._mch.GetAggregateRootId(), e._mch.GetValue().MchName)
 		}
@@ -129,4 +135,52 @@ func (e *staffManagerImpl) RequestTransfer(staffId int, mchId int) (int, error) 
 		return 0, err
 	}
 	return transferRequest.Id, err
+}
+
+// TransferApproval implements staff.IStaffManager.
+func (e *staffManagerImpl) TransferApproval(trans *staff.StaffTransfer, event *approval.ApprovalProcessEvent) error {
+	ap := event.Approval
+	if ap.IsFinal() {
+		// 审批结束
+		isPass := ap.GetApproval().FinalStatus == approval.FinalPassStatus
+		if isPass {
+			// 通过审核
+			trans.ReviewStatus = int(enum.ReviewApproved)
+		}
+		if ap.GetApproval().FinalStatus == approval.FinalRejectStatus {
+			// 未通过审核
+			trans.ReviewStatus = int(enum.ReviewRejected)
+			trans.ReviewRemark = event.Tx.ApprovalRemark
+		}
+		trans.UpdateTime = int(time.Now().Unix())
+		_, err := e._repo.TransferRepo().Save(trans)
+		if err == nil && isPass {
+			// 通过审核,更新职员信息
+			im := e._mchRepo.GetMerchant(trans.TransferMchId)
+			if im == nil {
+				return errors.New("商户不存在")
+			}
+			isn := e._stationRepo.GetStationByCity(im.GetValue().City)
+			staff := e.GetStaff(trans.StaffId)
+			staff.MchId = trans.TransferMchId
+			if isn != nil {
+				staff.StationId = isn.GetAggregateRootId()
+			} else {
+				staff.StationId = 0
+				logger.Error("station not found, staffId: %d, mchId: %d", staff.Id, staff.MchId)
+			}
+			_, err = e._repo.Save(staff)
+		}
+		return err
+	}
+	if event.NodeKey == "aggree" {
+		// 指派审批对象为新的商户
+		transMch := e._mchRepo.GetMerchant(trans.TransferMchId)
+		err := ap.Assign(trans.TransferMchId, transMch.GetValue().MchName)
+		if err != nil {
+			logger.Error("approval assign error: %v, transferId: %d", err, ap.GetApproval().BizId)
+			panic(err)
+		}
+	}
+	return nil
 }

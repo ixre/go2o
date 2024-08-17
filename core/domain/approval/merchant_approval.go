@@ -10,7 +10,9 @@
 
 package approval
 
-import "github.com/ixre/go2o/core/domain/interface/approval"
+import (
+	"github.com/ixre/go2o/core/domain/interface/approval"
+)
 
 var _ approval.IApprovalAggregateRoot = new(staffTransferApprovalImpl)
 
@@ -23,4 +25,14 @@ func NewStaffTransferApproval(value *approval.Approval, repo approval.IApprovalR
 	s._value = value
 	s._repo = repo
 	return s
+}
+
+func (s *staffTransferApprovalImpl) Process(nodeKey string, tx *approval.ApprovalLog) error {
+	if nodeKey == "aggree" {
+		// 原商户同意
+	}
+	if nodeKey == "finish" {
+		//
+	}
+	return nil
 }

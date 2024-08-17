@@ -18,6 +18,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
+	"github.com/ixre/gof/domain/eventbus"
 )
 
 var _ approval.IApprovalAggregateRoot = new(ApprovalImpl)
@@ -80,17 +81,17 @@ func (a *ApprovalImpl) Approve() error {
 	current.ApprovalTime = int(time.Now().Unix())
 	_, err = a._repo.GetLogRepo().Save(current)
 	if err == nil {
-		// 处理工作流
-		err = a.Process(node.NodeKey, current)
-		if err != nil {
-			return err
-		}
 		// 更新审批终态
 		if node.NodeType == approval.NodeTypeEnd {
 			a._value.FinalStatus = int(enum.ReviewApproved)
 			if err = a.Save(); err != nil {
 				return err
 			}
+		}
+		// 处理工作流
+		err = a.Process(node.NodeKey, current)
+		if err != nil {
+			return err
 		}
 		// 不是结束节点,则更新到下一个节点
 		if !a.IsFinal() {
@@ -249,6 +250,16 @@ func (a *ApprovalImpl) IsFinal() bool {
 }
 
 // Process implements approval.IApprovalAggregateRoot.
-func (a *ApprovalImpl) Process(nodeKey string, tx *approval.ApprovalLog) error {
-	panic("工作流处理程序应用实现类进行处理")
+func (a *ApprovalImpl) Process(nodeKey string, tx *approval.ApprovalLog) (err error) {
+	defer func() {
+		if err1 := recover(); err1 != nil {
+			err = err1.(error)
+		}
+	}()
+	eventbus.Publish(&approval.ApprovalProcessEvent{
+		Approval: a,
+		NodeKey:  nodeKey,
+		Tx:       tx,
+	})
+	return err
 }

@@ -39,26 +39,25 @@ import (
 var _ merchant.IMerchantAggregateRoot = new(merchantImpl)
 
 type merchantImpl struct {
-	_value             *merchant.Merchant
-	_account           merchant.IAccount
-	_wholesaler        wholesaler.IWholesaler
-	_host              string
-	_repo              merchant.IMerchantRepo
-	_wsRepo            wholesaler.IWholesaleRepo
-	_itemRepo          item.IItemRepo
-	_shopRepo          shop.IShopRepo
-	_userRepo          user.IUserRepo
-	_staffRepo         staff.IStaffRepo
-	_staffTransferRepo staff.IStaffTransferRepo
-	_valRepo           valueobject.IValueRepo
-	_memberRepo        member.IMemberRepo
-	_stationRepo       station.IStationRepo
-	_userManager       user.IUserManager
-	_confManager       merchant.IConfManager
-	_saleManager       merchant.ISaleManager
-	_levelManager      merchant.ILevelManager
-	_kvManager         merchant.IKvManager
-	_memberKvManager   merchant.IKvManager
+	_value           *merchant.Merchant
+	_account         merchant.IAccount
+	_wholesaler      wholesaler.IWholesaler
+	_host            string
+	_repo            merchant.IMerchantRepo
+	_wsRepo          wholesaler.IWholesaleRepo
+	_itemRepo        item.IItemRepo
+	_shopRepo        shop.IShopRepo
+	_userRepo        user.IUserRepo
+	_staffRepo       staff.IStaffRepo
+	_valRepo         valueobject.IValueRepo
+	_memberRepo      member.IMemberRepo
+	_stationRepo     station.IStationRepo
+	_userManager     user.IUserManager
+	_confManager     merchant.IConfManager
+	_saleManager     merchant.ISaleManager
+	_levelManager    merchant.ILevelManager
+	_kvManager       merchant.IKvManager
+	_memberKvManager merchant.IKvManager
 	//_mssManager      mss.IMssManager
 	//_mssRepo          mss.IMssRepo
 	_profileManager  merchant.IProfileManager
@@ -77,7 +76,6 @@ func (m *merchantImpl) EmployeeManager() staff.IStaffManager {
 	if m._employeeManager == nil {
 		m._employeeManager = staffImpl.NewStaffManager(m,
 			m._staffRepo,
-			m._staffTransferRepo,
 			m._memberRepo,
 			m._stationRepo,
 			m._repo,
@@ -90,7 +88,6 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
 	employeeRepo staff.IStaffRepo,
-	staffTransferRepo staff.IStaffTransferRepo,
 	memberRepo member.IMemberRepo,
 	stationRepo station.IStationRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo,
@@ -98,20 +95,19 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	approvalRepo approval.IApprovalRepository,
 ) merchant.IMerchantAggregateRoot {
 	mch := &merchantImpl{
-		_value:             v,
-		_repo:              rep,
-		_wsRepo:            wsRepo,
-		_itemRepo:          itemRepo,
-		_shopRepo:          shopRepo,
-		_userRepo:          userRepo,
-		_staffRepo:         employeeRepo,
-		_valRepo:           valRepo,
-		_memberRepo:        memberRepo,
-		_stationRepo:       stationRepo,
-		_staffTransferRepo: staffTransferRepo,
-		_walletRepo:        walletRepo,
-		_registryRepo:      registryRepo,
-		_approvalRepo:      approvalRepo,
+		_value:        v,
+		_repo:         rep,
+		_wsRepo:       wsRepo,
+		_itemRepo:     itemRepo,
+		_shopRepo:     shopRepo,
+		_userRepo:     userRepo,
+		_staffRepo:    employeeRepo,
+		_valRepo:      valRepo,
+		_memberRepo:   memberRepo,
+		_stationRepo:  stationRepo,
+		_walletRepo:   walletRepo,
+		_registryRepo: registryRepo,
+		_approvalRepo: approvalRepo,
 	}
 	return mch
 }
