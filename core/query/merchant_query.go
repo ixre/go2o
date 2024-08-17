@@ -159,3 +159,33 @@ func (m *MerchantQuery) QueryMerchantByName(name string) []map[string]interface{
 		}
 	})
 }
+
+// 查询商户员工转商户信息
+func (m *MerchantQuery) QueryTransferStaffs(mchId int) (*fw.PagingResult, error) {
+	tables := `mch_staff_transfer t
+		INNER JOIN mch_staff s ON s.id = t.staff_id
+		INNER JOIN approval a ON a.id = t.approval_id
+		`
+	fields := `t.*,
+	s.certified_name,
+	s.gender,
+	a.assign_uid,
+	a.assign_name,
+	(SELECT mch_name FROM mch_merchant WHERE id = t.origin_mch_id) as origin_mch_name,
+	(SELECT mch_name FROM mch_merchant WHERE id = t.transfer_mch_id) as transfer_mch_name
+	`
+
+	p := &fw.PagingParams{
+		Begin: 1,
+		Size:  100,
+		Order: "id DESC",
+	}
+	p.And("(origin_mch_id = ? OR transfer_mch_id = ?)", mchId, mchId)
+	rows, err := fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+	for _, row := range rows.Rows {
+		r := fw.ParsePagingRow(row)
+		r.Put("isApproval", r.Get("assignUid").(int64) == int64(mchId))
+		r.Put("isTransferIn", r.Get("transferMchId").(int64) == int64(mchId))
+	}
+	return rows, err
+}

@@ -36,11 +36,11 @@ func NewApprovalService(repo approval.IApprovalRepository) proto.ApprovalService
 func (a *ApprovalServiceImpl) Approve(_ context.Context, req *proto.ApprovalApproveRequest) (*proto.TxResult, error) {
 	ia := a._repo.GetApproval(int(req.ApprovalId))
 	if ia == nil {
-		return nil, errors.New("审批不存在")
+		return a.errorV2(errors.New("审批不存在")), nil
 	}
 	iv := ia.GetApproval()
 	if req.ApprovalUserId > 0 && iv.AssignUid != int(req.ApprovalUserId) {
-		return nil, errors.New("没有审批权限")
+		return a.errorV2(errors.New("没有审批权限")), nil
 	}
 	err := ia.Approve()
 	return a.errorV2(err), nil
@@ -50,7 +50,7 @@ func (a *ApprovalServiceImpl) Approve(_ context.Context, req *proto.ApprovalAppr
 func (a *ApprovalServiceImpl) Assign(_ context.Context, req *proto.ApprovalAssignRequest) (*proto.TxResult, error) {
 	ia := a._repo.GetApproval(int(req.ApprovalId))
 	if ia == nil {
-		return nil, errors.New("审批不存在")
+		return a.errorV2(errors.New("审批不存在")), nil
 	}
 	err := ia.Assign(int(req.ApprovalUserId), req.ApprovalUsername)
 	return a.errorV2(err), nil
@@ -82,11 +82,11 @@ func (a *ApprovalServiceImpl) GetFlow(_ context.Context, req *proto.ApprovalFlow
 func (a *ApprovalServiceImpl) Reject(_ context.Context, req *proto.ApprovalRejectRequest) (*proto.TxResult, error) {
 	ia := a._repo.GetApproval(int(req.ApprovalId))
 	if ia == nil {
-		return nil, errors.New("审批不存在")
+		return a.errorV2(errors.New("审批不存在")), nil
 	}
 	iv := ia.GetApproval()
 	if req.ApprovalUserId > 0 && iv.AssignUid != int(req.ApprovalUserId) {
-		return nil, errors.New("没有审批权限")
+		return a.errorV2(errors.New("没有审批权限")), nil
 	}
 	err := ia.Reject(req.RejectReason)
 	return a.errorV2(err), nil
