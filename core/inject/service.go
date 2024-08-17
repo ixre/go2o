@@ -172,3 +172,7 @@ func GetChatService() proto.ChatServiceServer {
 func GetWorkorderService() proto.WorkorderServiceServer {
 	panic(wire.Build(InjectProvideSets))
 }
+
+func GetApprovalService() proto.ApprovalServiceServer {
+	panic(wire.Build(InjectProvideSets))
+}

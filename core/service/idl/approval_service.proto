@@ -1,0 +1,87 @@
+/**
+ * Copyright (C) 2007-2024 fze.NET, All rights reserved.
+ *
+ * name: approval_service.proto
+ * author: jarrysix (jarrysix#gmail.com)
+ * date: 2024-08-17 18:06:28
+ * description: 审批服务
+ * history:
+ */
+
+syntax = "proto3";
+
+import "global.proto";
+
+option go_package = "./;proto";
+option java_package = "com.github.go2o.rpc";
+
+// 工单服务
+service ApprovalService {
+    // 获取审批流
+    rpc GetFlow(ApprovalFlowRequest) returns (SApprovalFlow) {}
+    // 审批通过
+    rpc Approve(ApprovalApproveRequest) returns (TxResult) {}
+    // 审批拒绝
+    rpc Reject(ApprovalRejectRequest) returns (TxResult) {}
+	// 分配审批人,当节点审批后切换到下个节点, 需分配审批人
+	rpc Assign(ApprovalAssignRequest) returns (TxResult) {}
+}
+
+
+message ApprovalFlowRequest {
+    int64 flowId = 1;
+}
+
+// 审批流
+message SApprovalFlow {
+    // 审批流ID 
+    int64 flowId = 1;
+    // 审批流名称
+    string flowName = 2;
+    // 审批流描述
+    string flowDesc = 3;
+    // 审批流节点
+    repeated SApprovalNode nodes = 4;
+}
+
+// 审批流节点
+message SApprovalNode {
+    // 节点ID   
+    int64 nodeId = 1;
+    // 节点名称
+    string nodeName = 2;
+    // 节点类型
+    int32 nodeType = 3;
+    // 节点KEY
+    string nodeKey = 4;
+    // 节点描述
+    string nodeDesc = 5;
+}
+
+// 审批通过
+message ApprovalApproveRequest {
+    // 审批ID   
+    int64 approvalId = 1;
+    // 审批人ID
+    int64 approvalUserId= 2;
+}
+
+// 审批拒绝
+message ApprovalRejectRequest {
+    // 审批ID   
+    int64 approvalId = 1;
+    // 审批人ID
+    int64 approvalUserId= 2;
+    // 审批拒绝原因
+    string rejectReason = 3;
+}
+
+// 分配审批人
+message ApprovalAssignRequest {
+    // 审批ID   
+    int64 approvalId = 1;
+    // 审批人ID
+    int64 approvalUserId= 2;
+    // 审批人名称
+    string approvalUsername= 3;    
+}

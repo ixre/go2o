@@ -349,3 +349,12 @@ func WorkorderServiceClient() (*grpc.ClientConn, proto.WorkorderServiceClient, e
 	}
 	return conn, nil, err
 }
+
+// ApprovalServiceClient 审批服务
+func ApprovalServiceClient() (*grpc.ClientConn, proto.ApprovalServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewApprovalServiceClient(conn), err
+	}
+	return conn, nil, err
+}
