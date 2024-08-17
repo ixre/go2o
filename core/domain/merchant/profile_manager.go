@@ -146,7 +146,7 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 			_, err = p.merchantImpl.Save()
 		}
 	} else {
-		e.ReviewStatus = int(enum.ReviewReject)
+		e.ReviewStatus = int(enum.ReviewRejected)
 		e.ReviewRemark = message
 		_, err = p._repo.SaveAuthenticate(e)
 	}

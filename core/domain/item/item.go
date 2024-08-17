@@ -656,7 +656,7 @@ func (i *itemImpl) Review(pass bool, remark string) error {
 			return item.ErrEmptyReviewRemark
 		}
 		i.value.ShelveState = item.ShelvesDown
-		i.value.ReviewStatus = enum.ReviewReject
+		i.value.ReviewStatus = enum.ReviewRejected
 	}
 	i.value.ReviewRemark = remark
 	_, err := i.Save()

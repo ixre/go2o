@@ -341,7 +341,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 		if l.ReviewStatus == int(enum.ReviewApproved) {
 			return member.ErrLevelUpPass
 		}
-		if l.ReviewStatus == int(enum.ReviewReject) {
+		if l.ReviewStatus == int(enum.ReviewRejected) {
 			return member.ErrLevelUpReject
 		}
 		if l.ReviewStatus == int(enum.ReviewConfirm) {
@@ -364,7 +364,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 			}
 			return err
 		} else {
-			l.ReviewStatus = int(enum.ReviewReject)
+			l.ReviewStatus = int(enum.ReviewRejected)
 			_, err := m.repo.SaveLevelUpLog(l)
 			return err
 		}

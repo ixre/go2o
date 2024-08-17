@@ -24,6 +24,15 @@ var (
 	FinalRejectStatus = 2
 )
 
+var (
+	// 开始节点
+	NodeTypeStart = 1
+	// 结束节点
+	NodeTypeEnd = 2
+	// 其他节点
+	NodeTypeOther = 3
+)
+
 type (
 	// IApprovalAggregateRoot 审批聚合根
 	IApprovalAggregateRoot interface {
@@ -38,10 +47,14 @@ type (
 		Approve() error
 		// 拒绝
 		Reject(remark string) error
+		// 是否最终状态
+		IsFinal() bool
 		// 获取工作流
 		Flow() *ApprovalFlow
-		// 重新分配审批人
-		ChangeAssign(uid int, name string) error
+		// 处理节点,在审批后会进行自动调用, 实现审批业务需重写
+		Process(nodeKey string, tx *ApprovalLog) error
+		// 分配审批人,当节点审批后切换到下个节点, 需分配审批人
+		Assign(uid int, name string) error
 	}
 
 	// IFlowManager 工作流管理器
@@ -107,7 +120,7 @@ type ApprovalLog struct {
 	// 审核状态
 	ApprovalStatus int `json:"approvalStatus" db:"approval_status" gorm:"column:approval_status" bson:"approvalStatus"`
 	// 审核备注
-	ApprovalRemark int `json:"approvalRemark" db:"approval_remark" gorm:"column:approval_remark" bson:"approvalRemark"`
+	ApprovalRemark string `json:"approvalRemark" db:"approval_remark" gorm:"column:approval_remark" bson:"approvalRemark"`
 	// 审核时间
 	ApprovalTime int `json:"approvalTime" db:"approval_time" gorm:"column:approval_time" bson:"approvalTime"`
 	// 创建时间
@@ -148,6 +161,8 @@ type ApprovalFlowNode struct {
 	NodeType int `json:"nodeType" db:"node_type" gorm:"column:node_type" bson:"nodeType"`
 	// 节点名称
 	NodeName string `json:"nodeName" db:"node_name" gorm:"column:node_name" bson:"nodeName"`
+	// 节点描述
+	NodeDesc string `json:"nodeDesc" db:"node_desc" gorm:"column:node_desc" bson:"nodeDesc"`
 }
 
 func (a ApprovalFlowNode) TableName() string {

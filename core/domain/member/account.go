@@ -425,8 +425,8 @@ func (a *accountImpl) reviewBalanceCarryTo(transactionId int, pass bool, reason 
 		l.ReviewStatus = int32(enum.ReviewApproved)
 		l.Remark = "系统审核通过"
 	} else {
-		l.ReviewStatus = int32(enum.ReviewReject)
-		l.ReviewStatus = int32(enum.ReviewReject)
+		l.ReviewStatus = int32(enum.ReviewRejected)
+		l.ReviewStatus = int32(enum.ReviewRejected)
 		l.Remark = reason
 	}
 	_, err := a.rep.SaveBalanceLog(l)
@@ -474,8 +474,8 @@ func (a *accountImpl) reviewIntegralCarryTo(transactionId int, pass bool, reason
 		l.ReviewStatus = int16(enum.ReviewApproved)
 		l.Remark = "系统审核通过"
 	} else {
-		l.ReviewStatus = int16(enum.ReviewReject)
-		l.ReviewStatus = int16(enum.ReviewReject)
+		l.ReviewStatus = int16(enum.ReviewRejected)
+		l.ReviewStatus = int16(enum.ReviewRejected)
 		l.Remark = reason
 	}
 	err := a.rep.SaveIntegralLog(l)

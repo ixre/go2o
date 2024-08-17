@@ -920,9 +920,9 @@ CREATE TABLE approval_log (
   node_id         int4 NOT NULL, 
   node_name       varchar(20) NOT NULL, 
   assign_uid      int4 NOT NULL, 
-  assign_name     varchar(255) NOT NULL, 
+  assign_name     varchar(40) NOT NULL, 
   approval_status int4 NOT NULL, 
-  approval_remark int4 NOT NULL, 
+  approval_remark varchar(40) NOT NULL, 
   approval_time   int4 NOT NULL, 
   create_time     int8 NOT NULL, 
   PRIMARY KEY (id));
@@ -960,8 +960,10 @@ CREATE TABLE approval_flow_node (
   node_key  varchar(20) NOT NULL, 
   node_type int4 NOT NULL, 
   node_name varchar(20) NOT NULL, 
+  node_desc varchar(120) NOT NULL, 
   PRIMARY KEY (id));
 COMMENT ON COLUMN approval_flow_node.flow_id IS '工作流编号';
 COMMENT ON COLUMN approval_flow_node.node_key IS '节点KEY';
 COMMENT ON COLUMN approval_flow_node.node_type IS '节点类型 1:起始节点   2: 结束节点   3: 其他节点';
 COMMENT ON COLUMN approval_flow_node.node_name IS '节点名称';
+COMMENT ON COLUMN approval_flow_node.node_desc IS '节点描述';

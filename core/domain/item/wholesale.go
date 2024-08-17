@@ -102,7 +102,7 @@ func (w *wholesaleItemImpl) Review(pass bool, remark string) error {
 		if remark == "" {
 			return item.ErrEmptyReviewRemark
 		}
-		w.value.ReviewStatus = enum.ReviewReject
+		w.value.ReviewStatus = enum.ReviewRejected
 	}
 	w.value.ReviewRemark = remark
 	_, err := w.Save()

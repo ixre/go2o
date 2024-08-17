@@ -45,7 +45,7 @@ func (w *wholesalerImpl) Review(pass bool, reason string) error {
 		if pass {
 			w.value.ReviewStatus = enum.ReviewApproved
 		} else {
-			w.value.ReviewStatus = enum.ReviewReject
+			w.value.ReviewStatus = enum.ReviewRejected
 		}
 		_, err := w.Save()
 		return err

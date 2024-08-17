@@ -702,7 +702,7 @@ func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error
 		if remark == "" {
 			return member.ErrEmptyReviewRemark
 		}
-		p.trustedInfo.ReviewStatus = int(enum.ReviewReject)
+		p.trustedInfo.ReviewStatus = int(enum.ReviewRejected)
 		if p.member.ContainFlag(member.FlagTrusted) {
 			p.member.value.UserFlag ^= member.FlagTrusted
 		}

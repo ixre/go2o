@@ -459,7 +459,7 @@ func (w *WalletImpl) ReviewCarryTo(transactionId int, pass bool, reason string) 
 		l.ReviewStatus = int(enum.ReviewApproved)
 		l.Remark = "系统审核通过"
 	} else {
-		l.ReviewStatus = int(enum.ReviewReject)
+		l.ReviewStatus = int(enum.ReviewRejected)
 		l.Remark = reason
 	}
 	err := w.saveWalletLog(l)
