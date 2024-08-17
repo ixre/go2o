@@ -68,7 +68,8 @@ func TestSaveMerchantAuthenticate(t *testing.T) {
 		QualificationPic: "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
 		PersonId:         "513701980102345678",
 		PersonName:       "田猫",
-		PersonPic:        "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		PersonFrontPic:   "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		PersonBackPic:    "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
 		PersonPhone:      "13888888888",
 		AuthorityPic:     "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
 		BankName:         "花旗银行",
@@ -242,4 +243,35 @@ func TestMchCarry(t *testing.T) {
 		t.FailNow()
 	}
 	t.Logf("结算成功,交易流水号:%d", txId)
+}
+
+// 测试员工转移
+func TestTransferStaff(t *testing.T) {
+	staffId := 2
+	repo := inject.GetMerchantRepo()
+	mch := repo.GetMerchant(1)
+	staffManager := mch.EmployeeManager()
+	transferId, err := staffManager.RequestTransfer(staffId, 2)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Logf("转移ID:%d", transferId)
+	staffRepo := inject.GetStaffRepo()
+	transfer := staffRepo.TransferRepo().Get(transferId)
+	// 进行审批
+	approvalRepo := inject.GetApprovalRepo()
+	ia := approvalRepo.GetApproval(transfer.ApprovalId)
+	err = ia.Approve()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	err = ia.Approve()
+	//err = ia.Reject("测试")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Logf("审批完成")
 }

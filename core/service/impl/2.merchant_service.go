@@ -1243,3 +1243,16 @@ func (m *merchantService) GetWalletTxLog(_ context.Context, r *proto.UserWalletT
 		RelateUser:         int64(v.OprUid),
 	}, nil
 }
+
+// TransferStaff 转移员工
+func (m *merchantService) TransferStaff(_ context.Context, req *proto.TransferStaffRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	txId, err := mch.EmployeeManager().RequestTransfer(int(req.StaffId), int(req.TransferMchId))
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(txId, nil), nil
+}

@@ -250,8 +250,10 @@ message SMerchantOrder {
 
 // 员工转商户请求
 message TransferStaffRequest{
-    // 员工编号
-    int64 staffId = 1;
     // 商户编号
-    int64 mchId = 2;
+    int64 mchId = 1;
+    // 员工编号
+    int64 staffId = 2;
+    // 转移商户编号
+    int64 transferMchId = 3;
 }

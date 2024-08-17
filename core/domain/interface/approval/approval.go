@@ -73,6 +73,8 @@ type (
 	// IApprovalRepository 审批表仓储
 	IApprovalRepository interface {
 		fw.Repository[Approval]
+		// GetApproval 获取审批聚合根
+		GetApproval(id int) IApprovalAggregateRoot
 		// GetLogRepo 获取审核日志仓储
 		GetLogRepo() fw.Repository[ApprovalLog]
 		// Create 创建审批单, 传入[flowId] 工作流ID, [bizId] 业务ID, 返回审批聚合根

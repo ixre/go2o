@@ -893,7 +893,7 @@ COMMENT ON COLUMN mch_staff_transfer.update_time IS '更新时间';
 DROP TABLE IF EXISTS approval CASCADE;
 CREATE TABLE approval (
   id           BIGSERIAL NOT NULL, 
-  approval_no  varchar(20) NOT NULL, 
+  approval_no  varchar(40) NOT NULL, 
   flow_id      int4 NOT NULL, 
   biz_id       int8 NOT NULL, 
   node_id      int4 NOT NULL, 
@@ -919,7 +919,7 @@ COMMENT ON COLUMN approval.update_time IS '更新时间';
 DROP TABLE IF EXISTS approval_log CASCADE;
 CREATE TABLE approval_log (
   id              BIGSERIAL NOT NULL, 
-  approval_id     int4 NOT NULL, 
+  approval_id     int8 NOT NULL, 
   node_id         int4 NOT NULL, 
   node_name       varchar(20) NOT NULL, 
   assign_uid      int4 NOT NULL, 

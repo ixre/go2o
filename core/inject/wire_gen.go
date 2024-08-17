@@ -11,6 +11,7 @@ import (
 	"github.com/ixre/go2o/core/dao/impl"
 	"github.com/ixre/go2o/core/domain/interface/ad"
 	"github.com/ixre/go2o/core/domain/interface/aftersales"
+	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/chat"
 	"github.com/ixre/go2o/core/domain/interface/content"
@@ -527,6 +528,12 @@ func GetWorkorderRepo() workorder.IWorkorderRepo {
 	db := provide.GetGOrm()
 	iWorkorderRepo := repos.NewWorkorderRepo(db)
 	return iWorkorderRepo
+}
+
+func GetApprovalRepo() approval.IApprovalRepository {
+	db := provide.GetGOrm()
+	iApprovalRepository := repos.NewApprovalRepository(db)
+	return iApprovalRepository
 }
 
 // Injectors from service.go:

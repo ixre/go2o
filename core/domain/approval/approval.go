@@ -83,8 +83,15 @@ func (a *ApprovalImpl) Approve() error {
 	if err == nil {
 		// 更新审批终态
 		if node.NodeType == approval.NodeTypeEnd {
-			a._value.FinalStatus = int(enum.ReviewApproved)
+			a._value.FinalStatus = int(approval.FinalPassStatus)
 			if err = a.Save(); err != nil {
+				return err
+			}
+		}
+		// 不是结束节点,则更新到下一个节点
+		if !a.IsFinal() {
+			err = a.toNextNode()
+			if err != nil {
 				return err
 			}
 		}
@@ -92,10 +99,6 @@ func (a *ApprovalImpl) Approve() error {
 		err = a.Process(node.NodeKey, current)
 		if err != nil {
 			return err
-		}
-		// 不是结束节点,则更新到下一个节点
-		if !a.IsFinal() {
-			err = a.toNextNode()
 		}
 	}
 	return err
@@ -148,14 +151,13 @@ func (a *ApprovalImpl) Reject(remark string) error {
 	current.ApprovalTime = int(time.Now().Unix())
 	_, err = a._repo.GetLogRepo().Save(current)
 	if err == nil {
-		// 处理工作流
-		err = a.Process(node.NodeKey, current)
-		if err != nil {
-			return err
-		}
 		// 更新审批终态
-		a._value.FinalStatus = int(enum.ReviewRejected)
+		a._value.FinalStatus = int(approval.FinalRejectStatus)
 		err = a.Save()
+		if err == nil {
+			// 处理工作流
+			err = a.Process(node.NodeKey, current)
+		}
 	}
 	return err
 }
@@ -180,7 +182,7 @@ func (a *ApprovalImpl) submitApproval() error {
 	// 生成交易号
 	txNo := domain.NewTradeNo(0, 0)
 	if flow.TxPrefix != "" {
-		txNo = flow.TxPrefix + "-" + txNo
+		txNo = flow.TxPrefix + txNo
 	}
 	a._value.ApprovalNo = txNo
 	a._value.CreateTime = int(time.Now().Unix())

@@ -53,6 +53,11 @@ func (a *approvalRepositoryImpl) GetCurrentNodeLog(approvalId int) *approval.App
 	return a.GetLogRepo().FindBy("approval_id = ? AND approval_status = ?", approvalId, enum.ReviewPending)
 }
 
+// GetApproval implements approval.IApprovalRepository.
+func (a *approvalRepositoryImpl) GetApproval(id int) approval.IApprovalAggregateRoot {
+	return approvalImpl.NewApproval(a.Get(id), a)
+}
+
 // GetLogRepo implements approval.IApprovalRepository.
 func (a *approvalRepositoryImpl) GetLogRepo() fw.Repository[approval.ApprovalLog] {
 	if a.logRepo == nil {

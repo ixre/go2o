@@ -55,6 +55,7 @@ const (
 	MerchantService_GetStaff_FullMethodName                    = "/MerchantService/GetStaff"
 	MerchantService_GetStaffByMember_FullMethodName            = "/MerchantService/GetStaffByMember"
 	MerchantService_SaveStaff_FullMethodName                   = "/MerchantService/SaveStaff"
+	MerchantService_TransferStaff_FullMethodName               = "/MerchantService/TransferStaff"
 	MerchantService_GetAccount_FullMethodName                  = "/MerchantService/GetAccount"
 	MerchantService_CarryToAccount_FullMethodName              = "/MerchantService/CarryToAccount"
 	MerchantService_AdjustAccount_FullMethodName               = "/MerchantService/AdjustAccount"
@@ -140,6 +141,8 @@ type MerchantServiceClient interface {
 	GetStaffByMember(ctx context.Context, in *StaffRequest, opts ...grpc.CallOption) (*SStaff, error)
 	// 保存员工
 	SaveStaff(ctx context.Context, in *SaveStaffRequest, opts ...grpc.CallOption) (*Result, error)
+	// 员工转商户,生成审批请求
+	TransferStaff(ctx context.Context, in *TransferStaffRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取钱包账户
 	GetAccount(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantAccount, error)
 	// 账户入账
@@ -492,6 +495,15 @@ func (c *merchantServiceClient) SaveStaff(ctx context.Context, in *SaveStaffRequ
 	return out, nil
 }
 
+func (c *merchantServiceClient) TransferStaff(ctx context.Context, in *TransferStaffRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MerchantService_TransferStaff_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *merchantServiceClient) GetAccount(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantAccount, error) {
 	out := new(SMerchantAccount)
 	err := c.cc.Invoke(ctx, MerchantService_GetAccount_FullMethodName, in, out, opts...)
@@ -647,6 +659,8 @@ type MerchantServiceServer interface {
 	GetStaffByMember(context.Context, *StaffRequest) (*SStaff, error)
 	// 保存员工
 	SaveStaff(context.Context, *SaveStaffRequest) (*Result, error)
+	// 员工转商户,生成审批请求
+	TransferStaff(context.Context, *TransferStaffRequest) (*TxResult, error)
 	// 获取钱包账户
 	GetAccount(context.Context, *MerchantId) (*SMerchantAccount, error)
 	// 账户入账
@@ -779,6 +793,9 @@ func (UnimplementedMerchantServiceServer) GetStaffByMember(context.Context, *Sta
 }
 func (UnimplementedMerchantServiceServer) SaveStaff(context.Context, *SaveStaffRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveStaff not implemented")
+}
+func (UnimplementedMerchantServiceServer) TransferStaff(context.Context, *TransferStaffRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TransferStaff not implemented")
 }
 func (UnimplementedMerchantServiceServer) GetAccount(context.Context, *MerchantId) (*SMerchantAccount, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccount not implemented")
@@ -1468,6 +1485,24 @@ func _MerchantService_SaveStaff_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_TransferStaff_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TransferStaffRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).TransferStaff(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_TransferStaff_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).TransferStaff(ctx, req.(*TransferStaffRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MerchantService_GetAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MerchantId)
 	if err := dec(in); err != nil {
@@ -1780,6 +1815,10 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveStaff",
 			Handler:    _MerchantService_SaveStaff_Handler,
+		},
+		{
+			MethodName: "TransferStaff",
+			Handler:    _MerchantService_TransferStaff_Handler,
 		},
 		{
 			MethodName: "GetAccount",
