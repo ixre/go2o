@@ -62,7 +62,9 @@ func GetStationQueryService() *query.StationQuery {
 func GetMerchantQueryService() *query.MerchantQuery {
 	app := provide.GetApp()
 	db := provide.GetGOrm()
-	merchantQuery := query.NewMerchantQuery(app, db)
+	iStaffRepo := repos.NewStaffRepo(db)
+	iApprovalRepository := repos.NewApprovalRepository(db)
+	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository)
 	return merchantQuery
 }
 
@@ -79,7 +81,9 @@ func GetContentQueryService() *query.ContentQuery {
 	orm := provide.GetOrmInstance()
 	db := provide.GetGOrm()
 	app := provide.GetApp()
-	merchantQuery := query.NewMerchantQuery(app, db)
+	iStaffRepo := repos.NewStaffRepo(db)
+	iApprovalRepository := repos.NewApprovalRepository(db)
+	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository)
 	memberQuery := query.NewMemberQuery(orm, db)
 	contentQuery := query.NewContentQuery(orm, db, merchantQuery, memberQuery)
 	return contentQuery
@@ -668,7 +672,7 @@ func GetMerchantService() proto.MerchantServiceServer {
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iApprovalRepository)
 	app := provide.GetApp()
-	merchantQuery := query.NewMerchantQuery(app, db)
+	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository)
 	orderQuery := query.NewOrderQuery(orm)
 	merchantServiceServer := impl2.NewMerchantService(iMerchantRepo, iMemberRepo, iStaffRepo, merchantQuery, orderQuery)
 	return merchantServiceServer
@@ -940,7 +944,9 @@ func GetContentService() proto.ContentServiceServer {
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
 	iArticleRepo := repos.NewArticleRepo(orm, db, iArticleCategoryRepo, iPageRepo, iRegistryRepo)
 	app := provide.GetApp()
-	merchantQuery := query.NewMerchantQuery(app, db)
+	iStaffRepo := repos.NewStaffRepo(db)
+	iApprovalRepository := repos.NewApprovalRepository(db)
+	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository)
 	memberQuery := query.NewMemberQuery(orm, db)
 	contentQuery := query.NewContentQuery(orm, db, merchantQuery, memberQuery)
 	contentServiceServer := impl2.NewContentService(iArticleRepo, contentQuery)
@@ -1123,7 +1129,9 @@ func GetWorkorderService() proto.WorkorderServiceServer {
 }
 
 func GetApprovalService() proto.ApprovalServiceServer {
-	approvalServiceServer := impl2.NewApprovalService()
+	db := provide.GetGOrm()
+	iApprovalRepository := repos.NewApprovalRepository(db)
+	approvalServiceServer := impl2.NewApprovalService(iApprovalRepository)
 	return approvalServiceServer
 }
 

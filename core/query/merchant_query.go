@@ -11,8 +11,11 @@ package query
 import (
 	"regexp"
 
+	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/infrastructure/fw"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof"
@@ -24,13 +27,19 @@ type MerchantQuery struct {
 	db.Connector
 	Storage storage.Interface
 	fw.BaseRepository[merchant.Merchant]
-	AuthRepo fw.BaseRepository[merchant.Authenticate]
+	AuthRepo      fw.BaseRepository[merchant.Authenticate]
+	_staffRepo    staff.IStaffRepo
+	_approvalRepo approval.IApprovalRepository
 }
 
-func NewMerchantQuery(c gof.App, fo fw.ORM) *MerchantQuery {
+func NewMerchantQuery(c gof.App, fo fw.ORM, staffRepo staff.IStaffRepo,
+	approvalRepo approval.IApprovalRepository,
+) *MerchantQuery {
 	q := &MerchantQuery{
-		Connector: c.Db(),
-		Storage:   c.Storage(),
+		Connector:     c.Db(),
+		Storage:       c.Storage(),
+		_staffRepo:    staffRepo,
+		_approvalRepo: approvalRepo,
 	}
 	q.ORM = fo
 	q.AuthRepo.ORM = fo
@@ -113,4 +122,40 @@ func (m *MerchantQuery) QueryMerchantAuthenticates(mchId int) []*merchant.Authen
 	var ret []*merchant.Authenticate
 	m.ORM.Find(&ret, "mch_id = ?", mchId)
 	return ret
+}
+
+// GetStaffTransferInfo 获取转商户信息
+func (m *MerchantQuery) GetStaffTransferInfo(staffId int64) (ret struct {
+	TxId            int                     `json:"txId"`
+	MchName         string                  `json:"mchName"`
+	TransferMchName string                  `json:"transferMchName"`
+	ApprovalLogs    []*approval.ApprovalLog `json:"approvalLogs"`
+}) {
+	sf := m._staffRepo.TransferRepo().FindBy("staff_id = ? ORDER BY id DESC", staffId)
+	if sf == nil {
+		return ret
+	}
+	ret.TxId = sf.Id
+	mch := m.Get(sf.OriginMchId)
+	tarMch := m.Get(sf.TransferMchId)
+	ret.MchName = mch.MchName
+	ret.TransferMchName = tarMch.MchName
+	ret.ApprovalLogs = m._approvalRepo.GetLogRepo().FindList(&fw.QueryOption{
+		Skip:  0,
+		Limit: 10,
+		Order: "id ASC",
+	}, " approval_id = ?", sf.ApprovalId)
+	return ret
+}
+
+// QueryMerchantByName 根据商户名称查询商户信息
+func (m *MerchantQuery) QueryMerchantByName(name string) []map[string]interface{} {
+	list := m.FindList(nil, "mch_name = ?", name)
+	return collections.MapList(list, func(m *merchant.Merchant) map[string]interface{} {
+		return map[string]interface{}{
+			"id":      m.Id,
+			"mchName": m.MchName,
+			"address": m.Address,
+		}
+	})
 }
