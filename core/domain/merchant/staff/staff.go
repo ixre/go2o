@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -20,6 +21,7 @@ type staffManagerImpl struct {
 	_memberRepo        member.IMemberRepo
 	_stationRepo       station.IStationRepo
 	_mchRepo           merchant.IMerchantRepo
+	_approvalRepo      approval.IApprovalRepository
 }
 
 func NewStaffManager(mch merchant.IMerchantAggregateRoot,
@@ -27,7 +29,9 @@ func NewStaffManager(mch merchant.IMerchantAggregateRoot,
 	staffTransferRepo staff.IStaffTransferRepo,
 	memberRepo member.IMemberRepo,
 	stationRepo station.IStationRepo,
-	mchRepo merchant.IMerchantRepo) staff.IStaffManager {
+	mchRepo merchant.IMerchantRepo,
+	approvalRepo approval.IApprovalRepository,
+) staff.IStaffManager {
 	return &staffManagerImpl{
 		_mch:               mch,
 		_repo:              staffRepo,
@@ -35,6 +39,7 @@ func NewStaffManager(mch merchant.IMerchantAggregateRoot,
 		_memberRepo:        memberRepo,
 		_stationRepo:       stationRepo,
 		_mchRepo:           mchRepo,
+		_approvalRepo:      approvalRepo,
 	}
 }
 
@@ -87,14 +92,14 @@ func (e *staffManagerImpl) Create(memberId int) error {
 }
 
 // RequestTransfer implements staff.IStaffManager.
-func (e *staffManagerImpl) RequestTransfer(staffId int, mchId int) error {
+func (e *staffManagerImpl) RequestTransfer(staffId int, mchId int) (int, error) {
 	count, _ := e._staffTransferRepo.Count("staff_id=? and review_status = ?", staffId, enum.ReviewPending)
 	if count > 0 {
-		return errors.New("员工存在未审核的转移请求")
+		return 0, errors.New("员工存在未审核的转移请求")
 	}
 	mch := e._mchRepo.GetMerchant(mchId)
 	if mch == nil {
-		return errors.New("商户不存在")
+		return 0, errors.New("商户不存在")
 	}
 	// 创建转移请求
 	transferRequest := &staff.StaffTransfer{
@@ -108,9 +113,20 @@ func (e *staffManagerImpl) RequestTransfer(staffId int, mchId int) error {
 		CreateTime:    int(time.Now().Unix()),
 		UpdateTime:    int(time.Now().Unix()),
 	}
-	_, err := e._staffTransferRepo.Save(transferRequest)
-	if err != nil {
-		return errors.New("创建转移请求失败")
+	ret, err := e._staffTransferRepo.Save(transferRequest)
+	if err == nil {
+		transferRequest.Id = ret.Id
+		// 创建审批单
+		ia := e._approvalRepo.Create(approval.FlowStaffTransfer, transferRequest.Id)
+		err = ia.Save()
+		if err == nil {
+			// 分配审批人
+			err = ia.Assign(e._mch.GetAggregateRootId(), e._mch.GetValue().MchName)
+		}
+		if err == nil {
+			return ret.Id, nil
+		}
+		return 0, err
 	}
-	return nil
+	return transferRequest.Id, err
 }

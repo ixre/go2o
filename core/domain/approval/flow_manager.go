@@ -15,10 +15,13 @@ import "github.com/ixre/go2o/core/domain/interface/approval"
 var _ approval.IFlowManager = new(flowManagerImpl)
 
 type flowManagerImpl struct {
+	_repo approval.IApprovalRepository
 }
 
-func NewFlowManager() approval.IFlowManager {
-	return &flowManagerImpl{}
+func NewFlowManager(repo approval.IApprovalRepository) approval.IFlowManager {
+	return &flowManagerImpl{
+		_repo: repo,
+	}
 }
 
 // CreateFlow implements approval.IFlowManager.

@@ -28,6 +28,13 @@ type ApprovalImpl struct {
 	_flow  *approval.ApprovalFlow
 }
 
+func NewApproval(value *approval.Approval, repo approval.IApprovalRepository) approval.IApprovalAggregateRoot {
+	return &ApprovalImpl{
+		_value: value,
+		_repo:  repo,
+	}
+}
+
 // GetAggregateRootId implements approval.IApprovalAggregateRoot.
 func (a *ApprovalImpl) GetAggregateRootId() int {
 	return a._value.Id
@@ -180,6 +187,7 @@ func (a *ApprovalImpl) submitApproval() error {
 	v, err := a._repo.Save(a._value)
 	if err == nil {
 		a._value.Id = v.Id
+		err = a.toNextNode()
 	}
 	return err
 }
@@ -218,10 +226,16 @@ func (a *ApprovalImpl) toNextNode() error {
 func (a *ApprovalImpl) getNextNode() *approval.ApprovalFlowNode {
 	flow := a.Flow()
 	for i, node := range flow.Nodes {
+		if a._value.NodeId <= 0 && node.NodeType == approval.NodeTypeStart {
+			// 如果还没有节点，则返回开始节点
+			return node
+		}
 		if node.Id != a._value.NodeId {
+			// 不是当前节点
 			continue
 		}
 		if i+1 < len(flow.Nodes) {
+			// 返回下一个节点
 			return flow.Nodes[i+1]
 		}
 		break

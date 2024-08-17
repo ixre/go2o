@@ -28,7 +28,7 @@ type (
 		// Create 创建员工
 		Create(memberId int) error
 		// RequestTransfer 请求转商户
-		RequestTransfer(staffId, mchId int) error
+		RequestTransfer(staffId, mchId int) (int, error)
 	}
 
 	// IStaffRepo 员工数据访问接口

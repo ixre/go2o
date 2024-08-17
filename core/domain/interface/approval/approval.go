@@ -33,6 +33,11 @@ var (
 	NodeTypeOther = 3
 )
 
+var (
+	// 员工转移审批
+	FlowStaffTransfer = 101
+)
+
 type (
 	// IApprovalAggregateRoot 审批聚合根
 	IApprovalAggregateRoot interface {
@@ -70,6 +75,8 @@ type (
 		fw.Repository[Approval]
 		// GetLogRepo 获取审核日志仓储
 		GetLogRepo() fw.Repository[ApprovalLog]
+		// Create 创建审批单, 传入[flowId] 工作流ID, [bizId] 业务ID, 返回审批聚合根
+		Create(flowId int, bizId int) IApprovalAggregateRoot
 		// FlowManager 工作流管理器
 		FlowManager() IFlowManager
 		// GetCurrentNodeLog 获取当前节点审核日志
@@ -85,6 +92,8 @@ type Approval struct {
 	ApprovalNo string `json:"approvalNo" db:"approval_no" gorm:"column:approval_no" bson:"approvalNo"`
 	// 工作流编号
 	FlowId int `json:"flowId" db:"flow_id" gorm:"column:flow_id" bson:"flowId"`
+	// 业务ID
+	BizId int `json:"bizId" db:"biz_id" gorm:"column:biz_id" bson:"bizId"`
 	// 当前节点编号
 	NodeId int `json:"nodeId" db:"node_id" gorm:"column:node_id" bson:"nodeId"`
 	// 审批人

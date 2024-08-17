@@ -895,6 +895,7 @@ CREATE TABLE approval (
   id           BIGSERIAL NOT NULL, 
   approval_no  varchar(20) NOT NULL, 
   flow_id      int4 NOT NULL, 
+  biz_id       int8 NOT NULL, 
   node_id      int4 NOT NULL, 
   assign_uid   int8 NOT NULL, 
   assign_name  varchar(20) NOT NULL, 
@@ -906,12 +907,14 @@ COMMENT ON TABLE approval IS '审批表';
 COMMENT ON COLUMN approval.id IS '编号';
 COMMENT ON COLUMN approval.approval_no IS '审批流水号';
 COMMENT ON COLUMN approval.flow_id IS '工作流编号';
+COMMENT ON COLUMN approval.biz_id IS '业务编号';
 COMMENT ON COLUMN approval.node_id IS '当前节点编号';
 COMMENT ON COLUMN approval.assign_uid IS '审批人';
 COMMENT ON COLUMN approval.assign_name IS '审批人名称';
 COMMENT ON COLUMN approval.final_status IS '最终状态,  0: 审核中  1: 已通过  2:不通过';
 COMMENT ON COLUMN approval.create_time IS '创建时间';
 COMMENT ON COLUMN approval.update_time IS '更新时间';
+
 
 DROP TABLE IF EXISTS approval_log CASCADE;
 CREATE TABLE approval_log (

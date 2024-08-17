@@ -17,6 +17,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -58,6 +59,7 @@ type merchantRepo struct {
 	_walletRepo        wallet.IWalletRepo
 	_registryRepo      registry.IRegistryRepo
 	_staffTransferRepo staff.IStaffTransferRepo
+	_approvalRepo      approval.IApprovalRepository
 	mux                *sync.RWMutex
 }
 
@@ -74,6 +76,7 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 	valRepo valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo,
 	staffTransferRepo staff.IStaffTransferRepo,
+	approvalRepo approval.IApprovalRepository,
 ) merchant.IMerchantRepo {
 	if !mchMerchantDaoImplMapped {
 		// 映射实体
@@ -97,6 +100,7 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 		_walletRepo:        walletRepo,
 		_registryRepo:      registryRepo,
 		_staffTransferRepo: staffTransferRepo,
+		_approvalRepo:      approvalRepo,
 		mux:                &sync.RWMutex{},
 	}
 	r.ORM = on
@@ -124,7 +128,8 @@ func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchantAg
 		m._stationRepo,
 		m._walletRepo,
 		m._valRepo,
-		m._registryRepo)
+		m._registryRepo,
+		m._approvalRepo)
 }
 
 func (m *merchantRepo) cleanCache(mchId int64) {

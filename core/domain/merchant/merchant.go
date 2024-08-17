@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -66,6 +67,7 @@ type merchantImpl struct {
 	_employeeManager staff.IStaffManager
 	_walletRepo      wallet.IWalletRepo
 	_registryRepo    registry.IRegistryRepo
+	_approvalRepo    approval.IApprovalRepository
 	// 之前绑定的会员编号
 	_lastBindMemberId int
 }
@@ -78,7 +80,8 @@ func (m *merchantImpl) EmployeeManager() staff.IStaffManager {
 			m._staffTransferRepo,
 			m._memberRepo,
 			m._stationRepo,
-			m._repo)
+			m._repo,
+			m._approvalRepo)
 	}
 	return m._employeeManager
 }
@@ -90,7 +93,10 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	staffTransferRepo staff.IStaffTransferRepo,
 	memberRepo member.IMemberRepo,
 	stationRepo station.IStationRepo,
-	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantAggregateRoot {
+	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo,
+	approvalRepo approval.IApprovalRepository,
+) merchant.IMerchantAggregateRoot {
 	mch := &merchantImpl{
 		_value:             v,
 		_repo:              rep,
@@ -105,6 +111,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 		_staffTransferRepo: staffTransferRepo,
 		_walletRepo:        walletRepo,
 		_registryRepo:      registryRepo,
+		_approvalRepo:      approvalRepo,
 	}
 	return mch
 }
