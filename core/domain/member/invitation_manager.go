@@ -18,7 +18,86 @@ import (
 var _ member.IInvitationManager = new(invitationManager)
 
 type invitationManager struct {
-	member *memberImpl
+	member      *memberImpl
+	_memberRepo member.IMemberRepo
+}
+
+func (i *invitationManager) getBlockInfo(memberId int) *member.BlockList {
+	return i._memberRepo.BlockRepo().FindBy("member_id = ? AND block_member_id = ?",
+		i.member.GetAggregateRootId(), memberId)
+}
+
+// Block implements member.IInvitationManager.
+func (i *invitationManager) Block(memberId int) error {
+	v := i.getBlockInfo(memberId)
+	if v != nil {
+		v.BlockFlag |= member.BlockFlagBlack
+	} else {
+		v = &member.BlockList{
+			Id:            memberId,
+			MemberId:      int(i.member.GetAggregateRootId()),
+			BlockMemberId: memberId,
+			BlockFlag:     member.BlockFlagBlack,
+			CreateTime:    int(time.Now().Unix()),
+		}
+	}
+	_, err := i._memberRepo.BlockRepo().Save(v)
+	return err
+}
+
+// IsBlockOrShield implements member.IInvitationManager.
+func (i *invitationManager) IsBlockOrShield(memberId int) (bool, int) {
+	v := i.getBlockInfo(memberId)
+	if v == nil {
+		return false, 0
+	}
+	return true, v.BlockFlag
+}
+
+// Shield implements member.IInvitationManager.
+func (i *invitationManager) Shield(memberId int) error {
+	v := i.getBlockInfo(memberId)
+	if v != nil {
+		v.BlockFlag |= member.BlockFlagShield
+	} else {
+		v = &member.BlockList{
+			Id:            memberId,
+			MemberId:      int(i.member.GetAggregateRootId()),
+			BlockMemberId: memberId,
+			BlockFlag:     member.BlockFlagShield,
+			CreateTime:    int(time.Now().Unix()),
+		}
+	}
+	_, err := i._memberRepo.BlockRepo().Save(v)
+	return err
+}
+
+// UnBlock implements member.IInvitationManager.
+func (i *invitationManager) UnBlock(memberId int) (err error) {
+	v := i.getBlockInfo(memberId)
+	if v != nil {
+		v.BlockFlag ^= member.BlockFlagBlack
+		if v.BlockFlag == 0 {
+			err = i._memberRepo.BlockRepo().Delete(v)
+		} else {
+			_, err = i._memberRepo.BlockRepo().Save(v)
+		}
+	}
+	return err
+}
+
+// UnShield implements member.IInvitationManager.
+func (i *invitationManager) UnShield(memberId int) (err error) {
+	v := i.getBlockInfo(memberId)
+	if v != nil {
+		v.BlockFlag ^= member.BlockFlagBlack
+		if v.BlockFlag == 0 {
+			err = i._memberRepo.BlockRepo().Delete(v)
+		} else {
+			_, err = i._memberRepo.BlockRepo().Save(v)
+		}
+	}
+	return err
 }
 
 // 更换邀请人

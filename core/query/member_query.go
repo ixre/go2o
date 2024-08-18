@@ -427,3 +427,16 @@ LEFT JOIN mm_profile pro ON pro.member_id = m.id`
 `
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
 }
+
+// QueryMemberBlockList 查询会员拉黑列表
+func (m *MemberQuery) QueryMemberBlockList(p *fw.PagingParams) (*fw.PagingResult, error) {
+	tables := `mm_block_list b INNER JOIN mm_member m ON b.block_member_id = m.id`
+	fields := `b.id,
+	b.block_member_id,
+	b.block_flag,
+	m.profile_photo,
+	m.nickname,
+	m.username,
+	b.create_time`
+	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+}

@@ -36,6 +36,8 @@ const (
 	MemberService_SaveProfile_FullMethodName                = "/MemberService/SaveProfile"
 	MemberService_GetInviter_FullMethodName                 = "/MemberService/GetInviter"
 	MemberService_GetInviteCount_FullMethodName             = "/MemberService/GetInviteCount"
+	MemberService_BlockOrShield_FullMethodName              = "/MemberService/BlockOrShield"
+	MemberService_IsBlockOrShield_FullMethodName            = "/MemberService/IsBlockOrShield"
 	MemberService_GetBankCards_FullMethodName               = "/MemberService/GetBankCards"
 	MemberService_AddBankCard_FullMethodName                = "/MemberService/AddBankCard"
 	MemberService_RemoveBankCard_FullMethodName             = "/MemberService/RemoveBankCard"
@@ -150,6 +152,10 @@ type MemberServiceClient interface {
 	GetInviter(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviterResponse, error)
 	// 获取会员邀请数量
 	GetInviteCount(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviteCountResponse, error)
+	// 会员屏蔽或拉黑操作及取消屏蔽和取消拉黑操作
+	BlockOrShield(ctx context.Context, in *MemberBlockShieldRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// 是否屏蔽或拉黑
+	IsBlockOrShield(ctx context.Context, in *MembersIdRequest, opts ...grpc.CallOption) (*MemberBlockShieldResponse, error)
 	// 获取会员绑定银行卡信息
 	GetBankCards(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*BankCardListResponse, error)
 	// 添加银行卡
@@ -435,6 +441,24 @@ func (c *memberServiceClient) GetInviter(ctx context.Context, in *MemberIdReques
 func (c *memberServiceClient) GetInviteCount(ctx context.Context, in *MemberIdRequest, opts ...grpc.CallOption) (*MemberInviteCountResponse, error) {
 	out := new(MemberInviteCountResponse)
 	err := c.cc.Invoke(ctx, MemberService_GetInviteCount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) BlockOrShield(ctx context.Context, in *MemberBlockShieldRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MemberService_BlockOrShield_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) IsBlockOrShield(ctx context.Context, in *MembersIdRequest, opts ...grpc.CallOption) (*MemberBlockShieldResponse, error) {
+	out := new(MemberBlockShieldResponse)
+	err := c.cc.Invoke(ctx, MemberService_IsBlockOrShield_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1065,6 +1089,10 @@ type MemberServiceServer interface {
 	GetInviter(context.Context, *MemberIdRequest) (*MemberInviterResponse, error)
 	// 获取会员邀请数量
 	GetInviteCount(context.Context, *MemberIdRequest) (*MemberInviteCountResponse, error)
+	// 会员屏蔽或拉黑操作及取消屏蔽和取消拉黑操作
+	BlockOrShield(context.Context, *MemberBlockShieldRequest) (*TxResult, error)
+	// 是否屏蔽或拉黑
+	IsBlockOrShield(context.Context, *MembersIdRequest) (*MemberBlockShieldResponse, error)
 	// 获取会员绑定银行卡信息
 	GetBankCards(context.Context, *MemberIdRequest) (*BankCardListResponse, error)
 	// 添加银行卡
@@ -1250,6 +1278,12 @@ func (UnimplementedMemberServiceServer) GetInviter(context.Context, *MemberIdReq
 }
 func (UnimplementedMemberServiceServer) GetInviteCount(context.Context, *MemberIdRequest) (*MemberInviteCountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInviteCount not implemented")
+}
+func (UnimplementedMemberServiceServer) BlockOrShield(context.Context, *MemberBlockShieldRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockOrShield not implemented")
+}
+func (UnimplementedMemberServiceServer) IsBlockOrShield(context.Context, *MembersIdRequest) (*MemberBlockShieldResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IsBlockOrShield not implemented")
 }
 func (UnimplementedMemberServiceServer) GetBankCards(context.Context, *MemberIdRequest) (*BankCardListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBankCards not implemented")
@@ -1758,6 +1792,42 @@ func _MemberService_GetInviteCount_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemberServiceServer).GetInviteCount(ctx, req.(*MemberIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_BlockOrShield_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MemberBlockShieldRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).BlockOrShield(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemberService_BlockOrShield_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).BlockOrShield(ctx, req.(*MemberBlockShieldRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_IsBlockOrShield_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MembersIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).IsBlockOrShield(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemberService_IsBlockOrShield_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).IsBlockOrShield(ctx, req.(*MembersIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2988,6 +3058,14 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetInviteCount",
 			Handler:    _MemberService_GetInviteCount_Handler,
+		},
+		{
+			MethodName: "BlockOrShield",
+			Handler:    _MemberService_BlockOrShield_Handler,
+		},
+		{
+			MethodName: "IsBlockOrShield",
+			Handler:    _MemberService_IsBlockOrShield_Handler,
 		},
 		{
 			MethodName: "GetBankCards",

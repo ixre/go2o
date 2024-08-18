@@ -660,6 +660,49 @@ func (s *memberService) CheckProfileCompleted(_ context.Context, memberId *proto
 	return &proto.Bool{}, nil
 }
 
+// BlockOrShield implements proto.MemberServiceServer.
+func (s *memberService) BlockOrShield(_ context.Context, req *proto.MemberBlockShieldRequest) (*proto.TxResult, error) {
+	m := s.repo.GetMember(req.MemberId)
+	if m == nil {
+		return s.errorV2(member.ErrNoSuchMember), nil
+	}
+	tm := s.repo.GetMember(req.TargetMemberId)
+	if tm == nil {
+		return s.errorV2(member.ErrNoSuchMember), nil
+	}
+	var err error
+	iv := m.Invitation()
+	if req.IsRevert {
+		if req.BlockType == 1 {
+			err = iv.UnShield(int(req.TargetMemberId))
+		}
+		if req.BlockType == 2 {
+			err = iv.UnBlock(int(req.TargetMemberId))
+		}
+	} else {
+		if req.BlockType == 1 {
+			err = iv.Shield(int(req.TargetMemberId))
+		}
+		if req.BlockType == 2 {
+			err = iv.Block(int(req.TargetMemberId))
+		}
+	}
+	return s.errorV2(err), nil
+}
+
+// IsBlockOrShield implements proto.MemberServiceServer.
+func (s *memberService) IsBlockOrShield(_ context.Context, req *proto.MembersIdRequest) (*proto.MemberBlockShieldResponse, error) {
+	m := s.repo.GetMember(req.MemberId)
+	if m != nil {
+		_, flag := m.Invitation().IsBlockOrShield(int(req.TargetMemberId))
+		return &proto.MemberBlockShieldResponse{
+			IsBlock:  flag&member.BlockFlagBlack == member.BlockFlagBlack,
+			IsShield: flag&member.BlockFlagShield == member.BlockFlagShield,
+		}, nil
+	}
+	return &proto.MemberBlockShieldResponse{}, nil
+}
+
 // CheckProfileComplete 判断资料是否完善
 func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.MemberIdRequest) (*proto.Result, error) {
 	m := s.repo.GetMember(id.MemberId)
@@ -1397,7 +1440,7 @@ func (s *memberService) B4EAuth(_ context.Context, r *proto.B4EAuthRequest) (*pr
 }
 
 // Withdraw 提现并返回提现编号,交易号以及错误信息
-func (s *memberService) Withdrawal(_ context.Context, r *proto.UserWithdrawRequest) (*proto.TxResult, error) {
+func (s *memberService) RequestWithdrawal(_ context.Context, r *proto.UserWithdrawRequest) (*proto.TxResult, error) {
 	m, err := s.getMember(r.UserId)
 	if err != nil {
 		return s.errorV2(err), nil

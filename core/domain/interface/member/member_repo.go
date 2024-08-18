@@ -11,9 +11,12 @@ package member
 
 import (
 	"github.com/ixre/go2o/core/dto"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
 type IMemberRepo interface {
+	// 黑名单仓储
+	BlockRepo() fw.Repository[BlockList]
 	// 获取管理服务
 	GetManager() IMemberManager
 

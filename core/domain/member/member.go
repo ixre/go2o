@@ -127,7 +127,8 @@ func (m *memberImpl) GiftCard() member.IGiftCardManager {
 func (m *memberImpl) Invitation() member.IInvitationManager {
 	if m.invitation == nil {
 		m.invitation = &invitationManager{
-			member: m,
+			member:      m,
+			_memberRepo: m.repo,
 		}
 	}
 	return m.invitation

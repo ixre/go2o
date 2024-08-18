@@ -970,3 +970,19 @@ COMMENT ON COLUMN approval_flow_node.node_key IS '节点KEY';
 COMMENT ON COLUMN approval_flow_node.node_type IS '节点类型 1:起始节点   2: 结束节点   3: 其他节点';
 COMMENT ON COLUMN approval_flow_node.node_name IS '节点名称';
 COMMENT ON COLUMN approval_flow_node.node_desc IS '节点描述';
+
+
+DROP TABLE IF EXISTS mm_block_list CASCADE;
+CREATE TABLE mm_block_list (
+  id              BIGSERIAL NOT NULL, 
+  member_id       int8 NOT NULL, 
+  block_member_id int8 NOT NULL, 
+  block_flag      int4 NOT NULL, 
+  create_time     int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mm_block_list IS '会员拉黑列表';
+COMMENT ON COLUMN mm_block_list.id IS '编号';
+COMMENT ON COLUMN mm_block_list.member_id IS '会员编号';
+COMMENT ON COLUMN mm_block_list.block_member_id IS '拉黑会员编号';
+COMMENT ON COLUMN mm_block_list.block_flag IS '拉黑标志，1: 屏蔽  2: 拉黑';
+COMMENT ON COLUMN mm_block_list.create_time IS '拉黑时间';

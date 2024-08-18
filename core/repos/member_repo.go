@@ -25,6 +25,7 @@ import (
 	memberImpl "github.com/ixre/go2o/core/domain/member"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	tool "github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/db"
@@ -46,12 +47,22 @@ type MemberRepoImpl struct {
 	valueRepo    valueobject.IValueRepo
 	mssRepo      mss.IMessageRepo
 	registryRepo registry.IRegistryRepo
+	_blockRepo   fw.Repository[member.BlockList]
 	_orm         orm.Orm
+	_o           fw.ORM
+}
+
+// BlockRepo implements member.IMemberRepo.
+func (m *MemberRepoImpl) BlockRepo() fw.Repository[member.BlockList] {
+	if m._blockRepo == nil {
+		m._blockRepo = &fw.BaseRepository[member.BlockList]{ORM: m._o}
+	}
+	return m._blockRepo
 }
 
 var memberRepoImplMapped = false
 
-func NewMemberRepo(sto storage.Interface, o orm.Orm,
+func NewMemberRepo(sto storage.Interface, o orm.Orm, no fw.ORM,
 	walletRepo wallet.IWalletRepo, mssRepo mss.IMessageRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMemberRepo {
 	if !memberRepoImplMapped {
@@ -63,6 +74,7 @@ func NewMemberRepo(sto storage.Interface, o orm.Orm,
 		storage:      sto,
 		Connector:    o.Connector(),
 		_orm:         o,
+		_o:           no,
 		mssRepo:      mssRepo,
 		walletRepo:   walletRepo,
 		valueRepo:    valRepo,

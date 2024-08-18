@@ -28,4 +28,40 @@ type IInvitationManager interface {
 
 	// 更换邀请人,async是否异步更新
 	UpdateInviter(inviterId int64, sync bool) error
+
+	// 屏蔽
+	Shield(memberId int) error
+	// 取消屏蔽
+	UnShield(memberId int) error
+	// 拉黑
+	Block(memberId int) error
+	// 取消拉黑
+	UnBlock(memberId int) error
+	// 是否被屏蔽或拉黑
+	IsBlockOrShield(memberId int) (bool, int)
+}
+
+const (
+	// 屏蔽
+	BlockFlagShield = 1 << iota
+	// 拉黑
+	BlockFlagBlack = 2
+)
+
+// MmBlockList 会员拉黑列表
+type BlockList struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 会员编号
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// 拉黑会员编号
+	BlockMemberId int `json:"blockMemberId" db:"block_member_id" gorm:"column:block_member_id" bson:"blockMemberId"`
+	// 拉黑标志，1: 屏蔽  2: 拉黑
+	BlockFlag int `json:"blockFlag" db:"block_flag" gorm:"column:block_flag" bson:"blockFlag"`
+	// 拉黑时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+}
+
+func (m BlockList) TableName() string {
+	return "mm_block_list"
 }

@@ -90,6 +90,34 @@ message MemberIdRequest{
   int64 memberId = 1;
 }
 
+// 会员屏蔽或拉黑请求
+message MemberBlockShieldRequest{
+  // 会员编号
+  int64 memberId = 1;
+  // 目标会员编号
+  int64 targetMemberId = 2;
+  // 屏蔽类型, 1:屏蔽, 2:拉黑
+  int32 blockType = 3;
+  // 是否撤销屏蔽或拉黑
+  bool isRevert = 4;
+}
+
+// 会员请求
+message MembersIdRequest{
+  // 会员编号 
+  int64 memberId = 1;
+  // 目标会员编号
+  int64 targetMemberId = 2;
+}
+
+// 会员屏蔽或拉黑响应
+message MemberBlockShieldResponse {
+  // 是否拉黑
+  bool isBlock = 1;
+  // 是否屏蔽
+  bool isShield = 2;
+}
+
 message FindMemberRequest {
   // 凭据类型
   ECredentials cred = 1;

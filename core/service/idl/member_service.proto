@@ -78,6 +78,12 @@ service MemberService {
     rpc GetInviteCount (MemberIdRequest) returns (MemberInviteCountResponse) {
     }
 
+    // 会员屏蔽或拉黑操作及取消屏蔽和取消拉黑操作
+    rpc BlockOrShield (MemberBlockShieldRequest) returns (TxResult) {}
+
+    // 是否屏蔽或拉黑
+    rpc IsBlockOrShield (MembersIdRequest) returns (MemberBlockShieldResponse) {}
+
     // 获取会员绑定银行卡信息
     rpc GetBankCards (MemberIdRequest) returns (BankCardListResponse) {
     }
