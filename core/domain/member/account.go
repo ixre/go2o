@@ -971,13 +971,13 @@ func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int, str
 	minAmount, _ := strconv.Atoi(minAmountStr)
 	if w.Amount < minAmount*100 {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrLessTakeAmount.Error(),
-			format.FormatFloat(float32(minAmount))))
+			format.FormatIntMoney(int64(minAmount))))
 	}
 	maxAmountStr, _ := a.registryRepo.GetValue(registry.MemberWithdrawMaxAmount)
 	maxAmount, _ := strconv.Atoi(maxAmountStr)
 	if maxAmount > 0 && w.Amount > maxAmount*100 {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrOutTakeAmount.Error(),
-			format.FormatFloat(float32(maxAmount))))
+			format.FormatIntMoney(int64(maxAmount))))
 	}
 	// 检测是否超过限制
 	maxTimes := a.registryRepo.Get(registry.MemberWithdrawMaxTimeOfDay).IntValue()

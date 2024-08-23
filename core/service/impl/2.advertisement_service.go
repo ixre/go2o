@@ -200,7 +200,7 @@ func (a *advertisementService) getAdvertisementPackage(ia ad.IAdAggregateRoot) *
 			})
 		}
 	default:
-		panic("not support ad type")
+		panic("not support advertisement type")
 	}
 	return ret
 }
