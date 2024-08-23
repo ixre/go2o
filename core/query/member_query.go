@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/service/proto"
@@ -27,6 +28,9 @@ type MemberQuery struct {
 	db.Connector
 	o orm.Orm
 	fw.BaseRepository[member.Member]
+	balanceLog  fw.BaseRepository[member.BalanceLog]
+	integralLog fw.BaseRepository[member.IntegralLog]
+	walletLog   fw.BaseRepository[wallet.WalletLog]
 }
 
 func NewMemberQuery(o orm.Orm, fo fw.ORM) *MemberQuery {
@@ -34,6 +38,9 @@ func NewMemberQuery(o orm.Orm, fo fw.ORM) *MemberQuery {
 		Connector: o.Connector(),
 		o:         o}
 	q.ORM = fo
+	q.balanceLog.ORM = fo
+	q.integralLog.ORM = fo
+	q.walletLog.ORM = fo
 	return q
 }
 
@@ -439,4 +446,24 @@ func (m *MemberQuery) QueryMemberBlockList(p *fw.PagingParams) (*fw.PagingResult
 	m.username,
 	b.create_time`
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+}
+
+func (m *MemberQuery) QueryPagingMemberBalanceLogs(memberId int, p *fw.PagingParams) (*fw.PagingResult, error) {
+	p.Equal("member_id", memberId)
+	return m.balanceLog.QueryPaging(p)
+}
+
+func (m *MemberQuery) QueryPagingMemberIntegralLogs(memberId int, p *fw.PagingParams) (*fw.PagingResult, error) {
+	p.Equal("member_id", memberId)
+	return m.integralLog.QueryPaging(p)
+}
+
+func (m *MemberQuery) QueryPagingMemberWalletLogs(memberId int, p *fw.PagingParams) (*fw.PagingResult, error) {
+	var walletId int
+	m.ORM.Raw("SELECT id FROM wal_wallet WHERE user_id=? AND wallet_type=? ", memberId, wallet.TPerson).Scan(&walletId)
+	if walletId == 0 {
+		return nil, fmt.Errorf("user no such wallet,id=%d", memberId)
+	}
+	p.Equal("wallet_id", walletId)
+	return m.walletLog.QueryPaging(p)
 }

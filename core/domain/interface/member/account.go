@@ -346,3 +346,11 @@ type (
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 	}
 )
+
+func (b *BalanceLog) TableName() string {
+	return "mm_balance_log"
+}
+
+func (i *IntegralLog) TableName() string {
+	return "mm_integral_log"
+}
