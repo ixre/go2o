@@ -6,8 +6,12 @@ option java_package = "com.github.go2o.rpc";
 
 // 清除缓存请求
 message CleanCacheRequest{
+    // 清除指定前缀的缓存,如果为空则清除所有缓存
     string prefix = 1;
+    // 清除指定键的缓存
     string key = 2;
+    // 是否清除全局缓存
+    bool clearGlobal = 3;
 }
 
 // 清除缓存响应

@@ -101,14 +101,14 @@ func (i *invitationManager) UnShield(memberId int) (err error) {
 }
 
 // 更换邀请人
-func (i *invitationManager) UpdateInviter(inviterId int64, sync bool) error {
+func (i *invitationManager) UpdateInviter(inviterId int, sync bool) error {
 	id := i.member.GetAggregateRootId()
 	var rl *member.InviteRelation
 	if inviterId > 0 {
-		rl = i.member.repo.GetRelation(inviterId)
+		rl = i.member.repo.GetRelation(int64(inviterId))
 	}
 	// 判断邀请人是否为下级的被邀请会员
-	if i.checkInvitation(id, inviterId) {
+	if i.checkInvitation(id, int64(inviterId)) {
 		return member.ErrInvalidInviteLevel
 	}
 	if !sync {
@@ -148,9 +148,9 @@ func (i *invitationManager) walkUpdateInvitation(id int64, p *member.InviteRelat
 // 更新邀请关系
 func (m *memberImpl) updateDepthInvite(r *member.InviteRelation) error {
 	if r.InviterId > 0 {
-		arr := m.Invitation().InviterArray(r.InviterId, 2)
-		r.InviterD2 = arr[0]
-		r.InviterD3 = arr[1]
+		arr := m.Invitation().InviterArray(int64(r.InviterId), 2)
+		r.InviterD2 = int(arr[0])
+		r.InviterD3 = int(arr[1])
 	} else {
 		r.InviterD2 = 0
 		r.InviterD3 = 0
@@ -172,7 +172,7 @@ func (i *invitationManager) InviterArray(memberId int64, depth int) []int64 {
 		if rl == nil || rl.InviterId <= 0 {
 			break
 		}
-		arr[di] = rl.InviterId
+		arr[di] = int64(rl.InviterId)
 		inviterId = arr[di]
 		di++
 	}
@@ -183,7 +183,7 @@ func (i *invitationManager) InviterArray(memberId int64, depth int) []int64 {
 func (i *invitationManager) InvitationBy(memberId int64) bool {
 	rl := i.member.GetRelation()
 	if rl != nil {
-		return rl.InviterId == memberId
+		return int(rl.InviterId) == int(memberId)
 	}
 	return false
 }

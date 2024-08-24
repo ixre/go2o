@@ -219,7 +219,7 @@ func (s *memberService) SetInviter(_ context.Context, r *proto.SetInviterRequest
 	if inviterId <= 0 {
 		return s.errorV2(member.ErrInvalidInviter), nil
 	}
-	err := im.BindInviter(inviterId, r.AllowChange)
+	err := im.BindInviter(int(inviterId), r.AllowChange)
 	return s.errorV2(err), nil
 }
 
@@ -541,8 +541,14 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	m := s.repo.CreateMember(v)
 	id, err := m.Save()
 	if err == nil {
-		// 保存关联信息
-		err = m.BindInviter(inviterId, true)
+		if inviterId > 0 {
+			// 绑定邀请人
+			err = m.BindInviter(int(inviterId), true)
+		}
+		if err == nil && mch != nil {
+			// 绑定商户信息
+			err = m.BindMerchantId(mch.GetAggregateRootId(), true)
+		}
 		// 添加商户雇员
 		if err == nil && r.UserType == member.RoleMchStaff {
 			err = mch.EmployeeManager().Create(int(id))
@@ -578,17 +584,23 @@ func (s *memberService) GetInviter(_ context.Context, id *proto.MemberIdRequest)
 	r := s.repo.GetRelation(id.MemberId)
 	if r != nil {
 		ret := &proto.MemberInviterResponse{
-			InviterId: r.InviterId,
-			InviterD2: r.InviterD2,
-			InviterD3: r.InviterD3,
+			InviterId: int64(r.InviterId),
+			InviterD2: int64(r.InviterD2),
+			InviterD3: int64(r.InviterD3),
+			RegMchId:  int64(r.RegMchId),
 		}
 		if r.InviterId > 0 {
-			if mm := s.repo.GetMember(r.InviterId); mm != nil {
+			if mm := s.repo.GetMember(int64(r.InviterId)); mm != nil {
 				mv := mm.GetValue()
 				ret.InviterUsername = mv.Username
 				ret.InviterNickname = mv.Nickname
 				ret.InviterProfilePhoto = mv.ProfilePhoto
 				ret.InviterPhone = mv.Phone
+			}
+		}
+		if r.RegMchId > 0 {
+			if mm := s.mchRepo.GetMerchant(int(r.RegMchId)); mm != nil {
+				ret.RegMchName = mm.GetValue().MchName
 			}
 		}
 		return ret, nil

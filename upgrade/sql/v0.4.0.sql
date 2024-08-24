@@ -986,3 +986,24 @@ COMMENT ON COLUMN mm_block_list.member_id IS '会员编号';
 COMMENT ON COLUMN mm_block_list.block_member_id IS '拉黑会员编号';
 COMMENT ON COLUMN mm_block_list.block_flag IS '拉黑标志，1: 屏蔽  2: 拉黑';
 COMMENT ON COLUMN mm_block_list.create_time IS '拉黑时间';
+
+
+-- 2024-08-24 17:56 会员绑定商户
+ALTER TABLE "public"."mm_relation" RENAME COLUMN "reg_mchid" TO "reg_mch_id";
+ALTER TABLE "public"."mm_relation"
+ALTER COLUMN "member_id" TYPE bigint USING "member_id"::bigint,
+ALTER COLUMN "member_id" SET NOT NULL, ALTER COLUMN "member_id" DROP DEFAULT, 
+ALTER COLUMN "card_no" TYPE character varying(20) USING "card_no"::character varying,
+ALTER COLUMN "card_no" SET NOT NULL, ALTER COLUMN "card_no" DROP DEFAULT,
+ALTER COLUMN "inviter_id" TYPE bigint USING "inviter_id"::bigint, 
+ALTER COLUMN "inviter_id" SET NOT NULL, ALTER COLUMN "inviter_id" SET DEFAULT 0, 
+ALTER COLUMN "reg_mch_id" TYPE bigint USING "reg_mch_id"::bigint, 
+ALTER COLUMN "reg_mch_id" SET NOT NULL, ALTER COLUMN "reg_mch_id" DROP DEFAULT,
+ALTER COLUMN "inviter_d2" TYPE bigint USING "inviter_d2"::bigint, 
+ALTER COLUMN "inviter_d2" SET NOT NULL, ALTER COLUMN "inviter_d2" SET DEFAULT 0, 
+ALTER COLUMN "inviter_d3" TYPE bigint USING "inviter_d3"::bigint, 
+ALTER COLUMN "inviter_d3" SET NOT NULL, ALTER COLUMN "inviter_d3" SET DEFAULT 0; 
+
+-- 初始化数据
+update mm_relation set reg_mch_id=mch_staff.mch_id
+FROM mch_staff WHERE  mch_staff.member_id=mm_relation.member_id;

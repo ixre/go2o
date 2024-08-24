@@ -397,8 +397,8 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 		rel := m.repo.GetRelation(m.GetAggregateRootId())
 		if rel == nil {
 			rel = &member.InviteRelation{
-				MemberId:  m.GetAggregateRootId(),
-				CardCard:  "",
+				MemberId:  int(m.GetAggregateRootId()),
+				CardNo:    "",
 				InviterId: 0,
 				RegMchId:  0,
 			}
@@ -727,13 +727,13 @@ func (m *memberImpl) generateMemberCode() string {
 }
 
 // 绑定邀请人,如果已邀请,force为true时更新
-func (m *memberImpl) BindInviter(inviterId int64, force bool) (err error) {
+func (m *memberImpl) BindInviter(inviterId int, force bool) (err error) {
 	rl := m.GetRelation()
 	if !force && rl.InviterId > 0 {
 		return member.ErrExistsInviter
 	}
 	// 不能绑定自己为推荐人
-	if m.GetAggregateRootId() == inviterId {
+	if int(m.GetAggregateRootId()) == inviterId {
 		return member.ErrInvalidInviter
 	}
 	// 更改邀请人,在更改邀请人方法里会验证是否绑定下级会员
@@ -744,6 +744,19 @@ func (m *memberImpl) BindInviter(inviterId int64, force bool) (err error) {
 		if err == nil && isPush {
 			m.pushSaveEvent(false)
 		}
+	}
+	return err
+}
+
+// 绑定邀请人,如果已邀请,force为true时更新
+func (m *memberImpl) BindMerchantId(mchId int, force bool) (err error) {
+	rl := m.GetRelation()
+	if !force && rl.RegMchId > 0 {
+		return errors.New("商户已绑定")
+	}
+	if rl.RegMchId != mchId {
+		rl.RegMchId = mchId
+		return m.repo.SaveRelation(rl)
 	}
 	return err
 }

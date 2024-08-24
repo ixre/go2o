@@ -567,6 +567,10 @@ message MemberInviterResponse {
   sint64 inviterD2 = 6;
   // 邀请会员编号(depth3)
   sint64 inviterD3 = 7;
+  // 注册商户编号
+  sint64 regMchId = 8;
+  // 注册商户
+  string regMchName = 9;
 }
 
 // 邀请数量统计

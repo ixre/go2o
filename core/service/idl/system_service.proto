@@ -16,7 +16,6 @@ service SystemService {
 
     // 获取系统信息
     rpc GetSystemInfo(Empty)returns(SSystemInfo){}
-
     // 清除缓存
     rpc FlushCache(Empty)returns(Result){}
 

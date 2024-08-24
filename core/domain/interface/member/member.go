@@ -104,7 +104,9 @@ type (
 		// GetRelation 获取关联的会员
 		GetRelation() *InviteRelation
 		// BindInviter 绑定邀请人,如果已邀请,force为true时更新
-		BindInviter(memberId int64, force bool) error
+		BindInviter(memberId int, force bool) error
+		// BindMerchantId 绑定商户
+		BindMerchantId(mchId int, force bool) error
 		// AddExp 增加经验值
 		AddExp(exp int) error
 		// Premium 升级为高级会员
@@ -340,17 +342,17 @@ type (
 	// 会员邀请关联表
 	InviteRelation struct {
 		// 会员编号
-		MemberId int64 `db:"member_id" pk:"yes"`
+		MemberId int `db:"member_id" pk:"yes"`
 		// 会员卡号
-		CardCard string `db:"card_no"`
+		CardNo string `db:"card_no"`
 		// 邀请人（会员）
-		InviterId int64 `db:"inviter_id"`
+		InviterId int `db:"inviter_id"`
 		// 邀请会员编号(depth2)
-		InviterD2 int64 `db:"inviter_d2"`
+		InviterD2 int `db:"inviter_d2"`
 		// 邀请会员编号(depth3)
-		InviterD3 int64 `db:"inviter_d3"`
+		InviterD3 int `db:"inviter_d3"`
 		// 注册关联商户编号
-		RegMchId int64 `db:"reg_mchid"`
+		RegMchId int `db:"reg_mch_id"`
 	}
 
 	// 实名认证信息

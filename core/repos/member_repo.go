@@ -581,14 +581,14 @@ func (m *MemberRepoImpl) CheckNicknameIsUse(phone string, memberId int64) bool {
 
 // 保存绑定
 func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
-	rel := m.GetRelation(v.MemberId)
+	rel := m.GetRelation(int64(v.MemberId))
 	if rel == nil {
 		_, _, err = m._orm.Save(nil, v)
 	} else {
 		_, _, err = m._orm.Save(v.MemberId, v)
 	}
 	if err == nil {
-		err = m.storage.Set(m.getRelationCk(v.MemberId), *v)
+		err = m.storage.Set(m.getRelationCk(int64(v.MemberId)), *v)
 	}
 	return err
 }

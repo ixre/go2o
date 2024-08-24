@@ -258,20 +258,20 @@ func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp str
 	m.Query(fmt.Sprintf(`SELECT id,user,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
  (SELECT COUNT(1) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id = m.id
-	AND r.reg_mchid=rl.reg_mchid  AND m1.reg_time BETWEEN
+	AND r.reg_mch_id=rl.reg_mch_id  AND m1.reg_time BETWEEN
   $1 AND $2 ) as invi_num,
 	((SELECT COUNT(1) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id = m.id
-	AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
+	AND r.reg_mch_id=rl.reg_mch_id AND m1.reg_time BETWEEN
   $3 AND $4 )+
  (SELECT COUNT(1) FROM mm_relation r INNER JOIN mm_member m1
   ON m1.id = r.member_id WHERE (m1.level%s) AND inviter_id IN
 	(SELECT member_id FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id =
-    m.id AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
+    m.id AND r.reg_mch_id=rl.reg_mch_id AND m1.reg_time BETWEEN
   $5 AND $6 ))) as all_num
  FROM mm_member m INNER JOIN mm_relation rl ON m.id= rl.member_id
- WHERE rl.reg_mchid = $7 AND state= $8) t ORDER BY %s,t.reg_time asc
+ WHERE rl.reg_mch_id = $7 AND state= $8) t ORDER BY %s,t.reg_time asc
  LIMIT $9`, levelCompStr, levelCompStr, levelCompStr, levelCompStr, sortField), func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &user, &name, &inviNum, &totalNum, &regTime)

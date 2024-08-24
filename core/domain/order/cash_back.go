@@ -26,14 +26,14 @@ import (
 func (o *subOrderImpl) getReferArr(memberId int64, level int32) []int64 {
 	arr := make([]int64, level)
 	var i int32
-	referId := memberId
+	referId := int64(memberId)
 	for i <= level-1 {
 		rl := o.memberRepo.GetRelation(referId)
 		if rl == nil || rl.InviterId <= 0 {
 			break
 		}
-		arr[i] = rl.InviterId
-		referId = arr[i]
+		arr[i] = int64(rl.InviterId)
+		referId = int64(arr[i])
 		i++
 	}
 	return arr
@@ -117,7 +117,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchantAggregateRoot, m member.I
 				break
 			}
 
-			m = o.memberRepo.GetMember(rl.InviterId)
+			m = o.memberRepo.GetMember(int64(rl.InviterId))
 			if m == nil {
 				break
 			}
@@ -175,7 +175,7 @@ func cashBack3R(level int, m member.IMemberAggregateRoot, o order.IOrder,
 			break
 		}
 
-		cm = memberRepo.GetMember(rl.InviterId)
+		cm = memberRepo.GetMember(int64(rl.InviterId))
 
 		// fmt.Println("-------- BACK ",cm == nil)
 		if m == nil {

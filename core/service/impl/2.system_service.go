@@ -59,13 +59,6 @@ func NewSystemService(rep valueobject.IValueRepo,
 	}
 }
 
-// FlushCache implements proto.SystemServiceServer.
-func (s *foundationService) FlushCache(context.Context, *proto.Empty) (*proto.Result, error) {
-	isa := s.sysRepo.GetSystemAggregateRoot()
-	isa.FlushUpdateStatus()
-	return s.success(nil), nil
-}
-
 // GetSystemInfo implements proto.SystemServiceServer.
 func (s *foundationService) GetSystemInfo(context.Context, *proto.Empty) (*proto.SSystemInfo, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot()
@@ -95,6 +88,10 @@ func (s *foundationService) ReplaceSensitive(_ context.Context, r *proto.Replace
 }
 
 func (s *foundationService) CleanCache(_ context.Context, request *proto.CleanCacheRequest) (*proto.CleanCacheResponse, error) {
+	if request.ClearGlobal {
+		isa := s.sysRepo.GetSystemAggregateRoot()
+		isa.FlushUpdateStatus()
+	}
 	var count = 0
 	if len(request.Prefix) > 0 {
 		count, _ = s._s.DeleteWith(request.Prefix)
