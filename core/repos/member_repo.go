@@ -445,9 +445,9 @@ func (m *MemberRepoImpl) SaveIntegralLog(v *member.IntegralLog) error {
 func (m *MemberRepoImpl) SaveBalanceLog(v *member.BalanceLog) (int32, error) {
 	id, err := orm.Save(m._orm, v, int(v.Id))
 	if err == nil {
-		v.Id = int64(id)
+		v.Id = int(id)
 	}
-	return int32(id), err
+	return int32(v.Id), err
 }
 
 // 保存钱包账户日志

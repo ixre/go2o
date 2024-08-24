@@ -219,61 +219,6 @@ type (
 		OuterTxUid int
 	}
 
-	// IntegralLog 积分记录
-	IntegralLog struct {
-		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
-		// 会员编号
-		MemberId int `db:"member_id"`
-		// 类型
-		Kind int `db:"kind"`
-		// 标题
-		Subject string `db:"subject"`
-		// 关联的编号
-		OuterNo string `db:"outer_no"`
-		// 积分值
-		Value int `db:"change_value"`
-		// 余额
-		Balance int `db:"balance"`
-		// 备注
-		Remark string `db:"remark"`
-		// 关联用户
-		RelateUser int `db:"rel_user"`
-		// 审核状态
-		ReviewStatus int16 `db:"review_status"`
-		// 创建时间
-		CreateTime int64 `db:"create_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-	}
-
-	// BalanceLog 余额日志
-	BalanceLog struct {
-		Id       int64  `db:"id" auto:"yes" pk:"yes"`
-		MemberId int64  `db:"member_id"`
-		OuterNo  string `db:"outer_no"`
-		// 业务类型
-		Kind int `db:"kind"`
-
-		Title string `db:"subject"`
-		// 金额
-		Amount int64 `db:"change_value"`
-		// 余额
-		Balance int `db:"balance"`
-		// 手续费
-		ProcedureFee int64 `db:"procedure_fee"`
-		// 关联操作人,仅在客服操作时,记录操作人
-		RelateUser int64 `db:"rel_user"`
-		// 状态
-		ReviewStatus int32 `db:"review_status"`
-		// 备注
-		Remark string `db:"remark"`
-		// 创建时间
-		CreateTime int64 `db:"create_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-	}
-
 	// WalletAccountLog 钱包账户日志
 	WalletAccountLog struct {
 		Id int64 `db:"id" auto:"yes" pk:"yes"`
@@ -351,6 +296,64 @@ func (b *BalanceLog) TableName() string {
 	return "mm_balance_log"
 }
 
-func (i *IntegralLog) TableName() string {
+// MmBalanceLog 余额日志
+type BalanceLog struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 会员编号
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// 类型
+	Kind int16 `json:"kind" db:"kind" gorm:"column:kind" bson:"kind"`
+	// 标题
+	Subject string `json:"subject" db:"subject" gorm:"column:subject" bson:"subject"`
+	// 外部交易号
+	OuterNo string `json:"outerNo" db:"outer_no" gorm:"column:outer_no" bson:"outerNo"`
+	// 金额
+	ChangeValue int `json:"changeValue" db:"change_value" gorm:"column:change_value" bson:"changeValue"`
+	// 手续费
+	ProcedureFee int `json:"procedureFee" db:"procedure_fee" gorm:"column:procedure_fee" bson:"procedureFee"`
+	// 审核状态
+	ReviewStatus int `json:"reviewStatus" db:"review_status" gorm:"column:review_status" bson:"reviewStatus"`
+	// 关联用户
+	RelateUser int `json:"relUser" db:"rel_user" gorm:"column:rel_user" bson:"relUser"`
+	// 备注
+	Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
+	// 创建时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// 变动后的余额
+	Balance int `json:"balance" db:"balance" gorm:"column:balance" bson:"balance"`
+}
+
+// MmIntegralLog 积分明细
+type IntegralLog struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 会员编号
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// 类型
+	Kind int `json:"kind" db:"kind" gorm:"column:kind" bson:"kind"`
+	// 标题
+	Subject string `json:"subject" db:"subject" gorm:"column:subject" bson:"subject"`
+	// 关联的编号
+	OuterNo string `json:"outerNo" db:"outer_no" gorm:"column:outer_no" bson:"outerNo"`
+	// 积分值
+	ChangeValue int `json:"changeValue" db:"change_value" gorm:"column:change_value" bson:"changeValue"`
+	// 备注
+	Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
+	// 关联用户
+	RelateUser int `json:"relateUser" db:"rel_user" gorm:"column:rel_user" bson:"relUser"`
+	// 审核状态
+	ReviewStatus int `json:"reviewStatus" db:"review_status" gorm:"column:review_status" bson:"reviewStatus"`
+	// 创建时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// 变动后的余额
+	Balance int `json:"balance" db:"balance" gorm:"column:balance" bson:"balance"`
+}
+
+func (m IntegralLog) TableName() string {
 	return "mm_integral_log"
 }

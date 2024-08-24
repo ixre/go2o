@@ -297,12 +297,12 @@ func (a *accountImpl) createIntegralLog(kind int, title string, value int, outer
 		Kind:         kind,
 		Subject:      title,
 		OuterNo:      outerNo,
-		Value:        value,
+		ChangeValue:  value,
 		Remark:       "",
 		RelateUser:   0,
-		ReviewStatus: int16(enum.ReviewApproved),
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		ReviewStatus: int(enum.ReviewApproved),
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}, nil
 
 }
@@ -319,15 +319,15 @@ func (a *accountImpl) createBalanceLog(kind int, title string, amount int, outer
 	}
 	unix := time.Now().Unix()
 	return &member.BalanceLog{
-		MemberId:     a.value.MemberId,
-		Kind:         kind,
-		Title:        title,
+		MemberId:     int(a.value.MemberId),
+		Kind:         int16(kind),
+		Subject:      title,
 		OuterNo:      outerNo,
-		Amount:       int64(amount),
-		ReviewStatus: enum.ReviewApproved,
+		ChangeValue:  int(amount),
+		ReviewStatus: int(enum.ReviewApproved),
 		RelateUser:   0,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}, nil
 
 }
@@ -395,15 +395,15 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, t
 	l, err := a.createBalanceLog(member.KindCarry, d.TransactionTitle, d.Amount, d.OuterTransactionNo, true)
 	if freeze {
 		a.value.FreezeBalance += int64(d.Amount)
-		l.ReviewStatus = enum.ReviewPending
+		l.ReviewStatus = int(enum.ReviewPending)
 		l.Remark = "待审核"
 	} else {
 		a.value.Balance += int64(d.Amount)
-		l.ReviewStatus = enum.ReviewConfirm
+		l.ReviewStatus = int(enum.ReviewConfirm)
 	}
 	if err == nil {
 		l.Remark = d.TransactionRemark
-		l.ProcedureFee = int64(transactionFee)
+		l.ProcedureFee = transactionFee
 		l.Balance = int(a.value.Balance)
 		_, err = a.rep.SaveBalanceLog(l)
 		if err == nil {
@@ -415,18 +415,17 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, t
 
 func (a *accountImpl) reviewBalanceCarryTo(transactionId int, pass bool, reason string) error {
 	l := a.rep.GetBalanceLog(transactionId)
-	if l.ReviewStatus != int32(enum.ReviewPending) {
+	if l.ReviewStatus != int(enum.ReviewPending) {
 		return wallet.ErrNotSupport
 	}
-	a.value.FreezeBalance -= l.Amount
-	l.UpdateTime = time.Now().Unix()
+	a.value.FreezeBalance -= int64(l.ChangeValue)
+	l.UpdateTime = int(time.Now().Unix())
 	if pass {
-		a.value.Balance += l.Amount
-		l.ReviewStatus = int32(enum.ReviewApproved)
+		a.value.Balance += int64(l.ChangeValue)
+		l.ReviewStatus = int(enum.ReviewApproved)
 		l.Remark = "系统审核通过"
 	} else {
-		l.ReviewStatus = int32(enum.ReviewRejected)
-		l.ReviewStatus = int32(enum.ReviewRejected)
+		l.ReviewStatus = int(enum.ReviewRejected)
 		l.Remark = reason
 	}
 	_, err := a.rep.SaveBalanceLog(l)
@@ -444,11 +443,11 @@ func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) 
 	l, err := a.createIntegralLog(member.KindCarry, d.TransactionTitle, d.Amount, d.OuterTransactionNo, true)
 	if freeze {
 		a.value.FreezeIntegral += d.Amount
-		l.ReviewStatus = int16(enum.ReviewPending)
+		l.ReviewStatus = int(enum.ReviewPending)
 		l.Remark = "待审核"
 	} else {
 		a.value.Integral += d.Amount
-		l.ReviewStatus = int16(enum.ReviewApproved)
+		l.ReviewStatus = int(enum.ReviewApproved)
 	}
 	if err == nil {
 		l.Remark = d.TransactionRemark
@@ -464,18 +463,17 @@ func (a *accountImpl) carryToIntegral(d member.AccountOperateData, freeze bool) 
 
 func (a *accountImpl) reviewIntegralCarryTo(transactionId int, pass bool, reason string) error {
 	l := a.rep.GetIntegralLog(transactionId)
-	if l.ReviewStatus != int16(enum.ReviewPending) {
+	if l.ReviewStatus != int(enum.ReviewPending) {
 		return wallet.ErrNotSupport
 	}
-	a.value.FreezeIntegral -= l.Value
-	l.UpdateTime = time.Now().Unix()
+	a.value.FreezeIntegral -= l.ChangeValue
+	l.UpdateTime = int(time.Now().Unix())
 	if pass {
-		a.value.Integral += l.Value
-		l.ReviewStatus = int16(enum.ReviewApproved)
+		a.value.Integral += l.ChangeValue
+		l.ReviewStatus = int(enum.ReviewApproved)
 		l.Remark = "系统审核通过"
 	} else {
-		l.ReviewStatus = int16(enum.ReviewRejected)
-		l.ReviewStatus = int16(enum.ReviewRejected)
+		l.ReviewStatus = int(enum.ReviewRejected)
 		l.Remark = reason
 	}
 	err := a.rep.SaveIntegralLog(l)
@@ -506,16 +504,16 @@ func (a *accountImpl) chargeFlow(d member.AccountOperateData) error {
 func (a *accountImpl) adjustBalanceAccount(title string, amount int, remark string, relateUser int64) error {
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
+		MemberId:     int(a.value.MemberId),
 		Kind:         member.KindAdjust,
-		Title:        title,
+		Subject:      title,
 		OuterNo:      "",
-		Amount:       int64(amount),
+		ChangeValue:  int(amount),
 		Remark:       remark,
-		RelateUser:   relateUser,
-		ReviewStatus: enum.ReviewApproved,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		RelateUser:   int(relateUser),
+		ReviewStatus: int(enum.ReviewApproved),
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 	_, err := a.rep.SaveBalanceLog(v)
 	if err == nil {
@@ -533,15 +531,15 @@ func (a *accountImpl) chargeBalanceNoLimit(kind int, title string, outerNo strin
 	}
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		Kind:         kind,
-		Title:        title,
+		MemberId:     int(a.value.MemberId),
+		Kind:         int16(kind),
+		Subject:      title,
 		OuterNo:      outerNo,
-		Amount:       int64(amount),
-		ReviewStatus: enum.ReviewApproved,
-		RelateUser:   relateUser,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		ChangeValue:  int(amount),
+		ReviewStatus: int(enum.ReviewApproved),
+		RelateUser:   int(relateUser),
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 	_, err := a.rep.SaveBalanceLog(v)
 	if err == nil {
@@ -714,16 +712,16 @@ func (a *accountImpl) freezeBalance(p member.AccountOperateData, relateUser int6
 	}
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		Kind:         member.KindFreeze,
-		Title:        p.TransactionTitle,
-		Amount:       -int64(p.Amount),
+		MemberId:     int(a.value.MemberId),
+		Kind:         int16(member.KindFreeze),
+		Subject:      p.TransactionTitle,
 		OuterNo:      p.OuterTransactionNo,
-		RelateUser:   relateUser,
+		ChangeValue:  -int(p.Amount),
+		RelateUser:   int(relateUser),
 		Remark:       p.TransactionRemark,
-		ReviewStatus: enum.ReviewApproved,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		ReviewStatus: int(enum.ReviewApproved),
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 	a.value.Balance -= int64(p.Amount)
 	a.value.FreezeBalance += int64(p.Amount)
@@ -799,13 +797,13 @@ func (a *accountImpl) freezesIntegral(p member.AccountOperateData, relateUser in
 		Kind:         member.TypeIntegralFreeze,
 		Subject:      p.TransactionTitle,
 		OuterNo:      p.OuterTransactionNo,
-		Value:        -p.Amount,
+		ChangeValue:  -p.Amount,
 		Remark:       p.TransactionRemark,
 		Balance:      a.value.Integral,
 		RelateUser:   int(relateUser),
-		ReviewStatus: int16(enum.ReviewApproved),
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		ReviewStatus: int(enum.ReviewApproved),
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 	_, err := a.Save()
 	if err == nil {
@@ -842,17 +840,17 @@ func (a *accountImpl) unfreezeBalance(d member.AccountOperateData, relateUser in
 	a.value.Balance += int64(d.Amount)
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		Kind:         member.KindUnfreeze,
-		Title:        d.TransactionTitle,
-		RelateUser:   relateUser,
-		Amount:       int64(d.Amount),
+		MemberId:     int(a.value.MemberId),
+		Kind:         int16(member.KindUnfreeze),
+		Subject:      d.TransactionTitle,
+		RelateUser:   int(relateUser),
+		ChangeValue:  int(d.Amount),
 		OuterNo:      d.OuterTransactionNo,
 		Balance:      int(a.value.Balance),
 		ProcedureFee: 0,
-		ReviewStatus: enum.ReviewApproved,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		ReviewStatus: int(enum.ReviewApproved),
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 	_, err := a.Save()
 	if err == nil {
@@ -885,15 +883,15 @@ func (a *accountImpl) PaymentDiscount(tradeNo string, amount int, remark string)
 
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		Kind:         member.KindDiscount,
-		Title:        remark,
+		MemberId:     int(a.value.MemberId),
+		Kind:         int16(member.KindDiscount),
+		Subject:      remark,
 		OuterNo:      tradeNo,
-		Amount:       -int64(amount),
-		ReviewStatus: enum.ReviewApproved,
-		RelateUser:   member.DefaultRelateUser,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		ChangeValue:  -int(amount),
+		ReviewStatus: int(enum.ReviewApproved),
+		RelateUser:   int(member.DefaultRelateUser),
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 	_, err := a.rep.SaveBalanceLog(v)
 	if err == nil {
@@ -917,13 +915,13 @@ func (a *accountImpl) unfreezesIntegral(d member.AccountOperateData, relateUser 
 		Kind:         member.TypeIntegralUnfreeze,
 		Subject:      d.TransactionTitle,
 		OuterNo:      d.OuterTransactionNo,
-		Value:        d.Amount,
+		ChangeValue:  d.Amount,
 		Remark:       d.TransactionRemark,
 		Balance:      a.value.Integral,
 		RelateUser:   int(relateUser),
-		ReviewStatus: int16(enum.ReviewApproved),
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		ReviewStatus: int(enum.ReviewApproved),
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 	_, err := a.Save()
 	if err == nil {
@@ -1088,17 +1086,17 @@ func (a *accountImpl) balanceFreezeExpired(amount int, remark string) error {
 	a.value.ExpiredBalance += int64(amount)
 	a.value.UpdateTime = unix
 	l := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		Kind:         member.KindExpired,
-		Title:        "过期失效",
+		MemberId:     int(a.value.MemberId),
+		Kind:         int16(member.KindExpired),
+		Subject:      "过期失效",
 		OuterNo:      "",
-		Amount:       int64(amount),
+		ChangeValue:  int(amount),
 		ProcedureFee: 0,
-		ReviewStatus: enum.ReviewApproved,
-		RelateUser:   member.DefaultRelateUser,
+		ReviewStatus: int(enum.ReviewApproved),
+		RelateUser:   int(member.DefaultRelateUser),
 		Remark:       remark,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 	_, err := a.rep.SaveBalanceLog(l)
 	if err == nil {
@@ -1185,17 +1183,17 @@ func (a *accountImpl) transferBalance(tm member.IMemberAggregateRoot, tradeNo st
 	// 扣款
 	toName := a.getMemberName(tm)
 	l := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		Kind:         member.KindTransferOut,
-		Title:        "转账给" + toName,
+		MemberId:     int(a.value.MemberId),
+		Kind:         int16(member.KindTransferOut),
+		Subject:      "转账给" + toName,
 		OuterNo:      tradeNo,
-		Amount:       -int64(amount),
-		ProcedureFee: int64(csnFee),
-		ReviewStatus: enum.ReviewApproved,
-		RelateUser:   member.DefaultRelateUser,
+		ChangeValue:  -int(amount),
+		ProcedureFee: int(csnFee),
+		ReviewStatus: int(enum.ReviewApproved),
+		RelateUser:   int(member.DefaultRelateUser),
 		Remark:       remark,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 	_, err := a.rep.SaveBalanceLog(l)
 	if err == nil {
@@ -1299,17 +1297,17 @@ func (a *accountImpl) receiveBalanceTransfer(fromMember int64, tradeNo string,
 	fromName := a.getMemberName(a.rep.GetMember(a.GetDomainId()))
 	unix := time.Now().Unix()
 	tl := &member.BalanceLog{
-		MemberId:     a.GetDomainId(),
-		Kind:         member.KindTransferIn,
-		Title:        "转账收款（" + fromName + "）",
+		MemberId:     int(a.value.MemberId),
+		Kind:         int16(member.KindTransferIn),
+		Subject:      "转账收款（" + fromName + "）",
 		OuterNo:      tradeNo,
-		Amount:       int64(amount),
+		ChangeValue:  int(amount),
 		ProcedureFee: 0,
-		ReviewStatus: enum.ReviewApproved,
-		RelateUser:   member.DefaultRelateUser,
+		ReviewStatus: int(enum.ReviewApproved),
+		RelateUser:   int(member.DefaultRelateUser),
 		Remark:       remark,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 	_, err := a.rep.SaveBalanceLog(tl)
 	if err == nil {
