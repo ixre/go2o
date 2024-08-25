@@ -467,3 +467,12 @@ func (m *MemberQuery) QueryPagingMemberWalletLogs(memberId int, p *fw.PagingPara
 	p.Equal("wallet_id", walletId)
 	return m.walletLog.QueryPaging(p)
 }
+
+// QueryPagingCertifications 查询会员认证列表
+func (m *MemberQuery) QueryPagingCertifications(p *fw.PagingParams) (*fw.PagingResult, error) {
+	tables := `mm_cert_info ti INNER JOIN mm_member m ON m.id=ti.member_id`
+	fields := `m.id,ti.member_id,ti.card_type, m.username,m.nickname,m.phone,ti.real_name,
+ti.review_status,ti.remark,ti.update_time,ti.card_id`
+	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+
+}
