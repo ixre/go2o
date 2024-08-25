@@ -259,14 +259,14 @@ func (m *memberImpl) checkLevelUp() bool {
 	if err == nil {
 		m.level = nil
 		lvLog := &member.LevelUpLog{
-			MemberId:     m.GetAggregateRootId(),
+			MemberId:     int(m.GetAggregateRootId()),
 			OriginLevel:  origin,
 			TargetLevel:  levelId,
 			IsFree:       1,
 			PaymentId:    0,
 			ReviewStatus: int(enum.ReviewConfirm),
 			UpgradeMode:  member.LAutoUpgrade,
-			CreateTime:   unix,
+			CreateTime:   int(unix),
 		}
 		_, _ = m.repo.SaveLevelUpLog(lvLog)
 	}
@@ -284,13 +284,13 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 	origin := m.value.Level
 	unix := time.Now().Unix()
 	lvLog := &member.LevelUpLog{
-		MemberId:     m.GetAggregateRootId(),
+		MemberId:     int(m.GetAggregateRootId()),
 		OriginLevel:  origin,
 		TargetLevel:  level,
 		PaymentId:    paymentId,
 		ReviewStatus: int(enum.ReviewNone),
 		UpgradeMode:  member.LServiceAgentUpgrade,
-		CreateTime:   unix,
+		CreateTime:   int(unix),
 	}
 	if paymentId == 0 {
 		lvLog.IsFree = 1
@@ -338,7 +338,7 @@ func (m *memberImpl) TestFlag(flag int) bool {
 // ReviewLevelUp 审核升级请求
 func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 	l := m.repo.GetLevelUpLog(id)
-	if l != nil && l.MemberId == m.GetAggregateRootId() {
+	if l != nil && l.MemberId == int(m.GetAggregateRootId()) {
 		if l.ReviewStatus == int(enum.ReviewApproved) {
 			return member.ErrLevelUpPass
 		}
@@ -348,7 +348,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 		if l.ReviewStatus == int(enum.ReviewConfirm) {
 			return member.ErrLevelUpConfirm
 		}
-		if time.Now().Unix()-l.CreateTime < 120 {
+		if time.Now().Unix()-int64(l.CreateTime) < 120 {
 			return member.ErrLevelUpLaterConfirm
 		}
 		if pass {
@@ -377,7 +377,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 // ConfirmLevelUp 标记已经处理升级
 func (m *memberImpl) ConfirmLevelUp(id int) error {
 	l := m.repo.GetLevelUpLog(id)
-	if l != nil && l.MemberId == m.GetAggregateRootId() {
+	if l != nil && l.MemberId == int(m.GetAggregateRootId()) {
 		if l.ReviewStatus == int(enum.ReviewConfirm) {
 			return member.ErrLevelUpConfirm
 		}

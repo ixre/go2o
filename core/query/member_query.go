@@ -31,6 +31,7 @@ type MemberQuery struct {
 	balanceLog  fw.BaseRepository[member.BalanceLog]
 	integralLog fw.BaseRepository[member.IntegralLog]
 	walletLog   fw.BaseRepository[wallet.WalletLog]
+	levelRepo   fw.BaseRepository[member.Level]
 }
 
 func NewMemberQuery(o orm.Orm, fo fw.ORM) *MemberQuery {
@@ -41,6 +42,7 @@ func NewMemberQuery(o orm.Orm, fo fw.ORM) *MemberQuery {
 	q.balanceLog.ORM = fo
 	q.integralLog.ORM = fo
 	q.walletLog.ORM = fo
+	q.levelRepo.ORM = fo
 	return q
 }
 
@@ -475,4 +477,9 @@ func (m *MemberQuery) QueryPagingCertifications(p *fw.PagingParams) (*fw.PagingR
 ti.review_status,ti.remark,ti.update_time,ti.card_id`
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
 
+}
+
+// QueryPagingLevels 查询会员等级列表
+func (m *MemberQuery) QueryPagingLevels(p *fw.PagingParams) (*fw.PagingResult, error) {
+	return m.levelRepo.QueryPaging(p)
 }

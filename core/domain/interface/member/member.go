@@ -507,27 +507,6 @@ type (
 		IsDefault int `db:"is_default"`
 	}
 
-	// 会员升级日志
-	LevelUpLog struct {
-		Id int `db:"id" pk:"yes" auto:"yes"`
-		// 会员编号
-		MemberId int64 `db:"member_id"`
-		// 原来等级
-		OriginLevel int `db:"origin_level"`
-		// 现在等级
-		TargetLevel int `db:"target_level"`
-		// 是否为免费升级的会员
-		IsFree int `db:"is_free"`
-		// 支付单编号
-		PaymentId int `db:"payment_id"`
-		// 是否审核及处理
-		ReviewStatus int `db:"review_status"`
-		// 升级方式,1:自动升级 2:客服更改 3:系统升级
-		UpgradeMode int `db:"upgrade_mode"`
-		// 升级时间
-		CreateTime int64 `db:"create_time"`
-	}
-
 	// MmLockInfo 会员锁定记录
 	MmLockInfo struct {
 		// 编号
