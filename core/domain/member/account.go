@@ -65,7 +65,7 @@ func newAccount(m *memberImpl, value *member.Account,
 func (a *accountImpl) initWallet() {
 	flag := wallet.FlagCharge | wallet.FlagDiscount
 	// 存在钱包,但关联失败
-	a.wallet = a.walletRepo.GetWalletByUserId(a.member.GetAggregateRootId(), 1)
+	a.wallet = a.walletRepo.GetWalletByUserId(int64(a.member.GetAggregateRootId()), 1)
 	if a.wallet != nil {
 		a.value.WalletCode = a.wallet.Get().HashCode
 		a.Save()
@@ -95,10 +95,10 @@ func (a *accountImpl) GetValue() *member.Account {
 // Save 保存
 func (a *accountImpl) Save() (int64, error) {
 	// 判断是否新建账号
-	origin := a.rep.GetAccount(a.member.GetAggregateRootId())
+	origin := a.rep.GetAccount(int64(a.member.GetAggregateRootId()))
 	isCreate := origin == nil
 	// 更新账户
-	a.value.MemberId = a.member.GetAggregateRootId()
+	a.value.MemberId = int64(a.member.GetAggregateRootId())
 	a.value.UpdateTime = time.Now().Unix()
 	n, err := a.rep.SaveAccount(a.value)
 	if err == nil {

@@ -22,7 +22,7 @@ type (
 		// 等级服务
 		LevelManager() ILevelManager
 		// 检查手机绑定,同时检查手机格式
-		CheckPhoneBind(phone string, memberId int64) error
+		CheckPhoneBind(phone string, memberId int) error
 		// 检查注册信息是否正确
 		PrepareRegister(v *Member, pro *Profile, invitationCode string) (
 			invitationId int64, err error)

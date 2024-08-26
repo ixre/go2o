@@ -81,7 +81,7 @@ type IMemberRepo interface {
 	// CheckNicknameIsUse 昵称是否使用
 	CheckNicknameIsUse(nickname string, memberId int64) bool
 	// CheckPhoneBind 手机号码是否使用
-	CheckPhoneBind(phone string, memberId int64) bool
+	CheckPhoneBind(phone string, memberId int) bool
 
 	// 保存绑定
 	SaveRelation(*InviteRelation) error

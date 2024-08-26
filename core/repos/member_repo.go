@@ -284,10 +284,10 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 		_, _, err := m._orm.Save(v.Id, v)
 		if err == nil {
 			// 存储到缓存中
-			err = m.storage.Set(m.getMemberCk(v.Id), *v)
-			m.storage.Delete(m.getProfileCk(v.Id))
+			err = m.storage.Set(m.getMemberCk(int64(v.Id)), *v)
+			m.storage.Delete(m.getProfileCk(int64(v.Id)))
 		}
-		return v.Id, err
+		return int64(v.Id), err
 	}
 	return m.createMember(v)
 }
@@ -298,8 +298,8 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	v.Id = id
-	return v.Id, err
+	v.Id = int(id)
+	return int64(v.Id), err
 }
 
 // 删除会员
@@ -342,7 +342,7 @@ func (m *MemberRepoImpl) CreateMemberById(memberId int64) member.IMemberAggregat
 	if memberId <= 0 {
 		return nil
 	}
-	return m.CreateMember(&member.Member{Id: memberId})
+	return m.CreateMember(&member.Member{Id: int(memberId)})
 }
 
 // 获取会员最后更新时间
@@ -564,7 +564,7 @@ func (m *MemberRepoImpl) CheckUserExist(user string, memberId int64) bool {
 }
 
 // 手机号码是否使用
-func (m *MemberRepoImpl) CheckPhoneBind(phone string, memberId int64) bool {
+func (m *MemberRepoImpl) CheckPhoneBind(phone string, memberId int) bool {
 	var c int
 	m.Connector.ExecScalar("SELECT COUNT(1) FROM mm_member WHERE phone= $1 AND id <> $2",
 		&c, phone, memberId)

@@ -108,7 +108,7 @@ func newProfileManagerImpl(m *memberImpl, memberId int64,
 
 // 手机号码是否占用
 func (p *profileManagerImpl) phoneIsExist(phone string) bool {
-	return p.repo.CheckPhoneBind(phone, p.memberId)
+	return p.repo.CheckPhoneBind(phone, int(p.memberId))
 }
 
 // 验证数据,用v.updateTime > 0 判断是否为新创建用户
@@ -265,7 +265,7 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 	if phone == "" {
 		return member.ErrInvalidPhone
 	}
-	used := p.repo.CheckPhoneBind(phone, p.memberId)
+	used := p.repo.CheckPhoneBind(phone, int(p.memberId))
 	if !used {
 		v := p.GetProfile()
 		v.Phone = phone

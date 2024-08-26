@@ -833,7 +833,7 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 		ret.Message = err.Error()
 		return ret, nil
 	} else {
-		ret.MemberId = v.Id
+		ret.MemberId = int64(v.Id)
 		ret.UserCode = v.UserCode
 	}
 	return ret, nil
@@ -871,7 +871,7 @@ func (s *memberService) VerifyTradePassword(_ context.Context, r *proto.VerifyPa
 
 // GetAccount 获取会员账户
 func (s *memberService) GetAccount(_ context.Context, id *proto.MemberIdRequest) (*proto.SAccount, error) {
-	m := s.repo.CreateMember(&member.Member{Id: id.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(id.MemberId)})
 	acc := m.GetAccount()
 	if acc != nil {
 		return s.parseAccountDto(acc.GetValue()), nil
@@ -881,7 +881,7 @@ func (s *memberService) GetAccount(_ context.Context, id *proto.MemberIdRequest)
 
 // 获取上级邀请人会员编号数组
 func (s *memberService) InviterArray(_ context.Context, r *proto.DepthRequest) (*proto.InviterIdListResponse, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(r.MemberId)})
 	var arr []int64
 	if m != nil {
 		arr = m.Invitation().InviterArray(r.MemberId, int(r.Depth))
@@ -977,7 +977,7 @@ func (s *memberService) parseGetInviterDataParams(data map[string]string) string
 
 // 解锁银行卡信息
 func (s *memberService) RemoveBankCard(_ context.Context, r *proto.BankCardRequest) (*proto.Result, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(r.MemberId)})
 	err := m.Profile().RemoveBankCard(r.BankCardNo)
 	return s.result(err), nil
 }
@@ -1025,7 +1025,7 @@ func (s *memberService) SaveReceiptsCode(_ context.Context, r *proto.ReceiptsCod
 
 // 获取银行卡
 func (s *memberService) GetBankCards(_ context.Context, id *proto.MemberIdRequest) (*proto.BankCardListResponse, error) {
-	m := s.repo.CreateMember(&member.Member{Id: id.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(id.MemberId)})
 	b := m.Profile().GetBankCards()
 	arr := make([]*proto.SBankCardInfo, len(b))
 	for i, v := range b {
@@ -1048,7 +1048,7 @@ func (s *memberService) GetBankCards(_ context.Context, id *proto.MemberIdReques
 
 // 保存银行卡
 func (s *memberService) AddBankCard(_ context.Context, r *proto.BankCardAddRequest) (*proto.Result, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(r.MemberId)})
 	var v = &member.BankCard{
 		MemberId:    r.MemberId,
 		BankAccount: r.Value.AccountNo,
@@ -1150,7 +1150,7 @@ func (s *memberService) GetAddressList(_ context.Context, id *proto.MemberIdRequ
 
 // GetAddress 获取配送地址
 func (s *memberService) GetAddress(_ context.Context, r *proto.GetAddressRequest) (*proto.SAddress, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(r.MemberId)})
 	pro := m.Profile()
 	var addr member.IDeliverAddress
 	if r.AddressId > 0 {
@@ -1175,7 +1175,7 @@ func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressReque
 	if r.MemberId <= 0 {
 		return &proto.SaveAddressResponse{ErrCode: 1, ErrMsg: member.ErrNoSuchMember.Error()}, nil
 	}
-	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(r.MemberId)})
 	var v member.IDeliverAddress
 	ret := &proto.SaveAddressResponse{}
 	if e.Id > 0 {
@@ -1208,7 +1208,7 @@ func (s *memberService) SaveAddress(_ context.Context, r *proto.SaveAddressReque
 
 // DeleteAddress 删除配送地址
 func (s *memberService) DeleteAddress(_ context.Context, r *proto.AddressIdRequest) (*proto.Result, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(r.MemberId)})
 	err := m.Profile().DeleteAddress(r.AddressId)
 	if err != nil {
 		return s.error(err), nil
@@ -1237,14 +1237,14 @@ func (s *memberService) SetPayPriority(_ context.Context, r *proto.PayPriorityRe
 
 // IsInvitation 判断会员是否由指定会员邀请推荐的
 func (s *memberService) IsInvitation(c context.Context, r *proto.IsInvitationRequest) (*proto.Bool, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(r.MemberId)})
 	b := m.Invitation().InvitationBy(r.InviterId)
 	return &proto.Bool{Value: b}, nil
 }
 
 // GetPagingInvitationMembers 获取我邀请的会员及会员邀请的人数
 func (s *memberService) GetPagingInvitationMembers(_ context.Context, r *proto.MemberInvitationPagingRequest) (*proto.MemberInvitationPagingResponse, error) {
-	iv := s.repo.CreateMember(&member.Member{Id: r.MemberId}).Invitation()
+	iv := s.repo.CreateMember(&member.Member{Id: int(r.MemberId)}).Invitation()
 	total, rows := iv.GetInvitationMembers(int(r.Begin), int(r.End))
 	ret := &proto.MemberInvitationPagingResponse{
 		Total: int64(total),
@@ -1341,7 +1341,7 @@ func (s *memberService) Unfreeze(_ context.Context, r *proto.AccountUnfreezeRequ
 // AccountCharge 充值,account为账户类型,kind为业务类型
 func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeRequest) (*proto.TxResult, error) {
 	var err error
-	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(r.MemberId)})
 	acc := m.GetAccount()
 	if acc == nil {
 		err = member.ErrNoSuchMember
@@ -1353,7 +1353,7 @@ func (s *memberService) AccountCharge(_ context.Context, r *proto.AccountChangeR
 
 // AccountCarryTo 账户入账
 func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryRequest) (*proto.TxResult, error) {
-	m := s.repo.CreateMember(&member.Member{Id: r.MemberId})
+	m := s.repo.CreateMember(&member.Member{Id: int(r.MemberId)})
 	if m == nil {
 		return s.errorV2(member.ErrNoSuchMember), nil
 	}
@@ -1645,13 +1645,13 @@ func (s *memberService) parseLevelDto(src *member.Level) *proto.SMemberLevel {
 
 func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 	return &proto.SMember{
-		Id:             src.Id,
+		Id:             int64(src.Id),
 		Username:       src.Username,
 		UserCode:       src.UserCode,
 		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
 		PremiumUser:    int32(src.PremiumUser),
-		PremiumExpires: src.PremiumExpires,
+		PremiumExpires: int64(src.PremiumExpires),
 		RegIp:          src.RegIp,
 		RegFrom:        src.RegFrom,
 		UserFlag:       int32(src.UserFlag),
@@ -1661,8 +1661,8 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		Email:          src.Email,
 		Nickname:       src.Nickname,
 		RealName:       src.RealName,
-		RegTime:        src.RegTime,
-		LastLoginTime:  src.LastLoginTime,
+		RegTime:        int64(src.RegTime),
+		LastLoginTime:  int64(src.LastLoginTime),
 	}
 }
 

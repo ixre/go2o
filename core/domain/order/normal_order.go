@@ -708,12 +708,12 @@ func (o *normalOrderImpl) applyCouponOnSubmit() error {
 	buyerId := o.buyer.GetAggregateRootId()
 	for _, c := range o.GetCoupons() {
 		if c.CanTake() {
-			t, err = c.GetTake(buyerId)
+			t, err = c.GetTake(int64(buyerId))
 			if err == nil {
 				err = c.ApplyTake(t.Id)
 			}
 		} else {
-			b, err = c.GetBind(buyerId)
+			b, err = c.GetBind(int64(buyerId))
 			if err == nil {
 				err = c.UseCoupon(b.Id)
 			}
@@ -830,8 +830,8 @@ func (o *normalOrderImpl) createAffiliateRebateOrder(so order.ISubOrder) {
 		v := &order.AffiliateDistribution{
 			Id:               0,
 			PlanId:           0,
-			BuyerId:          o._AffiliateMember.GetAggregateRootId(),
-			OwnerId:          o._AffiliateMember.GetAggregateRootId(),
+			BuyerId:          int64(o._AffiliateMember.GetAggregateRootId()),
+			OwnerId:          int64(o._AffiliateMember.GetAggregateRootId()),
 			Flag:             1,
 			IsRead:           0,
 			AffiliateCode:    o._AffiliateMember.GetValue().UserCode,
@@ -883,7 +883,7 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 			it.OrderId = int64(orderId)
 		}
 		// log.Println("----- vendor ", k, len(v),l)
-		list[i] = o.createSubOrderByVendor(parentOrderId, buyerId, vendorId, l > 1, v)
+		list[i] = o.createSubOrderByVendor(parentOrderId, int64(buyerId), vendorId, l > 1, v)
 		if _, err := list[i].Submit(); err != nil {
 			_ = domain.HandleError(err, "domain")
 		}

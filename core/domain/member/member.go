@@ -70,7 +70,7 @@ func NewMember(manager member.IMemberManager, val *member.Member,
 }
 
 // 获取聚合根编号
-func (m *memberImpl) GetAggregateRootId() int64 {
+func (m *memberImpl) GetAggregateRootId() int {
 	return m.value.Id
 }
 
@@ -91,7 +91,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 		TradePasswordHasSet: mv.TradePassword != "",
 		PremiumUser:         mv.PremiumUser,
 		Flag:                mv.UserFlag,
-		UpdateTime:          mv.UpdateTime,
+		UpdateTime:          int64(mv.UpdateTime),
 	}
 	return s
 }
@@ -100,7 +100,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 func (m *memberImpl) Profile() member.IProfileManager {
 	if m.profileManager == nil {
 		m.profileManager = newProfileManagerImpl(m,
-			m.GetAggregateRootId(), m.repo, m.registryRepo, m.valueRepo)
+			int64(m.GetAggregateRootId()), m.repo, m.registryRepo, m.valueRepo)
 	}
 	return m.profileManager
 }
@@ -109,7 +109,7 @@ func (m *memberImpl) Profile() member.IProfileManager {
 func (m *memberImpl) Favorite() member.IFavoriteManager {
 	if m.favoriteManager == nil {
 		m.favoriteManager = newFavoriteManagerImpl(
-			m.GetAggregateRootId(), m.repo)
+			int64(m.GetAggregateRootId()), m.repo)
 	}
 	return m.favoriteManager
 }
@@ -118,7 +118,7 @@ func (m *memberImpl) Favorite() member.IFavoriteManager {
 func (m *memberImpl) GiftCard() member.IGiftCardManager {
 	if m.giftCardManager == nil {
 		m.giftCardManager = newGiftCardManagerImpl(
-			m.GetAggregateRootId(), m.repo)
+			int64(m.GetAggregateRootId()), m.repo)
 	}
 	return m.giftCardManager
 }
@@ -144,7 +144,7 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 	const expiresMinutes = 10 //10分钟生效
 	code := domain.NewCheckCode()
 	m.value.CheckCode = code
-	m.value.CheckExpires = time.Now().Add(time.Minute * expiresMinutes).Unix()
+	m.value.CheckExpires = int(time.Now().Add(time.Minute * expiresMinutes).Unix())
 	_, err := m.Save()
 	if err == nil {
 		// 创建参数
@@ -182,7 +182,7 @@ func (m *memberImpl) CompareCode(code string) error {
 	if m.value.CheckCode != strings.TrimSpace(code) {
 		return de.ErrCheckCodeError
 	}
-	if m.value.CheckExpires < time.Now().Unix() {
+	if m.value.CheckExpires < int(time.Now().Unix()) {
 		return de.ErrCheckCodeExpires
 	}
 	return nil
@@ -191,10 +191,10 @@ func (m *memberImpl) CompareCode(code string) error {
 // GetAccount 获取账户
 func (m *memberImpl) GetAccount() member.IAccount {
 	if m.account == nil {
-		v := m.repo.GetAccount(m.value.Id)
+		v := m.repo.GetAccount(int64(m.value.Id))
 		if v == nil {
 			v = &member.Account{
-				MemberId: m.GetAggregateRootId(),
+				MemberId: int64(m.value.Id),
 			}
 		}
 		return newAccount(m, v, m.repo, m.manager, m.walletRepo, m.registryRepo)
@@ -218,7 +218,7 @@ func (m *memberImpl) Premium(v int, expires int64) error {
 		m.value.PremiumExpires = 0
 	case member.PremiumGold, member.PremiumWhiteGold, member.PremiumSuper:
 		m.value.PremiumUser = v
-		m.value.PremiumExpires = expires
+		m.value.PremiumExpires = int(expires)
 	default:
 		return member.ErrPremiumValue
 	}
@@ -254,7 +254,7 @@ func (m *memberImpl) checkLevelUp() bool {
 	origin := m.value.Level
 	unix := time.Now().Unix()
 	m.value.Level = levelId
-	m.value.UpdateTime = unix
+	m.value.UpdateTime = int(unix)
 	_, err := m.Save()
 	if err == nil {
 		m.level = nil
@@ -304,7 +304,7 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 			return err
 		}
 		m.value.Exp = lv.RequireExp
-		m.value.UpdateTime = unix
+		m.value.UpdateTime = int(unix)
 		_, err = m.Save()
 		if err == nil {
 			m.level = nil
@@ -360,7 +360,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 					return err
 				}
 				m.value.Exp = lv.RequireExp
-				m.value.UpdateTime = time.Now().Unix()
+				m.value.UpdateTime = int(time.Now().Unix())
 				_, err = m.Save()
 			}
 			return err
@@ -394,7 +394,7 @@ func (m *memberImpl) ConfirmLevelUp(id int) error {
 // GetRelation 获取会员关联
 func (m *memberImpl) GetRelation() *member.InviteRelation {
 	if m.relation == nil {
-		rel := m.repo.GetRelation(m.GetAggregateRootId())
+		rel := m.repo.GetRelation(int64(m.GetAggregateRootId()))
 		if rel == nil {
 			rel = &member.InviteRelation{
 				MemberId:  int(m.GetAggregateRootId()),
@@ -430,21 +430,21 @@ func (m *memberImpl) ChangeUsername(user string) error {
 func (m *memberImpl) UpdateLoginTime() error {
 	unix := time.Now().Unix()
 	m.value.LastLoginTime = m.value.LoginTime
-	m.value.LoginTime = unix
-	m.value.UpdateTime = unix
+	m.value.LoginTime = int(unix)
+	m.value.UpdateTime = int(unix)
 	_, err := m.Save()
 	return err
 }
 
 // Save 保存
 func (m *memberImpl) Save() (int64, error) {
-	m.value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
+	m.value.UpdateTime = int(time.Now().Unix()) // 更新时间，数据以更新时间触发
 	if m.value.Id > 0 {
 		_, err := m.repo.SaveMember(m.value)
 		if err == nil {
 			go m.pushSaveEvent(false)
 		}
-		return m.GetAggregateRootId(), err
+		return int64(m.value.Id), err
 	}
 	return m.create(m.value)
 }
@@ -480,7 +480,7 @@ func (m *memberImpl) Lock(minutes int, remark string) error {
 	if err == nil {
 		now := time.Now().Unix()
 		ml := &member.MmLockInfo{
-			MemberId:   m.GetAggregateRootId(),
+			MemberId:   int64(m.value.Id),
 			LockTime:   now,
 			UnlockTime: now + int64(minutes*60),
 			Remark:     remark,
@@ -516,7 +516,7 @@ func (m *memberImpl) Unlock() error {
 	m.value.UserFlag ^= member.FlagLocked
 	_, err := m.Save()
 	if err == nil {
-		err = m.repo.DeleteLockInfos(m.GetAggregateRootId())
+		err = m.repo.DeleteLockInfos(int64(m.GetAggregateRootId()))
 	}
 	return err
 }
@@ -567,8 +567,8 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 	err := m.prepare()
 	if err == nil {
 		unix := time.Now().Unix()
-		v.RegTime = unix
-		v.LastLoginTime = unix
+		v.RegTime = int(unix)
+		v.LastLoginTime = int(unix)
 		// 初始化等级
 		m.updateLevel(0)
 		v.Exp = 0
@@ -579,13 +579,13 @@ func (m *memberImpl) create(v *member.Member) (int64, error) {
 		v.UserCode = m.generateMemberCode()
 		id, err1 := m.repo.SaveMember(v)
 		if err1 == nil {
-			m.value.Id = id
+			m.value.Id = int(id)
 			go m.memberInit()
 		} else {
 			err = err1
 		}
 	}
-	return m.GetAggregateRootId(), err
+	return int64(m.GetAggregateRootId()), err
 }
 
 // 验证用户名
@@ -596,7 +596,7 @@ func (m *memberImpl) checkUser(user string) error {
 	if !regex.IsUser(user) {
 		return member.ErrUserValidErr
 	}
-	if m.repo.CheckUserExist(user, m.GetAggregateRootId()) {
+	if m.repo.CheckUserExist(user, int64(m.GetAggregateRootId())) {
 		return member.ErrUserExist
 	}
 	return nil
@@ -662,7 +662,7 @@ func (m *memberImpl) prepare() (err error) {
 		if checkPhone && !regex.IsPhone(m.value.Phone) {
 			return member.ErrInvalidPhone
 		}
-		if m.checkPhoneBind(m.value.Phone, m.GetAggregateRootId()) != nil {
+		if m.checkPhoneBind(m.value.Phone, int64(m.GetAggregateRootId())) != nil {
 			return member.ErrPhoneHasBind
 		}
 	}
@@ -708,7 +708,7 @@ func (m *memberImpl) checkPhoneBind(phone string, memberId int64) error {
 	if len(phone) <= 0 {
 		return member.ErrMissingPhone
 	}
-	if m.repo.CheckPhoneBind(phone, memberId) {
+	if m.repo.CheckPhoneBind(phone, int(memberId)) {
 		return member.ErrPhoneHasBind
 	}
 	return nil

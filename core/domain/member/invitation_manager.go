@@ -108,14 +108,14 @@ func (i *invitationManager) UpdateInviter(inviterId int, sync bool) error {
 		rl = i.member.repo.GetRelation(int64(inviterId))
 	}
 	// 判断邀请人是否为下级的被邀请会员
-	if i.checkInvitation(id, int64(inviterId)) {
+	if i.checkInvitation(int64(inviterId), int64(id)) {
 		return member.ErrInvalidInviteLevel
 	}
 	if !sync {
-		return i.walkUpdateInvitation(id, rl)
+		return i.walkUpdateInvitation(int64(id), rl)
 	}
 	// 异步更新
-	go i.walkUpdateInvitation(id, rl)
+	go i.walkUpdateInvitation(int64(id), rl)
 	return nil
 }
 
@@ -192,7 +192,7 @@ func (i *invitationManager) InvitationBy(memberId int64) bool {
 func (i *invitationManager) GetInvitationMembers(begin, end int) (
 	int, []*dto.InvitationMember) {
 	return i.member.repo.GetMyInvitationMembers(
-		i.member.GetAggregateRootId(), begin, end)
+		int64(i.member.GetAggregateRootId()), begin, end)
 }
 
 // 获取邀请会员下级邀请数量
@@ -200,13 +200,13 @@ func (i *invitationManager) GetSubInvitationNum(memberIdArr []int32) map[int32]i
 	if memberIdArr == nil || len(memberIdArr) == 0 {
 		return map[int32]int{}
 	}
-	return i.member.repo.GetSubInvitationNum(i.member.GetAggregateRootId(),
+	return i.member.repo.GetSubInvitationNum(int64(i.member.GetAggregateRootId()),
 		memberIdArr)
 }
 
 // 获取邀请要的会员
 func (i *invitationManager) GetInvitationMeMember() *member.Member {
-	return i.member.repo.GetInvitationMeMember(i.member.GetAggregateRootId())
+	return i.member.repo.GetInvitationMeMember(int64(i.member.GetAggregateRootId()))
 }
 
 // 是否存在邀请关系

@@ -9,6 +9,8 @@
 
 package member
 
+import "github.com/ixre/go2o/core/infrastructure/domain"
+
 const (
 	// DefaultRelateUser 默认操作用户
 	DefaultRelateUser int64 = 0
@@ -75,8 +77,7 @@ const (
 
 type (
 	IMemberAggregateRoot interface {
-		// GetAggregateRootId 获取聚合根编号
-		GetAggregateRootId() int64
+		domain.IAggregateRoot
 		// Complex 会员汇总信息
 		Complex() *ComplexMember
 		// Profile 会员资料服务
@@ -236,61 +237,6 @@ type (
 		Flag int
 		// 更新时间
 		UpdateTime int64
-	}
-
-	Member struct {
-		// 编号
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
-		// 用户编码
-		UserCode string `db:"user_code"`
-		// 昵称
-		Nickname string `db:"nickname"`
-		// 真实姓名
-		RealName string `db:"real_name"`
-		// 用户名
-		Username string `db:"username"`
-		// 加密盐
-		Salt string `db:"salt"`
-		// 密码
-		Password string `db:"password"`
-		// 头像
-		ProfilePhoto string `db:"profile_photo"`
-		// 交易密码
-		TradePassword string `db:"trade_pwd"`
-		// 经验值
-		Exp int `db:"exp"`
-		// 等级
-		Level int `db:"level"`
-		// 高级用户类型
-		PremiumUser int `db:"premium_user"`
-		// 高级用户过期时间
-		PremiumExpires int64 `db:"premium_expires"`
-		// 手机号码
-		Phone string `db:"phone"`
-		// 电子邮箱
-		Email string `db:"email"`
-		// 注册来源
-		RegFrom string `db:"reg_from"`
-		// 注册IP
-		RegIp string `db:"reg_ip"`
-		// 注册时间
-		RegTime int64 `db:"reg_time"`
-		// 校验码
-		CheckCode string `db:"check_code"`
-		// 校验码过期时间
-		CheckExpires int64 `db:"check_expires"`
-		// 会员标志
-		UserFlag int `db:"user_flag"`
-		// 角色标志
-		RoleFlag int `db:"role_flag"`
-		// 登录时间
-		LoginTime int64 `db:"login_time"`
-		// 最后登录时间
-		LastLoginTime int64 `db:"last_login_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-		// 超时时间
-		TimeoutTime int64 `db:"-"`
 	}
 
 	// 会员资料
@@ -545,6 +491,60 @@ func (b BankCard) Locked() bool {
 	return false
 	//panic(errors.New("Not Implemented"))
 	//return b.IsLocked == BankLocked
+}
+
+// Member 会员
+type Member struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 用户名
+	Username string `json:"username" db:"username" gorm:"column:username" bson:"username"`
+	// 密码
+	Password string `json:"password" db:"password" gorm:"column:password" bson:"password"`
+	// 交易密码
+	TradePassword string `json:"tradePwd" db:"trade_pwd" gorm:"column:trade_pwd" bson:"tradePwd"`
+	// 经验值
+	Exp int `json:"exp" db:"exp" gorm:"column:exp" bson:"exp"`
+	// 等级
+	Level int `json:"level" db:"level" gorm:"column:level" bson:"level"`
+	// 高级用户类型
+	PremiumUser int `json:"premiumUser" db:"premium_user" gorm:"column:premium_user" bson:"premiumUser"`
+	// 高级用户过期时间
+	PremiumExpires int `json:"premiumExpires" db:"premium_expires" gorm:"column:premium_expires" bson:"premiumExpires"`
+	// 注册IP
+	RegIp string `json:"regIp" db:"reg_ip" gorm:"column:reg_ip" bson:"regIp"`
+	// 注册来源
+	RegFrom string `json:"regFrom" db:"reg_from" gorm:"column:reg_from" bson:"regFrom"`
+	// 注册时间
+	RegTime int `json:"regTime" db:"reg_time" gorm:"column:reg_time" bson:"regTime"`
+	// 校验码
+	CheckCode string `json:"checkCode" db:"check_code" gorm:"column:check_code" bson:"checkCode"`
+	// 校验码过期时间
+	CheckExpires int `json:"checkExpires" db:"check_expires" gorm:"column:check_expires" bson:"checkExpires"`
+	// 登录时间
+	LoginTime int `json:"loginTime" db:"login_time" gorm:"column:login_time" bson:"loginTime"`
+	// 最后登录时间
+	LastLoginTime int `json:"lastLoginTime" db:"last_login_time" gorm:"column:last_login_time" bson:"lastLoginTime"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// 会员标志
+	UserFlag int `json:"userFlag" db:"user_flag" gorm:"column:user_flag" bson:"userFlag"`
+	// 用户编码
+	UserCode string `json:"userCode" db:"user_code" gorm:"column:user_code" bson:"userCode"`
+	// 头像
+	ProfilePhoto string `json:"profilePhoto" db:"profile_photo" gorm:"column:profile_photo" bson:"profilePhoto"`
+	// 手机号码
+	Phone string `json:"phone" db:"phone" gorm:"column:phone" bson:"phone"`
+	// 电子邮箱
+	Email string `json:"email" db:"email" gorm:"column:email" bson:"email"`
+	// 昵称
+	Nickname string `json:"nickname" db:"nickname" gorm:"column:nickname" bson:"nickname"`
+	// 真实姓名
+	RealName string `json:"realName" db:"real_name" gorm:"column:real_name" bson:"realName"`
+	// 加密盐
+	Salt string `json:"salt" db:"salt" gorm:"column:salt" bson:"salt"`
+	// 角色标志
+	RoleFlag int `json:"roleFlag" db:"role_flag" gorm:"column:role_flag" bson:"roleFlag"`
 }
 
 func (m Member) TableName() string {

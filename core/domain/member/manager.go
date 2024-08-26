@@ -63,7 +63,7 @@ func (m *memberManagerImpl) registerPerm(regMode int, invitation bool) error {
 }
 
 // 检查手机绑定,同时检查手机格式
-func (m *memberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
+func (m *memberManagerImpl) CheckPhoneBind(phone string, memberId int) error {
 	if len(phone) <= 0 {
 		return member.ErrMissingPhone
 	}

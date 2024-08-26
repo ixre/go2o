@@ -490,7 +490,7 @@ func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, er
 	if (val.UserFlag & member.FlagLocked) == member.FlagLocked {
 		return 0, member.ErrMemberLocked
 	}
-	return val.Id, nil
+	return int64(val.Id), nil
 }
 
 // 登录，返回结果(Result_)和会员编号(Id);
