@@ -65,5 +65,5 @@ func (q *WorkQuery) QueryLatestWorkorderComments(workorderId int, p *fw.PagingPa
 	return q.commentRepo.FindList(&fw.QueryOption{
 		Limit: p.Size,
 		Order: p.Order,
-	}, p.Arguments[0].(string), p.Arguments[1:])
+	}, p.Arguments[0].(string), p.Arguments[1:]...)
 }

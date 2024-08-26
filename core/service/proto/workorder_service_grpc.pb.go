@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	WorkorderService_SubmitWorkorder_FullMethodName = "/WorkorderService/SubmitWorkorder"
-	WorkorderService_GetWorkorder_FullMethodName    = "/WorkorderService/GetWorkorder"
-	WorkorderService_DeleteWorkorder_FullMethodName = "/WorkorderService/DeleteWorkorder"
-	WorkorderService_AllocateAgentId_FullMethodName = "/WorkorderService/AllocateAgentId"
-	WorkorderService_Finish_FullMethodName          = "/WorkorderService/Finish"
-	WorkorderService_Close_FullMethodName           = "/WorkorderService/Close"
-	WorkorderService_Apprise_FullMethodName         = "/WorkorderService/Apprise"
-	WorkorderService_SubmitComment_FullMethodName   = "/WorkorderService/SubmitComment"
+	WorkorderService_SubmitWorkorder_FullMethodName  = "/WorkorderService/SubmitWorkorder"
+	WorkorderService_GetWorkorder_FullMethodName     = "/WorkorderService/GetWorkorder"
+	WorkorderService_DeleteWorkorder_FullMethodName  = "/WorkorderService/DeleteWorkorder"
+	WorkorderService_AllocateAgentId_FullMethodName  = "/WorkorderService/AllocateAgentId"
+	WorkorderService_FinishWorkorder_FullMethodName  = "/WorkorderService/FinishWorkorder"
+	WorkorderService_CloseWorkorder_FullMethodName   = "/WorkorderService/CloseWorkorder"
+	WorkorderService_AppriseWorkorder_FullMethodName = "/WorkorderService/AppriseWorkorder"
+	WorkorderService_SubmitComment_FullMethodName    = "/WorkorderService/SubmitComment"
 )
 
 // WorkorderServiceClient is the client API for WorkorderService service.
@@ -42,11 +42,11 @@ type WorkorderServiceClient interface {
 	// 分配客服
 	AllocateAgentId(ctx context.Context, in *AllocateWorkorderAgentRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 完结
-	Finish(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error)
+	FinishWorkorder(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error)
 	// 用户关闭工单
-	Close(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error)
+	CloseWorkorder(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error)
 	// 评价
-	Apprise(ctx context.Context, in *WorkorderAppriseRequest, opts ...grpc.CallOption) (*TxResult, error)
+	AppriseWorkorder(ctx context.Context, in *WorkorderAppriseRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 提交回复
 	SubmitComment(ctx context.Context, in *SubmitWorkorderCommentRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
@@ -95,27 +95,27 @@ func (c *workorderServiceClient) AllocateAgentId(ctx context.Context, in *Alloca
 	return out, nil
 }
 
-func (c *workorderServiceClient) Finish(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *workorderServiceClient) FinishWorkorder(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
-	err := c.cc.Invoke(ctx, WorkorderService_Finish_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, WorkorderService_FinishWorkorder_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *workorderServiceClient) Close(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *workorderServiceClient) CloseWorkorder(ctx context.Context, in *WorkorderId, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
-	err := c.cc.Invoke(ctx, WorkorderService_Close_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, WorkorderService_CloseWorkorder_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *workorderServiceClient) Apprise(ctx context.Context, in *WorkorderAppriseRequest, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *workorderServiceClient) AppriseWorkorder(ctx context.Context, in *WorkorderAppriseRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
-	err := c.cc.Invoke(ctx, WorkorderService_Apprise_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, WorkorderService_AppriseWorkorder_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -144,11 +144,11 @@ type WorkorderServiceServer interface {
 	// 分配客服
 	AllocateAgentId(context.Context, *AllocateWorkorderAgentRequest) (*TxResult, error)
 	// 完结
-	Finish(context.Context, *WorkorderId) (*TxResult, error)
+	FinishWorkorder(context.Context, *WorkorderId) (*TxResult, error)
 	// 用户关闭工单
-	Close(context.Context, *WorkorderId) (*TxResult, error)
+	CloseWorkorder(context.Context, *WorkorderId) (*TxResult, error)
 	// 评价
-	Apprise(context.Context, *WorkorderAppriseRequest) (*TxResult, error)
+	AppriseWorkorder(context.Context, *WorkorderAppriseRequest) (*TxResult, error)
 	// 提交回复
 	SubmitComment(context.Context, *SubmitWorkorderCommentRequest) (*TxResult, error)
 	mustEmbedUnimplementedWorkorderServiceServer()
@@ -170,14 +170,14 @@ func (UnimplementedWorkorderServiceServer) DeleteWorkorder(context.Context, *Wor
 func (UnimplementedWorkorderServiceServer) AllocateAgentId(context.Context, *AllocateWorkorderAgentRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllocateAgentId not implemented")
 }
-func (UnimplementedWorkorderServiceServer) Finish(context.Context, *WorkorderId) (*TxResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Finish not implemented")
+func (UnimplementedWorkorderServiceServer) FinishWorkorder(context.Context, *WorkorderId) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FinishWorkorder not implemented")
 }
-func (UnimplementedWorkorderServiceServer) Close(context.Context, *WorkorderId) (*TxResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Close not implemented")
+func (UnimplementedWorkorderServiceServer) CloseWorkorder(context.Context, *WorkorderId) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CloseWorkorder not implemented")
 }
-func (UnimplementedWorkorderServiceServer) Apprise(context.Context, *WorkorderAppriseRequest) (*TxResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Apprise not implemented")
+func (UnimplementedWorkorderServiceServer) AppriseWorkorder(context.Context, *WorkorderAppriseRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AppriseWorkorder not implemented")
 }
 func (UnimplementedWorkorderServiceServer) SubmitComment(context.Context, *SubmitWorkorderCommentRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitComment not implemented")
@@ -267,56 +267,56 @@ func _WorkorderService_AllocateAgentId_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WorkorderService_Finish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WorkorderService_FinishWorkorder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WorkorderId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkorderServiceServer).Finish(ctx, in)
+		return srv.(WorkorderServiceServer).FinishWorkorder(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkorderService_Finish_FullMethodName,
+		FullMethod: WorkorderService_FinishWorkorder_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkorderServiceServer).Finish(ctx, req.(*WorkorderId))
+		return srv.(WorkorderServiceServer).FinishWorkorder(ctx, req.(*WorkorderId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WorkorderService_Close_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WorkorderService_CloseWorkorder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WorkorderId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkorderServiceServer).Close(ctx, in)
+		return srv.(WorkorderServiceServer).CloseWorkorder(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkorderService_Close_FullMethodName,
+		FullMethod: WorkorderService_CloseWorkorder_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkorderServiceServer).Close(ctx, req.(*WorkorderId))
+		return srv.(WorkorderServiceServer).CloseWorkorder(ctx, req.(*WorkorderId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WorkorderService_Apprise_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WorkorderService_AppriseWorkorder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WorkorderAppriseRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkorderServiceServer).Apprise(ctx, in)
+		return srv.(WorkorderServiceServer).AppriseWorkorder(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkorderService_Apprise_FullMethodName,
+		FullMethod: WorkorderService_AppriseWorkorder_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkorderServiceServer).Apprise(ctx, req.(*WorkorderAppriseRequest))
+		return srv.(WorkorderServiceServer).AppriseWorkorder(ctx, req.(*WorkorderAppriseRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -363,16 +363,16 @@ var WorkorderService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _WorkorderService_AllocateAgentId_Handler,
 		},
 		{
-			MethodName: "Finish",
-			Handler:    _WorkorderService_Finish_Handler,
+			MethodName: "FinishWorkorder",
+			Handler:    _WorkorderService_FinishWorkorder_Handler,
 		},
 		{
-			MethodName: "Close",
-			Handler:    _WorkorderService_Close_Handler,
+			MethodName: "CloseWorkorder",
+			Handler:    _WorkorderService_CloseWorkorder_Handler,
 		},
 		{
-			MethodName: "Apprise",
-			Handler:    _WorkorderService_Apprise_Handler,
+			MethodName: "AppriseWorkorder",
+			Handler:    _WorkorderService_AppriseWorkorder_Handler,
 		},
 		{
 			MethodName: "SubmitComment",

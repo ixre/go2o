@@ -35,7 +35,7 @@ func (w *workorderServiceImpl) AllocateAgentId(_ context.Context, req *proto.All
 }
 
 // Apprise implements proto.WorkorderServiceServer.
-func (w *workorderServiceImpl) Apprise(_ context.Context, req *proto.WorkorderAppriseRequest) (*proto.TxResult, error) {
+func (w *workorderServiceImpl) AppriseWorkorder(_ context.Context, req *proto.WorkorderAppriseRequest) (*proto.TxResult, error) {
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
 		return &proto.TxResult{
@@ -48,7 +48,7 @@ func (w *workorderServiceImpl) Apprise(_ context.Context, req *proto.WorkorderAp
 }
 
 // Close implements proto.WorkorderServiceServer.
-func (w *workorderServiceImpl) Close(_ context.Context, req *proto.WorkorderId) (*proto.TxResult, error) {
+func (w *workorderServiceImpl) CloseWorkorder(_ context.Context, req *proto.WorkorderId) (*proto.TxResult, error) {
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
 		return &proto.TxResult{
@@ -84,7 +84,7 @@ func (w *workorderServiceImpl) DeleteWorkorder(_ context.Context, req *proto.Wor
 }
 
 // Finish implements proto.WorkorderServiceServer.
-func (w *workorderServiceImpl) Finish(_ context.Context, req *proto.WorkorderId) (*proto.TxResult, error) {
+func (w *workorderServiceImpl) FinishWorkorder(_ context.Context, req *proto.WorkorderId) (*proto.TxResult, error) {
 	iw := w.repo.GetWorkorder(int(req.WorkorderId))
 	if iw == nil {
 		return &proto.TxResult{

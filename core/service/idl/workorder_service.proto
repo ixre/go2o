@@ -23,13 +23,13 @@ service WorkorderService {
     rpc AllocateAgentId(AllocateWorkorderAgentRequest) returns (TxResult) {
     }
 	// 完结
-	rpc Finish(WorkorderId) returns (TxResult) {
+	rpc FinishWorkorder(WorkorderId) returns (TxResult) {
     }
 	// 用户关闭工单
-	rpc Close(WorkorderId) returns (TxResult) {
+	rpc CloseWorkorder(WorkorderId) returns (TxResult) {
     }
 	// 评价
-    rpc Apprise(WorkorderAppriseRequest) returns (TxResult) {
+    rpc AppriseWorkorder(WorkorderAppriseRequest) returns (TxResult) {
     }
 
 	// 提交回复
