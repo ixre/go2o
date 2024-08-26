@@ -330,6 +330,16 @@ func (p *PagingParams) Like(field string, value interface{}) *PagingParams {
 	return p.where(field, "LIKE ?", value)
 }
 
+// Gt 大于
+func (p *PagingParams) Gt(field string, value interface{}) *PagingParams {
+	return p.where(field, "> ?", value)
+}
+
+// Lt 小于
+func (p *PagingParams) Lt(field string, value interface{}) *PagingParams {
+	return p.where(field, "< ?", value)
+}
+
 func (p *PagingParams) And(where string, values ...interface{}) *PagingParams {
 	buf := bytes.NewBuffer(nil)
 	isBlank := len(p.Arguments) == 0

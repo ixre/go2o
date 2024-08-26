@@ -17,6 +17,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -611,6 +612,11 @@ func (p *rbacServiceImpl) UpdateUserPassword(_ context.Context, req *proto.RbacP
 	return p.errorV2(err), nil
 }
 func (p *rbacServiceImpl) parsePermUser(v *model.RbacUser) *proto.SRbacUser {
+	if len(v.ProfilePhoto) == 0 {
+		// 如果未设置,则用系统内置头像
+		prefix, _ := p.registryRepo.GetValue(registry.FileServerUrl)
+		v.ProfilePhoto, _ = url.JoinPath(prefix, "static/init/avatar.jpg")
+	}
 	return &proto.SRbacUser{
 		Id:           int64(v.Id),
 		Username:     v.Username,

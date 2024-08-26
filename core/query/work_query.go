@@ -40,3 +40,30 @@ func (q *WorkQuery) QueryPagingWorkorderComments(workorderId int, p *fw.PagingPa
 	}
 	return ret, err
 }
+
+// 查询工单列表
+func (q *WorkQuery) QueryPagingWorkorders(p *fw.PagingParams) (*fw.PagingResult, error) {
+	tabels := `workorder w
+			   INNER JOIN mm_member m ON w.member_id = m.id
+			   LEFT JOIN rbac_user u ON w.allocate_aid= u.id`
+	fields := "w.*,m.nickname as nickname,m.profile_photo,u.nickname as allocate_agent_name"
+	ret, err := fw.UnifinedQueryPaging(q.ORM, p, tabels, fields)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range ret.Rows {
+		r := fw.ParsePagingRow(v)
+		r.Excludes("content")
+	}
+	return ret, nil
+}
+
+// 查询工单最新评论
+func (q *WorkQuery) QueryLatestWorkorderComments(workorderId int, p *fw.PagingParams) []*workorder.WorkorderComment {
+	p.Equal("order_id", workorderId)
+	p.OrderBy("id asc")
+	return q.commentRepo.FindList(&fw.QueryOption{
+		Limit: p.Size,
+		Order: p.Order,
+	}, p.Arguments[0].(string), p.Arguments[1:])
+}

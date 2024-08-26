@@ -9,7 +9,7 @@
 package content
 
 import (
-	"path"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -85,8 +85,8 @@ func (a *articleImpl) SetValue(v *content.Article) error {
 	}
 	if len(a._value.Thumbnail) == 0 {
 		// 如果未设置,则用系统内置头像
-		url, _ := a._registryRepo.GetValue(registry.FileServerUrl)
-		a._value.Thumbnail = path.Join(url, "static/init/nopic.jpg")
+		prefix, _ := a._registryRepo.GetValue(registry.FileServerUrl)
+		a._value.Thumbnail, _ = url.JoinPath(prefix, "static/init/nopic.jpg")
 	}
 	return nil
 }
