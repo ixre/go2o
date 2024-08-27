@@ -24,16 +24,16 @@ type ContentQuery struct {
 	fw.BaseRepository[content.Article]
 	categoryRepo fw.BaseRepository[content.Category]
 	pageRepo     fw.BaseRepository[content.Page]
-	mq           *MerchantQuery
+	_mchRepo     merchant.IMerchantRepo
 	mmq          *MemberQuery
 }
 
-func NewContentQuery(o orm.Orm, fo fw.ORM, mq *MerchantQuery, mmq *MemberQuery) *ContentQuery {
+func NewContentQuery(o orm.Orm, fo fw.ORM, mq *MerchantQuery, mmq *MemberQuery, mchRepo merchant.IMerchantRepo) *ContentQuery {
 	c := &ContentQuery{
 		Connector: o.Connector(),
 		o:         o,
-		mq:        mq,
 		mmq:       mmq,
+		_mchRepo:  mchRepo,
 	}
 	c.ORM = fo
 	c.categoryRepo.ORM = fo
@@ -58,7 +58,7 @@ func (c *ContentQuery) PagedArticleList(p *fw.PagingParams) (ret *fw.PagingResul
 	var mchMap map[int]*merchant.Merchant
 	var mmMap map[int]*member.Member
 	if len(mchIds) > 0 {
-		mchMap = collections.ToMap(c.mq.FindList(nil, "id IN ?", mchIds), func(m *merchant.Merchant) (int, *merchant.Merchant) {
+		mchMap = collections.ToMap(c._mchRepo.FindList(nil, "id IN ?", mchIds), func(m *merchant.Merchant) (int, *merchant.Merchant) {
 			return m.Id, m
 		})
 	}

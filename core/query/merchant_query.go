@@ -25,8 +25,9 @@ import (
 
 type MerchantQuery struct {
 	db.Connector
-	Storage storage.Interface
-	fw.BaseRepository[merchant.Merchant]
+	fw.ORM
+	Storage       storage.Interface
+	_repo         merchant.IMerchantRepo
 	AuthRepo      fw.BaseRepository[merchant.Authenticate]
 	_staffRepo    staff.IStaffRepo
 	_approvalRepo approval.IApprovalRepository
@@ -34,12 +35,14 @@ type MerchantQuery struct {
 
 func NewMerchantQuery(c gof.App, fo fw.ORM, staffRepo staff.IStaffRepo,
 	approvalRepo approval.IApprovalRepository,
+	mchRepo merchant.IMerchantRepo,
 ) *MerchantQuery {
 	q := &MerchantQuery{
 		Connector:     c.Db(),
 		Storage:       c.Storage(),
 		_staffRepo:    staffRepo,
 		_approvalRepo: approvalRepo,
+		_repo:         mchRepo,
 	}
 	q.ORM = fo
 	q.AuthRepo.ORM = fo
@@ -88,7 +91,12 @@ func (m *MerchantQuery) Verify(user, pwd string) int {
 	return id
 }
 
-// QueryPagingMerchantList 查询分页的商户列表
+// QueryPagingMerchants 查询分页的商户列表(基本信息)
+func (m *MerchantQuery) QueryPagingMerchants(p *fw.PagingParams) (_ *fw.PagingResult, err error) {
+	return m._repo.QueryPaging(p)
+}
+
+// QueryPagingMerchantList 查询分页的商户列表(完整信息)
 func (m *MerchantQuery) QueryPagingMerchantList(p *fw.PagingParams) (_ *fw.PagingResult, err error) {
 	tables := `mch_merchant p
          LEFT JOIN mch_authenticate a ON a.mch_id=p.id AND a.version = 1`
@@ -139,8 +147,8 @@ func (m *MerchantQuery) GetStaffTransferInfo(staffId int64) (ret struct {
 	}
 	staff := m._staffRepo.Get(staffId)
 	ret.TxId = sf.Id
-	mch := m.Get(sf.OriginMchId)
-	tarMch := m.Get(sf.TransferMchId)
+	mch := m._repo.Get(sf.OriginMchId)
+	tarMch := m._repo.Get(sf.TransferMchId)
 	ret.MchName = mch.MchName
 	ret.StaffName = staff.CertifiedName
 	ret.TransferMchName = tarMch.MchName
@@ -155,7 +163,7 @@ func (m *MerchantQuery) GetStaffTransferInfo(staffId int64) (ret struct {
 
 // QueryMerchantByName 根据商户名称查询商户信息
 func (m *MerchantQuery) QueryMerchantByName(name string) []map[string]interface{} {
-	list := m.FindList(nil, "mch_name = ?", name)
+	list := m._repo.FindList(nil, "mch_name = ?", name)
 	return collections.MapList(list, func(m *merchant.Merchant) map[string]interface{} {
 		return map[string]interface{}{
 			"id":      m.Id,
@@ -198,4 +206,17 @@ func (m *MerchantQuery) QueryTransferStaffs(mchId int, transferType int) (*fw.Pa
 		r.Put("isTransferIn", r.Get("transferMchId").(int64) == int64(mchId))
 	}
 	return rows, err
+}
+
+// 查询商户月度账单
+func (m *MerchantQuery) QueryPagingBills(p *fw.PagingParams) (*fw.PagingResult, error) {
+	tables := `mch_bill b
+		INNER JOIN mch_merchant m ON m.id = b.mch_id`
+	fields := `b.*,m.mch_name`
+	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+}
+
+// 获取商户月度账单
+func (m *MerchantQuery) GetBill(id int) *merchant.MerchantBill {
+	return m._repo.BillRepo().Get(id)
 }

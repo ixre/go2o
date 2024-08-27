@@ -1007,3 +1007,49 @@ ALTER COLUMN "inviter_d3" SET NOT NULL, ALTER COLUMN "inviter_d3" SET DEFAULT 0;
 -- 初始化数据
 update mm_relation set reg_mch_id=mch_staff.mch_id
 FROM mch_staff WHERE  mch_staff.member_id=mm_relation.member_id;
+
+
+DROP TABLE IF EXISTS mch_bill CASCADE;
+CREATE TABLE mch_bill (
+  id                 BIGSERIAL NOT NULL, 
+  mch_id             int8 NOT NULL, 
+  bill_time          int8 NOT NULL, 
+  bill_month         varchar(10) NOT NULL, 
+  start_time         int8 NOT NULL, 
+  end_time           int8 NOT NULL, 
+  shop_order_count   int4 NOT NULL, 
+  store_order_count  int4 NOT NULL, 
+  shop_total_amount  int8 NOT NULL, 
+  store_total_amount int8 NOT NULL, 
+  other_order_count  int4 NOT NULL, 
+  other_total_amount int8 NOT NULL, 
+  total_tx_fee       int8 NOT NULL, 
+  status             int4 NOT NULL, 
+  reviewer_id        int8 NOT NULL, 
+  reviewer_name      varchar(20) NOT NULL, 
+  review_time        int8 NOT NULL, 
+  create_time        int8 NOT NULL, 
+  build_time         int8 NOT NULL, 
+  update_time        int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mch_bill IS '商户月度账单';
+COMMENT ON COLUMN mch_bill.id IS '编号';
+COMMENT ON COLUMN mch_bill.mch_id IS '商户编号';
+COMMENT ON COLUMN mch_bill.bill_time IS '账单时间';
+COMMENT ON COLUMN mch_bill.bill_month IS '月份: 例:202408';
+COMMENT ON COLUMN mch_bill.start_time IS '账单开始时间';
+COMMENT ON COLUMN mch_bill.end_time IS '账单结束时间';
+COMMENT ON COLUMN mch_bill.shop_order_count IS '商城订单数量';
+COMMENT ON COLUMN mch_bill.store_order_count IS '线下订单数量';
+COMMENT ON COLUMN mch_bill.shop_total_amount IS '商城总金额';
+COMMENT ON COLUMN mch_bill.store_total_amount IS '线下总金额';
+COMMENT ON COLUMN mch_bill.other_order_count IS '其他订单总数量';
+COMMENT ON COLUMN mch_bill.other_total_amount IS '其他订单总金额';
+COMMENT ON COLUMN mch_bill.total_tx_fee IS '交易手续费';
+COMMENT ON COLUMN mch_bill.status IS '账单状态:  0: 待生成 1: 已生成 2: 已复核  3: 已结算';
+COMMENT ON COLUMN mch_bill.reviewer_id IS '审核人编号';
+COMMENT ON COLUMN mch_bill.reviewer_name IS '审核人名称';
+COMMENT ON COLUMN mch_bill.review_time IS '审核时间';
+COMMENT ON COLUMN mch_bill.create_time IS '创建时间';
+COMMENT ON COLUMN mch_bill.build_time IS '账单生成时间';
+COMMENT ON COLUMN mch_bill.update_time IS '更新时间';
