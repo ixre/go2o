@@ -3,11 +3,11 @@
  *
  * name : model_gen.go
  * author : jarrysix
- * date : 2024/07/15 13:44:47
- * description :
+ * date : 2021/07/15 13:44:47
+ * description : RBAC实体
  * history :
  */
-package model
+package rbac
 
 // RbacDict 数据字典
 type RbacDict struct {

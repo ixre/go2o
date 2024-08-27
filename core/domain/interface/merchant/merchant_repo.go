@@ -14,6 +14,8 @@ import "github.com/ixre/go2o/core/infrastructure/fw"
 type IMerchantRepo interface {
 	// 仓储实现
 	fw.Repository[Merchant]
+	// 账单仓储
+	BillRepo() fw.Repository[MerchantBill]
 	// 获取商户管理器
 	GetManager() IMerchantManager
 

@@ -28,6 +28,7 @@ import (
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
+	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/shipment"
 	"github.com/ixre/go2o/core/domain/interface/station"
@@ -197,5 +198,9 @@ func GetWorkorderRepo() workorder.IWorkorderRepo {
 }
 
 func GetApprovalRepo() approval.IApprovalRepository {
+	panic(wire.Build(provideSets))
+}
+
+func GetRbacRepo() rbac.IRbacRepository {
 	panic(wire.Build(provideSets))
 }
