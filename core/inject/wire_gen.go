@@ -86,7 +86,7 @@ func GetMerchantQueryService() *query.MerchantQuery {
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iRbacRepository := repos.NewRbacRepo(db)
 	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iApprovalRepository, iRbacRepository)
-	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo)
+	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo, iWalletRepo)
 	return merchantQuery
 }
 
@@ -125,7 +125,7 @@ func GetContentQueryService() *query.ContentQuery {
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iRbacRepository := repos.NewRbacRepo(db)
 	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iApprovalRepository, iRbacRepository)
-	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo)
+	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo, iWalletRepo)
 	memberQuery := query.NewMemberQuery(orm, db)
 	contentQuery := query.NewContentQuery(orm, db, merchantQuery, memberQuery, iMerchantRepo)
 	return contentQuery
@@ -732,7 +732,7 @@ func GetMerchantService() proto.MerchantServiceServer {
 	iRbacRepository := repos.NewRbacRepo(db)
 	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iApprovalRepository, iRbacRepository)
 	app := provide.GetApp()
-	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo)
+	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo, iWalletRepo)
 	orderQuery := query.NewOrderQuery(orm)
 	merchantServiceServer := impl2.NewMerchantService(iMerchantRepo, iMemberRepo, iStaffRepo, merchantQuery, orderQuery)
 	return merchantServiceServer
@@ -1030,7 +1030,7 @@ func GetContentService() proto.ContentServiceServer {
 	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iRbacRepository := repos.NewRbacRepo(db)
 	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iApprovalRepository, iRbacRepository)
-	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo)
+	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo, iWalletRepo)
 	memberQuery := query.NewMemberQuery(orm, db)
 	contentQuery := query.NewContentQuery(orm, db, merchantQuery, memberQuery, iMerchantRepo)
 	contentServiceServer := impl2.NewContentService(iArticleRepo, contentQuery)

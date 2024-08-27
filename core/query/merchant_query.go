@@ -14,6 +14,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/initial/provide"
@@ -26,16 +27,19 @@ import (
 type MerchantQuery struct {
 	db.Connector
 	fw.ORM
-	Storage       storage.Interface
-	_repo         merchant.IMerchantRepo
-	AuthRepo      fw.BaseRepository[merchant.Authenticate]
-	_staffRepo    staff.IStaffRepo
-	_approvalRepo approval.IApprovalRepository
+	Storage        storage.Interface
+	_repo          merchant.IMerchantRepo
+	AuthRepo       fw.BaseRepository[merchant.Authenticate]
+	_staffRepo     staff.IStaffRepo
+	_approvalRepo  approval.IApprovalRepository
+	_walletRepo    wallet.IWalletRepo
+	_walletLogRepo fw.BaseRepository[wallet.WalletLog]
 }
 
 func NewMerchantQuery(c gof.App, fo fw.ORM, staffRepo staff.IStaffRepo,
 	approvalRepo approval.IApprovalRepository,
 	mchRepo merchant.IMerchantRepo,
+	walletRepo wallet.IWalletRepo,
 ) *MerchantQuery {
 	q := &MerchantQuery{
 		Connector:     c.Db(),
@@ -43,9 +47,11 @@ func NewMerchantQuery(c gof.App, fo fw.ORM, staffRepo staff.IStaffRepo,
 		_staffRepo:    staffRepo,
 		_approvalRepo: approvalRepo,
 		_repo:         mchRepo,
+		_walletRepo:   walletRepo,
 	}
 	q.ORM = fo
 	q.AuthRepo.ORM = fo
+	q._walletLogRepo.ORM = fo
 	return q
 }
 
@@ -219,4 +225,9 @@ func (m *MerchantQuery) QueryPagingBills(p *fw.PagingParams) (*fw.PagingResult, 
 // 获取商户月度账单
 func (m *MerchantQuery) GetBill(id int) *merchant.MerchantBill {
 	return m._repo.BillRepo().Get(id)
+}
+
+// 查询商户月度账单明细
+func (m *MerchantQuery) QueryPagingBillItems(billId int, p *fw.PagingParams) (*fw.PagingResult, error) {
+	return m._walletLogRepo.QueryPaging(p)
 }
