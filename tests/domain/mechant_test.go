@@ -275,3 +275,34 @@ func TestTransferStaff(t *testing.T) {
 	}
 	t.Logf("审批完成")
 }
+
+// 测试商户交易账单
+func TestMerchantTransactionBill(t *testing.T) {
+	repo := inject.GetMerchantRepo()
+	mch := repo.GetMerchant(1)
+	tx := mch.SaleManager()
+	bill := tx.GetCurrentBill()
+	t.Logf("bill:%+v", bill)
+	err := tx.AdjustBillAmount(merchant.BillAmountTypeOther, 1000, 10)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	bill = tx.GetCurrentBill()
+	t.Logf("bill:%+v", bill)
+	err = tx.GenerateBill()
+	if err != nil {
+		t.Error(err)
+	}
+	err = tx.ReviewBill(bill.Id, 1)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	err = tx.SettleBill(bill.Id)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Logf("结算成功")
+}

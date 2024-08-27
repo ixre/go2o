@@ -65,6 +65,11 @@ const (
 	MerchantService_ReviewWithdrawal_FullMethodName            = "/MerchantService/ReviewWithdrawal"
 	MerchantService_FinishWithdrawal_FullMethodName            = "/MerchantService/FinishWithdrawal"
 	MerchantService_GetWalletTxLog_FullMethodName              = "/MerchantService/GetWalletTxLog"
+	MerchantService_GetBill_FullMethodName                     = "/MerchantService/GetBill"
+	MerchantService_AdjustBillAmount_FullMethodName            = "/MerchantService/AdjustBillAmount"
+	MerchantService_GenerateBill_FullMethodName                = "/MerchantService/GenerateBill"
+	MerchantService_ReviewBill_FullMethodName                  = "/MerchantService/ReviewBill"
+	MerchantService_SettleBill_FullMethodName                  = "/MerchantService/SettleBill"
 )
 
 // MerchantServiceClient is the client API for MerchantService service.
@@ -161,6 +166,16 @@ type MerchantServiceClient interface {
 	FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取钱包流水记录
 	GetWalletTxLog(ctx context.Context, in *UserWalletTxId, opts ...grpc.CallOption) (*UserWalletTxResponse, error)
+	// 根据月份时间,获取当前账单
+	GetBill(ctx context.Context, in *BillTimeRequest, opts ...grpc.CallOption) (*SMerchantBill, error)
+	// 调整账单商城金额
+	AdjustBillAmount(ctx context.Context, in *AdjustMerchantBillAmountRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// GenerateBill 生成当前月份的账单
+	GenerateBill(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*TxResult, error)
+	// ReviewBill 审核账单
+	ReviewBill(ctx context.Context, in *ReviewMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// SettleBill 结算账单
+	SettleBill(ctx context.Context, in *SettleMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type merchantServiceClient struct {
@@ -585,6 +600,51 @@ func (c *merchantServiceClient) GetWalletTxLog(ctx context.Context, in *UserWall
 	return out, nil
 }
 
+func (c *merchantServiceClient) GetBill(ctx context.Context, in *BillTimeRequest, opts ...grpc.CallOption) (*SMerchantBill, error) {
+	out := new(SMerchantBill)
+	err := c.cc.Invoke(ctx, MerchantService_GetBill_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) AdjustBillAmount(ctx context.Context, in *AdjustMerchantBillAmountRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MerchantService_AdjustBillAmount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) GenerateBill(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MerchantService_GenerateBill_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) ReviewBill(ctx context.Context, in *ReviewMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MerchantService_ReviewBill_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) SettleBill(ctx context.Context, in *SettleMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MerchantService_SettleBill_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MerchantServiceServer is the server API for MerchantService service.
 // All implementations must embed UnimplementedMerchantServiceServer
 // for forward compatibility
@@ -679,6 +739,16 @@ type MerchantServiceServer interface {
 	FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*TxResult, error)
 	// 获取钱包流水记录
 	GetWalletTxLog(context.Context, *UserWalletTxId) (*UserWalletTxResponse, error)
+	// 根据月份时间,获取当前账单
+	GetBill(context.Context, *BillTimeRequest) (*SMerchantBill, error)
+	// 调整账单商城金额
+	AdjustBillAmount(context.Context, *AdjustMerchantBillAmountRequest) (*TxResult, error)
+	// GenerateBill 生成当前月份的账单
+	GenerateBill(context.Context, *MerchantId) (*TxResult, error)
+	// ReviewBill 审核账单
+	ReviewBill(context.Context, *ReviewMerchantBillRequest) (*TxResult, error)
+	// SettleBill 结算账单
+	SettleBill(context.Context, *SettleMerchantBillRequest) (*TxResult, error)
 	mustEmbedUnimplementedMerchantServiceServer()
 }
 
@@ -823,6 +893,21 @@ func (UnimplementedMerchantServiceServer) FinishWithdrawal(context.Context, *Fin
 }
 func (UnimplementedMerchantServiceServer) GetWalletTxLog(context.Context, *UserWalletTxId) (*UserWalletTxResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWalletTxLog not implemented")
+}
+func (UnimplementedMerchantServiceServer) GetBill(context.Context, *BillTimeRequest) (*SMerchantBill, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBill not implemented")
+}
+func (UnimplementedMerchantServiceServer) AdjustBillAmount(context.Context, *AdjustMerchantBillAmountRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdjustBillAmount not implemented")
+}
+func (UnimplementedMerchantServiceServer) GenerateBill(context.Context, *MerchantId) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateBill not implemented")
+}
+func (UnimplementedMerchantServiceServer) ReviewBill(context.Context, *ReviewMerchantBillRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReviewBill not implemented")
+}
+func (UnimplementedMerchantServiceServer) SettleBill(context.Context, *SettleMerchantBillRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SettleBill not implemented")
 }
 func (UnimplementedMerchantServiceServer) mustEmbedUnimplementedMerchantServiceServer() {}
 
@@ -1665,6 +1750,96 @@ func _MerchantService_GetWalletTxLog_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_GetBill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BillTimeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetBill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GetBill_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetBill(ctx, req.(*BillTimeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_AdjustBillAmount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdjustMerchantBillAmountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).AdjustBillAmount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_AdjustBillAmount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).AdjustBillAmount(ctx, req.(*AdjustMerchantBillAmountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_GenerateBill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GenerateBill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GenerateBill_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GenerateBill(ctx, req.(*MerchantId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_ReviewBill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReviewMerchantBillRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).ReviewBill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_ReviewBill_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).ReviewBill(ctx, req.(*ReviewMerchantBillRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_SettleBill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SettleMerchantBillRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).SettleBill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_SettleBill_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).SettleBill(ctx, req.(*SettleMerchantBillRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MerchantService_ServiceDesc is the grpc.ServiceDesc for MerchantService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1855,6 +2030,26 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetWalletTxLog",
 			Handler:    _MerchantService_GetWalletTxLog_Handler,
+		},
+		{
+			MethodName: "GetBill",
+			Handler:    _MerchantService_GetBill_Handler,
+		},
+		{
+			MethodName: "AdjustBillAmount",
+			Handler:    _MerchantService_AdjustBillAmount_Handler,
+		},
+		{
+			MethodName: "GenerateBill",
+			Handler:    _MerchantService_GenerateBill_Handler,
+		},
+		{
+			MethodName: "ReviewBill",
+			Handler:    _MerchantService_ReviewBill_Handler,
+		},
+		{
+			MethodName: "SettleBill",
+			Handler:    _MerchantService_SettleBill_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

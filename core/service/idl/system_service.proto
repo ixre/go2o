@@ -63,8 +63,7 @@ service SystemService {
     rpc GetAllSsoApp (Empty) returns (StringListResponse) {
     }
     // 保存超级用户账号和密码
-    rpc updateSuperCredential (SuperPassswordRequest) returns (TxResult) {
-    }
+    rpc updateSuperCredential (SuperPassswordRequest) returns (TxResult);
     // 创建同步登录的地址,returnUrl
     rpc GetSyncLoginUrl (String) returns (String) {
     }

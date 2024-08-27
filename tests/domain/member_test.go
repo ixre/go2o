@@ -121,7 +121,7 @@ func TestCreateNewMember(t *testing.T) {
 	m := repo.CreateMember(v) //创建会员
 	id, err := m.Save()
 	if err == nil {
-		err = m.BindInviter(int64(inviterId), true)
+		err = m.BindInviter(inviterId, true)
 	}
 	if err != nil {
 		t.Error(err)
@@ -163,10 +163,10 @@ func TestToBePremium(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	m = repo.GetMember(m.GetAggregateRootId())
+	m = repo.GetMember(int64(m.GetAggregateRootId()))
 	v := m.GetValue()
 	t.Logf("Premium: user:%d ; expires:%s", v.PremiumUser,
-		time.Unix(v.PremiumExpires, 0).Format("2006-01-02 15:04:05"))
+		time.Unix(int64(v.PremiumExpires), 0).Format("2006-01-02 15:04:05"))
 }
 
 func TestChangePassword(t *testing.T) {
@@ -239,7 +239,7 @@ func TestUpdateInviter(t *testing.T) {
 	memberId := 728
 	inviterId := 710
 	m := inject.GetMemberRepo().GetMember(int64(memberId))
-	err := m.BindInviter(int64(inviterId), false)
+	err := m.BindInviter(inviterId, false)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

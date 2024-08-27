@@ -82,7 +82,7 @@ type (
 		// ConfManager 返回设置服务
 		ConfManager() IConfManager
 		// SaleManager 销售服务
-		SaleManager() ISaleManager
+		SaleManager() IMerchantTransactionManager
 		// LevelManager 获取会员等级服务
 		LevelManager() ILevelManager
 		// KvManager 获取键值管理器

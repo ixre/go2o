@@ -23,6 +23,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
+	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
@@ -54,7 +55,7 @@ type merchantImpl struct {
 	_stationRepo     station.IStationRepo
 	_userManager     user.IUserManager
 	_confManager     merchant.IConfManager
-	_saleManager     merchant.ISaleManager
+	_saleManager     merchant.IMerchantTransactionManager
 	_levelManager    merchant.ILevelManager
 	_kvManager       merchant.IKvManager
 	_memberKvManager merchant.IKvManager
@@ -69,6 +70,7 @@ type merchantImpl struct {
 	_approvalRepo    approval.IApprovalRepository
 	// 之前绑定的会员编号
 	_lastBindMemberId int
+	_rbacRepo         rbac.IRbacRepository
 }
 
 // EmployeeManager implements merchant.IMerchant.
@@ -93,6 +95,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo,
 	approvalRepo approval.IApprovalRepository,
+	rbacRepo rbac.IRbacRepository,
 ) merchant.IMerchantAggregateRoot {
 	mch := &merchantImpl{
 		_value:        v,
@@ -108,6 +111,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 		_walletRepo:   walletRepo,
 		_registryRepo: registryRepo,
 		_approvalRepo: approvalRepo,
+		_rbacRepo:     rbacRepo,
 	}
 	return mch
 }
@@ -499,9 +503,9 @@ func (m *merchantImpl) ConfManager() merchant.IConfManager {
 }
 
 // SaleManager 销售服务
-func (m *merchantImpl) SaleManager() merchant.ISaleManager {
+func (m *merchantImpl) SaleManager() merchant.IMerchantTransactionManager {
 	if m._saleManager == nil {
-		m._saleManager = newSaleManagerImpl(int(m.GetAggregateRootId()), m)
+		m._saleManager = newSaleManagerImpl(int(m.GetAggregateRootId()), m, m._rbacRepo)
 	}
 	return m._saleManager
 }

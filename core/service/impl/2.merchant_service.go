@@ -1256,3 +1256,98 @@ func (m *merchantService) TransferStaff(_ context.Context, req *proto.TransferSt
 	}
 	return m.txResult(txId, nil), nil
 }
+
+// AdjustBillAmount implements proto.MerchantServiceServer.
+func (m *merchantService) AdjustBillAmount(_ context.Context, req *proto.AdjustMerchantBillAmountRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	err := mch.SaleManager().AdjustBillAmount(merchant.BillAmountType(req.AmountType), int(req.Amount), int(req.TxFee))
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(0, nil), nil
+}
+
+// GenerateBill implements proto.MerchantServiceServer.
+func (m *merchantService) GenerateBill(_ context.Context, req *proto.MerchantId) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.Value))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	manager := mch.SaleManager()
+	bill := manager.GetCurrentBill()
+	err := manager.GenerateBill()
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(bill.Id, nil), nil
+}
+
+// GetBill implements proto.MerchantServiceServer.
+func (m *merchantService) GetBill(_ context.Context, req *proto.BillTimeRequest) (*proto.SMerchantBill, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return nil, errors.New("商户不存在")
+	}
+	manager := mch.SaleManager()
+	bill := manager.GetBillByTime(int(req.BillTime))
+	if bill == nil {
+		return nil, errors.New("账单不存在")
+	}
+	return m.parseMerchantBill(bill), nil
+}
+
+func (m *merchantService) parseMerchantBill(bill *merchant.MerchantBill) *proto.SMerchantBill {
+	return &proto.SMerchantBill{
+		Id:               int64(bill.Id),
+		MchId:            int64(bill.MchId),
+		BillTime:         int64(bill.BillTime),
+		BillMonth:        bill.BillMonth,
+		StartTime:        int64(bill.StartTime),
+		EndTime:          int64(bill.EndTime),
+		ShopOrderCount:   int32(bill.ShopOrderCount),
+		StoreOrderCount:  int32(bill.StoreOrderCount),
+		ShopTotalAmount:  int64(bill.ShopTotalAmount),
+		StoreTotalAmount: int64(bill.StoreTotalAmount),
+		OtherOrderCount:  int32(bill.OtherOrderCount),
+		OtherTotalAmount: int64(bill.OtherTotalAmount),
+		TotalTxFee:       int64(bill.TotalTxFee),
+		Status:           int32(bill.Status),
+		ReviewerId:       int64(bill.ReviewerId),
+		ReviewerName:     bill.ReviewerName,
+		ReviewTime:       int64(bill.ReviewTime),
+		CreateTime:       int64(bill.CreateTime),
+		BuildTime:        int64(bill.BuildTime),
+		UpdateTime:       int64(bill.UpdateTime),
+	}
+}
+
+// ReviewBill implements proto.MerchantServiceServer.
+func (m *merchantService) ReviewBill(_ context.Context, req *proto.ReviewMerchantBillRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	manager := mch.SaleManager()
+	err := manager.ReviewBill(int(req.BillId), int(req.ReviewerId))
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(int(req.BillId), nil), nil
+}
+
+// SettleBill implements proto.MerchantServiceServer.
+func (m *merchantService) SettleBill(_ context.Context, req *proto.SettleMerchantBillRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	manager := mch.SaleManager()
+	err := manager.SettleBill(int(req.BillId))
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(int(req.BillId), nil), nil
+}

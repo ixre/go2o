@@ -37,12 +37,20 @@ type IMerchantTransactionManager interface {
 	GetBillByTime(billTime int) *MerchantBill
 	// AdjustBillShopAmount 调整账单商城金额
 	AdjustBillAmount(amountType BillAmountType, amount int, txFee int) error
-	// GenerateCurrentBill 生成当前月份的账单
-	GenerateCurrentBill() error
+	// GenerateBill 生成当前月份的账单
+	GenerateBill() error
 	// ReviewBill 审核账单
 	ReviewBill(billId int, reviewerId int) error
 	// SettleBill 结算账单
-	SettleBill() error
+	SettleBill(billId int) error
+}
+
+// 账单结算事件
+type BillSettledEvent struct {
+	// 商户编号
+	MchId int
+	// 账单
+	Bill *MerchantBill
 }
 
 // MerchantBill 商户月度账单
@@ -71,6 +79,8 @@ type MerchantBill struct {
 	OtherOrderCount int `json:"otherOrderCount" db:"other_order_count" gorm:"column:other_order_count" bson:"otherOrderCount"`
 	// 其他订单总金额
 	OtherTotalAmount int `json:"otherTotalAmount" db:"other_total_amount" gorm:"column:other_total_amount" bson:"otherTotalAmount"`
+	// 交易费
+	TotalTxFee int `json:"totalTxFee" db:"total_tx_fee" gorm:"column:total_tx_fee" bson:"totalTxFee"`
 	// 账单状态:  0: 待生成 1: 已生成 2: 已复核  3: 已结算
 	Status int `json:"status" db:"status" gorm:"column:status" bson:"status"`
 	// 审核人编号

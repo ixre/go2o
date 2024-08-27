@@ -114,7 +114,7 @@ func (w *workorderAggregateRootImpl) Finish() error {
 	w.value.UpdateTime = int(time.Now().Unix())
 	_, err := w.repo.Save(w.value)
 	if err == nil {
-		err = w.SubmitComment("客服已结束工单,欢迎您对我们的服务进行评价,感谢您的反馈及对我们工作的支持!", true, 0)
+		err = w.SubmitComment("本次服务已经结束,感谢您对我们工作的支持,祝您生活愉快!", true, 0)
 	}
 	return err
 }

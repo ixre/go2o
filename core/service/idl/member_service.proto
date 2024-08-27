@@ -41,11 +41,9 @@ service MemberService {
     rpc GetCertification (MemberIdRequest) returns (SCertificationInfo) {
     }
     /** 提交实名信息 */
-    rpc SubmitCertification (SubmitCertificationRequest) returns (TxResult) {
-    }
+    rpc SubmitCertification (SubmitCertificationRequest) returns (TxResult);
     /** 审核实名认证,若重复审核将返回错误 **/
-    rpc ReviewCertification (ReviewCertificationRequest) returns (TxResult) {
-    }
+    rpc ReviewCertification (ReviewCertificationRequest) returns (TxResult);
     /** 获取会员等级信息,id */
     rpc GetMemberLevel (Int32) returns (SMemberLevel) {
     }
@@ -94,17 +92,13 @@ service MemberService {
     rpc RemoveBankCard (BankCardRequest) returns (Result) {
     }
     /** 激活会员,memberId */
-    rpc Active (MemberIdRequest) returns (TxResult) {
-    }
+    rpc Active (MemberIdRequest) returns (TxResult);
     /** 锁定,minutes锁定分钟数,默认:-1永久锁定 */
-    rpc Lock (LockRequest) returns (TxResult) {
-    }
+    rpc Lock (LockRequest) returns (TxResult);
     /** 解锁会员 */
-    rpc Unlock (MemberIdRequest) returns (TxResult) {
-    }
+    rpc Unlock (MemberIdRequest) returns (TxResult);
     /** 标志赋值, 如果flag小于零, 则异或运算 */
-    rpc GrantFlag (GrantFlagRequest) returns (TxResult) {
-    }
+    rpc GrantFlag (GrantFlagRequest) returns (TxResult);
     /** 获取会员汇总信息,memberId */
     rpc Complex (MemberIdRequest) returns (SComplexMember) {
     }
@@ -112,8 +106,7 @@ service MemberService {
     rpc SendCode (SendCodeRequest) returns (SendCodeResponse) {
     }
     /** 比较验证码是否正确 */
-    rpc compareCode (CompareCodeRequest) returns (TxResult) {
-    }
+    rpc compareCode (CompareCodeRequest) returns (TxResult);
     /** 获取收款码 */
     rpc ReceiptsCodes (MemberIdRequest) returns (SReceiptsCodeListResponse) {
     }
@@ -130,8 +123,7 @@ service MemberService {
     rpc MemberLevelInfo (MemberIdRequest) returns (SMemberLevelInfo) {
     }
     // 更改会员等级
-    rpc ChangeLevel (ChangeLevelRequest) returns (TxResult) {
-    }
+    rpc ChangeLevel (ChangeLevelRequest) returns (TxResult);
     // 审核升级申请
     rpc ReviewLevelUpRequest (LevelUpReviewRequest) returns (Result) {
     }
@@ -139,29 +131,23 @@ service MemberService {
     rpc ConfirmLevelUpRequest (LevelUpConfirmRequest) returns (Result) {
     }
     /* 更改手机号码，不验证手机格式 */
-    rpc ChangePhone (ChangePhoneRequest) returns (TxResult) {
-    }
+    rpc ChangePhone (ChangePhoneRequest) returns (TxResult);
     /* 更改用户名 */
-    rpc ChangeUsername (ChangeUsernameRequest) returns (TxResult) {
-    }
+    rpc ChangeUsername (ChangeUsernameRequest) returns (TxResult);
     // 更改昵称
     rpc ChangeNickname(ChangeNicknameRequest) returns (TxResult) {}
 
     // 上传会员头像
-    rpc ChangeProfilePhoto (ChangeProfilePhotoRequest) returns (TxResult) {
-    }
+    rpc ChangeProfilePhoto (ChangeProfilePhotoRequest) returns (TxResult);
     /** 更改密码 */
-    rpc ChangePassword (ChangePasswordRequest) returns (TxResult) {
-    }
+    rpc ChangePassword (ChangePasswordRequest) returns (TxResult);
     /** 更改交易密码 */
-    rpc ChangeTradePassword (ChangePasswordRequest) returns (TxResult) {
-    }
+    rpc ChangeTradePassword (ChangePasswordRequest) returns (TxResult);
     // 检查资料是否完善
     rpc CheckProfileCompleted (Int64) returns (Bool) {
     }
     /** 设置或更改邀请人 */
-    rpc SetInviter (SetInviterRequest) returns (TxResult) {
-    }
+    rpc SetInviter (SetInviterRequest) returns (TxResult);
    
 
     // 升级为高级会员
@@ -210,44 +196,32 @@ service MemberService {
     rpc GetPagingInvitationMembers (MemberInvitationPagingRequest) returns (MemberInvitationPagingResponse) {
     }
     // 账户充值,amount精确到分
-    rpc AccountCharge (AccountChangeRequest) returns (TxResult) {
-    }
+    rpc AccountCharge (AccountChangeRequest) returns (TxResult);
     // 账户入账
     rpc AccountCarryTo(AccountCarryRequest) returns (TxResult){
     }
     // 账户消耗,amount精确到分
-    rpc AccountConsume (AccountChangeRequest) returns (TxResult) {
-    }
+    rpc AccountConsume (AccountChangeRequest) returns (TxResult);
     // 账户预扣消耗,amount精确到分
-    rpc PrefreezeConsume (UserPrefreezeConsumeRequest) returns (TxResult) {
-    }
+    rpc PrefreezeConsume (UserPrefreezeConsumeRequest) returns (TxResult);
     // 账户抵扣,amount精确到分
-    rpc AccountDiscount (AccountChangeRequest) returns (TxResult) {
-    }
+    rpc AccountDiscount (AccountChangeRequest) returns (TxResult);
     /** 账户冻结 */
-    rpc Freeze (AccountFreezeRequest) returns (TxResult) {
-    }
+    rpc Freeze (AccountFreezeRequest) returns (TxResult);
     /** 账户解冻 */
-    rpc Unfreeze (AccountUnfreezeRequest) returns (TxResult) {
-    }
+    rpc Unfreeze (AccountUnfreezeRequest) returns (TxResult);
     // 账户退款,amount精确到分
-    rpc AccountRefund (AccountChangeRequest) returns (TxResult) {
-    }
+    rpc AccountRefund (AccountChangeRequest) returns (TxResult);
     // 账户人工调整
-    rpc AccountAdjust (AccountAdjustRequest) returns (TxResult) {
-    }
+    rpc AccountAdjust (AccountAdjustRequest) returns (TxResult);
     // 转账转账
-    rpc AccountTransfer (AccountTransferRequest) returns (TxResult) {
-    }
+    rpc AccountTransfer (AccountTransferRequest) returns (TxResult);
     // 提现并返回提现编号,交易号以及错误信息
-    rpc RequestWithdrawal (UserWithdrawRequest) returns (TxResult) {
-    }
+    rpc RequestWithdrawal (UserWithdrawRequest) returns (TxResult);
     // 确认提现
-    rpc ReviewWithdrawal (ReviewUserWithdrawalRequest) returns (TxResult) {
-    }
+    rpc ReviewWithdrawal (ReviewUserWithdrawalRequest) returns (TxResult);
     // 收到款项,完成提现
-    rpc FinishWithdrawal (FinishUserWithdrawalRequest) returns (TxResult) {
-    }
+    rpc FinishWithdrawal (FinishUserWithdrawalRequest) returns (TxResult);
     // 查询提现记录
     rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogResponse) {
     }

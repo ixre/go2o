@@ -15,15 +15,12 @@ service AdvertisementService {
     rpc GetPosition (AdPositionId) returns (SAdPosition) {
     }
     /** 更新广告位 */
-    rpc SaveAdPosition (SAdPosition) returns (TxResult) {
-    }
+    rpc SaveAdPosition (SAdPosition) returns (TxResult);
 
     /** 删除广告位 */
-    rpc DeleteAdPosition (AdPositionId) returns (TxResult) {
-    }
+    rpc DeleteAdPosition (AdPositionId) returns (TxResult);
     // 投放广告位的默认广告
-    rpc PutDefaultAd (SetDefaultAdRequest) returns (TxResult) {
-    }
+    rpc PutDefaultAd (SetDefaultAdRequest) returns (TxResult);
     // 查询广告
     rpc QueryAd(QueryAdRequest) returns (QueryAdResponse){}
 
@@ -32,15 +29,12 @@ service AdvertisementService {
     }
 
     // 用户投放广告
-    rpc SetUserAd (SetUserAdRequest) returns (TxResult) {
-    }
+    rpc SetUserAd (SetUserAdRequest) returns (TxResult);
     // 获取广告,returnData=true返回数据传输对象
     rpc GetAdvertisement (AdIdRequest) returns (SAd) {
     }
     // 保存广告,更新时不允许修改类型
-    rpc SaveAd (SAd) returns (TxResult) {
-    }
+    rpc SaveAd (SAd) returns (TxResult);
     // 删除广告
-    rpc DeleteAd (AdIdRequest) returns (TxResult) {
-    }
+    rpc DeleteAd (AdIdRequest) returns (TxResult);
 }

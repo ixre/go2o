@@ -26,6 +26,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
+	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
@@ -43,6 +44,7 @@ var mchMerchantDaoImplMapped = false
 type merchantRepo struct {
 	fw.BaseRepository[merchant.Merchant]
 	authRepo fw.BaseRepository[merchant.Authenticate]
+	billRepo fw.Repository[merchant.MerchantBill]
 	db.Connector
 	_orm          orm.Orm
 	storage       storage.Interface
@@ -59,6 +61,7 @@ type merchantRepo struct {
 	_walletRepo   wallet.IWalletRepo
 	_registryRepo registry.IRegistryRepo
 	_approvalRepo approval.IApprovalRepository
+	_rbacRepo     rbac.IRbacRepository
 	mux           *sync.RWMutex
 }
 
@@ -75,6 +78,7 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 	valRepo valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo,
 	approvalRepo approval.IApprovalRepository,
+	rbacRepo rbac.IRbacRepository,
 ) merchant.IMerchantRepo {
 	if !mchMerchantDaoImplMapped {
 		// 映射实体
@@ -98,11 +102,17 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 		_walletRepo:   walletRepo,
 		_registryRepo: registryRepo,
 		_approvalRepo: approvalRepo,
+		_rbacRepo:     rbacRepo,
 		mux:           &sync.RWMutex{},
 	}
 	r.ORM = on
 	r.authRepo.ORM = on
+	r.billRepo = &fw.BaseRepository[merchant.MerchantBill]{ORM: on}
 	return r
+}
+
+func (m *merchantRepo) BillRepo() fw.Repository[merchant.MerchantBill] {
+	return m.billRepo
 }
 
 // 获取商户管理器
@@ -125,7 +135,8 @@ func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchantAg
 		m._walletRepo,
 		m._valRepo,
 		m._registryRepo,
-		m._approvalRepo)
+		m._approvalRepo,
+		m._rbacRepo)
 }
 
 func (m *merchantRepo) cleanCache(mchId int64) {
