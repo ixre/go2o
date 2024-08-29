@@ -344,7 +344,7 @@ func (m *merchantImpl) Member() int64 {
 func (m *merchantImpl) Account() merchant.IAccount {
 	if m._account == nil {
 		v := m._repo.GetAccount(int(m.GetAggregateRootId()))
-		m._account = newAccountImpl(m, v, m._memberRepo, m._walletRepo)
+		m._account = newAccountImpl(m, v, m._memberRepo, m._walletRepo, m._invoiceRepo)
 	}
 	return m._account
 }

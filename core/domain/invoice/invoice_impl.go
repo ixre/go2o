@@ -132,8 +132,8 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 		r.InvoiceAmount += amount
 		r.TaxAmount += amount * v.TaxRate
 	}
-	if r.InvoiceAmount <= 0 {
-		return nil, errors.New("invoice amount is zero")
+	if r.InvoiceAmount < 1000 {
+		return nil, errors.New("开票金额不能低于10元")
 	}
 	r.CreateTime = int(time.Now().Unix())
 	r.IssueTenantId = v.IssueTenantId

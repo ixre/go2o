@@ -273,10 +273,12 @@ message SMerchantAccount {
   int64 refundAmount = 6;
   // 已提取金额
   int64 withdrawalAmount = 7;
+  // 可开票金额
+  int64 invoiceableAmount = 8;
   // 线下销售金额
-  int64 offlineSales = 8;
+  int64 offlineSales = 9;
   // 更新时间
-  int64 updateTime = 9;
+  int64 updateTime = 10;
 }
 
 /** 商户锁定状态请求 */

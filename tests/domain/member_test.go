@@ -251,7 +251,7 @@ func TestMemberWallet(t *testing.T) {
 	var memberId int64 = 16
 	m := inject.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
-	if ic.GetValue().WalletBalance != int64(ic.Wallet().Get().Balance) {
+	if ic.GetValue().WalletBalance != ic.Wallet().Get().Balance {
 		t.Error("钱包金额不符合")
 		t.FailNow()
 	}

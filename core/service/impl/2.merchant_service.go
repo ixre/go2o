@@ -935,15 +935,16 @@ func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STr
 
 func (m *merchantService) parseAccountDto(v *merchant.Account) *proto.SMerchantAccount {
 	return &proto.SMerchantAccount{
-		Balance:          int64(v.Balance),
-		FreezeAmount:     int64(v.FreezeAmount),
-		AwaitAmount:      int64(v.AwaitAmount),
-		PresentAmount:    int64(v.PresentAmount),
-		SalesAmount:      int64(v.SalesAmount),
-		RefundAmount:     int64(v.RefundAmount),
-		WithdrawalAmount: int64(v.WithdrawalAmount),
-		OfflineSales:     int64(v.OfflineSales),
-		UpdateTime:       int64(v.UpdateTime),
+		Balance:           int64(v.Balance),
+		FreezeAmount:      int64(v.FreezeAmount),
+		AwaitAmount:       int64(v.AwaitAmount),
+		PresentAmount:     int64(v.PresentAmount),
+		SalesAmount:       int64(v.SalesAmount),
+		RefundAmount:      int64(v.RefundAmount),
+		WithdrawalAmount:  int64(v.WithdrawalAmount),
+		InvoiceableAmount: int64(v.InvoiceableAmount),
+		OfflineSales:      int64(v.OfflineSales),
+		UpdateTime:        int64(v.UpdateTime),
 	}
 }
 
@@ -1358,8 +1359,8 @@ func (m *merchantService) RequestInvoice(_ context.Context, req *proto.MerchantR
 	if mch == nil {
 		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
-	manager := mch.SaleManager()
-	txId, err := manager.RequestInvoice(int(req.Amount), req.Remark)
+	account := mch.Account()
+	txId, err := account.RequestInvoice(int(req.Amount), req.Remark)
 	if err != nil {
 		return m.errorV2(err), nil
 	}

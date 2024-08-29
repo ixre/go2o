@@ -2,32 +2,39 @@
 package merchant
 
 import (
+	"errors"
 	"math"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/variable"
 )
 
 var _ merchant.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	mchImpl    *merchantImpl
-	value      *merchant.Account
-	memberRepo member.IMemberRepo
-	walletRepo wallet.IWalletRepo
+	mchImpl      *merchantImpl
+	value        *merchant.Account
+	memberRepo   member.IMemberRepo
+	walletRepo   wallet.IWalletRepo
+	_invoiceRepo invoice.IInvoiceRepo
 }
 
 func newAccountImpl(mchImpl *merchantImpl, a *merchant.Account,
-	memberRepo member.IMemberRepo, walletRepo wallet.IWalletRepo) merchant.IAccount {
+	memberRepo member.IMemberRepo,
+	walletRepo wallet.IWalletRepo,
+	invoiceRepo invoice.IInvoiceRepo) merchant.IAccount {
 	return &accountImpl{
-		mchImpl:    mchImpl,
-		value:      a,
-		memberRepo: memberRepo,
-		walletRepo: walletRepo,
+		mchImpl:      mchImpl,
+		value:        a,
+		memberRepo:   memberRepo,
+		walletRepo:   walletRepo,
+		_invoiceRepo: invoiceRepo,
 	}
 }
 
@@ -50,6 +57,7 @@ func (a *accountImpl) asyncWallet() error {
 
 // 保存
 func (a *accountImpl) Save() error {
+	a.value.UpdateTime = int(time.Now().Unix())
 	_, err := a.mchImpl._repo.SaveAccount(a.value)
 	return err
 }
@@ -371,4 +379,62 @@ func (a *accountImpl) ReviewWithdrawal(transactionId int, pass bool, remark stri
 		return a.asyncWallet()
 	}
 	return err
+}
+
+// RequestInvoice implements merchant.IMerchantTransactionManager.
+func (a *accountImpl) RequestInvoice(amount int, remark string) (int, error) {
+	mchId := a.mchImpl.GetAggregateRootId()
+	tenant := a._invoiceRepo.FindTenant(int(invoice.TenantMerchant), mchId)
+	if tenant == nil {
+		tenant = &invoice.InvoiceTenant{
+			TenantType: int(invoice.TenantMerchant),
+			TenantUid:  mchId,
+		}
+	}
+	it := a._invoiceRepo.CreateTenant(tenant)
+	if it.GetAggregateRootId() <= 0 {
+		err := it.Create()
+		if err != nil {
+			logger.Error("创建商户发票租户失败: %v,mchId: %d", err, mchId)
+			return 0, err
+		}
+	}
+	title := it.GetDefaultInvoiceTitle()
+	if title == nil {
+		return 0, errors.New("商户尚未添加发票抬头")
+	}
+	if a.GetValue().InvoiceableAmount < amount {
+		return 0, errors.New("超出最大可申请发票金额")
+	}
+
+	fee := float64(amount)
+	iv, err := it.RequestInvoice(&invoice.InvoiceRequestData{
+		OuterNo:       "",
+		IssueTenantId: 0,
+		TitleId:       title.Id,
+		ReceiveEmail:  "",
+		Subject:       "商户交易手续费发票",
+		Remark:        remark,
+		Items: []*invoice.InvoiceItem{
+			{
+				ItemName:  "平台服务费",
+				ItemSpec:  "",
+				Price:     fee,
+				Quantity:  1,
+				TaxRate:   0,
+				Unit:      "笔",
+				Amount:    fee,
+				TaxAmount: 0,
+			},
+		},
+	})
+	if err != nil {
+		return 0, err
+	}
+	a.value.InvoiceableAmount -= amount
+	err = a.Save()
+	if err == nil {
+		return iv.GetDomainId(), nil
+	}
+	return 0, err
 }

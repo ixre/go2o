@@ -65,3 +65,8 @@ func (i *InvoiceQuery) GetMerchantTenantId(memberId int) int {
 	}
 	return tenant.Id
 }
+
+// GetTitles 获取发票抬头
+func (i *InvoiceQuery) GetTitles(tenantId int) []*invoice.InvoiceTitle {
+	return i.titleRepo.FindList(nil, "tenant_id = ?", tenantId)
+}

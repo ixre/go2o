@@ -148,6 +148,9 @@ type (
 
 		// TransferToMember1 商户积分转会员积分
 		TransferToMember1(amount float32) error
+
+		// RequestInvoice 申请发票,返回发票申请ID和错误
+		RequestInvoice(amount int, remark string) (int, error)
 	}
 
 	// 订单参数
