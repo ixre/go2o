@@ -347,10 +347,10 @@ func (p *paymentOrderImpl) getBalanceDeductAmount(acc member.IAccount) int64 {
 		return 0
 	}
 	acv := acc.GetValue()
-	if acv.Balance >= p.value.FinalAmount {
+	if acv.Balance >= int(p.value.FinalAmount) {
 		return p.value.FinalAmount
 	}
-	return acv.Balance
+	return int64(acv.Balance)
 }
 
 // 获取可用于钱包抵扣的金额
@@ -359,10 +359,10 @@ func (p *paymentOrderImpl) getWalletDeductAmount(acc member.IAccount) int64 {
 		return 0
 	}
 	acv := acc.GetValue()
-	if acv.WalletBalance >= p.value.FinalAmount {
+	if acv.WalletBalance >= int(p.value.FinalAmount) {
 		return p.value.FinalAmount
 	}
-	return acv.WalletBalance
+	return int64(acv.WalletBalance)
 }
 
 func (p *paymentOrderImpl) getPaymentUser() member.IMemberAggregateRoot {
@@ -541,7 +541,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	// 如果余额够支付，则优先余额支付
-	if acc.Balance >= v.FinalAmount {
+	if acc.Balance >= int(v.FinalAmount) {
 		return p.BalanceDeduct(remark)
 	}
 	// 判断是否能钱包支付
@@ -549,7 +549,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 		return payment.ErrNotSupportPaymentChannel
 	}
 	// 判断是否余额不足
-	if acc.Balance+acc.WalletBalance < v.FinalAmount {
+	if acc.Balance+acc.WalletBalance < int(v.FinalAmount) {
 		return payment.ErrNotEnoughAmount
 	}
 	err := p.BalanceDeduct(remark)
@@ -571,7 +571,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 	amount := p.value.FinalAmount
 	// 判断并从钱包里扣款
 	acc := buyer.GetAccount()
-	if acc.GetValue().WalletBalance < amount {
+	if acc.GetValue().WalletBalance < int(amount) {
 		return payment.ErrNotEnoughAmount
 	}
 	err := acc.Consume(member.AccountWallet, "支付订单",

@@ -1053,3 +1053,16 @@ COMMENT ON COLUMN mch_bill.review_time IS '审核时间';
 COMMENT ON COLUMN mch_bill.create_time IS '创建时间';
 COMMENT ON COLUMN mch_bill.build_time IS '账单生成时间';
 COMMENT ON COLUMN mch_bill.update_time IS '更新时间';
+
+-- 2024-08-29 18:00 开票金额字段
+ALTER TABLE "public".mch_account 
+  ADD COLUMN invoiceable_amount int8 NOT NULL;
+COMMENT ON COLUMN "public".mch_account.invoiceable_amount IS '可开票金额';
+
+
+ALTER TABLE "public".mm_account 
+  ADD COLUMN invoiceable_amount int8 NOT NULL;
+ALTER TABLE "public".mm_account 
+  alter column wallet_code set default ''::character varying;
+COMMENT ON COLUMN "public".mm_account.invoiceable_amount IS '可开票金额';
+

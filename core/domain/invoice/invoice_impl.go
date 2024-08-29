@@ -6,30 +6,39 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/invoice"
-	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
-	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/gof/domain/eventbus"
 )
 
 var _ invoice.InvoiceUserAggregateRoot = new(invoiceTenantAggregateRootImpl)
 
 type invoiceTenantAggregateRootImpl struct {
-	value   *invoice.InvoiceTenant
-	repo    invoice.IInvoiceTenantRepo
-	mchRepo merchant.IMerchantRepo
+	value *invoice.InvoiceTenant
+	repo  invoice.IInvoiceRepo
+}
+
+// GetDefaultInvoiceTitle implements invoice.InvoiceUserAggregateRoot.
+func (i *invoiceTenantAggregateRootImpl) GetDefaultInvoiceTitle() *invoice.InvoiceTitle {
+	titles := i.repo.Title().FindList(nil, "tenant_id=?", i.GetAggregateRootId())
+	for _, v := range titles {
+		if v.IsDefault == 1 {
+			return v
+		}
+	}
+	if len(titles) > 0 {
+		return titles[0]
+	}
+	return nil
 }
 
 func NewInvoiceTenant(v *invoice.InvoiceTenant,
-	repo invoice.IInvoiceTenantRepo,
-	mchRepo merchant.IMerchantRepo,
+	repo invoice.IInvoiceRepo,
 ) invoice.InvoiceUserAggregateRoot {
 	return &invoiceTenantAggregateRootImpl{
-		value:   v,
-		mchRepo: mchRepo,
-		repo:    repo,
+		value: v,
+		repo:  repo,
 	}
 }
 
@@ -105,13 +114,14 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 		if tn == nil {
 			return nil, errors.New("issue tenant not exists")
 		}
-		mch := i.mchRepo.GetMerchant(tn.TenantUserId())
-		if mch == nil {
-			logger.Error("商户不存在,无法开具发票, tenantId:%d", tn.TenantUserId())
-			return nil, errors.New("商户不存在,无法开具发票")
+		title := tn.GetDefaultInvoiceTitle()
+		if title == nil {
+			return nil, errors.New("商户尚未设置开票信息")
 		}
-		r.SellerName = mch.GetValue().MchName
-		r.SellerTaxCode = ""
+		r.PurchaserName = title.TitleName
+		r.PurchaserTaxCode = title.TaxCode
+		r.SellerName = title.TitleName
+		r.SellerTaxCode = title.TaxCode
 	}
 	// 开票项目
 	if len(v.Items) == 0 {

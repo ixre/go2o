@@ -70,6 +70,7 @@ const (
 	MerchantService_GenerateBill_FullMethodName                = "/MerchantService/GenerateBill"
 	MerchantService_ReviewBill_FullMethodName                  = "/MerchantService/ReviewBill"
 	MerchantService_SettleBill_FullMethodName                  = "/MerchantService/SettleBill"
+	MerchantService_RequestInvoice_FullMethodName              = "/MerchantService/RequestInvoice"
 )
 
 // MerchantServiceClient is the client API for MerchantService service.
@@ -176,6 +177,8 @@ type MerchantServiceClient interface {
 	ReviewBill(ctx context.Context, in *ReviewMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// SettleBill 结算账单
 	SettleBill(ctx context.Context, in *SettleMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// 商户申请发票
+	RequestInvoice(ctx context.Context, in *MerchantRequestInvoiceRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type merchantServiceClient struct {
@@ -645,6 +648,15 @@ func (c *merchantServiceClient) SettleBill(ctx context.Context, in *SettleMercha
 	return out, nil
 }
 
+func (c *merchantServiceClient) RequestInvoice(ctx context.Context, in *MerchantRequestInvoiceRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MerchantService_RequestInvoice_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MerchantServiceServer is the server API for MerchantService service.
 // All implementations must embed UnimplementedMerchantServiceServer
 // for forward compatibility
@@ -749,6 +761,8 @@ type MerchantServiceServer interface {
 	ReviewBill(context.Context, *ReviewMerchantBillRequest) (*TxResult, error)
 	// SettleBill 结算账单
 	SettleBill(context.Context, *SettleMerchantBillRequest) (*TxResult, error)
+	// 商户申请发票
+	RequestInvoice(context.Context, *MerchantRequestInvoiceRequest) (*TxResult, error)
 	mustEmbedUnimplementedMerchantServiceServer()
 }
 
@@ -908,6 +922,9 @@ func (UnimplementedMerchantServiceServer) ReviewBill(context.Context, *ReviewMer
 }
 func (UnimplementedMerchantServiceServer) SettleBill(context.Context, *SettleMerchantBillRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SettleBill not implemented")
+}
+func (UnimplementedMerchantServiceServer) RequestInvoice(context.Context, *MerchantRequestInvoiceRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestInvoice not implemented")
 }
 func (UnimplementedMerchantServiceServer) mustEmbedUnimplementedMerchantServiceServer() {}
 
@@ -1840,6 +1857,24 @@ func _MerchantService_SettleBill_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_RequestInvoice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantRequestInvoiceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).RequestInvoice(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_RequestInvoice_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).RequestInvoice(ctx, req.(*MerchantRequestInvoiceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MerchantService_ServiceDesc is the grpc.ServiceDesc for MerchantService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2050,6 +2085,10 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SettleBill",
 			Handler:    _MerchantService_SettleBill_Handler,
+		},
+		{
+			MethodName: "RequestInvoice",
+			Handler:    _MerchantService_RequestInvoice_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

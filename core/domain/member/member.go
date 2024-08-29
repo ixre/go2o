@@ -191,10 +191,10 @@ func (m *memberImpl) CompareCode(code string) error {
 // GetAccount 获取账户
 func (m *memberImpl) GetAccount() member.IAccount {
 	if m.account == nil {
-		v := m.repo.GetAccount(int64(m.value.Id))
+		v := m.repo.GetAccount(m.GetAggregateRootId())
 		if v == nil {
 			v = &member.Account{
-				MemberId: int64(m.value.Id),
+				MemberId: m.GetAggregateRootId(),
 			}
 		}
 		return newAccount(m, v, m.repo, m.manager, m.walletRepo, m.registryRepo)

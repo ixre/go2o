@@ -123,8 +123,8 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 	for _, v := range arr {
 		finalAmount += v.Get().FinalAmount
 	}
-	acc := p.memberRepo.GetAccount(payUid)
-	if acc.Balance*100 < finalAmount {
+	acc := p.memberRepo.GetAccount(int(payUid))
+	if acc.Balance < int(finalAmount) {
 		err = member.ErrAccountBalanceNotEnough
 	} else {
 		for _, v := range arr {

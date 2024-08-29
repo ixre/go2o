@@ -12,12 +12,12 @@ var _ proto.InvoiceServiceServer = new(invoiceServiceImpl)
 
 type invoiceServiceImpl struct {
 	_    proto.InvoiceServiceServer
-	repo invoice.IInvoiceTenantRepo
+	repo invoice.IInvoiceRepo
 	proto.UnimplementedInvoiceServiceServer
 	serviceUtil
 }
 
-func NewInvoiceService(repo invoice.IInvoiceTenantRepo) proto.InvoiceServiceServer {
+func NewInvoiceService(repo invoice.IInvoiceRepo) proto.InvoiceServiceServer {
 	return &invoiceServiceImpl{
 		repo: repo,
 	}

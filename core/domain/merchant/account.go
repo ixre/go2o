@@ -32,7 +32,7 @@ func newAccountImpl(mchImpl *merchantImpl, a *merchant.Account,
 }
 
 // 获取领域对象编号
-func (a *accountImpl) GetDomainId() int64 {
+func (a *accountImpl) GetDomainId() int {
 	return a.value.MchId
 }
 
@@ -43,8 +43,8 @@ func (a *accountImpl) GetValue() *merchant.Account {
 
 // 同步到账户余额
 func (a *accountImpl) asyncWallet() error {
-	a.value.Balance = int64(a.getWallet().Get().Balance)
-	a.value.FreezeAmount = int64(a.getWallet().Get().FreezeAmount)
+	a.value.Balance = a.getWallet().Get().Balance
+	a.value.FreezeAmount = a.getWallet().Get().FreezeAmount
 	return a.Save()
 }
 
@@ -75,7 +75,7 @@ func (a *accountImpl) createBalanceLog(kind int, title string, outerNo string,
 		// 编号
 		Id: 0,
 		// 商户编号
-		MchId: a.GetDomainId(),
+		MchId: int64(a.GetDomainId()),
 		// 日志类型
 		Kind: kind,
 		// 标题
@@ -111,15 +111,15 @@ func (a *accountImpl) Consume(transactionTitle string, amount int, outerTxNo str
 	if amount <= 0 {
 		return merchant.ErrAmount
 	}
-	if a.value.Balance < int64(amount) {
+	if a.value.Balance < amount {
 		return merchant.ErrNoMoreAmount
 	}
 	l := a.createBalanceLog(merchant.KindAccountTakePayment,
 		transactionRemark, outerTxNo, -int64(amount), 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		a.value.Balance -= int64(amount)
-		a.value.UpdateTime = time.Now().Unix()
+		a.value.Balance -= amount
+		a.value.UpdateTime = int(time.Now().Unix())
 		err = a.Save()
 		if err == nil {
 			iw := a.getWallet()
@@ -141,13 +141,13 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 		return 0, merchant.ErrAmount
 	}
 	// 计算金额
-	fAmount := int64(p.Amount / 100)
-	fTradeFee := int64(p.TransactionFee / 100)
-	fRefund := int64(p.RefundAmount / 100)
+	fAmount := int(p.Amount / 100)
+	fTradeFee := int(p.TransactionFee / 100)
+	fRefund := int(p.RefundAmount / 100)
 	a.value.Balance += fAmount
 	a.value.SalesAmount += fTradeFee
 	a.value.RefundAmount += fRefund
-	a.value.UpdateTime = time.Now().Unix()
+	a.value.UpdateTime = int(time.Now().Unix())
 	err = a.Save()
 	if err == nil {
 		iw := a.getWallet()
@@ -161,7 +161,9 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 		}, p.Freeze)
 		if err == nil {
 			// 添加收入金额
-			a.value.SalesAmount += (int64(p.Amount) - int64(p.TransactionFee))
+			a.value.SalesAmount += p.Amount - p.TransactionFee
+			// 添加手续费可开票金额
+			a.value.InvoiceableAmount += p.TransactionFee
 			err = a.asyncWallet()
 		}
 		return txId, err
@@ -174,7 +176,7 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 }
 
 func (a *accountImpl) getWallet() wallet.IWallet {
-	iw := a.walletRepo.GetWalletByUserId(a.GetValue().MchId, wallet.TMerchant)
+	iw := a.walletRepo.GetWalletByUserId(int64(a.GetValue().MchId), wallet.TMerchant)
 	if iw == nil {
 		iw = a.walletRepo.CreateWallet(int(a.GetValue().MchId),
 			a.mchImpl._value.Username,
@@ -194,10 +196,10 @@ func (a *accountImpl) getWallet() wallet.IWallet {
 // 转到会员账户
 func (a *accountImpl) TransferToMember(amount int) error {
 	panic("TransferToMember需重构或移除")
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return merchant.ErrAmount
-	}
-	if a.value.Balance < int64(amount) || a.value.Balance <= 0 {
+	// if amount <= 0 || math.IsNaN(float64(amount)) {
+	// 	return merchant.ErrAmount
+	// }
+	if a.value.Balance < amount || a.value.Balance <= 0 {
 		return merchant.ErrNoMoreAmount
 	}
 	if a.mchImpl._value.MemberId <= 0 {
@@ -221,9 +223,9 @@ func (a *accountImpl) TransferToMember(amount int) error {
 		if err != nil {
 			return err
 		}
-		a.value.Balance -= int64(amount)
-		a.value.WithdrawAmount += int64(amount)
-		a.value.UpdateTime = time.Now().Unix()
+		a.value.Balance -= amount
+		a.value.WithdrawalAmount += amount
+		a.value.UpdateTime = int(time.Now().Unix())
 		err = a.Save()
 		if err != nil {
 			return err
@@ -252,7 +254,7 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return merchant.ErrAmount
 	}
-	if a.value.Balance < int64(amount) || a.value.Balance <= 0 {
+	if a.value.Balance < int(amount) || a.value.Balance <= 0 {
 		return merchant.ErrNoMoreAmount
 	}
 	if a.mchImpl._value.MemberId <= 0 {
@@ -276,9 +278,9 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 		if err != nil {
 			return err
 		}
-		a.value.Balance -= int64(amount)
-		a.value.WithdrawAmount += int64(amount)
-		a.value.UpdateTime = time.Now().Unix()
+		a.value.Balance -= int(amount)
+		a.value.WithdrawalAmount += int(amount)
+		a.value.UpdateTime = int(time.Now().Unix())
 		err = a.Save()
 		if err != nil {
 			return err

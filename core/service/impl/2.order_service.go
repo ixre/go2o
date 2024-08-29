@@ -220,30 +220,30 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		domain.TestFlag(int(r.PaymentFlag), payment.MWallet); fb || fw {
 		// 更新抵扣余额之后的金额
 		if fb {
-			if balance >= ov.FinalAmount {
-				deductAmount += ov.FinalAmount
+			if balance >= int(ov.FinalAmount) {
+				deductAmount += int64(ov.FinalAmount)
 				ov.FinalAmount = 0
 			} else {
-				deductAmount += balance
-				ov.FinalAmount -= balance
+				deductAmount += int64(balance)
+				ov.FinalAmount -= int64(balance)
 			}
 		}
 		// 更新抵扣钱包余额之后的金额
 		if fw {
-			if walletBalance >= ov.FinalAmount {
-				deductAmount += ov.FinalAmount
+			if walletBalance >= int(ov.FinalAmount) {
+				deductAmount += int64(ov.FinalAmount)
 				ov.FinalAmount = 0
 			} else {
-				deductAmount += walletBalance
-				ov.FinalAmount -= walletBalance
+				deductAmount += int64(walletBalance)
+				ov.FinalAmount -= int64(walletBalance)
 			}
 		}
 	}
 	rsp := parser.PrepareOrderDto(ov)
 	rsp.ShipmentAddressId = addressId
 	rsp.DeductAmount = deductAmount
-	rsp.BuyerBalance = balance
-	rsp.BuyerWallet = walletBalance
+	rsp.BuyerBalance = int64(balance)
+	rsp.BuyerWallet = int64(walletBalance)
 	rsp.BuyerIntegral = int64(acc.GetValue().Integral)
 	rsp.Sellers = s.parsePrepareItemsFromCart(ic)
 	return rsp, err

@@ -43,6 +43,8 @@ type (
 		Create() error
 		// GetInvoiceTitle 获取发票抬头
 		GetInvoiceTitle(id int) *InvoiceTitle
+		// GetDefaultInvoiceTitle 获取默认发票抬头
+		GetDefaultInvoiceTitle() *InvoiceTitle
 		// CreateInvoiceTitle 保存发票抬头
 		CreateInvoiceTitle(title *InvoiceTitle) error
 		// CreateInvoice 创建发票
@@ -90,8 +92,8 @@ type InvoiceRequestData struct {
 
 var _ domain.IValueObject = new(InvoiceItem)
 
-// IInvoiceTenantRepo 发票租户仓储接口
-type IInvoiceTenantRepo interface {
+// IInvoiceRepo 发票仓储接口
+type IInvoiceRepo interface {
 	fw.Repository[InvoiceTenant]
 	// Title 获取发票抬头仓储接口
 	Title() IInvoiceTitleRepo
@@ -103,6 +105,8 @@ type IInvoiceTenantRepo interface {
 	GetTenant(id int) InvoiceUserAggregateRoot
 	// CreateTenant 创建租户
 	CreateTenant(v *InvoiceTenant) InvoiceUserAggregateRoot
+	// FindTenant 获取租户
+	FindTenant(tenantType int, tenantId int) *InvoiceTenant
 }
 
 // IInvoiceTitlesRepo 发票抬头仓储接口

@@ -661,9 +661,9 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMemberAggregateRoot) erro
 		}
 	}
 	acv := acc.GetValue()
-	acv.TotalExpense += ov.ItemAmount
-	acv.TotalPay += ov.FinalAmount
-	acv.UpdateTime = time.Now().Unix()
+	acv.TotalExpense += int(ov.ItemAmount)
+	acv.TotalPay += int(ov.FinalAmount)
+	acv.UpdateTime = int(time.Now().Unix())
 	_, err = acc.Save()
 	return err
 }

@@ -83,9 +83,9 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMemberAggregateRoot,
 		//更新账户
 		acc := m.GetAccount()
 		acv := acc.GetValue()
-		acv.WalletBalance += fee
-		acv.TotalWalletAmount += fee
-		acv.UpdateTime = unixTime
+		acv.WalletBalance += int(fee)
+		acv.TotalWalletAmount += int(fee)
+		acv.UpdateTime = int(unixTime)
 		_, err := acc.Save()
 		if err == nil {
 			//给自己返现
@@ -201,16 +201,15 @@ func backCashForMember(m member.IMemberAggregateRoot, o order.IOrder,
 	//更新账户
 	acc := m.GetAccount()
 	acv := acc.GetValue()
-	bFee := int64(fee)
-	acv.WalletBalance += bFee // 更新赠送余额
-	acv.TotalWalletAmount += bFee
-	acv.UpdateTime = time.Now().Unix()
+	acv.WalletBalance += fee // 更新赠送余额
+	acv.TotalWalletAmount += fee
+	acv.UpdateTime = int(time.Now().Unix())
 	_, err := acc.Save()
 
 	if err == nil {
 		orderNo := o.OrderNo()
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
-			format.FormatIntMoney(bFee), orderNo, refName)
+			format.FormatIntMoney(int64(fee)), orderNo, refName)
 		_, err = acc.CarryTo(member.AccountWallet, member.AccountOperateData{
 			TransactionTitle:   tit,
 			Amount:             fee * 100,

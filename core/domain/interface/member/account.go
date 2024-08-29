@@ -8,7 +8,10 @@
  */
 package member
 
-import "github.com/ixre/go2o/core/domain/interface/wallet"
+import (
+	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/infrastructure/domain"
+)
 
 type AccountType int
 
@@ -73,14 +76,13 @@ const (
 
 type (
 	IAccount interface {
-		// GetDomainId 获取领域对象编号
-		GetDomainId() int64
+		domain.IDomain
 
 		// GetValue 获取账户值
 		GetValue() *Account
 
 		// Save 保存
-		Save() (int64, error)
+		Save() (int, error)
 
 		// Wallet 电子钱包
 		Wallet() wallet.IWallet
@@ -156,53 +158,6 @@ type (
 		TransferFlowTo(memberId int64, kind int, amount int, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
-
-	// Account 账户值对象
-	Account struct {
-		// 会员编号
-		MemberId int64 `db:"member_id" pk:"yes"`
-		// 积分
-		Integral int `db:"integral"`
-		// 不可用积分
-		FreezeIntegral int `db:"freeze_integral"`
-		// 余额
-		Balance int64 `db:"balance"`
-		// 不可用余额
-		FreezeBalance int64 `db:"freeze_balance"`
-		// 失效的账户余额
-		ExpiredBalance int64 `db:"expired_balance"`
-		// 钱包代码
-		WalletCode string `db:"wallet_code"`
-		//奖金账户余额
-		WalletBalance int64 `db:"wallet_balance"`
-		//冻结赠送金额
-		FreezeWallet int64 `db:"freeze_wallet"`
-		//失效的赠送金额
-		ExpiredWallet int64 `db:"expired_wallet"`
-		//总赠送金额
-		TotalWalletAmount int64 `db:"total_wallet_amount"`
-		//流动账户余额
-		FlowBalance int64 `db:"flow_balance"`
-		//当前理财账户余额
-		GrowBalance int64 `db:"grow_balance"`
-		//理财总投资金额,不含收益
-		GrowAmount int64 `db:"grow_amount"`
-		//当前收益金额
-		GrowEarnings int64 `db:"grow_earnings"`
-		//累积收益金额
-		GrowTotalEarnings int64 `db:"grow_total_earnings"`
-		//总消费金额
-		TotalExpense int64 `db:"total_expense"`
-		//总充值金额
-		TotalCharge int64 `db:"total_charge"`
-		//总支付额
-		TotalPay int64 `db:"total_pay"`
-		// 优先(默认)支付选项
-		PriorityPay int `db:"priority_pay"`
-		//更新时间
-		UpdateTime int64 `db:"update_time"`
-	}
-
 	// 账户操作数据
 	AccountOperateData struct {
 		// 描述
@@ -356,4 +311,56 @@ type IntegralLog struct {
 
 func (m IntegralLog) TableName() string {
 	return "mm_integral_log"
+}
+
+// MmAccount 会员账户
+type Account struct {
+	// 会员编号
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" pk:"yes" bson:"memberId"`
+	// 积分
+	Integral int `json:"integral" db:"integral" gorm:"column:integral" bson:"integral"`
+	// 冻结积分
+	FreezeIntegral int `json:"freezeIntegral" db:"freeze_integral" gorm:"column:freeze_integral" bson:"freezeIntegral"`
+	// 余额
+	Balance int `json:"balance" db:"balance" gorm:"column:balance" bson:"balance"`
+	// 冻结余额
+	FreezeBalance int `json:"freezeBalance" db:"freeze_balance" gorm:"column:freeze_balance" bson:"freezeBalance"`
+	// 失效的余额
+	ExpiredBalance int `json:"expiredBalance" db:"expired_balance" gorm:"column:expired_balance" bson:"expiredBalance"`
+	// 钱包余额
+	WalletBalance int `json:"walletBalance" db:"wallet_balance" gorm:"column:wallet_balance" bson:"walletBalance"`
+	// 冻结钱包余额,作废
+	FreezeWallet int `json:"freezeWallet" db:"freeze_wallet" gorm:"column:freeze_wallet" bson:"freezeWallet"`
+	// ,作废
+	ExpiredWallet int `json:"expiredWallet" db:"expired_wallet" gorm:"column:expired_wallet" bson:"expiredWallet"`
+	// TotalWalletAmount
+	TotalWalletAmount int `json:"totalWalletAmount" db:"total_wallet_amount" gorm:"column:total_wallet_amount" bson:"totalWalletAmount"`
+	// FlowBalance
+	FlowBalance int `json:"flowBalance" db:"flow_balance" gorm:"column:flow_balance" bson:"flowBalance"`
+	// GrowBalance
+	GrowBalance int `json:"growBalance" db:"grow_balance" gorm:"column:grow_balance" bson:"growBalance"`
+	// GrowAmount
+	GrowAmount int `json:"growAmount" db:"grow_amount" gorm:"column:grow_amount" bson:"growAmount"`
+	// GrowEarnings
+	GrowEarnings int `json:"growEarnings" db:"grow_earnings" gorm:"column:grow_earnings" bson:"growEarnings"`
+	// GrowTotalEarnings
+	GrowTotalEarnings int `json:"growTotalEarnings" db:"grow_total_earnings" gorm:"column:grow_total_earnings" bson:"growTotalEarnings"`
+	// 累计充值
+	TotalCharge int `json:"totalCharge" db:"total_charge" gorm:"column:total_charge" bson:"totalCharge"`
+	// 累计支付
+	TotalPay int `json:"totalPay" db:"total_pay" gorm:"column:total_pay" bson:"totalPay"`
+	// 累计消费
+	TotalExpense int `json:"totalExpense" db:"total_expense" gorm:"column:total_expense" bson:"totalExpense"`
+	// PriorityPay
+	PriorityPay int `json:"priorityPay" db:"priority_pay" gorm:"column:priority_pay" bson:"priorityPay"`
+	// UpdateTime
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// 钱包代码
+	WalletCode string `json:"walletCode" db:"wallet_code" gorm:"column:wallet_code" bson:"walletCode"`
+	// 可开票金额
+	InvoiceableAmount int `json:"invoiceableAmount" db:"invoiceable_amount" gorm:"column:invoiceable_amount" bson:"invoiceableAmount"`
+}
+
+func (m Account) TableName() string {
+	return "mm_account"
 }

@@ -14,21 +14,81 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/gof/domain/eventbus"
 )
 
 var _ merchant.IMerchantTransactionManager = new(TransactionManagerImpl)
 
 type TransactionManagerImpl struct {
-	mch         *merchantImpl
-	mchId       int
-	_billRepo   fw.Repository[merchant.MerchantBill]
-	currentBill *merchant.MerchantBill
-	_rbacRepo   rbac.IRbacRepository
+	mch          *merchantImpl
+	mchId        int
+	_mchRepo     merchant.IMerchantRepo
+	_invoiceRepo invoice.IInvoiceRepo
+	_billRepo    fw.Repository[merchant.MerchantBill]
+	currentBill  *merchant.MerchantBill
+	_rbacRepo    rbac.IRbacRepository
+}
+
+// RequestInvoice implements merchant.IMerchantTransactionManager.
+func (s *TransactionManagerImpl) RequestInvoice(amount int, remark string) (int, error) {
+	tenant := s._invoiceRepo.FindTenant(int(invoice.TenantMerchant), s.mchId)
+	if tenant == nil {
+		tenant = &invoice.InvoiceTenant{
+			TenantType: int(invoice.TenantMerchant),
+			TenantUid:  s.mchId,
+		}
+	}
+	it := s._invoiceRepo.CreateTenant(tenant)
+	if it.GetAggregateRootId() <= 0 {
+		err := it.Create()
+		if err != nil {
+			logger.Error("创建商户发票租户失败: %v,mchId: %d", err, s.mchId)
+			return 0, err
+		}
+	}
+	title := it.GetDefaultInvoiceTitle()
+	if title == nil {
+		return 0, errors.New("商户尚未添加发票抬头")
+	}
+	acc := s.mch.Account()
+	if acc == nil {
+		return 0, errors.New("商户账户不存在")
+	}
+	if acc.GetValue().InvoiceableAmount < amount {
+		return 0, errors.New("超出最大可申请发票金额")
+	}
+
+	fee := float64(amount) / 100
+	iv, err := it.RequestInvoice(&invoice.InvoiceRequestData{
+		OuterNo:       "",
+		IssueTenantId: 0,
+		TitleId:       title.Id,
+		ReceiveEmail:  "",
+		Subject:       "商户交易手续费发票",
+		Remark:        remark,
+		Items: []*invoice.InvoiceItem{
+			{
+				ItemName:  "平台服务费",
+				ItemSpec:  "",
+				Price:     fee,
+				Quantity:  1,
+				TaxRate:   0,
+				Unit:      "笔",
+				Amount:    fee,
+				TaxAmount: 0,
+			},
+		},
+	})
+	if err != nil {
+		return 0, err
+	}
+	return iv.GetDomainId(), nil
 }
 
 // AdjustBillAmount implements merchant.IMerchantTransactionManager.
@@ -155,12 +215,16 @@ func (s *TransactionManagerImpl) SettleBill(billId int) error {
 	return err
 }
 
-func newSaleManagerImpl(id int, m *merchantImpl, rbacRepo rbac.IRbacRepository) merchant.IMerchantTransactionManager {
+func newSaleManagerImpl(id int, m *merchantImpl, mchRepo merchant.IMerchantRepo,
+	invoiceRepo invoice.IInvoiceRepo,
+	rbacRepo rbac.IRbacRepository) merchant.IMerchantTransactionManager {
 	return &TransactionManagerImpl{
-		mchId:     id,
-		mch:       m,
-		_billRepo: m._repo.BillRepo(),
-		_rbacRepo: rbacRepo,
+		mchId:        id,
+		mch:          m,
+		_mchRepo:     mchRepo,
+		_billRepo:    m._repo.BillRepo(),
+		_invoiceRepo: invoiceRepo,
+		_rbacRepo:    rbacRepo,
 	}
 }
 

@@ -46,14 +46,14 @@ func (h *EventHandler) HandleMemberAccountPushEvent(data interface{}) {
 		ev := &proto.EVMemberAccountEventData{
 			//MemberId:v.MemberId,
 			Integral:      int64(v.Integral),
-			Balance:       v.Balance,
+			Balance:       int64(v.Balance),
 			WalletCode:    v.WalletCode,
-			WalletBalance: v.WalletBalance,
-			FlowBalance:   v.FlowBalance,
-			GrowBalance:   v.GrowBalance,
-			TotalExpense:  v.TotalExpense,
-			TotalCharge:   v.TotalCharge,
-			UpdateTime:    v.UpdateTime,
+			WalletBalance: int64(v.WalletBalance),
+			FlowBalance:   int64(v.FlowBalance),
+			GrowBalance:   int64(v.GrowBalance),
+			TotalExpense:  int64(v.TotalExpense),
+			TotalCharge:   int64(v.TotalCharge),
+			UpdateTime:    int64(v.UpdateTime),
 		}
 		msq.PushDelay(msq.MemberAccountUpdated, typeconv.MustJson(ev), 500)
 	}
@@ -68,7 +68,7 @@ func (h EventHandler) HandleWithdrawalPushEvent(data interface{}) {
 	isPush := h.registryRepo.Get(registry.MemberWithdrawalPushEnabled).BoolValue()
 	if isPush {
 		ev := &proto.EVMemberWithdrawalPushEventData{
-			MemberId:       v.MemberId,
+			MemberId:       int64(v.MemberId),
 			RequestId:      int64(v.RequestId),
 			Amount:         int64(v.Amount),
 			TransactionFee: int64(v.TransactionFee),

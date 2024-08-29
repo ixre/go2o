@@ -43,6 +43,8 @@ type IMerchantTransactionManager interface {
 	ReviewBill(billId int, reviewerId int) error
 	// SettleBill 结算账单
 	SettleBill(billId int) error
+	// RequestInvoice 申请发票,返回发票申请ID和错误
+	RequestInvoice(amount int, remark string) (int, error)
 }
 
 // 账单结算事件

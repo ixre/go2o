@@ -249,7 +249,7 @@ func (m *MemberRepoImpl) GetMemberIdByEmail(email string) int64 {
 func (m *MemberRepoImpl) getMemberCk(memberId int64) string {
 	return fmt.Sprintf("go2o:repo:mm:inf:%d", memberId)
 }
-func (m *MemberRepoImpl) getAccountCk(memberId int64) string {
+func (m *MemberRepoImpl) getAccountCk(memberId int) string {
 	return fmt.Sprintf("go2o:repo:mm:%d:acc", memberId)
 }
 func (m *MemberRepoImpl) getProfileCk(memberId int64) string {
@@ -354,7 +354,7 @@ func (m *MemberRepoImpl) GetMemberLatestUpdateTime(memberId int64) int64 {
 }
 
 // GetAccount 获取账户
-func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
+func (m *MemberRepoImpl) GetAccount(memberId int) *member.Account {
 	e := &member.Account{}
 	key := m.getAccountCk(memberId)
 	if m.storage.Get(key, &e) != nil {
@@ -367,7 +367,7 @@ func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
 }
 
 // SaveAccount 保存账户，传入会员编号
-func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
+func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int, error) {
 	var err error
 	if m.GetAccount(v.MemberId) == nil {
 		_, _, err = m._orm.Save(nil, v)
@@ -383,7 +383,7 @@ func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
 	return v.MemberId, err
 }
 
-func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int64, updateTime int64) {
+func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int, updateTime int) {
 	//rc := core.GetRedisConn()
 	//defer rc.Close()
 	//// 保存最后更新时间
@@ -723,9 +723,9 @@ func (m *MemberRepoImpl) SaveGrowAccount(memberId int64, balance, totalAmount,
 		grow_amount= $2,grow_earnings= $3,grow_total_earnings= $4,update_time= $5 where member_id= $6`,
 		balance, totalAmount, growEarnings, totalGrowEarnings, updateTime, memberId)
 	//清除缓存
-	m.storage.Delete(m.getAccountCk(memberId))
+	m.storage.Delete(m.getAccountCk(int(memberId)))
 	//加入通知队列
-	m.pushToAccountUpdateQueue(memberId, updateTime)
+	m.pushToAccountUpdateQueue(int(memberId), int(updateTime))
 	return err
 }
 

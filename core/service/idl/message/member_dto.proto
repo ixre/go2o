@@ -422,16 +422,18 @@ message SAccount {
   int64 growEarnings = 14;
   // 增利账户累计收益
   int64 growTotalEarnings = 15;
+  // 可开票金额
+  int64 invoiceableAmount = 16;
   // 总消费金额
-  int64 totalExpense = 16;
+  int64 totalExpense = 17;
   // 总充值金额
-  int64 totalCharge = 17;
+  int64 totalCharge = 18;
   // 总支付额
-  int64 totalPay = 18;
+  int64 totalPay = 19;
   // 优先(默认)支付选项
-  int32 priorityPay = 19;
+  int32 priorityPay = 20;
   // 更新时间
-  int64 updateTime = 20;
+  int64 updateTime = 21;
 }
 
 message SMemberRelation {

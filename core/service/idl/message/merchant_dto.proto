@@ -272,7 +272,7 @@ message SMerchantAccount {
   // 累计退款金额
   int64 refundAmount = 6;
   // 已提取金额
-  int64 withdrawAmount = 7;
+  int64 withdrawalAmount = 7;
   // 线下销售金额
   int64 offlineSales = 8;
   // 更新时间

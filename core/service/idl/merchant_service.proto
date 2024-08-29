@@ -113,6 +113,8 @@ service MerchantService {
 	rpc ReviewBill(ReviewMerchantBillRequest) returns (TxResult);
 	// SettleBill 结算账单
 	rpc SettleBill(SettleMerchantBillRequest) returns (TxResult);
+    // 商户申请发票
+    rpc RequestInvoice(MerchantRequestInvoiceRequest) returns (TxResult);
 }
 
 // 员工请求
@@ -296,4 +298,14 @@ message SettleMerchantBillRequest{
     int64 mchId = 1;
     // 账单编号
     int64 billId = 2;
+}
+
+// 商户申请发票请求
+message MerchantRequestInvoiceRequest{
+    // 商户编号
+    int64 mchId = 1;
+    // 申请金额
+    int64 amount = 2;
+    // 备注
+    string remark = 3;
 }

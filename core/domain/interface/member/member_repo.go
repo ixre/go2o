@@ -87,10 +87,10 @@ type IMemberRepo interface {
 	SaveRelation(*InviteRelation) error
 
 	// 获取账户
-	GetAccount(memberId int64) *Account
+	GetAccount(memberId int) *Account
 
 	// 保存账户，传入会员编号
-	SaveAccount(*Account) (int64, error)
+	SaveAccount(*Account) (int, error)
 	// 获取银行卡
 	BankCards(memberId int64) []BankCard
 	// 保存银行卡信息

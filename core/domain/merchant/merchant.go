@@ -16,6 +16,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -68,6 +69,7 @@ type merchantImpl struct {
 	_walletRepo      wallet.IWalletRepo
 	_registryRepo    registry.IRegistryRepo
 	_approvalRepo    approval.IApprovalRepository
+	_invoiceRepo     invoice.IInvoiceRepo
 	// 之前绑定的会员编号
 	_lastBindMemberId int
 	_rbacRepo         rbac.IRbacRepository
@@ -94,6 +96,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	stationRepo station.IStationRepo,
 	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo,
+	invoiceRepo invoice.IInvoiceRepo,
 	approvalRepo approval.IApprovalRepository,
 	rbacRepo rbac.IRbacRepository,
 ) merchant.IMerchantAggregateRoot {
@@ -111,6 +114,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 		_walletRepo:   walletRepo,
 		_registryRepo: registryRepo,
 		_approvalRepo: approvalRepo,
+		_invoiceRepo:  invoiceRepo,
 		_rbacRepo:     rbacRepo,
 	}
 	return mch
@@ -505,7 +509,12 @@ func (m *merchantImpl) ConfManager() merchant.IConfManager {
 // SaleManager 销售服务
 func (m *merchantImpl) SaleManager() merchant.IMerchantTransactionManager {
 	if m._saleManager == nil {
-		m._saleManager = newSaleManagerImpl(int(m.GetAggregateRootId()), m, m._rbacRepo)
+		m._saleManager = newSaleManagerImpl(int(m.GetAggregateRootId()),
+			m,
+			m._repo,
+			m._invoiceRepo,
+
+			m._rbacRepo)
 	}
 	return m._saleManager
 }

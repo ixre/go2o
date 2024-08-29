@@ -731,10 +731,10 @@ func (o *normalOrderImpl) getBalanceDeductFee(acc member.IAccount) int64 {
 		return 0
 	}
 	acv := acc.GetValue()
-	if acv.Balance >= o.baseValue.FinalAmount {
+	if acv.Balance >= int(o.baseValue.FinalAmount) {
 		return o.baseValue.FinalAmount
 	}
-	return acv.Balance
+	return int64(acv.Balance)
 }
 
 // 释放购物车并销毁
@@ -1031,9 +1031,9 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchantAggr
 	acv := acc.GetValue()
 	//acc.TotalAmount += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
-	acv.WalletBalance += fee // 更新赠送余额
-	acv.TotalWalletAmount += fee
-	acv.UpdateTime = unixTime
+	acv.WalletBalance += int(fee) // 更新赠送余额
+	acv.TotalWalletAmount += int(fee)
+	acv.UpdateTime = int(unixTime)
 	_, err := acc.Save()
 	if err == nil {
 		orderNo := o.OrderNo()
@@ -1070,7 +1070,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchantAggregate
 	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)
 
 	//更新账户
-	bFee := cpv.BackFee
+	bFee := int(cpv.BackFee)
 	acc := m.GetAccount()
 	acv := acc.GetValue()
 	acv.WalletBalance += bFee // 更新赠送余额
@@ -1078,7 +1078,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchantAggregate
 	// 赠送金额，不应该计入到余额，可采取充值到余额
 	//acc.Balance += float32(cpv.BackFee)                            // 更新账户余额
 
-	acv.UpdateTime = time.Now().Unix()
+	acv.UpdateTime = int(time.Now().Unix())
 	_, err := acc.Save()
 
 	if err == nil {

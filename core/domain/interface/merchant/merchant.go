@@ -103,8 +103,7 @@ type (
 
 	// IAccount 账户
 	IAccount interface {
-		// GetDomainId 获取领域对象编号
-		GetDomainId() int64
+		domain.IDomain
 		// GetValue 获取账户值
 		GetValue() *Account
 		// Save 保存
@@ -263,30 +262,6 @@ type (
 		CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 	}
 
-	// 商户账户表
-	Account struct {
-		// 商户编号
-		MchId int64 `db:"mch_id" pk:"yes"`
-		// 余额
-		Balance int64 `db:"balance"`
-		// 冻结金额
-		FreezeAmount int64 `db:"freeze_amount"`
-		// 待入账金额
-		AwaitAmount int64 `db:"await_amount"`
-		// 平台赠送金额
-		PresentAmount int64 `db:"present_amount"`
-		// 累计销售总额
-		SalesAmount int64 `db:"sales_amount"`
-		// 累计退款金额
-		RefundAmount int64 `db:"refund_amount"`
-		// 已提取金额
-		WithdrawAmount int64 `db:"take_amount"`
-		// 线下销售金额
-		OfflineSales int64 `db:"offline_sales"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-	}
-
 	// 商户余额日志
 	BalanceLog struct {
 		// 编号
@@ -348,6 +323,32 @@ func (m Merchant) TableName() string {
 	return "mch_merchant"
 }
 
-func (a Account) TableName() string {
+// MchAccount 商户账户
+type Account struct {
+	// 商户编号
+	MchId int `json:"mchId" db:"mch_id" gorm:"column:mch_id" pk:"yes" auto:"yes" bson:"mchId"`
+	// 余额
+	Balance int `json:"balance" db:"balance" gorm:"column:balance" bson:"balance"`
+	// 冻结金额
+	FreezeAmount int `json:"freezeAmount" db:"freeze_amount" gorm:"column:freeze_amount" bson:"freezeAmount"`
+	// 待入账金额
+	AwaitAmount int `json:"awaitAmount" db:"await_amount" gorm:"column:await_amount" bson:"awaitAmount"`
+	// 平台赠送金额
+	PresentAmount int `json:"presentAmount" db:"present_amount" gorm:"column:present_amount" bson:"presentAmount"`
+	// 累计销售总额
+	SalesAmount int `json:"salesAmount" db:"sales_amount" gorm:"column:sales_amount" bson:"salesAmount"`
+	// 累计退款金额
+	RefundAmount int `json:"refundAmount" db:"refund_amount" gorm:"column:refund_amount" bson:"refundAmount"`
+	// 已提取金额
+	WithdrawalAmount int `json:"takeAmount" db:"take_amount" gorm:"column:take_amount" bson:"takeAmount"`
+	// 线下销售金额
+	OfflineSales int `json:"offlineSales" db:"offline_sales" gorm:"column:offline_sales" bson:"offlineSales"`
+	// 可开票金额
+	InvoiceableAmount int `json:"invoiceableAmount" db:"invoiceable_amount" gorm:"column:invoiceable_amount" bson:"invoiceableAmount"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+}
+
+func (m Account) TableName() string {
 	return "mch_account"
 }

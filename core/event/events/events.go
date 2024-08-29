@@ -101,7 +101,7 @@ type SubOrderPushEvent struct {
 // 提现申请推送事件
 type WithdrawalPushEvent struct {
 	// 会员编号
-	MemberId int64
+	MemberId int
 	// 流水号Id
 	RequestId int
 	// 提现金额

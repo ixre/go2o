@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/approval"
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -60,6 +61,7 @@ type merchantRepo struct {
 	_stationRepo  station.IStationRepo
 	_walletRepo   wallet.IWalletRepo
 	_registryRepo registry.IRegistryRepo
+	_invoiceRepo  invoice.IInvoiceRepo
 	_approvalRepo approval.IApprovalRepository
 	_rbacRepo     rbac.IRbacRepository
 	mux           *sync.RWMutex
@@ -77,6 +79,7 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 	walletRepo wallet.IWalletRepo,
 	valRepo valueobject.IValueRepo,
 	registryRepo registry.IRegistryRepo,
+	invoiceRepo invoice.IInvoiceRepo,
 	approvalRepo approval.IApprovalRepository,
 	rbacRepo rbac.IRbacRepository,
 ) merchant.IMerchantRepo {
@@ -101,6 +104,7 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 		_memberRepo:   memberRepo,
 		_walletRepo:   walletRepo,
 		_registryRepo: registryRepo,
+		_invoiceRepo:  invoiceRepo,
 		_approvalRepo: approvalRepo,
 		_rbacRepo:     rbacRepo,
 		mux:           &sync.RWMutex{},
@@ -135,6 +139,7 @@ func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchantAg
 		m._walletRepo,
 		m._valRepo,
 		m._registryRepo,
+		m._invoiceRepo,
 		m._approvalRepo,
 		m._rbacRepo)
 }
@@ -182,8 +187,8 @@ func (m *merchantRepo) GetAccount(mchId int) *merchant.Account {
 	}
 	// 初始化一个钱包账户
 	if err == sql.ErrNoRows {
-		e.MchId = int64(mchId)
-		e.UpdateTime = time.Now().Unix()
+		e.MchId = mchId
+		e.UpdateTime = int(time.Now().Unix())
 		orm.Save(m._orm, &e, 0)
 		return &e
 	}
