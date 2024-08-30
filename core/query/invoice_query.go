@@ -58,8 +58,8 @@ func (i *InvoiceQuery) GetMemberTenantId(memberId int) int {
 }
 
 // GetMerchantTenantId 获取商户的租户ID
-func (i *InvoiceQuery) GetMerchantTenantId(memberId int) int {
-	tenant := i.tenantRepo.FindBy("tenant_uid = ? AND tenant_type = ?", memberId, invoice.TenantUser)
+func (i *InvoiceQuery) GetMerchantTenantId(mchId int) int {
+	tenant := i.tenantRepo.FindBy("tenant_uid = ? AND tenant_type = ?", mchId, invoice.TenantMerchant)
 	if tenant == nil {
 		return 0
 	}

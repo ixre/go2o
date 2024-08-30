@@ -428,13 +428,15 @@ func (a *accountImpl) RequestInvoice(amount int, remark string) (int, error) {
 			},
 		},
 	})
-	if err != nil {
-		return 0, err
-	}
-	a.value.InvoiceableAmount -= amount
-	err = a.Save()
 	if err == nil {
-		return iv.GetDomainId(), nil
+		err = iv.Save()
+	}
+	if err == nil {
+		a.value.InvoiceableAmount -= amount
+		err = a.Save()
+		if err == nil {
+			return iv.GetDomainId(), nil
+		}
 	}
 	return 0, err
 }
