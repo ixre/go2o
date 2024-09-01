@@ -19,7 +19,6 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	QueryService_SummaryStatistics_FullMethodName        = "/QueryService/SummaryStatistics"
 	QueryService_MemberStatistics_FullMethodName         = "/QueryService/MemberStatistics"
 	QueryService_PagingShops_FullMethodName              = "/QueryService/PagingShops"
 	QueryService_MemberNormalOrders_FullMethodName       = "/QueryService/MemberNormalOrders"
@@ -39,8 +38,6 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryServiceClient interface {
-	// 汇总统计
-	SummaryStatistics(ctx context.Context, in *SummaryStatisticsRequest, opts ...grpc.CallOption) (*SummaryStatisticsResponse, error)
 	// * 获取会员的订单状态及其数量
 	MemberStatistics(ctx context.Context, in *MemberStatisticsRequest, opts ...grpc.CallOption) (*MemberStatisticsResponse, error)
 	// 获取分页店铺数据
@@ -75,15 +72,6 @@ type queryServiceClient struct {
 
 func NewQueryServiceClient(cc grpc.ClientConnInterface) QueryServiceClient {
 	return &queryServiceClient{cc}
-}
-
-func (c *queryServiceClient) SummaryStatistics(ctx context.Context, in *SummaryStatisticsRequest, opts ...grpc.CallOption) (*SummaryStatisticsResponse, error) {
-	out := new(SummaryStatisticsResponse)
-	err := c.cc.Invoke(ctx, QueryService_SummaryStatistics_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *queryServiceClient) MemberStatistics(ctx context.Context, in *MemberStatisticsRequest, opts ...grpc.CallOption) (*MemberStatisticsResponse, error) {
@@ -207,8 +195,6 @@ func (c *queryServiceClient) SearchItem(ctx context.Context, in *SearchItemReque
 // All implementations must embed UnimplementedQueryServiceServer
 // for forward compatibility
 type QueryServiceServer interface {
-	// 汇总统计
-	SummaryStatistics(context.Context, *SummaryStatisticsRequest) (*SummaryStatisticsResponse, error)
 	// * 获取会员的订单状态及其数量
 	MemberStatistics(context.Context, *MemberStatisticsRequest) (*MemberStatisticsResponse, error)
 	// 获取分页店铺数据
@@ -242,9 +228,6 @@ type QueryServiceServer interface {
 type UnimplementedQueryServiceServer struct {
 }
 
-func (UnimplementedQueryServiceServer) SummaryStatistics(context.Context, *SummaryStatisticsRequest) (*SummaryStatisticsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SummaryStatistics not implemented")
-}
 func (UnimplementedQueryServiceServer) MemberStatistics(context.Context, *MemberStatisticsRequest) (*MemberStatisticsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MemberStatistics not implemented")
 }
@@ -295,24 +278,6 @@ type UnsafeQueryServiceServer interface {
 
 func RegisterQueryServiceServer(s grpc.ServiceRegistrar, srv QueryServiceServer) {
 	s.RegisterService(&QueryService_ServiceDesc, srv)
-}
-
-func _QueryService_SummaryStatistics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SummaryStatisticsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServiceServer).SummaryStatistics(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: QueryService_SummaryStatistics_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).SummaryStatistics(ctx, req.(*SummaryStatisticsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _QueryService_MemberStatistics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -556,10 +521,6 @@ var QueryService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "QueryService",
 	HandlerType: (*QueryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "SummaryStatistics",
-			Handler:    _QueryService_SummaryStatistics_Handler,
-		},
 		{
 			MethodName: "MemberStatistics",
 			Handler:    _QueryService_MemberStatistics_Handler,

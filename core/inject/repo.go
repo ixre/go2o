@@ -185,7 +185,7 @@ func GetPageRepo() content.IPageRepo {
 	panic(wire.Build(provideSets))
 }
 
-func GetInvoiceTenantRepo() invoice.IInvoiceTenantRepo {
+func GetInvoiceTenantRepo() invoice.IInvoiceRepo {
 	panic(wire.Build(provideSets))
 }
 
