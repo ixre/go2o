@@ -1066,3 +1066,49 @@ ALTER TABLE "public".mm_account
   alter column wallet_code set default ''::character varying;
 COMMENT ON COLUMN "public".mm_account.invoiceable_amount IS '可开票金额';
 
+
+-- 2024-09-01 09:52:00 
+DROP TABLE IF EXISTS "public".mch_sale_conf CASCADE;
+CREATE TABLE "public".mch_sale_conf (
+  mch_id            BIGSERIAL NOT NULL, 
+  fx_sales          int4 NOT NULL, 
+  cb_percent        numeric(4, 2) NOT NULL, 
+  cb_tg1_percent    numeric(4, 2) NOT NULL, 
+  cb_tg2_percent    numeric(4, 2) NOT NULL, 
+  cb_member_percent numeric(4, 2) NOT NULL, 
+  oa_open           bool DEFAULT 'false' NOT NULL, 
+  oa_timeout_minute int4 NOT NULL, 
+  oa_confirm_minute int4 NOT NULL, 
+  oa_receive_hour   int4 NOT NULL, 
+  update_time       int8 NOT NULL, 
+  CONSTRAINT mch_sale_conf_pkey 
+    PRIMARY KEY (mch_id));
+COMMENT ON TABLE "public".mch_sale_conf IS '商户销售设置';
+COMMENT ON COLUMN "public".mch_sale_conf.fx_sales IS '是否启用分销,0:不启用, 1:启用';
+COMMENT ON COLUMN "public".mch_sale_conf.cb_percent IS '反现比例,0则不返现';
+COMMENT ON COLUMN "public".mch_sale_conf.cb_tg1_percent IS '一级比例';
+COMMENT ON COLUMN "public".mch_sale_conf.cb_tg2_percent IS '二级比例';
+COMMENT ON COLUMN "public".mch_sale_conf.cb_member_percent IS '会员比例';
+COMMENT ON COLUMN "public".mch_sale_conf.oa_open IS '开启自动设置订单';
+COMMENT ON COLUMN "public".mch_sale_conf.oa_timeout_minute IS '订单超时取消（分钟）';
+COMMENT ON COLUMN "public".mch_sale_conf.oa_confirm_minute IS '订单自动确认（分钟）';
+COMMENT ON COLUMN "public".mch_sale_conf.oa_receive_hour IS '超时自动收货（小时）';
+
+
+CREATE TABLE mch_settle_conf (
+  id            BIGSERIAL NOT NULL, 
+  mch_id        int8 NOT NULL, 
+  order_tx_rate numeric(4, 2) NOT NULL, 
+  other_tx_rate numeric(4, 2) NOT NULL, 
+  sub_mch_no    varchar(40) NOT NULL, 
+  update_time   int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mch_settle_conf IS '商户结算设置';
+COMMENT ON COLUMN mch_settle_conf.id IS '编号';
+COMMENT ON COLUMN mch_settle_conf.mch_id IS '商户编号';
+COMMENT ON COLUMN mch_settle_conf.order_tx_rate IS '订单交易费率';
+COMMENT ON COLUMN mch_settle_conf.other_tx_rate IS '其他服务手续费比例';
+COMMENT ON COLUMN mch_settle_conf.sub_mch_no IS '结算子商户号';
+COMMENT ON COLUMN mch_settle_conf.update_time IS '创建时间';
+CREATE INDEX mch_settle_conf_mch_id 
+  ON mch_settle_conf (mch_id);

@@ -28,6 +28,10 @@ type (
 		GetTradeConf(tradeType int) *TradeConf
 		// 保存交易设置
 		SaveTradeConf([]*TradeConf) error
+		// 获取结算设置
+		GetSettleConf() *SettleConf
+		// 保存结算设置
+		SaveSettleConf(*SettleConf) error
 	}
 
 	// 商户客户分组设置
@@ -61,35 +65,61 @@ type (
 		// 批发返点周期
 		RebatePeriod int
 	}
-
-	// 销售设置为商户填写,同时可以恢复默认
-	SaleConf struct {
-		// 合作商编号
-		MerchantId int64 `db:"mch_id" auto:"no" pk:"yes"`
-		// 是否启用分销模式
-		FxSalesEnabled int `db:"fx_sales"`
-		// 返现比例,0则不返现
-		CashBackPercent float32 `db:"cb_percent"`
-		// 一级比例
-		CashBackTg1Percent float32 `db:"cb_tg1_percent"`
-		// 二级比例
-		CashBackTg2Percent float32 `db:"cb_tg2_percent"`
-		// 会员比例
-		CashBackMemberPercent float32 `db:"cb_member_percent"`
-		// 自动设置订单
-		AutoSetupOrder int `db:"oa_open"`
-		// 订单超时分钟数
-		OrderTimeOutMinute int `db:"oa_timeout_minute"`
-		// 订单自动确认时间
-		OrderConfirmAfterMinute int `db:"oa_confirm_minute"`
-		// 订单超时自动收货
-		OrderTimeOutReceiveHour int `db:"oa_receive_hour"`
-
-		//IntegralBackNum         int     `db:"ib_num"`                         // 每一元返多少积分
-		//IntegralBackExtra       int     `db:"ib_extra"`                       // 每单额外赠送
-		//TakeOutCsn                float32 `db:"apply_csn"`                      // 提现手续费费率
-		//TransferCsn                float32 `db:"trans_csn"`                      // 转账手续费费率
-		//FlowConvertCsn          float32 `db:"flow_convert_csn"`               // 活动账户转为赠送可提现奖金手续费费率
-		//PresentConvertCsn       float32 `db:"present_convert_csn"`            // 钱包账户转换手续费费率
-	}
 )
+
+// MchSaleConf 商户销售设置
+type SaleConf struct {
+	// MchId
+	MchId int `json:"mchId" db:"mch_id" gorm:"column:mch_id" pk:"yes" auto:"yes" bson:"mchId"`
+	// 是否启用分销,0:不启用, 1:启用
+	FxSales int `json:"fxSales" db:"fx_sales" gorm:"column:fx_sales" bson:"fxSales"`
+	// 反现比例,0则不返现
+	CbPercent float64 `json:"cbPercent" db:"cb_percent" gorm:"column:cb_percent" bson:"cbPercent"`
+	// 一级比例
+	CbTg1Percent float64 `json:"cbTg1Percent" db:"cb_tg1_percent" gorm:"column:cb_tg1_percent" bson:"cbTg1Percent"`
+	// 二级比例
+	CbTg2Percent float64 `json:"cbTg2Percent" db:"cb_tg2_percent" gorm:"column:cb_tg2_percent" bson:"cbTg2Percent"`
+	// 会员比例
+	CbMemberPercent float64 `json:"cbMemberPercent" db:"cb_member_percent" gorm:"column:cb_member_percent" bson:"cbMemberPercent"`
+	// 开启自动设置订单
+	OaOpen int `json:"oaOpen" db:"oa_open" gorm:"column:oa_open" bson:"oaOpen"`
+	// 订单超时取消（分钟）
+	OaTimeoutMinute int `json:"oaTimeoutMinute" db:"oa_timeout_minute" gorm:"column:oa_timeout_minute" bson:"oaTimeoutMinute"`
+	// 订单自动确认（分钟）
+	OaConfirmMinute int `json:"oaConfirmMinute" db:"oa_confirm_minute" gorm:"column:oa_confirm_minute" bson:"oaConfirmMinute"`
+	// 超时自动收货（小时）
+	OaReceiveHour int `json:"oaReceiveHour" db:"oa_receive_hour" gorm:"column:oa_receive_hour" bson:"oaReceiveHour"`
+	// UpdateTime
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	//IntegralBackNum         int     `db:"ib_num"`                         // 每一元返多少积分
+	//IntegralBackExtra       int     `db:"ib_extra"`                       // 每单额外赠送
+	//TakeOutCsn                float32 `db:"apply_csn"`                      // 提现手续费费率
+	//TransferCsn                float32 `db:"trans_csn"`                      // 转账手续费费率
+	//FlowConvertCsn          float32 `db:"flow_convert_csn"`               // 活动账户转为赠送可提现奖金手续费费率
+	//PresentConvertCsn       float32 `db:"present_convert_csn"`            // 钱包账户转换手续费费率
+
+}
+
+func (m SaleConf) TableName() string {
+	return "mch_sale_conf"
+}
+
+// MchSettleConf 商户结算设置
+type SettleConf struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 商户编号
+	MchId int `json:"mchId" db:"mch_id" gorm:"column:mch_id" bson:"mchId"`
+	// 订单交易费率
+	OrderTxRate float64 `json:"orderTxRate" db:"order_tx_rate" gorm:"column:order_tx_rate" bson:"orderTxRate"`
+	// 其他服务手续费比例
+	OtherTxRate float64 `json:"otherTxRate" db:"other_tx_rate" gorm:"column:other_tx_rate" bson:"otherTxRate"`
+	// 结算子商户号
+	SubMchNo string `json:"subMchNo" db:"sub_mch_no" gorm:"column:sub_mch_no" bson:"subMchNo"`
+	// 创建时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+}
+
+func (m SettleConf) TableName() string {
+	return "mch_settle_conf"
+}

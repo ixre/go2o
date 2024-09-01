@@ -43,6 +43,39 @@ type merchantService struct {
 	proto.UnimplementedMerchantServiceServer
 }
 
+// GetSettleConf implements proto.MerchantServiceServer.
+func (m *merchantService) GetSettleConf(_ context.Context, req *proto.MerchantId) (*proto.SSettleConf, error) {
+	im := m._mchRepo.GetMerchant(int(req.Value))
+	if im == nil {
+		return nil, errors.New("商户不存在")
+	}
+	conf := im.ConfManager()
+	settle := conf.GetSettleConf()
+	return &proto.SSettleConf{
+		MchId:       int64(settle.MchId),
+		OrderTxRate: float32(settle.OrderTxRate),
+		OtherTxRate: float32(settle.OtherTxRate),
+		SubMchNo:    settle.SubMchNo,
+	}, nil
+
+}
+
+// SaveSettleConf implements proto.MerchantServiceServer.
+func (m *merchantService) SaveSettleConf(_ context.Context, req *proto.SettleConfigSaveRequest) (*proto.TxResult, error) {
+	im := m._mchRepo.GetMerchant(int(req.MchId))
+	if im == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	conf := im.ConfManager()
+	err := conf.SaveSettleConf(&merchant.SettleConf{
+		MchId:       int(req.MchId),
+		OrderTxRate: float64(req.OrderTxRate),
+		OtherTxRate: float64(req.OtherTxRate),
+		SubMchNo:    req.SubMchNo,
+	})
+	return m.errorV2(err), nil
+}
+
 func NewMerchantService(r merchant.IMerchantRepo,
 	memberRepo member.IMemberRepo,
 	staffRepo staff.IStaffRepo,
@@ -950,31 +983,31 @@ func (m *merchantService) parseAccountDto(v *merchant.Account) *proto.SMerchantA
 
 func (m *merchantService) parseSaleConf(v *proto.SMerchantSaleConf) *merchant.SaleConf {
 	return &merchant.SaleConf{
-		MerchantId:              v.MerchantId,
-		FxSalesEnabled:          types.ElseInt(v.FxSalesEnabled, 1, 0),
-		CashBackPercent:         float32(v.CashBackPercent),
-		CashBackTg1Percent:      float32(v.CashBackTg1Percent),
-		CashBackTg2Percent:      float32(v.CashBackTg2Percent),
-		CashBackMemberPercent:   float32(v.CashBackMemberPercent),
-		AutoSetupOrder:          types.ElseInt(v.AutoSetupOrder, 1, 0),
-		OrderTimeOutMinute:      int(v.OrderTimeOutMinute),
-		OrderConfirmAfterMinute: int(v.OrderConfirmAfterMinute),
-		OrderTimeOutReceiveHour: int(v.OrderTimeOutReceiveHour),
+		MchId:           int(v.MerchantId),
+		FxSales:         types.ElseInt(v.FxSalesEnabled, 1, 0),
+		CbPercent:       float64(v.CashBackPercent),
+		CbTg1Percent:    float64(v.CashBackTg1Percent),
+		CbTg2Percent:    float64(v.CashBackTg2Percent),
+		CbMemberPercent: float64(v.CashBackMemberPercent),
+		OaOpen:          types.ElseInt(v.AutoSetupOrder, 1, 0),
+		OaTimeoutMinute: int(v.OrderTimeOutMinute),
+		OaConfirmMinute: int(v.OrderConfirmAfterMinute),
+		OaReceiveHour:   int(v.OrderTimeOutReceiveHour),
 	}
 }
 
 func (m *merchantService) parseSaleConfDto(v merchant.SaleConf) *proto.SMerchantSaleConf {
 	return &proto.SMerchantSaleConf{
-		MerchantId:              v.MerchantId,
-		FxSalesEnabled:          v.FxSalesEnabled == 1,
-		CashBackPercent:         float64(v.CashBackPercent),
-		CashBackTg1Percent:      float64(v.CashBackTg1Percent),
-		CashBackTg2Percent:      float64(v.CashBackTg2Percent),
-		CashBackMemberPercent:   float64(v.CashBackMemberPercent),
-		AutoSetupOrder:          v.AutoSetupOrder == 1,
-		OrderTimeOutMinute:      int32(v.OrderTimeOutMinute),
-		OrderConfirmAfterMinute: int32(v.OrderConfirmAfterMinute),
-		OrderTimeOutReceiveHour: int32(v.OrderTimeOutReceiveHour),
+		MerchantId:              int64(v.MchId),
+		FxSalesEnabled:          v.FxSales == 1,
+		CashBackPercent:         float64(v.CbPercent),
+		CashBackTg1Percent:      float64(v.CbTg1Percent),
+		CashBackTg2Percent:      float64(v.CbTg2Percent),
+		CashBackMemberPercent:   float64(v.CbMemberPercent),
+		AutoSetupOrder:          v.OaOpen == 1,
+		OrderTimeOutMinute:      int32(v.OaTimeoutMinute),
+		OrderConfirmAfterMinute: int32(v.OaConfirmMinute),
+		OrderTimeOutReceiveHour: int32(v.OaReceiveHour),
 	}
 }
 

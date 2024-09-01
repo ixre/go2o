@@ -71,6 +71,8 @@ const (
 	MerchantService_ReviewBill_FullMethodName                  = "/MerchantService/ReviewBill"
 	MerchantService_SettleBill_FullMethodName                  = "/MerchantService/SettleBill"
 	MerchantService_RequestInvoice_FullMethodName              = "/MerchantService/RequestInvoice"
+	MerchantService_GetSettleConf_FullMethodName               = "/MerchantService/GetSettleConf"
+	MerchantService_SaveSettleConf_FullMethodName              = "/MerchantService/SaveSettleConf"
 )
 
 // MerchantServiceClient is the client API for MerchantService service.
@@ -179,6 +181,10 @@ type MerchantServiceClient interface {
 	SettleBill(ctx context.Context, in *SettleMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 商户申请发票
 	RequestInvoice(ctx context.Context, in *MerchantRequestInvoiceRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// 获取结算设置
+	GetSettleConf(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SSettleConf, error)
+	// 保存结算设置
+	SaveSettleConf(ctx context.Context, in *SettleConfigSaveRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type merchantServiceClient struct {
@@ -657,6 +663,24 @@ func (c *merchantServiceClient) RequestInvoice(ctx context.Context, in *Merchant
 	return out, nil
 }
 
+func (c *merchantServiceClient) GetSettleConf(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SSettleConf, error) {
+	out := new(SSettleConf)
+	err := c.cc.Invoke(ctx, MerchantService_GetSettleConf_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *merchantServiceClient) SaveSettleConf(ctx context.Context, in *SettleConfigSaveRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MerchantService_SaveSettleConf_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MerchantServiceServer is the server API for MerchantService service.
 // All implementations must embed UnimplementedMerchantServiceServer
 // for forward compatibility
@@ -763,6 +787,10 @@ type MerchantServiceServer interface {
 	SettleBill(context.Context, *SettleMerchantBillRequest) (*TxResult, error)
 	// 商户申请发票
 	RequestInvoice(context.Context, *MerchantRequestInvoiceRequest) (*TxResult, error)
+	// 获取结算设置
+	GetSettleConf(context.Context, *MerchantId) (*SSettleConf, error)
+	// 保存结算设置
+	SaveSettleConf(context.Context, *SettleConfigSaveRequest) (*TxResult, error)
 	mustEmbedUnimplementedMerchantServiceServer()
 }
 
@@ -925,6 +953,12 @@ func (UnimplementedMerchantServiceServer) SettleBill(context.Context, *SettleMer
 }
 func (UnimplementedMerchantServiceServer) RequestInvoice(context.Context, *MerchantRequestInvoiceRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestInvoice not implemented")
+}
+func (UnimplementedMerchantServiceServer) GetSettleConf(context.Context, *MerchantId) (*SSettleConf, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSettleConf not implemented")
+}
+func (UnimplementedMerchantServiceServer) SaveSettleConf(context.Context, *SettleConfigSaveRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveSettleConf not implemented")
 }
 func (UnimplementedMerchantServiceServer) mustEmbedUnimplementedMerchantServiceServer() {}
 
@@ -1875,6 +1909,42 @@ func _MerchantService_RequestInvoice_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_GetSettleConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).GetSettleConf(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_GetSettleConf_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).GetSettleConf(ctx, req.(*MerchantId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MerchantService_SaveSettleConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SettleConfigSaveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).SaveSettleConf(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_SaveSettleConf_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).SaveSettleConf(ctx, req.(*SettleConfigSaveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MerchantService_ServiceDesc is the grpc.ServiceDesc for MerchantService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2089,6 +2159,14 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RequestInvoice",
 			Handler:    _MerchantService_RequestInvoice_Handler,
+		},
+		{
+			MethodName: "GetSettleConf",
+			Handler:    _MerchantService_GetSettleConf_Handler,
+		},
+		{
+			MethodName: "SaveSettleConf",
+			Handler:    _MerchantService_SaveSettleConf_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

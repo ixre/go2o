@@ -44,8 +44,9 @@ var mchMerchantDaoImplMapped = false
 
 type merchantRepo struct {
 	fw.BaseRepository[merchant.Merchant]
-	authRepo fw.BaseRepository[merchant.Authenticate]
-	billRepo fw.Repository[merchant.MerchantBill]
+	authRepo    fw.BaseRepository[merchant.Authenticate]
+	billRepo    fw.Repository[merchant.MerchantBill]
+	_settleRepo fw.Repository[merchant.SettleConf]
 	db.Connector
 	_orm          orm.Orm
 	storage       storage.Interface
@@ -112,11 +113,16 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 	r.ORM = on
 	r.authRepo.ORM = on
 	r.billRepo = &fw.BaseRepository[merchant.MerchantBill]{ORM: on}
+	r._settleRepo = &fw.BaseRepository[merchant.SettleConf]{ORM: on}
 	return r
 }
 
 func (m *merchantRepo) BillRepo() fw.Repository[merchant.MerchantBill] {
 	return m.billRepo
+}
+
+func (m *merchantRepo) SettleRepo() fw.Repository[merchant.SettleConf] {
+	return m._settleRepo
 }
 
 // 获取商户管理器
@@ -262,8 +268,8 @@ func (m *merchantRepo) GetMerchantSaleConf(mchId int64) *merchant.SaleConf {
 
 func (m *merchantRepo) SaveMerchantSaleConf(v *merchant.SaleConf) error {
 	var err error
-	if v.MerchantId > 0 {
-		_, _, err = m._orm.Save(v.MerchantId, v)
+	if v.MchId > 0 {
+		_, _, err = m._orm.Save(v.MchId, v)
 	} else {
 		_, _, err = m._orm.Save(nil, v)
 	}

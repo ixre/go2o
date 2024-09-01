@@ -115,6 +115,10 @@ service MerchantService {
 	rpc SettleBill(SettleMerchantBillRequest) returns (TxResult);
     // 商户申请发票
     rpc RequestInvoice(MerchantRequestInvoiceRequest) returns (TxResult);
+    // 获取结算设置
+    rpc GetSettleConf (MerchantId) returns (SSettleConf);
+    //  保存结算设置
+    rpc SaveSettleConf (SettleConfigSaveRequest) returns (TxResult);
 }
 
 // 员工请求
@@ -308,4 +312,28 @@ message MerchantRequestInvoiceRequest{
     int64 amount = 2;
     // 备注
     string remark = 3;
+}
+
+// 商户结算设置
+message SSettleConf {
+    // 商户编号
+    int64 mchId = 1;
+    // 订单交易费率
+    float orderTxRate = 2;
+    // 其他交易费率
+    float otherTxRate = 3;
+    // 子商户号
+    string subMchNo = 4;
+}
+
+// 保存商户结算设置请求
+message SettleConfigSaveRequest{
+    // 商户编号
+    int64 mchId = 1;
+    // 订单交易费率
+    float orderTxRate = 2;
+    // 其他交易费率
+    float otherTxRate = 3;
+    // 子商户号
+    string subMchNo = 4;
 }

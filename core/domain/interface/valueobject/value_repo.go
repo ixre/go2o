@@ -197,13 +197,13 @@ type (
 		// 是否启用分销模式
 		FxSalesEnabled bool
 		// 返现比例,0则不返现
-		CashBackPercent float32
+		CashBackPercent float64
 		// 一级比例
-		CashBackTg1Percent float32
+		CashBackTg1Percent float64
 		// 二级比例
-		CashBackTg2Percent float32
+		CashBackTg2Percent float64
 		// 会员比例
-		CashBackMemberPercent float32
+		CashBackMemberPercent float64
 
 		// 自动设置订单
 		AutoSetupOrder int

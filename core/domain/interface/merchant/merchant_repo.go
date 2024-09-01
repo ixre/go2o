@@ -16,9 +16,11 @@ type IMerchantRepo interface {
 	fw.Repository[Merchant]
 	// 账单仓储
 	BillRepo() fw.Repository[MerchantBill]
+	// 商户结算仓储
+	SettleRepo() fw.Repository[SettleConf]
 	// 获取商户管理器
 	GetManager() IMerchantManager
-
+	// 创建商户
 	CreateMerchant(*Merchant) IMerchantAggregateRoot
 
 	// 获取商户的编号

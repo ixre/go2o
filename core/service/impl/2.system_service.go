@@ -449,10 +449,10 @@ func (s *foundationService) GetGlobMchSaleConf_(_ context.Context, r *proto.Empt
 func (s *foundationService) SaveGlobMchSaleConf_(_ context.Context, conf *proto.SGlobMchSaleConf) (*proto.Result, error) {
 	dst := &valueobject.GlobMchSaleConf{
 		FxSalesEnabled:          conf.FxSalesEnabled,
-		CashBackPercent:         float32(conf.CashBackPercent),
-		CashBackTg1Percent:      float32(conf.CashBackTg1Percent),
-		CashBackTg2Percent:      float32(conf.CashBackTg2Percent),
-		CashBackMemberPercent:   float32(conf.CashBackMemberPercent),
+		CashBackPercent:         float64(conf.CashBackPercent),
+		CashBackTg1Percent:      float64(conf.CashBackTg1Percent),
+		CashBackTg2Percent:      float64(conf.CashBackTg2Percent),
+		CashBackMemberPercent:   float64(conf.CashBackMemberPercent),
 		AutoSetupOrder:          int(conf.AutoSetupOrder),
 		OrderTimeOutMinute:      int(conf.OrderTimeOutMinute),
 		OrderConfirmAfterMinute: int(conf.OrderConfirmAfterMinute),

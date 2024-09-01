@@ -57,11 +57,11 @@ func (o *subOrderImpl) handleCashBack() error {
 		var back_fee int64
 		saleConf := mch.ConfManager().GetSaleConf()
 
-		if saleConf.CashBackPercent > 0 {
-			back_fee = int64(float32(v.FinalAmount) * saleConf.CashBackPercent)
+		if saleConf.CbPercent > 0 {
+			back_fee = int64(float64(v.FinalAmount) * saleConf.CbPercent)
 			//将此次消费记入会员账户
 			err = o.updateShoppingMemberBackFee(mch.GetValue().MchName, buyer,
-				int64(float32(back_fee)*saleConf.CashBackMemberPercent), now)
+				int64(float64(back_fee)*saleConf.CbMemberPercent), now)
 			domain.HandleError(err, "domain")
 
 		}
@@ -110,7 +110,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchantAggregateRoot, m member.I
 		i := 0
 		mName := m.Profile().GetProfile().Name
 		saleConf := mch.ConfManager().GetSaleConf()
-		percent := saleConf.CashBackTg2Percent
+		percent := saleConf.CbTg2Percent
 		for i < 2 {
 			rl := m.GetRelation()
 			if rl == nil || rl.InviterId == 0 {
@@ -123,11 +123,11 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchantAggregateRoot, m member.I
 			}
 
 			if i == 1 {
-				percent = saleConf.CashBackTg1Percent
+				percent = saleConf.CbTg1Percent
 			}
 
 			err = o.updateMemberAccount(m, mch.GetValue().MchName, mName,
-				int64(float32(back_fee)*percent), unixTime)
+				int64(float64(back_fee)*percent), unixTime)
 			if err != nil {
 				domain.HandleError(err, "domain")
 				break

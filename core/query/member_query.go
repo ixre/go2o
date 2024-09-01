@@ -425,15 +425,30 @@ func (m *MemberQuery) OrdersQuantity(memberId int64) map[int]int {
 // QueryPagingMemberList 查询会员列表
 func (m *MemberQuery) QueryPagingMemberList(p *fw.PagingParams) (*fw.PagingResult, error) {
 	tables := `mm_member m LEFT JOIN mm_relation r ON m.id = r.member_id
-LEFT JOIN mm_level lv ON lv.id = m.level
 LEFT JOIN mm_account ac ON m.id = ac.member_id
 LEFT JOIN mm_profile pro ON pro.member_id = m.id`
+
 	fields := `
 	distinct(m.id),m.nickname,m.real_name,m.username,m.exp,m.profile_photo,pro.gender,pro.birthday,
-	m.phone,lv.name as level_name,m.level,m.user_flag,ac.integral,ac.balance,
+	m.phone,m.level,m.user_flag,ac.integral,ac.balance,
 	ac.total_pay,ac.wallet_balance,m.reg_from,m.reg_time,m.last_login_time,
 	(SELECT id FROM mm_member m2 WHERE m2.id = r.inviter_id) as inviter_id
 `
+	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+}
+
+// QueryPagingStaffs 查询商户员工列表
+func (m *MemberQuery) QueryPagingStaffs(p *fw.PagingParams) (*fw.PagingResult, error) {
+	tables := `mm_member m
+		INNER JOIN mch_staff s ON s.member_id=m.id
+		INNER JOIN mch_merchant mch ON mch.id = s.mch_id
+		LEFT JOIN mm_profile pro ON pro.member_id = m.id`
+	fields := `
+	distinct(m.id),m.nickname,m.real_name,m.username,m.exp,m.profile_photo,pro.gender,pro.birthday,
+	m.phone,m.level,m.user_flag,
+	m.reg_from,m.reg_time,m.last_login_time,
+	s.certified_name,s.is_certified,mch.mch_name
+	`
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
 }
 
