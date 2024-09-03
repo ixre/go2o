@@ -29,6 +29,7 @@ import (
 	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/db/orm"
@@ -45,20 +46,30 @@ type rbacServiceImpl struct {
 	dao          dao.IRbacDao
 	registryRepo registry.IRegistryRepo
 	s            storage.Interface
+	_repo        rbac.IRbacRepository
 	serviceUtil
 	proto.UnimplementedRbacServiceServer
 }
 
-func NewRbacService(s storage.Interface, o orm.Orm, registryRepo registry.IRegistryRepo) proto.RbacServiceServer {
+func NewRbacService(s storage.Interface, o orm.Orm,
+	repo rbac.IRbacRepository,
+	registryRepo registry.IRegistryRepo) proto.RbacServiceServer {
 	return &rbacServiceImpl{
 		s:            s,
+		_repo:        repo,
 		registryRepo: registryRepo,
 		dao:          impl.NewRbacDao(o),
 	}
 }
 
 func (p *rbacServiceImpl) createLoginLog(userId int, ipAddress string, isSuccess int) {
-
+	p._repo.LoginLogRepo().Save(&rbac.RbacLoginLog{
+		Id:         userId,
+		UserId:     userId,
+		Ip:         ipAddress,
+		IsSuccess:  isSuccess,
+		CreateTime: int(time.Now().Unix()),
+	})
 }
 
 func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest) (*proto.RbacLoginResponse, error) {
@@ -80,6 +91,8 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 				ErrMsg:  "密码不正确",
 			}, nil
 		}
+
+		p.createLoginLog(0, r.IpAddress, 0) // 登录失败
 		dst := &proto.RbacLoginResponse{
 			UserId: 0,
 			Roles:  []string{"master", "admin"},
@@ -241,10 +254,10 @@ func (p *rbacServiceImpl) getUserRoles(userId int) ([]int64, []*rbac.RbacRole) {
 }
 
 // 移动资源顺序
-func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveResourceOrdinalRequest) (*proto.Result, error) {
+func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveResourceOrdinalRequest) (*proto.TxResult, error) {
 	res := p.dao.GetRbacResource(r.ResourceId)
 	if res == nil {
-		return p.error(errors.New("no such data")), nil
+		return p.errorV2(errors.New("no such data")), nil
 	}
 	// 获取交换的对象
 	var swapRes *rbac.RbacRes
@@ -265,7 +278,7 @@ func (p *rbacServiceImpl) MoveResourceOrdinal(_ context.Context, r *proto.MoveRe
 		p.dao.SaveRbacResource(res)
 		p.dao.SaveRbacResource(swapRes)
 	}
-	return p.success(nil), nil
+	return p.successV2(nil), nil
 }
 
 // 　如果上级菜单未加入,则加入上级菜单
@@ -385,14 +398,31 @@ func walkDepartTree(node *proto.SRbacTree, nodeList []*rbac.RbacDepart) {
 }
 
 // 部门树形数据
-func (p *rbacServiceImpl) DepartTree(_ context.Context, empty *proto.Empty) (*proto.SRbacTree, error) {
+func (p *rbacServiceImpl) DepartTree(_ context.Context, req *proto.DepartTreeRequest) (*proto.SRbacTree, error) {
 	root := &proto.SRbacTree{
 		Id:       0,
 		Label:    "根节点",
 		Children: make([]*proto.SRbacTree, 0),
 	}
 	list := p.dao.SelectPermDept("")
-	walkDepartTree(root, list)
+	if !req.Lazy {
+		walkDepartTree(root, list)
+	} else {
+		arr := collections.FilterArray(list, func(v *rbac.RbacDepart) bool {
+			return v.Pid == int(req.ParentId)
+		})
+		dstArr := collections.MapList(arr, func(v *rbac.RbacDepart) *proto.SRbacTree {
+			return &proto.SRbacTree{
+				Id:    int64(v.Id),
+				Label: v.Name,
+				IsLeaf: !collections.AnyArray(list, func(r *rbac.RbacDepart) bool {
+					return r.Pid == v.Id
+				}),
+				Children: []*proto.SRbacTree{},
+			}
+		})
+		root.Children = dstArr
+	}
 	return root, nil
 }
 
@@ -431,9 +461,9 @@ func (p *rbacServiceImpl) GetDepart(_ context.Context, id *proto.RbacDepartId) (
 	return p.parsePermDept(v), nil
 }
 
-func (p *rbacServiceImpl) DeleteDepart(_ context.Context, id *proto.RbacDepartId) (*proto.Result, error) {
+func (p *rbacServiceImpl) DeleteDepart(_ context.Context, id *proto.RbacDepartId) (*proto.TxResult, error) {
 	err := p.dao.DeleteDepart(id.Value)
-	return p.error(err), nil
+	return p.errorV2(err), nil
 }
 
 func (p *rbacServiceImpl) parsePermDept(v *rbac.RbacDepart) *proto.SPermDept {
@@ -513,9 +543,9 @@ func (p *rbacServiceImpl) QueryJobList(_ context.Context, r *proto.QueryJobReque
 	return ret, nil
 }
 
-func (p *rbacServiceImpl) DeleteJob(_ context.Context, id *proto.RbacJobId) (*proto.Result, error) {
+func (p *rbacServiceImpl) DeleteJob(_ context.Context, id *proto.RbacJobId) (*proto.TxResult, error) {
 	err := p.dao.DeleteJob(id.Value)
-	return p.error(err), nil
+	return p.errorV2(err), nil
 }
 
 func (p *rbacServiceImpl) PagingJobList(_ context.Context, r *proto.RbacJobPagingRequest) (*proto.PagingRbacJobResponse, error) {
@@ -525,10 +555,10 @@ func (p *rbacServiceImpl) PagingJobList(_ context.Context, r *proto.RbacJobPagin
 		r.Params.SortBy)
 	ret := &proto.PagingRbacJobResponse{
 		Total: int64(total),
-		Value: make([]*proto.PagingJobList, len(rows)),
+		Rows:  make([]*proto.PagingJobList, len(rows)),
 	}
 	for i, v := range rows {
-		ret.Value[i] = &proto.PagingJobList{
+		ret.Rows[i] = &proto.PagingJobList{
 			Id:         int64(typeconv.MustInt(v["id"])),
 			Name:       typeconv.Stringify(v["name"]),
 			Enabled:    int32(typeconv.MustInt(v["enabled"])),
@@ -646,9 +676,9 @@ func (p *rbacServiceImpl) GetUser(_ context.Context, id *proto.RbacUserId) (*pro
 	return dst, nil
 }
 
-func (p *rbacServiceImpl) DeleteUser(_ context.Context, id *proto.RbacUserId) (*proto.Result, error) {
+func (p *rbacServiceImpl) DeleteUser(_ context.Context, id *proto.RbacUserId) (*proto.TxResult, error) {
 	err := p.dao.DeleteUser(id.Value)
-	return p.error(err), nil
+	return p.errorV2(err), nil
 }
 
 func (p *rbacServiceImpl) walkDepartArray(pid int) []int {
@@ -680,17 +710,17 @@ func (p *rbacServiceImpl) PagingUser(_ context.Context, r *proto.PagingRbacUserR
 		r.Params.SortBy)
 	ret := &proto.PagingRbacUserResponse{
 		Total: int64(total),
-		Value: make([]*proto.PagingUser, len(rows)),
+		Rows:  make([]*proto.PagingUser, len(rows)),
 	}
 	for i, v := range rows {
-		ret.Value[i] = &proto.PagingUser{
+		ret.Rows[i] = &proto.PagingUser{
 			Id:           int64(typeconv.MustInt(v["id"])),
 			Username:     typeconv.Stringify(v["username"]),
 			Password:     typeconv.Stringify(v["password"]),
 			Flag:         int32(typeconv.MustInt(v["flag"])),
 			ProfilePhoto: typeconv.Stringify(v["profilePhoto"]),
 			Nickname:     typeconv.Stringify(v["nickname"]),
-			Gender:       typeconv.Stringify(v["gender"]),
+			Gender:       int32(typeconv.Int(v["gender"])),
 			Email:        typeconv.Stringify(v["email"]),
 			Phone:        typeconv.Stringify(v["phone"]),
 			DeptId:       int64(typeconv.MustInt(v["deptId"])),
@@ -730,13 +760,13 @@ func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SaveRbacRoleR
 }
 
 // 更新角色资源
-func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateRoleResRequest) (*proto.Result, error) {
+func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateRoleResRequest) (*proto.TxResult, error) {
 	role := p.dao.GetRole(r.RoleId)
 	if role == nil {
-		return p.error(errors.New("角色不存在")), nil
+		return p.errorV2(errors.New("角色不存在")), nil
 	}
-	if role.Code == "admin" {
-		return p.error(errors.New("管理员已拥有全部权限")), nil
+	if role.Code == "admin" || role.Code == "master" {
+		return p.errorV2(errors.New("管理员已拥有全部权限")), nil
 	}
 	arr := make([]int, 0)
 	permMap := make(map[int]int32, 0)
@@ -770,7 +800,7 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 			fmt.Sprintf("role_id = %d AND res_id IN (%s)",
 				r.RoleId, util.JoinIntArray(deleted, ",")))
 	}
-	return p.error(nil), nil
+	return p.errorV2(nil), nil
 }
 
 func (p *rbacServiceImpl) parsePermRole(v *rbac.RbacRole) *proto.SRbacRole {
@@ -817,23 +847,22 @@ func (p *rbacServiceImpl) QueryPermRoleList(_ context.Context, r *proto.QueryRba
 }
 
 // DeletePermRole 删除角色
-func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.RbacRoleId) (*proto.Result, error) {
+func (p *rbacServiceImpl) DeletePermRole(_ context.Context, id *proto.RbacRoleId) (*proto.TxResult, error) {
 	err := p.dao.DeletePermRole(id.Value)
-	return p.error(err), nil
+	return p.errorV2(err), nil
 }
 
 // PagingPermRole 角色分页信息
 func (p *rbacServiceImpl) PagingPermRole(_ context.Context, r *proto.RbacRolePagingRequest) (*proto.PagingRbacRoleResponse, error) {
 	total, rows := p.dao.QueryPagingPermRole(int(r.Params.Begin),
 		int(r.Params.End),
-		r.Params.Where,
-		r.Params.SortBy)
+		r.Params.Where)
 	ret := &proto.PagingRbacRoleResponse{
 		Total: int64(total),
-		Value: make([]*proto.PagingPermRole, len(rows)),
+		Rows:  make([]*proto.PagingPermRole, len(rows)),
 	}
 	for i, v := range rows {
-		ret.Value[i] = &proto.PagingPermRole{
+		ret.Rows[i] = &proto.PagingPermRole{
 			Id:         int64(typeconv.MustInt(v["id"])),
 			Name:       typeconv.Stringify(v["name"]),
 			Level:      int32(typeconv.MustInt(v["level"])),
@@ -1069,14 +1098,14 @@ func (p *rbacServiceImpl) queryResChildren(parentId int, arr []*rbac.RbacRes) []
 }
 
 // 删除资源
-func (p *rbacServiceImpl) DeleteRbacResource(_ context.Context, id *proto.PermResId) (*proto.Result, error) {
+func (p *rbacServiceImpl) DeleteRbacResource(_ context.Context, id *proto.PermResId) (*proto.TxResult, error) {
 	res := p.dao.GetRbacResource(id.Value)
 	if res == nil {
-		return p.error(errors.New("资源不存在")), nil
+		return p.errorV2(errors.New("资源不存在")), nil
 	}
 	res.IsForbidden = 1
 	_, err := p.dao.SaveRbacResource(res)
-	return p.error(err), nil
+	return p.errorV2(err), nil
 }
 
 func (p *rbacServiceImpl) updateUserRoles(userId int64, roles []int64) error {
@@ -1138,10 +1167,10 @@ func (p *rbacServiceImpl) PagingLoginLog(_ context.Context, r *proto.LoginLogPag
 		r.Params.SortBy)
 	ret := &proto.LoginLogPagingResponse{
 		Total: int64(total),
-		Value: make([]*proto.PagingLoginLog, len(rows)),
+		Rows:  make([]*proto.PagingLoginLog, len(rows)),
 	}
 	for i, v := range rows {
-		ret.Value[i] = &proto.PagingLoginLog{
+		ret.Rows[i] = &proto.PagingLoginLog{
 			Id:         int64(typeconv.MustInt(v["id"])),
 			UserId:     int64(typeconv.MustInt(v["userId"])),
 			Username:   typeconv.Stringify(v["username"]),
@@ -1150,7 +1179,7 @@ func (p *rbacServiceImpl) PagingLoginLog(_ context.Context, r *proto.LoginLogPag
 			IsSuccess:  int32(typeconv.MustInt(v["isSuccess"])),
 			CreateTime: int64(typeconv.MustInt(v["createTime"])),
 		}
-		if r := ret.Value[i]; r.UserId == 0 {
+		if r := ret.Rows[i]; r.UserId == 0 {
 			r.Username = "master"
 			r.Nickname = "超级管理员"
 		}

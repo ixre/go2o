@@ -20,6 +20,7 @@ var _ rbac.IRbacRepository = new(rbacRepoImpl)
 type rbacRepoImpl struct {
 	userRepo     fw.Repository[rbac.RbacUser]
 	userRoleRepo fw.Repository[rbac.RbacUserRole]
+	loginLogRepo fw.Repository[rbac.RbacLoginLog]
 }
 
 // GetRbacAggregateRoot implements rbac.IRbacRepository.
@@ -42,5 +43,10 @@ func NewRbacRepo(o fw.ORM) rbac.IRbacRepository {
 	return &rbacRepoImpl{
 		userRepo:     &fw.BaseRepository[rbac.RbacUser]{ORM: o},
 		userRoleRepo: &fw.BaseRepository[rbac.RbacUserRole]{ORM: o},
+		loginLogRepo: &fw.BaseRepository[rbac.RbacLoginLog]{ORM: o},
 	}
+}
+
+func (r *rbacRepoImpl) LoginLogRepo() fw.Repository[rbac.RbacLoginLog] {
+	return r.loginLogRepo
 }

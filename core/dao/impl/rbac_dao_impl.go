@@ -370,10 +370,8 @@ func (p *rbacDaoImpl) BatchDeletePermRole(where string, v ...interface{}) (int64
 }
 
 // Params paging data
-func (p *rbacDaoImpl) QueryPagingPermRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
-	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy
-	}
+func (p *rbacDaoImpl) QueryPagingPermRole(begin, end int, where string) (total int, rows []map[string]interface{}) {
+	orderBy := "ORDER BY id ASC"
 	if where == "" {
 		where = "1=1"
 	}

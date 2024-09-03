@@ -68,7 +68,7 @@ type IRbacDao interface {
 	// Batch Delete 角色
 	BatchDeletePermRole(where string, v ...interface{}) (int64, error)
 	// Params paging data
-	QueryPagingPermRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{})
+	QueryPagingPermRole(begin, end int, where string) (total int, rows []map[string]interface{})
 
 	// Get PermRes
 	GetRbacResource(primary interface{}) *rbac.RbacRes

@@ -66,15 +66,15 @@ type RbacServiceClient interface {
 	// 获取资源树形数据
 	QueryRbacResourceList(ctx context.Context, in *QueryRbacResRequest, opts ...grpc.CallOption) (*QueryRbacResourceResponse, error)
 	// 移动资源顺序
-	MoveResourceOrdinal(ctx context.Context, in *MoveResourceOrdinalRequest, opts ...grpc.CallOption) (*Result, error)
+	MoveResourceOrdinal(ctx context.Context, in *MoveResourceOrdinalRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 部门树形数据
-	DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SRbacTree, error)
+	DepartTree(ctx context.Context, in *DepartTreeRequest, opts ...grpc.CallOption) (*SRbacTree, error)
 	// 保存部门
 	SaveDepart(ctx context.Context, in *SaveDepartRequest, opts ...grpc.CallOption) (*SaveDepartResponse, error)
 	// 获取部门
 	GetDepart(ctx context.Context, in *RbacDepartId, opts ...grpc.CallOption) (*SPermDept, error)
 	// 删除部门
-	DeleteDepart(ctx context.Context, in *RbacDepartId, opts ...grpc.CallOption) (*Result, error)
+	DeleteDepart(ctx context.Context, in *RbacDepartId, opts ...grpc.CallOption) (*TxResult, error)
 	// 保存岗位
 	SaveJob(ctx context.Context, in *SaveJobRequest, opts ...grpc.CallOption) (*SaveJobResponse, error)
 	// 获取岗位
@@ -82,7 +82,7 @@ type RbacServiceClient interface {
 	// 获取岗位列表
 	QueryJobList(ctx context.Context, in *QueryJobRequest, opts ...grpc.CallOption) (*QueryJobResponse, error)
 	// 删除岗位
-	DeleteJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*Result, error)
+	DeleteJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取岗位分页数据
 	PagingJobList(ctx context.Context, in *RbacJobPagingRequest, opts ...grpc.CallOption) (*PagingRbacJobResponse, error)
 	// 保存系统用户
@@ -92,19 +92,19 @@ type RbacServiceClient interface {
 	// 更新用户密码
 	UpdateUserPassword(ctx context.Context, in *RbacPasswordRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 删除系统用户
-	DeleteUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*Result, error)
+	DeleteUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取系统用户分页数据
 	PagingUser(ctx context.Context, in *PagingRbacUserRequest, opts ...grpc.CallOption) (*PagingRbacUserResponse, error)
 	// 保存角色
 	SavePermRole(ctx context.Context, in *SaveRbacRoleRequest, opts ...grpc.CallOption) (*SaveRbacRoleResponse, error)
 	// 保存角色
-	UpdateRoleResource(ctx context.Context, in *UpdateRoleResRequest, opts ...grpc.CallOption) (*Result, error)
+	UpdateRoleResource(ctx context.Context, in *UpdateRoleResRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取角色
 	GetRole(ctx context.Context, in *RbacRoleId, opts ...grpc.CallOption) (*SRbacRole, error)
 	// 获取角色列表
 	QueryPermRoleList(ctx context.Context, in *QueryRbacRoleRequest, opts ...grpc.CallOption) (*QueryRbacRoleResponse, error)
 	// 删除角色
-	DeletePermRole(ctx context.Context, in *RbacRoleId, opts ...grpc.CallOption) (*Result, error)
+	DeletePermRole(ctx context.Context, in *RbacRoleId, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取角色分页数据
 	PagingPermRole(ctx context.Context, in *RbacRolePagingRequest, opts ...grpc.CallOption) (*PagingRbacRoleResponse, error)
 	// 保存PermRes
@@ -112,7 +112,7 @@ type RbacServiceClient interface {
 	// 获取PermRes
 	GetRbacRes(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*SRbacRes, error)
 	// 删除PermRes
-	DeleteRbacResource(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*Result, error)
+	DeleteRbacResource(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取用户登录日志分页数据
 	PagingLoginLog(ctx context.Context, in *LoginLogPagingRequest, opts ...grpc.CallOption) (*LoginLogPagingResponse, error)
 }
@@ -170,8 +170,8 @@ func (c *rbacServiceClient) QueryRbacResourceList(ctx context.Context, in *Query
 	return out, nil
 }
 
-func (c *rbacServiceClient) MoveResourceOrdinal(ctx context.Context, in *MoveResourceOrdinalRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *rbacServiceClient) MoveResourceOrdinal(ctx context.Context, in *MoveResourceOrdinalRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RbacService_MoveResourceOrdinal_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -179,7 +179,7 @@ func (c *rbacServiceClient) MoveResourceOrdinal(ctx context.Context, in *MoveRes
 	return out, nil
 }
 
-func (c *rbacServiceClient) DepartTree(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SRbacTree, error) {
+func (c *rbacServiceClient) DepartTree(ctx context.Context, in *DepartTreeRequest, opts ...grpc.CallOption) (*SRbacTree, error) {
 	out := new(SRbacTree)
 	err := c.cc.Invoke(ctx, RbacService_DepartTree_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -206,8 +206,8 @@ func (c *rbacServiceClient) GetDepart(ctx context.Context, in *RbacDepartId, opt
 	return out, nil
 }
 
-func (c *rbacServiceClient) DeleteDepart(ctx context.Context, in *RbacDepartId, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *rbacServiceClient) DeleteDepart(ctx context.Context, in *RbacDepartId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RbacService_DeleteDepart_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -242,8 +242,8 @@ func (c *rbacServiceClient) QueryJobList(ctx context.Context, in *QueryJobReques
 	return out, nil
 }
 
-func (c *rbacServiceClient) DeleteJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *rbacServiceClient) DeleteJob(ctx context.Context, in *RbacJobId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RbacService_DeleteJob_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -287,8 +287,8 @@ func (c *rbacServiceClient) UpdateUserPassword(ctx context.Context, in *RbacPass
 	return out, nil
 }
 
-func (c *rbacServiceClient) DeleteUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *rbacServiceClient) DeleteUser(ctx context.Context, in *RbacUserId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RbacService_DeleteUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -314,8 +314,8 @@ func (c *rbacServiceClient) SavePermRole(ctx context.Context, in *SaveRbacRoleRe
 	return out, nil
 }
 
-func (c *rbacServiceClient) UpdateRoleResource(ctx context.Context, in *UpdateRoleResRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *rbacServiceClient) UpdateRoleResource(ctx context.Context, in *UpdateRoleResRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RbacService_UpdateRoleResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -341,8 +341,8 @@ func (c *rbacServiceClient) QueryPermRoleList(ctx context.Context, in *QueryRbac
 	return out, nil
 }
 
-func (c *rbacServiceClient) DeletePermRole(ctx context.Context, in *RbacRoleId, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *rbacServiceClient) DeletePermRole(ctx context.Context, in *RbacRoleId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RbacService_DeletePermRole_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -377,8 +377,8 @@ func (c *rbacServiceClient) GetRbacRes(ctx context.Context, in *PermResId, opts 
 	return out, nil
 }
 
-func (c *rbacServiceClient) DeleteRbacResource(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *rbacServiceClient) DeleteRbacResource(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RbacService_DeleteRbacResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -410,15 +410,15 @@ type RbacServiceServer interface {
 	// 获取资源树形数据
 	QueryRbacResourceList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error)
 	// 移动资源顺序
-	MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*Result, error)
+	MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*TxResult, error)
 	// 部门树形数据
-	DepartTree(context.Context, *Empty) (*SRbacTree, error)
+	DepartTree(context.Context, *DepartTreeRequest) (*SRbacTree, error)
 	// 保存部门
 	SaveDepart(context.Context, *SaveDepartRequest) (*SaveDepartResponse, error)
 	// 获取部门
 	GetDepart(context.Context, *RbacDepartId) (*SPermDept, error)
 	// 删除部门
-	DeleteDepart(context.Context, *RbacDepartId) (*Result, error)
+	DeleteDepart(context.Context, *RbacDepartId) (*TxResult, error)
 	// 保存岗位
 	SaveJob(context.Context, *SaveJobRequest) (*SaveJobResponse, error)
 	// 获取岗位
@@ -426,7 +426,7 @@ type RbacServiceServer interface {
 	// 获取岗位列表
 	QueryJobList(context.Context, *QueryJobRequest) (*QueryJobResponse, error)
 	// 删除岗位
-	DeleteJob(context.Context, *RbacJobId) (*Result, error)
+	DeleteJob(context.Context, *RbacJobId) (*TxResult, error)
 	// 获取岗位分页数据
 	PagingJobList(context.Context, *RbacJobPagingRequest) (*PagingRbacJobResponse, error)
 	// 保存系统用户
@@ -436,19 +436,19 @@ type RbacServiceServer interface {
 	// 更新用户密码
 	UpdateUserPassword(context.Context, *RbacPasswordRequest) (*TxResult, error)
 	// 删除系统用户
-	DeleteUser(context.Context, *RbacUserId) (*Result, error)
+	DeleteUser(context.Context, *RbacUserId) (*TxResult, error)
 	// 获取系统用户分页数据
 	PagingUser(context.Context, *PagingRbacUserRequest) (*PagingRbacUserResponse, error)
 	// 保存角色
 	SavePermRole(context.Context, *SaveRbacRoleRequest) (*SaveRbacRoleResponse, error)
 	// 保存角色
-	UpdateRoleResource(context.Context, *UpdateRoleResRequest) (*Result, error)
+	UpdateRoleResource(context.Context, *UpdateRoleResRequest) (*TxResult, error)
 	// 获取角色
 	GetRole(context.Context, *RbacRoleId) (*SRbacRole, error)
 	// 获取角色列表
 	QueryPermRoleList(context.Context, *QueryRbacRoleRequest) (*QueryRbacRoleResponse, error)
 	// 删除角色
-	DeletePermRole(context.Context, *RbacRoleId) (*Result, error)
+	DeletePermRole(context.Context, *RbacRoleId) (*TxResult, error)
 	// 获取角色分页数据
 	PagingPermRole(context.Context, *RbacRolePagingRequest) (*PagingRbacRoleResponse, error)
 	// 保存PermRes
@@ -456,7 +456,7 @@ type RbacServiceServer interface {
 	// 获取PermRes
 	GetRbacRes(context.Context, *PermResId) (*SRbacRes, error)
 	// 删除PermRes
-	DeleteRbacResource(context.Context, *PermResId) (*Result, error)
+	DeleteRbacResource(context.Context, *PermResId) (*TxResult, error)
 	// 获取用户登录日志分页数据
 	PagingLoginLog(context.Context, *LoginLogPagingRequest) (*LoginLogPagingResponse, error)
 	mustEmbedUnimplementedRbacServiceServer()
@@ -481,10 +481,10 @@ func (UnimplementedRbacServiceServer) GetUserResource(context.Context, *RbacUser
 func (UnimplementedRbacServiceServer) QueryRbacResourceList(context.Context, *QueryRbacResRequest) (*QueryRbacResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryRbacResourceList not implemented")
 }
-func (UnimplementedRbacServiceServer) MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*Result, error) {
+func (UnimplementedRbacServiceServer) MoveResourceOrdinal(context.Context, *MoveResourceOrdinalRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MoveResourceOrdinal not implemented")
 }
-func (UnimplementedRbacServiceServer) DepartTree(context.Context, *Empty) (*SRbacTree, error) {
+func (UnimplementedRbacServiceServer) DepartTree(context.Context, *DepartTreeRequest) (*SRbacTree, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DepartTree not implemented")
 }
 func (UnimplementedRbacServiceServer) SaveDepart(context.Context, *SaveDepartRequest) (*SaveDepartResponse, error) {
@@ -493,7 +493,7 @@ func (UnimplementedRbacServiceServer) SaveDepart(context.Context, *SaveDepartReq
 func (UnimplementedRbacServiceServer) GetDepart(context.Context, *RbacDepartId) (*SPermDept, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDepart not implemented")
 }
-func (UnimplementedRbacServiceServer) DeleteDepart(context.Context, *RbacDepartId) (*Result, error) {
+func (UnimplementedRbacServiceServer) DeleteDepart(context.Context, *RbacDepartId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDepart not implemented")
 }
 func (UnimplementedRbacServiceServer) SaveJob(context.Context, *SaveJobRequest) (*SaveJobResponse, error) {
@@ -505,7 +505,7 @@ func (UnimplementedRbacServiceServer) GetJob(context.Context, *RbacJobId) (*SRba
 func (UnimplementedRbacServiceServer) QueryJobList(context.Context, *QueryJobRequest) (*QueryJobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryJobList not implemented")
 }
-func (UnimplementedRbacServiceServer) DeleteJob(context.Context, *RbacJobId) (*Result, error) {
+func (UnimplementedRbacServiceServer) DeleteJob(context.Context, *RbacJobId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteJob not implemented")
 }
 func (UnimplementedRbacServiceServer) PagingJobList(context.Context, *RbacJobPagingRequest) (*PagingRbacJobResponse, error) {
@@ -520,7 +520,7 @@ func (UnimplementedRbacServiceServer) GetUser(context.Context, *RbacUserId) (*SR
 func (UnimplementedRbacServiceServer) UpdateUserPassword(context.Context, *RbacPasswordRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserPassword not implemented")
 }
-func (UnimplementedRbacServiceServer) DeleteUser(context.Context, *RbacUserId) (*Result, error) {
+func (UnimplementedRbacServiceServer) DeleteUser(context.Context, *RbacUserId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
 func (UnimplementedRbacServiceServer) PagingUser(context.Context, *PagingRbacUserRequest) (*PagingRbacUserResponse, error) {
@@ -529,7 +529,7 @@ func (UnimplementedRbacServiceServer) PagingUser(context.Context, *PagingRbacUse
 func (UnimplementedRbacServiceServer) SavePermRole(context.Context, *SaveRbacRoleRequest) (*SaveRbacRoleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SavePermRole not implemented")
 }
-func (UnimplementedRbacServiceServer) UpdateRoleResource(context.Context, *UpdateRoleResRequest) (*Result, error) {
+func (UnimplementedRbacServiceServer) UpdateRoleResource(context.Context, *UpdateRoleResRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRoleResource not implemented")
 }
 func (UnimplementedRbacServiceServer) GetRole(context.Context, *RbacRoleId) (*SRbacRole, error) {
@@ -538,7 +538,7 @@ func (UnimplementedRbacServiceServer) GetRole(context.Context, *RbacRoleId) (*SR
 func (UnimplementedRbacServiceServer) QueryPermRoleList(context.Context, *QueryRbacRoleRequest) (*QueryRbacRoleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryPermRoleList not implemented")
 }
-func (UnimplementedRbacServiceServer) DeletePermRole(context.Context, *RbacRoleId) (*Result, error) {
+func (UnimplementedRbacServiceServer) DeletePermRole(context.Context, *RbacRoleId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePermRole not implemented")
 }
 func (UnimplementedRbacServiceServer) PagingPermRole(context.Context, *RbacRolePagingRequest) (*PagingRbacRoleResponse, error) {
@@ -550,7 +550,7 @@ func (UnimplementedRbacServiceServer) SaveRbacResource(context.Context, *SaveRba
 func (UnimplementedRbacServiceServer) GetRbacRes(context.Context, *PermResId) (*SRbacRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRbacRes not implemented")
 }
-func (UnimplementedRbacServiceServer) DeleteRbacResource(context.Context, *PermResId) (*Result, error) {
+func (UnimplementedRbacServiceServer) DeleteRbacResource(context.Context, *PermResId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRbacResource not implemented")
 }
 func (UnimplementedRbacServiceServer) PagingLoginLog(context.Context, *LoginLogPagingRequest) (*LoginLogPagingResponse, error) {
@@ -678,7 +678,7 @@ func _RbacService_MoveResourceOrdinal_Handler(srv interface{}, ctx context.Conte
 }
 
 func _RbacService_DepartTree_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(DepartTreeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -690,7 +690,7 @@ func _RbacService_DepartTree_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: RbacService_DepartTree_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RbacServiceServer).DepartTree(ctx, req.(*Empty))
+		return srv.(RbacServiceServer).DepartTree(ctx, req.(*DepartTreeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

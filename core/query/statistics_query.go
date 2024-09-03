@@ -115,3 +115,43 @@ func (s *StatisticsQuery) QuerySummary() *SummaryStatistics {
 	ss.TodayMchServiceAmount = typeconv.Int(mp["today_mch_service_amount"])
 	return &ss
 }
+
+type ServiceStatistics struct {
+	Date   string  `json:"date"`
+	Count  int     `json:"count"`
+	Amount float64 `json:"amount"`
+	Users  int     `json:"users"`
+}
+
+// QueryServiceStatistics 查询服务统计信息
+func (s *StatisticsQuery) QueryServiceStatistics(beginTime, endTime int) []*ServiceStatistics {
+	rows := make([]*ServiceStatistics, 0)
+	s.on.Raw(`select b::date as date,count(id) as count,
+			count(distinct member_id) as users,
+			coalesce(SUM(final_fee),0.00) as amount
+			FROM generate_series(
+				to_timestamp(?),
+				to_timestamp(?),'1 days'
+			) as b
+			LEFT JOIN mch_service_order
+			ON b::date = date_trunc('day', to_timestamp(create_time)::date)
+
+			group by b,final_fee
+			ORDER BY b`, beginTime, endTime).Scan(&rows)
+	return rows
+}
+
+// QueryCityMerchantStaffs 查询城市商户员工统计信息(前十)
+func (s *StatisticsQuery) QueryCityMerchantStaffs() (rows []*struct {
+	StationId int    `json:"stationId"`
+	Label     string `json:"label"`
+	Value     int    `json:"value"`
+}) {
+	s.on.Raw(`
+		select station_id, coalesce(name,'其他') as label,count as value FROM sys_sub_station s 
+		INNER JOIN sys_district d ON d.code = s.city_code
+		RIGHT JOIN (select station_id,count(0) as count FROM mch_staff group by station_id) t
+		ON t.station_id = s.id
+		ORDER BY count DESC LIMIT 10`).Scan(&rows)
+	return rows
+}

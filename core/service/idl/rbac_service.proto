@@ -8,87 +8,67 @@ option java_package = "com.github.go2o.rpc";
 // RBAC服务
 service RbacService {
     // 用户登录
-    rpc UserLogin(RbacLoginRequest)returns(RbacLoginResponse) {}
+    rpc UserLogin(RbacLoginRequest)returns(RbacLoginResponse);
     // 检查令牌是否有效并返回新的令牌
-    rpc CheckRBACToken(RbacCheckTokenRequest) returns(RbacCheckTokenResponse){}
+    rpc CheckRBACToken(RbacCheckTokenRequest) returns(RbacCheckTokenResponse);
     // 获取JWT密钥
-    rpc GetJwtToken(Empty)returns(String) {}
+    rpc GetJwtToken(Empty)returns(String);
     // 获取用户资源
-    rpc GetUserResource(RbacUserResourceRequest)returns(RbacUserResourceResponse) {}
+    rpc GetUserResource(RbacUserResourceRequest)returns(RbacUserResourceResponse);
     // 获取资源树形数据
-    rpc QueryRbacResourceList (QueryRbacResRequest) returns (QueryRbacResourceResponse) {
-    }
+    rpc QueryRbacResourceList (QueryRbacResRequest) returns (QueryRbacResourceResponse);
     // 移动资源顺序
-    rpc MoveResourceOrdinal(MoveResourceOrdinalRequest) returns (Result) {}
-
+    rpc MoveResourceOrdinal(MoveResourceOrdinalRequest) returns (TxResult);
     // 部门树形数据
-    rpc DepartTree(Empty)returns(SRbacTree) {}
+    rpc DepartTree(DepartTreeRequest)returns(SRbacTree);
     // 保存部门
-    rpc SaveDepart (SaveDepartRequest) returns (SaveDepartResponse) {
-    }
+    rpc SaveDepart (SaveDepartRequest) returns (SaveDepartResponse);
     // 获取部门
-    rpc GetDepart (RbacDepartId) returns (SPermDept) {
-    }
+    rpc GetDepart (RbacDepartId) returns (SPermDept);
     // 删除部门
-    rpc DeleteDepart (RbacDepartId) returns (Result) {
-    }
+    rpc DeleteDepart (RbacDepartId) returns (TxResult);
     // 保存岗位
-    rpc SaveJob (SaveJobRequest) returns (SaveJobResponse) {
-    }
+    rpc SaveJob (SaveJobRequest) returns (SaveJobResponse);
     // 获取岗位
-    rpc GetJob (RbacJobId) returns (SRbacJob) {
-    }
+    rpc GetJob (RbacJobId) returns (SRbacJob);
     // 获取岗位列表
-    rpc QueryJobList (QueryJobRequest) returns (QueryJobResponse) {
-    }
+    rpc QueryJobList (QueryJobRequest) returns (QueryJobResponse);
     // 删除岗位
-    rpc DeleteJob (RbacJobId) returns (Result) {
-    }
+    rpc DeleteJob (RbacJobId) returns (TxResult);
     // 获取岗位分页数据
     rpc PagingJobList (RbacJobPagingRequest) returns (PagingRbacJobResponse);
 
     // 保存系统用户
-    rpc SaveUser (SaveRbacUserRequest) returns (SaveRbacUserResponse) {
-    }
+    rpc SaveUser (SaveRbacUserRequest) returns (SaveRbacUserResponse);
     // 获取系统用户
-    rpc GetUser (RbacUserId) returns (SRbacUser) {
-    }
+    rpc GetUser (RbacUserId) returns (SRbacUser);
     // 更新用户密码
     rpc updateUserPassword(RbacPasswordRequest)returns (TxResult){
     }
     // 删除系统用户
-    rpc DeleteUser (RbacUserId) returns (Result) {
-    }
+    rpc DeleteUser (RbacUserId) returns (TxResult);
     // 获取系统用户分页数据
     rpc PagingUser (PagingRbacUserRequest) returns (PagingRbacUserResponse);
 
     // 保存角色
-    rpc SavePermRole (SaveRbacRoleRequest) returns (SaveRbacRoleResponse) {
-    }
+    rpc SavePermRole (SaveRbacRoleRequest) returns (SaveRbacRoleResponse);
     // 保存角色
-    rpc UpdateRoleResource (UpdateRoleResRequest) returns (Result) {
-    }
+    rpc UpdateRoleResource (UpdateRoleResRequest) returns (TxResult);
     // 获取角色
-    rpc GetRole (RbacRoleId) returns (SRbacRole) {
-    }
+    rpc GetRole (RbacRoleId) returns (SRbacRole);
     // 获取角色列表
-    rpc QueryPermRoleList (QueryRbacRoleRequest) returns (QueryRbacRoleResponse) {
-    }
+    rpc QueryPermRoleList (QueryRbacRoleRequest) returns (QueryRbacRoleResponse);
     // 删除角色
-    rpc DeletePermRole (RbacRoleId) returns (Result) {
-    }
+    rpc DeletePermRole (RbacRoleId) returns (TxResult);
     // 获取角色分页数据
     rpc PagingPermRole (RbacRolePagingRequest) returns (PagingRbacRoleResponse);
 
     // 保存PermRes
-    rpc SaveRbacResource (SaveRbacResRequest) returns (SaveRbacResResponse) {
-    }
+    rpc SaveRbacResource (SaveRbacResRequest) returns (SaveRbacResResponse);
     // 获取PermRes
-    rpc GetRbacRes (PermResId) returns (SRbacRes) {
-    }
+    rpc GetRbacRes (PermResId) returns (SRbacRes);
     // 删除PermRes
-    rpc DeleteRbacResource (PermResId) returns (Result) {
-    }
+    rpc DeleteRbacResource (PermResId) returns (TxResult);
     // 获取用户登录日志分页数据
     rpc PagingLoginLog (LoginLogPagingRequest) returns (LoginLogPagingResponse);
 }
@@ -193,10 +173,16 @@ message UserId {
 }
 
 
+// 树形节点
 message SRbacTree {
+    // 编号
     int64 id = 1;
+    // 名称
     string label = 2;
-    repeated SRbacTree children = 3;
+    // 是否叶子节点
+    bool isLeaf = 3;
+    // 子节点
+    repeated SRbacTree children = 4;
 }
 
 message SaveDepartRequest {
@@ -322,7 +308,7 @@ message RbacJobPagingRequest {
 
 message PagingRbacJobResponse {
     int64 total = 1;
-    repeated PagingJobList value =  2;
+    repeated PagingJobList rows =  2;
 }
 
 
@@ -425,7 +411,7 @@ message PagingUser {
     // 昵称
     string nickname = 6;
     // 性别
-    string gender = 7;
+    int32 gender = 7;
     // 邮箱
     string email = 8;
     // 手机号码
@@ -451,7 +437,7 @@ message PagingRbacUserRequest {
 
 message PagingRbacUserResponse {
     int64 total = 1;
-    repeated PagingUser value =  2;
+    repeated PagingUser rows =  2;
 }
 
 // 保存角色请求
@@ -548,7 +534,7 @@ message RbacRolePagingRequest {
 
 message PagingRbacRoleResponse {
     int64 total = 1;
-    repeated PagingPermRole value =  2;
+    repeated PagingPermRole rows =  2;
 }
 
 
@@ -688,5 +674,13 @@ message LoginLogPagingResponse {
    // 总数
    int64 total = 1;
    // 数据列表
-   repeated PagingLoginLog value = 2;
+   repeated PagingLoginLog rows = 2;
+}
+
+// 部门属性请求
+message DepartTreeRequest{
+    // 是否懒加载
+    bool lazy = 1;
+    // 上级编号
+    int64 parentId = 2;
 }

@@ -1122,8 +1122,10 @@ func GetAppService() proto.AppServiceServer {
 func GetRbacService() proto.RbacServiceServer {
 	storageInterface := provide.GetStorageInstance()
 	orm := provide.GetOrmInstance()
+	db := provide.GetGOrm()
+	iRbacRepository := repos.NewRbacRepo(db)
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
-	rbacServiceServer := impl2.NewRbacService(storageInterface, orm, iRegistryRepo)
+	rbacServiceServer := impl2.NewRbacService(storageInterface, orm, iRbacRepository, iRegistryRepo)
 	return rbacServiceServer
 }
 

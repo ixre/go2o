@@ -40,5 +40,7 @@ type (
 		UserRepo() fw.Repository[RbacUser]
 		// UserRoleRepo 用户绑定角色仓储
 		UserRoleRepo() fw.Repository[RbacUserRole]
+		// LoginLogRepo 登陆日志
+		LoginLogRepo() fw.Repository[RbacLoginLog]
 	}
 )
