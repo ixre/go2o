@@ -47,6 +47,7 @@ const (
 	RbacService_PagingPermRole_FullMethodName        = "/RbacService/PagingPermRole"
 	RbacService_SaveRbacResource_FullMethodName      = "/RbacService/SaveRbacResource"
 	RbacService_GetRbacRes_FullMethodName            = "/RbacService/GetRbacRes"
+	RbacService_GetResourceSQL_FullMethodName        = "/RbacService/GetResourceSQL"
 	RbacService_DeleteRbacResource_FullMethodName    = "/RbacService/DeleteRbacResource"
 	RbacService_PagingLoginLog_FullMethodName        = "/RbacService/PagingLoginLog"
 )
@@ -111,6 +112,8 @@ type RbacServiceClient interface {
 	SaveRbacResource(ctx context.Context, in *SaveRbacResRequest, opts ...grpc.CallOption) (*SaveRbacResResponse, error)
 	// 获取PermRes
 	GetRbacRes(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*SRbacRes, error)
+	// 获取资源SQL语句
+	GetResourceSQL(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*ResourcesSQLResponse, error)
 	// 删除PermRes
 	DeleteRbacResource(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取用户登录日志分页数据
@@ -377,6 +380,15 @@ func (c *rbacServiceClient) GetRbacRes(ctx context.Context, in *PermResId, opts 
 	return out, nil
 }
 
+func (c *rbacServiceClient) GetResourceSQL(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*ResourcesSQLResponse, error) {
+	out := new(ResourcesSQLResponse)
+	err := c.cc.Invoke(ctx, RbacService_GetResourceSQL_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rbacServiceClient) DeleteRbacResource(ctx context.Context, in *PermResId, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, RbacService_DeleteRbacResource_FullMethodName, in, out, opts...)
@@ -455,6 +467,8 @@ type RbacServiceServer interface {
 	SaveRbacResource(context.Context, *SaveRbacResRequest) (*SaveRbacResResponse, error)
 	// 获取PermRes
 	GetRbacRes(context.Context, *PermResId) (*SRbacRes, error)
+	// 获取资源SQL语句
+	GetResourceSQL(context.Context, *PermResId) (*ResourcesSQLResponse, error)
 	// 删除PermRes
 	DeleteRbacResource(context.Context, *PermResId) (*TxResult, error)
 	// 获取用户登录日志分页数据
@@ -549,6 +563,9 @@ func (UnimplementedRbacServiceServer) SaveRbacResource(context.Context, *SaveRba
 }
 func (UnimplementedRbacServiceServer) GetRbacRes(context.Context, *PermResId) (*SRbacRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRbacRes not implemented")
+}
+func (UnimplementedRbacServiceServer) GetResourceSQL(context.Context, *PermResId) (*ResourcesSQLResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetResourceSQL not implemented")
 }
 func (UnimplementedRbacServiceServer) DeleteRbacResource(context.Context, *PermResId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRbacResource not implemented")
@@ -1073,6 +1090,24 @@ func _RbacService_GetRbacRes_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RbacService_GetResourceSQL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PermResId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RbacServiceServer).GetResourceSQL(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RbacService_GetResourceSQL_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RbacServiceServer).GetResourceSQL(ctx, req.(*PermResId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RbacService_DeleteRbacResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PermResId)
 	if err := dec(in); err != nil {
@@ -1227,6 +1262,10 @@ var RbacService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRbacRes",
 			Handler:    _RbacService_GetRbacRes_Handler,
+		},
+		{
+			MethodName: "GetResourceSQL",
+			Handler:    _RbacService_GetResourceSQL_Handler,
 		},
 		{
 			MethodName: "DeleteRbacResource",

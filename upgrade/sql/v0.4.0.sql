@@ -1112,3 +1112,6 @@ COMMENT ON COLUMN mch_settle_conf.sub_mch_no IS '结算子商户号';
 COMMENT ON COLUMN mch_settle_conf.update_time IS '创建时间';
 CREATE INDEX mch_settle_conf_mch_id 
   ON mch_settle_conf (mch_id);
+
+-- 删除rbac资源component_name
+ALTER TABLE rbac_res DROP COLUMN "component_name";

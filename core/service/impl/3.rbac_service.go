@@ -75,8 +75,8 @@ func (p *rbacServiceImpl) createLoginLog(userId int, ipAddress string, isSuccess
 func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest) (*proto.RbacLoginResponse, error) {
 	if len(r.Password) != 32 {
 		return &proto.RbacLoginResponse{
-			ErrCode: 1,
-			ErrMsg:  "密码长度不正确，应该为32位长度的md5字符",
+			Code:    1,
+			Message: "密码长度不正确，应该为32位长度的md5字符",
 		}, nil
 	}
 	expires := 3600 * 24
@@ -87,8 +87,8 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 		if superPwd != encPwd {
 			p.createLoginLog(0, r.IpAddress, 1) // 登录失败
 			return &proto.RbacLoginResponse{
-				ErrCode: 3,
-				ErrMsg:  "密码不正确",
+				Code:    3,
+				Message: "密码不正确",
 			}, nil
 		}
 
@@ -103,23 +103,23 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 	usr := p.dao.GetUserBy("username = $1", r.Username)
 	if usr == nil {
 		return &proto.RbacLoginResponse{
-			ErrCode: 2,
-			ErrMsg:  "用户不存在",
+			Code:    2,
+			Message: "用户不存在",
 		}, nil
 	}
 	decPwd := crypto.Sha1([]byte(r.Password + usr.Salt))
 	if usr.Password != decPwd {
 		p.createLoginLog(usr.Id, r.IpAddress, 3) // 登录失败
 		return &proto.RbacLoginResponse{
-			ErrCode: 3,
-			ErrMsg:  "密码不正确",
+			Code:    3,
+			Message: "密码不正确",
 		}, nil
 	}
 	if usr.Enabled != 1 {
 		p.createLoginLog(usr.Id, r.IpAddress, 4) // 登录失败
 		return &proto.RbacLoginResponse{
-			ErrCode: 4,
-			ErrMsg:  "用户已停用",
+			Code:    4,
+			Message: "用户已停用",
 		}, nil
 	}
 	p.createLoginLog(usr.Id, r.IpAddress, 0) // 登录成功
@@ -140,8 +140,8 @@ func (p *rbacServiceImpl) withAccessToken(username string,
 		strings.Join(dst.Roles, ","), expires)
 	dst.AccessToken = accessToken
 	if err != nil {
-		dst.ErrCode = 2
-		dst.ErrMsg = err.Error()
+		dst.Code = 2
+		dst.Message = err.Error()
 	}
 	return dst, nil
 }
@@ -316,55 +316,83 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 		if usr == nil {
 			return nil, fmt.Errorf("no such user %v", r.UserId)
 		}
+		log.Println("ss1", time.Now().UnixMilli())
+		// 获取用户角色
 		_, userRoles := p.getUserRoles(int(r.UserId))
 		roleList := make([]int, len(userRoles))
 		for i, v := range userRoles {
 			roleList[i] = int(v.Id)
 			dst.Roles = append(dst.Roles, v.Code)
 		}
+		// 获取角色所有对应的资源, 多个角色可能存在资源重复,且权限有差异
 		resList = p.dao.GetRoleResources(roleList)
-		p.appendParentResource(&resList) //　添加上级资源
+		p.appendParentResource(&resList)
 		roleResList := p.dao.GetRoleResList(roleList)
 		for _, v := range roleResList {
 			rolePermMap[int(v.ResId)] = v.PermFlag
 		}
+		log.Println(typeconv.MustJson(roleResList))
 	}
+	// 准备菜单数据
+	log.Println("ss2", time.Now().UnixMilli())
+	parents := make(map[int][]int, 0)
+	resMap := make(map[int]*rbac.RbacRes, 0)
+	for _, v := range resList {
+		if v.AppIndex != int(r.AppIndex) {
+			// 其他应用的资源排除
+			continue
+		}
+		if v.IsMenu == 0 {
+			// 非菜单资源排除
+			continue
+		}
+		if _, ok := parents[v.Pid]; !ok {
+			parents[v.Pid] = []int{int(v.Id)}
+		} else {
+			if !collections.InArray(parents[v.Pid], int(v.Id)) {
+				// 已经已包含(多个角色存在重复加载的情况),则跳过
+				parents[v.Pid] = append(parents[v.Pid], int(v.Id))
+			}
+		}
+		resMap[v.Id] = v
+	}
+
 	// 获取菜单
 	root := proto.SUserMenu{}
 	wg := sync.WaitGroup{}
-	var f func(*sync.WaitGroup, *proto.SUserMenu, []*rbac.RbacRes)
-	f = func(w *sync.WaitGroup, root *proto.SUserMenu, arr []*rbac.RbacRes) {
+
+	// 遍历函数
+	log.Println("sss", time.Now().UnixMilli())
+	var f func(w *sync.WaitGroup, root *proto.SUserMenu, arr map[int][]int)
+	f = func(w *sync.WaitGroup, root *proto.SUserMenu, arr map[int][]int) {
 		root.Children = []*proto.SUserMenu{}
-		for _, v := range arr {
-			if v.AppIndex != int(r.AppIndex) {
-				// 其他应用的资源排除
+		children := arr[int(root.Id)]
+		for _, c := range children {
+			if root.Id == 0 && len(arr[c]) == 0 {
+				// 如果一级栏目不包含下级,则不添加上级菜单
 				continue
 			}
-			if v.IsMenu == 0 {
-				// 非菜单资源排除
-				continue
+			// 绑定下级菜单
+			v := resMap[c]
+			m := &proto.SUserMenu{
+				Id:      int64(v.Id),
+				Key:     v.ResKey,
+				Name:    v.Name,
+				Path:    v.Path,
+				Icon:    v.Icon,
+				SortNum: int32(v.SortNum),
 			}
-			if v.Pid == int(root.Id) {
-				c := &proto.SUserMenu{
-					Id:            int64(v.Id),
-					Key:           v.ResKey,
-					Name:          v.Name,
-					Path:          v.Path,
-					Icon:          v.Icon,
-					SortNum:       int32(v.SortNum),
-					ComponentName: v.ComponentName,
-				}
-				c.Children = make([]*proto.SUserMenu, 0)
-				root.Children = append(root.Children, c)
-				w.Add(1)
-				go f(w, c, arr)
-			}
+			root.Children = append(root.Children, m)
+			w.Add(1)
+			go f(w, m, arr)
 		}
 		w.Done()
 	}
 	wg.Add(1)
-	f(&wg, &root, resList)
+	f(&wg, &root, parents)
 	wg.Wait()
+
+	log.Println("ssa", time.Now().UnixMilli())
 	dst.Menu = root.Children
 	// 普通用户返回权限Keys,格式如:["A0101","A010102+7"],不用区分应用
 	if r.UserId > 0 {
@@ -446,8 +474,8 @@ func (p *rbacServiceImpl) SaveDepart(_ context.Context, r *proto.SaveDepartReque
 		Id: int64(id),
 	}
 	if err != nil {
-		ret.ErrCode = 1
-		ret.ErrMsg = err.Error()
+		ret.Code = 1
+		ret.Message = err.Error()
 	}
 	return ret, nil
 }
@@ -497,8 +525,8 @@ func (p *rbacServiceImpl) SaveJob(_ context.Context, r *proto.SaveJobRequest) (*
 		Id: int64(id),
 	}
 	if err != nil {
-		ret.ErrCode = 1
-		ret.ErrMsg = err.Error()
+		ret.Code = 1
+		ret.Message = err.Error()
 	}
 	return ret, nil
 }
@@ -577,23 +605,28 @@ func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserReque
 		dst = p.dao.GetUser(r.Id)
 		if dst == nil {
 			return &proto.SaveRbacUserResponse{
-				ErrCode: 2,
-				ErrMsg:  "no such record",
+				Code:    2,
+				Message: "no such record",
 			}, nil
 		}
 	} else {
 		dst = &rbac.RbacUser{}
 		dst.Salt = util.RandString(4)
+		dst.Username = r.Username
 		dst.CreateTime = int(time.Now().Unix())
 	}
 	if l := len(r.Password); l > 0 {
 		if l != 32 {
 			return &proto.SaveRbacUserResponse{
-				ErrCode: 1,
-				ErrMsg:  "非32位md5密码",
+				Code:    1,
+				Message: "非32位md5密码",
 			}, nil
 		}
 		dst.Password = crypto.Sha1([]byte(r.Password + dst.Salt))
+	}
+	if len(r.ProfilePhoto) == 0 {
+		filePath, _ := p.registryRepo.GetValue(registry.FileServerUrl)
+		dst.ProfilePhoto, _ = url.JoinPath(filePath, "static/init/avatar.jpg")
 	}
 	dst.Flag = int(r.Flag)
 	dst.ProfilePhoto = r.ProfilePhoto
@@ -613,8 +646,8 @@ func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserReque
 		err = p.updateUserRoles(int64(id), r.Roles)
 	}
 	if err != nil {
-		ret.ErrCode = 1
-		ret.ErrMsg = err.Error()
+		ret.Code = 1
+		ret.Message = err.Error()
 	}
 	return ret, nil
 }
@@ -632,7 +665,7 @@ func (p *rbacServiceImpl) UpdateUserPassword(_ context.Context, req *proto.RbacP
 		if l != 32 {
 			return p.errorV2(errors.New("非32位md5密码")), nil
 		}
-		origin := crypto.Sha1([]byte(req.NewPassword + iu.Salt))
+		origin := crypto.Sha1([]byte(req.OldPassword + iu.Salt))
 		if origin != iu.Password {
 			return p.errorV2(errors.New("原密码不正确")), nil
 		}
@@ -753,8 +786,8 @@ func (p *rbacServiceImpl) SavePermRole(_ context.Context, r *proto.SaveRbacRoleR
 		Id: int64(id),
 	}
 	if err != nil {
-		ret.ErrCode = 1
-		ret.ErrMsg = err.Error()
+		ret.Code = 1
+		ret.Message = err.Error()
 	}
 	return ret, nil
 }
@@ -765,8 +798,8 @@ func (p *rbacServiceImpl) UpdateRoleResource(_ context.Context, r *proto.UpdateR
 	if role == nil {
 		return p.errorV2(errors.New("角色不存在")), nil
 	}
-	if role.Code == "admin" || role.Code == "master" {
-		return p.errorV2(errors.New("管理员已拥有全部权限")), nil
+	if role.Code == "master" {
+		return p.errorV2(errors.New("超级管理员已拥有全部权限")), nil
 	}
 	arr := make([]int, 0)
 	permMap := make(map[int]int32, 0)
@@ -937,8 +970,8 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	if r.Id > 0 {
 		if dst = p.dao.GetRbacResource(r.Id); dst == nil {
 			return &proto.SaveRbacResResponse{
-				ErrCode: 2,
-				ErrMsg:  "no such data",
+				Code:    2,
+				Message: "no such data",
 			}, nil
 		}
 	} else {
@@ -956,16 +989,16 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 		// 限制下级资源路径不能以'/'开头,以避免无法找到资源的情况
 		if len(r.Path) > 0 && r.Path[0] == '/' {
 			return &proto.SaveRbacResResponse{
-				ErrCode: 3,
-				ErrMsg:  "该资源(包含上级资源)路径不能以'/'开头",
+				Code:    3,
+				Message: "该资源(包含上级资源)路径不能以'/'开头",
 			}, nil
 		}
 	}
 	parent, err := p.checkParentResource(int(dst.Id), int(dst.Pid), int(r.Pid))
 	if err != nil {
 		return &proto.SaveRbacResResponse{
-			ErrCode: 2,
-			ErrMsg:  err.Error(),
+			Code:    2,
+			Message: err.Error(),
 		}, nil
 	}
 	// 如果新增, 则生成key
@@ -989,7 +1022,6 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 	dst.SortNum = int(r.SortNum)
 	dst.IsMenu = types.ElseInt(r.IsMenu, 1, 0)
 	dst.IsEnabled = types.ElseInt(r.IsEnabled, 1, 0)
-	dst.ComponentName = r.ComponentName
 	dst.AppIndex = int(r.AppIndex)
 	// 如果未设置排列序号,或者更改了上级,则需系统自动编号
 	if dst.SortNum <= 0 || parentChanged {
@@ -1000,8 +1032,8 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 		Id: int64(id),
 	}
 	if err != nil {
-		ret.ErrCode = 1
-		ret.ErrMsg = err.Error()
+		ret.Code = 1
+		ret.Message = err.Error()
 	} else {
 		if parentChanged {
 			depth := p.getResDepth(dst.Pid)
@@ -1013,19 +1045,18 @@ func (p *rbacServiceImpl) SaveRbacResource(_ context.Context, r *proto.SaveRbacR
 
 func (p *rbacServiceImpl) parseRbacRes(v *rbac.RbacRes) *proto.SRbacRes {
 	return &proto.SRbacRes{
-		Id:            int64(v.Id),
-		Name:          v.Name,
-		ResType:       int32(v.ResType),
-		Pid:           int64(v.Pid),
-		Key:           v.ResKey,
-		Path:          v.Path,
-		Icon:          v.Icon,
-		SortNum:       int32(v.SortNum),
-		IsMenu:        v.IsMenu == 1,
-		IsEnabled:     v.IsEnabled == 1,
-		CreateTime:    int64(v.CreateTime),
-		ComponentName: v.ComponentName,
-		AppIndex:      int32(v.AppIndex),
+		Id:         int64(v.Id),
+		Name:       v.Name,
+		ResType:    int32(v.ResType),
+		Pid:        int64(v.Pid),
+		Key:        v.ResKey,
+		Path:       v.Path,
+		Icon:       v.Icon,
+		SortNum:    int32(v.SortNum),
+		IsMenu:     v.IsMenu == 1,
+		IsEnabled:  v.IsEnabled == 1,
+		CreateTime: int64(v.CreateTime),
+		AppIndex:   int32(v.AppIndex),
 	}
 }
 
@@ -1036,6 +1067,35 @@ func (p *rbacServiceImpl) GetRbacRes(_ context.Context, id *proto.PermResId) (*p
 		return nil, fmt.Errorf("no such resource %v", id.Value)
 	}
 	return p.parseRbacRes(v), nil
+}
+
+// GetResourceSQL implements proto.RbacServiceServer.
+func (p *rbacServiceImpl) GetResourceSQL(_ context.Context, req *proto.PermResId) (*proto.ResourcesSQLResponse, error) {
+	v := p.dao.GetRbacResource(req.Value)
+	if v == nil {
+		return &proto.ResourcesSQLResponse{}, nil
+	}
+	s := fmt.Sprintf(`INSERT INTO rbac_res `+
+		`(id, name, res_type, pid, res_key, path, icon, sort_num, is_menu, is_enabled,create_time,depth,is_forbidden,app_index)`+
+		` VALUES (%d,'%s',%d,%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d,%d);`, v.Id,
+		v.Name,
+		v.ResType,
+		v.Pid,
+		v.ResKey,
+		v.Path,
+		v.Icon,
+		v.SortNum,
+		v.IsMenu,
+		v.IsEnabled,
+		v.CreateTime,
+		v.Depth,
+		v.IsForbidden,
+		v.AppIndex,
+	)
+	return &proto.ResourcesSQLResponse{
+		ResourceId: int64(req.Value),
+		Sql:        s,
+	}, nil
 }
 
 // 获取PermRes列表

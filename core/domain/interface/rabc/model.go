@@ -129,8 +129,6 @@ type RbacRes struct {
 	IsEnabled int `json:"isEnabled" db:"is_enabled" gorm:"column:is_enabled" bson:"isEnabled"`
 	// 创建日期
 	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
-	// 组件路径
-	ComponentName string `json:"componentName" db:"component_name" gorm:"column:component_name" bson:"componentName"`
 	// 深度/层级
 	Depth int `json:"depth" db:"depth" gorm:"column:depth" bson:"depth"`
 	// 是否禁止

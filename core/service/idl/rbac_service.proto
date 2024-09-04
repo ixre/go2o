@@ -67,6 +67,8 @@ service RbacService {
     rpc SaveRbacResource (SaveRbacResRequest) returns (SaveRbacResResponse);
     // 获取PermRes
     rpc GetRbacRes (PermResId) returns (SRbacRes);
+    // 获取资源SQL语句
+    rpc GetResourceSQL(PermResId)returns(ResourcesSQLResponse);
     // 删除PermRes
     rpc DeleteRbacResource (PermResId) returns (TxResult);
     // 获取用户登录日志分页数据
@@ -86,9 +88,9 @@ message RbacLoginRequest {
 // 用户登录响应
 message RbacLoginResponse {
     // 错误编码,0为成功
-    int32 errCode = 1;
+    int32 code = 1;
     // 错误消息
-    string errMsg = 2;
+    string message = 2;
     // 用户编号
     int64 userId =  3;
     // 访问令牌
@@ -161,8 +163,6 @@ message SUserMenu {
     sint32 sortNum = 7;
     // 子资源
     repeated SUserMenu children = 8;
-    // 组件名称
-    string componentName = 9;
 }
 
 message RoleId {
@@ -202,8 +202,8 @@ message SaveDepartRequest {
 
 // 保存部门结果
 message SaveDepartResponse {
-    int32 errCode = 1;
-    string errMsg = 2;
+    int32 code = 1;
+    string message = 2;
     int64 id = 3;
 }
 
@@ -250,8 +250,8 @@ message SaveJobRequest {
 }
 
 message SaveJobResponse {
-    int32 errCode = 1;
-    string errMsg = 2;
+    int32 code = 1;
+    string message = 2;
     int64 id = 3;
 }
 
@@ -347,8 +347,8 @@ message SaveRbacUserRequest {
 }
 
 message SaveRbacUserResponse {
-    int32 errCode = 1;
-    string errMsg = 2;
+    int32 code = 1;
+    string message = 2;
     int64 id = 3;
 }
 
@@ -466,8 +466,8 @@ message UpdateRoleResRequest {
     repeated SRolePermPair resources = 2;
 }
 message SaveRbacRoleResponse {
-    int32 errCode = 1;
-    string errMsg = 2;
+    int32 code = 1;
+    string message = 2;
     int64 id = 3;
 }
 
@@ -561,15 +561,13 @@ message SaveRbacResRequest {
     int32 sortNum = 10;
     // 创建日期
     int64 createTime = 11;
-    // 组件名称
-    string componentName = 12;
     // 应用序号
     int32 appIndex = 13;
 }
 
 message SaveRbacResResponse {
-    int32 errCode = 1;
-    string errMsg = 2;
+    int32 code = 1;
+    string message = 2;
     int64 id = 3;
 }
 
@@ -602,10 +600,8 @@ message SRbacRes {
     int32 sortNum = 11;
     // 创建日期
     int64 createTime = 12;
-    // 组件名称
-    string componentName = 13;
     // 应用序号
-    int32 appIndex = 16;
+    int32 appIndex = 13;
     // 是否为叶子节点
     bool isLeaf = 14;
     // 子资源
@@ -643,6 +639,14 @@ message MoveResourceOrdinalRequest {
     int64 resourceId = 1;
     // 移动方向,0:向上移,1:向下移
     int32 direction = 2;
+}
+
+// 获取资源SQL
+message ResourcesSQLResponse{
+    // 资源编号
+    int64 resourceId = 1;
+    // SQL语句
+    string sql = 2;
 }
 
 // 用户登录日志分页数据
