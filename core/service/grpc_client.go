@@ -358,3 +358,12 @@ func ApprovalServiceClient() (*grpc.ClientConn, proto.ApprovalServiceClient, err
 	}
 	return conn, nil, err
 }
+
+// ProviderServiceClient 服务商服务
+func ProviderServiceClient() (*grpc.ClientConn, proto.ServiceProviderServiceClient, error) {
+	conn, err := getConn(selector)
+	if err == nil {
+		return conn, proto.NewServiceProviderServiceClient(conn), err
+	}
+	return conn, nil, err
+}

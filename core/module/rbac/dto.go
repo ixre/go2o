@@ -7,7 +7,7 @@ type UserInfoResponse struct {
 	// 昵称
 	Nickname string `json:"nickname"`
 	// 头像
-	Avatar string `json:"avatar"`
+	ProfilePhoto string `json:"profilePhoto"`
 	// 登录IP
 	LoginIp string `json:"loginIp"`
 	// 资源Key

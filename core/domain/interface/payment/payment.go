@@ -11,7 +11,7 @@
 package payment
 
 import (
-	"github.com/ixre/go2o/core/domain/interface/promotion"
+	//"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
@@ -135,7 +135,7 @@ type (
 		// PaymentFinish 支付完成并保存,传入第三名支付名称,以及外部的交易号
 		PaymentFinish(spName string, outTradeNo string) error
 		// CouponDiscount 优惠券抵扣
-		CouponDiscount(coupon promotion.ICouponPromotion) (int, error)
+		CouponDiscount(coupon string) (int, error)
 		// BalanceDeduct 使用会员的余额抵扣
 		BalanceDeduct(remark string) error
 		// WalletDeduct 使用会员的钱包抵扣

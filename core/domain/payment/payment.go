@@ -227,10 +227,11 @@ func (p *paymentOrderImpl) Cancel() (err error) {
 		}
 	}
 	if err == nil {
-		err = p.orderManager.Cancel(p.value.OutOrderNo,
-			p.value.SubOrder == 1,
-			pv.SubOrder == 1,
-			"超时未付款")
+		//todo: 临时注释, 应该支付已去掉了订单的依赖
+		// err = p.orderManager.Cancel(p.value.OutOrderNo,
+		// 	p.value.SubOrder == 1,
+		// 	pv.SubOrder == 1,
+		// 	"超时未付款")
 	}
 	return err
 }
@@ -324,8 +325,9 @@ func (p *paymentOrderImpl) applyPaymentFinish() error {
 
 // 优惠券抵扣
 
-func (p *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
+func (p *paymentOrderImpl) CouponDiscount(s string) (
 	int, error) {
+	var coupon promotion.ICouponPromotion
 	//** todo:!!! 应该在订单除使用优惠券
 	//todo: 如可以使用多张优惠券,那么初始化应该获取支付单的所有优惠券
 	if p.coupons == nil {
@@ -710,12 +712,12 @@ type RepoBase struct {
 
 func (p *RepoBase) CreatePaymentOrder(v *payment.
 	Order, repo payment.IPaymentRepo, mmRepo member.IMemberRepo,
-	orderManager order.IOrderManager, registryRepo registry.IRegistryRepo) payment.IPaymentOrder {
+	registryRepo registry.IRegistryRepo) payment.IPaymentOrder {
 	return &paymentOrderImpl{
-		repo:         repo,
-		value:        v,
-		memberRepo:   mmRepo,
-		orderManager: orderManager,
+		repo:       repo,
+		value:      v,
+		memberRepo: mmRepo,
+		//orderManager: orderManager,
 		registryRepo: registryRepo,
 	}
 }

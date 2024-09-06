@@ -18,13 +18,13 @@ option java_package = "com.github.go2o.rpc";
 // 工单服务
 service ApprovalService {
     // 获取审批流
-    rpc GetFlow(ApprovalFlowRequest) returns (SApprovalFlow) {}
+    rpc GetFlow(ApprovalFlowRequest) returns (SApprovalFlow);
     // 审批通过
-    rpc Approve(ApprovalApproveRequest) returns (TxResult) {}
+    rpc Approve(ApprovalApproveRequest) returns (TxResult);
     // 审批拒绝
-    rpc Reject(ApprovalRejectRequest) returns (TxResult) {}
+    rpc Reject(ApprovalRejectRequest) returns (TxResult);
 	// 分配审批人,当节点审批后切换到下个节点, 需分配审批人
-	rpc Assign(ApprovalAssignRequest) returns (TxResult) {}
+	rpc Assign(ApprovalAssignRequest) returns (TxResult);
 }
 
 

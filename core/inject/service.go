@@ -176,3 +176,8 @@ func GetWorkorderService() proto.WorkorderServiceServer {
 func GetApprovalService() proto.ApprovalServiceServer {
 	panic(wire.Build(InjectProvideSets))
 }
+
+// ServiceProviderService 服务提供者服务
+func GetProviderService() proto.ServiceProviderServiceServer {
+	panic(wire.Build(InjectProvideSets))
+}

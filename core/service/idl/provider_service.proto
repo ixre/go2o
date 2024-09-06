@@ -1,0 +1,45 @@
+/**
+ * Copyright (C) 2007-2024 fze.NET, All rights reserved.
+ *
+ * name: provider_service.proto
+ * author: jarrysix (jarrysix#gmail.com)
+ * date: 2024-09-06 09:17:13
+ * description: 第三方服务接口
+ * history:
+ */
+syntax = "proto3";
+
+import "global.proto";
+
+option go_package = "./;proto";
+option java_package = "com.github.go2o.rpc";
+
+
+
+// 第三方服务提供服务
+service ServiceProviderService {
+    // 获取服务提供者
+    rpc GetOpenId(GetUserOpenIdRequest) returns (UserOpenIdResponse);
+}
+
+// 获取用户OpenId请求
+message GetUserOpenIdRequest {
+    // 应用ID
+    int64 appId = 1;
+    // 用户授权码
+    string code = 2;
+    // 类型
+    string type = 3;
+}
+
+// 用户OpenId响应
+message UserOpenIdResponse {
+    // 状态码
+    int32 code = 1;
+    // 状态信息
+    string message = 2;
+    // 用户OpenId
+    string openId = 3;
+    // 用户UnionId
+    string unionId = 4;
+}

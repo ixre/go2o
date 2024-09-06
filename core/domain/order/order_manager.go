@@ -197,7 +197,6 @@ func (t *orderManagerImpl) submitTradeOrder(data order.SubmitOrderData) (order.I
 			rd.PaymentOrderNo = o.GetPaymentOrder().TradeNo()
 		}
 	}
-
 	return o, rd, err
 }
 
@@ -239,7 +238,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMemberAggregateRoot, o order.IO
 		} else {
 			//应用优惠券
 			if err = io.ApplyCoupon(coupon); err == nil {
-				_, err = py.CouponDiscount(coupon)
+				_, err = py.CouponDiscount(couponCode)
 			}
 		}
 	}

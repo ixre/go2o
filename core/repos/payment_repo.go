@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	payImpl "github.com/ixre/go2o/core/domain/payment"
@@ -33,7 +32,6 @@ type paymentRepoImpl struct {
 	Storage storage.Interface
 	*payImpl.RepoBase
 	memberRepo   member.IMemberRepo
-	orderRepo    order.IOrderRepo
 	registryRepo registry.IRegistryRepo
 	_orm         orm.Orm
 }
@@ -48,11 +46,10 @@ func NewPaymentRepo(sto storage.Interface, o orm.Orm, mmRepo member.IMemberRepo,
 	}
 	//todo: 临时取消与orderRepo的循环依赖
 	return &paymentRepoImpl{
-		Storage:    sto,
-		Connector:  o.Connector(),
-		_orm:       o,
-		memberRepo: mmRepo,
-		//orderRepo:    orderRepo,
+		Storage:      sto,
+		Connector:    o.Connector(),
+		_orm:         o,
+		memberRepo:   mmRepo,
 		registryRepo: registryRepo,
 	}
 }
@@ -130,7 +127,7 @@ func (p *paymentRepoImpl) GetPaymentOrder(paymentNo string) payment.IPaymentOrde
 func (p *paymentRepoImpl) CreatePaymentOrder(
 	o *payment.Order) payment.IPaymentOrder {
 	return p.RepoBase.CreatePaymentOrder(o, p,
-		p.memberRepo, p.orderRepo.Manager(), p.registryRepo)
+		p.memberRepo, p.registryRepo)
 }
 
 // 保存支付单

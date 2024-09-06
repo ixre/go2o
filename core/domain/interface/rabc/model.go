@@ -184,7 +184,7 @@ type RbacUser struct {
 	// 标志
 	Flag int `json:"flag" db:"flag" gorm:"column:flag" bson:"flag"`
 	// 头像
-	ProfilePhoto string `json:"profilePhoto" db:"profile_photo" gorm:"column:profile_photo" bson:"avatar"`
+	ProfilePhoto string `json:"profilePhoto" db:"profile_photo" gorm:"column:profile_photo" bson:"profilePhoto"`
 	// 姓名
 	Nickname string `json:"nickname" db:"nickname" gorm:"column:nickname" bson:"nickname"`
 	// 性别
