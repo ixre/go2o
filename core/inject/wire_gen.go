@@ -593,10 +593,10 @@ func GetRbacRepo() rbac.IRbacRepository {
 
 // GetSPConfig 获取第三方服务自动配置
 func GetSPConfig() *sp.ServiceProviderConfiguration {
-	orm := provide.GetOrmInstance()
 	storageInterface := provide.GetStorageInstance()
+	orm := provide.GetOrmInstance()
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
-	serviceProviderConfiguration := sp.NewSPConfig(iRegistryRepo)
+	serviceProviderConfiguration := sp.NewSPConfig(storageInterface, iRegistryRepo)
 	return serviceProviderConfiguration
 }
 

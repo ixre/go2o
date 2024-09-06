@@ -118,6 +118,11 @@ func (m *MerchantQuery) QueryPagingMerchantList(p *fw.PagingParams) (_ *fw.Pagin
 	return ret, err
 }
 
+// GetMerchantAuthenticate 查询商户的认证信息
+func (m *MerchantQuery) GetMerchantAuthenticate(mchId int) *merchant.Authenticate {
+	return m.AuthRepo.FindBy("mch_id = ?", mchId)
+}
+
 // 查询分页商户待审核记录
 func (m *MerchantQuery) QueryPagingAuthenticates(p *fw.PagingParams) (_ *fw.PagingResult, err error) {
 	tables := `mch_authenticate a
