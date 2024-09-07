@@ -93,6 +93,7 @@ const (
 	MemberService_ReviewWithdrawal_FullMethodName           = "/MemberService/ReviewWithdrawal"
 	MemberService_FinishWithdrawal_FullMethodName           = "/MemberService/FinishWithdrawal"
 	MemberService_QueryWithdrawalLog_FullMethodName         = "/MemberService/QueryWithdrawalLog"
+	MemberService_SubmitRechargePaymentOrder_FullMethodName = "/MemberService/SubmitRechargePaymentOrder"
 	MemberService_BindOAuthApp_FullMethodName               = "/MemberService/BindOAuthApp"
 	MemberService_UnbindOAuthApp_FullMethodName             = "/MemberService/UnbindOAuthApp"
 	MemberService_GetOAuthBindInfo_FullMethodName           = "/MemberService/GetOAuthBindInfo"
@@ -266,6 +267,8 @@ type MemberServiceClient interface {
 	FinishWithdrawal(ctx context.Context, in *FinishUserWithdrawalRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 查询提现记录
 	QueryWithdrawalLog(ctx context.Context, in *WithdrawalLogRequest, opts ...grpc.CallOption) (*WithdrawalLogResponse, error)
+	// 提交充值支付单
+	SubmitRechargePaymentOrder(ctx context.Context, in *SubmitRechargePaymentOrderRequest, opts ...grpc.CallOption) (*RechargePaymentOrderResponse, error)
 	// 绑定第三方应用
 	BindOAuthApp(ctx context.Context, in *SMemberOAuthAccount, opts ...grpc.CallOption) (*Result, error)
 	// 解除第三方应用绑定
@@ -960,6 +963,15 @@ func (c *memberServiceClient) QueryWithdrawalLog(ctx context.Context, in *Withdr
 	return out, nil
 }
 
+func (c *memberServiceClient) SubmitRechargePaymentOrder(ctx context.Context, in *SubmitRechargePaymentOrderRequest, opts ...grpc.CallOption) (*RechargePaymentOrderResponse, error) {
+	out := new(RechargePaymentOrderResponse)
+	err := c.cc.Invoke(ctx, MemberService_SubmitRechargePaymentOrder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *memberServiceClient) BindOAuthApp(ctx context.Context, in *SMemberOAuthAccount, opts ...grpc.CallOption) (*Result, error) {
 	out := new(Result)
 	err := c.cc.Invoke(ctx, MemberService_BindOAuthApp_FullMethodName, in, out, opts...)
@@ -1203,6 +1215,8 @@ type MemberServiceServer interface {
 	FinishWithdrawal(context.Context, *FinishUserWithdrawalRequest) (*TxResult, error)
 	// 查询提现记录
 	QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error)
+	// 提交充值支付单
+	SubmitRechargePaymentOrder(context.Context, *SubmitRechargePaymentOrderRequest) (*RechargePaymentOrderResponse, error)
 	// 绑定第三方应用
 	BindOAuthApp(context.Context, *SMemberOAuthAccount) (*Result, error)
 	// 解除第三方应用绑定
@@ -1449,6 +1463,9 @@ func (UnimplementedMemberServiceServer) FinishWithdrawal(context.Context, *Finis
 }
 func (UnimplementedMemberServiceServer) QueryWithdrawalLog(context.Context, *WithdrawalLogRequest) (*WithdrawalLogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryWithdrawalLog not implemented")
+}
+func (UnimplementedMemberServiceServer) SubmitRechargePaymentOrder(context.Context, *SubmitRechargePaymentOrderRequest) (*RechargePaymentOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitRechargePaymentOrder not implemented")
 }
 func (UnimplementedMemberServiceServer) BindOAuthApp(context.Context, *SMemberOAuthAccount) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BindOAuthApp not implemented")
@@ -2822,6 +2839,24 @@ func _MemberService_QueryWithdrawalLog_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemberService_SubmitRechargePaymentOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitRechargePaymentOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).SubmitRechargePaymentOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemberService_SubmitRechargePaymentOrder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).SubmitRechargePaymentOrder(ctx, req.(*SubmitRechargePaymentOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MemberService_BindOAuthApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SMemberOAuthAccount)
 	if err := dec(in); err != nil {
@@ -3286,6 +3321,10 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryWithdrawalLog",
 			Handler:    _MemberService_QueryWithdrawalLog_Handler,
+		},
+		{
+			MethodName: "SubmitRechargePaymentOrder",
+			Handler:    _MemberService_SubmitRechargePaymentOrder_Handler,
 		},
 		{
 			MethodName: "BindOAuthApp",

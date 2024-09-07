@@ -28,8 +28,8 @@ func TestCheckRBACToken(t *testing.T) {
 	ret, _ := inject.GetRbacService().CheckRBACToken(context.TODO(), &proto.RbacCheckTokenRequest{
 		AccessToken: accessToken,
 	})
-	if len(ret.Error) > 0 {
-		t.Log(ret.Error)
+	if ret.Code > 0 {
+		t.Log(ret.Message)
 		t.FailNow()
 	}
 	t.Log(typeconv.MustJson(ret))
@@ -73,17 +73,16 @@ func TestSaveRbacResource(t *testing.T) {
 		Value: 2383,
 	})
 	ret, _ := s.SaveRbacResource(context.TODO(), &proto.SaveRbacResRequest{
-		Id:            0,
-		Name:          r.Name,
-		ResType:       r.ResType,
-		Pid:           2321,
-		Path:          r.Path,
-		Icon:          r.Icon,
-		SortNum:       r.SortNum,
-		IsMenu:        r.IsMenu,
-		IsEnabled:     r.IsEnabled,
-		CreateTime:    r.CreateTime,
-		ComponentName: r.ComponentName,
+		Id:         0,
+		Name:       r.Name,
+		ResType:    r.ResType,
+		Pid:        2321,
+		Path:       r.Path,
+		Icon:       r.Icon,
+		SortNum:    r.SortNum,
+		IsMenu:     r.IsMenu,
+		IsEnabled:  r.IsEnabled,
+		CreateTime: r.CreateTime,
 	})
 	t.Logf(typeconv.MustJson(ret))
 }

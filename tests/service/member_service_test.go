@@ -42,8 +42,8 @@ func TestChangeProfilePhoto(t *testing.T) {
 			MemberId:        702,
 			ProfilePhotoUrl: "",
 		})
-	if r.ErrCode > 0 {
-		t.Log(r.ErrMsg)
+	if r.Code > 0 {
+		t.Log(r.Message)
 		t.FailNow()
 	}
 }
@@ -57,8 +57,8 @@ func TestChangeMemberLevel(t *testing.T) {
 			Review:         false,
 			PaymentOrderId: 0,
 		})
-	if r.ErrCode > 0 {
-		t.Log(r.ErrMsg)
+	if r.Code > 0 {
+		t.Log(r.Message)
 		t.FailNow()
 	}
 }
@@ -67,8 +67,8 @@ func TestChangeUsername(t *testing.T) {
 		MemberId: 729,
 		Username: "哈哈",
 	})
-	if ret.ErrCode > 0 {
-		t.Log(ret.ErrMsg)
+	if ret.Code > 0 {
+		t.Log(ret.Message)
 	}
 }
 func TestChangePasswordAndCheckLogin(t *testing.T) {
@@ -79,8 +79,8 @@ func TestChangePasswordAndCheckLogin(t *testing.T) {
 			MemberId:    1,
 			NewPassword: pwd,
 		})
-	if r.ErrCode > 0 {
-		t.Error(r.ErrMsg)
+	if r.Code > 0 {
+		t.Error(r.Message)
 	}
 	ret, _ := inject.GetMemberService().CheckLogin(context.TODO(), &proto.LoginRequest{
 		Username: "13162222872",
@@ -140,5 +140,20 @@ func TestRegisterMerchantStaff(t *testing.T) {
 		t.Error(ret.ErrMsg)
 	} else {
 		t.Log("ok")
+	}
+}
+
+// 测试提交充值订单
+func TestSubmitRechargeOrd(t *testing.T) {
+	ret, _ := inject.GetMemberService().SubmitRechargePaymentOrder(context.TODO(),
+		&proto.SubmitRechargePaymentOrderRequest{
+			MemberId: 702,
+			Amount:   10000,
+		})
+	if ret.Code != 0 {
+		t.Error(ret.Message)
+		t.FailNow()
+	} else {
+		t.Log("ok:", ret.OrderNo)
 	}
 }

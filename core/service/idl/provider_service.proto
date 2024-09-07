@@ -42,4 +42,6 @@ message UserOpenIdResponse {
     string openId = 3;
     // 用户UnionId
     string unionId = 4;
+    // 返回第三方应用Id, 如微信小程序的appId
+    string appId = 5;
 }

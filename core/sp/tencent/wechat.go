@@ -15,6 +15,12 @@ import (
 // 全局微信实例
 var WECHAT *Wechat
 
+type WxOAuthSession struct {
+	auth.ResCode2Session
+	// 小程序或公众号应用ID
+	AppId string
+}
+
 // 初始化默认微信实例
 func Configure(o storage.Interface, repo registry.IRegistryRepo) {
 	WECHAT = NewWechat(o, repo)
@@ -77,7 +83,7 @@ func (w *Wechat) initConfig() {
 }
 
 // 根据JsCode获取会话信息
-func (w *Wechat) GetOpenId(jsCode string, cfg *config.Config) (*auth.ResCode2Session, error) {
+func (w *Wechat) GetOpenId(jsCode string, cfg *config.Config) (*WxOAuthSession, error) {
 	if cfg == nil {
 		cfg = w._mpConfig
 		if cfg.AppID == "" || cfg.AppSecret == "" {
@@ -85,5 +91,11 @@ func (w *Wechat) GetOpenId(jsCode string, cfg *config.Config) (*auth.ResCode2Ses
 		}
 	}
 	ret, err := w._wc.GetMiniProgram(cfg).GetAuth().Code2Session(jsCode)
-	return &ret, err
+	if err != nil {
+		return nil, err
+	}
+	return &WxOAuthSession{
+		ResCode2Session: ret,
+		AppId:           cfg.AppID,
+	}, err
 }

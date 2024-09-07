@@ -55,6 +55,13 @@ const (
 	StateRefunded = 4
 )
 
+const (
+	// TypeOrder 商城订单
+	TypeOrder = 1
+	// TypeRecharge 会员充值
+	TypeRecharge = 2
+)
+
 var (
 	ErrNoSuchPaymentOrder = domain.NewError(
 		"err_no_such_payment_order", "支付单不存在")

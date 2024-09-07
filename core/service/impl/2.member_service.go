@@ -22,6 +22,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
+	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
@@ -46,6 +47,7 @@ type memberService struct {
 	query        *query.MemberQuery
 	orderQuery   *query.OrderQuery
 	valRepo      valueobject.IValueRepo
+	_payRepo     payment.IPaymentRepo
 	serviceUtil
 	proto.UnimplementedMemberServiceServer
 }
@@ -54,6 +56,7 @@ func NewMemberService(repo member.IMemberRepo,
 	mchRepo merchant.IMerchantRepo,
 	registryRepo registry.IRegistryRepo,
 	q *query.MemberQuery, oq *query.OrderQuery,
+	payRepo payment.IPaymentRepo,
 	valRepo valueobject.IValueRepo) proto.MemberServiceServer {
 	s := &memberService{
 		repo:         repo,
@@ -61,6 +64,7 @@ func NewMemberService(repo member.IMemberRepo,
 		registryRepo: registryRepo,
 		query:        q,
 		orderQuery:   oq,
+		_payRepo:     payRepo,
 		valRepo:      valRepo,
 	}
 	return s
@@ -1823,4 +1827,56 @@ func (m *memberService) UnbindOAuthApp(_ context.Context, req *proto.MemberOAuth
 	}
 	err := mm.Profile().UnbindOAuthApp(req.AppCode)
 	return m.error(err), nil
+}
+
+// SubmitRechargePaymentOrder 提交充值订单
+func (m *memberService) SubmitRechargePaymentOrder(_ context.Context, req *proto.SubmitRechargePaymentOrderRequest) (*proto.RechargePaymentOrderResponse, error) {
+	im := m.repo.GetMember(req.MemberId)
+	if im == nil {
+		return &proto.RechargePaymentOrderResponse{
+			Code:    1,
+			Message: "用户不存在",
+		}, nil
+	}
+	io := m._payRepo.CreatePaymentOrder(&payment.Order{
+		Id:             0,
+		SellerId:       0,
+		TradeType:      "RECHARGE",
+		TradeNo:        "",
+		OrderType:      payment.TypeRecharge,
+		SubOrder:       0,
+		OutOrderNo:     "",
+		Subject:        "会员充值",
+		BuyerId:        req.MemberId,
+		PayerId:        req.MemberId,
+		DiscountAmount: 0,
+		AdjustAmount:   0,
+		TotalAmount:    req.Amount,
+		DeductAmount:   0,
+		TransactionFee: 0,
+		FinalAmount:    req.Amount,
+		PaidAmount:     0,
+		PayFlag:        payment.MPaySP,
+		FinalFlag:      0,
+		ExtraData:      "",
+		TradeChannel:   0,
+		OutTradeSp:     "",
+		OutTradeNo:     "",
+		State:          0,
+		SubmitTime:     0,
+		ExpiresTime:    0,
+		PaidTime:       0,
+		UpdateTime:     0,
+		TradeMethods:   []*payment.TradeMethodData{},
+	})
+	err := io.Submit()
+	if err != nil {
+		return &proto.RechargePaymentOrderResponse{
+			Code:    1,
+			Message: err.Error(),
+		}, nil
+	}
+	return &proto.RechargePaymentOrderResponse{
+		OrderNo: io.TradeNo(),
+	}, nil
 }

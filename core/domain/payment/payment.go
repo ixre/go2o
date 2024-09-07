@@ -89,6 +89,9 @@ func (p *paymentOrderImpl) Submit() error {
 	if b := p.repo.CheckTradeNoMatch(p.value.TradeNo, p.GetAggregateRootId()); !b {
 		return payment.ErrExistsTradeNo
 	}
+	if len(p.value.TradeNo) == 0 {
+		p.value.TradeNo = p.generateTradeNo()
+	}
 	err := p.saveOrder()
 	if err == nil {
 		// 保存支付单的支付方式,主要用于拆分子订单提交
@@ -98,6 +101,23 @@ func (p *paymentOrderImpl) Submit() error {
 		}
 	}
 	return err
+}
+
+// 生成交易号
+func (p *paymentOrderImpl) generateTradeNo() string {
+	var orderNo string
+	i := 0
+	for {
+		orderNo = domain.NewTradeNo(p.value.OrderType, int(p.value.BuyerId))
+		if p.repo.CheckTradeNoMatch(orderNo, p.GetAggregateRootId()) {
+			break
+		}
+		if i++; i > 10 {
+			log.Println("生成交易号失败")
+			return ""
+		}
+	}
+	return orderNo
 }
 
 // MergePay 合并支付

@@ -31,5 +31,6 @@ func (s *serviceProviderServiceImpl) GetOpenId(_ context.Context, req *proto.Get
 	return &proto.UserOpenIdResponse{
 		OpenId:  ret.OpenID,
 		UnionId: ret.UnionID,
+		AppId:   ret.AppId,
 	}, nil
 }
