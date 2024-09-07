@@ -48,6 +48,7 @@ type MemberRepoImpl struct {
 	mssRepo      mss.IMessageRepo
 	registryRepo registry.IRegistryRepo
 	_blockRepo   fw.Repository[member.BlockList]
+	_oauthRepo   fw.Repository[member.OAuthAccount]
 	_orm         orm.Orm
 	_o           fw.ORM
 }
@@ -60,13 +61,19 @@ func (m *MemberRepoImpl) BlockRepo() fw.Repository[member.BlockList] {
 	return m._blockRepo
 }
 
+func (m *MemberRepoImpl) OAuthRepo() fw.Repository[member.OAuthAccount] {
+	if m._oauthRepo == nil {
+		m._oauthRepo = &fw.BaseRepository[member.OAuthAccount]{ORM: m._o}
+	}
+	return m._oauthRepo
+}
+
 var memberRepoImplMapped = false
 
 func NewMemberRepo(sto storage.Interface, o orm.Orm, no fw.ORM,
 	walletRepo wallet.IWalletRepo, mssRepo mss.IMessageRepo,
 	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMemberRepo {
 	if !memberRepoImplMapped {
-		_ = o.Mapping(member.OAuthAccount{}, "mm_app_account")
 		memberRepoImplMapped = true
 		OrmMapping(o)
 	}
@@ -832,22 +839,14 @@ func (m *MemberRepoImpl) DeleteOAuthAccount(primary interface{}) error {
 
 // GetOAuthAccount implements member.IMemberRepo
 func (m *MemberRepoImpl) GetOAuthAccount(memberId int, appCode string) *member.OAuthAccount {
-	e := member.OAuthAccount{}
-	err := m._orm.GetBy(&e, "member_id = $1 AND app_code = $2", memberId, appCode)
-	if err == nil {
-		return &e
-	}
-	if err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OAuthAccount")
-	}
-	return nil
+	return m.OAuthRepo().FindBy("member_id = ? AND app_code = ?", memberId, appCode)
 }
 
 // SaveOAuthAccount implements member.IMemberRepo
 func (m *MemberRepoImpl) SaveOAuthAccount(v *member.OAuthAccount) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.Id))
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OAuthAccount")
+	e, err := m.OAuthRepo().Save(v)
+	if err == nil {
+		return e.Id, nil
 	}
-	return id, err
+	return 0, err
 }

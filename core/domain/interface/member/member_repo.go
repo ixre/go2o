@@ -17,6 +17,8 @@ import (
 type IMemberRepo interface {
 	// 黑名单仓储
 	BlockRepo() fw.Repository[BlockList]
+	// OAuth仓储
+	OAuthRepo() fw.Repository[OAuthAccount]
 	// 获取管理服务
 	GetManager() IMemberManager
 

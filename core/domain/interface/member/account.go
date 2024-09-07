@@ -227,24 +227,6 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
-
-	// OAuthAccount 关联第三方应用账号
-	OAuthAccount struct {
-		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
-		// 会员ID
-		MemberId int64 `db:"member_id" json:"memberId"`
-		// 应用代码,如wx
-		AppCode string `db:"app_code" json:"appCode"`
-		// 第三方应用id
-		OpenId string `db:"open_id" json:"openId"`
-		// 第三方应用认证令牌
-		AuthToken string `db:"auth_token" json:"auth_token"`
-		// 头像地址
-		ProfilePhoto string `db:"profile_photo" json:"profilePhoto"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time" json:"updateTime"`
-	}
 )
 
 func (b *BalanceLog) TableName() string {
@@ -363,4 +345,28 @@ type Account struct {
 
 func (m Account) TableName() string {
 	return "mm_account"
+}
+
+// OauthAccount 关联第三方应用账号
+type OAuthAccount struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 会员ID
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// 应用代码,如wechat-mp
+	AppCode string `json:"appCode" db:"app_code" gorm:"column:app_code" bson:"appCode"`
+	// 第三方应用id
+	OpenId string `json:"openId" db:"open_id" gorm:"column:open_id" bson:"openId"`
+	// UnionId
+	UnionId string `json:"unionId" db:"union_id" gorm:"column:union_id" bson:"unionId"`
+	// AuthToken
+	AuthToken string `json:"authToken" db:"auth_token" gorm:"column:auth_token" bson:"authToken"`
+	// ProfilePhoto
+	ProfilePhoto string `json:"profilePhoto" db:"profile_photo" gorm:"column:profile_photo" bson:"profilePhoto"`
+	// UpdateTime
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+}
+
+func (m OAuthAccount) TableName() string {
+	return "mm_oauth_account"
 }

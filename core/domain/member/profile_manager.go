@@ -10,7 +10,6 @@ package member
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -731,15 +730,19 @@ func (p *profileManagerImpl) bankCardIsExists(cardNo string) bool {
 func (p *profileManagerImpl) BindOAuthApp(app string, openId string, authToken string) error {
 	b := p.GetOAuthBindInfo(app)
 	if b != nil {
-		return fmt.Errorf("app %s aready has binding info", app)
-	}
-	b = &member.OAuthAccount{
-		MemberId:     p.memberId,
-		AppCode:      app,
-		OpenId:       openId,
-		AuthToken:    authToken,
-		ProfilePhoto: "",
-		UpdateTime:   time.Now().Unix(),
+		b.OpenId = openId
+		b.AuthToken = authToken
+	} else {
+		b = &member.OAuthAccount{
+			Id:           0,
+			MemberId:     int(p.memberId),
+			AppCode:      app,
+			OpenId:       openId,
+			UnionId:      "",
+			AuthToken:    authToken,
+			ProfilePhoto: "",
+			UpdateTime:   int(time.Now().Unix()),
+		}
 	}
 	_, err := p.repo.SaveOAuthAccount(b)
 	return err

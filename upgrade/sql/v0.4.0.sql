@@ -1115,3 +1115,27 @@ CREATE INDEX mch_settle_conf_mch_id
 
 -- 删除rbac资源component_name
 ALTER TABLE rbac_res DROP COLUMN "component_name";
+
+-- oauth账号
+CREATE TABLE "public".mm_oauth_account (
+  id            bigserial NOT NULL, 
+  member_id     int8 NOT NULL, 
+  app_code      varchar(20) NOT NULL, 
+  open_id       varchar(60) NOT NULL, 
+  union_id      varchar(60) NOT NULL, 
+  auth_token    varchar(40) NOT NULL, 
+  profile_photo varchar(120) NOT NULL, 
+  update_time   int8 NOT NULL, 
+  CONSTRAINT mm_oauth_account_pkey 
+    PRIMARY KEY (id));
+COMMENT ON TABLE "public".mm_oauth_account IS '关联第三方应用账号';
+COMMENT ON COLUMN "public".mm_oauth_account.id IS '编号';
+COMMENT ON COLUMN "public".mm_oauth_account.member_id IS '会员ID';
+COMMENT ON COLUMN "public".mm_oauth_account.app_code IS '应用代码,如wechat-mp';
+COMMENT ON COLUMN "public".mm_oauth_account.open_id IS '第三方应用id';
+COMMENT ON COLUMN "public".mm_oauth_account.union_id IS 'unionId';
+COMMENT ON COLUMN "public".mm_oauth_account.auth_token IS '第三方应用认证令牌';
+COMMENT ON COLUMN "public".mm_oauth_account.profile_photo IS '头像地址';
+COMMENT ON COLUMN "public".mm_oauth_account.update_time IS '更新时间';
+
+DROP TABLE IF EXISTS "public".mm_oauth_account CASCADE;
