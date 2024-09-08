@@ -427,3 +427,31 @@ func (p *paymentService) DeleteIntegrateApp(_ context.Context, id *proto.PayInte
 	err := p.repo.DeleteIntegrateApp(id.Value)
 	return p.errorV2(err), nil
 }
+
+// Divide implements proto.PaymentServiceServer.
+func (p *paymentService) Divide(_ context.Context, req *proto.PaymentDivideRequest) (*proto.TxResult, error) {
+	ip := p.repo.GetPaymentOrder(req.TradeNo)
+	if ip == nil {
+		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+	}
+	divides := make([]*payment.DivideData, len(req.Divides))
+	for i, v := range req.Divides {
+		divides[i] = &payment.DivideData{
+			DivideType:   int(v.DivideType),
+			UserId:       int(v.UserId),
+			DivideAmount: int(v.DivideAmount),
+		}
+	}
+	err := ip.Divide(req.OutTxNo, divides)
+	return p.errorV2(err), nil
+}
+
+// FinishDivide implements proto.PaymentServiceServer.
+func (p *paymentService) FinishDivide(_ context.Context, req *proto.PaymentOrderRequest) (*proto.TxResult, error) {
+	ip := p.repo.GetPaymentOrder(req.TradeNo)
+	if ip == nil {
+		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+	}
+	err := ip.FinishDivide()
+	return p.errorV2(err), nil
+}

@@ -1,5 +1,3 @@
-package payment
-
 /**
  * Copyright 2015 @ 56x.net.
  * name : payment
@@ -8,6 +6,7 @@ package payment
  * description :
  * history :
  */
+package payment
 
 import (
 	"errors"
@@ -741,4 +740,77 @@ func (p *RepoBase) CreatePaymentOrder(v *payment.
 		//orderManager: orderManager,
 		registryRepo: registryRepo,
 	}
+}
+
+// Divide implements payment.IPaymentOrder.
+func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData) error {
+	repo := p.repo.DivideRepo()
+	if p.value.DivideStatus == payment.DivideFinished {
+		return errors.New("订单已分账完成")
+	}
+	if len(outTxNo) == 0 {
+		return errors.New("缺少分账关联的外部交易单号")
+	}
+	dividedList := repo.FindList(nil, "pay_id = ?", p.GetAggregateRootId())
+	// 统计将分账的总金额
+	divideAmount := 0
+	dividedAmount := 0
+	for i, v := range divides {
+		if v.DivideType != 1 && v.UserId <= 0 {
+			return errors.New("分账用户编号不能为空")
+		}
+		divideAmount += v.DivideAmount
+		for _, k := range dividedList {
+			if i == 0 {
+				dividedAmount += k.DivideAmount
+			}
+			if k.OutTxNo == outTxNo && k.UserId == v.UserId && k.DivideType == v.DivideType {
+				return errors.New("同一交易不允许用户重复分账")
+			}
+		}
+	}
+
+	if divideAmount+dividedAmount > p.value.FinalAmount {
+		return errors.New("超出订单可分账总额")
+	}
+	unix := int(time.Now().Unix())
+	for _, v := range divides {
+		_, err := repo.Save(&payment.PayDivide{
+			Id:           0,
+			PayId:        p.GetAggregateRootId(),
+			DivideType:   v.DivideType,
+			UserId:       v.UserId,
+			DivideAmount: divideAmount,
+			OutTxNo:      outTxNo,
+			Remark:       "",
+			CreateTime:   unix,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	if divideAmount+dividedAmount == p.value.FinalAmount {
+		// 如果金额全部分账，则自动标记为分账完成
+		return p.FinishDivide()
+	}
+	if p.value.DivideStatus == payment.DivideNoDivide {
+		// 修改状态为待分账
+		p.value.DivideStatus = payment.DividePending
+		p.value.UpdateTime = unix
+		_, err := p.repo.SavePaymentOrder(p.value)
+		return err
+	}
+	return nil
+}
+
+// FinishDivide implements payment.IPaymentOrder.
+func (p *paymentOrderImpl) FinishDivide() error {
+	if p.value.DivideStatus != payment.DivideFinished {
+		// 如果金额全部分账，则自动标记为分账完成
+		p.value.DivideStatus = payment.DivideFinished
+		p.value.UpdateTime = int(time.Now().Unix())
+		_, err := p.repo.SavePaymentOrder(p.value)
+		return err
+	}
+	return nil
 }

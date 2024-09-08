@@ -20,6 +20,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	payImpl "github.com/ixre/go2o/core/domain/payment"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
@@ -33,25 +34,35 @@ type paymentRepoImpl struct {
 	*payImpl.RepoBase
 	memberRepo   member.IMemberRepo
 	registryRepo registry.IRegistryRepo
+	_divideRepo  fw.BaseRepository[payment.PayDivide]
 	_orm         orm.Orm
 }
 
 var payIntegrateAppDaoImplMapped = false
 
-func NewPaymentRepo(sto storage.Interface, o orm.Orm, mmRepo member.IMemberRepo,
+func NewPaymentRepo(sto storage.Interface, o orm.Orm,
+	on fw.ORM,
+	mmRepo member.IMemberRepo,
 	registryRepo registry.IRegistryRepo) payment.IPaymentRepo {
 	if !payIntegrateAppDaoImplMapped {
 		_ = o.Mapping(payment.IntegrateApp{}, "pay_integrate_app")
 		payIntegrateAppDaoImplMapped = true
 	}
 	//todo: 临时取消与orderRepo的循环依赖
-	return &paymentRepoImpl{
+	r := &paymentRepoImpl{
 		Storage:      sto,
 		Connector:    o.Connector(),
 		_orm:         o,
 		memberRepo:   mmRepo,
 		registryRepo: registryRepo,
 	}
+	r._divideRepo.ORM = on
+	return r
+}
+
+// DivideRepo implements payment.IPaymentRepo.
+func (p *paymentRepoImpl) DivideRepo() fw.Repository[payment.PayDivide] {
+	return &p._divideRepo
 }
 
 // 根据订单号获取支付单

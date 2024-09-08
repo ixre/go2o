@@ -63,6 +63,15 @@ const (
 	TypeRecharge = 2
 )
 
+const (
+	// DivideNoDivide 未分账
+	DivideNoDivide = 0
+	// DividePending 待分账
+	DividePending = 1
+	// DivideFinished 分账完成
+	DivideFinished = 2
+)
+
 var (
 	ErrNoSuchPaymentOrder = domain.NewError(
 		"err_no_such_payment_order", "支付单不存在")
@@ -231,8 +240,11 @@ type (
 
 	// 支付单分账数据
 	DivideData struct {
-		DivideType   int
-		UserId       int
+		// 分账用户类型: 1: 平台  2: 商户  3: 会员
+		DivideType int
+		// 用户ID
+		UserId int
+		// 分账金额
 		DivideAmount int
 	}
 	// TradeMethodData 支付单项
@@ -342,6 +354,8 @@ type Order struct {
 	ExpiresTime int `json:"expiresTime" db:"expires_time" gorm:"column:expires_time" bson:"expiresTime"`
 	// PaidTime
 	PaidTime int `json:"paidTime" db:"paid_time" gorm:"column:paid_time" bson:"paidTime"`
+	// 分账状态 0:未分账 1: 待分账 2:分账完成
+	DivideStatus int `json:"divideStatus" db:"divide_status" grom:"column:divide_status" bson:"divideStatus"`
 	// UpdateTime
 	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 	// SubOrder

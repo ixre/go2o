@@ -64,6 +64,10 @@ service PaymentService {
     rpc HybridPayment (HyperPaymentRequest) returns (TxResult);
     // 完成支付单支付，并传入支付方式及外部订单号
     rpc FinishPayment (FinishPaymentRequest) returns (TxResult);
+    // Divide 分账
+	rpc Divide(PaymentDivideRequest) returns(TxResult);
+	// FinishDive 完成分账
+	rpc FinishDivide(PaymentOrderRequest) returns(TxResult);
 
     // 支付网关(仅交易单使用)
     rpc GatewayV1 (PayGatewayRequest) returns (TxResult);
@@ -347,4 +351,24 @@ message SIntegrateApp{
     string hint = 7;
     /** 是否高亮显示 */
     int32 highlight = 8;
+}
+
+// 支付分账请求
+message PaymentDivideRequest{
+    // 支付单号
+    string tradeNo = 1;
+    // 外部交易单号
+    string outTxNo = 2;
+    // 分账明细
+    repeated SDivideData divides = 3;
+}
+
+// 分账数据
+message SDivideData{
+    // 分账用户类型: 1: 平台  2: 商户  3: 会员
+    int32 divideType = 1;
+    // 用户ID
+    int64 userId = 2;
+    // 分账金额
+    int64 divideAmount = 3;
 }
