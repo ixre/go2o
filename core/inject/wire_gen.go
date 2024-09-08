@@ -631,7 +631,14 @@ func GetEventSource() *event.EventSource {
 	iRbacRepository := repos.NewRbacRepo(db)
 	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	eventHandler := handler.NewEventHandler(iRegistryRepo, iArticleRepo, iMessageRepo, iStationRepo, iPageRepo, iPortalDao, iMerchantRepo, iApprovalRepository, iStaffRepo)
-	eventSource := event.NewEventSource(eventHandler)
+	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, iMemberRepo, iRegistryRepo)
+	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
+	iPromotionRepo := repos.NewPromotionRepo(orm, iItemRepo, iMemberRepo)
+	iDeliveryRepo := repos.NewDeliverRepo(orm)
+	iShipmentRepo := repos.NewShipmentRepo(orm, iExpressRepo)
+	iOrderRepo := repos.NewOrderRepo(storageInterface, orm, iMerchantRepo, iPaymentRepo, iProductRepo, iCartRepo, iItemRepo, iPromotionRepo, iMemberRepo, iDeliveryRepo, iExpressRepo, iShipmentRepo, iShopRepo, iValueRepo, iRegistryRepo)
+	paymentEventHandler := handler.NewPaymentEventHandler(iMemberRepo, iOrderRepo)
+	eventSource := event.NewEventSource(eventHandler, paymentEventHandler)
 	return eventSource
 }
 
@@ -1224,5 +1231,5 @@ var daoProvideSets = wire.NewSet(
 )
 
 var InjectProvideSets = wire.NewSet(
-	daoProvideSets, impl2.NewStatusService, impl2.NewRegistryService, impl2.NewMerchantService, impl2.NewPromotionService, impl2.NewSystemService, impl2.NewMemberService, impl2.NewShopService, impl2.NewProductService, impl2.NewItemService, impl2.NewShoppingService, impl2.NewCartService, impl2.NewAfterSalesService, impl2.NewAdvertisementService, impl2.NewPaymentService, impl2.NewQuickPayService, impl2.NewMessageService, impl2.NewExpressService, impl2.NewShipmentService, impl2.NewContentService, impl2.NewWalletService, impl2.NewCodeService, impl2.NewQueryService, impl2.NewRbacService, impl2.NewAppService, impl2.NewPortalService, impl2.NewPersonFinanceService, impl2.NewExecutionService, impl2.NewCheckService, impl2.NewInvoiceService, impl2.NewChatService, impl2.NewWorkorderService, impl2.NewApprovalService, impl2.NewServiceProviderService, event.NewEventSource, handler.NewEventHandler, sp.NewSPConfig,
+	daoProvideSets, impl2.NewStatusService, impl2.NewRegistryService, impl2.NewMerchantService, impl2.NewPromotionService, impl2.NewSystemService, impl2.NewMemberService, impl2.NewShopService, impl2.NewProductService, impl2.NewItemService, impl2.NewShoppingService, impl2.NewCartService, impl2.NewAfterSalesService, impl2.NewAdvertisementService, impl2.NewPaymentService, impl2.NewQuickPayService, impl2.NewMessageService, impl2.NewExpressService, impl2.NewShipmentService, impl2.NewContentService, impl2.NewWalletService, impl2.NewCodeService, impl2.NewQueryService, impl2.NewRbacService, impl2.NewAppService, impl2.NewPortalService, impl2.NewPersonFinanceService, impl2.NewExecutionService, impl2.NewCheckService, impl2.NewInvoiceService, impl2.NewChatService, impl2.NewWorkorderService, impl2.NewApprovalService, impl2.NewServiceProviderService, event.NewEventSource, handler.NewEventHandler, handler.NewPaymentEventHandler, sp.NewSPConfig,
 )

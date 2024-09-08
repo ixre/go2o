@@ -25,6 +25,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/gof/domain/eventbus"
 )
 
 var _ payment.IPaymentOrder = new(paymentOrderImpl)
@@ -307,6 +308,7 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 	if len(outerNo) < 8 {
 		return payment.ErrOuterNo
 	}
+	p.value.State = 1
 	if p.value.State == payment.StateFinished {
 		return payment.ErrOrderPayed
 	}
@@ -332,13 +334,12 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 // 更新订单状态, 需要注意,防止多次订单更新
 func (p *paymentOrderImpl) applyPaymentFinish() error {
 	if p.GetAggregateRootId() > 0 {
-		// 通知订单支付完成
-		if p.value.OutOrderNo != "" {
-			subOrder := p.value.SubOrder == 1
-			err := p.orderManager.NotifyOrderTradeSuccess(p.value.OutOrderNo, subOrder)
-			domain.HandleError(err, "domain")
-			return err
-		}
+		// 发布支付成功事件，并进行其他业务处理
+		eventbus.Publish(&payment.PaymentSuccessEvent{
+			Order:         p,
+			TradeChannels: p.TradeMethods(),
+		})
+
 	}
 	return nil
 }

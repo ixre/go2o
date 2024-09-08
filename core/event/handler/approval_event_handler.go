@@ -28,7 +28,7 @@ func (h *EventHandler) OnApprovalProcess(data interface{}) {
 	logger.Error("approval process event not support: %d", event.Approval.FlowId())
 }
 
-// 员工转移
+// 处理员工转移事件
 func processStaffTransferEvent(h *EventHandler, event *approval.ApprovalProcessEvent) {
 	trans := h._staffRepo.TransferRepo().Get(event.Approval.GetApproval().BizId)
 	if trans == nil {

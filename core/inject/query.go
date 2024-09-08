@@ -121,6 +121,7 @@ var InjectProvideSets = wire.NewSet(
 	// 事件
 	event.NewEventSource,
 	handler.NewEventHandler,
+	handler.NewPaymentEventHandler,
 	// 其他
 	sp.NewSPConfig,
 )

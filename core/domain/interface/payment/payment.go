@@ -206,6 +206,13 @@ type (
 		GetAwaitCloseOrders(lastId int, size int) []IPaymentOrder
 	}
 
+	// PaymentSuccessEvent 支付成功事件
+	PaymentSuccessEvent struct {
+		// Order 支付单
+		Order IPaymentOrder
+		// TradeChannels 支付通道
+		TradeChannels []*TradeMethodData
+	}
 	// Order 支付单
 	Order struct {
 		// 编号

@@ -1,3 +1,12 @@
+/**
+ * Copyright (C) 2007-2024 fze.NET,All rights reserved.
+ *
+ * name : payment_test.go
+ * author : jarrysix (jarrysix#gmail.com)
+ * date : 2015-09-08 10:02
+ * description : 支付测试
+ * history :
+ */
 package domain
 
 import (
@@ -10,8 +19,9 @@ import (
 	"github.com/ixre/go2o/core/inject"
 )
 
+// 测试支付完成
 func TestPaymentSuccess(t *testing.T) {
-	orderNo := "1220607000313450"
+	orderNo := "2240907702773876"
 	repo := inject.GetPaymentRepo()
 	ip := repo.GetPaymentOrder(orderNo)
 	if ip == nil {

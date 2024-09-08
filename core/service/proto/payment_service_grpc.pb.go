@@ -42,23 +42,23 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PaymentServiceClient interface {
 	// 创建支付单并提交
-	SubmitPaymentOrder(ctx context.Context, in *SPaymentOrder, opts ...grpc.CallOption) (*Result, error)
+	SubmitPaymentOrder(ctx context.Context, in *SPaymentOrder, opts ...grpc.CallOption) (*TxResult, error)
 	// 根据支付单号或订单号获取支付单
 	GetPaymentOrder(ctx context.Context, in *PaymentOrderRequest, opts ...grpc.CallOption) (*SPaymentOrder, error)
 	// 调整支付单金额
-	AdjustOrder(ctx context.Context, in *AdjustOrderRequest, opts ...grpc.CallOption) (*Result, error)
+	AdjustOrder(ctx context.Context, in *AdjustOrderRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 余额抵扣
-	DiscountByBalance(ctx context.Context, in *DiscountBalanceRequest, opts ...grpc.CallOption) (*Result, error)
+	DiscountByBalance(ctx context.Context, in *DiscountBalanceRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 积分抵扣支付单
-	DiscountByIntegral(ctx context.Context, in *DiscountIntegralRequest, opts ...grpc.CallOption) (*Result, error)
+	DiscountByIntegral(ctx context.Context, in *DiscountIntegralRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 钱包账户支付
-	PaymentByWallet(ctx context.Context, in *WalletPaymentRequest, opts ...grpc.CallOption) (*Result, error)
+	PaymentByWallet(ctx context.Context, in *WalletPaymentRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 余额钱包混合支付，优先扣除余额。
-	HybridPayment(ctx context.Context, in *HyperPaymentRequest, opts ...grpc.CallOption) (*Result, error)
+	HybridPayment(ctx context.Context, in *HyperPaymentRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 完成支付单支付，并传入支付方式及外部订单号
-	FinishPayment(ctx context.Context, in *FinishPaymentRequest, opts ...grpc.CallOption) (*Result, error)
+	FinishPayment(ctx context.Context, in *FinishPaymentRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 支付网关(仅交易单使用)
-	GatewayV1(ctx context.Context, in *PayGatewayRequest, opts ...grpc.CallOption) (*Result, error)
+	GatewayV1(ctx context.Context, in *PayGatewayRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取支付预交易数据
 	GetPreparePaymentInfo(ctx context.Context, in *OrderInfoRequest, opts ...grpc.CallOption) (*SPrepareTradeData, error)
 	// 支付网关V2
@@ -70,15 +70,15 @@ type PaymentServiceClient interface {
 	// @param tradeNo   交易号
 	// @param Data  支付数据
 	// @return 支付结果,返回:order_state
-	MixedPayment(ctx context.Context, in *MixedPaymentRequest, opts ...grpc.CallOption) (*Result, error)
+	MixedPayment(ctx context.Context, in *MixedPaymentRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 保存集成支付应用
-	SaveIntegrateApp(ctx context.Context, in *SIntegrateApp, opts ...grpc.CallOption) (*Result, error)
+	SaveIntegrateApp(ctx context.Context, in *SIntegrateApp, opts ...grpc.CallOption) (*TxResult, error)
 	// * 获取集成支付应用列表
 	QueryIntegrateAppList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*QueryIntegrateAppResponse, error)
 	// 准备集成支付的参数
 	PrepareIntegrateParams(ctx context.Context, in *IntegrateParamsRequest, opts ...grpc.CallOption) (*IntegrateParamsResponse, error)
 	// * 删除集成支付应用
-	DeleteIntegrateApp(ctx context.Context, in *PayIntegrateAppId, opts ...grpc.CallOption) (*Result, error)
+	DeleteIntegrateApp(ctx context.Context, in *PayIntegrateAppId, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type paymentServiceClient struct {
@@ -89,8 +89,8 @@ func NewPaymentServiceClient(cc grpc.ClientConnInterface) PaymentServiceClient {
 	return &paymentServiceClient{cc}
 }
 
-func (c *paymentServiceClient) SubmitPaymentOrder(ctx context.Context, in *SPaymentOrder, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) SubmitPaymentOrder(ctx context.Context, in *SPaymentOrder, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_SubmitPaymentOrder_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -107,8 +107,8 @@ func (c *paymentServiceClient) GetPaymentOrder(ctx context.Context, in *PaymentO
 	return out, nil
 }
 
-func (c *paymentServiceClient) AdjustOrder(ctx context.Context, in *AdjustOrderRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) AdjustOrder(ctx context.Context, in *AdjustOrderRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_AdjustOrder_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -116,8 +116,8 @@ func (c *paymentServiceClient) AdjustOrder(ctx context.Context, in *AdjustOrderR
 	return out, nil
 }
 
-func (c *paymentServiceClient) DiscountByBalance(ctx context.Context, in *DiscountBalanceRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) DiscountByBalance(ctx context.Context, in *DiscountBalanceRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_DiscountByBalance_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -125,8 +125,8 @@ func (c *paymentServiceClient) DiscountByBalance(ctx context.Context, in *Discou
 	return out, nil
 }
 
-func (c *paymentServiceClient) DiscountByIntegral(ctx context.Context, in *DiscountIntegralRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) DiscountByIntegral(ctx context.Context, in *DiscountIntegralRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_DiscountByIntegral_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -134,8 +134,8 @@ func (c *paymentServiceClient) DiscountByIntegral(ctx context.Context, in *Disco
 	return out, nil
 }
 
-func (c *paymentServiceClient) PaymentByWallet(ctx context.Context, in *WalletPaymentRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) PaymentByWallet(ctx context.Context, in *WalletPaymentRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_PaymentByWallet_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -143,8 +143,8 @@ func (c *paymentServiceClient) PaymentByWallet(ctx context.Context, in *WalletPa
 	return out, nil
 }
 
-func (c *paymentServiceClient) HybridPayment(ctx context.Context, in *HyperPaymentRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) HybridPayment(ctx context.Context, in *HyperPaymentRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_HybridPayment_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -152,8 +152,8 @@ func (c *paymentServiceClient) HybridPayment(ctx context.Context, in *HyperPayme
 	return out, nil
 }
 
-func (c *paymentServiceClient) FinishPayment(ctx context.Context, in *FinishPaymentRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) FinishPayment(ctx context.Context, in *FinishPaymentRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_FinishPayment_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -161,8 +161,8 @@ func (c *paymentServiceClient) FinishPayment(ctx context.Context, in *FinishPaym
 	return out, nil
 }
 
-func (c *paymentServiceClient) GatewayV1(ctx context.Context, in *PayGatewayRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) GatewayV1(ctx context.Context, in *PayGatewayRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_GatewayV1_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -188,8 +188,8 @@ func (c *paymentServiceClient) GatewayV2(ctx context.Context, in *PayGatewayV2Re
 	return out, nil
 }
 
-func (c *paymentServiceClient) MixedPayment(ctx context.Context, in *MixedPaymentRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) MixedPayment(ctx context.Context, in *MixedPaymentRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_MixedPayment_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -197,8 +197,8 @@ func (c *paymentServiceClient) MixedPayment(ctx context.Context, in *MixedPaymen
 	return out, nil
 }
 
-func (c *paymentServiceClient) SaveIntegrateApp(ctx context.Context, in *SIntegrateApp, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) SaveIntegrateApp(ctx context.Context, in *SIntegrateApp, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_SaveIntegrateApp_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -224,8 +224,8 @@ func (c *paymentServiceClient) PrepareIntegrateParams(ctx context.Context, in *I
 	return out, nil
 }
 
-func (c *paymentServiceClient) DeleteIntegrateApp(ctx context.Context, in *PayIntegrateAppId, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *paymentServiceClient) DeleteIntegrateApp(ctx context.Context, in *PayIntegrateAppId, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_DeleteIntegrateApp_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -238,23 +238,23 @@ func (c *paymentServiceClient) DeleteIntegrateApp(ctx context.Context, in *PayIn
 // for forward compatibility
 type PaymentServiceServer interface {
 	// 创建支付单并提交
-	SubmitPaymentOrder(context.Context, *SPaymentOrder) (*Result, error)
+	SubmitPaymentOrder(context.Context, *SPaymentOrder) (*TxResult, error)
 	// 根据支付单号或订单号获取支付单
 	GetPaymentOrder(context.Context, *PaymentOrderRequest) (*SPaymentOrder, error)
 	// 调整支付单金额
-	AdjustOrder(context.Context, *AdjustOrderRequest) (*Result, error)
+	AdjustOrder(context.Context, *AdjustOrderRequest) (*TxResult, error)
 	// 余额抵扣
-	DiscountByBalance(context.Context, *DiscountBalanceRequest) (*Result, error)
+	DiscountByBalance(context.Context, *DiscountBalanceRequest) (*TxResult, error)
 	// 积分抵扣支付单
-	DiscountByIntegral(context.Context, *DiscountIntegralRequest) (*Result, error)
+	DiscountByIntegral(context.Context, *DiscountIntegralRequest) (*TxResult, error)
 	// 钱包账户支付
-	PaymentByWallet(context.Context, *WalletPaymentRequest) (*Result, error)
+	PaymentByWallet(context.Context, *WalletPaymentRequest) (*TxResult, error)
 	// 余额钱包混合支付，优先扣除余额。
-	HybridPayment(context.Context, *HyperPaymentRequest) (*Result, error)
+	HybridPayment(context.Context, *HyperPaymentRequest) (*TxResult, error)
 	// 完成支付单支付，并传入支付方式及外部订单号
-	FinishPayment(context.Context, *FinishPaymentRequest) (*Result, error)
+	FinishPayment(context.Context, *FinishPaymentRequest) (*TxResult, error)
 	// 支付网关(仅交易单使用)
-	GatewayV1(context.Context, *PayGatewayRequest) (*Result, error)
+	GatewayV1(context.Context, *PayGatewayRequest) (*TxResult, error)
 	// 获取支付预交易数据
 	GetPreparePaymentInfo(context.Context, *OrderInfoRequest) (*SPrepareTradeData, error)
 	// 支付网关V2
@@ -266,15 +266,15 @@ type PaymentServiceServer interface {
 	// @param tradeNo   交易号
 	// @param Data  支付数据
 	// @return 支付结果,返回:order_state
-	MixedPayment(context.Context, *MixedPaymentRequest) (*Result, error)
+	MixedPayment(context.Context, *MixedPaymentRequest) (*TxResult, error)
 	// * 保存集成支付应用
-	SaveIntegrateApp(context.Context, *SIntegrateApp) (*Result, error)
+	SaveIntegrateApp(context.Context, *SIntegrateApp) (*TxResult, error)
 	// * 获取集成支付应用列表
 	QueryIntegrateAppList(context.Context, *Empty) (*QueryIntegrateAppResponse, error)
 	// 准备集成支付的参数
 	PrepareIntegrateParams(context.Context, *IntegrateParamsRequest) (*IntegrateParamsResponse, error)
 	// * 删除集成支付应用
-	DeleteIntegrateApp(context.Context, *PayIntegrateAppId) (*Result, error)
+	DeleteIntegrateApp(context.Context, *PayIntegrateAppId) (*TxResult, error)
 	mustEmbedUnimplementedPaymentServiceServer()
 }
 
@@ -282,31 +282,31 @@ type PaymentServiceServer interface {
 type UnimplementedPaymentServiceServer struct {
 }
 
-func (UnimplementedPaymentServiceServer) SubmitPaymentOrder(context.Context, *SPaymentOrder) (*Result, error) {
+func (UnimplementedPaymentServiceServer) SubmitPaymentOrder(context.Context, *SPaymentOrder) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitPaymentOrder not implemented")
 }
 func (UnimplementedPaymentServiceServer) GetPaymentOrder(context.Context, *PaymentOrderRequest) (*SPaymentOrder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentOrder not implemented")
 }
-func (UnimplementedPaymentServiceServer) AdjustOrder(context.Context, *AdjustOrderRequest) (*Result, error) {
+func (UnimplementedPaymentServiceServer) AdjustOrder(context.Context, *AdjustOrderRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdjustOrder not implemented")
 }
-func (UnimplementedPaymentServiceServer) DiscountByBalance(context.Context, *DiscountBalanceRequest) (*Result, error) {
+func (UnimplementedPaymentServiceServer) DiscountByBalance(context.Context, *DiscountBalanceRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DiscountByBalance not implemented")
 }
-func (UnimplementedPaymentServiceServer) DiscountByIntegral(context.Context, *DiscountIntegralRequest) (*Result, error) {
+func (UnimplementedPaymentServiceServer) DiscountByIntegral(context.Context, *DiscountIntegralRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DiscountByIntegral not implemented")
 }
-func (UnimplementedPaymentServiceServer) PaymentByWallet(context.Context, *WalletPaymentRequest) (*Result, error) {
+func (UnimplementedPaymentServiceServer) PaymentByWallet(context.Context, *WalletPaymentRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PaymentByWallet not implemented")
 }
-func (UnimplementedPaymentServiceServer) HybridPayment(context.Context, *HyperPaymentRequest) (*Result, error) {
+func (UnimplementedPaymentServiceServer) HybridPayment(context.Context, *HyperPaymentRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HybridPayment not implemented")
 }
-func (UnimplementedPaymentServiceServer) FinishPayment(context.Context, *FinishPaymentRequest) (*Result, error) {
+func (UnimplementedPaymentServiceServer) FinishPayment(context.Context, *FinishPaymentRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishPayment not implemented")
 }
-func (UnimplementedPaymentServiceServer) GatewayV1(context.Context, *PayGatewayRequest) (*Result, error) {
+func (UnimplementedPaymentServiceServer) GatewayV1(context.Context, *PayGatewayRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GatewayV1 not implemented")
 }
 func (UnimplementedPaymentServiceServer) GetPreparePaymentInfo(context.Context, *OrderInfoRequest) (*SPrepareTradeData, error) {
@@ -315,10 +315,10 @@ func (UnimplementedPaymentServiceServer) GetPreparePaymentInfo(context.Context, 
 func (UnimplementedPaymentServiceServer) GatewayV2(context.Context, *PayGatewayV2Request) (*PayGatewayResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GatewayV2 not implemented")
 }
-func (UnimplementedPaymentServiceServer) MixedPayment(context.Context, *MixedPaymentRequest) (*Result, error) {
+func (UnimplementedPaymentServiceServer) MixedPayment(context.Context, *MixedPaymentRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MixedPayment not implemented")
 }
-func (UnimplementedPaymentServiceServer) SaveIntegrateApp(context.Context, *SIntegrateApp) (*Result, error) {
+func (UnimplementedPaymentServiceServer) SaveIntegrateApp(context.Context, *SIntegrateApp) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveIntegrateApp not implemented")
 }
 func (UnimplementedPaymentServiceServer) QueryIntegrateAppList(context.Context, *Empty) (*QueryIntegrateAppResponse, error) {
@@ -327,7 +327,7 @@ func (UnimplementedPaymentServiceServer) QueryIntegrateAppList(context.Context, 
 func (UnimplementedPaymentServiceServer) PrepareIntegrateParams(context.Context, *IntegrateParamsRequest) (*IntegrateParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PrepareIntegrateParams not implemented")
 }
-func (UnimplementedPaymentServiceServer) DeleteIntegrateApp(context.Context, *PayIntegrateAppId) (*Result, error) {
+func (UnimplementedPaymentServiceServer) DeleteIntegrateApp(context.Context, *PayIntegrateAppId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIntegrateApp not implemented")
 }
 func (UnimplementedPaymentServiceServer) mustEmbedUnimplementedPaymentServiceServer() {}

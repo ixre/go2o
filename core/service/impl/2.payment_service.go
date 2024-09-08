@@ -58,15 +58,15 @@ func (p *paymentService) GetPaymentOrder(_ context.Context, req *proto.PaymentOr
 }
 
 // SubmitPaymentOrder 创建支付单
-func (p *paymentService) SubmitPaymentOrder(_ context.Context, order *proto.SPaymentOrder) (*proto.Result, error) {
+func (p *paymentService) SubmitPaymentOrder(_ context.Context, order *proto.SPaymentOrder) (*proto.TxResult, error) {
 	v := p.parsePaymentOrder(order)
 	o := p.repo.CreatePaymentOrder(v)
 	err := o.Submit()
-	return p.result(err), nil
+	return p.errorV2(err), nil
 }
 
 // AdjustOrder 调整支付单金额
-func (p *paymentService) AdjustOrder(_ context.Context, r *proto.AdjustOrderRequest) (*proto.Result, error) {
+func (p *paymentService) AdjustOrder(_ context.Context, r *proto.AdjustOrderRequest) (*proto.TxResult, error) {
 	var err error
 	o := p.repo.GetPaymentOrder(r.PaymentNo)
 	if o == nil {
@@ -74,11 +74,11 @@ func (p *paymentService) AdjustOrder(_ context.Context, r *proto.AdjustOrderRequ
 	} else {
 		err = o.Adjust(int(r.Amount * 100))
 	}
-	return p.result(err), nil
+	return p.errorV2(err), nil
 }
 
 // DiscountByIntegral 积分抵扣支付单
-func (p *paymentService) DiscountByIntegral(_ context.Context, r *proto.DiscountIntegralRequest) (*proto.Result, error) {
+func (p *paymentService) DiscountByIntegral(_ context.Context, r *proto.DiscountIntegralRequest) (*proto.TxResult, error) {
 	var amount int
 	var err error
 	o := p.repo.GetPaymentOrderById(int(r.OrderId))
@@ -87,13 +87,13 @@ func (p *paymentService) DiscountByIntegral(_ context.Context, r *proto.Discount
 	} else {
 		amount, err = o.IntegralDiscount(int(r.Integral), r.IgnoreOut)
 	}
-	rs := p.result(err)
+	rs := p.errorV2(err)
 	rs.Data = map[string]string{"Amount": strconv.Itoa(amount)}
 	return rs, nil
 }
 
 // DiscountByBalance 余额抵扣
-func (p *paymentService) DiscountByBalance(_ context.Context, r *proto.DiscountBalanceRequest) (*proto.Result, error) {
+func (p *paymentService) DiscountByBalance(_ context.Context, r *proto.DiscountBalanceRequest) (*proto.TxResult, error) {
 	var err error
 	o := p.repo.GetPaymentOrderById(int(r.OrderId))
 	if o == nil {
@@ -101,11 +101,11 @@ func (p *paymentService) DiscountByBalance(_ context.Context, r *proto.DiscountB
 	} else {
 		err = o.BalanceDeduct(r.Remark)
 	}
-	return p.result(err), nil
+	return p.errorV2(err), nil
 }
 
 // PaymentByWallet 钱包账户支付
-func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPaymentRequest) (rs *proto.Result, err error) {
+func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPaymentRequest) (rs *proto.TxResult, err error) {
 	arr := p.repo.GetMergePayOrders(r.TradeNo)
 	if len(arr) == 0 {
 		// 单个订单支付
@@ -115,7 +115,7 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 		} else {
 			err = ip.PaymentByWallet(r.Remark)
 		}
-		return p.result(err), nil
+		return p.errorV2(err), nil
 	}
 	// 合并支付单支付
 	payUid := arr[0].Get().PayerId
@@ -133,38 +133,38 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 			}
 		}
 	}
-	return p.result(err), nil
+	return p.errorV2(err), nil
 }
 
 // HybridPayment 余额钱包混合支付，优先扣除余额。
-func (p *paymentService) HybridPayment(_ context.Context, r *proto.HyperPaymentRequest) (rs *proto.Result, err error) {
+func (p *paymentService) HybridPayment(_ context.Context, r *proto.HyperPaymentRequest) (rs *proto.TxResult, err error) {
 	o := p.repo.GetPaymentOrder(r.TradeNo)
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
 		err = o.HybridPayment(r.Remark)
 	}
-	return p.result(err), nil
+	return p.errorV2(err), nil
 }
 
 // FinishPayment 完成支付单支付，并传入支付方式及外部订单号
-func (p *paymentService) FinishPayment(_ context.Context, r *proto.FinishPaymentRequest) (rs *proto.Result, err error) {
+func (p *paymentService) FinishPayment(_ context.Context, r *proto.FinishPaymentRequest) (rs *proto.TxResult, err error) {
 	o := p.repo.GetPaymentOrder(r.PaymentOrderNo)
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
 		err = o.PaymentFinish(r.SpName, r.SpTradeNo)
 	}
-	return p.result(err), nil
+	return p.errorV2(err), nil
 }
 
 // GatewayV1 支付网关
-func (p *paymentService) GatewayV1(_ context.Context, r *proto.PayGatewayRequest) (rs *proto.Result, err error) {
+func (p *paymentService) GatewayV1(_ context.Context, r *proto.PayGatewayRequest) (rs *proto.TxResult, err error) {
 	mod := module.Get(module.PAY).(*module.PaymentModule)
 	// 获取令牌
 	if r.Action == "get_token" {
 		token := mod.CreateToken(r.UserId)
-		return p.success(map[string]string{"token": token}), nil
+		return p.successV2(map[string]string{"token": token}), nil
 	}
 	// 提交支付请求
 	if r.Action == "submit" {
@@ -174,7 +174,7 @@ func (p *paymentService) GatewayV1(_ context.Context, r *proto.PayGatewayRequest
 	if r.Action == "payment" {
 		err = mod.CheckAndPayment(r.UserId, r.Data)
 	}
-	return p.result(err), nil
+	return p.errorV2(err), nil
 }
 
 // GetPreparePaymentInfo 获取支付预交易数据
@@ -270,7 +270,7 @@ func (p *paymentService) GatewayV2(_ context.Context, r *proto.PayGatewayV2Reque
 }
 
 // MixedPayment 混合支付
-func (p *paymentService) MixedPayment(_ context.Context, _ *proto.MixedPaymentRequest) (*proto.Result, error) {
+func (p *paymentService) MixedPayment(_ context.Context, _ *proto.MixedPaymentRequest) (*proto.TxResult, error) {
 	return nil, errors.New("not support MixedPayment")
 }
 
@@ -344,7 +344,7 @@ func (p *paymentService) parseTradeMethodDataDto(src *payment.TradeMethodData) *
 	}
 }
 
-func (p *paymentService) SaveIntegrateApp(_ context.Context, app *proto.SIntegrateApp) (*proto.Result, error) {
+func (p *paymentService) SaveIntegrateApp(_ context.Context, app *proto.SIntegrateApp) (*proto.TxResult, error) {
 	_, err := p.repo.SaveIntegrateApp(&payment.IntegrateApp{
 		Id:            int(app.Id),
 		AppName:       app.AppName,
@@ -355,7 +355,7 @@ func (p *paymentService) SaveIntegrateApp(_ context.Context, app *proto.SIntegra
 		Hint:          app.Hint,
 		Highlight:     int(app.Highlight),
 	})
-	return p.error(err), nil
+	return p.errorV2(err), nil
 }
 
 func (p *paymentService) QueryIntegrateAppList(_ context.Context, _ *proto.Empty) (*proto.QueryIntegrateAppResponse, error) {
@@ -423,7 +423,7 @@ func (p *paymentService) parseIntegrateApp(v *payment.IntegrateApp) *proto.SInte
 		Highlight:     int32(v.Highlight),
 	}
 }
-func (p *paymentService) DeleteIntegrateApp(_ context.Context, id *proto.PayIntegrateAppId) (*proto.Result, error) {
+func (p *paymentService) DeleteIntegrateApp(_ context.Context, id *proto.PayIntegrateAppId) (*proto.TxResult, error) {
 	err := p.repo.DeleteIntegrateApp(id.Value)
-	return p.error(err), nil
+	return p.errorV2(err), nil
 }
