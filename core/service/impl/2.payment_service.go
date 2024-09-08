@@ -121,7 +121,7 @@ func (p *paymentService) PaymentByWallet(_ context.Context, r *proto.WalletPayme
 	payUid := arr[0].Get().PayerId
 	var finalAmount int64 = 0
 	for _, v := range arr {
-		finalAmount += v.Get().FinalAmount
+		finalAmount += int64(v.Get().FinalAmount)
 	}
 	acc := p.memberRepo.GetAccount(int(payUid))
 	if acc.Balance < int(finalAmount) {
@@ -214,8 +214,8 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 			Subject:        iv.Subject,
 			TradeType:      iv.TradeType,
 			State:          int32(iv.State),
-			TransactionFee: iv.TransactionFee,
-			FinalAmount:    iv.FinalAmount,
+			TransactionFee: int64(iv.TransactionFee),
+			FinalAmount:    int64(iv.FinalAmount),
 		}
 		// 更新支付状态
 		if so.State != payment.StateAwaitingPayment {
@@ -227,9 +227,9 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 		}
 		// 更新支付金额
 		d.TradeOrders = append(d.TradeOrders, so)
-		d.TransactionFee += so.TransactionFee // 手续费
-		d.FinalAmount += so.FinalAmount       // 最终金额
-		d.TotalAmount += iv.TotalAmount       // 累计金额
+		d.TransactionFee += so.TransactionFee  // 手续费
+		d.FinalAmount += so.FinalAmount        // 最终金额
+		d.TotalAmount += int64(iv.TotalAmount) // 累计金额
 	}
 	d.ErrCode = 0
 	d.TradeNo = tradeNo // 交易单号
@@ -262,9 +262,9 @@ func (p *paymentService) GatewayV2(_ context.Context, r *proto.PayGatewayV2Reque
 	}
 	for _, ip := range arr {
 		iv := ip.Get()
-		ret.TransactionFee += iv.TransactionFee // 手续费
-		ret.FinalAmount += iv.FinalAmount       // 最终金额
-		ret.TotalAmount += iv.TotalAmount       // 累计金额
+		ret.TransactionFee += int64(iv.TransactionFee) // 手续费
+		ret.FinalAmount += int64(iv.FinalAmount)       // 最终金额
+		ret.TotalAmount += int64(iv.TotalAmount)       // 累计金额
 	}
 	return &ret, nil
 }
@@ -283,21 +283,21 @@ func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Or
 		OrderType:      int(src.OrderType),
 		OutOrderNo:     src.OutOrderNo,
 		Subject:        src.Subject,
-		BuyerId:        src.BuyerId,
-		PayerId:        src.PayerId,
-		TotalAmount:    src.TotalAmount,
-		DeductAmount:   src.DeductAmount,
-		AdjustAmount:   src.AdjustAmount,
-		TransactionFee: src.TransactionFee,
-		FinalAmount:    src.FinalAmount,
-		PaidAmount:     src.PaidAmount,
+		BuyerId:        int(src.BuyerId),
+		PayerId:        int(src.PayerId),
+		TotalAmount:    int(src.TotalAmount),
+		DeductAmount:   int(src.DeductAmount),
+		AdjustAmount:   int(src.AdjustAmount),
+		TransactionFee: int(src.TransactionFee),
+		FinalAmount:    int(src.FinalAmount),
+		PaidAmount:     int(src.PaidAmount),
 		PayFlag:        int(src.PayFlag),
 		FinalFlag:      int(src.FinalFlag),
 		ExtraData:      src.ExtraData,
 		State:          int(src.State),
-		SubmitTime:     src.SubmitTime,
-		ExpiresTime:    src.ExpiresTime,
-		PaidTime:       src.PaidTime,
+		SubmitTime:     int(src.SubmitTime),
+		ExpiresTime:    int(src.ExpiresTime),
+		PaidTime:       int(src.PaidTime),
 		TradeMethods:   make([]*payment.TradeMethodData, 0),
 	}
 	if src.SubOrder {
@@ -313,21 +313,21 @@ func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymen
 		TradeType:      src.TradeType,
 		TradeNo:        src.TradeNo,
 		Subject:        src.Subject,
-		BuyerId:        src.BuyerId,
-		PayerId:        src.PayerId,
-		TotalAmount:    src.TotalAmount,
-		DeductAmount:   src.DeductAmount,
-		AdjustAmount:   src.AdjustAmount,
-		TransactionFee: src.TransactionFee,
-		FinalAmount:    src.FinalAmount,
-		PaidAmount:     src.PaidAmount,
+		BuyerId:        int64(src.BuyerId),
+		PayerId:        int64(src.PayerId),
+		TotalAmount:    int64(src.TotalAmount),
+		DeductAmount:   int64(src.DeductAmount),
+		AdjustAmount:   int64(src.AdjustAmount),
+		TransactionFee: int64(src.TransactionFee),
+		FinalAmount:    int64(src.FinalAmount),
+		PaidAmount:     int64(src.PaidAmount),
 		PayFlag:        int32(src.PayFlag),
 		FinalFlag:      int32(src.FinalFlag),
 		ExtraData:      src.ExtraData,
 		State:          int32(src.State),
-		SubmitTime:     src.SubmitTime,
-		ExpiresTime:    src.ExpiresTime,
-		PaidTime:       src.PaidTime,
+		SubmitTime:     int64(src.SubmitTime),
+		ExpiresTime:    int64(src.ExpiresTime),
+		PaidTime:       int64(src.PaidTime),
 		SubOrder:       src.SubOrder == 1,
 		OrderType:      int32(src.OrderType),
 		OutOrderNo:     src.OutOrderNo,

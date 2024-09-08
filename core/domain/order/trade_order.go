@@ -197,7 +197,7 @@ func (o *tradeOrderImpl) fixFinalAmount() {
 func (o *tradeOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
 	v.SellerId = int(o.value.VendorId)
-	v.TotalAmount = o.value.FinalAmount
+	v.TotalAmount = int(o.value.FinalAmount)
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
 	return o.paymentOrder.Submit()
 }

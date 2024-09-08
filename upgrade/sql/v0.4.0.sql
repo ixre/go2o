@@ -1139,3 +1139,39 @@ COMMENT ON COLUMN "public".mm_oauth_account.profile_photo IS '头像地址';
 COMMENT ON COLUMN "public".mm_oauth_account.update_time IS '更新时间';
 
 DROP TABLE IF EXISTS "public".mm_oauth_account CASCADE;
+
+
+-- 2024-09-08 分账
+
+ALTER TABLE "public".pay_order 
+  ADD COLUMN divide_status int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".pay_order.divide_status IS '分账状态 0:未分账  1:分账中  2:已完成分账';
+
+DROP TABLE IF EXISTS pay_divide CASCADE;
+CREATE TABLE pay_divide (
+  id            BIGSERIAL NOT NULL, 
+  pay_id        int8 NOT NULL, 
+  divide_type   int4 NOT NULL, 
+  user_id       int8 NOT NULL, 
+  divide_amount int8 NOT NULL, 
+  out_tx_no     varchar(40) NOT NULL, 
+  remark        varchar(20) NOT NULL, 
+  create_time   int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE pay_divide IS '支付分账';
+COMMENT ON COLUMN pay_divide.id IS '编号';
+COMMENT ON COLUMN pay_divide.pay_id IS '支付单ID';
+COMMENT ON COLUMN pay_divide.divide_type IS '分账类型: 1: 平台  2: 商户  3: 会员';
+COMMENT ON COLUMN pay_divide.user_id IS '分账接收方ID';
+COMMENT ON COLUMN pay_divide.divide_amount IS '分账金额';
+COMMENT ON COLUMN pay_divide.out_tx_no IS '外部交易单号';
+COMMENT ON COLUMN pay_divide.remark IS '备注';
+COMMENT ON COLUMN pay_divide.create_time IS '创建时间';
+
+
+ALTER TABLE "public".pay_order 
+  ADD COLUMN divide_status int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".pay_order.divide_status IS '分账状态 0:未分账  1: 分账中  2: 已完成分账';
+
+ALTER TABLE pay_order RENAME COLUMN state TO status;
+ALTER TABLE pay_order RENAME COLUMN procedure_fee TO transaction_fee;

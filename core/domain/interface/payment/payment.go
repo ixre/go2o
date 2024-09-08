@@ -13,6 +13,7 @@ package payment
 import (
 	//"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
 // 支付通道
@@ -164,10 +165,16 @@ type (
 		Refund(amount int) error
 		// ChanName 获取支付通道字符串
 		ChanName(method int) string
+		// Divide 分账
+		Divide(outTxNo string, divides []*DivideData) error
+		// FinishDive 完成分账
+		FinishDivide() error
 	}
 
 	// IPaymentRepo 支付仓储
 	IPaymentRepo interface {
+		// DivideRepo 分账仓储
+		DivideRepo() fw.Repository[PayDivide]
 		// GetPaymentOrderById 根据编号获取支付单
 		GetPaymentOrderById(id int) IPaymentOrder
 		// DeletePaymentOrder 拆分后删除父支付单
@@ -213,68 +220,21 @@ type (
 		// TradeChannels 支付通道
 		TradeChannels []*TradeMethodData
 	}
-	// Order 支付单
-	Order struct {
-		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
-		// 卖家编号
-		SellerId int `db:"seller_id"`
-		// 交易类型
-		TradeType string `db:"trade_type"`
-		// 交易号
-		TradeNo string `db:"trade_no"`
-		// 支付单的类型，如购物或其他
-		OrderType int `db:"order_type"`
-		// 是否为子订单
-		SubOrder int `db:"sub_order"`
-		// 外部订单号
-		OutOrderNo string `db:"out_order_no"`
-		// 支付单详情
-		Subject string `db:"subject"`
-		// 买家编号
-		BuyerId int64 `db:"buyer_id"`
-		// 支付用户编号
-		PayerId int64 `db:"payer_id"`
-		// 优惠金额,todo: 删除但目前依赖于优惠券
-		DiscountAmount int64 `db:"-"`
-		// 调整金额
-		AdjustAmount int64 `db:"adjust_amount"`
-		// 共计金额，包含抵扣金额
-		TotalAmount int64 `db:"total_amount"`
-		// 抵扣金额
-		DeductAmount int64 `db:"deduct_amount"`
-		// 手续费
-		TransactionFee int64 `db:"procedure_fee"`
-		// 最终支付金额，包含手续费，不包含抵扣金额
-		FinalAmount int64 `db:"final_amount"`
-		// 实付金额
-		PaidAmount int64 `db:"paid_amount"`
-		// 可⽤支付方式
-		PayFlag int `db:"pay_flag"`
-		// 实际支付方式
-		FinalFlag int `db:"final_flag"`
-		// 其他支付信息
-		ExtraData string `db:"extra_data"`
-		// 交易支付渠道
-		TradeChannel int `db:"trade_channel"`
-		// 外部交易提供商
-		OutTradeSp string `db:"out_trade_sp"`
-		// 外部交易订单号
-		OutTradeNo string `db:"out_trade_no"`
-		// 订单状态
-		State int `db:"state"`
-		// 提交时间
-		SubmitTime int64 `db:"submit_time"`
-		// 支付过期时间
-		ExpiresTime int64 `db:"expires_time"`
-		// 支付时间
-		PaidTime int64 `db:"paid_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-		// 交易途径支付信息
-		TradeMethods []*TradeMethodData `db:"-"`
+
+	// PaymentDivideEvent 支付分账事件
+	PaymentDivideEvent struct {
+		// 支付单
+		Order IPaymentOrder
+		// 分账数据
+		Divides []*DivideData
 	}
 
+	// 支付单分账数据
+	DivideData struct {
+		DivideType   int
+		UserId       int
+		DivideAmount int
+	}
 	// TradeMethodData 支付单项
 	TradeMethodData struct {
 		// 编号
@@ -329,3 +289,94 @@ type (
 		Highlight int `db:"highlight"`
 	}
 )
+
+// Order 支付单
+type Order struct {
+	// Id
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// SellerId
+	SellerId int `json:"sellerId" db:"seller_id" gorm:"column:seller_id" bson:"sellerId"`
+	// TradeType
+	TradeType string `json:"tradeType" db:"trade_type" gorm:"column:trade_type" bson:"tradeType"`
+	// TradeNo
+	TradeNo string `json:"tradeNo" db:"trade_no" gorm:"column:trade_no" bson:"tradeNo"`
+	// Subject
+	Subject string `json:"subject" db:"subject" gorm:"column:subject" bson:"subject"`
+	// OrderType
+	OrderType int `json:"orderType" db:"order_type" gorm:"column:order_type" bson:"orderType"`
+	// OutOrderNo
+	OutOrderNo string `json:"outOrderNo" db:"out_order_no" gorm:"column:out_order_no" bson:"outOrderNo"`
+	// BuyerId
+	BuyerId int `json:"buyerId" db:"buyer_id" gorm:"column:buyer_id" bson:"buyerId"`
+	// PayerId
+	PayerId int `json:"payerId" db:"payer_id" gorm:"column:payer_id" bson:"payerId"`
+	// AdjustAmount
+	AdjustAmount int `json:"adjustAmount" db:"adjust_amount" gorm:"column:adjust_amount" bson:"adjustAmount"`
+	// TotalAmount
+	TotalAmount int `json:"totalAmount" db:"total_amount" gorm:"column:total_amount" bson:"totalAmount"`
+	// DeductAmount
+	DeductAmount int `json:"deductAmount" db:"deduct_amount" gorm:"column:deduct_amount" bson:"deductAmount"`
+	// TransactionFee
+	TransactionFee int `json:"transactionFee" db:"transaction_fee" gorm:"column:transaction_fee" bson:"transactionFee"`
+	// FinalAmount
+	FinalAmount int `json:"finalAmount" db:"final_amount" gorm:"column:final_amount" bson:"finalAmount"`
+	// PaidAmount
+	PaidAmount int `json:"paidAmount" db:"paid_amount" gorm:"column:paid_amount" bson:"paidAmount"`
+	// PayFlag
+	PayFlag int `json:"payFlag" db:"pay_flag" gorm:"column:pay_flag" bson:"payFlag"`
+	// FinalFlag
+	FinalFlag int `json:"finalFlag" db:"final_flag" gorm:"column:final_flag" bson:"finalFlag"`
+	// ExtraData
+	ExtraData string `json:"extraData" db:"extra_data" gorm:"column:extra_data" bson:"extraData"`
+	// TradeChannel
+	TradeChannel int `json:"tradeChannel" db:"trade_channel" gorm:"column:trade_channel" bson:"tradeChannel"`
+	// OutTradeSp
+	OutTradeSp string `json:"outTradeSp" db:"out_trade_sp" gorm:"column:out_trade_sp" bson:"outTradeSp"`
+	// OutTradeNo
+	OutTradeNo string `json:"outTradeNo" db:"out_trade_no" gorm:"column:out_trade_no" bson:"outTradeNo"`
+	// State
+	State int `json:"status" db:"status" gorm:"column:status" bson:"status"`
+	// SubmitTime
+	SubmitTime int `json:"submitTime" db:"submit_time" gorm:"column:submit_time" bson:"submitTime"`
+	// ExpiresTime
+	ExpiresTime int `json:"expiresTime" db:"expires_time" gorm:"column:expires_time" bson:"expiresTime"`
+	// PaidTime
+	PaidTime int `json:"paidTime" db:"paid_time" gorm:"column:paid_time" bson:"paidTime"`
+	// UpdateTime
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// SubOrder
+	SubOrder int `json:"subOrder" db:"sub_order" gorm:"column:sub_order" bson:"subOrder"`
+	// 优惠金额,todo: 删除但目前依赖于优惠券
+	DiscountAmount int64 `db:"-" gorm:"-:all"`
+	// 交易途径支付信息
+	TradeMethods []*TradeMethodData `db:"-" gorm:"-:all"`
+}
+
+func (p Order) TableName() string {
+	return "pay_order"
+}
+
+// PayDivide 支付分账
+
+type PayDivide struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 支付单ID
+	PayId int `json:"payId" db:"pay_id" gorm:"column:pay_id" bson:"payId"`
+	// 分账类型: 1: 平台  2: 商户  3: 会员
+	DivideType int `json:"divideType" db:"divide_type" gorm:"column:divide_type" bson:"divideType"`
+	// 分账接收方ID
+	UserId int `json:"userId" db:"user_id" gorm:"column:user_id" bson:"userId"`
+	// 分账金额
+	DivideAmount int `json:"divideAmount" db:"divide_amount" gorm:"column:divide_amount" bson:"divideAmount"`
+	// 外部交易单号
+	OutTxNo string `json:"outTxNo" db:"out_tx_no" gorm:"column:out_tx_no" bson:"outTxNo"`
+	// 备注
+	Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
+	// 创建时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+}
+
+func (p PayDivide) TableName() string {
+	return "pay_divide"
+}

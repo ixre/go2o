@@ -31,6 +31,7 @@ func NewPaymentEventHandler(memberRepo member.IMemberRepo, orderRepo order.IOrde
 	}
 }
 
+// 处理支付成功事件
 func (p *PaymentEventHandler) HandlePaymentSuccessEvent(event interface{}) {
 	e := event.(*payment.PaymentSuccessEvent)
 	ov := e.Order.Get()
@@ -40,6 +41,12 @@ func (p *PaymentEventHandler) HandlePaymentSuccessEvent(event interface{}) {
 	case payment.TypeRecharge:
 		p.handleRechargeSuccessEvent(e)
 	}
+}
+
+// 处理支付分账事件
+func (p *PaymentEventHandler) HandlePaymentDivideEvent(event interface{}) {
+	//e := event.(*payment.PaymentDivideEvent)
+	// note: 支付分账事件由具体的支付渠道通过订阅事件处理，这里不作处理
 }
 
 // 处理商城订单支付完成
@@ -56,7 +63,7 @@ func (p *PaymentEventHandler) handleOrderSuccessEvent(e *payment.PaymentSuccessE
 // 处理充值订单支付完成
 func (p *PaymentEventHandler) handleRechargeSuccessEvent(e *payment.PaymentSuccessEvent) {
 	ov := e.Order.Get()
-	m := p._memberRepo.GetMember(ov.BuyerId)
+	m := p._memberRepo.GetMember(int64(ov.BuyerId))
 	if m == nil {
 		logger.Error("recharge success but member is nil, payment order id: %d", e.Order.GetAggregateRootId())
 		return

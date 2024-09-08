@@ -305,7 +305,7 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	// }
 
 	rd.IsMergePay = len(no.GetSubOrders()) > 1
-	rd.TradeAmount = ipv.FinalAmount
+	rd.TradeAmount = int64(ipv.FinalAmount)
 	rd.OrderNo = ipv.OutOrderNo
 	rd.PaymentState = ipv.State
 	rd.PaymentOrderNo = ipv.TradeNo

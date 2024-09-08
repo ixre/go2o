@@ -362,9 +362,9 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 				pv := po.Get()
 				ret.DeductAmount = int32(pv.DeductAmount)
 				ret.FinalAmount = int32(pv.FinalAmount)
-				ret.ExpiresTime = pv.ExpiresTime
+				ret.ExpiresTime = int64(pv.ExpiresTime)
 				ret.TotalAmount = int32(pv.TotalAmount)
-				ret.PaymentTime = pv.PaidTime
+				ret.PaymentTime = int64(pv.PaidTime)
 				for _, t := range po.TradeMethods() {
 					pm := s.parseTradeMethodDataDto(t)
 					pm.ChanName = po.ChanName(t.Method)
