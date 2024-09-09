@@ -68,6 +68,8 @@ service PaymentService {
 	rpc Divide(PaymentDivideRequest) returns(TxResult);
 	// FinishDive 完成分账
 	rpc FinishDivide(PaymentOrderRequest) returns(TxResult);
+    // UpdateDivideStatus 更新分账状态
+    rpc UpdateDivideStatus(UpdateDivideStatusRequest) returns(TxResult);
     // QueryDivideOrders 查询可用于分账的订单
     rpc QueryDivideOrders(DivideOrdersRequest)returns(DivideOrdersResponse);
     // 支付网关(仅交易单使用)
@@ -405,4 +407,16 @@ message SDivideOrderInfo{
 // 分账订单响应
 message DivideOrdersResponse{
     repeated SDivideOrderInfo orders = 1;
+}
+
+// 更新分账状态请求
+message UpdateDivideStatusRequest{
+    // 支付单编号
+    int64 payId = 1;
+    // 分账编号
+    int64 divideId = 2;
+    // 是否成功
+    bool success = 3;
+    // 备注
+    string remark = 4;
 }

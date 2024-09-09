@@ -24,6 +24,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/gof/domain/eventbus"
 )
 
@@ -780,9 +781,12 @@ func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData)
 			PayId:        p.GetAggregateRootId(),
 			DivideType:   v.DivideType,
 			UserId:       v.UserId,
-			DivideAmount: divideAmount,
+			DivideAmount: v.DivideAmount,
 			OutTxNo:      outTxNo,
 			Remark:       "",
+			SubmitStatus: 1,
+			SubmitRemark: "",
+			SubmitTime:   0,
 			CreateTime:   unix,
 		})
 		if err != nil {
@@ -819,4 +823,23 @@ func (p *paymentOrderImpl) FinishDivide() error {
 		return err
 	}
 	return nil
+}
+
+// UpdateDivideStatus implements payment.IPaymentOrder.
+func (p *paymentOrderImpl) UpdateDivideStatus(divideId int, success bool, remark string) error {
+	divide := p.repo.DivideRepo().Get(divideId)
+	if divide == nil {
+		return errors.New("分账记录不存在")
+	}
+	if divide.PayId != p.GetAggregateRootId() {
+		return errors.New("分账记录不属于当前订单")
+	}
+	if divide.SubmitStatus != 1 {
+		return errors.New("分账记录状态错误")
+	}
+	divide.SubmitStatus = types.Ternary(success, 2, 3)
+	divide.SubmitRemark = remark
+	divide.SubmitTime = int(time.Now().Unix())
+	_, err := p.repo.DivideRepo().Save(divide)
+	return err
 }

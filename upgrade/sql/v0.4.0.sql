@@ -1156,6 +1156,9 @@ CREATE TABLE pay_divide (
   divide_amount int8 NOT NULL, 
   out_tx_no     varchar(40) NOT NULL, 
   remark        varchar(20) NOT NULL, 
+  submit_status int4 NOT NULL, 
+  submit_remark varchar(40) NOT NULL, 
+  submit_time   int8 NOT NULL, 
   create_time   int8 NOT NULL, 
   PRIMARY KEY (id));
 COMMENT ON TABLE pay_divide IS '支付分账';
@@ -1166,7 +1169,11 @@ COMMENT ON COLUMN pay_divide.user_id IS '分账接收方ID';
 COMMENT ON COLUMN pay_divide.divide_amount IS '分账金额';
 COMMENT ON COLUMN pay_divide.out_tx_no IS '外部交易单号';
 COMMENT ON COLUMN pay_divide.remark IS '备注';
+COMMENT ON COLUMN pay_divide.submit_status IS '分账提交状态 1:待提交  2: 成功  3:失败';
+COMMENT ON COLUMN pay_divide.submit_remark IS '分账备注';
+COMMENT ON COLUMN pay_divide.submit_time IS '分账提交时间';
 COMMENT ON COLUMN pay_divide.create_time IS '创建时间';
+
 
 
 ALTER TABLE "public".pay_order 

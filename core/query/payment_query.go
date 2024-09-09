@@ -66,3 +66,13 @@ func (p *PaymentQuery) QueryDivideOrders(memberId int, orderType int) []*DivideO
 	}
 	return arr
 }
+
+// 查询待提交的分账记录
+func (p *PaymentQuery) QueryAwaitSubmitDivides(unix int64, size int) ([]*payment.PayDivide, error) {
+	rows := p._divideRepo.FindList(nil, "submit_status=? AND submit_time < ? AND user_id <> 0", payment.DivideStatusPending, unix)
+	return rows, nil
+}
+
+func (p *PaymentQuery) GetPaymentOrder(payId int) *payment.Order {
+	return p._orderRepo.Get(payId)
+}

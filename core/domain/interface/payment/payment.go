@@ -81,6 +81,15 @@ const (
 	DivideUserBuyer = 3
 )
 
+const (
+	// DivideStatusPending 待提交
+	DivideStatusPending = 1
+	// DivideStatusSuccess 提交分账成功
+	DivideStatusSuccess = 2
+	// DivideStatusFailed 提交分账失败
+	DivideStatusFailed = 3
+)
+
 var (
 	ErrNoSuchPaymentOrder = domain.NewError(
 		"err_no_such_payment_order", "支付单不存在")
@@ -187,6 +196,8 @@ type (
 		Divide(outTxNo string, divides []*DivideData) error
 		// FinishDive 完成分账
 		FinishDivide() error
+		// UpdateDivideStatus 更新分账提交状态
+		UpdateDivideStatus(divideId int, success bool, remark string) error
 	}
 
 	// IPaymentRepo 支付仓储
@@ -351,9 +362,9 @@ type Order struct {
 	ExtraData string `json:"extraData" db:"extra_data" gorm:"column:extra_data" bson:"extraData"`
 	// TradeChannel
 	TradeChannel int `json:"tradeChannel" db:"trade_channel" gorm:"column:trade_channel" bson:"tradeChannel"`
-	// OutTradeSp
+	// OutTradeSp 外部支付服务商
 	OutTradeSp string `json:"outTradeSp" db:"out_trade_sp" gorm:"column:out_trade_sp" bson:"outTradeSp"`
-	// OutTradeNo
+	// OutTradeNo 外部支付服务商交易单号
 	OutTradeNo string `json:"outTradeNo" db:"out_trade_no" gorm:"column:out_trade_no" bson:"outTradeNo"`
 	// Status
 	Status int `json:"status" db:"status" gorm:"column:status" bson:"status"`
@@ -396,6 +407,12 @@ type PayDivide struct {
 	OutTxNo string `json:"outTxNo" db:"out_tx_no" gorm:"column:out_tx_no" bson:"outTxNo"`
 	// 备注
 	Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
+	// 分账提交状态 1:待提交  2: 成功  3:失败
+	SubmitStatus int `json:"submitStatus" db:"submit_status" gorm:"column:submit_status" bson:"submitStatus"`
+	// 分账备注
+	SubmitRemark string `json:"submitRemark" db:"submit_remark" gorm:"column:submit_remark" bson:"submitRemark"`
+	// 分账提交时间
+	SubmitTime int `json:"submitTime" db:"submit_time" gorm:"column:submit_time" bson:"submitTime"`
 	// 创建时间
 	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 }

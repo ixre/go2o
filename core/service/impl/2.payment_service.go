@@ -485,3 +485,12 @@ func (p *paymentService) FinishDivide(_ context.Context, req *proto.PaymentOrder
 	err := ip.FinishDivide()
 	return p.errorV2(err), nil
 }
+
+func (p *paymentService) UpdateDivideStatus(_ context.Context, req *proto.UpdateDivideStatusRequest) (*proto.TxResult, error) {
+	ip := p.repo.GetPaymentOrderById(int(req.PayId))
+	if ip == nil {
+		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+	}
+	err := ip.UpdateDivideStatus(int(req.DivideId), req.Success, req.Remark)
+	return p.errorV2(err), nil
+}
