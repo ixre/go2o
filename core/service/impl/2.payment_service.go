@@ -17,6 +17,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/order"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/module"
+	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 )
 
@@ -26,16 +27,37 @@ type paymentService struct {
 	repo       payment.IPaymentRepo
 	orderRepo  order.IOrderRepo
 	memberRepo member.IMemberRepo
+	query      *query.PaymentQuery
 	serviceUtil
 	proto.UnimplementedPaymentServiceServer
 }
 
+// QueryDivideOrders implements proto.PaymentServiceServer.
+func (p *paymentService) QueryDivideOrders(ctx context.Context, req *proto.DivideOrdersRequest) (*proto.DivideOrdersResponse, error) {
+	arr := p.query.QueryDivideOrders(int(req.MemberId), int(req.OrderType))
+	ret := &proto.DivideOrdersResponse{
+		Orders: make([]*proto.SDivideOrderInfo, 0),
+	}
+	for _, v := range arr {
+		ret.Orders = append(ret.Orders, &proto.SDivideOrderInfo{
+			TradeNo:       v.TradeNo,
+			Amount:        int64(v.Amount),
+			DividedAmount: int64(v.DividedAmount),
+			CreateTime:    int64(v.CreateTime),
+			DivideStatus:  int32(v.DivideStatus),
+		})
+	}
+	return ret, nil
+}
+
 func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo,
-	memberRepo member.IMemberRepo) proto.PaymentServiceServer {
+	memberRepo member.IMemberRepo,
+	query *query.PaymentQuery) proto.PaymentServiceServer {
 	return &paymentService{
 		repo:       rep,
 		orderRepo:  orderRepo,
 		memberRepo: memberRepo,
+		query:      query,
 	}
 }
 
@@ -199,7 +221,7 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 		d.ErrMsg = "无效的支付订单"
 		return d, nil
 	}
-	d.TradeState = payment.StateAwaitingPayment // 待支付
+	d.TradeStatus = payment.StateAwaitingPayment // 待支付
 	for _, ip := range tradeOrders {
 		// 检查支付状态
 		if checkPay {
@@ -213,13 +235,13 @@ func (p *paymentService) getMergePaymentOrdersInfo(tradeNo string,
 			OrderNo:        iv.OutOrderNo,
 			Subject:        iv.Subject,
 			TradeType:      iv.TradeType,
-			State:          int32(iv.State),
+			Status:         int32(iv.Status),
 			TransactionFee: int64(iv.TransactionFee),
 			FinalAmount:    int64(iv.FinalAmount),
 		}
 		// 更新支付状态
-		if so.State != payment.StateAwaitingPayment {
-			d.TradeState = so.State
+		if so.Status != payment.StateAwaitingPayment {
+			d.TradeStatus = so.Status
 		}
 		// 更新支付标志
 		if i := int32(iv.PayFlag); d.PayFlag != i {
@@ -294,7 +316,7 @@ func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Or
 		PayFlag:        int(src.PayFlag),
 		FinalFlag:      int(src.FinalFlag),
 		ExtraData:      src.ExtraData,
-		State:          int(src.State),
+		Status:         int(src.Status),
 		SubmitTime:     int(src.SubmitTime),
 		ExpiresTime:    int(src.ExpiresTime),
 		PaidTime:       int(src.PaidTime),
@@ -324,7 +346,7 @@ func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymen
 		PayFlag:        int32(src.PayFlag),
 		FinalFlag:      int32(src.FinalFlag),
 		ExtraData:      src.ExtraData,
-		State:          int32(src.State),
+		Status:         int32(src.Status),
 		SubmitTime:     int64(src.SubmitTime),
 		ExpiresTime:    int64(src.ExpiresTime),
 		PaidTime:       int64(src.PaidTime),
@@ -430,20 +452,28 @@ func (p *paymentService) DeleteIntegrateApp(_ context.Context, id *proto.PayInte
 
 // Divide implements proto.PaymentServiceServer.
 func (p *paymentService) Divide(_ context.Context, req *proto.PaymentDivideRequest) (*proto.TxResult, error) {
-	ip := p.repo.GetPaymentOrder(req.TradeNo)
-	if ip == nil {
-		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+	if len(req.SubDivides) == 0 {
+		return p.errorV2(errors.New("分账明细不正确")), nil
 	}
-	divides := make([]*payment.DivideData, len(req.Divides))
-	for i, v := range req.Divides {
-		divides[i] = &payment.DivideData{
-			DivideType:   int(v.DivideType),
-			UserId:       int(v.UserId),
-			DivideAmount: int(v.DivideAmount),
+	for _, v := range req.SubDivides {
+		ip := p.repo.GetPaymentOrder(v.TradeNo)
+		if ip == nil {
+			return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+		}
+		divides := make([]*payment.DivideData, len(v.Divides))
+		for i, v := range v.Divides {
+			divides[i] = &payment.DivideData{
+				DivideType:   int(v.DivideType),
+				UserId:       int(v.UserId),
+				DivideAmount: int(v.DivideAmount),
+			}
+		}
+		err := ip.Divide(req.OutTxNo, divides)
+		if err != nil {
+			return p.errorV2(err), nil
 		}
 	}
-	err := ip.Divide(req.OutTxNo, divides)
-	return p.errorV2(err), nil
+	return p.errorV2(nil), nil
 }
 
 // FinishDivide implements proto.PaymentServiceServer.

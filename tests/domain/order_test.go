@@ -143,11 +143,11 @@ func TestCancelOrder(t *testing.T) {
 	py := o.GetPaymentOrder()
 	err = py.PaymentByWallet("支付订单")
 	pv := py.Get()
-	payState := pv.State
+	payState := pv.Status
 	if payState == payment.StateFinished {
 		t.Logf("订单支付完成,金额：%d", pv.FinalAmount)
 	} else {
-		t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.TradeNo())
+		t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.Status, py.TradeNo())
 	}
 	t.Logf("支付单信息：%#v", pv)
 

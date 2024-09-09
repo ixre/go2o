@@ -1862,7 +1862,7 @@ func (m *memberService) SubmitRechargePaymentOrder(_ context.Context, req *proto
 		TradeChannel:   0,
 		OutTradeSp:     "",
 		OutTradeNo:     "",
-		State:          0,
+		Status:         0,
 		SubmitTime:     0,
 		ExpiresTime:    0,
 		PaidTime:       0,

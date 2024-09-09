@@ -68,7 +68,8 @@ service PaymentService {
 	rpc Divide(PaymentDivideRequest) returns(TxResult);
 	// FinishDive 完成分账
 	rpc FinishDivide(PaymentOrderRequest) returns(TxResult);
-
+    // QueryDivideOrders 查询可用于分账的订单
+    rpc QueryDivideOrders(DivideOrdersRequest)returns(DivideOrdersResponse);
     // 支付网关(仅交易单使用)
     rpc GatewayV1 (PayGatewayRequest) returns (TxResult);
     // 获取支付预交易数据
@@ -82,7 +83,7 @@ service PaymentService {
      * @param storeCode 店铺编号
      * @param tradeNo   交易号
      * @param Data  支付数据
-     * @return 支付结果,返回:order_state
+     * @return 支付结果,返回:order_status
      */
     rpc MixedPayment (MixedPaymentRequest) returns (TxResult);
     /** 保存集成支付应用 */
@@ -240,7 +241,7 @@ message SPaymentOrder {
     /** 其他支付信息 */
     string extraData = 21;
     /** 订单状态 */
-    sint32 state = 22;
+    sint32 status = 22;
     /** 提交时间 */
     sint64 submitTime = 23;
     /** 过期时间 */
@@ -296,7 +297,7 @@ message SPrepareTradeData {
     /** 支付标志 */
     sint32 payFlag = 4;
     /** 交易状态 */
-    sint32 tradeState = 5;
+    sint32 tradeStatus = 5;
     /** 交易订单 */
     repeated SPaymentOrderData tradeOrders = 6;
     /** 累计金额 */
@@ -316,7 +317,7 @@ message SPaymentOrderData {
     /** 交易类型 */
     string tradeType = 3;
     /** 状态 */
-    sint32 state = 4;
+    sint32 status = 4;
     /** 手续费 */
     int64 transactionFee = 5;
     /** 最终支付金额 */
@@ -355,10 +356,16 @@ message SIntegrateApp{
 
 // 支付分账请求
 message PaymentDivideRequest{
+    // 外部交易单号
+    string outTxNo = 1;
+    // 分账明细
+    repeated SPaymentSubDivide subDivides = 2;
+}
+
+// 支付单分账子单,一次分账可能涉及多个支付单
+message SPaymentSubDivide{
     // 支付单号
     string tradeNo = 1;
-    // 外部交易单号
-    string outTxNo = 2;
     // 分账明细
     repeated SDivideData divides = 3;
 }
@@ -371,4 +378,31 @@ message SDivideData{
     int64 userId = 2;
     // 分账金额
     int64 divideAmount = 3;
+}
+
+// 查询可用于分账的订单请求
+message DivideOrdersRequest{
+    // 会员ID
+    int64 memberId= 1;
+    // 支付单类型
+    int32 orderType = 2;
+}
+
+// 分账订单信息
+message SDivideOrderInfo{
+    // 支付单号
+    string tradeNo = 1;
+    // 可分账金额
+    int64 amount = 2;
+    // 已分账金额
+    int64 dividedAmount = 3;
+    // 分账状态
+    int32 divideStatus = 4;
+    // 支付单创建时间
+    sint64 createTime = 5;
+}
+
+// 分账订单响应
+message DivideOrdersResponse{
+    repeated SDivideOrderInfo orders = 1;
 }

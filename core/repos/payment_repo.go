@@ -143,9 +143,9 @@ func (p *paymentRepoImpl) CreatePaymentOrder(
 
 // 保存支付单
 func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
-	stat := v.State
+	stat := v.Status
 	if v.Id > 0 {
-		stat = p.GetPaymentOrderById(v.Id).Get().State
+		stat = p.GetPaymentOrderById(v.Id).Get().Status
 	}
 	id, err := orm.Save(p._orm, v, v.Id)
 	if err == nil {
@@ -155,7 +155,7 @@ func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 		// 缓存订单号与订单的关系
 		p.Storage.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.Id, DefaultCacheSeconds*10)
 		// 已经更改过状态,且为已成功,则推送到队列中
-		if stat != v.State && v.State == payment.StateFinished {
+		if stat != v.Status && v.Status == payment.StateFinished {
 			p.notifyPaymentFinish(v.Id)
 		}
 	}
@@ -286,7 +286,7 @@ func (p *paymentRepoImpl) DeleteIntegrateApp(primary interface{}) error {
 func (p *paymentRepoImpl) GetAwaitCloseOrders(lastId int, size int) []payment.IPaymentOrder {
 	list := make([]*payment.Order, 0)
 	err := p._orm.Select(&list, `
-		state = 1 AND expires_time < $1 
+		status = 1 AND expires_time < $1 
 		AND id > $2 ORDER BY id LIMIT $3`,
 		time.Now().Unix(),
 		lastId,

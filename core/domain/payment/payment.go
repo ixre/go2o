@@ -60,7 +60,7 @@ func (p *paymentOrderImpl) TradeNo() string {
 
 // State 支付单状态
 func (p *paymentOrderImpl) State() int {
-	return int(p.value.State)
+	return int(p.value.Status)
 }
 
 // Flag 支付标志
@@ -155,7 +155,7 @@ func (p *paymentOrderImpl) prepareSubmit() {
 	p.value.SubmitTime = int(unix)
 	p.value.UpdateTime = int(unix)
 	// 初始化状态
-	p.value.State = payment.StateAwaitingPayment
+	p.value.Status = payment.StateAwaitingPayment
 	// 初始化支付用户编号
 	if p.value.PayerId <= 0 {
 		p.value.PayerId = p.value.BuyerId
@@ -167,7 +167,7 @@ func (p *paymentOrderImpl) CheckPaymentState() error {
 	if p.GetAggregateRootId() <= 0 {
 		return payment.ErrPaymentNotSave
 	}
-	switch p.value.State {
+	switch p.value.Status {
 	case payment.StateAwaitingPayment:
 		if p.value.FinalAmount == 0 {
 			return payment.ErrFinalAmount
@@ -184,7 +184,7 @@ func (p *paymentOrderImpl) CheckPaymentState() error {
 
 // 检查是否支付完成, 且返回是否为第一次支付成功,
 func (p *paymentOrderImpl) checkOrderFinalAmount() error {
-	if p.value.State == payment.StateAwaitingPayment {
+	if p.value.Status == payment.StateAwaitingPayment {
 		if p.value.TotalAmount <= 0 { // 检查支付金额
 			return payment.ErrItemAmount
 		}
@@ -194,7 +194,7 @@ func (p *paymentOrderImpl) checkOrderFinalAmount() error {
 		p.value.FinalAmount = p.value.TotalAmount - p.value.DeductAmount + p.value.TransactionFee
 		// 如果支付完成,则更新订单状态
 		if p.value.FinalAmount == 0 {
-			p.value.State = payment.StateFinished
+			p.value.Status = payment.StateFinished
 			p.firstFinishPayment = true
 			p.value.PaidTime = int(time.Now().Unix())
 		}
@@ -205,10 +205,10 @@ func (p *paymentOrderImpl) checkOrderFinalAmount() error {
 // 取消支付,并退款
 func (p *paymentOrderImpl) Cancel() (err error) {
 	// 如果已取消或订单再次回调到支付单取消, 不做任何处理
-	if p.value.State == payment.StateClosed {
+	if p.value.Status == payment.StateClosed {
 		return nil
 	}
-	p.value.State = payment.StateClosed
+	p.value.Status = payment.StateClosed
 	if err = p.saveOrder(); err != nil {
 		return err
 	}
@@ -294,7 +294,7 @@ func (p *paymentOrderImpl) TradeFinish() error {
 	if err := p.CheckPaymentState(); err != nil {
 		return err
 	}
-	p.value.State = payment.StateFinished
+	p.value.Status = payment.StateFinished
 	p.value.OutTradeNo = ""
 	p.value.PaidTime = int(time.Now().Unix())
 	p.firstFinishPayment = true
@@ -307,17 +307,17 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 	if len(outerNo) < 8 {
 		return payment.ErrOuterNo
 	}
-	p.value.State = 1
-	if p.value.State == payment.StateFinished {
+	p.value.Status = 1
+	if p.value.Status == payment.StateFinished {
 		return payment.ErrOrderPayed
 	}
-	if p.value.State == payment.StateRefunded {
+	if p.value.Status == payment.StateRefunded {
 		return payment.ErrOrderRefunded
 	}
-	if p.value.State == payment.StateClosed {
+	if p.value.Status == payment.StateClosed {
 		return payment.ErrOrderClosed
 	}
-	p.value.State = payment.StateFinished
+	p.value.Status = payment.StateFinished
 	p.value.OutTradeSp = spName
 	p.value.OutTradeNo = outerNo
 	p.value.PaidTime = int(time.Now().Unix())
@@ -789,18 +789,24 @@ func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData)
 			return err
 		}
 	}
+	var err error
 	if divideAmount+dividedAmount == p.value.FinalAmount {
 		// 如果金额全部分账，则自动标记为分账完成
-		return p.FinishDivide()
-	}
-	if p.value.DivideStatus == payment.DivideNoDivide {
+		err = p.FinishDivide()
+	} else if p.value.DivideStatus == payment.DivideNoDivide {
 		// 修改状态为待分账
 		p.value.DivideStatus = payment.DividePending
 		p.value.UpdateTime = unix
-		_, err := p.repo.SavePaymentOrder(p.value)
-		return err
+		_, err = p.repo.SavePaymentOrder(p.value)
 	}
-	return nil
+	if err == nil {
+		// 发布分账事件
+		eventbus.Publish(&payment.PaymentDivideEvent{
+			Order:   p,
+			Divides: divides,
+		})
+	}
+	return err
 }
 
 // FinishDivide implements payment.IPaymentOrder.

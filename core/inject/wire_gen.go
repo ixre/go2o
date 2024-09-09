@@ -169,6 +169,13 @@ func GetStatisticsQueryService() *query.StatisticsQuery {
 	return statisticsQuery
 }
 
+// GetPaymentQueryService 获取支付查询服务
+func GetPaymentQueryService() *query.PaymentQuery {
+	db := provide.GetGOrm()
+	paymentQuery := query.NewPaymentQuery(db)
+	return paymentQuery
+}
+
 // Injectors from repo.go:
 
 func GetProModelRepo() promodel.IProductModelRepo {
@@ -962,7 +969,8 @@ func GetPaymentService() proto.PaymentServiceServer {
 	iDeliveryRepo := repos.NewDeliverRepo(orm)
 	iShipmentRepo := repos.NewShipmentRepo(orm, iExpressRepo)
 	iOrderRepo := repos.NewOrderRepo(storageInterface, orm, iMerchantRepo, iPaymentRepo, iProductRepo, iCartRepo, iItemRepo, iPromotionRepo, iMemberRepo, iDeliveryRepo, iExpressRepo, iShipmentRepo, iShopRepo, iValueRepo, iRegistryRepo)
-	paymentServiceServer := impl2.NewPaymentService(iPaymentRepo, iOrderRepo, iMemberRepo)
+	paymentQuery := query.NewPaymentQuery(db)
+	paymentServiceServer := impl2.NewPaymentService(iPaymentRepo, iOrderRepo, iMemberRepo, paymentQuery)
 	return paymentServiceServer
 }
 
@@ -1223,7 +1231,7 @@ func GetProviderService() proto.ServiceProviderServiceServer {
 var provideSets = wire.NewSet(provide.GetOrm, provide.GetGOrm, provide.GetOrmInstance, provide.GetStorageInstance, provide.GetApp, provide.GetDb, repos.NewSystemRepo, repos.NewRegistryRepo, repos.NewProModelRepo, repos.NewValueRepo, repos.NewUserRepo, repos.NewWalletRepo, repos.NewNotifyRepo, repos.NewMssRepo, repos.NewExpressRepo, repos.NewShipmentRepo, repos.NewMemberRepo, repos.NewProductRepo, repos.NewItemWholesaleRepo, repos.NewCategoryRepo, repos.NewShopRepo, repos.NewGoodsItemRepo, repos.NewAfterSalesRepo, repos.NewCartRepo, repos.NewArticleRepo, repos.NewMerchantRepo, repos.NewOrderRepo, repos.NewPaymentRepo, repos.NewPromotionRepo, repos.NewStationRepo, repos.NewTagSaleRepo, repos.NewWholesaleRepo, repos.NewPersonFinanceRepository, repos.NewDeliverRepo, repos.NewAdvertisementRepo, repos.NewJobRepository, repos.NewStaffRepo, repos.NewApprovalRepository, repos.NewPageRepo, repos.NewArticleCategoryRepo, repos.NewInvoiceTenantRepo, repos.NewChatRepo, repos.NewWorkorderRepo, repos.NewRbacRepo)
 
 var queryProvideSets = wire.NewSet(
-	provideSets, query.NewStationQuery, query.NewMerchantQuery, query.NewOrderQuery, query.NewMemberQuery, query.NewShopQuery, query.NewItemQuery, query.NewAfterSalesQuery, query.NewContentQuery, query.NewWorkQuery, query.NewWalletQuery, query.NewInvoiceQuery, query.NewAdvertisementQuery, query.NewStatisticsQuery,
+	provideSets, query.NewStationQuery, query.NewMerchantQuery, query.NewOrderQuery, query.NewMemberQuery, query.NewShopQuery, query.NewItemQuery, query.NewAfterSalesQuery, query.NewContentQuery, query.NewWorkQuery, query.NewWalletQuery, query.NewInvoiceQuery, query.NewAdvertisementQuery, query.NewStatisticsQuery, query.NewPaymentQuery,
 )
 
 var daoProvideSets = wire.NewSet(

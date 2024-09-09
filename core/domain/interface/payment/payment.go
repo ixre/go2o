@@ -72,6 +72,15 @@ const (
 	DivideFinished = 2
 )
 
+const (
+	// DivideUserPlatform 平台
+	DivideUserPlatform = 1
+	// DivideUserMerchant 商户
+	DivideUserMerchant = 2
+	// DivideUserBuyer 买家
+	DivideUserBuyer = 3
+)
+
 var (
 	ErrNoSuchPaymentOrder = domain.NewError(
 		"err_no_such_payment_order", "支付单不存在")
@@ -346,8 +355,8 @@ type Order struct {
 	OutTradeSp string `json:"outTradeSp" db:"out_trade_sp" gorm:"column:out_trade_sp" bson:"outTradeSp"`
 	// OutTradeNo
 	OutTradeNo string `json:"outTradeNo" db:"out_trade_no" gorm:"column:out_trade_no" bson:"outTradeNo"`
-	// State
-	State int `json:"status" db:"status" gorm:"column:status" bson:"status"`
+	// Status
+	Status int `json:"status" db:"status" gorm:"column:status" bson:"status"`
 	// SubmitTime
 	SubmitTime int `json:"submitTime" db:"submit_time" gorm:"column:submit_time" bson:"submitTime"`
 	// ExpiresTime
