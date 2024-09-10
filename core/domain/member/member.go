@@ -142,7 +142,7 @@ func (m *memberImpl) GetValue() member.Member {
 // SendCheckCode 发送验证码,并返回验证码
 func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error) {
 	const expiresMinutes = 10 //10分钟生效
-	code := domain.NewCheckCode()
+	code := domain.NewCheckCode(4)
 	m.value.CheckCode = code
 	m.value.CheckExpires = int(time.Now().Add(time.Minute * expiresMinutes).Unix())
 	_, err := m.Save()

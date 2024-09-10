@@ -221,7 +221,7 @@ func (c *checkServiceImpl) SendCode(_ context.Context, r *proto.SendCheckCodeReq
 		// 默认5分钟有效
 		r.Effective = 5
 	}
-	code := domain.NewCheckCode()
+	code := domain.NewCheckCode(4)
 	// 保存校验码信息
 	unix := time.Now().Unix()
 	c.CheckCodeVerifier.SaveData(r.Token,
