@@ -52,13 +52,21 @@ func DeepClone[T any](v *T) (t *T) {
 
 // 转换为Json对象
 func ParseJSONObject(v interface{}) (map[string]interface{}, error) {
-	data, err := json.Marshal(v)
-	if err == nil {
-		var result map[string]interface{}
-		err = json.Unmarshal(data, &result)
-		if err == nil {
-			return result, nil
+	var data []byte
+	switch v := v.(type) {
+	case string:
+		data = []byte(v)
+	default:
+		md, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
 		}
+		data = md
+	}
+	var result map[string]interface{}
+	err := json.Unmarshal(data, &result)
+	if err == nil {
+		return result, nil
 	}
 	return nil, err
 }

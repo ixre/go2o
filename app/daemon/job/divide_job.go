@@ -21,7 +21,7 @@ import (
 )
 
 // SubmitPaymentProviderEndpointDivide提交支付渠道端分账请求
-func SubmitPaymentProviderEndpointDivide(f func(o *payment.PayDivide) error) {
+func SubmitPaymentProviderEndpointDivide(f func(o *payment.PayDivide) (string, error)) {
 	if f == nil {
 		panic("分账处理函数不能为空")
 	}
@@ -40,7 +40,7 @@ func SubmitPaymentProviderEndpointDivide(f func(o *payment.PayDivide) error) {
 			logger.Error("查询待提交分账记录失败，错误信息:%s", err.Error())
 		}
 		for _, order := range orders {
-			err := f(order)
+			divideNo, err := f(order)
 			remark := ""
 			if err != nil {
 				remark = err.Error()
@@ -50,6 +50,7 @@ func SubmitPaymentProviderEndpointDivide(f func(o *payment.PayDivide) error) {
 				DivideId: int64(order.Id),
 				Success:  err == nil,
 				Remark:   remark,
+				DivideNo: divideNo,
 			})
 			if ret.Code > 0 {
 				logger.Error("更新分账记录提交状态失败，id:%d,错误信息:%s", order.Id, ret.Message)

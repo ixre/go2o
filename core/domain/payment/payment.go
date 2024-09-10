@@ -826,7 +826,7 @@ func (p *paymentOrderImpl) FinishDivide() error {
 }
 
 // UpdateDivideStatus implements payment.IPaymentOrder.
-func (p *paymentOrderImpl) UpdateDivideStatus(divideId int, success bool, remark string) error {
+func (p *paymentOrderImpl) UpdateDivideStatus(divideId int, success bool, divideNo string, remark string) error {
 	divide := p.repo.DivideRepo().Get(divideId)
 	if divide == nil {
 		return errors.New("分账记录不存在")
@@ -840,6 +840,7 @@ func (p *paymentOrderImpl) UpdateDivideStatus(divideId int, success bool, remark
 	divide.SubmitStatus = types.Ternary(success, 2, 3)
 	divide.SubmitRemark = remark
 	divide.SubmitTime = int(time.Now().Unix())
+	divide.SubmitDivideNo = divideNo
 	_, err := p.repo.DivideRepo().Save(divide)
 	return err
 }

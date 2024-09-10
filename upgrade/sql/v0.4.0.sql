@@ -1149,17 +1149,18 @@ COMMENT ON COLUMN "public".pay_order.divide_status IS '分账状态 0:未分账 
 
 DROP TABLE IF EXISTS pay_divide CASCADE;
 CREATE TABLE pay_divide (
-  id            BIGSERIAL NOT NULL, 
-  pay_id        int8 NOT NULL, 
-  divide_type   int4 NOT NULL, 
-  user_id       int8 NOT NULL, 
-  divide_amount int8 NOT NULL, 
-  out_tx_no     varchar(40) NOT NULL, 
-  remark        varchar(20) NOT NULL, 
-  submit_status int4 NOT NULL, 
-  submit_remark varchar(40) NOT NULL, 
-  submit_time   int8 NOT NULL, 
-  create_time   int8 NOT NULL, 
+  id               BIGSERIAL NOT NULL, 
+  pay_id           int8 NOT NULL, 
+  divide_type      int4 NOT NULL, 
+  user_id          int8 NOT NULL, 
+  divide_amount    int8 NOT NULL, 
+  out_tx_no        varchar(40) NOT NULL, 
+  remark           varchar(20) NOT NULL, 
+  submit_status    int4 NOT NULL, 
+  submit_remark    varchar(40) NOT NULL, 
+  submit_divide_no varchar(40) DEFAULT '' NOT NULL, 
+  submit_time      int8 NOT NULL, 
+  create_time      int8 NOT NULL, 
   PRIMARY KEY (id));
 COMMENT ON TABLE pay_divide IS '支付分账';
 COMMENT ON COLUMN pay_divide.id IS '编号';
@@ -1171,9 +1172,9 @@ COMMENT ON COLUMN pay_divide.out_tx_no IS '外部交易单号';
 COMMENT ON COLUMN pay_divide.remark IS '备注';
 COMMENT ON COLUMN pay_divide.submit_status IS '分账提交状态 1:待提交  2: 成功  3:失败';
 COMMENT ON COLUMN pay_divide.submit_remark IS '分账备注';
+COMMENT ON COLUMN pay_divide.submit_divide_no IS '分账单号';
 COMMENT ON COLUMN pay_divide.submit_time IS '分账提交时间';
 COMMENT ON COLUMN pay_divide.create_time IS '创建时间';
-
 
 
 ALTER TABLE "public".pay_order 

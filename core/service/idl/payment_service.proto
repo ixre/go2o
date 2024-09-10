@@ -417,6 +417,8 @@ message UpdateDivideStatusRequest{
     int64 divideId = 2;
     // 是否成功
     bool success = 3;
+    // 分账单号
+    string divideNo = 4;
     // 备注
-    string remark = 4;
+    string remark = 5;
 }

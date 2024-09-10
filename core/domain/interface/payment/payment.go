@@ -197,7 +197,7 @@ type (
 		// FinishDive 完成分账
 		FinishDivide() error
 		// UpdateDivideStatus 更新分账提交状态
-		UpdateDivideStatus(divideId int, success bool, remark string) error
+		UpdateDivideStatus(divideId int, success bool, divideNo string, remark string) error
 	}
 
 	// IPaymentRepo 支付仓储
@@ -413,6 +413,8 @@ type PayDivide struct {
 	SubmitRemark string `json:"submitRemark" db:"submit_remark" gorm:"column:submit_remark" bson:"submitRemark"`
 	// 分账提交时间
 	SubmitTime int `json:"submitTime" db:"submit_time" gorm:"column:submit_time" bson:"submitTime"`
+	// 分账单号
+	SubmitDivideNo string `json:"submitDivideNo" db:"submit_divide_no" gorm:"column:submit_divide_no" bson:"submitDivideNo"`
 	// 创建时间
 	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 }

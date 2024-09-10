@@ -73,6 +73,13 @@ func (p *PaymentQuery) QueryAwaitSubmitDivides(unix int64, size int) ([]*payment
 	return rows, nil
 }
 
+// GetPaymentOrder 获取支付单
 func (p *PaymentQuery) GetPaymentOrder(payId int) *payment.Order {
 	return p._orderRepo.Get(payId)
+}
+
+// GetPayDivide 获取分账记录
+
+func (p *PaymentQuery) GetPayDivide(divideId int) *payment.PayDivide {
+	return p._divideRepo.Get(divideId)
 }

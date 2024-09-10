@@ -491,6 +491,6 @@ func (p *paymentService) UpdateDivideStatus(_ context.Context, req *proto.Update
 	if ip == nil {
 		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
 	}
-	err := ip.UpdateDivideStatus(int(req.DivideId), req.Success, req.Remark)
+	err := ip.UpdateDivideStatus(int(req.DivideId), req.Success, req.DivideNo, req.Remark)
 	return p.errorV2(err), nil
 }
