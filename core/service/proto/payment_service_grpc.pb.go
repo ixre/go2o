@@ -30,6 +30,7 @@ const (
 	PaymentService_Divide_FullMethodName                 = "/PaymentService/Divide"
 	PaymentService_FinishDivide_FullMethodName           = "/PaymentService/FinishDivide"
 	PaymentService_UpdateDivideStatus_FullMethodName     = "/PaymentService/UpdateDivideStatus"
+	PaymentService_RevertSubDivide_FullMethodName        = "/PaymentService/RevertSubDivide"
 	PaymentService_QueryDivideOrders_FullMethodName      = "/PaymentService/QueryDivideOrders"
 	PaymentService_GatewayV1_FullMethodName              = "/PaymentService/GatewayV1"
 	PaymentService_GetPreparePaymentInfo_FullMethodName  = "/PaymentService/GetPreparePaymentInfo"
@@ -67,6 +68,8 @@ type PaymentServiceClient interface {
 	FinishDivide(ctx context.Context, in *PaymentOrderRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// UpdateDivideStatus 更新分账状态
 	UpdateDivideStatus(ctx context.Context, in *UpdateDivideStatusRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// RevertSubDivide 撤销分账
+	RevertSubDivide(ctx context.Context, in *PaymentSubDivideRevertRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// QueryDivideOrders 查询可用于分账的订单
 	QueryDivideOrders(ctx context.Context, in *DivideOrdersRequest, opts ...grpc.CallOption) (*DivideOrdersResponse, error)
 	// 支付网关(仅交易单使用)
@@ -200,6 +203,15 @@ func (c *paymentServiceClient) UpdateDivideStatus(ctx context.Context, in *Updat
 	return out, nil
 }
 
+func (c *paymentServiceClient) RevertSubDivide(ctx context.Context, in *PaymentSubDivideRevertRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, PaymentService_RevertSubDivide_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *paymentServiceClient) QueryDivideOrders(ctx context.Context, in *DivideOrdersRequest, opts ...grpc.CallOption) (*DivideOrdersResponse, error) {
 	out := new(DivideOrdersResponse)
 	err := c.cc.Invoke(ctx, PaymentService_QueryDivideOrders_FullMethodName, in, out, opts...)
@@ -307,6 +319,8 @@ type PaymentServiceServer interface {
 	FinishDivide(context.Context, *PaymentOrderRequest) (*TxResult, error)
 	// UpdateDivideStatus 更新分账状态
 	UpdateDivideStatus(context.Context, *UpdateDivideStatusRequest) (*TxResult, error)
+	// RevertSubDivide 撤销分账
+	RevertSubDivide(context.Context, *PaymentSubDivideRevertRequest) (*TxResult, error)
 	// QueryDivideOrders 查询可用于分账的订单
 	QueryDivideOrders(context.Context, *DivideOrdersRequest) (*DivideOrdersResponse, error)
 	// 支付网关(仅交易单使用)
@@ -370,6 +384,9 @@ func (UnimplementedPaymentServiceServer) FinishDivide(context.Context, *PaymentO
 }
 func (UnimplementedPaymentServiceServer) UpdateDivideStatus(context.Context, *UpdateDivideStatusRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDivideStatus not implemented")
+}
+func (UnimplementedPaymentServiceServer) RevertSubDivide(context.Context, *PaymentSubDivideRevertRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevertSubDivide not implemented")
 }
 func (UnimplementedPaymentServiceServer) QueryDivideOrders(context.Context, *DivideOrdersRequest) (*DivideOrdersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryDivideOrders not implemented")
@@ -609,6 +626,24 @@ func _PaymentService_UpdateDivideStatus_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PaymentService_RevertSubDivide_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaymentSubDivideRevertRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).RevertSubDivide(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_RevertSubDivide_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).RevertSubDivide(ctx, req.(*PaymentSubDivideRevertRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PaymentService_QueryDivideOrders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DivideOrdersRequest)
 	if err := dec(in); err != nil {
@@ -821,6 +856,10 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateDivideStatus",
 			Handler:    _PaymentService_UpdateDivideStatus_Handler,
+		},
+		{
+			MethodName: "RevertSubDivide",
+			Handler:    _PaymentService_RevertSubDivide_Handler,
 		},
 		{
 			MethodName: "QueryDivideOrders",

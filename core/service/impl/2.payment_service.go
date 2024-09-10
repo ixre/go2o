@@ -296,6 +296,7 @@ func (p *paymentService) MixedPayment(_ context.Context, _ *proto.MixedPaymentRe
 	return nil, errors.New("not support MixedPayment")
 }
 
+// parsePaymentOrder 转换为支付单
 func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Order {
 	dst := &payment.Order{
 		Id:             int(src.Id),
@@ -328,6 +329,7 @@ func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Or
 	return dst
 }
 
+// parsePaymentOrderDto 转换为支付单数据
 func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymentOrder {
 	return &proto.SPaymentOrder{
 		Id:             int32(src.Id),
@@ -357,6 +359,7 @@ func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymen
 	}
 }
 
+// parseTradeMethodDataDto 转换为交易渠道数据
 func (p *paymentService) parseTradeMethodDataDto(src *payment.TradeMethodData) *proto.STradeChanData {
 	return &proto.STradeChanData{
 		ChanId:     int32(src.Method),
@@ -366,6 +369,7 @@ func (p *paymentService) parseTradeMethodDataDto(src *payment.TradeMethodData) *
 	}
 }
 
+// SaveIntegrateApp 保存集成支付应用
 func (p *paymentService) SaveIntegrateApp(_ context.Context, app *proto.SIntegrateApp) (*proto.TxResult, error) {
 	_, err := p.repo.SaveIntegrateApp(&payment.IntegrateApp{
 		Id:            int(app.Id),
@@ -380,6 +384,7 @@ func (p *paymentService) SaveIntegrateApp(_ context.Context, app *proto.SIntegra
 	return p.errorV2(err), nil
 }
 
+// QueryIntegrateAppList 查询集成支付应用列表
 func (p *paymentService) QueryIntegrateAppList(_ context.Context, _ *proto.Empty) (*proto.QueryIntegrateAppResponse, error) {
 	arr := p.repo.FindAllIntegrateApp()
 	ret := &proto.QueryIntegrateAppResponse{
@@ -433,6 +438,7 @@ func (p *paymentService) PrepareIntegrateParams(_ context.Context, req *proto.In
 	}, nil
 }
 
+// parseIntegrateApp 转换为集成支付应用
 func (p *paymentService) parseIntegrateApp(v *payment.IntegrateApp) *proto.SIntegrateApp {
 	return &proto.SIntegrateApp{
 		Id:            int32(v.Id),
@@ -450,7 +456,7 @@ func (p *paymentService) DeleteIntegrateApp(_ context.Context, id *proto.PayInte
 	return p.errorV2(err), nil
 }
 
-// Divide implements proto.PaymentServiceServer.
+// Divide 分账
 func (p *paymentService) Divide(_ context.Context, req *proto.PaymentDivideRequest) (*proto.TxResult, error) {
 	if len(req.SubDivides) == 0 {
 		return p.errorV2(errors.New("分账明细不正确")), nil
@@ -476,7 +482,7 @@ func (p *paymentService) Divide(_ context.Context, req *proto.PaymentDivideReque
 	return p.errorV2(nil), nil
 }
 
-// FinishDivide implements proto.PaymentServiceServer.
+// FinishDivide 完成分账
 func (p *paymentService) FinishDivide(_ context.Context, req *proto.PaymentOrderRequest) (*proto.TxResult, error) {
 	ip := p.repo.GetPaymentOrder(req.TradeNo)
 	if ip == nil {
@@ -486,11 +492,22 @@ func (p *paymentService) FinishDivide(_ context.Context, req *proto.PaymentOrder
 	return p.errorV2(err), nil
 }
 
+// UpdateDivideStatus 更新分账状态
 func (p *paymentService) UpdateDivideStatus(_ context.Context, req *proto.UpdateDivideStatusRequest) (*proto.TxResult, error) {
 	ip := p.repo.GetPaymentOrderById(int(req.PayId))
 	if ip == nil {
 		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
 	}
-	err := ip.UpdateDivideStatus(int(req.DivideId), req.Success, req.DivideNo, req.Remark)
+	err := ip.UpdateSubDivideStatus(int(req.DivideId), req.Success, req.DivideNo, req.Remark)
+	return p.errorV2(err), nil
+}
+
+// RevertSubDivide 撤销分账
+func (p *paymentService) RevertSubDivide(_ context.Context, req *proto.PaymentSubDivideRevertRequest) (*proto.TxResult, error) {
+	ip := p.repo.GetPaymentOrderById(int(req.PayId))
+	if ip == nil {
+		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+	}
+	err := ip.RevertSubDivide(int(req.DivideId), req.Reason)
 	return p.errorV2(err), nil
 }

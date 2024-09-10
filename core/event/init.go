@@ -37,4 +37,6 @@ func (e *EventSource) Init() {
 	eventbus.Subscribe(approval.ApprovalProcessEvent{}, h.OnApprovalProcess)
 	// 注册支付成功事件
 	eventbus.Subscribe(payment.PaymentSuccessEvent{}, e.HandlePaymentSuccessEvent)
+	eventbus.Subscribe(payment.PaymentSubDivideRevertEvent{}, e.HandlePaymentSubDivideRevertEvent)
+	eventbus.Subscribe(payment.PaymentDivideEvent{}, e.HandlePaymentDivideEvent)
 }

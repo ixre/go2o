@@ -49,6 +49,12 @@ func (p *PaymentEventHandler) HandlePaymentDivideEvent(event interface{}) {
 	// note: 支付分账事件由具体的支付渠道通过订阅事件处理，这里不作处理
 }
 
+// 处理支付分账撤销事件
+func (p *PaymentEventHandler) HandlePaymentSubDivideRevertEvent(event interface{}) {
+	//e := event.(*payment.PaymentSubDivideRevertEvent)
+	// note: 支付分账撤销事件由具体的支付渠道通过订阅事件处理，这里不作处理
+}
+
 // 处理商城订单支付完成
 func (p *PaymentEventHandler) handleOrderSuccessEvent(e *payment.PaymentSuccessEvent) {
 	ov := e.Order.Get()

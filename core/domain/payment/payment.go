@@ -825,8 +825,8 @@ func (p *paymentOrderImpl) FinishDivide() error {
 	return nil
 }
 
-// UpdateDivideStatus implements payment.IPaymentOrder.
-func (p *paymentOrderImpl) UpdateDivideStatus(divideId int, success bool, divideNo string, remark string) error {
+// UpdateSubDivideStatus implements payment.IPaymentOrder.
+func (p *paymentOrderImpl) UpdateSubDivideStatus(divideId int, success bool, divideNo string, remark string) error {
 	divide := p.repo.DivideRepo().Get(divideId)
 	if divide == nil {
 		return errors.New("分账记录不存在")
@@ -834,7 +834,8 @@ func (p *paymentOrderImpl) UpdateDivideStatus(divideId int, success bool, divide
 	if divide.PayId != p.GetAggregateRootId() {
 		return errors.New("分账记录不属于当前订单")
 	}
-	if divide.SubmitStatus != 1 {
+	if divide.SubmitStatus != payment.DividePending && divide.SubmitStatus != payment.DivideStatusReverted {
+		// 只有待分账及撤销状态下允许更改状态
 		return errors.New("分账记录状态错误")
 	}
 	divide.SubmitStatus = types.Ternary(success, 2, 3)
@@ -842,5 +843,32 @@ func (p *paymentOrderImpl) UpdateDivideStatus(divideId int, success bool, divide
 	divide.SubmitTime = int(time.Now().Unix())
 	divide.SubmitDivideNo = divideNo
 	_, err := p.repo.DivideRepo().Save(divide)
+	return err
+}
+
+// RevertSubDivide implements payment.IPaymentOrder.
+func (p *paymentOrderImpl) RevertSubDivide(divideId int, remark string) error {
+	divide := p.repo.DivideRepo().Get(divideId)
+	if divide == nil {
+		return errors.New("分账记录不存在")
+	}
+	if divide.PayId != p.GetAggregateRootId() {
+		return errors.New("分账记录不属于当前订单")
+	}
+	if divide.SubmitStatus != payment.DivideStatusSuccess {
+		return errors.New("分账未成功状态，不支持撤销")
+	}
+	raw := types.DeepClone(divide)
+	divide.SubmitStatus = payment.DivideStatusReverted
+	divide.SubmitRemark = remark
+	divide.SubmitTime = int(time.Now().Unix())
+	_, err := p.repo.DivideRepo().Save(divide)
+	if err == nil {
+		// 发布分账撤销事件
+		eventbus.Publish(&payment.PaymentSubDivideRevertEvent{
+			Order:   p,
+			Divides: []*payment.PayDivide{raw},
+		})
+	}
 	return err
 }

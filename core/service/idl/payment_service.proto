@@ -70,6 +70,8 @@ service PaymentService {
 	rpc FinishDivide(PaymentOrderRequest) returns(TxResult);
     // UpdateDivideStatus 更新分账状态
     rpc UpdateDivideStatus(UpdateDivideStatusRequest) returns(TxResult);
+    // RevertSubDivide 撤销分账
+    rpc RevertSubDivide(PaymentSubDivideRevertRequest) returns(TxResult);
     // QueryDivideOrders 查询可用于分账的订单
     rpc QueryDivideOrders(DivideOrdersRequest)returns(DivideOrdersResponse);
     // 支付网关(仅交易单使用)
@@ -421,4 +423,14 @@ message UpdateDivideStatusRequest{
     string divideNo = 4;
     // 备注
     string remark = 5;
+}
+
+// 支付分账子项撤销请求
+message PaymentSubDivideRevertRequest{
+    // 支付单编号
+    int64 payId = 1;
+    // 分账编号
+    int64 divideId = 2;
+    // 撤销原因
+    string reason = 3;
 }

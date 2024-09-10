@@ -88,6 +88,8 @@ const (
 	DivideStatusSuccess = 2
 	// DivideStatusFailed 提交分账失败
 	DivideStatusFailed = 3
+	// DivideReverted 分账撤销
+	DivideStatusReverted = 4
 )
 
 var (
@@ -197,7 +199,9 @@ type (
 		// FinishDive 完成分账
 		FinishDivide() error
 		// UpdateDivideStatus 更新分账提交状态
-		UpdateDivideStatus(divideId int, success bool, divideNo string, remark string) error
+		UpdateSubDivideStatus(divideId int, success bool, divideNo string, remark string) error
+		// RevertDivide 请求分账归还，发起后将更新为撤销状态并发送事件进行归还处理
+		RevertSubDivide(divideId int, remark string) error
 	}
 
 	// IPaymentRepo 支付仓储
@@ -250,12 +254,20 @@ type (
 		TradeChannels []*TradeMethodData
 	}
 
-	// PaymentDivideEvent 支付分账事件
+	// PaymentDivideEvent 支付分账事件,通常订阅事件来实现实时分账，或使用定时任务来实现延迟分账
 	PaymentDivideEvent struct {
 		// 支付单
 		Order IPaymentOrder
 		// 分账数据
 		Divides []*DivideData
+	}
+
+	// PaymentSubDivideRevertEvent 支付分账(子项)撤销事件，订阅该实现来实现撤回分账，在到帐前拦截错误的分账
+	PaymentSubDivideRevertEvent struct {
+		// 支付单
+		Order IPaymentOrder
+		// 分账数据
+		Divides []*PayDivide
 	}
 
 	// 支付单分账数据
