@@ -179,7 +179,7 @@ func OrmMapping(orm orm.Orm) {
 
 	// 支付
 	orm.Mapping(payment.Order{}, "pay_order")
-	orm.Mapping(payment.TradeMethodData{}, "pay_trade_data")
+	orm.Mapping(payment.PayTradeData{}, "pay_trade_data")
 	orm.Mapping(payment.MergeOrder{}, "pay_merge_order")
 
 	// 促销

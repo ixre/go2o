@@ -68,7 +68,7 @@ func (p *paymentService) GetPaymentOrder(_ context.Context, req *proto.PaymentOr
 		sp := p.parsePaymentOrderDto(&v)
 		for _, t := range po.TradeMethods() {
 			pm := p.parseTradeMethodDataDto(t)
-			pm.ChanName = po.ChanName(t.Method)
+			pm.ChanName = po.ChanName(t.PayMethod)
 			if len(pm.ChanName) == 0 {
 				pm.ChanName = v.OutTradeSp
 			}
@@ -321,7 +321,7 @@ func (p *paymentService) parsePaymentOrder(src *proto.SPaymentOrder) *payment.Or
 		SubmitTime:     int(src.SubmitTime),
 		ExpiresTime:    int(src.ExpiresTime),
 		PaidTime:       int(src.PaidTime),
-		TradeMethods:   make([]*payment.TradeMethodData, 0),
+		TradeMethods:   make([]*payment.PayTradeData, 0),
 	}
 	if src.SubOrder {
 		dst.SubOrder = 1
@@ -360,11 +360,11 @@ func (p *paymentService) parsePaymentOrderDto(src *payment.Order) *proto.SPaymen
 }
 
 // parseTradeMethodDataDto 转换为交易渠道数据
-func (p *paymentService) parseTradeMethodDataDto(src *payment.TradeMethodData) *proto.STradeChanData {
+func (p *paymentService) parseTradeMethodDataDto(src *payment.PayTradeData) *proto.STradeChanData {
 	return &proto.STradeChanData{
-		ChanId:     int32(src.Method),
-		Amount:     src.Amount,
-		ChanCode:   src.Code,
+		ChanId:     int32(src.PayMethod),
+		Amount:     int64(src.PayAmount),
+		ChanCode:   src.OutTradeCode,
 		OutTradeNo: src.OutTradeNo,
 	}
 }
@@ -509,5 +509,19 @@ func (p *paymentService) RevertSubDivide(_ context.Context, req *proto.PaymentSu
 		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
 	}
 	err := ip.RevertSubDivide(int(req.DivideId), req.Reason)
+	return p.errorV2(err), nil
+}
+
+func (p *paymentService) RequestRefund(_ context.Context, req *proto.PaymentRefundRequest) (*proto.TxResult, error) {
+	ip := p.repo.GetPaymentOrder(req.TradeNo)
+	if ip == nil {
+		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+	}
+	if ip.Get().OrderType == payment.TypeOrder {
+		return p.errorV2(errors.New("当前支付单不支持退款操作[TYPE_NOT_MATCH]")), nil
+	}
+	err := ip.Refund(map[int]int{
+		payment.MPaySP: int(req.RefundAmount),
+	}, req.Reason)
 	return p.errorV2(err), nil
 }

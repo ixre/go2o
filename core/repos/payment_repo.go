@@ -100,7 +100,7 @@ func (p *paymentRepoImpl) DeletePaymentOrder(id int) error {
 
 // DeletePaymentTradeData 删除支付单的支付数据
 func (p *paymentRepoImpl) DeletePaymentTradeData(orderId int) error {
-	_, err := p._orm.Delete(payment.TradeMethodData{}, "order_id=$1", orderId)
+	_, err := p._orm.Delete(payment.PayTradeData{}, "order_id=$1", orderId)
 	return err
 }
 
@@ -179,8 +179,8 @@ func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 	return i == 0
 }
 
-func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeMethodData {
-	list := make([]*payment.TradeMethodData, 0)
+func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.PayTradeData {
+	list := make([]*payment.PayTradeData, 0)
 	err := p._orm.Select(&list, "trade_no= $1 LIMIT $2", tradeNo, 10)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
@@ -188,7 +188,7 @@ func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeM
 	return list
 }
 
-func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.TradeMethodData) (int, error) {
+func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.PayTradeData) (int, error) {
 	tradeChan.TradeNo = tradeNo
 	id, err := orm.Save(p._orm, tradeChan, tradeChan.Id)
 	if err != nil && err != sql.ErrNoRows {

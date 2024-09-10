@@ -18,22 +18,22 @@ import (
 
 // 支付通道
 const (
+	// MPaySP 第三方支付(1)
+	MPaySP = 1 << 0
 	// MBalance 余额抵扣通道
-	MBalance = 1 << 0
+	MBalance = 1 << 1
 	// MWallet 钱包支付通道
-	MWallet = 1 << 1
+	MWallet = 1 << 2
 	// MIntegral 积分兑换通道
-	MIntegral = 1 << 2
+	MIntegral = 1 << 3
 	// MUserCard 用户卡通道
-	MUserCard = 1 << 3
+	MUserCard = 1 << 4
 	// MUserCoupon 用户券通道
-	MUserCoupon = 1 << 4
+	MUserCoupon = 1 << 5
 	// MCash 现金支付通道
-	MCash = 1 << 5
+	MCash = 1 << 6
 	// MBankCard 银行卡支付通道(64)
-	MBankCard = 1 << 6
-	// MPaySP 第三方支付(128)
-	MPaySP = 1 << 7
+	MBankCard = 1 << 7
 	// MSellerPay 卖家支付通道
 	MSellerPay = 1 << 8
 	// MSystemPay 系统支付通道
@@ -156,7 +156,7 @@ type (
 		// Flag 支付方式
 		Flag() int
 		// TradeMethods 支付途径支付信息
-		TradeMethods() []*TradeMethodData
+		TradeMethods() []*PayTradeData
 		// CheckPaymentState 在支付之前检查订单状态
 		CheckPaymentState() error
 		// Submit 提交支付单
@@ -190,8 +190,8 @@ type (
 
 		// Adjust 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
 		Adjust(amount int) error
-		// Refund 退款
-		Refund(amount int) error
+		// Refund 退款,传递各支付方式的退款金额,如不传递则表示全额退款
+		Refund(amounts map[int]int, reason string) error
 		// ChanName 获取支付通道字符串
 		ChanName(method int) string
 		// Divide 分账
@@ -227,9 +227,9 @@ type (
 		// CheckTradeNoMatch 检查支付单号是否匹配
 		CheckTradeNoMatch(tradeNo string, id int) bool
 		// GetTradeChannelItems 获取交易途径支付信息
-		GetTradeChannelItems(tradeNo string) []*TradeMethodData
+		GetTradeChannelItems(tradeNo string) []*PayTradeData
 		// SavePaymentTradeChan 保存支付途径支付信息
-		SavePaymentTradeChan(tradeNo string, tradeChan *TradeMethodData) (int, error)
+		SavePaymentTradeChan(tradeNo string, tradeChan *PayTradeData) (int, error)
 		// GetMergePayOrders 获取合并支付的订单
 		GetMergePayOrders(mergeTradeNo string) []IPaymentOrder
 		// ResetMergePaymentOrders 清除欲合并的支付单
@@ -251,7 +251,7 @@ type (
 		// Order 支付单
 		Order IPaymentOrder
 		// TradeChannels 支付通道
-		TradeChannels []*TradeMethodData
+		TradeChannels []*PayTradeData
 	}
 
 	// PaymentDivideEvent 支付分账事件,通常订阅事件来实现实时分账，或使用定时任务来实现延迟分账
@@ -270,6 +270,20 @@ type (
 		Divides []*PayDivide
 	}
 
+	// PaymentProviderRefundEvent 支付渠道退款事件
+	PaymentProviderRefundEvent struct {
+		// 支付单
+		Order IPaymentOrder
+		// 退款金额
+		Amount int
+		// 退款原因
+		Reason string
+		// 外部交易提供商代码(第三方支付代号)
+		OutTradeCode string
+		// 外部交易单号(第三方支付单号)
+		OutTradeNo string
+	}
+
 	// 支付单分账数据
 	DivideData struct {
 		// 分账用户类型: 1: 平台  2: 商户  3: 会员
@@ -278,27 +292,6 @@ type (
 		UserId int
 		// 分账金额
 		DivideAmount int
-	}
-	// TradeMethodData 支付单项
-	TradeMethodData struct {
-		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
-		// 支付订单号Id
-		OrderId int `db:"order_id"`
-		// 交易单号
-		TradeNo string `db:"trade_no"`
-		// 支付途径
-		Method int `db:"pay_method"`
-		// 支付代码
-		Code string `db:"pay_code"`
-		// 是否为内置支付途径
-		Internal int `db:"internal"`
-		// 支付金额
-		Amount int64 `db:"pay_amount"`
-		// 外部交易单号
-		OutTradeNo string `db:"out_trade_no"`
-		// 支付时间
-		PayTime int64 `db:"pay_time"`
 	}
 
 	// MergeOrder 合并的支付单
@@ -395,7 +388,7 @@ type Order struct {
 	// 优惠金额,todo: 删除但目前依赖于优惠券
 	DiscountAmount int64 `db:"-" gorm:"-:all"`
 	// 交易途径支付信息
-	TradeMethods []*TradeMethodData `db:"-" gorm:"-:all"`
+	TradeMethods []*PayTradeData `db:"-" gorm:"-:all"`
 }
 
 func (p Order) TableName() string {
@@ -433,4 +426,32 @@ type PayDivide struct {
 
 func (p PayDivide) TableName() string {
 	return "pay_divide"
+}
+
+// PayTradeData PayTradeData
+type PayTradeData struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 交易单号
+	TradeNo string `json:"tradeNo" db:"trade_no" gorm:"column:trade_no" bson:"tradeNo"`
+	// 支付方式
+	PayMethod int `json:"payMethod" db:"pay_method" gorm:"column:pay_method" bson:"payMethod"`
+	// 外部交易方式
+	OutTradeCode string `json:"outTradeCode" db:"out_trade_code" gorm:"column:out_trade_code" bson:"outTradeCode"`
+	// 是否为内置支付方式
+	Internal int `json:"internal" db:"internal" gorm:"column:internal" bson:"internal"`
+	// 支付金额
+	PayAmount int `json:"payAmount" db:"pay_amount" gorm:"column:pay_amount" bson:"payAmount"`
+	// 外部交易单号
+	OutTradeNo string `json:"outTradeNo" db:"out_trade_no" gorm:"column:out_trade_no" bson:"outTradeNo"`
+	// 支付时间
+	PayTime int `json:"payTime" db:"pay_time" gorm:"column:pay_time" bson:"payTime"`
+	// 支付订单编号
+	OrderId int `json:"orderId" db:"order_id" gorm:"column:order_id" bson:"orderId"`
+	// 退款金额
+	RefundAmount int `json:"refundAmount" db:"refund_amount" gorm:"column:refund_amount" bson:"refundAmount"`
+}
+
+func (p PayTradeData) TableName() string {
+	return "pay_trade_data"
 }

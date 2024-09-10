@@ -367,7 +367,7 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 				ret.PaymentTime = int64(pv.PaidTime)
 				for _, t := range po.TradeMethods() {
 					pm := s.parseTradeMethodDataDto(t)
-					pm.ChanName = po.ChanName(t.Method)
+					pm.ChanName = po.ChanName(t.PayMethod)
 					if len(pm.ChanName) == 0 {
 						pm.ChanName = pv.OutTradeSp
 					}
@@ -415,11 +415,11 @@ func (s *orderServiceImpl) BreakPaymentOrder(_ context.Context, r *proto.BreakPa
 	return &proto.Result{}, nil
 }
 
-func (s *orderServiceImpl) parseTradeMethodDataDto(src *payment.TradeMethodData) *proto.SOrderPayChanData {
+func (s *orderServiceImpl) parseTradeMethodDataDto(src *payment.PayTradeData) *proto.SOrderPayChanData {
 	return &proto.SOrderPayChanData{
-		ChanId:     int32(src.Method),
-		Amount:     src.Amount,
-		ChanCode:   src.Code,
+		ChanId:     int32(src.PayMethod),
+		Amount:     int64(src.PayAmount),
+		ChanCode:   src.OutTradeCode,
 		OutTradeNo: src.OutTradeNo,
 	}
 }

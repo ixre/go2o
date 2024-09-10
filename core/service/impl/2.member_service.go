@@ -1867,7 +1867,7 @@ func (m *memberService) SubmitRechargePaymentOrder(_ context.Context, req *proto
 		ExpiresTime:    0,
 		PaidTime:       0,
 		UpdateTime:     0,
-		TradeMethods:   []*payment.TradeMethodData{},
+		TradeMethods:   []*payment.PayTradeData{},
 	})
 	err := io.Submit()
 	if err != nil {

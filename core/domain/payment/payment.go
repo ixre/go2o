@@ -12,7 +12,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math"
 	"regexp"
 	"strings"
 	"time"
@@ -70,10 +69,10 @@ func (p *paymentOrderImpl) Flag() int {
 }
 
 // TradeMethods 支付途径支付信息
-func (p *paymentOrderImpl) TradeMethods() []*payment.TradeMethodData {
+func (p *paymentOrderImpl) TradeMethods() []*payment.PayTradeData {
 	if p.value.TradeMethods == nil {
 		if p.GetAggregateRootId() <= 0 {
-			return make([]*payment.TradeMethodData, 0)
+			return make([]*payment.PayTradeData, 0)
 		}
 		p.value.TradeMethods = p.repo.GetTradeChannelItems(p.TradeNo())
 	}
@@ -526,15 +525,15 @@ func (p *paymentOrderImpl) SystemPayment(fee int) error {
 
 // 保存支付信息
 func (p *paymentOrderImpl) saveTradeChan(amount int, method int, code string, outTradeNo string) error {
-	c := &payment.TradeMethodData{
-		TradeNo:    p.TradeNo(),
-		OrderId:    p.GetAggregateRootId(),
-		Method:     method,
-		Internal:   1,
-		Amount:     int64(amount),
-		Code:       code,
-		OutTradeNo: outTradeNo,
-		PayTime:    time.Now().Unix(),
+	c := &payment.PayTradeData{
+		TradeNo:      p.TradeNo(),
+		OrderId:      p.GetAggregateRootId(),
+		PayMethod:    method,
+		Internal:     1,
+		PayAmount:    amount,
+		OutTradeCode: code,
+		OutTradeNo:   outTradeNo,
+		PayTime:      int(time.Now().Unix()),
 	}
 	_, err := p.repo.SavePaymentTradeChan(p.TradeNo(), c)
 	return err
@@ -632,47 +631,86 @@ func (p *paymentOrderImpl) saveOrder() error {
 }
 
 // 退款
-func (p *paymentOrderImpl) Refund(amount int) (err error) {
+func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error) {
+	if p.State() != payment.StateFinished {
+		return errors.New("订单未支付不支持退款")
+	}
+	chanMap := p.TradeMethods()
+	if amounts == nil {
+		// 如果未指定退款金额，则按支付的可退金额退款
+		amounts = make(map[int]int, 0)
+		for _, v := range chanMap {
+			amounts[v.PayMethod] = v.PayAmount - v.RefundAmount
+		}
+	} else {
+		// 验证退款金额
+		for _, v := range chanMap {
+			amount, ok := amounts[v.PayMethod]
+			if ok && v.PayAmount-v.RefundAmount < amount {
+				return errors.New("退款金额超出可退款金额")
+			}
+		}
+	}
+
 	mm := p.getBuyer()
 	if mm == nil {
 		return member.ErrNoSuchMember
 	}
 	pv := p.Get()
 	acc := mm.GetAccount()
-	chanMap := p.getPaymentChannelMap()
-	// 先退回到余额
-	if v := chanMap[payment.MBalance]; v > 0 {
-		final := int(math.Min(float64(v), float64(amount)))
-		if int64(amount) > v {
-			amount = amount - final
-		}
-		err = acc.Refund(member.AccountBalance, "订单退款",
-			final, pv.TradeNo, "")
-		if err == nil {
-			p.value.DeductAmount -= final
-		}
+	if len(reason) == 0 {
+		reason = "订单退款"
 	}
-	// 如果已经支付，则将支付的款项退回到账户
-	if v := chanMap[payment.MWallet]; v > 0 {
-		final := int(math.Min(float64(v), float64(amount)))
-		if int64(amount) > v {
-			amount = amount - final
+	totalRefund := 0
+	for _, v := range chanMap {
+		amount, ok := amounts[v.PayMethod]
+		if !ok {
+			// 如果未使用该支付方式，则跳过
+			continue
 		}
-		err = acc.Refund(member.AccountWallet,
-			"订单退款", final, pv.TradeNo, "")
+		switch v.PayMethod {
+		case payment.MBalance:
+			err = acc.Refund(member.AccountBalance, reason, amount, pv.TradeNo, "")
+		case payment.MWallet:
+			err = acc.Refund(member.AccountWallet, reason, amount, pv.TradeNo, "")
+		case payment.MPaySP: // 第三方支付原路退回
+			err = p.checkDivideAmount(v.PayAmount, amount+v.RefundAmount)
+			if err == nil {
+				eventbus.Publish(&payment.PaymentProviderRefundEvent{
+					Order:        p,
+					Amount:       amount,
+					Reason:       reason,
+					OutTradeCode: v.OutTradeCode,
+					OutTradeNo:   v.OutTradeNo,
+				})
+			}
+		}
 		if err == nil {
-			p.value.DeductAmount -= amount
+			v.RefundAmount += amount
+			_, err = p.repo.SavePaymentTradeChan(p.TradeNo(), v)
 		}
-	}
-	//todo: 原路退回，目前全部退回钱包
-	if amount > 0 {
-		err = acc.Refund(member.AccountWallet,
-			"订单退款", amount, pv.TradeNo, "")
-		if err == nil {
-			p.value.DeductAmount -= amount
+		if err != nil {
+			return err
 		}
+		totalRefund += amount
 	}
-	return p.saveOrder()
+	return err
+}
+
+// checkDivideAmount 检查退款金额是否超出分账外的金额
+func (p *paymentOrderImpl) checkDivideAmount(orderAmount int, refundTotalAmount int) error {
+	if refundTotalAmount > orderAmount {
+		return errors.New("退款金额超出可退款金额")
+	}
+	divides := p.repo.DivideRepo().FindList(nil, "pay_id = ?", p.GetAggregateRootId())
+	totalDiviedAmount := 0
+	for _, v := range divides {
+		totalDiviedAmount += v.DivideAmount
+	}
+	if orderAmount-totalDiviedAmount < refundTotalAmount {
+		return errors.New("支付单包含分账，退款金额超出可退款金额")
+	}
+	return nil
 }
 
 // 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
@@ -686,16 +724,16 @@ func (p *paymentOrderImpl) Adjust(amount int) error {
 }
 
 // 获取支付途径支付信息字典
-func (p *paymentOrderImpl) getPaymentChannelMap() map[int]int64 {
-	mp := make(map[int]int64, 0)
+func (p *paymentOrderImpl) getPaymentChannelMap() map[int]int {
+	mp := make(map[int]int, 0)
 	arr := p.TradeMethods()
 	for _, v := range arr {
-		if v.Amount > 0 {
-			c, ok := mp[v.Method]
+		if v.PayAmount > 0 {
+			c, ok := mp[v.PayMethod]
 			if ok {
-				mp[v.Method] = c + v.Amount
+				mp[v.PayMethod] = c + v.PayAmount
 			} else {
-				mp[v.Method] = v.Amount
+				mp[v.PayMethod] = v.PayAmount
 			}
 		}
 	}

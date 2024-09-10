@@ -266,7 +266,7 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 		ExpiresTime:    int(expiresTime),
 		PaidTime:       0,
 		UpdateTime:     int(unix),
-		TradeMethods:   make([]*payment.TradeMethodData, 0),
+		TradeMethods:   make([]*payment.PayTradeData, 0),
 	}
 	return v2
 }

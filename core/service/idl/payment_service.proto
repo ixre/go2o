@@ -64,6 +64,9 @@ service PaymentService {
     rpc HybridPayment (HyperPaymentRequest) returns (TxResult);
     // 完成支付单支付，并传入支付方式及外部订单号
     rpc FinishPayment (FinishPaymentRequest) returns (TxResult);
+    
+    // QueryDivideOrders 查询可用于分账的订单
+    rpc QueryDivideOrders(DivideOrdersRequest)returns(DivideOrdersResponse);
     // Divide 分账
 	rpc Divide(PaymentDivideRequest) returns(TxResult);
 	// FinishDive 完成分账
@@ -72,8 +75,10 @@ service PaymentService {
     rpc UpdateDivideStatus(UpdateDivideStatusRequest) returns(TxResult);
     // RevertSubDivide 撤销分账
     rpc RevertSubDivide(PaymentSubDivideRevertRequest) returns(TxResult);
-    // QueryDivideOrders 查询可用于分账的订单
-    rpc QueryDivideOrders(DivideOrdersRequest)returns(DivideOrdersResponse);
+    
+    // RequestRefund 申请退款(仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款)
+    rpc RequestRefund(PaymentRefundRequest) returns(TxResult);
+
     // 支付网关(仅交易单使用)
     rpc GatewayV1 (PayGatewayRequest) returns (TxResult);
     // 获取支付预交易数据
@@ -182,23 +187,23 @@ message PayGatewayRequest {
 
 /** 支付方式的位值 */
 enum EPayMethod {
-    _4 = 0;
-    /** 余额抵扣 */
-    Balance = 1;
-    /** 钱包支付 */
-    Wallet = 2;
-    /** 积分兑换 */
-    Integral = 4;
-    /** 用户卡 */
-    UserCard = 8;
-    /** 用户券 */
-    UserCoupon = 16;
-    /** 现金支付 */
-    Cash = 32;
-    /** 银行卡支付 */
-    BankCard = 64;
+    _EPayMethodZero = 0;
     /** 第三方支付,如支付宝等 */
-    PaySP = 128;
+    PaySP = 1;
+    /** 余额抵扣 */
+    Balance = 2;
+    /** 钱包支付 */
+    Wallet = 4;
+    /** 积分兑换 */
+    Integral = 8;
+    /** 用户卡 */
+    UserCard = 16;
+    /** 用户券 */
+    UserCoupon = 32;
+    /** 现金支付 */
+    Cash = 64;
+    /** 银行卡支付 */
+    BankCard = 128;
     /** 卖家支付通道 */
     SellerPay = 256;
     /** 系统支付通道 */
@@ -432,5 +437,15 @@ message PaymentSubDivideRevertRequest{
     // 分账编号
     int64 divideId = 2;
     // 撤销原因
+    string reason = 3;
+}
+
+// 支付退款请求
+message PaymentRefundRequest{
+    // 支付单号
+    string tradeNo = 1;
+    // 退款金额
+    int64 refundAmount = 2;
+    // 退款原因
     string reason = 3;
 }

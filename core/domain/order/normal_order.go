@@ -578,7 +578,7 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		ExpiresTime:  int(expiresTime),
 		PaidTime:     0,
 		UpdateTime:   int(v.CreateTime),
-		TradeMethods: []*payment.TradeMethodData{},
+		TradeMethods: []*payment.PayTradeData{},
 	}
 	o._payOrder = o.payRepo.CreatePaymentOrder(po)
 	err := o._payOrder.Submit()
@@ -934,18 +934,18 @@ func (o *normalOrderImpl) createSubPaymentOrder(ip payment.IPaymentOrder, iso or
 		SubmitTime:     po.SubmitTime,
 		ExpiresTime:    po.ExpiresTime,
 		UpdateTime:     int(time.Now().Unix()),
-		TradeMethods:   []*payment.TradeMethodData{},
+		TradeMethods:   []*payment.PayTradeData{},
 	}
 	// 更新支付方式
 	for _, tv := range ip.TradeMethods() {
-		v.TradeMethods = append(v.TradeMethods, &payment.TradeMethodData{
-			TradeNo:    so.OrderNo,
-			Method:     tv.Method,
-			Code:       tv.Code,
-			Internal:   tv.Internal,
-			Amount:     int64(math.Round(float64(tv.Amount) * rate)),
-			OutTradeNo: tv.OutTradeNo,
-			PayTime:    tv.PayTime,
+		v.TradeMethods = append(v.TradeMethods, &payment.PayTradeData{
+			TradeNo:      so.OrderNo,
+			PayMethod:    tv.PayMethod,
+			OutTradeCode: tv.OutTradeCode,
+			Internal:     tv.Internal,
+			PayAmount:    int(math.Round(float64(tv.PayAmount) * rate)),
+			OutTradeNo:   tv.OutTradeNo,
+			PayTime:      tv.PayTime,
 		})
 	}
 	isp := o.payRepo.CreatePaymentOrder(v)

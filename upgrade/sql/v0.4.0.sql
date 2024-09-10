@@ -1183,3 +1183,19 @@ COMMENT ON COLUMN "public".pay_order.divide_status IS '分账状态 0:未分账 
 
 ALTER TABLE pay_order RENAME COLUMN state TO status;
 ALTER TABLE pay_order RENAME COLUMN procedure_fee TO transaction_fee;
+
+-- 2024-09-10 支付单支付途径
+ALTER TABLE "public".pay_trade_data 
+  ADD COLUMN refund_amount int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".pay_trade_data.refund_amount IS '退款金额';
+
+ALTER TABLE "public"."pay_trade_data" RENAME COLUMN "pay_code" TO "out_trade_code"; 
+
+COMMENT ON COLUMN "public".pay_trade_data.id IS '编号';
+COMMENT ON COLUMN "public".pay_trade_data.trade_no IS '交易单号';
+COMMENT ON COLUMN "public".pay_trade_data.pay_method IS '支付方式';
+COMMENT ON COLUMN "public".pay_trade_data.internal IS '是否为内置支付方式';
+COMMENT ON COLUMN "public".pay_trade_data.pay_amount IS '支付金额';
+COMMENT ON COLUMN "public".pay_trade_data.out_trade_code IS '外部交易方式';
+COMMENT ON COLUMN "public".pay_trade_data.out_trade_no IS '外部交易单号';
+COMMENT ON COLUMN "public".pay_trade_data.pay_time IS '支付时间';
