@@ -24,14 +24,16 @@ type DivideOrderInfo struct {
 
 type PaymentQuery struct {
 	fw.ORM
-	_orderRepo  fw.Repository[payment.Order]
-	_divideRepo fw.Repository[payment.PayDivide]
+	_orderRepo       fw.Repository[payment.Order]
+	_divideRepo      fw.Repository[payment.PayDivide]
+	_subMerchantRepo fw.Repository[payment.PayMerchant]
 }
 
 func NewPaymentQuery(o fw.ORM) *PaymentQuery {
 	return &PaymentQuery{ORM: o,
-		_orderRepo:  &fw.BaseRepository[payment.Order]{ORM: o},
-		_divideRepo: &fw.BaseRepository[payment.PayDivide]{ORM: o},
+		_orderRepo:       &fw.BaseRepository[payment.Order]{ORM: o},
+		_divideRepo:      &fw.BaseRepository[payment.PayDivide]{ORM: o},
+		_subMerchantRepo: &fw.BaseRepository[payment.PayMerchant]{ORM: o},
 	}
 }
 
@@ -82,4 +84,14 @@ func (p *PaymentQuery) GetPaymentOrder(payId int) *payment.Order {
 
 func (p *PaymentQuery) GetPayDivide(divideId int) *payment.PayDivide {
 	return p._divideRepo.Get(divideId)
+}
+
+// GetSubMerchant 获取子商户
+func (p *PaymentQuery) GetSubMerchant(subType int, mchId int) *payment.PayMerchant {
+	return p._subMerchantRepo.FindBy("user_type=? AND user_id=?", subType, mchId)
+}
+
+// QueryPagingSubMerchant 分页查询入网商户
+func (p *PaymentQuery) QueryPagingSubMerchant(params *fw.PagingParams) (*fw.PagingResult, error) {
+	return p._subMerchantRepo.QueryPaging(params)
 }

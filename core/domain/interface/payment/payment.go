@@ -92,6 +92,13 @@ const (
 	DivideStatusReverted = 4
 )
 
+const (
+	// SubMember 会员子商户
+	SubMember = 1
+	// SubMerchant 商户子商户
+	SubMerchant = 2
+)
+
 var (
 	ErrNoSuchPaymentOrder = domain.NewError(
 		"err_no_such_payment_order", "支付单不存在")
@@ -558,7 +565,7 @@ type PayMerchant struct {
 	SettleDirection int `json:"settleDirection" db:"settle_direction" gorm:"column:settle_direction" bson:"settleDirection"`
 	// 开户总行编码
 	SettleBankCode string `json:"settleBankCode" db:"settle_bank_code" gorm:"column:settle_bank_code" bson:"settleBankCode"`
-	// 银行账户类型
+	// 银行账户类型,1:个体户 2: 对公账户 2:个人借记卡 4:存折
 	SettleAccountType int `json:"settleAccountType" db:"settle_account_type" gorm:"column:settle_account_type" bson:"settleAccountType"`
 	// 银行账户号码
 	SettleBankAccount string `json:"settleBankAccount" db:"settle_bank_account" gorm:"column:settle_bank_account" bson:"settleBankAccount"`

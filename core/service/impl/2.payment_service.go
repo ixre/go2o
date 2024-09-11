@@ -580,7 +580,9 @@ func (p *paymentService) InitialSubMerchant(_ context.Context, req *proto.SubMer
 	mgr := p.repo.SubMerchantManager()
 	mch, err := mgr.InitialMerchant(int(req.UserType), int(req.UserId))
 	if err == nil {
-		return p.txResult(mch.Id, nil), nil
+		return p.txResult(mch.Id, map[string]string{
+			"code": mch.Code,
+		}), nil
 	}
 	return p.errorV2(err), nil
 }

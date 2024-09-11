@@ -54,6 +54,8 @@ func DeepClone[T any](v *T) (t *T) {
 func ParseJSONObject(v interface{}) (map[string]interface{}, error) {
 	var data []byte
 	switch v := v.(type) {
+	case []byte:
+		data = v
 	case string:
 		data = []byte(v)
 	default:

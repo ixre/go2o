@@ -378,7 +378,7 @@ func (s *foundationService) GetChildOptions(_ context.Context, req *proto.Option
 	ret := collections.MapList(options, func(o *sys.GeneralOption) *proto.SOption {
 		return &proto.SOption{
 			Id:     int64(o.Id),
-			Name:   o.Name,
+			Name:   o.Label,
 			Value:  o.Value,
 			IsLeaf: isa.IsLeaf(o),
 		}

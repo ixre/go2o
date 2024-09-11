@@ -160,3 +160,11 @@ message SArea{
     // 站点编号
     int64 stationId = 3;
 }
+
+// 通用选项
+message SGenericOptions{
+    // 标签
+    string label = 1;
+    // 值
+    string value = 2;
+}

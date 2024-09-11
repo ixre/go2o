@@ -1275,7 +1275,7 @@ COMMENT ON COLUMN pay_merchant.district_code IS '经营区';
 COMMENT ON COLUMN pay_merchant.address IS '经营地址';
 COMMENT ON COLUMN pay_merchant.settle_direction IS '结算方向 1: 支付账户  2:公户';
 COMMENT ON COLUMN pay_merchant.settle_bank_code IS '开户总行编码';
-COMMENT ON COLUMN pay_merchant.settle_account_type IS '银行账户类型';
+COMMENT ON COLUMN pay_merchant.settle_account_type IS '银行账户类型,1:个体户 2: 对公账户 2:个人借记卡 4:存折';
 COMMENT ON COLUMN pay_merchant.settle_bank_account IS '银行账户号码';
 COMMENT ON COLUMN pay_merchant.issue_mch_no IS '下发商户编号';
 COMMENT ON COLUMN pay_merchant.agreement_sign_url IS '协议签署地址';

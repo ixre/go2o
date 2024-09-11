@@ -1,3 +1,15 @@
+/**
+ * Copyright (C) 2007-2024 fze.NET, All rights reserved.
+ *
+ * name: sys.go
+ * author: jarrysix (jarrysix#gmail.com)
+ * date: 2024-05-11 19:10:56
+ * description:
+ * history:
+*
+ * 行政区划数据参考： https://open.yeepay.com/docs/v2/products/fwssfk/others/5f59fc1720289f001ba82528/5f59fcd020289f001ba82529/index.html
+*/
+
 package sys
 
 import (
@@ -32,7 +44,7 @@ type (
 		// GetDistricts 获取区域名称
 		GetDistrictNames(code ...int) map[int]string
 		// FindCity 查找城市
-		FindCity(name string)*District
+		FindCity(name string) *District
 	}
 
 	// IOptionManager 选项管理器
@@ -85,7 +97,7 @@ type GeneralOption struct {
 	// 上级编号
 	Pid int `db:"pid" json:"pid" bson:"pid"`
 	// 名称
-	Name string `db:"name" json:"name" bson:"name"`
+	Label string `db:"name" json:"name" bson:"name"`
 	// 值
 	Value string `db:"value" json:"value" bson:"value"`
 	// 排列序号

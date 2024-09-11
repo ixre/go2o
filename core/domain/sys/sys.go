@@ -197,7 +197,7 @@ func (o *optionManagerImpl) GetOptionNames(code ...int) map[int]string {
 		if collections.AnyArray(code, func(c int) bool {
 			return c == v.Id
 		}) {
-			mp[v.Id] = v.Name
+			mp[v.Id] = v.Label
 		}
 	}
 	return mp
