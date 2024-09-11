@@ -33,13 +33,13 @@ type paymentRepoImpl struct {
 	db.Connector
 	Storage storage.Interface
 	*payImpl.RepoBase
-	memberRepo   member.IMemberRepo
-	registryRepo registry.IRegistryRepo
-	_divideRepo  fw.Repository[payment.PayDivide]
-	_mchRepo     merchant.IMerchantRepo
-	_subMchRepo  fw.Repository[payment.PayMerchant]
-	_subMchMgr   payment.ISubMerchantManager
-	_orm         orm.Orm
+	_memberRepo   member.IMemberRepo
+	_registryRepo registry.IRegistryRepo
+	_divideRepo   fw.Repository[payment.PayDivide]
+	_mchRepo      merchant.IMerchantRepo
+	_subMchRepo   fw.Repository[payment.PayMerchant]
+	_subMchMgr    payment.ISubMerchantManager
+	_orm          orm.Orm
 }
 
 // MerchantRepo implements payment.IPaymentRepo.
@@ -50,7 +50,7 @@ func (p *paymentRepoImpl) MerchantRepo() fw.Repository[payment.PayMerchant] {
 // SubMerchantManager implements payment.IPaymentRepo.
 func (p *paymentRepoImpl) SubMerchantManager() payment.ISubMerchantManager {
 	if p._subMchMgr == nil {
-		p._subMchMgr = payImpl.NewSubMerchantManager(p, p._mchRepo)
+		p._subMchMgr = payImpl.NewSubMerchantManager(p, p._mchRepo, p._memberRepo)
 	}
 	return p._subMchMgr
 }
@@ -68,13 +68,14 @@ func NewPaymentRepo(sto storage.Interface, o orm.Orm,
 	}
 	//todo: 临时取消与orderRepo的循环依赖
 	r := &paymentRepoImpl{
-		Storage:      sto,
-		Connector:    o.Connector(),
-		_orm:         o,
-		memberRepo:   mmRepo,
-		registryRepo: registryRepo,
-		_divideRepo:  &fw.BaseRepository[payment.PayDivide]{ORM: on},
-		_subMchRepo:  &fw.BaseRepository[payment.PayMerchant]{ORM: on},
+		Storage:       sto,
+		Connector:     o.Connector(),
+		_orm:          o,
+		_memberRepo:   mmRepo,
+		_mchRepo:      mchRepo,
+		_registryRepo: registryRepo,
+		_divideRepo:   &fw.BaseRepository[payment.PayDivide]{ORM: on},
+		_subMchRepo:   &fw.BaseRepository[payment.PayMerchant]{ORM: on},
 	}
 	return r
 }
@@ -157,7 +158,7 @@ func (p *paymentRepoImpl) GetPaymentOrder(paymentNo string) payment.IPaymentOrde
 func (p *paymentRepoImpl) CreatePaymentOrder(
 	o *payment.Order) payment.IPaymentOrder {
 	return p.RepoBase.CreatePaymentOrder(o, p,
-		p.memberRepo, p.registryRepo)
+		p._memberRepo, p._registryRepo)
 }
 
 // 保存支付单

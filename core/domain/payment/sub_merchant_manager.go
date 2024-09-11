@@ -24,9 +24,9 @@ import (
 )
 
 type subMerchantManagerImpl struct {
-	rep     payment.IPaymentRepo
-	mchRepo merchant.IMerchantRepo
-	mmRepo  member.IMemberRepo
+	rep      payment.IPaymentRepo
+	_mchRepo merchant.IMerchantRepo
+	_mmRepo  member.IMemberRepo
 }
 
 // InitialMerchant implements payment.ISubMerchantManager.
@@ -85,7 +85,7 @@ func (s *subMerchantManagerImpl) InitialMerchant(userType int, userId int) (*pay
 		// 会员
 		v.MchType = 2 // 小微商户
 
-		mm := s.mmRepo.GetMember(int64(userId))
+		mm := s._mmRepo.GetMember(int64(userId))
 		if mm == nil {
 			return nil, errors.New("会员不存在")
 		}
@@ -128,7 +128,7 @@ func (s *subMerchantManagerImpl) InitialMerchant(userType int, userId int) (*pay
 		v.SettleBankAccount = ""
 	}
 	if userType == 2 {
-		mch := s.mchRepo.GetMerchant(userId)
+		mch := s._mchRepo.GetMerchant(userId)
 		if mch == nil {
 			return nil, errors.New("商户不存在")
 		}
@@ -167,7 +167,7 @@ func (s *subMerchantManagerImpl) InitialMerchant(userType int, userId int) (*pay
 		v.SettleAccountType = 1
 		v.SettleBankAccount = auth.BankAccount
 	}
-	v.IssueStatus = 1
+	v.IssueStatus = 0
 	v.CreateTime = int(time.Now().Unix())
 	v.UpdateTime = v.CreateTime
 	return s.rep.MerchantRepo().Save(v)
@@ -226,10 +226,11 @@ func (s *subMerchantManagerImpl) Submit(code string) error {
 	return err
 }
 
-func NewSubMerchantManager(rep payment.IPaymentRepo, mchRepo merchant.IMerchantRepo) payment.ISubMerchantManager {
+func NewSubMerchantManager(rep payment.IPaymentRepo, mchRepo merchant.IMerchantRepo, mmRepo member.IMemberRepo) payment.ISubMerchantManager {
 	return &subMerchantManagerImpl{
-		rep:     rep,
-		mchRepo: mchRepo,
+		rep:      rep,
+		_mchRepo: mchRepo,
+		_mmRepo:  mmRepo,
 	}
 }
 
@@ -265,7 +266,7 @@ func (s *subMerchantManagerImpl) Update(code string, data *payment.SubMerchantUp
 }
 
 func (s *subMerchantManagerImpl) updateMerchantSubMerchantNo(userId int, subMerchantNo string) error {
-	mch := s.mchRepo.GetMerchant(userId)
+	mch := s._mchRepo.GetMerchant(userId)
 	if mch == nil {
 		return errors.New("商户不存在")
 	}
