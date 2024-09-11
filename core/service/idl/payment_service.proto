@@ -65,6 +65,7 @@ service PaymentService {
     // 完成支付单支付，并传入支付方式及外部订单号
     rpc FinishPayment (FinishPaymentRequest) returns (TxResult);
     
+    /*********************  分账  *********************/
     // QueryDivideOrders 查询可用于分账的订单
     rpc QueryDivideOrders(DivideOrdersRequest)returns(DivideOrdersResponse);
     // Divide 分账
@@ -76,8 +77,23 @@ service PaymentService {
     // RevertSubDivide 撤销分账
     rpc RevertSubDivide(PaymentSubDivideRevertRequest) returns(TxResult);
     
+    /*********************  商户入网  *********************/
+    // GetSubMerchant 获取商户入网信息
+    rpc GetSubMerchant(SubMerchantCodeRequest) returns(SSubMerchant);
+    // InitialSubMerchant 初始化商户入网信息
+    rpc InitialSubMerchant(SubMerchantInitialRequest) returns(TxResult);
+    // StageSubMerchant 暂存商户入网信息
+    rpc StageSubMerchant(SSubMerchant) returns(TxResult);
+    // SubmitSubMerchant 提交商户入网信息
+    rpc SubmitSubMerchant(SubMerchantCodeRequest) returns(TxResult);
+    // UpdateSubMerchant 更新商户入网信息
+    rpc UpdateSubMerchant(SubMerchantUpdateRequest) returns(TxResult);
+
+
+    /*********************  退款  *********************/
     // RequestRefund 申请退款(仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款)
     rpc RequestRefund(PaymentRefundRequest) returns(TxResult);
+
 
     // 支付网关(仅交易单使用)
     rpc GatewayV1 (PayGatewayRequest) returns (TxResult);
@@ -448,4 +464,114 @@ message PaymentRefundRequest{
     int64 refundAmount = 2;
     // 退款原因
     string reason = 3;
+}
+
+// 商户入网申请单编号请求
+message SubMerchantCodeRequest{
+    // 申请单编号
+    string code = 1;
+}
+
+// 初始化商户入网请求
+message SubMerchantInitialRequest{
+    // 用户类型 1:会员  2:商户
+    int32 userType = 1;
+    // 用户编号
+    int64 userId = 2;
+}
+
+// 更新商户入网状态请求
+message SubMerchantUpdateRequest{
+    // 申请单编号
+    string code = 1;
+    // 状态
+    int32 status = 2;
+    // 备注
+    string remark = 3;
+    // 商户编码
+    string merchantCode = 4;
+    // 协议签署地址
+    string agreementSignUrl = 5;
+}
+
+// 支付入网子商户
+message SSubMerchant{
+    // 编号
+    int64 id = 1;
+    // 申请单编号
+    string code = 2;
+    // 用户类型 1:会员  2:商户
+    int32 userType = 3;
+    // 用户编号
+    int64 userId = 4;
+    // 商户类型 1:企业/个体  2:小微(个人)
+    int32 mchType = 5;
+    // 商户角色 1:标准商户  2: 平台商 3: 平台商子商户 4: 分账接收方
+    int32 mchRole = 6;
+    // 商户证件照片地址
+    string licencePic = 7;
+    // 商户签约名,与商户证件主体名称一致。
+    string signName = 8;
+    // 商户签约类型  1: 个体  2: 企业   3: 事业单位  4: 社会团体
+    int32 signType = 9;
+    // 商户证件号码
+    string licenceNo = 10;
+    // 商户简称
+    string shortName = 11;
+    // 开户许可证图片
+    string accountLicencePic = 12;
+    // 法人名称
+    string legalName = 13;
+    // 法人证件类型 1: 身份证 2: 永久居留身份证 3: 护照  4:港澳通行证  5: 台胞证
+    int32 legalLicenceType = 14;
+    // 法人证件编号
+    string legalLicenceNo = 15;
+    // 法人证件正面照片地址
+    string legalFrontPic = 16;
+    // 法人证件背面照片地址
+    string legalBackPic = 17;
+    // 联系人姓名
+    string contactName = 18;
+    // 联系人手机号
+    string contactPhone = 19;
+    // 联系人邮箱
+    string contactEmail = 20;
+    // 联系人证件号码
+    string contactLicenceNo = 21;
+    // 商户后台管理员邮箱
+    string accountEmail = 22;
+    // 商户后台管理员手机号
+    string accountPhone = 23;
+    // 一级行业分类编码
+    string primaryIndustryCode = 24;
+    // 二级行业分类编码
+    string secondaryIndustryCode = 25;
+    // 经营省
+    int32 provinceCode = 26;
+    // 经营市
+    int32 cityCode = 27;
+    // 经营区
+    int32 districtCode = 28;
+    // 经营地址
+    string address = 29;
+    // 结算方向 1: 支付账户  2:公户
+    int32 settleDirection = 30;
+    // 开户总行编码
+    string settleBankCode = 31;
+    // 银行账户类型
+    int32 settleAccountType = 32;
+    // 银行账户号码
+    string settleBankAccount = 33;
+    // 下发商户编号
+    string issueMchNo = 34;
+    // 协议签署地址
+    string agreementSignUrl = 35;
+    // 入网状态 1: 审核中  2: 被驳回 3: 待签署协议 4: 开通中 5: 已开通
+    int32 issueStatus = 36;
+    // 入网结果信息
+    string issueMessage = 37;
+    // 创建时间
+    int64 createTime = 38;
+    // 更新时间
+    int64 updateTime = 39;
 }

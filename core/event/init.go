@@ -43,4 +43,6 @@ func (e *EventSource) Init() {
 	eventbus.Subscribe(payment.PaymentDivideEvent{}, e.HandlePaymentDivideEvent)
 	// 注册第三方支付退款事件
 	eventbus.Subscribe(payment.PaymentProviderRefundEvent{}, e.HandlePaymentProviderRefundEvent)
+	// 注册支付商户入网事件
+	eventbus.Subscribe(payment.PaymentMerchantRegistrationEvent{}, e.HandlePaymentMerchantRegistrationEvent)
 }

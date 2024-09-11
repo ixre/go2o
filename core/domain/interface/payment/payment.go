@@ -208,6 +208,10 @@ type (
 	IPaymentRepo interface {
 		// DivideRepo 分账仓储
 		DivideRepo() fw.Repository[PayDivide]
+		// MerchantRepo 支付商户仓储
+		MerchantRepo() fw.Repository[PayMerchant]
+		// MerchantManager 支付商户管理
+		SubMerchantManager() ISubMerchantManager
 		// GetPaymentOrderById 根据编号获取支付单
 		GetPaymentOrderById(id int) IPaymentOrder
 		// DeletePaymentOrder 拆分后删除父支付单
@@ -292,6 +296,40 @@ type (
 		UserId int
 		// 分账金额
 		DivideAmount int
+	}
+
+	// ISubMerchantManager 支付商户管理
+	ISubMerchantManager interface {
+		// GetMerchant 获取用户的支付入网信息
+		FindMerchant(userType int, userId int) *PayMerchant
+		// InitialMerchant 初始化支付商入网信息
+		InitialMerchant(userType int, userId int) (*PayMerchant, error)
+		// GetMerchant 获取支付商户信息
+		GetMerchant(code string) *PayMerchant
+		// SaveMerchant 暂存支付商户信息
+		StageMerchant(mch *PayMerchant) error
+		// Submit 提交支付商户入网申请
+		Submit(code string) error
+		// Update 更新支付商户入网申请状态
+		Update(code string, data *SubMerchantUpdateParams) error
+	}
+
+	// SubMerchantUpdateParams 更新支付商户入网申请状态参数
+	SubMerchantUpdateParams struct {
+		// 状态
+		Status int
+		// 备注
+		Remark string
+		// 商户编码
+		MerchantCode string
+		// 协议签署地址
+		AgreementSignUrl string
+	}
+
+	// PaymentMerchantRegistrationEvent 支付商户入网事件
+	PaymentMerchantRegistrationEvent struct {
+		// 支付商户
+		Merchant *PayMerchant
 	}
 
 	// MergeOrder 合并的支付单
@@ -454,4 +492,90 @@ type PayTradeData struct {
 
 func (p PayTradeData) TableName() string {
 	return "pay_trade_data"
+}
+
+// PayMerchant 支付入网商户
+type PayMerchant struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" bson:"id"`
+	// 申请单编号
+	Code string `json:"code" db:"code" gorm:"column:code" bson:"code"`
+	// 用户类型 1:会员  2:商户
+	UserType int `json:"userType" db:"user_type" gorm:"column:user_type" bson:"userType"`
+	// 用户编号
+	UserId int `json:"userId" db:"user_id" gorm:"column:user_id" bson:"userId"`
+	// 商户类型 1:企业/个体  2:小微(个人)
+	MchType int `json:"mchType" db:"mch_type" gorm:"column:mch_type" bson:"mchType"`
+	// 商户角色 1:标准商户  2: 平台商 3: 平台商子商户 4: 分账接收方
+	MchRole int `json:"mchRole" db:"mch_role" gorm:"column:mch_role" bson:"mchRole"`
+	// 商户证件照片地址
+	LicencePic string `json:"licencePic" db:"licence_pic" gorm:"column:licence_pic" bson:"licencePic"`
+	// 商户签约名,与商户证件主体名称一致。
+	SignName string `json:"signName" db:"sign_name" gorm:"column:sign_name" bson:"signName"`
+	// 商户签约类型  1: 个体  2: 企业   3: 事业单位  4: 社会团体
+	SignType int `json:"signType" db:"sign_type" gorm:"column:sign_type" bson:"signType"`
+	// 商户证件号码
+	LicenceNo string `json:"licenceNo" db:"licence_no" gorm:"column:licence_no" bson:"licenceNo"`
+	// 商户简称
+	ShortName string `json:"shortName" db:"short_name" gorm:"column:short_name" bson:"shortName"`
+	// 开户许可证图片
+	AccountLicencePic string `json:"accountLicencePic" db:"account_licence_pic" gorm:"column:account_licence_pic" bson:"accountLicencePic"`
+	// 法人名称
+	LegalName string `json:"legalName" db:"legal_name" gorm:"column:legal_name" bson:"legalName"`
+	// 法人证件类型 1: 身份证 2: 永久居留身份证 3: 护照  4:港澳通行证  5: 台胞证
+	LegalLicenceType int `json:"legalLicenceType" db:"legal_licence_type" gorm:"column:legal_licence_type" bson:"legalLicenceType"`
+	// 法人证件编号
+	LegalLicenceNo string `json:"legalLicenceNo" db:"legal_licence_no" gorm:"column:legal_licence_no" bson:"legalLicenceNo"`
+	// 法人证件正面照片地址
+	LegalFrontPic string `json:"legalFrontPic" db:"legal_front_pic" gorm:"column:legal_front_pic" bson:"legalFrontPic"`
+	// 法人证件背面照片地址
+	LegalBackPic string `json:"legalBackPic" db:"legal_back_pic" gorm:"column:legal_back_pic" bson:"legalBackPic"`
+	// 联系人姓名
+	ContactName string `json:"contactName" db:"contact_name" gorm:"column:contact_name" bson:"contactName"`
+	// 联系人手机号
+	ContactPhone string `json:"contactPhone" db:"contact_phone" gorm:"column:contact_phone" bson:"contactPhone"`
+	// 联系人邮箱
+	ContactEmail string `json:"contactEmail" db:"contact_email" gorm:"column:contact_email" bson:"contactEmail"`
+	// 联系人证件号码
+	ContactLicenceNo string `json:"contactLicenceNo" db:"contact_licence_no" gorm:"column:contact_licence_no" bson:"contactLicenceNo"`
+	// 商户后台管理员邮箱
+	AccountEmail string `json:"accountEmail" db:"account_email" gorm:"column:account_email" bson:"accountEmail"`
+	// 商户后台管理员手机号
+	AccountPhone string `json:"accountPhone" db:"account_phone" gorm:"column:account_phone" bson:"accountPhone"`
+	// 一级行业分类编码
+	PrimaryIndustryCode string `json:"primaryIndustryCode" db:"primary_industry_code" gorm:"column:primary_industry_code" bson:"primaryIndustryCode"`
+	// 二级行业分类编码
+	SecondaryIndustryCode string `json:"secondaryIndustryCode" db:"secondary_industry_code" gorm:"column:secondary_industry_code" bson:"secondaryIndustryCode"`
+	// 经营省
+	ProvinceCode int `json:"provinceCode" db:"province_code" gorm:"column:province_code" bson:"provinceCode"`
+	// 经营市
+	CityCode int `json:"cityCode" db:"city_code" gorm:"column:city_code" bson:"cityCode"`
+	// 经营区
+	DistrictCode int `json:"districtCode" db:"district_code" gorm:"column:district_code" bson:"districtCode"`
+	// 经营地址
+	Address string `json:"address" db:"address" gorm:"column:address" bson:"address"`
+	// 结算方向 1: 支付账户  2:公户
+	SettleDirection int `json:"settleDirection" db:"settle_direction" gorm:"column:settle_direction" bson:"settleDirection"`
+	// 开户总行编码
+	SettleBankCode string `json:"settleBankCode" db:"settle_bank_code" gorm:"column:settle_bank_code" bson:"settleBankCode"`
+	// 银行账户类型
+	SettleAccountType int `json:"settleAccountType" db:"settle_account_type" gorm:"column:settle_account_type" bson:"settleAccountType"`
+	// 银行账户号码
+	SettleBankAccount string `json:"settleBankAccount" db:"settle_bank_account" gorm:"column:settle_bank_account" bson:"settleBankAccount"`
+	// 下发商户编号
+	IssueMchNo string `json:"issueMchNo" db:"issue_mch_no" gorm:"column:issue_mch_no" bson:"issueMchNo"`
+	// 协议签署地址
+	AgreementSignUrl string `json:"agreementSignUrl" db:"agreement_sign_url" gorm:"column:agreement_sign_url" bson:"agreementSignUrl"`
+	// 入网状态 1: 审核中  2: 被驳回 3: 待签署协议 4: 开通中 5: 已开通
+	IssueStatus int `json:"issueStatus" db:"issue_status" gorm:"column:issue_status" bson:"issueStatus"`
+	// 入网结果信息
+	IssueMessage string `json:"issueMessage" db:"issue_message" gorm:"column:issue_message" bson:"issueMessage"`
+	// 创建时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+}
+
+func (p PayMerchant) TableName() string {
+	return "pay_merchant"
 }

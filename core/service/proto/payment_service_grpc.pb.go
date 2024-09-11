@@ -32,6 +32,11 @@ const (
 	PaymentService_FinishDivide_FullMethodName           = "/PaymentService/FinishDivide"
 	PaymentService_UpdateDivideStatus_FullMethodName     = "/PaymentService/UpdateDivideStatus"
 	PaymentService_RevertSubDivide_FullMethodName        = "/PaymentService/RevertSubDivide"
+	PaymentService_GetSubMerchant_FullMethodName         = "/PaymentService/GetSubMerchant"
+	PaymentService_InitialSubMerchant_FullMethodName     = "/PaymentService/InitialSubMerchant"
+	PaymentService_StageSubMerchant_FullMethodName       = "/PaymentService/StageSubMerchant"
+	PaymentService_SubmitSubMerchant_FullMethodName      = "/PaymentService/SubmitSubMerchant"
+	PaymentService_UpdateSubMerchant_FullMethodName      = "/PaymentService/UpdateSubMerchant"
 	PaymentService_RequestRefund_FullMethodName          = "/PaymentService/RequestRefund"
 	PaymentService_GatewayV1_FullMethodName              = "/PaymentService/GatewayV1"
 	PaymentService_GetPreparePaymentInfo_FullMethodName  = "/PaymentService/GetPreparePaymentInfo"
@@ -73,6 +78,16 @@ type PaymentServiceClient interface {
 	UpdateDivideStatus(ctx context.Context, in *UpdateDivideStatusRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// RevertSubDivide 撤销分账
 	RevertSubDivide(ctx context.Context, in *PaymentSubDivideRevertRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// GetSubMerchant 获取商户入网信息
+	GetSubMerchant(ctx context.Context, in *SubMerchantCodeRequest, opts ...grpc.CallOption) (*SSubMerchant, error)
+	// InitialSubMerchant 初始化商户入网信息
+	InitialSubMerchant(ctx context.Context, in *SubMerchantInitialRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// StageSubMerchant 暂存商户入网信息
+	StageSubMerchant(ctx context.Context, in *SSubMerchant, opts ...grpc.CallOption) (*TxResult, error)
+	// SubmitSubMerchant 提交商户入网信息
+	SubmitSubMerchant(ctx context.Context, in *SubMerchantCodeRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// UpdateSubMerchant 更新商户入网信息
+	UpdateSubMerchant(ctx context.Context, in *SubMerchantUpdateRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// RequestRefund 申请退款(仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款)
 	RequestRefund(ctx context.Context, in *PaymentRefundRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 支付网关(仅交易单使用)
@@ -224,6 +239,51 @@ func (c *paymentServiceClient) RevertSubDivide(ctx context.Context, in *PaymentS
 	return out, nil
 }
 
+func (c *paymentServiceClient) GetSubMerchant(ctx context.Context, in *SubMerchantCodeRequest, opts ...grpc.CallOption) (*SSubMerchant, error) {
+	out := new(SSubMerchant)
+	err := c.cc.Invoke(ctx, PaymentService_GetSubMerchant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentServiceClient) InitialSubMerchant(ctx context.Context, in *SubMerchantInitialRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, PaymentService_InitialSubMerchant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentServiceClient) StageSubMerchant(ctx context.Context, in *SSubMerchant, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, PaymentService_StageSubMerchant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentServiceClient) SubmitSubMerchant(ctx context.Context, in *SubMerchantCodeRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, PaymentService_SubmitSubMerchant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentServiceClient) UpdateSubMerchant(ctx context.Context, in *SubMerchantUpdateRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, PaymentService_UpdateSubMerchant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *paymentServiceClient) RequestRefund(ctx context.Context, in *PaymentRefundRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_RequestRefund_FullMethodName, in, out, opts...)
@@ -335,6 +395,16 @@ type PaymentServiceServer interface {
 	UpdateDivideStatus(context.Context, *UpdateDivideStatusRequest) (*TxResult, error)
 	// RevertSubDivide 撤销分账
 	RevertSubDivide(context.Context, *PaymentSubDivideRevertRequest) (*TxResult, error)
+	// GetSubMerchant 获取商户入网信息
+	GetSubMerchant(context.Context, *SubMerchantCodeRequest) (*SSubMerchant, error)
+	// InitialSubMerchant 初始化商户入网信息
+	InitialSubMerchant(context.Context, *SubMerchantInitialRequest) (*TxResult, error)
+	// StageSubMerchant 暂存商户入网信息
+	StageSubMerchant(context.Context, *SSubMerchant) (*TxResult, error)
+	// SubmitSubMerchant 提交商户入网信息
+	SubmitSubMerchant(context.Context, *SubMerchantCodeRequest) (*TxResult, error)
+	// UpdateSubMerchant 更新商户入网信息
+	UpdateSubMerchant(context.Context, *SubMerchantUpdateRequest) (*TxResult, error)
 	// RequestRefund 申请退款(仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款)
 	RequestRefund(context.Context, *PaymentRefundRequest) (*TxResult, error)
 	// 支付网关(仅交易单使用)
@@ -404,6 +474,21 @@ func (UnimplementedPaymentServiceServer) UpdateDivideStatus(context.Context, *Up
 }
 func (UnimplementedPaymentServiceServer) RevertSubDivide(context.Context, *PaymentSubDivideRevertRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RevertSubDivide not implemented")
+}
+func (UnimplementedPaymentServiceServer) GetSubMerchant(context.Context, *SubMerchantCodeRequest) (*SSubMerchant, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSubMerchant not implemented")
+}
+func (UnimplementedPaymentServiceServer) InitialSubMerchant(context.Context, *SubMerchantInitialRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InitialSubMerchant not implemented")
+}
+func (UnimplementedPaymentServiceServer) StageSubMerchant(context.Context, *SSubMerchant) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StageSubMerchant not implemented")
+}
+func (UnimplementedPaymentServiceServer) SubmitSubMerchant(context.Context, *SubMerchantCodeRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitSubMerchant not implemented")
+}
+func (UnimplementedPaymentServiceServer) UpdateSubMerchant(context.Context, *SubMerchantUpdateRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubMerchant not implemented")
 }
 func (UnimplementedPaymentServiceServer) RequestRefund(context.Context, *PaymentRefundRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestRefund not implemented")
@@ -679,6 +764,96 @@ func _PaymentService_RevertSubDivide_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PaymentService_GetSubMerchant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubMerchantCodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).GetSubMerchant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_GetSubMerchant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).GetSubMerchant(ctx, req.(*SubMerchantCodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaymentService_InitialSubMerchant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubMerchantInitialRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).InitialSubMerchant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_InitialSubMerchant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).InitialSubMerchant(ctx, req.(*SubMerchantInitialRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaymentService_StageSubMerchant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SSubMerchant)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).StageSubMerchant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_StageSubMerchant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).StageSubMerchant(ctx, req.(*SSubMerchant))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaymentService_SubmitSubMerchant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubMerchantCodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).SubmitSubMerchant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_SubmitSubMerchant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).SubmitSubMerchant(ctx, req.(*SubMerchantCodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaymentService_UpdateSubMerchant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubMerchantUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).UpdateSubMerchant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_UpdateSubMerchant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).UpdateSubMerchant(ctx, req.(*SubMerchantUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PaymentService_RequestRefund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PaymentRefundRequest)
 	if err := dec(in); err != nil {
@@ -899,6 +1074,26 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RevertSubDivide",
 			Handler:    _PaymentService_RevertSubDivide_Handler,
+		},
+		{
+			MethodName: "GetSubMerchant",
+			Handler:    _PaymentService_GetSubMerchant_Handler,
+		},
+		{
+			MethodName: "InitialSubMerchant",
+			Handler:    _PaymentService_InitialSubMerchant_Handler,
+		},
+		{
+			MethodName: "StageSubMerchant",
+			Handler:    _PaymentService_StageSubMerchant_Handler,
+		},
+		{
+			MethodName: "SubmitSubMerchant",
+			Handler:    _PaymentService_SubmitSubMerchant_Handler,
+		},
+		{
+			MethodName: "UpdateSubMerchant",
+			Handler:    _PaymentService_UpdateSubMerchant_Handler,
 		},
 		{
 			MethodName: "RequestRefund",

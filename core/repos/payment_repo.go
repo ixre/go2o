@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	payImpl "github.com/ixre/go2o/core/domain/payment"
@@ -34,8 +35,24 @@ type paymentRepoImpl struct {
 	*payImpl.RepoBase
 	memberRepo   member.IMemberRepo
 	registryRepo registry.IRegistryRepo
-	_divideRepo  fw.BaseRepository[payment.PayDivide]
+	_divideRepo  fw.Repository[payment.PayDivide]
+	_mchRepo     merchant.IMerchantRepo
+	_subMchRepo  fw.Repository[payment.PayMerchant]
+	_subMchMgr   payment.ISubMerchantManager
 	_orm         orm.Orm
+}
+
+// MerchantRepo implements payment.IPaymentRepo.
+func (p *paymentRepoImpl) MerchantRepo() fw.Repository[payment.PayMerchant] {
+	return p._subMchRepo
+}
+
+// SubMerchantManager implements payment.IPaymentRepo.
+func (p *paymentRepoImpl) SubMerchantManager() payment.ISubMerchantManager {
+	if p._subMchMgr == nil {
+		p._subMchMgr = payImpl.NewSubMerchantManager(p, p._mchRepo)
+	}
+	return p._subMchMgr
 }
 
 var payIntegrateAppDaoImplMapped = false
@@ -43,6 +60,7 @@ var payIntegrateAppDaoImplMapped = false
 func NewPaymentRepo(sto storage.Interface, o orm.Orm,
 	on fw.ORM,
 	mmRepo member.IMemberRepo,
+	mchRepo merchant.IMerchantRepo,
 	registryRepo registry.IRegistryRepo) payment.IPaymentRepo {
 	if !payIntegrateAppDaoImplMapped {
 		_ = o.Mapping(payment.IntegrateApp{}, "pay_integrate_app")
@@ -55,14 +73,15 @@ func NewPaymentRepo(sto storage.Interface, o orm.Orm,
 		_orm:         o,
 		memberRepo:   mmRepo,
 		registryRepo: registryRepo,
+		_divideRepo:  &fw.BaseRepository[payment.PayDivide]{ORM: on},
+		_subMchRepo:  &fw.BaseRepository[payment.PayMerchant]{ORM: on},
 	}
-	r._divideRepo.ORM = on
 	return r
 }
 
 // DivideRepo implements payment.IPaymentRepo.
 func (p *paymentRepoImpl) DivideRepo() fw.Repository[payment.PayDivide] {
-	return &p._divideRepo
+	return p._divideRepo
 }
 
 // 根据订单号获取支付单

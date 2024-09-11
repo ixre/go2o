@@ -154,8 +154,8 @@ func (m *merchantService) SaveAuthenticate(_ context.Context, r *proto.SaveAuthe
 	v := &merchant.Authenticate{
 		OrgName:          r.OrgName,
 		MchName:          r.MchName,
-		OrgNo:            r.OrgNo,
-		OrgPic:           r.OrgPic,
+		LicenceNo:        r.OrgNo,
+		LicencePic:       r.OrgPic,
 		OrgAddress:       r.OrgAddress,
 		Province:         int(r.Province),
 		City:             int(r.City),

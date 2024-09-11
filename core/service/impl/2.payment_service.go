@@ -525,3 +525,129 @@ func (p *paymentService) RequestRefund(_ context.Context, req *proto.PaymentRefu
 	}, req.Reason)
 	return p.errorV2(err), nil
 }
+
+// GetSubMerchant implements proto.PaymentServiceServer.
+func (p *paymentService) GetSubMerchant(_ context.Context, req *proto.SubMerchantCodeRequest) (*proto.SSubMerchant, error) {
+	v := p.repo.SubMerchantManager().GetMerchant(req.Code)
+	if v == nil {
+		return &proto.SSubMerchant{}, nil
+	}
+	return &proto.SSubMerchant{
+		Id:                    int64(v.Id),
+		Code:                  v.Code,
+		UserType:              int32(v.UserType),
+		UserId:                int64(v.UserId),
+		MchType:               int32(v.MchType),
+		MchRole:               int32(v.MchRole),
+		LicencePic:            v.LicencePic,
+		SignName:              v.SignName,
+		SignType:              int32(v.SignType),
+		LicenceNo:             v.LicenceNo,
+		ShortName:             v.ShortName,
+		AccountLicencePic:     v.AccountLicencePic,
+		LegalName:             v.LegalName,
+		LegalLicenceType:      int32(v.LegalLicenceType),
+		LegalLicenceNo:        v.LegalLicenceNo,
+		LegalFrontPic:         v.LegalFrontPic,
+		LegalBackPic:          v.LegalBackPic,
+		ContactName:           v.ContactName,
+		ContactPhone:          v.ContactPhone,
+		ContactEmail:          v.ContactEmail,
+		ContactLicenceNo:      v.ContactLicenceNo,
+		AccountEmail:          v.AccountEmail,
+		AccountPhone:          v.AccountPhone,
+		PrimaryIndustryCode:   v.PrimaryIndustryCode,
+		SecondaryIndustryCode: v.SecondaryIndustryCode,
+		ProvinceCode:          int32(v.ProvinceCode),
+		CityCode:              int32(v.CityCode),
+		DistrictCode:          int32(v.DistrictCode),
+		Address:               v.Address,
+		SettleDirection:       int32(v.SettleDirection),
+		SettleBankCode:        v.SettleBankCode,
+		SettleAccountType:     int32(v.SettleAccountType),
+		SettleBankAccount:     v.SettleBankAccount,
+		IssueMchNo:            v.IssueMchNo,
+		AgreementSignUrl:      v.AgreementSignUrl,
+		IssueStatus:           int32(v.IssueStatus),
+		IssueMessage:          v.IssueMessage,
+		CreateTime:            int64(v.CreateTime),
+		UpdateTime:            int64(v.UpdateTime),
+	}, nil
+}
+
+// InitialSubMerchant implements proto.PaymentServiceServer.
+func (p *paymentService) InitialSubMerchant(_ context.Context, req *proto.SubMerchantInitialRequest) (*proto.TxResult, error) {
+	mgr := p.repo.SubMerchantManager()
+	mch, err := mgr.InitialMerchant(int(req.UserType), int(req.UserId))
+	if err == nil {
+		return p.txResult(mch.Id, nil), nil
+	}
+	return p.errorV2(err), nil
+}
+
+// StageSubMerchant implements proto.PaymentServiceServer.
+func (p *paymentService) StageSubMerchant(_ context.Context, req *proto.SSubMerchant) (*proto.TxResult, error) {
+	mgr := p.repo.SubMerchantManager()
+	dst := &payment.PayMerchant{
+		Id:                    int(req.Id),
+		Code:                  req.Code,
+		UserType:              int(req.UserType),
+		UserId:                int(req.UserId),
+		MchType:               int(req.MchType),
+		MchRole:               int(req.MchRole),
+		LicencePic:            req.LicencePic,
+		SignName:              req.SignName,
+		SignType:              int(req.SignType),
+		LicenceNo:             req.LicenceNo,
+		ShortName:             req.ShortName,
+		AccountLicencePic:     req.AccountLicencePic,
+		LegalName:             req.LegalName,
+		LegalLicenceType:      int(req.LegalLicenceType),
+		LegalLicenceNo:        req.LegalLicenceNo,
+		LegalFrontPic:         req.LegalFrontPic,
+		LegalBackPic:          req.LegalBackPic,
+		ContactName:           req.ContactName,
+		ContactPhone:          req.ContactPhone,
+		ContactEmail:          req.ContactEmail,
+		ContactLicenceNo:      req.ContactLicenceNo,
+		AccountEmail:          req.AccountEmail,
+		AccountPhone:          req.AccountPhone,
+		PrimaryIndustryCode:   req.PrimaryIndustryCode,
+		SecondaryIndustryCode: req.SecondaryIndustryCode,
+		ProvinceCode:          int(req.ProvinceCode),
+		CityCode:              int(req.CityCode),
+		DistrictCode:          int(req.DistrictCode),
+		Address:               req.Address,
+		SettleDirection:       int(req.SettleDirection),
+		SettleBankCode:        req.SettleBankCode,
+		SettleAccountType:     int(req.SettleAccountType),
+		SettleBankAccount:     req.SettleBankAccount,
+		IssueMchNo:            req.IssueMchNo,
+		AgreementSignUrl:      req.AgreementSignUrl,
+		IssueStatus:           int(req.IssueStatus),
+		IssueMessage:          req.IssueMessage,
+		CreateTime:            int(req.CreateTime),
+		UpdateTime:            int(req.UpdateTime),
+	}
+	err := mgr.StageMerchant(dst)
+	return p.errorV2(err), nil
+}
+
+// SubmitSubMerchant implements proto.PaymentServiceServer.
+func (p *paymentService) SubmitSubMerchant(_ context.Context, req *proto.SubMerchantCodeRequest) (*proto.TxResult, error) {
+	mgr := p.repo.SubMerchantManager()
+	err := mgr.Submit(req.Code)
+	return p.errorV2(err), nil
+}
+
+// UpdateSubMerchant implements proto.PaymentServiceServer.
+func (p *paymentService) UpdateSubMerchant(_ context.Context, req *proto.SubMerchantUpdateRequest) (*proto.TxResult, error) {
+	mgr := p.repo.SubMerchantManager()
+	err := mgr.Update(req.Code, &payment.SubMerchantUpdateParams{
+		Status:           int(req.Status),
+		Remark:           req.Remark,
+		MerchantCode:     req.MerchantCode,
+		AgreementSignUrl: req.AgreementSignUrl,
+	})
+	return p.errorV2(err), nil
+}

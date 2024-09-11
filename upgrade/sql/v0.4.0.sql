@@ -1199,3 +1199,88 @@ COMMENT ON COLUMN "public".pay_trade_data.pay_amount IS '支付金额';
 COMMENT ON COLUMN "public".pay_trade_data.out_trade_code IS '外部交易方式';
 COMMENT ON COLUMN "public".pay_trade_data.out_trade_no IS '外部交易单号';
 COMMENT ON COLUMN "public".pay_trade_data.pay_time IS '支付时间';
+
+-- 2024-09-11 支付入网商户
+DROP TABLE IF EXISTS pay_merchant CASCADE;
+
+CREATE TABLE pay_merchant (
+  id                      int8 NOT NULL UNIQUE, 
+  code                    varchar(20) NOT NULL, 
+  user_type               int4 NOT NULL, 
+  user_id                 int8 NOT NULL, 
+  mch_type                int4 NOT NULL, 
+  mch_role                int4 NOT NULL, 
+  licence_pic             varchar(120) NOT NULL, 
+  sign_name               varchar(20) NOT NULL, 
+  sign_type               int4 NOT NULL, 
+  licence_no              varchar(20) NOT NULL, 
+  short_name              varchar(20) NOT NULL, 
+  account_licence_pic     varchar(120) NOT NULL, 
+  legal_name              varchar(20) NOT NULL, 
+  legal_licence_type      int4 NOT NULL, 
+  legal_licence_no        varchar(40) NOT NULL, 
+  legal_front_pic         varchar(120) NOT NULL, 
+  legal_back_pic          varchar(120) NOT NULL, 
+  contact_name            varchar(20) NOT NULL, 
+  contact_phone           varchar(20) NOT NULL, 
+  contact_email           varchar(40) NOT NULL, 
+  contact_licence_no      varchar(20) NOT NULL, 
+  account_email           varchar(40) NOT NULL, 
+  account_phone           varchar(20) NOT NULL, 
+  primary_industry_code   varchar(20) NOT NULL, 
+  secondary_industry_code varchar(20) NOT NULL, 
+  province_code           int4 NOT NULL, 
+  city_code               int4 NOT NULL, 
+  district_code           int4 NOT NULL, 
+  address                 varchar(40) NOT NULL, 
+  settle_direction        int4 NOT NULL, 
+  settle_bank_code        varchar(20) NOT NULL, 
+  settle_account_type     int4 NOT NULL, 
+  settle_bank_account     varchar(20) NOT NULL, 
+  issue_mch_no            varchar(40) NOT NULL, 
+  agreement_sign_url      varchar(120) NOT NULL, 
+  issue_status            int4 NOT NULL, 
+  issue_message           varchar(20) NOT NULL, 
+  create_time             int8 NOT NULL, 
+  update_time             int8 NOT NULL);
+COMMENT ON TABLE pay_merchant IS '支付入网商户';
+COMMENT ON COLUMN pay_merchant.id IS '编号';
+COMMENT ON COLUMN pay_merchant.code IS '申请单编号';
+COMMENT ON COLUMN pay_merchant.user_type IS '用户类型 1:会员  2:商户';
+COMMENT ON COLUMN pay_merchant.user_id IS '用户编号';
+COMMENT ON COLUMN pay_merchant.mch_type IS '商户类型 1:企业/个体  2:小微(个人)';
+COMMENT ON COLUMN pay_merchant.mch_role IS '商户角色 1:标准商户  2: 平台商 3: 平台商子商户 4: 分账接收方';
+COMMENT ON COLUMN pay_merchant.licence_pic IS '商户证件照片地址';
+COMMENT ON COLUMN pay_merchant.sign_name IS '商户签约名,与商户证件主体名称一致。';
+COMMENT ON COLUMN pay_merchant.sign_type IS '商户签约类型  1: 个体  2: 企业   3: 事业单位  4: 社会团体';
+COMMENT ON COLUMN pay_merchant.licence_no IS '商户证件号码';
+COMMENT ON COLUMN pay_merchant.short_name IS '商户简称';
+COMMENT ON COLUMN pay_merchant.account_licence_pic IS '开户许可证图片';
+COMMENT ON COLUMN pay_merchant.legal_name IS '法人名称';
+COMMENT ON COLUMN pay_merchant.legal_licence_type IS '法人证件类型 1: 身份证 2: 永久居留身份证 3: 护照  4:港澳通行证  5: 台胞证';
+COMMENT ON COLUMN pay_merchant.legal_licence_no IS '法人证件编号';
+COMMENT ON COLUMN pay_merchant.legal_front_pic IS '法人证件正面照片地址';
+COMMENT ON COLUMN pay_merchant.legal_back_pic IS '法人证件背面照片地址';
+COMMENT ON COLUMN pay_merchant.contact_name IS '联系人姓名';
+COMMENT ON COLUMN pay_merchant.contact_phone IS '联系人手机号';
+COMMENT ON COLUMN pay_merchant.contact_email IS '联系人邮箱';
+COMMENT ON COLUMN pay_merchant.contact_licence_no IS '联系人证件号码';
+COMMENT ON COLUMN pay_merchant.account_email IS '商户后台管理员邮箱';
+COMMENT ON COLUMN pay_merchant.account_phone IS '商户后台管理员手机号';
+COMMENT ON COLUMN pay_merchant.primary_industry_code IS '一级行业分类编码';
+COMMENT ON COLUMN pay_merchant.secondary_industry_code IS '二级行业分类编码';
+COMMENT ON COLUMN pay_merchant.province_code IS '经营省';
+COMMENT ON COLUMN pay_merchant.city_code IS '经营市';
+COMMENT ON COLUMN pay_merchant.district_code IS '经营区';
+COMMENT ON COLUMN pay_merchant.address IS '经营地址';
+COMMENT ON COLUMN pay_merchant.settle_direction IS '结算方向 1: 支付账户  2:公户';
+COMMENT ON COLUMN pay_merchant.settle_bank_code IS '开户总行编码';
+COMMENT ON COLUMN pay_merchant.settle_account_type IS '银行账户类型';
+COMMENT ON COLUMN pay_merchant.settle_bank_account IS '银行账户号码';
+COMMENT ON COLUMN pay_merchant.issue_mch_no IS '下发商户编号';
+COMMENT ON COLUMN pay_merchant.agreement_sign_url IS '协议签署地址';
+COMMENT ON COLUMN pay_merchant.issue_status IS '入网状态 1: 审核中  2: 被驳回 3: 待签署协议 4: 开通中 5: 已开通';
+COMMENT ON COLUMN pay_merchant.issue_message IS '入网结果信息';
+COMMENT ON COLUMN pay_merchant.create_time IS '创建时间';
+COMMENT ON COLUMN pay_merchant.update_time IS '更新时间';
+

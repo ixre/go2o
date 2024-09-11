@@ -62,8 +62,8 @@ func TestSaveMerchantAuthenticate(t *testing.T) {
 	mch := inject.GetMerchantRepo().GetMerchant(1)
 	v := &merchant.Authenticate{
 		OrgName:          "天猫有限公司",
-		OrgNo:            "00000000",
-		OrgPic:           "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
+		LicenceNo:        "00000000",
+		LicencePic:       "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
 		WorkCity:         0,
 		QualificationPic: "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
 		PersonId:         "513701980102345678",

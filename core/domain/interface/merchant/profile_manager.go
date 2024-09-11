@@ -26,11 +26,11 @@ type (
 		// 公司名称
 		OrgName string `json:"orgName" db:"org_name" gorm:"column:org_name" bson:"orgName"`
 		// 营业执照编号
-		OrgNo string `json:"orgNo" db:"org_no" gorm:"column:org_no" bson:"orgNo"`
+		LicenceNo string `json:"orgNo" db:"org_no" gorm:"column:org_no" bson:"orgNo"`
 		// 公司地址
 		OrgAddress string `json:"orgAddress" db:"org_address" gorm:"column:org_address" bson:"orgAddress"`
 		// 营业执照照片
-		OrgPic string `json:"orgPic" db:"org_pic" gorm:"column:org_pic" bson:"orgPic"`
+		LicencePic string `json:"orgPic" db:"org_pic" gorm:"column:org_pic" bson:"orgPic"`
 		// 办公地
 		WorkCity int `json:"workCity" db:"work_city" gorm:"column:work_city" bson:"workCity"`
 		// 资质图片
@@ -71,6 +71,8 @@ type (
 
 	// 基本资料管理器
 	IProfileManager interface {
+		// GetAuthenticate 获取商户认证信息
+		GetAuthenticate() *Authenticate
 		// SaveAuthenticate 保存商户认证信息
 		SaveAuthenticate(v *Authenticate) (int, error)
 

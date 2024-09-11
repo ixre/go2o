@@ -26,6 +26,11 @@ type profileManagerImpl struct {
 	valRepo valueobject.IValueRepo
 }
 
+// GetAuthenticate implements merchant.IProfileManager.
+func (p *profileManagerImpl) GetAuthenticate() *merchant.Authenticate {
+	return p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 1)
+}
+
 func newProfileManager(m *merchantImpl, valRepo valueobject.IValueRepo) merchant.IProfileManager {
 	return &profileManagerImpl{
 		merchantImpl: m,
@@ -69,6 +74,9 @@ func (p *profileManagerImpl) applyMerchantInitial() error {
 
 // 检查企业认证信息
 func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
+	if v == nil {
+		return errors.New("商户认证信息不能为空")
+	}
 	if v == nil || len(v.MchName) < 2 {
 		return errors.New("商户名称不能为空")
 	}
@@ -78,10 +86,10 @@ func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 	if len(v.OrgName) < 2 {
 		return errors.New("企业名称不能为空")
 	}
-	if len(v.OrgNo) == 0 {
+	if len(v.LicenceNo) == 0 {
 		return errors.New("企业营业执照号不能为空")
 	}
-	if len(v.OrgPic) == 0 {
+	if len(v.LicencePic) == 0 {
 		return errors.New("企业营业执照图片不能为空")
 	}
 	if len(v.PersonName) < 2 {

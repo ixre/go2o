@@ -60,6 +60,11 @@ func (p *PaymentEventHandler) HandlePaymentProviderRefundEvent(event interface{}
 	// note: 第三方支付退款事件由具体的支付渠道通过订阅事件处理，这里不作处理
 }
 
+func (p *PaymentEventHandler) HandlePaymentMerchantRegistrationEvent(event interface{}) {
+	//e := event.(*payment.PaymentMerchantRegistrationEvent)
+	// note: 支付商户入网事件由具体的支付渠道通过订阅事件处理，这里不作处理
+}
+
 // 处理商城订单支付完成
 func (p *PaymentEventHandler) handleOrderSuccessEvent(e *payment.PaymentSuccessEvent) {
 	ov := e.Order.Get()
