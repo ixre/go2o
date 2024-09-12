@@ -27,6 +27,7 @@ import (
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/types"
 	context2 "golang.org/x/net/context"
 )
@@ -868,6 +869,7 @@ func (m *merchantService) GetStaff(_ context.Context, req *proto.StaffRequest) (
 		// 如果商户不匹配，则返回空
 		return &proto.SStaff{}, nil
 	}
+	m.checkImInitialized(staff)
 	return m.parseStaffDto(staff), nil
 }
 
@@ -881,7 +883,18 @@ func (m *merchantService) GetStaffByMember(_ context.Context, req *proto.StaffRe
 		// 如果商户不匹配，则返回空
 		return &proto.SStaff{}, nil
 	}
+	m.checkImInitialized(staff)
 	return m.parseStaffDto(staff), nil
+}
+
+// checkImInitialized 检查员工IM是否初始化
+func (m *merchantService) checkImInitialized(s *staff.Staff) {
+	if s.ImInitialized == 0 {
+		// 发布员工IM初始化事件
+		eventbus.Publish(&staff.StaffRequireImInitEvent{
+			Staff: *s,
+		})
+	}
 }
 
 // SaveStaff implements proto.MerchantServiceServer.
@@ -915,6 +928,7 @@ func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {
 		CertifiedName: src.CertifiedName,
 		PremiumLevel:  int32(src.PremiumLevel),
 		CreateTime:    int64(src.CreateTime),
+		ImInitialized: int32(src.ImInitialized),
 	}
 }
 

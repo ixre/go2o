@@ -1284,3 +1284,8 @@ COMMENT ON COLUMN pay_merchant.issue_message IS '入网结果信息';
 COMMENT ON COLUMN pay_merchant.create_time IS '创建时间';
 COMMENT ON COLUMN pay_merchant.update_time IS '更新时间';
 
+
+-- 2024-09-12 商户员工IM注册
+ALTER TABLE mch_staff 
+  ADD COLUMN im_initialized int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN mch_staff.im_initialized IS 'IM是否注册 0:否  1:是';

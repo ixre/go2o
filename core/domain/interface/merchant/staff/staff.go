@@ -44,6 +44,13 @@ type (
 		// TransferRepo 员工转商户仓储
 		TransferRepo() fw.Repository[StaffTransfer]
 	}
+
+	// StaffRequireImInitEvent 员工IM初始化事件
+	StaffRequireImInitEvent struct {
+		// 员工信息
+		Staff Staff
+	}
+
 	// MchStaff 商户代理人坐席(员工)
 	Staff struct {
 		// 编号
@@ -78,6 +85,8 @@ type (
 		ServiceCount int `json:"serviceCount" db:"service_count" gorm:"column:service_count" bson:"serviceCount"`
 		// 服务总人数
 		CusCount int `json:"cusCount" db:"cus_count" gorm:"column:cus_count" bson:"cusCount"`
+		// IM是否注册
+		ImInitialized int `json:"imInitialized" db:"im_initialized" gorm:"column:im_initialized" bson:"imInitialized"`
 	}
 )
 

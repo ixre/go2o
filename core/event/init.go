@@ -2,6 +2,7 @@ package event
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/approval"
+	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/event/events"
@@ -12,12 +13,14 @@ import (
 type EventSource struct {
 	*handler.EventHandler
 	*handler.PaymentEventHandler
+	*handler.MerchantEventHandler
 }
 
-func NewEventSource(h *handler.EventHandler, p *handler.PaymentEventHandler) *EventSource {
+func NewEventSource(h *handler.EventHandler, p *handler.PaymentEventHandler, m *handler.MerchantEventHandler) *EventSource {
 	return &EventSource{
-		EventHandler:        h,
-		PaymentEventHandler: p,
+		EventHandler:         h,
+		PaymentEventHandler:  p,
+		MerchantEventHandler: m,
 	}
 }
 
@@ -45,4 +48,7 @@ func (e *EventSource) Init() {
 	eventbus.Subscribe(payment.PaymentProviderRefundEvent{}, e.HandlePaymentProviderRefundEvent)
 	// 注册支付商户入网事件
 	eventbus.Subscribe(payment.PaymentMerchantRegistrationEvent{}, e.HandlePaymentMerchantRegistrationEvent)
+
+	// 注册员工IM初始化事件
+	eventbus.Subscribe(staff.StaffRequireImInitEvent{}, e.HandleStaffRequireImInitEvent)
 }

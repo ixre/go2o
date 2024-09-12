@@ -123,6 +123,7 @@ var InjectProvideSets = wire.NewSet(
 	event.NewEventSource,
 	handler.NewEventHandler,
 	handler.NewPaymentEventHandler,
+	handler.NewMerchantEventHandler,
 	// 其他
 	sp.NewSPConfig,
 )
