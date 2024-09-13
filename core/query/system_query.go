@@ -12,7 +12,6 @@ package query
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/sys"
-	"github.com/ixre/go2o/core/infrastructure/fw/types"
 )
 
 type SystemQuery struct {
@@ -24,22 +23,28 @@ func NewSystemQuery() *SystemQuery {
 
 // QueryIndustries 查询行业数据
 func (q *SystemQuery) QueryIndustries(parentId string) []*sys.GeneralOption {
-	data := types.DeepClone(&sys.INDUSTRY_DATA)
 	if parentId == "0" || parentId == "" {
+		dst := make([]*sys.GeneralOption, len(sys.INDUSTRY_DATA))
 		// 获取根节点数据
-		for _, v := range *data {
-			(*v).IsLeaf = false
-			(*v).Children = nil
+		for i, v := range sys.INDUSTRY_DATA {
+			dst[i] = &sys.GeneralOption{
+				Label:  v.Label,
+				Value:  v.Value,
+				IsLeaf: false,
+			}
 		}
-		return *data
+		return dst
 	}
-	for _, v := range *data {
+	for _, v := range sys.INDUSTRY_DATA {
 		if v.Value == parentId {
 			// 获取下级数据
-			ret := v.Children
-			for _, v := range ret {
-				(*v).IsLeaf = true
-				(*v).Children = nil
+			ret := make([]*sys.GeneralOption, len(v.Children))
+			for i, v := range v.Children {
+				ret[i] = &sys.GeneralOption{
+					Label:  v.Label,
+					Value:  v.Value,
+					IsLeaf: true,
+				}
 			}
 			return ret
 		}
