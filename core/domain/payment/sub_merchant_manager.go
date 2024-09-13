@@ -48,9 +48,10 @@ func (s *subMerchantManagerImpl) InitialMerchant(userType int, userId int) (*pay
 		UserId:                userId,
 		UserType:              userType,
 		MchType:               1,
+		MchRole:               4, //默认分账接受方
 		LicencePic:            "",
 		SignName:              "",
-		SignType:              0,
+		SignType:              1,
 		LicenceNo:             "",
 		ShortName:             "",
 		AccountLicencePic:     "",
@@ -83,8 +84,8 @@ func (s *subMerchantManagerImpl) InitialMerchant(userType int, userId int) (*pay
 	}
 	if userType == 1 {
 		// 会员
-		v.MchType = 2 // 小微商户
-
+		v.MchType = 2  // 小微商户
+		v.SignType = 1 // 个体户
 		mm := s._mmRepo.GetMember(int64(userId))
 		if mm == nil {
 			return nil, errors.New("会员不存在")
@@ -128,6 +129,7 @@ func (s *subMerchantManagerImpl) InitialMerchant(userType int, userId int) (*pay
 		v.SettleBankAccount = ""
 	}
 	if userType == 2 {
+		// 商户
 		mch := s._mchRepo.GetMerchant(userId)
 		if mch == nil {
 			return nil, errors.New("商户不存在")
@@ -137,8 +139,8 @@ func (s *subMerchantManagerImpl) InitialMerchant(userType int, userId int) (*pay
 			return nil, errors.New("商户尚未通过认证")
 		}
 		mv := mch.GetValue()
-		// 商户
-		v.MchType = 1 // 企业商户
+		v.MchType = 1  // 企业商户
+		v.SignType = 2 // 企业
 		v.LicenceNo = auth.LicenceNo
 		v.LicencePic = auth.LicencePic
 		v.SignName = auth.OrgName

@@ -398,6 +398,9 @@ func (m *merchantImpl) createMerchant() (int64, error) {
 	m._value.Status = 0
 	m._value.Flag = 0
 
+	// 设置邮箱
+	m._value.MailAddr = m._value.Username
+
 	id, err := m._repo.SaveMerchant(m._value)
 	if err != nil {
 		return int64(id), err

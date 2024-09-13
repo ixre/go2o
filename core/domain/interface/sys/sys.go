@@ -89,23 +89,28 @@ func (a District) TableName() string {
 }
 
 // GeneralOption 系统通用选项(用于存储分类和选项等数据)
+
 type GeneralOption struct {
 	// 编号
-	Id int `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
 	// 类型
-	Type string `db:"type" json:"type" bson:"type"`
+	Type string `json:"type" db:"type" gorm:"column:type" bson:"type"`
 	// 上级编号
-	Pid int `db:"pid" json:"pid" bson:"pid"`
+	Pid int `json:"pid" db:"pid" gorm:"column:pid" bson:"pid"`
 	// 名称
-	Label string `db:"name" json:"name" bson:"name"`
+	Label string `json:"name" db:"name" gorm:"column:name" bson:"name"`
 	// 值
-	Value string `db:"value" json:"value" bson:"value"`
+	Value string `json:"value" db:"value" gorm:"column:value" bson:"value"`
 	// 排列序号
-	SortNum int `db:"sort_num" json:"sortNum" bson:"sortNum"`
+	SortNum int `json:"sortNum" db:"sort_num" gorm:"column:sort_num" bson:"sortNum"`
 	// 是否启用
-	Enabled int `db:"enabled" json:"enabled" bson:"enabled"`
+	Enabled int `json:"enabled" db:"enabled" gorm:"column:enabled" bson:"enabled"`
 	// 创建时间
-	CreateTime int `db:"create_time" json:"createTime" bson:"createTime"`
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+	// 子选项
+	Children []*GeneralOption `db:"-" gorm:"-:all" json:"children" bson:"-"`
+	// 是否为叶子节点
+	IsLeaf bool `db:"-" json:"isLeaf" gorm:"-:all" bson:"-"`
 }
 
 func (s GeneralOption) TableName() string {

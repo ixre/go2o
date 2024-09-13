@@ -76,6 +76,7 @@ var queryProvideSets = wire.NewSet(
 	query.NewAdvertisementQuery,
 	query.NewStatisticsQuery,
 	query.NewPaymentQuery,
+	query.NewSystemQuery,
 )
 
 var daoProvideSets = wire.NewSet(
@@ -173,5 +174,10 @@ func GetStatisticsQueryService() *query.StatisticsQuery {
 
 // GetPaymentQueryService 获取支付查询服务
 func GetPaymentQueryService() *query.PaymentQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+// GetSystemQueryService 获取系统查询服务
+func GetSystemQueryService() *query.SystemQuery {
 	panic(wire.Build(queryProvideSets))
 }

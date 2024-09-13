@@ -76,7 +76,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 			payment.MBankCard, payment.MPaySP, payment.MBalance,
 			payment.MIntegral, payment.MWallet}),
 		OutTradeNo: "",
-		SubmitTime: unix,
+		SubmitTime: int(unix),
 		PaidTime:   0,
 	})
 	if err := ip.Submit(); err != nil {
