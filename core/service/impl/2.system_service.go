@@ -11,6 +11,7 @@ package impl
 
 import (
 	"context"
+	"strings"
 
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
@@ -325,18 +326,21 @@ func (s *foundationService) GetSmsApiSet() mss.SmsApiSet {
 	return mss.SmsApiSet{}
 }
 
-// GetChildAreas 获取下级区域
-func (s *foundationService) GetChildAreas(_ context.Context, code *proto.Int32) (*proto.AreaListResponse, error) {
-	var arr []*proto.SDistrict
-	for _, v := range s._rep.GetChildAreas(code.Value) {
-		arr = append(arr, &proto.SDistrict{
-			Id:       v.Code,
-			ParentId: v.Parent,
-			Name:     v.Name,
-		})
-	}
+// GetChildDistrict 获取下级区域
+func (s *foundationService) GetChildDistrict(_ context.Context, code *proto.DistrictChildrenRequest) (*proto.AreaListResponse, error) {
+	isa := s.sysRepo.GetSystemAggregateRoot()
+	addr := isa.Address()
+	arr := addr.GetChildrenDistricts(int(code.ParentId))
+	ret := collections.MapList(arr, func(d *sys.District) *proto.SDistrict {
+		return &proto.SDistrict{
+			Id:       int64(d.Code),
+			ParentId: int64(d.Parent),
+			Name:     d.Name,
+			IsLeaf:   len(addr.GetChildrenDistricts(d.Code)) == 0,
+		}
+	})
 	return &proto.AreaListResponse{
-		Value: arr,
+		Value: ret,
 	}, nil
 }
 
@@ -483,4 +487,27 @@ func (s *foundationService) parseBankItem(v *bank.BankItem) *proto.BankItem {
 		Name: v.Name,
 		Sign: v.Sign,
 	}
+}
+
+// QueryBanks 查询银行列表
+func (s *foundationService) QueryBanks(ctx context.Context, req *proto.QueryBanksRequest) (*proto.OptionsResponse, error) {
+	isa := s.sysRepo.GetSystemAggregateRoot()
+	arr := isa.GetBanks()
+	if len(req.Name) == 0 {
+		return &proto.OptionsResponse{}, nil
+	}
+	filters := collections.FilterArray(arr, func(o *sys.GeneralOption) bool {
+		return strings.Contains(o.Label, req.Name)
+	})
+	ret := collections.MapList(filters, func(o *sys.GeneralOption) *proto.SOption {
+		return &proto.SOption{
+			Id:     int64(o.Id),
+			Name:   o.Label,
+			Value:  o.Value,
+			IsLeaf: true,
+		}
+	})
+	return &proto.OptionsResponse{
+		Value: ret,
+	}, nil
 }

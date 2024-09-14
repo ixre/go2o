@@ -28,6 +28,9 @@ type (
 		// 获取选项管理器
 		Options() IOptionManager
 
+		// 获取银行列表
+		GetBanks() []*GeneralOption
+
 		// 标记更新状态,通常监听数据变更或事件后调用
 		FlushUpdateStatus()
 
@@ -39,8 +42,8 @@ type (
 	IAddressManager interface {
 		// GetAllCities 获取所有城市
 		GetAllCities() []*District
-		// GetDistrictList 获取区域信息
-		GetDistrictList(parentId int) []*District
+		// GetChildrenDistricts 获取区域信息
+		GetChildrenDistricts(parentId int) []*District
 		// GetDistricts 获取区域名称
 		GetDistrictNames(code ...int) map[int]string
 		// FindCity 查找城市

@@ -19,10 +19,10 @@ var (
 var (
 	// 审核状态
 	ReviewStatusPending = 1
-	// 审核通过
-	ReviewStatusApproved = 2
 	// 审核拒绝
-	ReviewStatusRejected = 3
+	ReviewStatusRejected = 2
+	// 审核通过
+	ReviewStatusApproved = 3
 )
 
 type (

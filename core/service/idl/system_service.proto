@@ -9,41 +9,30 @@ option java_package = "com.github.go2o.rpc";
 // 基础服务
 service SystemService {
     /** 检测是否包含敏感词 */
-    rpc CheckSensitive(String)returns(Bool) {}
-
+    rpc CheckSensitive(String)returns(Bool);
     /** 替换敏感词 */
-    rpc ReplaceSensitive(ReplaceSensitiveRequest)returns(String) {}
-
+    rpc ReplaceSensitive(ReplaceSensitiveRequest)returns(String);
     // 获取系统信息
-    rpc GetSystemInfo(Empty)returns(SSystemInfo){}
+    rpc GetSystemInfo(Empty)returns(SSystemInfo);
     // 清除缓存
-    rpc FlushCache(Empty)returns(Result){}
-
+    rpc FlushCache(Empty)returns(Result);
     // 获取选项名称
-    rpc GetOptionNames (GetNamesRequest) returns (IntStringMapResponse) {
-    }
+    rpc GetOptionNames (GetNamesRequest) returns (IntStringMapResponse);
     // 获取下级选项,code
-    rpc GetChildOptions (OptionsRequest) returns (OptionsResponse) {
-    }
-
+    rpc GetChildOptions (OptionsRequest) returns (OptionsResponse);
+    // 获取银行列表
+    rpc QueryBanks (QueryBanksRequest) returns (OptionsResponse);
     /** 获取短信API凭据, provider 短信服务商, 默认:http */
-    rpc GetSmsSetting (GetSmsSettingRequest) returns (SSmsProviderSetting) {
-    }
+    rpc GetSmsSetting (GetSmsSettingRequest) returns (SSmsProviderSetting);
     /** 保存短信API凭据,@provider 短信服务商, 默认:http */
-    rpc SaveSmsSetting (SSmsProviderSetting) returns (Result) {
-    }
-
+    rpc SaveSmsSetting (SSmsProviderSetting) returns (Result);
     /** 清除缓存 */
-    rpc CleanCache(CleanCacheRequest) returns (CleanCacheResponse){}
-
-
+    rpc CleanCache(CleanCacheRequest) returns (CleanCacheResponse);
     /** 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks */
-    rpc SaveBoardHook (BoardHookSaveRequest) returns (Result) {
-    }
+    rpc SaveBoardHook (BoardHookSaveRequest) returns (Result);
 
     // 格式化资源地址并返回
-    rpc ResourceUrl (String) returns (String) {
-    }
+    rpc ResourceUrl (String) returns (String);
     // 设置键值
     //rpc SetValue (Pair) returns (Result){}
     // 删除值,key
@@ -54,51 +43,37 @@ service SystemService {
     //   -  1. 成功，并返回token
     //   - -1. 接口地址不正确
     //   - -2. 已经注册
-    rpc RegisterApp (SSsoApp) returns (String) {
-    }
+    rpc RegisterApp (SSsoApp) returns (String);
     // 获取应用信息,name
-    rpc GetApp (String) returns (SSsoApp) {
-    }
+    rpc GetApp (String) returns (SSsoApp);
     // 获取单点登录应用
-    rpc GetAllSsoApp (Empty) returns (StringListResponse) {
-    }
+    rpc GetAllSsoApp (Empty) returns (StringListResponse);
     // 保存超级用户账号和密码
     rpc updateSuperCredential (SuperPassswordRequest) returns (TxResult);
     // 创建同步登录的地址,returnUrl
-    rpc GetSyncLoginUrl (String) returns (String) {
-    }
+    rpc GetSyncLoginUrl (String) returns (String);
     // 获取地区名称,如:获取多个城市对应的名称
-    rpc GetDistrictNames (GetNamesRequest) returns (IntStringMapResponse) {
-    }
+    rpc GetDistrictNames (GetNamesRequest) returns (IntStringMapResponse);
     // 获取省市区字符串
-    rpc GetAreaString (AreaStringRequest) returns (String) {
-    }
+    rpc GetAreaString (AreaStringRequest) returns (String);
     // 获取下级区域,code
-    rpc GetChildAreas (Int32) returns (AreaListResponse) {
-    }
+    rpc GetChildDistrict (DistrictChildrenRequest) returns (AreaListResponse);
     // 查找城市信息
-    rpc FindCity(FindAreaRequest) returns (SArea){}
+    rpc FindCity(FindAreaRequest) returns (SArea);
     // 获取移动应用设置
-    rpc GetMoAppConf (Empty) returns (SMobileAppConfig) {
-    }
+    rpc GetMoAppConf (Empty) returns (SMobileAppConfig);
     // 保存移动应用设置
-    rpc SaveMoAppConf (SMobileAppConfig) returns (Result) {
-    }
+    rpc SaveMoAppConf (SMobileAppConfig) returns (Result);
     // 获取微信接口配置
-    rpc GetWxApiConfig (Empty) returns (SWxApiConfig) {
-    }
+    rpc GetWxApiConfig (Empty) returns (SWxApiConfig);
     // 保存微信接口配置
-    rpc SaveWxApiConfig (SWxApiConfig) returns (Result) {
-    }
+    rpc SaveWxApiConfig (SWxApiConfig) returns (Result);
     // 获取支付平台
-    rpc GetPayPlatform (Empty) returns (PaymentPlatformResponse) {
-    }
+    rpc GetPayPlatform (Empty) returns (PaymentPlatformResponse);
     // 获取全局商户销售设置
-    rpc GetGlobMchSaleConf_ (Empty) returns (SGlobMchSaleConf) {
-    }
+    rpc GetGlobMchSaleConf_ (Empty) returns (SGlobMchSaleConf);
     // 保存全局商户销售设置
-    rpc SaveGlobMchSaleConf_ (SGlobMchSaleConf) returns (Result) {
-    }
+    rpc SaveGlobMchSaleConf_ (SGlobMchSaleConf) returns (Result);
 }
 
 // 系统信息
@@ -167,4 +142,18 @@ message SGenericOptions{
     string label = 1;
     // 值
     string value = 2;
+}
+
+// 获取下级区域请求
+message DistrictChildrenRequest{
+    // 上级ID
+    int64 parentId = 1;
+}
+
+// 查询银行请求
+message QueryBanksRequest{
+    // 银行名称
+    string name = 1;
+    // 数量
+    int32 size = 2;
 }

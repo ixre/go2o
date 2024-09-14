@@ -216,6 +216,69 @@ func (s *subMerchantManagerImpl) Submit(code string) error {
 	if !(mch.IssueStatus == 0 || mch.IssueStatus == 2) {
 		return errors.New("商户入网信息无法提交或已通过审核")
 	}
+	if mch.MchType == 1 {
+		// 企业商户
+		if mch.LicencePic == "" {
+			return errors.New("商户营业执照图片不能为空")
+		}
+		if mch.SignName == "" {
+			return errors.New("商户名称不能为空")
+		}
+		if mch.ShortName == "" {
+			return errors.New("商户简称不能为空")
+		}
+		if mch.AccountLicencePic == "" {
+			return errors.New("开户许可证图片不能为空")
+		}
+		if mch.LegalName == "" {
+			return errors.New("法人姓名不能为空")
+		}
+		if mch.LegalLicenceNo == "" {
+			return errors.New("法人身份证号不能为空")
+		}
+		if mch.LegalFrontPic == "" {
+			return errors.New("法人身份证正面图片不能为空")
+		}
+		if mch.LegalBackPic == "" {
+			return errors.New("法人身份证反面图片不能为空")
+		}
+		if mch.ContactName == "" {
+			return errors.New("联系人姓名不能为空")
+		}
+		if mch.ContactPhone == "" {
+			return errors.New("联系人电话不能为空")
+		}
+		if mch.ContactEmail == "" {
+			return errors.New("联系人邮箱不能为空")
+		}
+		if mch.ContactLicenceNo == "" {
+			return errors.New("联系人身份证号不能为空")
+		}
+		if mch.AccountEmail == "" {
+			return errors.New("管理员邮箱不能为空")
+		}
+		if mch.AccountPhone == "" {
+			return errors.New("管理员电话不能为空")
+		}
+		if mch.PrimaryIndustryCode == "" || mch.SecondaryIndustryCode == "" {
+			return errors.New("主营行业不能为空")
+		}
+		if mch.ProvinceCode == 0 || mch.CityCode == 0 || mch.DistrictCode == 0 {
+			return errors.New("经营区域不能为空")
+		}
+		if mch.Address == "" {
+			return errors.New("经营地址不能为空")
+		}
+		if mch.SettleBankCode == "" {
+			return errors.New("结算银行未指定")
+		}
+		if mch.SettleAccountType == 0 {
+			return errors.New("结算账户类型不能为空")
+		}
+		if mch.SettleBankAccount == "" {
+			return errors.New("结算账户不能为空")
+		}
+	}
 	mch.IssueStatus = 1
 	mch.UpdateTime = int(time.Now().Unix())
 	_, err := s.rep.MerchantRepo().Save(mch)

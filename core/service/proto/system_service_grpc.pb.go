@@ -25,6 +25,7 @@ const (
 	SystemService_FlushCache_FullMethodName            = "/SystemService/FlushCache"
 	SystemService_GetOptionNames_FullMethodName        = "/SystemService/GetOptionNames"
 	SystemService_GetChildOptions_FullMethodName       = "/SystemService/GetChildOptions"
+	SystemService_QueryBanks_FullMethodName            = "/SystemService/QueryBanks"
 	SystemService_GetSmsSetting_FullMethodName         = "/SystemService/GetSmsSetting"
 	SystemService_SaveSmsSetting_FullMethodName        = "/SystemService/SaveSmsSetting"
 	SystemService_CleanCache_FullMethodName            = "/SystemService/CleanCache"
@@ -37,7 +38,7 @@ const (
 	SystemService_GetSyncLoginUrl_FullMethodName       = "/SystemService/GetSyncLoginUrl"
 	SystemService_GetDistrictNames_FullMethodName      = "/SystemService/GetDistrictNames"
 	SystemService_GetAreaString_FullMethodName         = "/SystemService/GetAreaString"
-	SystemService_GetChildAreas_FullMethodName         = "/SystemService/GetChildAreas"
+	SystemService_GetChildDistrict_FullMethodName      = "/SystemService/GetChildDistrict"
 	SystemService_FindCity_FullMethodName              = "/SystemService/FindCity"
 	SystemService_GetMoAppConf_FullMethodName          = "/SystemService/GetMoAppConf"
 	SystemService_SaveMoAppConf_FullMethodName         = "/SystemService/SaveMoAppConf"
@@ -64,6 +65,8 @@ type SystemServiceClient interface {
 	GetOptionNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error)
 	// 获取下级选项,code
 	GetChildOptions(ctx context.Context, in *OptionsRequest, opts ...grpc.CallOption) (*OptionsResponse, error)
+	// 获取银行列表
+	QueryBanks(ctx context.Context, in *QueryBanksRequest, opts ...grpc.CallOption) (*OptionsResponse, error)
 	// * 获取短信API凭据, provider 短信服务商, 默认:http
 	GetSmsSetting(ctx context.Context, in *GetSmsSettingRequest, opts ...grpc.CallOption) (*SSmsProviderSetting, error)
 	// * 保存短信API凭据,@provider 短信服务商, 默认:http
@@ -98,7 +101,7 @@ type SystemServiceClient interface {
 	// 获取省市区字符串
 	GetAreaString(ctx context.Context, in *AreaStringRequest, opts ...grpc.CallOption) (*String, error)
 	// 获取下级区域,code
-	GetChildAreas(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*AreaListResponse, error)
+	GetChildDistrict(ctx context.Context, in *DistrictChildrenRequest, opts ...grpc.CallOption) (*AreaListResponse, error)
 	// 查找城市信息
 	FindCity(ctx context.Context, in *FindAreaRequest, opts ...grpc.CallOption) (*SArea, error)
 	// 获取移动应用设置
@@ -173,6 +176,15 @@ func (c *systemServiceClient) GetOptionNames(ctx context.Context, in *GetNamesRe
 func (c *systemServiceClient) GetChildOptions(ctx context.Context, in *OptionsRequest, opts ...grpc.CallOption) (*OptionsResponse, error) {
 	out := new(OptionsResponse)
 	err := c.cc.Invoke(ctx, SystemService_GetChildOptions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *systemServiceClient) QueryBanks(ctx context.Context, in *QueryBanksRequest, opts ...grpc.CallOption) (*OptionsResponse, error) {
+	out := new(OptionsResponse)
+	err := c.cc.Invoke(ctx, SystemService_QueryBanks_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -287,9 +299,9 @@ func (c *systemServiceClient) GetAreaString(ctx context.Context, in *AreaStringR
 	return out, nil
 }
 
-func (c *systemServiceClient) GetChildAreas(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*AreaListResponse, error) {
+func (c *systemServiceClient) GetChildDistrict(ctx context.Context, in *DistrictChildrenRequest, opts ...grpc.CallOption) (*AreaListResponse, error) {
 	out := new(AreaListResponse)
-	err := c.cc.Invoke(ctx, SystemService_GetChildAreas_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, SystemService_GetChildDistrict_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -384,6 +396,8 @@ type SystemServiceServer interface {
 	GetOptionNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error)
 	// 获取下级选项,code
 	GetChildOptions(context.Context, *OptionsRequest) (*OptionsResponse, error)
+	// 获取银行列表
+	QueryBanks(context.Context, *QueryBanksRequest) (*OptionsResponse, error)
 	// * 获取短信API凭据, provider 短信服务商, 默认:http
 	GetSmsSetting(context.Context, *GetSmsSettingRequest) (*SSmsProviderSetting, error)
 	// * 保存短信API凭据,@provider 短信服务商, 默认:http
@@ -418,7 +432,7 @@ type SystemServiceServer interface {
 	// 获取省市区字符串
 	GetAreaString(context.Context, *AreaStringRequest) (*String, error)
 	// 获取下级区域,code
-	GetChildAreas(context.Context, *Int32) (*AreaListResponse, error)
+	GetChildDistrict(context.Context, *DistrictChildrenRequest) (*AreaListResponse, error)
 	// 查找城市信息
 	FindCity(context.Context, *FindAreaRequest) (*SArea, error)
 	// 获取移动应用设置
@@ -460,6 +474,9 @@ func (UnimplementedSystemServiceServer) GetOptionNames(context.Context, *GetName
 func (UnimplementedSystemServiceServer) GetChildOptions(context.Context, *OptionsRequest) (*OptionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChildOptions not implemented")
 }
+func (UnimplementedSystemServiceServer) QueryBanks(context.Context, *QueryBanksRequest) (*OptionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryBanks not implemented")
+}
 func (UnimplementedSystemServiceServer) GetSmsSetting(context.Context, *GetSmsSettingRequest) (*SSmsProviderSetting, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSmsSetting not implemented")
 }
@@ -496,8 +513,8 @@ func (UnimplementedSystemServiceServer) GetDistrictNames(context.Context, *GetNa
 func (UnimplementedSystemServiceServer) GetAreaString(context.Context, *AreaStringRequest) (*String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAreaString not implemented")
 }
-func (UnimplementedSystemServiceServer) GetChildAreas(context.Context, *Int32) (*AreaListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetChildAreas not implemented")
+func (UnimplementedSystemServiceServer) GetChildDistrict(context.Context, *DistrictChildrenRequest) (*AreaListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChildDistrict not implemented")
 }
 func (UnimplementedSystemServiceServer) FindCity(context.Context, *FindAreaRequest) (*SArea, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindCity not implemented")
@@ -640,6 +657,24 @@ func _SystemService_GetChildOptions_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SystemServiceServer).GetChildOptions(ctx, req.(*OptionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SystemService_QueryBanks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBanksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServiceServer).QueryBanks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SystemService_QueryBanks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServiceServer).QueryBanks(ctx, req.(*QueryBanksRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -860,20 +895,20 @@ func _SystemService_GetAreaString_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SystemService_GetChildAreas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Int32)
+func _SystemService_GetChildDistrict_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DistrictChildrenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SystemServiceServer).GetChildAreas(ctx, in)
+		return srv.(SystemServiceServer).GetChildDistrict(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: SystemService_GetChildAreas_FullMethodName,
+		FullMethod: SystemService_GetChildDistrict_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SystemServiceServer).GetChildAreas(ctx, req.(*Int32))
+		return srv.(SystemServiceServer).GetChildDistrict(ctx, req.(*DistrictChildrenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1054,6 +1089,10 @@ var SystemService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SystemService_GetChildOptions_Handler,
 		},
 		{
+			MethodName: "QueryBanks",
+			Handler:    _SystemService_QueryBanks_Handler,
+		},
+		{
 			MethodName: "GetSmsSetting",
 			Handler:    _SystemService_GetSmsSetting_Handler,
 		},
@@ -1102,8 +1141,8 @@ var SystemService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SystemService_GetAreaString_Handler,
 		},
 		{
-			MethodName: "GetChildAreas",
-			Handler:    _SystemService_GetChildAreas_Handler,
+			MethodName: "GetChildDistrict",
+			Handler:    _SystemService_GetChildDistrict_Handler,
 		},
 		{
 			MethodName: "FindCity",

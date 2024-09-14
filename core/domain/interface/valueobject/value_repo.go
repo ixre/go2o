@@ -248,9 +248,6 @@ type (
 		// 保存全局商户销售设置
 		SaveGlobMchSaleConf(v *GlobMchSaleConf) error
 
-		// 获取下级区域
-		GetChildAreas(code int32) []*Area
-
 		// 获取区域名称
 		GetAreaName(code int32) string
 

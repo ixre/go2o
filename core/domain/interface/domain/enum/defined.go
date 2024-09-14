@@ -19,10 +19,10 @@ const (
 	ReviewNone int32 = 0
 	// 待审核
 	ReviewPending int32 = 1
-	// 审核成功
-	ReviewApproved int32 = 2
 	// 审核未通过
-	ReviewRejected int32 = 3
+	ReviewRejected int32 = 2
+	// 审核成功
+	ReviewApproved int32 = 3
 	// 已复核
 	ReviewConfirm int32 = 4
 	// 审核作废

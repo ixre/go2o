@@ -127,6 +127,8 @@ message SDistrict {
     int64 parentId = 2;
     // 区域名称
     string name = 3;
+    // 是否是叶子节点
+    bool isLeaf = 4;
 }
 
 

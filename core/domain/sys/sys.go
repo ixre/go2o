@@ -52,11 +52,16 @@ func (s *systemAggregateRootImpl) LastUpdateTime() int64 {
 	return s._repo.LastUpdateTime()
 }
 
+// GetBanks 获取银行列表
+func (s *systemAggregateRootImpl) GetBanks() []*sys.GeneralOption {
+	return sys.BankCodes
+}
+
 var _ sys.IAddressManager = new(addressManagerImpl)
 
 type addressManagerImpl struct {
 	fw.Repository[sys.District]
-	areaList []*sys.District
+	districtList []*sys.District
 }
 
 // FindCity 查找城市
@@ -68,19 +73,17 @@ func (a *addressManagerImpl) FindCity(name string) *sys.District {
 
 // getDistrictList 获取地区列表
 func (a *addressManagerImpl) getDistrictList() []*sys.District {
-	if a.areaList == nil {
-		a.areaList = fw.ReduceFinds(func(opt *fw.QueryOption) []*sys.District {
+	if a.districtList == nil {
+		a.districtList = fw.ReduceFinds(func(opt *fw.QueryOption) []*sys.District {
 			return a.FindList(opt, "")
 		}, 1000)
 	}
-	return a.areaList
+	return a.districtList
 }
 
 // getProvinces 获取省列表
 func (a *addressManagerImpl) getProvinces() []*sys.District {
-	return collections.FilterArray(a.getDistrictList(), func(a *sys.District) bool {
-		return a.Parent == 0 && a.Code != 0
-	})
+	return a.GetChildrenDistricts(0)
 }
 
 // GetDistrictNames implements sys.IAddressManager.
@@ -135,9 +138,12 @@ func (a *addressManagerImpl) GetAllCities() []*sys.District {
 	return ret
 }
 
-// GetDistrictList implements sys.IAddressManager.
-func (a *addressManagerImpl) GetDistrictList(parentId int) []*sys.District {
-	return a.FindList(nil, "parent=$1", parentId)
+// GetChildrenDistricts implements sys.IAddressManager.
+func (a *addressManagerImpl) GetChildrenDistricts(parentId int) []*sys.District {
+	return collections.FilterArray(a.getDistrictList(), func(a *sys.District) bool {
+		return a.Parent == parentId && a.Code != 0
+	})
+
 }
 
 var _ sys.IOptionManager = new(optionManagerImpl)
