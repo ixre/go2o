@@ -11,6 +11,7 @@ package impl
 
 import (
 	"context"
+	"regexp"
 	"strings"
 
 	de "github.com/ixre/go2o/core/domain/interface/domain"
@@ -493,11 +494,14 @@ func (s *foundationService) parseBankItem(v *bank.BankItem) *proto.BankItem {
 func (s *foundationService) QueryBanks(ctx context.Context, req *proto.QueryBanksRequest) (*proto.OptionsResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot()
 	arr := isa.GetBanks()
-	if len(req.Name) == 0 {
+
+	name := regexp.MustCompile("(银行)(.+)").ReplaceAllString(req.Name, "$1")
+
+	if len(name) == 0 {
 		return &proto.OptionsResponse{}, nil
 	}
 	filters := collections.FilterArray(arr, func(o *sys.GeneralOption) bool {
-		return strings.Contains(o.Label, req.Name)
+		return strings.Contains(o.Label, name) || o.Value == name
 	})
 	ret := collections.MapList(filters, func(o *sys.GeneralOption) *proto.SOption {
 		return &proto.SOption{
