@@ -304,7 +304,7 @@ func (s *subMerchantManagerImpl) Update(code string, data *payment.SubMerchantUp
 	if mch == nil {
 		return errors.New("商户入网信息不存在")
 	}
-	if mch.IssueStatus != 5 {
+	if mch.IssueStatus == 5 {
 		return errors.New("商户入网信息已审核通过")
 	}
 	if !collections.InArray([]int{2, 3, 4, 5}, data.Status) {
