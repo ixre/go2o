@@ -29,6 +29,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	ServiceProviderService_GetOpenId_FullMethodName = "/ServiceProviderService/GetOpenId"
+	ServiceProviderService_GetMPCode_FullMethodName = "/ServiceProviderService/GetMPCode"
 )
 
 // ServiceProviderServiceClient is the client API for ServiceProviderService service.
@@ -37,6 +38,8 @@ const (
 type ServiceProviderServiceClient interface {
 	// 获取服务提供者
 	GetOpenId(ctx context.Context, in *GetUserOpenIdRequest, opts ...grpc.CallOption) (*UserOpenIdResponse, error)
+	// 获取小程序二维码
+	GetMPCode(ctx context.Context, in *MPCodeRequest, opts ...grpc.CallOption) (*MPQrCodeResponse, error)
 }
 
 type serviceProviderServiceClient struct {
@@ -56,12 +59,23 @@ func (c *serviceProviderServiceClient) GetOpenId(ctx context.Context, in *GetUse
 	return out, nil
 }
 
+func (c *serviceProviderServiceClient) GetMPCode(ctx context.Context, in *MPCodeRequest, opts ...grpc.CallOption) (*MPQrCodeResponse, error) {
+	out := new(MPQrCodeResponse)
+	err := c.cc.Invoke(ctx, ServiceProviderService_GetMPCode_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServiceProviderServiceServer is the server API for ServiceProviderService service.
 // All implementations must embed UnimplementedServiceProviderServiceServer
 // for forward compatibility
 type ServiceProviderServiceServer interface {
 	// 获取服务提供者
 	GetOpenId(context.Context, *GetUserOpenIdRequest) (*UserOpenIdResponse, error)
+	// 获取小程序二维码
+	GetMPCode(context.Context, *MPCodeRequest) (*MPQrCodeResponse, error)
 	mustEmbedUnimplementedServiceProviderServiceServer()
 }
 
@@ -71,6 +85,9 @@ type UnimplementedServiceProviderServiceServer struct {
 
 func (UnimplementedServiceProviderServiceServer) GetOpenId(context.Context, *GetUserOpenIdRequest) (*UserOpenIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOpenId not implemented")
+}
+func (UnimplementedServiceProviderServiceServer) GetMPCode(context.Context, *MPCodeRequest) (*MPQrCodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMPCode not implemented")
 }
 func (UnimplementedServiceProviderServiceServer) mustEmbedUnimplementedServiceProviderServiceServer() {
 }
@@ -104,6 +121,24 @@ func _ServiceProviderService_GetOpenId_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ServiceProviderService_GetMPCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MPCodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceProviderServiceServer).GetMPCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ServiceProviderService_GetMPCode_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceProviderServiceServer).GetMPCode(ctx, req.(*MPCodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ServiceProviderService_ServiceDesc is the grpc.ServiceDesc for ServiceProviderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +149,10 @@ var ServiceProviderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetOpenId",
 			Handler:    _ServiceProviderService_GetOpenId_Handler,
+		},
+		{
+			MethodName: "GetMPCode",
+			Handler:    _ServiceProviderService_GetMPCode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -20,6 +20,8 @@ option java_package = "com.github.go2o.rpc";
 service ServiceProviderService {
     // 获取服务提供者
     rpc GetOpenId(GetUserOpenIdRequest) returns (UserOpenIdResponse);
+    // 获取小程序二维码
+    rpc GetMPCode(MPCodeRequest) returns (MPQrCodeResponse);
 }
 
 // 获取用户OpenId请求
@@ -44,4 +46,26 @@ message UserOpenIdResponse {
     string unionId = 4;
     // 返回第三方应用Id, 如微信小程序的appId
     string appId = 5;
+}
+
+// 小程序二维码请求
+message MPCodeRequest {
+    // 应用ID
+    int64 appId = 1;
+    // 所有者Key
+    string ownerKey = 2;        
+    // 页面路径
+    string page = 3;
+    // 场景值
+    string scene = 4;
+}
+
+// 小程序二维码响应
+message MPQrCodeResponse {
+    // 状态码
+    int32 code = 1;
+    // 状态信息
+    string message = 2;
+    // 二维码图片
+    string qrCodeUrl = 3;
 }

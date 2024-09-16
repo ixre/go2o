@@ -1240,7 +1240,7 @@ CREATE TABLE pay_merchant (
   issue_mch_no            varchar(40) NOT NULL, 
   agreement_sign_url      varchar(120) NOT NULL, 
   issue_status            int4 NOT NULL, 
-  issue_message           varchar(20) NOT NULL, 
+  issue_message           varchar(128) NOT NULL, 
   create_time             int8 NOT NULL, 
   update_time             int8 NOT NULL);
 COMMENT ON TABLE pay_merchant IS '支付入网商户';
