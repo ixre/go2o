@@ -577,7 +577,11 @@ func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwdReque
 			ErrMsg:  err.Error(),
 		}, nil
 	}
-	shopId := mch.ShopManager().GetOnlineShop().GetDomainId()
+	var shopId = 0
+	shop := mch.ShopManager().GetOnlineShop()
+	if shop != nil {
+		shopId = shop.GetDomainId()
+	}
 	return &proto.MchLoginResponse{
 		MerchantId: int64(mch.GetAggregateRootId()),
 		ShopId:     int64(shopId),
