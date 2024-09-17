@@ -9,9 +9,11 @@
 package query
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/ixre/go2o/core/domain/interface/approval"
+	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
@@ -182,6 +184,21 @@ func (m *MerchantQuery) QueryMerchantByName(name string) []map[string]interface{
 			"address": m.Address,
 		}
 	})
+}
+
+// QueryPagingStaffs 查询商户待认证员工列表(商户端)
+func (m *MerchantQuery) QueryMerchantPendingStaffs(p *fw.PagingParams) (*fw.PagingResult, error) {
+	tables := fmt.Sprintf(`mm_member m
+		INNER JOIN mch_staff s ON s.member_id=m.id
+		LEFT JOIN mm_profile pro ON pro.member_id = m.id
+		LEFT JOIN mm_cert_info c ON c.member_id = m.id AND version=0 AND review_status <> %d`, enum.ReviewApproved)
+	fields := `
+	distinct(s.id),m.nickname,c.real_name,m.username,m.exp,m.profile_photo,pro.gender,
+	m.phone,m.level,m.user_flag,
+	m.reg_from,m.reg_time,m.last_login_time,
+	s.certified_name,s.is_certified,c.review_status,c.remark,c.manual_review
+	`
+	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
 }
 
 // 查询商户员工转商户信息

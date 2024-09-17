@@ -468,6 +468,16 @@ func ParsePagingRow(v interface{}) *pagingRow {
 	return &pagingRow{v: v.(map[string]interface{})}
 }
 
+func (p *pagingRow) AsInt(keys ...string) {
+	for _, key := range keys {
+		v, ok := p.v[key].([]uint8)
+		if ok {
+			f := typeconv.MustInt(string(v))
+			p.v[key] = f
+		}
+	}
+}
+
 // 转换为float类型
 func (p *pagingRow) AsFloat(keys ...string) {
 	for _, key := range keys {
