@@ -1289,3 +1289,10 @@ COMMENT ON COLUMN pay_merchant.update_time IS '更新时间';
 ALTER TABLE mch_staff 
   ADD COLUMN im_initialized int4 DEFAULT 0 NOT NULL;
 COMMENT ON COLUMN mch_staff.im_initialized IS 'IM是否注册 0:否  1:是';
+
+
+-- 2024-09-18 支付单退款金额
+ALTER TABLE "public".pay_order 
+  ADD COLUMN refund_amount int8 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".pay_order.refund_amount IS '退款金额';
+

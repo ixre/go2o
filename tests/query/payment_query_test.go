@@ -14,11 +14,12 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/gof/typeconv"
 )
 
 // 测试查询可分账的支付订单
 func TestPaymentQuery_QueryDivideOrders(t *testing.T) {
 	qs := inject.GetPaymentQueryService()
-	orders := qs.QueryDivideOrders(702, payment.TypeRecharge)
-	t.Errorf("orders: %v", orders)
+	orders := qs.QueryDivideOrders(848, payment.TypeRecharge)
+	t.Errorf("orders: %s", typeconv.MustJson(orders))
 }

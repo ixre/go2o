@@ -404,6 +404,8 @@ type Order struct {
 	FinalAmount int `json:"finalAmount" db:"final_amount" gorm:"column:final_amount" bson:"finalAmount"`
 	// PaidAmount
 	PaidAmount int `json:"paidAmount" db:"paid_amount" gorm:"column:paid_amount" bson:"paidAmount"`
+	// RefundAmount
+	RefundAmount int `json:"refundAmount" db:"refund_amount" gorm:"column:refund_amount" bson:"refundAmount"`
 	// PayFlag
 	PayFlag int `json:"payFlag" db:"pay_flag" gorm:"column:pay_flag" bson:"payFlag"`
 	// FinalFlag

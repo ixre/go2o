@@ -512,6 +512,7 @@ func (p *paymentService) RevertSubDivide(_ context.Context, req *proto.PaymentSu
 	return p.errorV2(err), nil
 }
 
+// RequestRefund 请求退款
 func (p *paymentService) RequestRefund(_ context.Context, req *proto.PaymentRefundRequest) (*proto.TxResult, error) {
 	ip := p.repo.GetPaymentOrder(req.TradeNo)
 	if ip == nil {

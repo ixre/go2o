@@ -50,9 +50,11 @@ func (p *PaymentQuery) QueryDivideOrders(memberId int, orderType int) []*DivideO
 	mp := make(map[int]*DivideOrderInfo)
 	for _, v := range orders {
 		payIds = append(payIds, v.Id)
+		// 支付金额减去退款金额为实际可分账金额
+		amount := v.FinalAmount - v.RefundAmount
 		dst := &DivideOrderInfo{
 			TradeNo:       v.TradeNo,
-			Amount:        v.FinalAmount,
+			Amount:        amount,
 			DividedAmount: 0,
 			CreateTime:    v.SubmitTime,
 			DivideStatus:  v.DivideStatus,

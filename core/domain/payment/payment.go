@@ -703,6 +703,12 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 		}
 		totalRefund += amount
 	}
+	if totalRefund > 0 {
+		// 更新支付单退单金额
+		p.value.RefundAmount += totalRefund
+		p.value.UpdateTime = int(time.Now().Unix())
+		_, err = p.repo.SavePaymentOrder(p.value)
+	}
 	return err
 }
 
