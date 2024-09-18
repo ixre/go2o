@@ -433,7 +433,7 @@ LEFT JOIN mm_profile pro ON pro.member_id = m.id`
 	fields := `
 	distinct(m.id),m.nickname,m.real_name,m.username,m.exp,m.profile_photo,pro.gender,pro.birthday,
 	m.phone,m.level,m.user_flag,ac.integral,ac.balance,
-	ac.total_pay,ac.wallet_balance,m.reg_from,m.reg_time,m.last_login_time,
+	ac.total_pay,ac.wallet_balance,m.reg_from,m.reg_time,m.login_time,
 	(SELECT id FROM mm_member m2 WHERE m2.id = r.inviter_id) as inviter_id
 `
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
@@ -448,8 +448,8 @@ func (m *MemberQuery) QueryPagingStaffs(p *fw.PagingParams) (*fw.PagingResult, e
 	fields := `
 	distinct(m.id),m.nickname,m.real_name,m.username,m.exp,m.profile_photo,pro.gender,pro.birthday,
 	m.phone,m.level,m.user_flag,
-	m.reg_from,m.reg_time,m.last_login_time,
-	s.certified_name,s.is_certified,mch.mch_name,
+	m.reg_from,m.reg_time,m.login_time,
+	s.certified_name,s.is_certified,mch.mch_name
 	`
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
 }
