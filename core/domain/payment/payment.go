@@ -685,7 +685,8 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 		case payment.MPaySP: // 第三方支付原路退回
 			err = p.checkDivideAmount(v.PayAmount, amount+v.RefundAmount)
 			if err == nil {
-				eventbus.Publish(&payment.PaymentProviderRefundEvent{
+				// 异步发布退款事件
+				go eventbus.Publish(&payment.PaymentProviderRefundEvent{
 					Order:        p,
 					Amount:       amount,
 					Reason:       reason,
@@ -708,8 +709,20 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 		p.value.RefundAmount += totalRefund
 		p.value.UpdateTime = int(time.Now().Unix())
 		_, err = p.repo.SavePaymentOrder(p.value)
+		if err == nil {
+			err = p.handlePaymentOrderRefund(acc, totalRefund, reason)
+		}
 	}
 	return err
+}
+
+// 处理退款业务
+func (p *paymentOrderImpl) handlePaymentOrderRefund(acc member.IAccount, totalRefund int, reason string) error {
+	if p.value.OrderType == payment.TypeRecharge {
+		// 如果是充值订单，则需扣除充值的金额
+		return acc.Discount(member.AccountWallet, reason, totalRefund, p.TradeNo(), "")
+	}
+	return nil
 }
 
 // checkDivideAmount 检查退款金额是否超出分账外的金额

@@ -274,7 +274,7 @@ func (a *accountImpl) Discount(account member.AccountType, title string, amount 
 	case member.AccountBalance:
 		return a.discountBalance(title, amount, outerNo, remark)
 	case member.AccountWallet:
-		return a.walletDiscount(title, amount, outerNo, remark)
+		return a.walletDiscount(title, amount, outerNo)
 	case member.AccountFlow:
 		//return a(title,  float32(amount)/100, outerNo, remark)
 	}
@@ -625,7 +625,7 @@ func (a *accountImpl) walletConsume(title string, amount int, outerNo string, re
 }
 
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
-func (a *accountImpl) walletDiscount(title string, amount int, outerNo string, remark string) error {
+func (a *accountImpl) walletDiscount(title string, amount int, outerNo string) error {
 	mustLargeZero := false
 	if mustLargeZero && a.wallet.Get().Balance < amount {
 		return member.ErrAccountNotEnoughAmount
