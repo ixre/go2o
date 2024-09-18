@@ -85,12 +85,14 @@ func (p *paymentOrderImpl) Submit() error {
 		return payment.ErrOrderCommitted
 	}
 	p.prepareSubmit() // 提交之前进行操作
-	// 检查支付单单号是否匹配
-	if b := p.repo.CheckTradeNoMatch(p.value.TradeNo, p.GetAggregateRootId()); !b {
-		return payment.ErrExistsTradeNo
-	}
+
 	if len(p.value.TradeNo) == 0 {
 		p.value.TradeNo = p.generateTradeNo()
+	} else {
+		// 检查外部指定的支付单单号是否重复
+		if b := p.repo.CheckTradeNoMatch(p.value.TradeNo, p.GetAggregateRootId()); !b {
+			return payment.ErrExistsTradeNo
+		}
 	}
 	err := p.saveOrder()
 	if err == nil {
