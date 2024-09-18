@@ -84,7 +84,10 @@ func (p *paymentOrderImpl) Submit() error {
 	if id := p.GetAggregateRootId(); id > 0 {
 		return payment.ErrOrderCommitted
 	}
-	p.prepareSubmit() // 提交之前进行操作
+	err := p.prepareSubmit() // 提交之前进行操作
+	if err != nil {
+		return err
+	}
 
 	if len(p.value.TradeNo) == 0 {
 		p.value.TradeNo = p.generateTradeNo()
@@ -94,7 +97,7 @@ func (p *paymentOrderImpl) Submit() error {
 			return payment.ErrExistsTradeNo
 		}
 	}
-	err := p.saveOrder()
+	err = p.saveOrder()
 	if err == nil {
 		// 保存支付单的支付方式,主要用于拆分子订单提交
 		for _, v := range p.value.TradeMethods {
@@ -152,7 +155,7 @@ func (p *paymentOrderImpl) MergePay(orders []payment.IPaymentOrder) (mergeTradeN
 }
 
 // 准备提交支付单
-func (p *paymentOrderImpl) prepareSubmit() {
+func (p *paymentOrderImpl) prepareSubmit() error {
 	unix := time.Now().Unix()
 	p.value.SubmitTime = int(unix)
 	p.value.UpdateTime = int(unix)
@@ -162,6 +165,10 @@ func (p *paymentOrderImpl) prepareSubmit() {
 	if p.value.PayerId <= 0 {
 		p.value.PayerId = p.value.BuyerId
 	}
+	if p.value.ExpiresTime == 0 {
+		return errors.New("支付单过期时间未设置")
+	}
+	return nil
 }
 
 // 在支付之前检查订单状态

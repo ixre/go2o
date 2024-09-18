@@ -17,6 +17,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
@@ -1838,6 +1839,7 @@ func (m *memberService) SubmitRechargePaymentOrder(_ context.Context, req *proto
 			Message: "用户不存在",
 		}, nil
 	}
+	unix := time.Now().Unix()
 	io := m._payRepo.CreatePaymentOrder(&payment.Order{
 		Id:             0,
 		SellerId:       0,
@@ -1864,7 +1866,7 @@ func (m *memberService) SubmitRechargePaymentOrder(_ context.Context, req *proto
 		OutTradeNo:     "",
 		Status:         0,
 		SubmitTime:     0,
-		ExpiresTime:    0,
+		ExpiresTime:    int(unix + 1860), // 30分钟内支付有效
 		PaidTime:       0,
 		UpdateTime:     0,
 		TradeMethods:   []*payment.PayTradeData{},
