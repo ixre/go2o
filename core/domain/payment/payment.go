@@ -721,6 +721,8 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 		// 更新支付单退单金额
 		p.value.RefundAmount += totalRefund
 		p.value.UpdateTime = int(time.Now().Unix())
+		// 检查分账并更新状态
+		p.checkDivideStatus(tx)
 		_, err = p.repo.SavePaymentOrder(p.value)
 		if err == nil {
 			err = p.handlePaymentOrderRefund(acc, totalRefund, reason)
@@ -739,12 +741,12 @@ func (p *paymentOrderImpl) handlePaymentOrderRefund(acc member.IAccount, totalRe
 }
 
 // RefundAvail 请求退款全部可退金额，通常用于全额退款或消费后将剩余部分进行退款
-func (p *paymentOrderImpl) RefundAvail(remark string) (err error) {
+func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 	if p.State() != payment.StateFinished {
-		return errors.New("订单未支付不支持退款")
+		return 0, errors.New("订单未支付不支持退款")
 	}
 	if len(remark) == 0 {
-		return errors.New("缺少退款备注")
+		return 0, errors.New("缺少退款备注")
 	}
 	// 获取支付数据
 	chanMap := p.TradeMethods()
@@ -761,14 +763,15 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (err error) {
 		}
 		amount := tx.PayAmount - tx.RefundAmount - divideAmount
 		if amount < 0 {
-			return errors.New("第三方支付超出可退款金额")
+			return 0, fmt.Errorf("第三方支付超出可退款金额: %.2f, 已处理金额: %.2f",
+				float64(tx.PayAmount)/100, float64(divideAmount+tx.RefundAmount)/100)
 		}
 		spRefundAmount = amount
 	}
 	// 获取会员及账户
 	mm := p.getBuyer()
 	if mm == nil {
-		return member.ErrNoSuchMember
+		return 0, member.ErrNoSuchMember
 	}
 	pv := p.Get()
 	acc := mm.GetAccount()
@@ -786,6 +789,8 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (err error) {
 			err = acc.Refund(member.AccountWallet, remark, amount, pv.TradeNo, "")
 		case payment.MPaySP:
 			if spRefundAmount > 0 {
+				// 第三方支付退款金额
+				amount = spRefundAmount
 				// 第三方支付原路退回, 异步发布退款事件
 				go eventbus.Publish(&payment.PaymentProviderRefundEvent{
 					Order:        p,
@@ -801,7 +806,7 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (err error) {
 			_, err = p.repo.SavePaymentTradeChan(p.TradeNo(), v)
 		}
 		if err != nil {
-			return err
+			return 0, err
 		}
 		totalRefund += amount
 	}
@@ -809,12 +814,34 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (err error) {
 		// 更新支付单退单金额
 		p.value.RefundAmount += totalRefund
 		p.value.UpdateTime = int(time.Now().Unix())
+		// 检查分账并更新状态
+		p.checkDivideStatus(tx)
 		_, err = p.repo.SavePaymentOrder(p.value)
 		if err == nil {
 			err = p.handlePaymentOrderRefund(acc, totalRefund, remark)
 		}
 	}
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return totalRefund, nil
+}
+
+// 检查分账状态，只有第三方支付的部分能参与分账
+func (p *paymentOrderImpl) checkDivideStatus(tx *payment.PayTradeData) {
+	if !p.isDivide() {
+		return
+	}
+	dividedList := p.getDivides()
+	// 统计分账的总金额
+	dividedAmount := 0
+	for _, k := range dividedList {
+		dividedAmount += k.DivideAmount
+	}
+	if dividedAmount+tx.RefundAmount >= tx.PayAmount {
+		// 如果分账金额+已退款金额等于订单金额，则自动标记为分账完成
+		p.value.DivideStatus = payment.DivideFinished
+	}
 }
 
 // getDivides 获取分账列表
@@ -906,8 +933,16 @@ func (p *RepoBase) CreatePaymentOrder(v *payment.
 	}
 }
 
+// IsDivide 是否支持分账
+func (p *paymentOrderImpl) isDivide() bool {
+	return p.value.AttrFlag&int(payment.FlagDivide) == int(payment.FlagDivide)
+}
+
 // Divide implements payment.IPaymentOrder.
 func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData) error {
+	if !p.isDivide() {
+		return errors.New("支付单不支持分账")
+	}
 	repo := p.repo.DivideRepo()
 	if p.value.DivideStatus == payment.DivideFinished {
 		return errors.New("订单已分账完成")
@@ -915,7 +950,7 @@ func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData)
 	if len(outTxNo) == 0 {
 		return errors.New("缺少分账关联的外部交易单号")
 	}
-	dividedList := repo.FindList(nil, "pay_id = ?", p.GetAggregateRootId())
+	dividedList := p.getDivides()
 	// 统计将分账的总金额
 	divideAmount := 0
 	dividedAmount := 0
@@ -939,7 +974,7 @@ func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData)
 	}
 	unix := int(time.Now().Unix())
 	for _, v := range divides {
-		_, err := repo.Save(&payment.PayDivide{
+		ret, err := repo.Save(&payment.PayDivide{
 			Id:           0,
 			PayId:        p.GetAggregateRootId(),
 			DivideType:   v.DivideType,
@@ -955,11 +990,13 @@ func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData)
 		if err != nil {
 			return err
 		}
+		// 更新分账明细ID
+		v.DivideItemId = ret.Id
 	}
 	var err error
-	if divideAmount+dividedAmount == p.value.FinalAmount {
-		// 如果金额全部分账，则自动标记为分账完成
-		err = p.FinishDivide()
+	if divideAmount+dividedAmount+p.value.RefundAmount >= p.value.FinalAmount {
+		// 如果分账金额+已退款金额等于订单金额，则自动标记为分账完成
+		err = p.CompleteDivide()
 	} else if p.value.DivideStatus == payment.DivideNoDivide {
 		// 修改状态为待分账
 		p.value.DivideStatus = payment.DividePending
@@ -976,13 +1013,21 @@ func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData)
 	return err
 }
 
-// FinishDivide implements payment.IPaymentOrder.
-func (p *paymentOrderImpl) FinishDivide() error {
+// CompleteDivide implements payment.IPaymentOrder.
+func (p *paymentOrderImpl) CompleteDivide() error {
+	if !p.isDivide() {
+		return errors.New("支付单不支持分账")
+	}
 	if p.value.DivideStatus != payment.DivideFinished {
 		// 如果金额全部分账，则自动标记为分账完成
 		p.value.DivideStatus = payment.DivideFinished
 		p.value.UpdateTime = int(time.Now().Unix())
 		_, err := p.repo.SavePaymentOrder(p.value)
+		if err == nil {
+			go eventbus.Publish(&payment.PaymentCompleteDivideEvent{
+				Order: p,
+			})
+		}
 		return err
 	}
 	return nil
@@ -997,7 +1042,7 @@ func (p *paymentOrderImpl) UpdateSubDivideStatus(divideId int, success bool, div
 	if divide.PayId != p.GetAggregateRootId() {
 		return errors.New("分账记录不属于当前订单")
 	}
-	if divide.SubmitStatus != payment.DividePending && divide.SubmitStatus != payment.DivideStatusReverted {
+	if divide.SubmitStatus != payment.DividePending && divide.SubmitStatus != payment.DivideItemStatusReverted {
 		// 只有待分账及撤销状态下允许更改状态
 		return errors.New("分账记录状态错误")
 	}
@@ -1018,17 +1063,17 @@ func (p *paymentOrderImpl) RevertSubDivide(divideId int, remark string) error {
 	if divide.PayId != p.GetAggregateRootId() {
 		return errors.New("分账记录不属于当前订单")
 	}
-	if divide.SubmitStatus != payment.DivideStatusSuccess {
+	if divide.SubmitStatus != payment.DivideItemStatusSuccess {
 		return errors.New("分账未成功状态，不支持撤销")
 	}
 	raw := types.DeepClone(divide)
-	divide.SubmitStatus = payment.DivideStatusReverted
+	divide.SubmitStatus = payment.DivideItemStatusReverted
 	divide.SubmitRemark = remark
 	divide.SubmitTime = int(time.Now().Unix())
 	_, err := p.repo.DivideRepo().Save(divide)
 	if err == nil {
 		// 发布分账撤销事件
-		eventbus.Publish(&payment.PaymentSubDivideRevertEvent{
+		eventbus.Publish(&payment.PaymentRevertSubDivideEvent{
 			Order:   p,
 			Divides: []*payment.PayDivide{raw},
 		})

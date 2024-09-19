@@ -143,3 +143,13 @@ func TestCancelPaymentOrder(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+// 测试完成分账
+func TestCompleteDivide(t *testing.T) {
+	orderNo := "1230326007400338"
+	p := inject.GetPaymentRepo().GetPaymentOrder(orderNo)
+	if err := p.CompleteDivide(); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}

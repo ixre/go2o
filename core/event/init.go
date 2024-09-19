@@ -41,11 +41,13 @@ func (e *EventSource) Init() {
 	// 注册支付成功事件
 	eventbus.Subscribe(payment.PaymentSuccessEvent{}, e.HandlePaymentSuccessEvent)
 	// 注册支付分账撤销事件
-	eventbus.Subscribe(payment.PaymentSubDivideRevertEvent{}, e.HandlePaymentSubDivideRevertEvent)
+	eventbus.Subscribe(payment.PaymentRevertSubDivideEvent{}, e.HandlePaymentSubDivideRevertEvent)
 	// 注册支付分账事件
 	eventbus.Subscribe(payment.PaymentDivideEvent{}, e.HandlePaymentDivideEvent)
 	// 注册第三方支付退款事件
 	eventbus.Subscribe(payment.PaymentProviderRefundEvent{}, e.HandlePaymentProviderRefundEvent)
+	// 注册支付完成分账事件
+	eventbus.Subscribe(payment.PaymentCompleteDivideEvent{}, e.HandlePaymentCompleteDivideEvent)
 	// 注册支付商户入网事件
 	eventbus.Subscribe(payment.PaymentMerchantRegistrationEvent{}, e.HandlePaymentMerchantRegistrationEvent)
 

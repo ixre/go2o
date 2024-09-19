@@ -71,7 +71,7 @@ service PaymentService {
     // Divide 分账
 	rpc Divide(PaymentDivideRequest) returns(TxResult);
 	// FinishDive 完成分账
-	rpc FinishDivide(PaymentOrderRequest) returns(TxResult);
+	rpc CompleteDivide(PaymentOrderRequest) returns(TxResult);
     // UpdateDivideStatus 更新分账状态
     rpc UpdateDivideStatus(UpdateDivideStatusRequest) returns(TxResult);
     // RevertSubDivide 撤销分账
@@ -95,7 +95,7 @@ service PaymentService {
     rpc RequestRefund(PaymentRefundRequest) returns(TxResult);
     // RequestRefundAvail 申请退款(全部可退金额)，常用于充值退款，或消费后再退回剩余金额
     // 注意: 该方法仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款
-    rpc RequestRefundAvail(PaymentRefundAvailRequest) returns(TxResult);
+    rpc RequestRefundAvail(PaymentRefundAvailRequest) returns(PaymentRefundAvailResponse);
 
     // 支付网关(仅交易单使用)
     rpc GatewayV1 (PayGatewayRequest) returns (TxResult);
@@ -475,6 +475,17 @@ message PaymentRefundAvailRequest{
     // 退款备注
     string remark= 2;
 }
+
+// 支付退款响应
+message PaymentRefundAvailResponse{
+    // 错误码
+    int32 code = 1;
+    // 错误消息
+    string message = 2;
+    // 退款金额
+    int64 amount = 3;
+}
+
 // 商户入网申请单编号请求
 message SubMerchantCodeRequest{
     // 申请单编号

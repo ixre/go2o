@@ -29,7 +29,7 @@ const (
 	PaymentService_FinishPayment_FullMethodName          = "/PaymentService/FinishPayment"
 	PaymentService_QueryDivideOrders_FullMethodName      = "/PaymentService/QueryDivideOrders"
 	PaymentService_Divide_FullMethodName                 = "/PaymentService/Divide"
-	PaymentService_FinishDivide_FullMethodName           = "/PaymentService/FinishDivide"
+	PaymentService_CompleteDivide_FullMethodName         = "/PaymentService/CompleteDivide"
 	PaymentService_UpdateDivideStatus_FullMethodName     = "/PaymentService/UpdateDivideStatus"
 	PaymentService_RevertSubDivide_FullMethodName        = "/PaymentService/RevertSubDivide"
 	PaymentService_GetSubMerchant_FullMethodName         = "/PaymentService/GetSubMerchant"
@@ -38,7 +38,7 @@ const (
 	PaymentService_SubmitSubMerchant_FullMethodName      = "/PaymentService/SubmitSubMerchant"
 	PaymentService_UpdateSubMerchant_FullMethodName      = "/PaymentService/UpdateSubMerchant"
 	PaymentService_RequestRefund_FullMethodName          = "/PaymentService/RequestRefund"
-	PaymentService_RequestRefundAvail_FullMethodName       = "/PaymentService/RequestRefundAvail"
+	PaymentService_RequestRefundAvail_FullMethodName     = "/PaymentService/RequestRefundAvail"
 	PaymentService_GatewayV1_FullMethodName              = "/PaymentService/GatewayV1"
 	PaymentService_GetPreparePaymentInfo_FullMethodName  = "/PaymentService/GetPreparePaymentInfo"
 	PaymentService_GatewayV2_FullMethodName              = "/PaymentService/GatewayV2"
@@ -74,7 +74,7 @@ type PaymentServiceClient interface {
 	// Divide 分账
 	Divide(ctx context.Context, in *PaymentDivideRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// FinishDive 完成分账
-	FinishDivide(ctx context.Context, in *PaymentOrderRequest, opts ...grpc.CallOption) (*TxResult, error)
+	CompleteDivide(ctx context.Context, in *PaymentOrderRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// UpdateDivideStatus 更新分账状态
 	UpdateDivideStatus(ctx context.Context, in *UpdateDivideStatusRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// RevertSubDivide 撤销分账
@@ -93,7 +93,7 @@ type PaymentServiceClient interface {
 	RequestRefund(ctx context.Context, in *PaymentRefundRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// RequestRefundAvail 申请退款(全部可退金额)，常用于充值退款，或消费后再退回剩余金额
 	// 注意: 该方法仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款
-	RequestRefundAvail(ctx context.Context, in *PaymentRefundAvailRequest, opts ...grpc.CallOption) (*TxResult, error)
+	RequestRefundAvail(ctx context.Context, in *PaymentRefundAvailRequest, opts ...grpc.CallOption) (*PaymentRefundAvailResponse, error)
 	// 支付网关(仅交易单使用)
 	GatewayV1(ctx context.Context, in *PayGatewayRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取支付预交易数据
@@ -216,9 +216,9 @@ func (c *paymentServiceClient) Divide(ctx context.Context, in *PaymentDivideRequ
 	return out, nil
 }
 
-func (c *paymentServiceClient) FinishDivide(ctx context.Context, in *PaymentOrderRequest, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *paymentServiceClient) CompleteDivide(ctx context.Context, in *PaymentOrderRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
-	err := c.cc.Invoke(ctx, PaymentService_FinishDivide_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, PaymentService_CompleteDivide_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -297,8 +297,8 @@ func (c *paymentServiceClient) RequestRefund(ctx context.Context, in *PaymentRef
 	return out, nil
 }
 
-func (c *paymentServiceClient) RequestRefundAvail(ctx context.Context, in *PaymentRefundAvailRequest, opts ...grpc.CallOption) (*TxResult, error) {
-	out := new(TxResult)
+func (c *paymentServiceClient) RequestRefundAvail(ctx context.Context, in *PaymentRefundAvailRequest, opts ...grpc.CallOption) (*PaymentRefundAvailResponse, error) {
+	out := new(PaymentRefundAvailResponse)
 	err := c.cc.Invoke(ctx, PaymentService_RequestRefundAvail_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -403,7 +403,7 @@ type PaymentServiceServer interface {
 	// Divide 分账
 	Divide(context.Context, *PaymentDivideRequest) (*TxResult, error)
 	// FinishDive 完成分账
-	FinishDivide(context.Context, *PaymentOrderRequest) (*TxResult, error)
+	CompleteDivide(context.Context, *PaymentOrderRequest) (*TxResult, error)
 	// UpdateDivideStatus 更新分账状态
 	UpdateDivideStatus(context.Context, *UpdateDivideStatusRequest) (*TxResult, error)
 	// RevertSubDivide 撤销分账
@@ -422,7 +422,7 @@ type PaymentServiceServer interface {
 	RequestRefund(context.Context, *PaymentRefundRequest) (*TxResult, error)
 	// RequestRefundAvail 申请退款(全部可退金额)，常用于充值退款，或消费后再退回剩余金额
 	// 注意: 该方法仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款
-	RequestRefundAvail(context.Context, *PaymentRefundAvailRequest) (*TxResult, error)
+	RequestRefundAvail(context.Context, *PaymentRefundAvailRequest) (*PaymentRefundAvailResponse, error)
 	// 支付网关(仅交易单使用)
 	GatewayV1(context.Context, *PayGatewayRequest) (*TxResult, error)
 	// 获取支付预交易数据
@@ -482,8 +482,8 @@ func (UnimplementedPaymentServiceServer) QueryDivideOrders(context.Context, *Div
 func (UnimplementedPaymentServiceServer) Divide(context.Context, *PaymentDivideRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Divide not implemented")
 }
-func (UnimplementedPaymentServiceServer) FinishDivide(context.Context, *PaymentOrderRequest) (*TxResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FinishDivide not implemented")
+func (UnimplementedPaymentServiceServer) CompleteDivide(context.Context, *PaymentOrderRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompleteDivide not implemented")
 }
 func (UnimplementedPaymentServiceServer) UpdateDivideStatus(context.Context, *UpdateDivideStatusRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDivideStatus not implemented")
@@ -509,7 +509,7 @@ func (UnimplementedPaymentServiceServer) UpdateSubMerchant(context.Context, *Sub
 func (UnimplementedPaymentServiceServer) RequestRefund(context.Context, *PaymentRefundRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestRefund not implemented")
 }
-func (UnimplementedPaymentServiceServer) RequestRefundAvail(context.Context, *PaymentRefundAvailRequest) (*TxResult, error) {
+func (UnimplementedPaymentServiceServer) RequestRefundAvail(context.Context, *PaymentRefundAvailRequest) (*PaymentRefundAvailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestRefundAvail not implemented")
 }
 func (UnimplementedPaymentServiceServer) GatewayV1(context.Context, *PayGatewayRequest) (*TxResult, error) {
@@ -729,20 +729,20 @@ func _PaymentService_Divide_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PaymentService_FinishDivide_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PaymentService_CompleteDivide_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PaymentOrderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PaymentServiceServer).FinishDivide(ctx, in)
+		return srv.(PaymentServiceServer).CompleteDivide(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: PaymentService_FinishDivide_FullMethodName,
+		FullMethod: PaymentService_CompleteDivide_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PaymentServiceServer).FinishDivide(ctx, req.(*PaymentOrderRequest))
+		return srv.(PaymentServiceServer).CompleteDivide(ctx, req.(*PaymentOrderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1101,8 +1101,8 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PaymentService_Divide_Handler,
 		},
 		{
-			MethodName: "FinishDivide",
-			Handler:    _PaymentService_FinishDivide_Handler,
+			MethodName: "CompleteDivide",
+			Handler:    _PaymentService_CompleteDivide_Handler,
 		},
 		{
 			MethodName: "UpdateDivideStatus",

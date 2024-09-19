@@ -1840,7 +1840,7 @@ func (m *memberService) SubmitRechargePaymentOrder(_ context.Context, req *proto
 		}, nil
 	}
 	unix := time.Now().Unix()
-	io := m._payRepo.CreatePaymentOrder(&payment.Order{
+	ord := &payment.Order{
 		Id:             0,
 		SellerId:       0,
 		TradeType:      "RECHARGE",
@@ -1870,7 +1870,12 @@ func (m *memberService) SubmitRechargePaymentOrder(_ context.Context, req *proto
 		PaidTime:       0,
 		UpdateTime:     0,
 		TradeMethods:   []*payment.PayTradeData{},
-	})
+	}
+	if req.Divide {
+		// 启用分账
+		ord.AttrFlag = int(payment.FlagDivide)
+	}
+	io := m._payRepo.CreatePaymentOrder(ord)
 	err := io.Submit()
 	if err != nil {
 		return &proto.RechargePaymentOrderResponse{

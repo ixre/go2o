@@ -1296,3 +1296,7 @@ ALTER TABLE "public".pay_order
   ADD COLUMN refund_amount int8 DEFAULT 0 NOT NULL;
 COMMENT ON COLUMN "public".pay_order.refund_amount IS '退款金额';
 
+ALTER TABLE "public".pay_order 
+  ADD COLUMN attr_flag int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".pay_order.attr_flag IS '标志 1: 分账';
+

@@ -219,6 +219,8 @@ message SubmitRechargePaymentOrderRequest{
     int64 memberId = 1;
     // 充值金额
     int64 amount = 3;
+    // 是否分账
+    bool divide = 4;
 }
 
 // 提交会员充值单响应

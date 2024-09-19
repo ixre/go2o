@@ -482,13 +482,13 @@ func (p *paymentService) Divide(_ context.Context, req *proto.PaymentDivideReque
 	return p.errorV2(nil), nil
 }
 
-// FinishDivide 完成分账
-func (p *paymentService) FinishDivide(_ context.Context, req *proto.PaymentOrderRequest) (*proto.TxResult, error) {
+// CompleteDivide 完成分账
+func (p *paymentService) CompleteDivide(_ context.Context, req *proto.PaymentOrderRequest) (*proto.TxResult, error) {
 	ip := p.repo.GetPaymentOrder(req.TradeNo)
 	if ip == nil {
 		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
 	}
-	err := ip.FinishDivide()
+	err := ip.CompleteDivide()
 	return p.errorV2(err), nil
 }
 
@@ -528,16 +528,28 @@ func (p *paymentService) RequestRefund(_ context.Context, req *proto.PaymentRefu
 }
 
 // RequestRefundAvail 请求全额退款
-func (p *paymentService) RequestRefundAvail(_ context.Context, req *proto.PaymentRefundAvailRequest) (*proto.TxResult, error) {
+func (p *paymentService) RequestRefundAvail(_ context.Context, req *proto.PaymentRefundAvailRequest) (*proto.PaymentRefundAvailResponse, error) {
 	ip := p.repo.GetPaymentOrder(req.TradeNo)
 	if ip == nil {
-		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+		return &proto.PaymentRefundAvailResponse{
+			Code:    1,
+			Message: "支付单不存在",
+		}, nil
 	}
 	if ip.Get().OrderType == payment.TypeOrder {
-		return p.errorV2(errors.New("当前支付单不支持退款操作[TYPE_NOT_MATCH]")), nil
+		return &proto.PaymentRefundAvailResponse{
+			Code:    1,
+			Message: "当前支付单不支持退款操作[TYPE_NOT_MATCH]",
+		}, nil
 	}
-	err := ip.RefundAvail(req.Remark)
-	return p.errorV2(err), nil
+	amount, err := ip.RefundAvail(req.Remark)
+	if err != nil {
+		return &proto.PaymentRefundAvailResponse{
+			Code:    1,
+			Message: err.Error(),
+		}, nil
+	}
+	return &proto.PaymentRefundAvailResponse{Amount: int64(amount)}, nil
 }
 
 // GetSubMerchant implements proto.PaymentServiceServer.

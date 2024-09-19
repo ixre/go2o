@@ -44,6 +44,13 @@ const (
 const PAllFlag = MBalance | MWallet | MIntegral | MUserCard |
 	MUserCoupon | MCash | MBankCard | MPaySP | MSellerPay | MSystemPay
 
+type PaymentFlag int
+
+const (
+	// FlagDivide 分账标志
+	FlagDivide PaymentFlag = 1 << 0
+)
+
 // 支付单状态
 const (
 	// StateAwaitingPayment 待支付
@@ -82,14 +89,14 @@ const (
 )
 
 const (
-	// DivideStatusPending 待提交
-	DivideStatusPending = 1
-	// DivideStatusSuccess 提交分账成功
-	DivideStatusSuccess = 2
-	// DivideStatusFailed 提交分账失败
-	DivideStatusFailed = 3
-	// DivideReverted 分账撤销
-	DivideStatusReverted = 4
+	// DivideItemStatusPending 待提交
+	DivideItemStatusPending = 1
+	// DivideItemStatusSuccess 提交分账成功
+	DivideItemStatusSuccess = 2
+	// DivideItemStatusFailed 提交分账失败
+	DivideItemStatusFailed = 3
+	// DivideItemStatusReverted 分账撤销
+	DivideItemStatusReverted = 4
 )
 
 const (
@@ -200,13 +207,13 @@ type (
 		// Refund 退款,传递各支付方式的退款金额,如不传递则表示全额退款
 		Refund(amounts map[int]int, reason string) error
 		// RefundAvail 请求退款全部可退金额，通常用于全额退款或消费后将剩余部分进行退款
-		RefundAvail(remark string) error
+		RefundAvail(remark string) (int, error)
 		// ChanName 获取支付通道字符串
 		ChanName(method int) string
-		// Divide 分账
+		// Divide 分账, 分账后将更新支付单状态为分账中,直到调用完成分账，该订单不再允许分账
 		Divide(outTxNo string, divides []*DivideData) error
 		// FinishDive 完成分账
-		FinishDivide() error
+		CompleteDivide() error
 		// UpdateDivideStatus 更新分账提交状态
 		UpdateSubDivideStatus(divideId int, success bool, divideNo string, remark string) error
 		// RevertDivide 请求分账归还，发起后将更新为撤销状态并发送事件进行归还处理
@@ -275,12 +282,18 @@ type (
 		Divides []*DivideData
 	}
 
-	// PaymentSubDivideRevertEvent 支付分账(子项)撤销事件，订阅该实现来实现撤回分账，在到帐前拦截错误的分账
-	PaymentSubDivideRevertEvent struct {
+	// PaymentRevertSubDivideEvent 支付分账(子项)撤销事件，订阅该实现来实现撤回分账，在到帐前拦截错误的分账
+	PaymentRevertSubDivideEvent struct {
 		// 支付单
 		Order IPaymentOrder
 		// 分账数据
 		Divides []*PayDivide
+	}
+
+	// PaymentCompleteDivideEvent 支付完成分账事件
+	PaymentCompleteDivideEvent struct {
+		// 支付单
+		Order IPaymentOrder
 	}
 
 	// PaymentProviderRefundEvent 支付渠道退款事件
@@ -299,6 +312,8 @@ type (
 
 	// 支付单分账数据
 	DivideData struct {
+		// 分账明细ID
+		DivideItemId int
 		// 分账用户类型: 1: 平台  2: 商户  3: 会员
 		DivideType int
 		// 用户ID
@@ -382,6 +397,8 @@ type Order struct {
 	SellerId int `json:"sellerId" db:"seller_id" gorm:"column:seller_id" bson:"sellerId"`
 	// TradeType
 	TradeType string `json:"tradeType" db:"trade_type" gorm:"column:trade_type" bson:"tradeType"`
+	// 标志
+	AttrFlag int `json:"attrFlag" db:"attr_flag" gorm:"column:attr_flag" bson:"attrFlag"`
 	// TradeNo
 	TradeNo string `json:"tradeNo" db:"trade_no" gorm:"column:trade_no" bson:"tradeNo"`
 	// Subject

@@ -55,11 +55,19 @@ func (p *PaymentEventHandler) HandlePaymentSubDivideRevertEvent(event interface{
 	// note: 支付分账撤销事件由具体的支付渠道通过订阅事件处理，这里不作处理
 }
 
+// 处理第三方支付退款事件
 func (p *PaymentEventHandler) HandlePaymentProviderRefundEvent(event interface{}) {
 	//e := event.(*payment.PaymentProviderRefundEvent)
 	// note: 第三方支付退款事件由具体的支付渠道通过订阅事件处理，这里不作处理
 }
 
+// 处理支付完成分账事件
+func (p *PaymentEventHandler) HandlePaymentCompleteDivideEvent(event interface{}) {
+	//e := event.(*payment.PaymentCompleteDivideEvent)
+	// note: 支付完成分账事件由具体的支付渠道通过订阅事件处理，这里不作处理
+}
+
+// 处理支付商户入网事件
 func (p *PaymentEventHandler) HandlePaymentMerchantRegistrationEvent(event interface{}) {
 	//e := event.(*payment.PaymentMerchantRegistrationEvent)
 	// note: 支付商户入网事件由具体的支付渠道通过订阅事件处理，这里不作处理

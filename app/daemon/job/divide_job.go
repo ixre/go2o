@@ -20,7 +20,8 @@ import (
 	"github.com/ixre/go2o/core/service/proto"
 )
 
-// SubmitPaymentProviderEndpointDivide提交支付渠道端分账请求
+// SubmitPaymentProviderEndpointDivide 提交支付渠道端分账请求
+// 如果订阅事件，对分账进行处理后，定时任务中将不会再检测待提交分账的任务
 func SubmitPaymentProviderEndpointDivide(f func(o *payment.PayDivide) (string, error)) {
 	if f == nil {
 		panic("分账处理函数不能为空")
@@ -41,7 +42,7 @@ func SubmitPaymentProviderEndpointDivide(f func(o *payment.PayDivide) (string, e
 		}
 		for _, order := range orders {
 			divideNo, err := f(order)
-			remark := ""
+			remark := "成功"
 			if err != nil {
 				remark = err.Error()
 			}

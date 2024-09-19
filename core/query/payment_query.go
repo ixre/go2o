@@ -49,31 +49,36 @@ func (p *PaymentQuery) QueryDivideOrders(memberId int, orderType int) []*DivideO
 	payIds := make([]int, 0)
 	mp := make(map[int]*DivideOrderInfo)
 	for _, v := range orders {
-		payIds = append(payIds, v.Id)
 		// 支付金额减去退款金额为实际可分账金额
 		amount := v.FinalAmount - v.RefundAmount
-		dst := &DivideOrderInfo{
-			TradeNo:       v.TradeNo,
-			Amount:        amount,
-			DividedAmount: 0,
-			CreateTime:    v.SubmitTime,
-			DivideStatus:  v.DivideStatus,
+		if amount > 0 {
+			payIds = append(payIds, v.Id)
+			dst := &DivideOrderInfo{
+				TradeNo:       v.TradeNo,
+				Amount:        amount,
+				DividedAmount: 0,
+				CreateTime:    v.SubmitTime,
+				DivideStatus:  v.DivideStatus,
+			}
+			arr = append(arr, dst)
+			mp[v.Id] = dst
 		}
-		arr = append(arr, dst)
-		mp[v.Id] = dst
 	}
-	divides := p._divideRepo.FindList(nil, "pay_id IN (?)", payIds)
-	for _, v := range divides {
-		dst := mp[v.PayId]
-		dst.DividedAmount += v.DivideAmount
-		mp[v.PayId] = dst
+	if len(payIds) > 0 {
+		// 查询已分账的记录
+		divides := p._divideRepo.FindList(nil, "pay_id IN (?)", payIds)
+		for _, v := range divides {
+			dst := mp[v.PayId]
+			dst.DividedAmount += v.DivideAmount
+			mp[v.PayId] = dst
+		}
 	}
 	return arr
 }
 
 // 查询待提交的分账记录
 func (p *PaymentQuery) QueryAwaitSubmitDivides(unix int64, size int) ([]*payment.PayDivide, error) {
-	rows := p._divideRepo.FindList(nil, "submit_status=? AND submit_time < ? AND user_id <> 0", payment.DivideStatusPending, unix)
+	rows := p._divideRepo.FindList(nil, "submit_status=? AND submit_time < ? AND user_id <> 0", payment.DivideItemStatusPending, unix)
 	return rows, nil
 }
 
