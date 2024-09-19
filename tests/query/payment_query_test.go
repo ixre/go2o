@@ -23,3 +23,10 @@ func TestPaymentQuery_QueryDivideOrders(t *testing.T) {
 	orders := qs.QueryDivideOrders(848, payment.TypeRecharge)
 	t.Errorf("orders: %s", typeconv.MustJson(orders))
 }
+
+func TestPaymentQuery_QueryRefundableOrders(t *testing.T) {
+	memberId := 848
+	qs := inject.GetPaymentQueryService()
+	orders := qs.QueryRefundableRechargeOrders(memberId)
+	t.Errorf("orders: %s", typeconv.MustJson(orders))
+}

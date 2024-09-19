@@ -38,6 +38,7 @@ const (
 	PaymentService_StageSubMerchant_FullMethodName       = "/PaymentService/StageSubMerchant"
 	PaymentService_SubmitSubMerchant_FullMethodName      = "/PaymentService/SubmitSubMerchant"
 	PaymentService_UpdateSubMerchant_FullMethodName      = "/PaymentService/UpdateSubMerchant"
+	PaymentService_QueryRefundableOrders_FullMethodName  = "/PaymentService/QueryRefundableOrders"
 	PaymentService_RequestRefund_FullMethodName          = "/PaymentService/RequestRefund"
 	PaymentService_RequestRefundAvail_FullMethodName     = "/PaymentService/RequestRefundAvail"
 	PaymentService_GatewayV1_FullMethodName              = "/PaymentService/GatewayV1"
@@ -92,6 +93,8 @@ type PaymentServiceClient interface {
 	SubmitSubMerchant(ctx context.Context, in *SubMerchantCodeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// UpdateSubMerchant 更新商户入网信息
 	UpdateSubMerchant(ctx context.Context, in *SubMerchantUpdateRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// QueryRefundableOrders 查询可退款的充值订单
+	QueryRefundableOrders(ctx context.Context, in *QueryRefundablePaymentOrdersRequest, opts ...grpc.CallOption) (*RefundablePaymentOrdersResponse, error)
 	// RequestRefund 申请退款(仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款)
 	RequestRefund(ctx context.Context, in *PaymentRefundRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// RequestRefundAvail 申请退款(全部可退金额)，常用于充值退款，或消费后再退回剩余金额
@@ -300,6 +303,15 @@ func (c *paymentServiceClient) UpdateSubMerchant(ctx context.Context, in *SubMer
 	return out, nil
 }
 
+func (c *paymentServiceClient) QueryRefundableOrders(ctx context.Context, in *QueryRefundablePaymentOrdersRequest, opts ...grpc.CallOption) (*RefundablePaymentOrdersResponse, error) {
+	out := new(RefundablePaymentOrdersResponse)
+	err := c.cc.Invoke(ctx, PaymentService_QueryRefundableOrders_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *paymentServiceClient) RequestRefund(ctx context.Context, in *PaymentRefundRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_RequestRefund_FullMethodName, in, out, opts...)
@@ -432,6 +444,8 @@ type PaymentServiceServer interface {
 	SubmitSubMerchant(context.Context, *SubMerchantCodeRequest) (*TxResult, error)
 	// UpdateSubMerchant 更新商户入网信息
 	UpdateSubMerchant(context.Context, *SubMerchantUpdateRequest) (*TxResult, error)
+	// QueryRefundableOrders 查询可退款的充值订单
+	QueryRefundableOrders(context.Context, *QueryRefundablePaymentOrdersRequest) (*RefundablePaymentOrdersResponse, error)
 	// RequestRefund 申请退款(仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款)
 	RequestRefund(context.Context, *PaymentRefundRequest) (*TxResult, error)
 	// RequestRefundAvail 申请退款(全部可退金额)，常用于充值退款，或消费后再退回剩余金额
@@ -522,6 +536,9 @@ func (UnimplementedPaymentServiceServer) SubmitSubMerchant(context.Context, *Sub
 }
 func (UnimplementedPaymentServiceServer) UpdateSubMerchant(context.Context, *SubMerchantUpdateRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSubMerchant not implemented")
+}
+func (UnimplementedPaymentServiceServer) QueryRefundableOrders(context.Context, *QueryRefundablePaymentOrdersRequest) (*RefundablePaymentOrdersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryRefundableOrders not implemented")
 }
 func (UnimplementedPaymentServiceServer) RequestRefund(context.Context, *PaymentRefundRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestRefund not implemented")
@@ -908,6 +925,24 @@ func _PaymentService_UpdateSubMerchant_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PaymentService_QueryRefundableOrders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryRefundablePaymentOrdersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).QueryRefundableOrders(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_QueryRefundableOrders_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).QueryRefundableOrders(ctx, req.(*QueryRefundablePaymentOrdersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PaymentService_RequestRefund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PaymentRefundRequest)
 	if err := dec(in); err != nil {
@@ -1170,6 +1205,10 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateSubMerchant",
 			Handler:    _PaymentService_UpdateSubMerchant_Handler,
+		},
+		{
+			MethodName: "QueryRefundableOrders",
+			Handler:    _PaymentService_QueryRefundableOrders_Handler,
 		},
 		{
 			MethodName: "RequestRefund",

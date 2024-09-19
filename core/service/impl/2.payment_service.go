@@ -522,6 +522,21 @@ func (p *paymentService) DivideSuccess(_ context.Context, req *proto.PaymentDivi
 	return p.errorV2(err), nil
 }
 
+// QueryRefundableOrders 查询可退款支付单
+func (p *paymentService) QueryRefundableOrders(_ context.Context, req *proto.QueryRefundablePaymentOrdersRequest) (*proto.RefundablePaymentOrdersResponse, error) {
+	arr := p.query.QueryRefundableRechargeOrders(int(req.MemberId))
+	orders := make([]*proto.RefundablePaymentOrder, len(arr))
+	for i, v := range arr {
+		orders[i] = &proto.RefundablePaymentOrder{
+			TradeNo:          v.TradeNo,
+			RefundableAmount: int64(v.RefundableAmount),
+		}
+	}
+	return &proto.RefundablePaymentOrdersResponse{
+		Orders: orders,
+	}, nil
+}
+
 // RequestRefund 请求退款
 func (p *paymentService) RequestRefund(_ context.Context, req *proto.PaymentRefundRequest) (*proto.TxResult, error) {
 	ip := p.repo.GetPaymentOrder(req.TradeNo)
@@ -559,7 +574,7 @@ func (p *paymentService) RequestRefundAvail(_ context.Context, req *proto.Paymen
 			Message: err.Error(),
 		}, nil
 	}
-	return &proto.PaymentRefundAvailResponse{Amount: int64(amount)}, nil
+	return &proto.PaymentRefundAvailResponse{RefundAmount: int64(amount)}, nil
 }
 
 // GetSubMerchant implements proto.PaymentServiceServer.

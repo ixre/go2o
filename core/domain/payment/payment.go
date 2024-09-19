@@ -1093,7 +1093,12 @@ func (p *paymentOrderImpl) checkDivideCommandExecuted() {
 		return
 	}
 	isExecuted := true
-	for _, v := range p.getDivides() {
+	divides := p.getDivides()
+	if len(divides) == 0 {
+		// 没有分账记录
+		return
+	}
+	for _, v := range divides {
 		if v.SubmitStatus != payment.DivideItemStatusSuccess {
 			isExecuted = false
 			break

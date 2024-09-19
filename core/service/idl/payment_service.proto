@@ -93,6 +93,8 @@ service PaymentService {
 
 
     /*********************  退款  *********************/
+    // QueryRefundableOrders 查询可退款的充值订单
+    rpc QueryRefundableOrders(QueryRefundablePaymentOrdersRequest) returns(RefundablePaymentOrdersResponse);
     // RequestRefund 申请退款(仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款)
     rpc RequestRefund(PaymentRefundRequest) returns(TxResult);
     // RequestRefundAvail 申请退款(全部可退金额)，常用于充值退款，或消费后再退回剩余金额
@@ -493,7 +495,26 @@ message PaymentRefundAvailResponse{
     // 错误消息
     string message = 2;
     // 退款金额
-    int64 amount = 3;
+    int64 refundAmount = 3;
+}
+
+// 查询可退款支付单请求
+message QueryRefundablePaymentOrdersRequest{
+    // 会员ID
+    int64 memberId = 1;
+}
+
+// 可退款支付单响应
+message RefundablePaymentOrdersResponse{
+    repeated RefundablePaymentOrder orders = 1;
+}
+
+// 可退款支付单
+message RefundablePaymentOrder{
+    // 支付单号
+    string tradeNo = 1;
+    // 可退款金额
+    int64 refundableAmount = 2;
 }
 
 // 商户入网申请单编号请求

@@ -22,6 +22,16 @@ type DivideOrderInfo struct {
 	DivideStatus  int
 }
 
+// 可退款充值订单
+type RefundableRechargeOrder struct {
+	// 支付单ID
+	PayId int `json:"-"`
+	// 订单号
+	TradeNo string `json:"tradeNo"`
+	// 可退金额
+	RefundableAmount int `json:"refundableAmount"`
+}
+
 type PaymentQuery struct {
 	fw.ORM
 	_orderRepo       fw.Repository[payment.Order]
@@ -71,6 +81,49 @@ func (p *PaymentQuery) QueryDivideOrders(memberId int, orderType int) []*DivideO
 			dst := mp[v.PayId]
 			dst.DividedAmount += v.DivideAmount
 			mp[v.PayId] = dst
+		}
+	}
+	return arr
+}
+
+// QueryRefundableRechargeOrders 查询可退款的充值订单
+func (p *PaymentQuery) QueryRefundableRechargeOrders(memberId int) []*RefundableRechargeOrder {
+	arr := make([]*RefundableRechargeOrder, 0)
+	orders := p._orderRepo.FindList(nil, `
+		buyer_id=? 
+		AND order_type=? 
+		AND status = ? 
+		AND divide_status < ?
+		AND refund_amount = 0
+		ORDER BY id ASC
+	`,
+		memberId,
+		payment.TypeRecharge,
+		payment.StateFinished,
+		payment.DivideCompleted,
+	)
+	payIds := make([]int, 0)
+	mp := make(map[int]*RefundableRechargeOrder)
+	for _, v := range orders {
+		// 支付金额减去退款金额为实际可分账金额
+		amount := v.FinalAmount - v.RefundAmount
+		if amount > 0 {
+			payIds = append(payIds, v.Id)
+			dst := &RefundableRechargeOrder{
+				PayId:            v.Id,
+				TradeNo:          v.TradeNo,
+				RefundableAmount: amount,
+			}
+			arr = append(arr, dst)
+			mp[v.Id] = dst
+		}
+	}
+	if len(payIds) > 0 {
+		// 查询已分账的记录
+		divides := p._divideRepo.FindList(nil, "pay_id IN (?)", payIds)
+		for _, v := range divides {
+			dst := mp[v.PayId]
+			dst.RefundableAmount -= v.DivideAmount
 		}
 	}
 	return arr
