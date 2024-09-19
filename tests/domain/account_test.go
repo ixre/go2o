@@ -140,7 +140,7 @@ func TestMemberUnfreezeWallet(t *testing.T) {
 	ic := m.GetAccount()
 	err := ic.Unfreeze(member.AccountWallet, member.AccountOperateData{
 		TransactionTitle:   "解冻",
-		Amount:             8833,
+		Amount:             33,
 		OuterTransactionNo: "",
 		TransactionRemark:  "",
 	}, true, 1)

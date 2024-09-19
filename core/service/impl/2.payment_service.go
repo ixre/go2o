@@ -527,6 +527,19 @@ func (p *paymentService) RequestRefund(_ context.Context, req *proto.PaymentRefu
 	return p.errorV2(err), nil
 }
 
+// RequestRefundAvail 请求全额退款
+func (p *paymentService) RequestRefundAvail(_ context.Context, req *proto.PaymentRefundAvailRequest) (*proto.TxResult, error) {
+	ip := p.repo.GetPaymentOrder(req.TradeNo)
+	if ip == nil {
+		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+	}
+	if ip.Get().OrderType == payment.TypeOrder {
+		return p.errorV2(errors.New("当前支付单不支持退款操作[TYPE_NOT_MATCH]")), nil
+	}
+	err := ip.RefundAvail(req.Remark)
+	return p.errorV2(err), nil
+}
+
 // GetSubMerchant implements proto.PaymentServiceServer.
 func (p *paymentService) GetSubMerchant(_ context.Context, req *proto.SubMerchantCodeRequest) (*proto.SSubMerchant, error) {
 	v := p.repo.SubMerchantManager().GetMerchant(req.Code)

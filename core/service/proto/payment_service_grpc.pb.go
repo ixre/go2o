@@ -38,6 +38,7 @@ const (
 	PaymentService_SubmitSubMerchant_FullMethodName      = "/PaymentService/SubmitSubMerchant"
 	PaymentService_UpdateSubMerchant_FullMethodName      = "/PaymentService/UpdateSubMerchant"
 	PaymentService_RequestRefund_FullMethodName          = "/PaymentService/RequestRefund"
+	PaymentService_RequestRefundAvail_FullMethodName       = "/PaymentService/RequestRefundAvail"
 	PaymentService_GatewayV1_FullMethodName              = "/PaymentService/GatewayV1"
 	PaymentService_GetPreparePaymentInfo_FullMethodName  = "/PaymentService/GetPreparePaymentInfo"
 	PaymentService_GatewayV2_FullMethodName              = "/PaymentService/GatewayV2"
@@ -90,6 +91,9 @@ type PaymentServiceClient interface {
 	UpdateSubMerchant(ctx context.Context, in *SubMerchantUpdateRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// RequestRefund 申请退款(仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款)
 	RequestRefund(ctx context.Context, in *PaymentRefundRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// RequestRefundAvail 申请退款(全部可退金额)，常用于充值退款，或消费后再退回剩余金额
+	// 注意: 该方法仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款
+	RequestRefundAvail(ctx context.Context, in *PaymentRefundAvailRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 支付网关(仅交易单使用)
 	GatewayV1(ctx context.Context, in *PayGatewayRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取支付预交易数据
@@ -293,6 +297,15 @@ func (c *paymentServiceClient) RequestRefund(ctx context.Context, in *PaymentRef
 	return out, nil
 }
 
+func (c *paymentServiceClient) RequestRefundAvail(ctx context.Context, in *PaymentRefundAvailRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, PaymentService_RequestRefundAvail_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *paymentServiceClient) GatewayV1(ctx context.Context, in *PayGatewayRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_GatewayV1_FullMethodName, in, out, opts...)
@@ -407,6 +420,9 @@ type PaymentServiceServer interface {
 	UpdateSubMerchant(context.Context, *SubMerchantUpdateRequest) (*TxResult, error)
 	// RequestRefund 申请退款(仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款)
 	RequestRefund(context.Context, *PaymentRefundRequest) (*TxResult, error)
+	// RequestRefundAvail 申请退款(全部可退金额)，常用于充值退款，或消费后再退回剩余金额
+	// 注意: 该方法仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款
+	RequestRefundAvail(context.Context, *PaymentRefundAvailRequest) (*TxResult, error)
 	// 支付网关(仅交易单使用)
 	GatewayV1(context.Context, *PayGatewayRequest) (*TxResult, error)
 	// 获取支付预交易数据
@@ -492,6 +508,9 @@ func (UnimplementedPaymentServiceServer) UpdateSubMerchant(context.Context, *Sub
 }
 func (UnimplementedPaymentServiceServer) RequestRefund(context.Context, *PaymentRefundRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestRefund not implemented")
+}
+func (UnimplementedPaymentServiceServer) RequestRefundAvail(context.Context, *PaymentRefundAvailRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestRefundAvail not implemented")
 }
 func (UnimplementedPaymentServiceServer) GatewayV1(context.Context, *PayGatewayRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GatewayV1 not implemented")
@@ -872,6 +891,24 @@ func _PaymentService_RequestRefund_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PaymentService_RequestRefundAvail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaymentRefundAvailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).RequestRefundAvail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_RequestRefundAvail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).RequestRefundAvail(ctx, req.(*PaymentRefundAvailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PaymentService_GatewayV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PayGatewayRequest)
 	if err := dec(in); err != nil {
@@ -1098,6 +1135,10 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RequestRefund",
 			Handler:    _PaymentService_RequestRefund_Handler,
+		},
+		{
+			MethodName: "RequestRefundAvail",
+			Handler:    _PaymentService_RequestRefundAvail_Handler,
 		},
 		{
 			MethodName: "GatewayV1",

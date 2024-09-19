@@ -199,6 +199,8 @@ type (
 		Adjust(amount int) error
 		// Refund 退款,传递各支付方式的退款金额,如不传递则表示全额退款
 		Refund(amounts map[int]int, reason string) error
+		// RefundAvail 请求退款全部可退金额，通常用于全额退款或消费后将剩余部分进行退款
+		RefundAvail(remark string) error
 		// ChanName 获取支付通道字符串
 		ChanName(method int) string
 		// Divide 分账

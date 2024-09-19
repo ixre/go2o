@@ -245,7 +245,7 @@ type MemberServiceClient interface {
 	AccountCarryTo(ctx context.Context, in *AccountCarryRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户消耗,amount精确到分
 	AccountConsume(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error)
-	// 账户预扣消耗,amount精确到分
+	// 账户预扣消耗(预扣转消费),amount精确到分
 	PrefreezeConsume(ctx context.Context, in *UserPrefreezeConsumeRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户抵扣,amount精确到分
 	AccountDiscount(ctx context.Context, in *AccountChangeRequest, opts ...grpc.CallOption) (*TxResult, error)
@@ -1193,7 +1193,7 @@ type MemberServiceServer interface {
 	AccountCarryTo(context.Context, *AccountCarryRequest) (*TxResult, error)
 	// 账户消耗,amount精确到分
 	AccountConsume(context.Context, *AccountChangeRequest) (*TxResult, error)
-	// 账户预扣消耗,amount精确到分
+	// 账户预扣消耗(预扣转消费),amount精确到分
 	PrefreezeConsume(context.Context, *UserPrefreezeConsumeRequest) (*TxResult, error)
 	// 账户抵扣,amount精确到分
 	AccountDiscount(context.Context, *AccountChangeRequest) (*TxResult, error)

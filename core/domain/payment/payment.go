@@ -23,6 +23,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/gof/domain/eventbus"
 )
@@ -670,6 +671,21 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 	if len(reason) == 0 {
 		reason = "订单退款"
 	}
+
+	// 检查退款是否超出分账和已退款之和
+	tx := collections.FindArray(chanMap, func(e *payment.PayTradeData) bool {
+		return e.PayMethod == payment.MPaySP
+	})
+	if tx != nil {
+		amount, ok := amounts[tx.PayMethod]
+		if ok {
+			err = p.checkDivideAmount(tx.PayAmount, amount+tx.RefundAmount)
+		}
+		if err != nil {
+			return err
+		}
+	}
+
 	totalRefund := 0
 	for _, v := range chanMap {
 		amount, ok := amounts[v.PayMethod]
@@ -682,18 +698,15 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 			err = acc.Refund(member.AccountBalance, reason, amount, pv.TradeNo, "")
 		case payment.MWallet:
 			err = acc.Refund(member.AccountWallet, reason, amount, pv.TradeNo, "")
-		case payment.MPaySP: // 第三方支付原路退回
-			err = p.checkDivideAmount(v.PayAmount, amount+v.RefundAmount)
-			if err == nil {
-				// 异步发布退款事件
-				go eventbus.Publish(&payment.PaymentProviderRefundEvent{
-					Order:        p,
-					Amount:       amount,
-					Reason:       reason,
-					OutTradeCode: v.OutTradeCode,
-					OutTradeNo:   v.OutTradeNo,
-				})
-			}
+		case payment.MPaySP:
+			// 第三方支付原路退回, 异步发布退款事件
+			go eventbus.Publish(&payment.PaymentProviderRefundEvent{
+				Order:        p,
+				Amount:       amount,
+				Reason:       reason,
+				OutTradeCode: v.OutTradeCode,
+				OutTradeNo:   v.OutTradeNo,
+			})
 		}
 		if err == nil {
 			v.RefundAmount += amount
@@ -725,12 +738,96 @@ func (p *paymentOrderImpl) handlePaymentOrderRefund(acc member.IAccount, totalRe
 	return nil
 }
 
+// RefundAvail 请求退款全部可退金额，通常用于全额退款或消费后将剩余部分进行退款
+func (p *paymentOrderImpl) RefundAvail(remark string) (err error) {
+	if p.State() != payment.StateFinished {
+		return errors.New("订单未支付不支持退款")
+	}
+	if len(remark) == 0 {
+		return errors.New("缺少退款备注")
+	}
+	// 获取支付数据
+	chanMap := p.TradeMethods()
+	// 计算第三方支付可退金额
+	spRefundAmount := 0
+	tx := collections.FindArray(chanMap, func(e *payment.PayTradeData) bool {
+		return e.PayMethod == payment.MPaySP
+	})
+	if tx != nil {
+		divides := p.getDivides()
+		divideAmount := 0
+		for _, v := range divides {
+			divideAmount += v.DivideAmount
+		}
+		amount := tx.PayAmount - tx.RefundAmount - divideAmount
+		if amount < 0 {
+			return errors.New("第三方支付超出可退款金额")
+		}
+		spRefundAmount = amount
+	}
+	// 获取会员及账户
+	mm := p.getBuyer()
+	if mm == nil {
+		return member.ErrNoSuchMember
+	}
+	pv := p.Get()
+	acc := mm.GetAccount()
+
+	totalRefund := 0
+	for _, v := range chanMap {
+		amount := v.PayAmount - v.RefundAmount
+		if amount <= 0 {
+			continue
+		}
+		switch v.PayMethod {
+		case payment.MBalance:
+			err = acc.Refund(member.AccountBalance, remark, amount, pv.TradeNo, "")
+		case payment.MWallet:
+			err = acc.Refund(member.AccountWallet, remark, amount, pv.TradeNo, "")
+		case payment.MPaySP:
+			if spRefundAmount > 0 {
+				// 第三方支付原路退回, 异步发布退款事件
+				go eventbus.Publish(&payment.PaymentProviderRefundEvent{
+					Order:        p,
+					Amount:       spRefundAmount,
+					Reason:       remark,
+					OutTradeCode: v.OutTradeCode,
+					OutTradeNo:   v.OutTradeNo,
+				})
+			}
+		}
+		if err == nil {
+			v.RefundAmount += amount
+			_, err = p.repo.SavePaymentTradeChan(p.TradeNo(), v)
+		}
+		if err != nil {
+			return err
+		}
+		totalRefund += amount
+	}
+	if totalRefund > 0 {
+		// 更新支付单退单金额
+		p.value.RefundAmount += totalRefund
+		p.value.UpdateTime = int(time.Now().Unix())
+		_, err = p.repo.SavePaymentOrder(p.value)
+		if err == nil {
+			err = p.handlePaymentOrderRefund(acc, totalRefund, remark)
+		}
+	}
+	return err
+}
+
+// getDivides 获取分账列表
+func (p *paymentOrderImpl) getDivides() []*payment.PayDivide {
+	return p.repo.DivideRepo().FindList(nil, "pay_id = ?", p.GetAggregateRootId())
+}
+
 // checkDivideAmount 检查退款金额是否超出分账外的金额
 func (p *paymentOrderImpl) checkDivideAmount(orderAmount int, refundTotalAmount int) error {
 	if refundTotalAmount > orderAmount {
 		return errors.New("退款金额超出可退款金额")
 	}
-	divides := p.repo.DivideRepo().FindList(nil, "pay_id = ?", p.GetAggregateRootId())
+	divides := p.getDivides()
 	totalDiviedAmount := 0
 	for _, v := range divides {
 		totalDiviedAmount += v.DivideAmount
