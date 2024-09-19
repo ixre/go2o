@@ -91,10 +91,10 @@ const (
 const (
 	// DivideItemStatusPending 待提交
 	DivideItemStatusPending = 1
-	// DivideItemStatusSuccess 提交分账成功
-	DivideItemStatusSuccess = 2
 	// DivideItemStatusFailed 提交分账失败
-	DivideItemStatusFailed = 3
+	DivideItemStatusFailed = 2
+	// DivideItemStatusSuccess 提交分账成功
+	DivideItemStatusSuccess = 3
 	// DivideItemStatusReverted 分账撤销
 	DivideItemStatusReverted = 4
 )
@@ -212,9 +212,14 @@ type (
 		ChanName(method int) string
 		// Divide 分账, 分账后将更新支付单状态为分账中,直到调用完成分账，该订单不再允许分账
 		Divide(outTxNo string, divides []*DivideData) error
-		// FinishDive 完成分账
+		// FinishDive 完成分账,如果订单已标记为分账完成,且每笔分账均成功，则下发分账完成指令
+		// 该方法通常用于:
+		// 1. 在分账金额未达到可分账金额时，提前完成分账
+		// 2. 需要退全款时, 退款后结束分账流程
+		// 2. 补发分账完成指令
 		CompleteDivide() error
 		// UpdateDivideStatus 更新分账提交状态
+		// 当订单状态为分账完成，且所有分账方状态均成功时，结算分账资金
 		UpdateSubDivideStatus(divideId int, success bool, divideNo string, remark string) error
 		// RevertDivide 请求分账归还，发起后将更新为撤销状态并发送事件进行归还处理
 		RevertSubDivide(divideId int, remark string) error

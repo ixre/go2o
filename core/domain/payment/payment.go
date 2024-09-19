@@ -725,6 +725,7 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 		p.checkDivideStatus(tx)
 		_, err = p.repo.SavePaymentOrder(p.value)
 		if err == nil {
+			// 处理充值退款
 			err = p.handlePaymentOrderRefund(acc, totalRefund, reason)
 		}
 	}
@@ -818,6 +819,7 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 		p.checkDivideStatus(tx)
 		_, err = p.repo.SavePaymentOrder(p.value)
 		if err == nil {
+			// 处理充值订单退款
 			err = p.handlePaymentOrderRefund(acc, totalRefund, remark)
 		}
 	}
@@ -974,7 +976,7 @@ func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData)
 	}
 	unix := int(time.Now().Unix())
 	for _, v := range divides {
-		ret, err := repo.Save(&payment.PayDivide{
+		pv := &payment.PayDivide{
 			Id:           0,
 			PayId:        p.GetAggregateRootId(),
 			DivideType:   v.DivideType,
@@ -986,7 +988,13 @@ func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData)
 			SubmitRemark: "",
 			SubmitTime:   0,
 			CreateTime:   unix,
-		})
+		}
+		if v.DivideType == payment.DivideUserPlatform {
+			// 如果是平台，则默认已经分账
+			pv.SubmitStatus = payment.DivideItemStatusSuccess
+			pv.SubmitRemark = "系统通过"
+		}
+		ret, err := repo.Save(pv)
 		if err != nil {
 			return err
 		}
@@ -1023,13 +1031,12 @@ func (p *paymentOrderImpl) CompleteDivide() error {
 		p.value.DivideStatus = payment.DivideFinished
 		p.value.UpdateTime = int(time.Now().Unix())
 		_, err := p.repo.SavePaymentOrder(p.value)
-		if err == nil {
-			go eventbus.Publish(&payment.PaymentCompleteDivideEvent{
-				Order: p,
-			})
+		if err != nil {
+			return err
 		}
-		return err
 	}
+	// 检查分账命令是否执行
+	p.checkDivideCommandExecuted()
 	return nil
 }
 
@@ -1046,12 +1053,41 @@ func (p *paymentOrderImpl) UpdateSubDivideStatus(divideId int, success bool, div
 		// 只有待分账及撤销状态下允许更改状态
 		return errors.New("分账记录状态错误")
 	}
-	divide.SubmitStatus = types.Ternary(success, 2, 3)
+	divide.SubmitStatus = types.Ternary(success, payment.DivideItemStatusSuccess, payment.DivideItemStatusFailed)
 	divide.SubmitRemark = remark
 	divide.SubmitTime = int(time.Now().Unix())
 	divide.SubmitDivideNo = divideNo
 	_, err := p.repo.DivideRepo().Save(divide)
+	if err == nil {
+		// 检查分账命令是否执行
+		p.checkDivideCommandExecuted()
+	}
 	return err
+}
+
+// checkDivideCommandExecuted 检查分账命令是否执行,如果执行，则执行分账完成指令(SP)
+// 分账完成的条件： 所有分账都为成功状态, 且订单没有金额再用于分账
+// 调用场景：
+// 1. 手动完成分账
+// 2. 更新分账子项状态时
+func (p *paymentOrderImpl) checkDivideCommandExecuted() {
+	if p.value.DivideStatus != payment.DivideFinished {
+		// 未标记为已经分账完成的订单，不下发分账完成指令
+		return
+	}
+	isExecuted := true
+	for _, v := range p.getDivides() {
+		if v.SubmitStatus != payment.DivideItemStatusSuccess {
+			isExecuted = false
+			break
+		}
+	}
+	if isExecuted {
+		// 如果分账命令都已下发，则执行分账完成指令
+		go eventbus.Publish(&payment.PaymentCompleteDivideEvent{
+			Order: p,
+		})
+	}
 }
 
 // RevertSubDivide implements payment.IPaymentOrder.
