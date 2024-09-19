@@ -283,7 +283,12 @@ func (w *WalletImpl) PrefreezeConsume(data wallet.TransactionData) error {
 	if len(data.TransactionRemark) > 0 {
 		l.Remark = data.TransactionRemark
 	}
-	return w.saveWalletLog(l)
+	err := w.saveWalletLog(l)
+	if err == nil {
+		// 将冻结金额进行解冻，不退回余额
+		err = w.Unfreeze(l.ChangeValue, "预扣成功", l.OuterTxNo, false, 0, "")
+	}
+	return err
 }
 
 // Discount 支付抵扣,must是否必须大于0

@@ -253,7 +253,7 @@ func (a *accountImpl) Consume(account member.AccountType, title string, amount i
 
 // PrefreezeConsume implements member.IAccount.
 func (a *accountImpl) PrefreezeConsume(transactionId int, transactionTitle string, transactionRemark string) error {
-	return a.wallet.PrefreezeConsume(wallet.TransactionData{
+	err := a.wallet.PrefreezeConsume(wallet.TransactionData{
 		TransactionTitle:  transactionTitle,
 		Amount:            0,
 		TransactionFee:    0,
@@ -262,6 +262,10 @@ func (a *accountImpl) PrefreezeConsume(transactionId int, transactionTitle strin
 		TransactionId:     transactionId,
 		OuterTxUid:        0,
 	})
+	if err == nil {
+		err = a.asyncWallet()
+	}
+	return err
 }
 
 func (a *accountImpl) Discount(account member.AccountType, title string, amount int, outerNo string, remark string) error {

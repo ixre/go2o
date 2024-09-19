@@ -131,3 +131,20 @@ func TestAccountAdjust(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// 测试解冻钱包
+func TestMemberUnfreezeWallet(t *testing.T) {
+	var memberId int64 = 848
+
+	m := inject.GetMemberRepo().GetMember(memberId)
+	ic := m.GetAccount()
+	err := ic.Unfreeze(member.AccountWallet, member.AccountOperateData{
+		TransactionTitle:   "解冻",
+		Amount:             8833,
+		OuterTransactionNo: "",
+		TransactionRemark:  "",
+	}, true, 1)
+	if err != nil {
+		t.Error(err)
+	}
+}
