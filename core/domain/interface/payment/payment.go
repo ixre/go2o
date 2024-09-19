@@ -75,8 +75,10 @@ const (
 	DivideNoDivide = 0
 	// DividePending 待分账
 	DividePending = 1
-	// DivideFinished 分账完成
-	DivideFinished = 2
+	// DivideCompleted 分账结束: 支付平台已进行分账，待提交支付平台
+	DivideCompleted = 2
+	// DivideSuccess 分账成功: 支付平台已进行分账
+	DivideSuccess = 3
 )
 
 const (
@@ -91,12 +93,12 @@ const (
 const (
 	// DivideItemStatusPending 待提交
 	DivideItemStatusPending = 1
-	// DivideItemStatusFailed 提交分账失败
-	DivideItemStatusFailed = 2
-	// DivideItemStatusSuccess 提交分账成功
-	DivideItemStatusSuccess = 3
 	// DivideItemStatusReverted 分账撤销
-	DivideItemStatusReverted = 4
+	DivideItemStatusReverted = 2
+	// DivideItemStatusFailed 提交分账失败
+	DivideItemStatusFailed = 3
+	// DivideItemStatusSuccess 提交分账成功
+	DivideItemStatusSuccess = 4
 )
 
 const (
@@ -223,6 +225,8 @@ type (
 		UpdateSubDivideStatus(divideId int, success bool, divideNo string, remark string) error
 		// RevertDivide 请求分账归还，发起后将更新为撤销状态并发送事件进行归还处理
 		RevertSubDivide(divideId int, remark string) error
+		// DivideSuccess 分账成功,支付平台已进行分账
+		DivideSuccess(outTxNo string) error
 	}
 
 	// IPaymentRepo 支付仓储

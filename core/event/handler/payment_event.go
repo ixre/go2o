@@ -65,6 +65,31 @@ func (p *PaymentEventHandler) HandlePaymentProviderRefundEvent(event interface{}
 func (p *PaymentEventHandler) HandlePaymentCompleteDivideEvent(event interface{}) {
 	//e := event.(*payment.PaymentCompleteDivideEvent)
 	// note: 支付完成分账事件由具体的支付渠道通过订阅事件处理，这里不作处理
+
+	/** 示例代码如下: **/
+	// ov := e.Order.Get()
+	// logger.Info("支付完成分账事件:%s", ov.TradeNo)
+	// var err error
+	// if ov.OutTradeSp == "yop" {
+	// 	err = yeepay.YOP.RequestCompleteDivide(&ov)
+	// } else {
+	// 	err = errors.New("支付完成分账业务未处理")
+	// }
+	// if err == nil {
+	// 	// 标记为已经分账成功
+	// 	ps := inject.GetPaymentService()
+	// 	ret, _ := ps.DivideSuccess(context.TODO(), &proto.PaymentDivideSuccessRequest{
+	// 		PayId:   int64(ov.Id),
+	// 		OutTxNo: "-",
+	// 	})
+	// 	if ret.Code > 0 {
+	// 		err = errors.New(ret.Message)
+	// 	}
+	// }
+
+	// if err != nil {
+	// 	logger.Error("支付完成分账失败:%s, 订单号:%s", err.Error(), e.Order.TradeNo())
+	// }
 }
 
 // 处理支付商户入网事件

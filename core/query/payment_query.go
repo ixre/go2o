@@ -40,11 +40,11 @@ func NewPaymentQuery(o fw.ORM) *PaymentQuery {
 // 查询可分账的支付订单
 func (p *PaymentQuery) QueryDivideOrders(memberId int, orderType int) []*DivideOrderInfo {
 	arr := make([]*DivideOrderInfo, 0)
-	orders := p._orderRepo.FindList(nil, "buyer_id=? AND order_type=? AND status = ? AND divide_status <> ? ORDER BY id ASC",
+	orders := p._orderRepo.FindList(nil, "buyer_id=? AND order_type=? AND status = ? AND divide_status < ? ORDER BY id ASC",
 		memberId,
 		orderType,
 		payment.StateFinished,
-		payment.DivideFinished,
+		payment.DivideCompleted,
 	)
 	payIds := make([]int, 0)
 	mp := make(map[int]*DivideOrderInfo)

@@ -32,6 +32,7 @@ const (
 	PaymentService_CompleteDivide_FullMethodName         = "/PaymentService/CompleteDivide"
 	PaymentService_UpdateDivideStatus_FullMethodName     = "/PaymentService/UpdateDivideStatus"
 	PaymentService_RevertSubDivide_FullMethodName        = "/PaymentService/RevertSubDivide"
+	PaymentService_DivideSuccess_FullMethodName          = "/PaymentService/DivideSuccess"
 	PaymentService_GetSubMerchant_FullMethodName         = "/PaymentService/GetSubMerchant"
 	PaymentService_InitialSubMerchant_FullMethodName     = "/PaymentService/InitialSubMerchant"
 	PaymentService_StageSubMerchant_FullMethodName       = "/PaymentService/StageSubMerchant"
@@ -79,6 +80,8 @@ type PaymentServiceClient interface {
 	UpdateDivideStatus(ctx context.Context, in *UpdateDivideStatusRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// RevertSubDivide 撤销分账
 	RevertSubDivide(ctx context.Context, in *PaymentSubDivideRevertRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// DivideSuccess 分账成功
+	DivideSuccess(ctx context.Context, in *PaymentDivideSuccessRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// GetSubMerchant 获取商户入网信息
 	GetSubMerchant(ctx context.Context, in *SubMerchantCodeRequest, opts ...grpc.CallOption) (*SSubMerchant, error)
 	// InitialSubMerchant 初始化商户入网信息
@@ -237,6 +240,15 @@ func (c *paymentServiceClient) UpdateDivideStatus(ctx context.Context, in *Updat
 func (c *paymentServiceClient) RevertSubDivide(ctx context.Context, in *PaymentSubDivideRevertRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, PaymentService_RevertSubDivide_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentServiceClient) DivideSuccess(ctx context.Context, in *PaymentDivideSuccessRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, PaymentService_DivideSuccess_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -408,6 +420,8 @@ type PaymentServiceServer interface {
 	UpdateDivideStatus(context.Context, *UpdateDivideStatusRequest) (*TxResult, error)
 	// RevertSubDivide 撤销分账
 	RevertSubDivide(context.Context, *PaymentSubDivideRevertRequest) (*TxResult, error)
+	// DivideSuccess 分账成功
+	DivideSuccess(context.Context, *PaymentDivideSuccessRequest) (*TxResult, error)
 	// GetSubMerchant 获取商户入网信息
 	GetSubMerchant(context.Context, *SubMerchantCodeRequest) (*SSubMerchant, error)
 	// InitialSubMerchant 初始化商户入网信息
@@ -490,6 +504,9 @@ func (UnimplementedPaymentServiceServer) UpdateDivideStatus(context.Context, *Up
 }
 func (UnimplementedPaymentServiceServer) RevertSubDivide(context.Context, *PaymentSubDivideRevertRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RevertSubDivide not implemented")
+}
+func (UnimplementedPaymentServiceServer) DivideSuccess(context.Context, *PaymentDivideSuccessRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DivideSuccess not implemented")
 }
 func (UnimplementedPaymentServiceServer) GetSubMerchant(context.Context, *SubMerchantCodeRequest) (*SSubMerchant, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSubMerchant not implemented")
@@ -779,6 +796,24 @@ func _PaymentService_RevertSubDivide_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PaymentServiceServer).RevertSubDivide(ctx, req.(*PaymentSubDivideRevertRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaymentService_DivideSuccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaymentDivideSuccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).DivideSuccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_DivideSuccess_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).DivideSuccess(ctx, req.(*PaymentDivideSuccessRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1111,6 +1146,10 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RevertSubDivide",
 			Handler:    _PaymentService_RevertSubDivide_Handler,
+		},
+		{
+			MethodName: "DivideSuccess",
+			Handler:    _PaymentService_DivideSuccess_Handler,
 		},
 		{
 			MethodName: "GetSubMerchant",

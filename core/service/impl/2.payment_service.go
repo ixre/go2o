@@ -512,6 +512,16 @@ func (p *paymentService) RevertSubDivide(_ context.Context, req *proto.PaymentSu
 	return p.errorV2(err), nil
 }
 
+// DivideSuccess 分账成功
+func (p *paymentService) DivideSuccess(_ context.Context, req *proto.PaymentDivideSuccessRequest) (*proto.TxResult, error) {
+	ip := p.repo.GetPaymentOrderById(int(req.PayId))
+	if ip == nil {
+		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+	}
+	err := ip.DivideSuccess(req.OutTxNo)
+	return p.errorV2(err), nil
+}
+
 // RequestRefund 请求退款
 func (p *paymentService) RequestRefund(_ context.Context, req *proto.PaymentRefundRequest) (*proto.TxResult, error) {
 	ip := p.repo.GetPaymentOrder(req.TradeNo)

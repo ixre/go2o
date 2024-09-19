@@ -76,6 +76,8 @@ service PaymentService {
     rpc UpdateDivideStatus(UpdateDivideStatusRequest) returns(TxResult);
     // RevertSubDivide 撤销分账
     rpc RevertSubDivide(PaymentSubDivideRevertRequest) returns(TxResult);
+    // DivideSuccess 分账成功
+    rpc DivideSuccess(PaymentDivideSuccessRequest) returns(TxResult);
     
     /*********************  商户入网  *********************/
     // GetSubMerchant 获取商户入网信息
@@ -456,6 +458,14 @@ message PaymentSubDivideRevertRequest{
     int64 divideId = 2;
     // 撤销原因
     string reason = 3;
+}
+
+// 支付分账成功请求
+message PaymentDivideSuccessRequest{
+    // 支付单编号
+    int64 payId = 1;
+    // 外部交易单号
+    string outTxNo = 2;
 }
 
 // 支付退款请求

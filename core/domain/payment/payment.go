@@ -842,7 +842,7 @@ func (p *paymentOrderImpl) checkDivideStatus(tx *payment.PayTradeData) {
 	}
 	if dividedAmount+tx.RefundAmount >= tx.PayAmount {
 		// 如果分账金额+已退款金额等于订单金额，则自动标记为分账完成
-		p.value.DivideStatus = payment.DivideFinished
+		p.value.DivideStatus = payment.DivideCompleted
 	}
 }
 
@@ -862,7 +862,7 @@ func (p *paymentOrderImpl) checkDivideAmount(orderAmount int, refundTotalAmount 
 		totalDiviedAmount += v.DivideAmount
 	}
 	if orderAmount-totalDiviedAmount < refundTotalAmount {
-		return errors.New("支付单包含分账，退款金额超出可退款金额")
+		return errors.New("退款金额超出可退款金额(含分账)")
 	}
 	return nil
 }
@@ -946,7 +946,7 @@ func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData)
 		return errors.New("支付单不支持分账")
 	}
 	repo := p.repo.DivideRepo()
-	if p.value.DivideStatus == payment.DivideFinished {
+	if p.value.DivideStatus == payment.DivideCompleted {
 		return errors.New("订单已分账完成")
 	}
 	if len(outTxNo) == 0 {
@@ -1026,9 +1026,12 @@ func (p *paymentOrderImpl) CompleteDivide() error {
 	if !p.isDivide() {
 		return errors.New("支付单不支持分账")
 	}
-	if p.value.DivideStatus != payment.DivideFinished {
+	if p.value.DivideStatus == payment.DivideSuccess {
+		return errors.New("支付平台已进行分账")
+	}
+	if p.value.DivideStatus != payment.DivideCompleted {
 		// 如果金额全部分账，则自动标记为分账完成
-		p.value.DivideStatus = payment.DivideFinished
+		p.value.DivideStatus = payment.DivideCompleted
 		p.value.UpdateTime = int(time.Now().Unix())
 		_, err := p.repo.SavePaymentOrder(p.value)
 		if err != nil {
@@ -1038,6 +1041,20 @@ func (p *paymentOrderImpl) CompleteDivide() error {
 	// 检查分账命令是否执行
 	p.checkDivideCommandExecuted()
 	return nil
+}
+
+// DivideSuccess 分账成功,支付平台已进行分账
+func (p *paymentOrderImpl) DivideSuccess(outTxNo string) error {
+	if !p.isDivide() {
+		return errors.New("支付单不支持分账")
+	}
+	if p.value.DivideStatus == payment.DivideSuccess {
+		return errors.New("支付平台已进行分账")
+	}
+	p.value.DivideStatus = payment.DivideSuccess
+	p.value.UpdateTime = int(time.Now().Unix())
+	_, err := p.repo.SavePaymentOrder(p.value)
+	return err
 }
 
 // UpdateSubDivideStatus implements payment.IPaymentOrder.
@@ -1071,7 +1088,7 @@ func (p *paymentOrderImpl) UpdateSubDivideStatus(divideId int, success bool, div
 // 1. 手动完成分账
 // 2. 更新分账子项状态时
 func (p *paymentOrderImpl) checkDivideCommandExecuted() {
-	if p.value.DivideStatus != payment.DivideFinished {
+	if p.value.DivideStatus != payment.DivideCompleted {
 		// 未标记为已经分账完成的订单，不下发分账完成指令
 		return
 	}
