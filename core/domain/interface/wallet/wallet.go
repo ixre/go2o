@@ -197,13 +197,13 @@ type (
 		Adjust(value int, title, outerNo string, remark string, operatorUid int, operatorName string) error
 
 		// Consume 消费
-		Consume(amount int, title string, outerNo string, remark string) error
+		Consume(amount int, title string, outerNo string, remark string) (int, error)
 
 		// 预扣消费,将冻结转为消费,扣款后不自动退回余额
 		PrefreezeConsume(data TransactionData) error
 
 		// Discount 抵扣,must是否必须大于0
-		Discount(amount int, title, outerNo string, must bool) error
+		Discount(amount int, title, outerNo string, must bool) (int, error)
 
 		// Freeze 冻结余额,返回LogId
 		Freeze(data TransactionData, operator Operator) (int, error)

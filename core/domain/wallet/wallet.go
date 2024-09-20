@@ -246,12 +246,12 @@ func (w *WalletImpl) Adjust(value int, title, outerNo string,
 }
 
 // Consume 消费
-func (w *WalletImpl) Consume(amount int, title string, outerNo string, remark string) error {
+func (w *WalletImpl) Consume(amount int, title string, outerNo string, remark string) (int, error) {
 	if amount > 0 {
 		amount = -amount
 	}
 	if w._value.Balance < -amount {
-		return wallet.ErrOutOfAmount
+		return 0, wallet.ErrOutOfAmount
 	}
 	w._value.Balance += amount
 	w._value.TotalPay += -amount
@@ -263,7 +263,7 @@ func (w *WalletImpl) Consume(amount int, title string, outerNo string, remark st
 	if err == nil {
 		_, err = w.Save()
 	}
-	return err
+	return l.Id, err
 }
 
 // PrefreezeConsume implements wallet.IWallet.
@@ -292,14 +292,14 @@ func (w *WalletImpl) PrefreezeConsume(data wallet.TransactionData) error {
 }
 
 // Discount 支付抵扣,must是否必须大于0
-func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error {
+func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) (int, error) {
 	err := w.checkValueOpu(value, false, 0, "")
 	if err == nil {
 		if value > 0 {
 			value = -value
 		}
 		if must && w._value.Balance < -value {
-			return wallet.ErrOutOfAmount
+			return 0, wallet.ErrOutOfAmount
 		}
 		w._value.Balance += value
 		w._value.TotalPay += -value
@@ -310,8 +310,9 @@ func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error
 		if err == nil {
 			_, err = w.Save()
 		}
+		return l.Id, err
 	}
-	return err
+	return 0, err
 }
 
 func (w *WalletImpl) Freeze(data wallet.TransactionData, operator wallet.Operator) (int, error) {

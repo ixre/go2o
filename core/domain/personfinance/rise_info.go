@@ -94,11 +94,11 @@ func (r *riseInfo) transferInPayment(amount float32,
 	switch transferWith {
 	//从余额转入
 	case personfinance.TransferFromWithBalance:
-		err = acc.Discount(member.AccountBalance, "理财转入",
+		_, err = acc.Discount(member.AccountBalance, "理财转入",
 			int(amount*100), tradeNo, "")
 		//从钱包转入
 	case personfinance.TransferFromWithWallet:
-		err = acc.Discount(member.AccountWallet, "理财转入",
+		_, err = acc.Discount(member.AccountWallet, "理财转入",
 			int(amount*100), tradeNo, "")
 		//其他方式转入
 	default:

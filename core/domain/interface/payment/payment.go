@@ -317,6 +317,8 @@ type (
 		OutTradeCode string
 		// 外部交易单号(第三方支付单号)
 		OutTradeNo string
+		// 账户交易明细ID, 在退款后更新该明细
+		AccountTxId int
 	}
 
 	// 支付单分账数据

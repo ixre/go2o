@@ -100,13 +100,13 @@ type (
 		ReviewCarryTo(account AccountType, transactionId int, pass bool, reason string) error
 
 		// Consume 消耗
-		Consume(account AccountType, title string, amount int, outerNo string, remark string) error
+		Consume(account AccountType, title string, amount int, outerNo string, remark string) (int, error)
 
 		// Adjust 客服调整
 		Adjust(account AccountType, title string, amount int, remark string, relateUser int64) error
 
 		// Discount 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣(内部,购物时需要抵扣一部分)
-		Discount(account AccountType, title string, amount int, outerNo string, remark string) error
+		Discount(account AccountType, title string, amount int, outerNo string, remark string) (int, error)
 
 		// Refund 退款
 		Refund(account AccountType, title string, amount int, outerNo string, remark string) error

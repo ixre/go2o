@@ -234,9 +234,9 @@ func (a *accountImpl) Adjust(account member.AccountType, title string, amount in
 }
 
 // 消耗
-func (a *accountImpl) Consume(account member.AccountType, title string, amount int, outerNo string, remark string) error {
+func (a *accountImpl) Consume(account member.AccountType, title string, amount int, outerNo string, remark string) (int, error) {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return member.ErrIncorrectQuota
+		return 0, member.ErrIncorrectQuota
 	}
 	switch account {
 	case member.AccountIntegral:
@@ -248,7 +248,7 @@ func (a *accountImpl) Consume(account member.AccountType, title string, amount i
 	case member.AccountFlow:
 		return a.flowAccountConsume(title, amount, outerNo, remark)
 	}
-	return member.ErrNotSupportAccountType
+	return 0, member.ErrNotSupportAccountType
 }
 
 // PrefreezeConsume implements member.IAccount.
@@ -268,9 +268,9 @@ func (a *accountImpl) PrefreezeConsume(transactionId int, transactionTitle strin
 	return err
 }
 
-func (a *accountImpl) Discount(account member.AccountType, title string, amount int, outerNo string, remark string) error {
+func (a *accountImpl) Discount(account member.AccountType, title string, amount int, outerNo string, remark string) (int, error) {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return member.ErrIncorrectQuota
+		return 0, member.ErrIncorrectQuota
 	}
 	switch account {
 	case member.AccountIntegral:
@@ -282,7 +282,7 @@ func (a *accountImpl) Discount(account member.AccountType, title string, amount 
 	case member.AccountFlow:
 		//return a(title,  float32(amount)/100, outerNo, remark)
 	}
-	return member.ErrNotSupportAccountType
+	return 0, member.ErrNotSupportAccountType
 }
 
 // 创建积分日志
@@ -617,28 +617,28 @@ func (a *accountImpl) chargeWallet(title string, amount int, outerNo string, rem
 }
 
 // 钱包消费
-func (a *accountImpl) walletConsume(title string, amount int, outerNo string, remark string) error {
+func (a *accountImpl) walletConsume(title string, amount int, outerNo string, remark string) (int, error) {
 	if a.wallet.Get().Balance < amount {
-		return member.ErrAccountNotEnoughAmount
+		return 0, member.ErrAccountNotEnoughAmount
 	}
-	err := a.wallet.Consume(-amount, title, outerNo, remark)
+	txId, err := a.wallet.Consume(-amount, title, outerNo, remark)
 	if err == nil {
 		err = a.asyncWallet()
 	}
-	return err
+	return txId, err
 }
 
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
-func (a *accountImpl) walletDiscount(title string, amount int, outerNo string) error {
+func (a *accountImpl) walletDiscount(title string, amount int, outerNo string) (int, error) {
 	mustLargeZero := false
 	if mustLargeZero && a.wallet.Get().Balance < amount {
-		return member.ErrAccountNotEnoughAmount
+		return 0, member.ErrAccountNotEnoughAmount
 	}
-	err := a.wallet.Discount(-amount, title, outerNo, false)
+	txId, err := a.wallet.Discount(-amount, title, outerNo, false)
 	if err == nil {
 		err = a.asyncWallet()
 	}
-	return err
+	return txId, err
 }
 
 // 钱包退款(指定业务类型)
@@ -1440,9 +1440,9 @@ func (a *accountImpl) TransferFlowTo(memberId int64, kind int,
 }
 
 // 充值积分
-func (a *accountImpl) integralConsume(title string, value int, outerNo string, remark string) error {
+func (a *accountImpl) integralConsume(title string, value int, outerNo string, remark string) (int, error) {
 	if a.value.Integral < value {
-		return member.ErrNoSuchIntegral
+		return 0, member.ErrNoSuchIntegral
 	}
 	l, err := a.createIntegralLog(member.KindConsume, title, -value, outerNo, true)
 	if err == nil {
@@ -1452,13 +1452,14 @@ func (a *accountImpl) integralConsume(title string, value int, outerNo string, r
 			a.value.Integral -= value
 			_, err = a.Save()
 		}
+		return l.Id, err
 	}
-	return err
+	return 0, err
 }
 
-func (a *accountImpl) balanceConsume(title string, amount int, outerNo string, remark string) error {
+func (a *accountImpl) balanceConsume(title string, amount int, outerNo string, remark string) (int, error) {
 	if a.value.Balance < amount {
-		return member.ErrAccountNotEnoughAmount
+		return 0, member.ErrAccountNotEnoughAmount
 	}
 	l, err := a.createBalanceLog(member.KindConsume, title, -amount, outerNo, true)
 	if err == nil {
@@ -1468,13 +1469,14 @@ func (a *accountImpl) balanceConsume(title string, amount int, outerNo string, r
 			a.value.Balance -= amount
 			_, err = a.Save()
 		}
+		return l.Id, err
 	}
-	return err
+	return 0, err
 }
 
-func (a *accountImpl) flowAccountConsume(title string, amount int, outerNo string, remark string) error {
+func (a *accountImpl) flowAccountConsume(title string, amount int, outerNo string, remark string) (int, error) {
 	if a.value.FlowBalance < amount {
-		return member.ErrAccountNotEnoughAmount
+		return 0, member.ErrAccountNotEnoughAmount
 	}
 	l, err := a.createFlowAccountLog(member.KindConsume, title, -amount, outerNo, true)
 	if err == nil {
@@ -1484,14 +1486,15 @@ func (a *accountImpl) flowAccountConsume(title string, amount int, outerNo strin
 			a.value.FlowBalance -= amount
 			_, err = a.Save()
 		}
+		return int(l.Id), err
 	}
-	return err
+	return 0, err
 }
 
 // 积分抵扣
-func (a *accountImpl) integralDiscount(title string, value int, outerNo string, remark string) error {
+func (a *accountImpl) integralDiscount(title string, value int, outerNo string, remark string) (int, error) {
 	if a.value.Integral < value {
-		return member.ErrNoSuchIntegral
+		return 0, member.ErrNoSuchIntegral
 	}
 	l, err := a.createIntegralLog(member.KindDiscount, title, -value, outerNo, true)
 	if err == nil {
@@ -1500,14 +1503,15 @@ func (a *accountImpl) integralDiscount(title string, value int, outerNo string, 
 			a.value.Integral -= value
 			_, err = a.Save()
 		}
+		return l.Id, err
 	}
-	return err
+	return 0, err
 }
 
 // 扣减余额
-func (a *accountImpl) discountBalance(title string, amount int, outerNo string, remark string) (err error) {
+func (a *accountImpl) discountBalance(title string, amount int, outerNo string, remark string) (txId int, err error) {
 	if a.value.Balance < amount {
-		return member.ErrAccountNotEnoughAmount
+		return 0, member.ErrAccountNotEnoughAmount
 	}
 	l, err := a.createBalanceLog(member.KindDiscount, title, -amount, outerNo, true)
 	if err == nil {
@@ -1516,8 +1520,9 @@ func (a *accountImpl) discountBalance(title string, amount int, outerNo string, 
 			a.value.Balance -= amount
 			_, err = a.Save()
 		}
+		return l.Id, err
 	}
-	return err
+	return 0, err
 }
 
 // 充值积分

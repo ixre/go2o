@@ -455,7 +455,7 @@ func (p *paymentOrderImpl) WalletDeduct(remark string) error {
 	if amount == 0 {
 		return member.ErrAccountNotEnoughAmount
 	}
-	err := acc.Discount(member.AccountWallet, "订单抵扣",
+	_, err := acc.Discount(member.AccountWallet, "订单抵扣",
 		int(amount), p.value.OutOrderNo, remark)
 	if err == nil {
 		p.value.DeductAmount += int(amount) // 修改抵扣金额
@@ -502,7 +502,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int,
 	acc := p.memberRepo.GetMember(int64(p.value.BuyerId)).GetAccount()
 	//log.Println("----", p.value.BuyerId, acc.Value().Integral, "discount:", integral)
 	//log.Printf("-----%#v\n", acc.Value())
-	err = acc.Discount(member.AccountIntegral, "积分支付抵扣",
+	_, err = acc.Discount(member.AccountIntegral, "积分支付抵扣",
 		integral, p.Get().TradeNo, "")
 	// 抵扣积分
 	if err == nil {
@@ -606,7 +606,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 	if acc.GetValue().WalletBalance < int(amount) {
 		return payment.ErrNotEnoughAmount
 	}
-	err := acc.Consume(member.AccountWallet, "支付订单",
+	_, err := acc.Consume(member.AccountWallet, "支付订单",
 		int(amount), p.TradeNo(), remark)
 	if err == nil {
 		p.value.DeductAmount += amount
@@ -699,14 +699,20 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 		case payment.MWallet:
 			err = acc.Refund(member.AccountWallet, reason, amount, pv.TradeNo, "")
 		case payment.MPaySP:
-			// 第三方支付原路退回, 异步发布退款事件
-			go eventbus.Publish(&payment.PaymentProviderRefundEvent{
-				Order:        p,
-				Amount:       amount,
-				Reason:       reason,
-				OutTradeCode: v.OutTradeCode,
-				OutTradeNo:   v.OutTradeNo,
-			})
+			// 处理充值退款
+			var txId int
+			txId, err = p.handlePaymentOrderRefund(acc, totalRefund, reason)
+			if err == nil {
+				// 第三方支付原路退回, 异步发布退款事件
+				go eventbus.Publish(&payment.PaymentProviderRefundEvent{
+					Order:        p,
+					Amount:       amount,
+					Reason:       reason,
+					OutTradeCode: v.OutTradeCode,
+					OutTradeNo:   v.OutTradeNo,
+					AccountTxId:  txId,
+				})
+			}
 		}
 		if err == nil {
 			v.RefundAmount += amount
@@ -728,21 +734,17 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 		// 检查分账并更新状态
 		p.checkDivideStatus(tx)
 		_, err = p.repo.SavePaymentOrder(p.value)
-		if err == nil {
-			// 处理充值退款
-			err = p.handlePaymentOrderRefund(acc, totalRefund, reason)
-		}
 	}
 	return err
 }
 
 // 处理退款业务
-func (p *paymentOrderImpl) handlePaymentOrderRefund(acc member.IAccount, totalRefund int, reason string) error {
+func (p *paymentOrderImpl) handlePaymentOrderRefund(acc member.IAccount, totalRefund int, reason string) (txId int, err error) {
 	if p.value.OrderType == payment.TypeRecharge {
 		// 如果是充值订单，则需扣除充值的金额
 		return acc.Discount(member.AccountWallet, reason, totalRefund, p.TradeNo(), "")
 	}
-	return nil
+	return 0, nil
 }
 
 // RefundAvail 请求退款全部可退金额，通常用于全额退款或消费后将剩余部分进行退款
@@ -796,14 +798,20 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 			if spRefundAmount > 0 {
 				// 第三方支付退款金额
 				amount = spRefundAmount
-				// 第三方支付原路退回, 异步发布退款事件
-				go eventbus.Publish(&payment.PaymentProviderRefundEvent{
-					Order:        p,
-					Amount:       spRefundAmount,
-					Reason:       remark,
-					OutTradeCode: v.OutTradeCode,
-					OutTradeNo:   v.OutTradeNo,
-				})
+				// 处理充值退款
+				var txId int
+				txId, err = p.handlePaymentOrderRefund(acc, totalRefund, remark)
+				if err == nil {
+					// 第三方支付原路退回, 异步发布退款事件
+					go eventbus.Publish(&payment.PaymentProviderRefundEvent{
+						Order:        p,
+						Amount:       spRefundAmount,
+						Reason:       remark,
+						OutTradeCode: v.OutTradeCode,
+						OutTradeNo:   v.OutTradeNo,
+						AccountTxId:  txId,
+					})
+				}
 			}
 		}
 		if err == nil {
@@ -826,10 +834,6 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 		// 检查分账并更新状态
 		p.checkDivideStatus(tx)
 		_, err = p.repo.SavePaymentOrder(p.value)
-		if err == nil {
-			// 处理充值订单退款
-			err = p.handlePaymentOrderRefund(acc, totalRefund, remark)
-		}
 	}
 	if err != nil {
 		return 0, err

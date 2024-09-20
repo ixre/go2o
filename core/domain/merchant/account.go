@@ -131,7 +131,7 @@ func (a *accountImpl) Consume(transactionTitle string, amount int, outerTxNo str
 		err = a.Save()
 		if err == nil {
 			iw := a.getWallet()
-			err = iw.Consume(int(amount),
+			_, err = iw.Consume(int(amount),
 				transactionTitle,
 				outerTxNo,
 				transactionRemark)
