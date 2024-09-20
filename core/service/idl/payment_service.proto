@@ -494,8 +494,10 @@ message PaymentRefundAvailResponse{
     int32 code = 1;
     // 错误消息
     string message = 2;
+    // 实际支付金额
+    int64 finalAmount = 3;
     // 退款金额
-    int64 refundAmount = 3;
+    int64 refundAmount = 4;
 }
 
 // 查询可退款支付单请求

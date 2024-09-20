@@ -66,7 +66,7 @@ const (
 )
 
 const (
-	// KCharge 赠送金额
+	// KCharge 充值金额
 	KCharge = 1
 	// KCarry 钱包收入
 	KCarry = 2

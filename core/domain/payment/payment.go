@@ -721,6 +721,10 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 		// 更新支付单退单金额
 		p.value.RefundAmount += totalRefund
 		p.value.UpdateTime = int(time.Now().Unix())
+		if p.value.FinalAmount == p.value.RefundAmount {
+			// 如果全部退款，则标记支付单状态为：已退款
+			p.value.Status = payment.StateRefunded
+		}
 		// 检查分账并更新状态
 		p.checkDivideStatus(tx)
 		_, err = p.repo.SavePaymentOrder(p.value)
@@ -815,6 +819,10 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 		// 更新支付单退单金额
 		p.value.RefundAmount += totalRefund
 		p.value.UpdateTime = int(time.Now().Unix())
+		if p.value.FinalAmount == p.value.RefundAmount {
+			// 如果全部退款，则标记支付单状态为：已退款
+			p.value.Status = payment.StateRefunded
+		}
 		// 检查分账并更新状态
 		p.checkDivideStatus(tx)
 		_, err = p.repo.SavePaymentOrder(p.value)
@@ -842,7 +850,13 @@ func (p *paymentOrderImpl) checkDivideStatus(tx *payment.PayTradeData) {
 	}
 	if dividedAmount+tx.RefundAmount >= tx.PayAmount {
 		// 如果分账金额+已退款金额等于订单金额，则自动标记为分账完成
-		p.value.DivideStatus = payment.DivideCompleted
+		if dividedAmount == 0 {
+			// 如果分账金额为0，则标记为分账成功
+			p.value.DivideStatus = payment.DivideItemStatusSuccess
+		} else {
+			// 如果分账金额不为0，则标记为分账完成,等待下发分账指令
+			p.value.DivideStatus = payment.DivideCompleted
+		}
 	}
 }
 

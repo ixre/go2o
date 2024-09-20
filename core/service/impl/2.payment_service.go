@@ -574,7 +574,10 @@ func (p *paymentService) RequestRefundAvail(_ context.Context, req *proto.Paymen
 			Message: err.Error(),
 		}, nil
 	}
-	return &proto.PaymentRefundAvailResponse{RefundAmount: int64(amount)}, nil
+	return &proto.PaymentRefundAvailResponse{
+		FinalAmount:  int64(ip.Get().FinalAmount),
+		RefundAmount: int64(amount),
+	}, nil
 }
 
 // GetSubMerchant implements proto.PaymentServiceServer.

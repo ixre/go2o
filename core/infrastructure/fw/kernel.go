@@ -525,6 +525,14 @@ func ParseError(err error) *Error {
 	return nil
 }
 
+// NewError 创建错误
+func NewError(code int, message string) *Error {
+	return &Error{
+		Code:    code,
+		Message: message,
+	}
+}
+
 // 断言错误
 func AssertError(t *testing.T, err error) {
 	if err != nil {
