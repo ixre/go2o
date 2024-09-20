@@ -129,7 +129,7 @@ message ReviewUserWithdrawalRequest {
   }
   
   // 完成提现
-  message FinishUserWithdrawalRequest {
+  message FinishUserTransactionRequest {
     // 会员编号
     int64 userId = 1;
     // 提现记录编号

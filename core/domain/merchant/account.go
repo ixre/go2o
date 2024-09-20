@@ -344,10 +344,10 @@ func (a *accountImpl) Adjust(title string, amount int, remark string, relateUser
 	return err
 }
 
-// FinishWithdrawal implements merchant.IAccount.
-func (a *accountImpl) FinishWithdrawal(transactionId int, outerTransactionNo string) error {
+// CompleteTransaction implements merchant.IAccount.
+func (a *accountImpl) CompleteTransaction(transactionId int, outerTransactionNo string) error {
 	//todo: opr_uid
-	err := a.getWallet().FinishWithdrawal(transactionId, outerTransactionNo)
+	err := a.getWallet().CompleteTransaction(transactionId, outerTransactionNo)
 	if err == nil {
 		return a.asyncWallet()
 	}

@@ -264,7 +264,7 @@ func (m *memberImpl) checkLevelUp() bool {
 			TargetLevel:  levelId,
 			IsFree:       1,
 			PaymentId:    0,
-			ReviewStatus: int(enum.ReviewConfirm),
+			ReviewStatus: int(enum.ReviewCompleted),
 			UpgradeMode:  member.LAutoUpgrade,
 			CreateTime:   int(unix),
 		}
@@ -296,7 +296,7 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 		lvLog.IsFree = 1
 	}
 	if !review {
-		lvLog.ReviewStatus = int(enum.ReviewConfirm)
+		lvLog.ReviewStatus = int(enum.ReviewCompleted)
 	}
 	_, err := m.repo.SaveLevelUpLog(lvLog)
 	if err == nil && !review {
@@ -345,7 +345,7 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 		if l.ReviewStatus == int(enum.ReviewRejected) {
 			return member.ErrLevelUpReject
 		}
-		if l.ReviewStatus == int(enum.ReviewConfirm) {
+		if l.ReviewStatus == int(enum.ReviewCompleted) {
 			return member.ErrLevelUpConfirm
 		}
 		if time.Now().Unix()-int64(l.CreateTime) < 120 {
@@ -378,13 +378,13 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 func (m *memberImpl) ConfirmLevelUp(id int) error {
 	l := m.repo.GetLevelUpLog(id)
 	if l != nil && l.MemberId == int(m.GetAggregateRootId()) {
-		if l.ReviewStatus == int(enum.ReviewConfirm) {
+		if l.ReviewStatus == int(enum.ReviewCompleted) {
 			return member.ErrLevelUpConfirm
 		}
 		if l.ReviewStatus != int(enum.ReviewApproved) {
 			return member.ErrLevelUpReject
 		}
-		l.ReviewStatus = int(enum.ReviewConfirm)
+		l.ReviewStatus = int(enum.ReviewCompleted)
 		_, err := m.repo.SaveLevelUpLog(l)
 		return err
 	}

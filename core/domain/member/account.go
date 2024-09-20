@@ -403,7 +403,7 @@ func (a *accountImpl) carryToBalance(d member.AccountOperateData, freeze bool, t
 		l.Remark = "待审核"
 	} else {
 		a.value.Balance += d.Amount
-		l.ReviewStatus = int(enum.ReviewConfirm)
+		l.ReviewStatus = int(enum.ReviewCompleted)
 	}
 	if err == nil {
 		l.Remark = d.TransactionRemark
@@ -1057,10 +1057,10 @@ func (a *accountImpl) ReviewWithdrawal(transactionId int, pass bool, remark stri
 	return err
 }
 
-// FinishWithdrawal 完成提现
-func (a *accountImpl) FinishWithdrawal(transactionId int, outerTransactionNo string) error {
+// CompleteTransaction 完成交易
+func (a *accountImpl) CompleteTransaction(transactionId int, outerTransactionNo string) error {
 	//todo: opr_uid
-	err := a.wallet.FinishWithdrawal(transactionId, outerTransactionNo)
+	err := a.wallet.CompleteTransaction(transactionId, outerTransactionNo)
 	if err == nil {
 		err = a.asyncWallet()
 	}

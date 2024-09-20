@@ -100,7 +100,7 @@ service MerchantService {
     // 确认提现
     rpc ReviewWithdrawal (ReviewUserWithdrawalRequest) returns (TxResult);
     // 收到款项,完成提现
-    rpc FinishWithdrawal (FinishUserWithdrawalRequest) returns (TxResult);
+    rpc CompleteTransaction (FinishUserTransactionRequest) returns (TxResult);
     // 获取钱包流水记录
     rpc GetWalletTxLog (UserWalletTxId) returns (UserWalletTxResponse);
     // 根据月份时间,获取当前账单

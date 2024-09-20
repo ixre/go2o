@@ -210,6 +210,10 @@ type (
 		Refund(amounts map[int]int, reason string) error
 		// RefundAvail 请求退款全部可退金额，通常用于全额退款或消费后将剩余部分进行退款
 		RefundAvail(remark string) (int, error)
+		// SupplementRefund 补发退款交易,用于退款后补发,当退款未到账时，调用补发
+		// 需注意：该方法只验证交易状态，并发送退款事件，不包含退款的具体实现，需在订阅退款时间并进行处理
+		SupplementRefund(txId int) error
+
 		// ChanName 获取支付通道字符串
 		ChanName(method int) string
 		// Divide 分账, 分账后将更新支付单状态为分账中,直到调用完成分账，该订单不再允许分账

@@ -243,7 +243,7 @@ func (a *accountImpl) ReviewWithdrawal_(id int32, pass bool, remark string) erro
 }
 
 // 完成提现
-func (a *accountImpl) FinishWithdrawal_(id int32, tradeNo string) error {
+func (a *accountImpl) CompleteTransaction_(id int32, tradeNo string) error {
 	v := a.GetWalletLog(id)
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
@@ -252,14 +252,14 @@ func (a *accountImpl) FinishWithdrawal_(id int32, tradeNo string) error {
 		return member.ErrTakeOutState
 	}
 	v.OuterNo = tradeNo
-	v.ReviewStatus = enum.ReviewConfirm
+	v.ReviewStatus = enum.ReviewCompleted
 	v.Remark = "转款凭证:" + tradeNo
 	_, err := a.rep.SaveWalletAccountLog(v)
 	return err
 
 	//if v.Kind == member.KindWalletTakeOutToBankCard {
 	//    v.OuterNo = tradeNo
-	//    v.State = enum.ReviewConfirm
+	//    v.State = enum.ReviewCompleted
 	//    v.Remark = "银行凭证:" + tradeNo
 	//    _, err := a.repo.SaveWalletAccountLog(v)
 	//    return err

@@ -1161,13 +1161,13 @@ func (m *merchantService) CarryToAccount(_ context.Context, req *proto.UserWalle
 	return m.txResult(id, nil), nil
 }
 
-// FinishWithdrawal implements proto.MerchantServiceServer.
-func (m *merchantService) FinishWithdrawal(_ context.Context, req *proto.FinishUserWithdrawalRequest) (*proto.TxResult, error) {
+// CompleteTransaction implements proto.MerchantServiceServer.
+func (m *merchantService) CompleteTransaction(_ context.Context, req *proto.FinishUserTransactionRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(req.UserId))
 	if mch == nil {
 		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
-	err := mch.Account().FinishWithdrawal(
+	err := mch.Account().CompleteTransaction(
 		int(req.TransactionId),
 		req.OuterTransactionNo)
 	return m.errorV2(err), nil

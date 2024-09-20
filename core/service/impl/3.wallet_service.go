@@ -74,14 +74,18 @@ func (w *walletServiceImpl) Adjust(_ context.Context, r *proto.AdjustRequest) (r
 	return w.result(err), nil
 }
 
-func (w *walletServiceImpl) Discount(_ context.Context, r *proto.DiscountRequest) (ro *proto.Result, err error) {
+func (w *walletServiceImpl) Discount(_ context.Context, r *proto.DiscountRequest) (ro *proto.TxResult, err error) {
 	iw := w._repo.GetWallet(int(r.WalletId))
+	var txId int
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Discount(int(r.Amount), r.Title, r.OuterNo, r.Must)
+		txId, err = iw.Discount(int(r.Amount), r.Title, r.OuterNo, r.Must)
 	}
-	return w.result(err), nil
+	if err == nil {
+		return w.txResult(txId, nil), nil
+	}
+	return w.errorV2(err), nil
 }
 
 func (w *walletServiceImpl) Freeze(_ context.Context, r *proto.FreezeRequest) (ro *proto.FreezeResponse, err error) {
@@ -109,7 +113,7 @@ func (w *walletServiceImpl) Unfreeze(_ context.Context, r *proto.UnfreezeRequest
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.Unfreeze(int(r.Amount), r.Title, r.OuterNo,r.IsRefundBalance, int(r.OperatorUid), r.OperatorName)
+		err = iw.Unfreeze(int(r.Amount), r.Title, r.OuterNo, r.IsRefundBalance, int(r.OperatorUid), r.OperatorName)
 	}
 	return w.result(err), nil
 }
@@ -175,12 +179,12 @@ func (w *walletServiceImpl) ReviewTakeOut(_ context.Context, r *proto.ReviewWith
 	return w.result(err), nil
 }
 
-func (w *walletServiceImpl) FinishWithdrawal(_ context.Context, r *proto.FinishWithdrawRequest) (ro *proto.Result, err error) {
+func (w *walletServiceImpl) CompleteTransaction(_ context.Context, r *proto.FinishWithdrawRequest) (ro *proto.Result, err error) {
 	iw := w._repo.GetWallet(int(r.WalletId))
 	if iw == nil {
 		err = wallet.ErrNoSuchWalletAccount
 	} else {
-		err = iw.FinishWithdrawal(int(r.TransactionId), r.OuterNo)
+		err = iw.CompleteTransaction(int(r.TransactionId), r.OuterNo)
 	}
 	return w.result(err), nil
 }

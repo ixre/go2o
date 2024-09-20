@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -259,6 +258,7 @@ func (w *WalletImpl) Consume(amount int, title string, outerNo string, remark st
 	l.OuterTxNo = outerNo
 	l.Balance = w._value.Balance
 	l.Remark = remark
+	l.ReviewStatus = wallet.ReviewApproved
 	err := w.saveWalletLog(l)
 	if err == nil {
 		_, err = w.Save()
@@ -455,17 +455,17 @@ func (w *WalletImpl) CarryTo(tx wallet.TransactionData, review bool) (int, error
 // ReviewCarryTo 审核入账
 func (w *WalletImpl) ReviewCarryTo(transactionId int, pass bool, reason string) error {
 	l := w._repo.GetLog(w.GetAggregateRootId(), int64(transactionId))
-	if l.ReviewStatus != int(enum.ReviewPending) {
+	if l.ReviewStatus != int(wallet.ReviewPending) {
 		return wallet.ErrNotSupport
 	}
 	w._value.FreezeAmount -= int(l.ChangeValue)
 	l.UpdateTime = int(time.Now().Unix())
 	if pass {
 		w._value.Balance += l.ChangeValue
-		l.ReviewStatus = int(enum.ReviewApproved)
+		l.ReviewStatus = int(wallet.ReviewApproved)
 		l.Remark = "系统审核通过"
 	} else {
-		l.ReviewStatus = int(enum.ReviewRejected)
+		l.ReviewStatus = int(wallet.ReviewRejected)
 		l.Remark = reason
 	}
 	err := w.saveWalletLog(l)
@@ -662,7 +662,7 @@ func (w *WalletImpl) ReviewWithdrawal(transactionId int, pass bool, remark strin
 		l.ReviewStatus = wallet.ReviewApproved
 	} else {
 		l.ReviewRemark = remark
-		l.ReviewStatus = wallet.ReviewReject
+		l.ReviewStatus = wallet.ReviewRejected
 		err := w.Refund(-(l.TransactionFee + int(l.ChangeValue)), wallet.KWithdrawRefund, "提现退回",
 			l.OuterTxNo, 0, "")
 		if err != nil {
@@ -675,7 +675,7 @@ func (w *WalletImpl) ReviewWithdrawal(transactionId int, pass bool, remark strin
 	return w.saveWalletLog(l)
 }
 
-func (w *WalletImpl) FinishWithdrawal(transactionId int, outerNo string) error {
+func (w *WalletImpl) CompleteTransaction(transactionId int, outerNo string) error {
 	l := w.getLog(int64(transactionId))
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
@@ -684,7 +684,7 @@ func (w *WalletImpl) FinishWithdrawal(transactionId int, outerNo string) error {
 		return wallet.ErrWithdrawState
 	}
 	l.OuterTxNo = outerNo
-	l.ReviewStatus = wallet.ReviewConfirm
+	l.ReviewStatus = wallet.ReviewCompleted
 	l.Remark = "转款凭证:" + outerNo
 	return w.saveWalletLog(l)
 }

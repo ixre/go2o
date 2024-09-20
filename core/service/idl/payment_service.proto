@@ -100,6 +100,8 @@ service PaymentService {
     // RequestRefundAvail 申请退款(全部可退金额)，常用于充值退款，或消费后再退回剩余金额
     // 注意: 该方法仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款
     rpc RequestRefundAvail(PaymentRefundAvailRequest) returns(PaymentRefundAvailResponse);
+    // 补发退款(第三方支付),用于退款后补发,当退款未到账时，调用补发
+    rpc SupplementRefund(PaymentSupplementRefundRequest)returns(TxResult);
 
     // 支付网关(仅交易单使用)
     rpc GatewayV1 (PayGatewayRequest) returns (TxResult);
@@ -500,6 +502,13 @@ message PaymentRefundAvailResponse{
     int64 refundAmount = 4;
 }
 
+// 支付补款退款请求
+message PaymentSupplementRefundRequest{
+    // 支付单号
+    string tradeNo = 1;
+    // 会员退款交易ID
+    int64 txId = 2;
+}
 // 查询可退款支付单请求
 message QueryRefundablePaymentOrdersRequest{
     // 会员ID

@@ -22,6 +22,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
@@ -742,7 +743,7 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 func (p *paymentOrderImpl) handlePaymentOrderRefund(acc member.IAccount, totalRefund int, reason string) (txId int, err error) {
 	if p.value.OrderType == payment.TypeRecharge {
 		// 如果是充值订单，则需扣除充值的金额
-		return acc.Discount(member.AccountWallet, reason, totalRefund, p.TradeNo(), "")
+		return acc.Consume(member.AccountWallet, reason, totalRefund, p.TradeNo(), "")
 	}
 	return 0, nil
 }
@@ -839,6 +840,45 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 		return 0, err
 	}
 	return totalRefund, nil
+}
+
+func (p *paymentOrderImpl) SupplementRefund(txId int) error {
+	// 获取支付数据
+	chanMap := p.TradeMethods()
+	// 计算第三方支付可退金额
+	tx := collections.FindArray(chanMap, func(e *payment.PayTradeData) bool {
+		return e.PayMethod == payment.MPaySP
+	})
+	if tx == nil {
+		return errors.New("支付单未使用第三方支付")
+	}
+	// 验证会员和交易状态
+	m := p.getBuyer()
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	acc := m.GetAccount()
+	if acc == nil {
+		return errors.New("会员账户不存在")
+	}
+	mtx := acc.GetWalletLog(int64(txId))
+	if mtx.Id <= 0 {
+		return errors.New("找不到交易记录")
+	}
+	if mtx.ReviewStatus == wallet.ReviewCompleted {
+		return errors.New("交易已完成,无需补发")
+	}
+
+	// 第三方支付原路退回, 异步发布退款事件
+	go eventbus.Publish(&payment.PaymentProviderRefundEvent{
+		Order:        p,
+		Amount:       mtx.ChangeValue - mtx.TransactionFee,
+		Reason:       mtx.Subject,
+		OutTradeCode: tx.OutTradeCode,
+		OutTradeNo:   tx.OutTradeNo,
+		AccountTxId:  txId,
+	})
+	return nil
 }
 
 // 检查分账状态，只有第三方支付的部分能参与分账

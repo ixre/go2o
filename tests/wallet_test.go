@@ -179,7 +179,7 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = wlt.FinishWithdrawal(id, "96699999999")
+	err = wlt.CompleteTransaction(id, "96699999999")
 	if v := wlt.Get().Balance; v != balance-int64(amount) {
 		t.Error("提现退回后余额不正确", balance, v)
 		t.FailNow()

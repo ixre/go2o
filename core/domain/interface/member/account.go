@@ -135,8 +135,8 @@ type (
 		// ReviewWithdrawal 提现审核
 		ReviewWithdrawal(transactionId int, pass bool, reason string) error
 
-		// FinishWithdrawal 完成提现(打款),outerTransactionNo为外部交易号
-		FinishWithdrawal(transactionId int, outerTransactionNo string) error
+		// CompleteTransaction 完成交易(打款),outerTransactionNo为外部交易号
+		CompleteTransaction(transactionId int, outerTransactionNo string) error
 
 		// TransferAccount 转账
 		TransferAccount(account AccountType, toMember int64, amount int,

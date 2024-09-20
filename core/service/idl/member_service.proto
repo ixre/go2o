@@ -170,8 +170,8 @@ service MemberService {
     rpc RequestWithdrawal (UserWithdrawRequest) returns (TxResult);
     // 确认提现
     rpc ReviewWithdrawal (ReviewUserWithdrawalRequest) returns (TxResult);
-    // 收到款项,完成提现
-    rpc FinishWithdrawal (FinishUserWithdrawalRequest) returns (TxResult);
+    // 完成交易(如：提现到账)
+    rpc CompleteTransaction (FinishUserTransactionRequest) returns (TxResult);
     // 查询提现记录
     rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogResponse);
     // 提交充值支付单

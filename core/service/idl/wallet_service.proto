@@ -146,7 +146,7 @@ service WalletService {
     }
 
     /** 支付抵扣,must是否必须大于0 */
-    rpc Discount (DiscountRequest) returns (Result) {
+    rpc Discount (DiscountRequest) returns (TxResult) {
     }
 
     /** 冻结余额 */
@@ -174,7 +174,7 @@ service WalletService {
     }
 
     /** 完成提现 */
-    rpc FinishWithdrawal (FinishWithdrawRequest) returns (Result) {
+    rpc CompleteTransaction (FinishWithdrawRequest) returns (Result) {
     }
 
     /** 获取分页钱包日志 */

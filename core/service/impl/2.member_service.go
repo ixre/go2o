@@ -1383,8 +1383,12 @@ func (s *memberService) AccountCarryTo(_ context.Context, r *proto.AccountCarryR
 func (s *memberService) AccountDiscount(_ context.Context, r *proto.AccountChangeRequest) (*proto.TxResult, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
+		var txId int
 		acc := m.GetAccount()
-		err = acc.Discount(member.AccountType(r.AccountType), r.TransactionTitle, int(r.Amount), r.OuterTransactionNo, r.TransactionRemark)
+		txId, err = acc.Discount(member.AccountType(r.AccountType), r.TransactionTitle, int(r.Amount), r.OuterTransactionNo, r.TransactionRemark)
+		if err == nil {
+			return s.txResult(txId, nil), nil
+		}
 	}
 	return s.errorV2(err), nil
 }
@@ -1393,8 +1397,12 @@ func (s *memberService) AccountDiscount(_ context.Context, r *proto.AccountChang
 func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChangeRequest) (*proto.TxResult, error) {
 	m, err := s.getMember(r.MemberId)
 	if err == nil {
+		var txId int
 		acc := m.GetAccount()
-		err = acc.Consume(member.AccountType(r.AccountType), r.TransactionTitle, int(r.Amount), r.OuterTransactionNo, r.TransactionRemark)
+		txId,err = acc.Consume(member.AccountType(r.AccountType), r.TransactionTitle, int(r.Amount), r.OuterTransactionNo, r.TransactionRemark)
+		if err == nil {
+			return s.txResult(txId, nil), nil
+		}
 	}
 	return s.errorV2(err), nil
 }
@@ -1514,7 +1522,7 @@ func (s *memberService) QueryWithdrawalLog(_ context.Context, r *proto.Withdrawa
 	//		sText = "已审核,等待打款"
 	//	case enum.ReviewReject:
 	//		sText = "被退回"
-	//	case enum.ReviewConfirm:
+	//	case enum.ReviewCompleted:
 	//		sText = "已完成"
 	//	}
 	//	if latestApplyInfo.Amount < 0 {
@@ -1554,11 +1562,11 @@ func (s *memberService) ReviewWithdrawal(_ context.Context, r *proto.ReviewUserW
 }
 
 // 完成提现
-func (s *memberService) FinishWithdrawal(_ context.Context, r *proto.FinishUserWithdrawalRequest) (*proto.TxResult, error) {
+func (s *memberService) CompleteTransaction(_ context.Context, r *proto.FinishUserTransactionRequest) (*proto.TxResult, error) {
 	var err error
 	m, err := s.getMember(r.UserId)
 	if err == nil {
-		err = m.GetAccount().FinishWithdrawal(int(r.TransactionId), r.OuterTransactionNo)
+		err = m.GetAccount().CompleteTransaction(int(r.TransactionId), r.OuterTransactionNo)
 	}
 	return s.errorV2(err), nil
 }

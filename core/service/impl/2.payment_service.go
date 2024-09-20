@@ -580,6 +580,17 @@ func (p *paymentService) RequestRefundAvail(_ context.Context, req *proto.Paymen
 	}, nil
 }
 
+func (p *paymentService) SupplementRefund(_ context.Context, req *proto.PaymentSupplementRefundRequest) (*proto.TxResult, error) {
+	ip := p.repo.GetPaymentOrder(req.TradeNo)
+	if ip == nil {
+		return p.errorV2(payment.ErrNoSuchPaymentOrder), nil
+	}
+	err := ip.SupplementRefund(int(req.TxId))
+	return p.errorV2(err), nil
+}
+
+// GetIntegrateApp 获取集成应用
+
 // GetSubMerchant implements proto.PaymentServiceServer.
 func (p *paymentService) GetSubMerchant(_ context.Context, req *proto.SubMerchantCodeRequest) (*proto.SSubMerchant, error) {
 	v := p.repo.SubMerchantManager().GetMerchant(req.Code)

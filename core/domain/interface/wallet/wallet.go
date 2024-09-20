@@ -45,11 +45,11 @@ const (
 	// ReviewPending 等待审核
 	ReviewPending = 1
 	// ReviewReject 审核失败
-	ReviewReject = 2
+	ReviewRejected = 2
 	// ReviewApproved 审核成功
 	ReviewApproved = 3
-	// ReviewConfirm 已确认
-	ReviewConfirm = 4
+	// ReviewCompleted 已确认
+	ReviewCompleted = 4
 	// ReviewAbort 审核终止
 	ReviewAbort = 5
 )
@@ -238,8 +238,8 @@ type (
 		// ReviewWithdrawal 确认提现
 		ReviewWithdrawal(transactionId int, pass bool, remark string, operatorUid int, operatorName string) error
 
-		// FinishWithdrawal 完成提现
-		FinishWithdrawal(transactionId int, outerTxNo string) error
+		// CompleteTransaction 完成交易
+		CompleteTransaction(transactionId int, outerTxNo string) error
 
 		// PagingLog 分页钱包日志
 		PagingLog(begin int, over int, opt map[string]string, sort string) (int, []*WalletLog)
