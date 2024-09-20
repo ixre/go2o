@@ -150,7 +150,7 @@ func (s *TransactionManagerImpl) SettleBill(billId int) error {
 	bill.UpdateTime = int(time.Now().Unix())
 	_, err := s._billRepo.Save(bill)
 	if err == nil {
-		eventbus.Publish(&merchant.BillSettledEvent{
+		go eventbus.Publish(&merchant.BillSettledEvent{
 			MchId: s.mchId,
 			Bill:  bill,
 		})

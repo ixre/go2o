@@ -22,3 +22,9 @@ func (m *MerchantEventHandler) HandleStaffRequireImInitEvent(event interface{}) 
 	// e := event.(*staff.StaffRequireImInitEvent)
 	// 初始化员工IM应在具体的实现中订阅事件并处理, 这里只是为了展示，不做任何处理
 }
+
+// HandleMerchantBillSettleEvent 处理商户账单结算事件
+func (m *MerchantEventHandler) HandleMerchantBillSettleEvent(event interface{}) {
+	// e := event.(*merchant.MerchantBillSettleEvent)
+	// 结算账单应在具体的实现中订阅事件并处理, 这里只是为了展示，不做任何处理
+}

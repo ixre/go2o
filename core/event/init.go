@@ -2,6 +2,7 @@ package event
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/approval"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -36,6 +37,9 @@ func (e *EventSource) Init() {
 	eventbus.SubscribeAsync(events.MemberAccountPushEvent{}, h.HandleMemberAccountPushEvent)
 	eventbus.SubscribeAsync(events.WithdrawalPushEvent{}, h.HandleWithdrawalPushEvent)
 
+	// 注册商户事件
+	e.initMchEvents()
+
 	// 注册审批事件
 	eventbus.Subscribe(approval.ApprovalProcessEvent{}, h.OnApprovalProcess)
 	// 注册支付成功事件
@@ -53,4 +57,8 @@ func (e *EventSource) Init() {
 
 	// 注册员工IM初始化事件
 	eventbus.Subscribe(staff.StaffRequireImInitEvent{}, e.HandleStaffRequireImInitEvent)
+}
+
+func (e *EventSource) initMchEvents() {
+	eventbus.Subscribe(merchant.BillSettledEvent{},e.HandleMerchantBillSettleEvent)
 }
