@@ -11,12 +11,14 @@ package merchant
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
+	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/gof/domain/eventbus"
@@ -25,13 +27,14 @@ import (
 var _ merchant.IMerchantTransactionManager = new(TransactionManagerImpl)
 
 type TransactionManagerImpl struct {
-	mch          *merchantImpl
-	mchId        int
-	_mchRepo     merchant.IMerchantRepo
-	_invoiceRepo invoice.IInvoiceRepo
-	_billRepo    fw.Repository[merchant.MerchantBill]
-	currentBill  *merchant.MerchantBill
-	_rbacRepo    rbac.IRbacRepository
+	mch           *merchantImpl
+	mchId         int
+	_mchRepo      merchant.IMerchantRepo
+	_invoiceRepo  invoice.IInvoiceRepo
+	_billRepo     fw.Repository[merchant.MerchantBill]
+	currentBill   *merchant.MerchantBill
+	_rbacRepo     rbac.IRbacRepository
+	_registryRepo registry.IRegistryRepo
 }
 
 // AdjustBillAmount implements merchant.IMerchantTransactionManager.
@@ -146,13 +149,24 @@ func (s *TransactionManagerImpl) SettleBill(billId int) error {
 	if bill.Status != int(merchant.BillStatusReviewed) {
 		return errors.New("账单尚未复核或已结算")
 	}
+	conf := s.mch.ConfManager().GetSettleConf()
+	if len(conf.SubMchNo) == 0 {
+		return errors.New("商户尚未在支付平台入网,无法完成结算")
+	}
 	bill.Status = int(merchant.BillStatusSettled)
 	bill.UpdateTime = int(time.Now().Unix())
 	_, err := s._billRepo.Save(bill)
 	if err == nil {
-		go eventbus.Publish(&merchant.BillSettledEvent{
-			MchId: s.mchId,
-			Bill:  bill,
+		// 生成结算备注
+		platformName, _ := s._registryRepo.GetValue(registry.PlatformName)
+		remark := fmt.Sprintf("%s结算账单%d", platformName, bill.BillMonth)
+		// 发送结算事件
+		go eventbus.Publish(&merchant.MerchantBillSettleEvent{
+			MchId:         s.mchId,
+			MchName:       s.mch.GetValue().MchName,
+			SubMerchantNo: conf.SubMchNo,
+			SettleRemark:  remark,
+			Bill:          bill,
 		})
 	}
 	return err
@@ -160,14 +174,16 @@ func (s *TransactionManagerImpl) SettleBill(billId int) error {
 
 func newSaleManagerImpl(id int, m *merchantImpl, mchRepo merchant.IMerchantRepo,
 	invoiceRepo invoice.IInvoiceRepo,
-	rbacRepo rbac.IRbacRepository) merchant.IMerchantTransactionManager {
+	rbacRepo rbac.IRbacRepository,
+	registryRepo registry.IRegistryRepo) merchant.IMerchantTransactionManager {
 	return &TransactionManagerImpl{
-		mchId:        id,
-		mch:          m,
-		_mchRepo:     mchRepo,
-		_billRepo:    m._repo.BillRepo(),
-		_invoiceRepo: invoiceRepo,
-		_rbacRepo:    rbacRepo,
+		mchId:         id,
+		mch:           m,
+		_mchRepo:      mchRepo,
+		_billRepo:     m._repo.BillRepo(),
+		_invoiceRepo:  invoiceRepo,
+		_rbacRepo:     rbacRepo,
+		_registryRepo: registryRepo,
 	}
 }
 

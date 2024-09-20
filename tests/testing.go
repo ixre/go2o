@@ -75,5 +75,5 @@ func init() {
 	// 初始化分布式锁
 	etcd.InitializeLocker(&cfg)
 	// 初始化事件
-	inject.GetEventSource().Init()
+	inject.GetEventSource().Bind()
 }

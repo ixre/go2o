@@ -119,7 +119,7 @@ func Run(ch chan bool, after func(cfg *clientv3.Config, debug bool)) {
 		inject.GetRegistryRepo(),
 	)
 	// 初始化事件
-	inject.GetEventSource().Init()
+	inject.GetEventSource().Bind()
 	// 发布应用初始化事件
 	eventbus.Publish(&events.AppInitialEvent{})
 	InitialModules()

@@ -1,3 +1,13 @@
+/**
+ * Copyright (C) 2007-2024 fze.NET, All rights reserved.
+ *
+ * name: transaction_manager.go
+ * author: jarrysix (jarrysix#gmail.com)
+ * date: 2024-08-20 22:39:44
+ * description: 商户交易服务
+ * history:
+ */
+
 package merchant
 
 const (
@@ -45,12 +55,18 @@ type IMerchantTransactionManager interface {
 	SettleBill(billId int) error
 }
 
-// 账单结算事件
-type BillSettledEvent struct {
+// MerchantBillSettleEvent 账单结算事件
+type MerchantBillSettleEvent struct {
 	// 商户编号
 	MchId int
+	// 商户名称
+	MchName string
+	// 结算子商户号
+	SubMerchantNo string
 	// 账单
 	Bill *MerchantBill
+	// 结算备注
+	SettleRemark string
 }
 
 // MerchantBill 商户月度账单

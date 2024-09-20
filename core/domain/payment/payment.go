@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"regexp"
 	"strings"
 	"time"
@@ -872,7 +873,7 @@ func (p *paymentOrderImpl) SupplementRefund(txId int) error {
 	// 第三方支付原路退回, 异步发布退款事件
 	go eventbus.Publish(&payment.PaymentProviderRefundEvent{
 		Order:        p,
-		Amount:       mtx.ChangeValue - mtx.TransactionFee,
+		Amount:       int(math.Abs(float64(mtx.ChangeValue - mtx.TransactionFee))),
 		Reason:       mtx.Subject,
 		OutTradeCode: tx.OutTradeCode,
 		OutTradeNo:   tx.OutTradeNo,

@@ -516,8 +516,8 @@ func (m *merchantImpl) SaleManager() merchant.IMerchantTransactionManager {
 			m,
 			m._repo,
 			m._invoiceRepo,
-
-			m._rbacRepo)
+			m._rbacRepo,
+			m._registryRepo)
 	}
 	return m._saleManager
 }

@@ -25,7 +25,7 @@ func NewEventSource(h *handler.EventHandler, p *handler.PaymentEventHandler, m *
 	}
 }
 
-func (e *EventSource) Init() {
+func (e *EventSource) Bind() {
 	h := e.EventHandler
 	eventbus.SubscribeAsync(events.AppInitialEvent{}, h.HandleAppInitialEvent)
 	eventbus.SubscribeAsync(registry.RegistryPushEvent{}, h.HandleRegistryPushEvent)
@@ -60,5 +60,5 @@ func (e *EventSource) Init() {
 }
 
 func (e *EventSource) initMchEvents() {
-	eventbus.Subscribe(merchant.BillSettledEvent{},e.HandleMerchantBillSettleEvent)
+	eventbus.Subscribe(merchant.MerchantBillSettleEvent{}, e.HandleMerchantBillSettleEvent)
 }
