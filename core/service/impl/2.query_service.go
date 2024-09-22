@@ -313,7 +313,7 @@ func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.Paging
 	}
 	rs := &proto.MemberAccountPagingLogResponse{
 		Total: int32(total),
-		Data:  rows,
+		Rows:  rows,
 	}
 	return rs, nil
 }

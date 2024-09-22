@@ -83,7 +83,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, valueFilter int32, 
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_balance_log
 			WHERE member_id= $1 %s`, where), &num, memberId)
-	sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,procedure_fee,
+	sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_tx_no,change_value,transaction_fee,
 	balance,review_status,create_time FROM mm_balance_log
 			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy)
@@ -121,7 +121,7 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, valueFilter int32,
 		if sortBy != "" {
 			orderBy = "ORDER BY " + sortBy
 		}
-		sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,
+		sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_tx_no,change_value,
 		balance,review_status,create_time FROM mm_integral_log 
 			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`, where, orderBy)
 		err := d.Query(sqlLine, func(_rows *sql.Rows) {
@@ -163,7 +163,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 	//rows = make([]*proto.SMemberAccountLog,0)
 
 	if num > 0 {
-		cmd := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,procedure_fee,
+		cmd := fmt.Sprintf(`SELECT id,kind,subject,outer_tx_no,change_value,transaction_fee,
 			balance,review_status,create_time FROM wal_wallet_log 
 			WHERE wallet_id = $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)

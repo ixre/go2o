@@ -9,7 +9,7 @@ message MemberAccountPagingLogResponse{
    // 总条数,如不查询总数则返回0
    int32 total = 1;
    // 数据
-   repeated SMemberAccountLog data = 2;
+   repeated SMemberAccountLog rows = 2;
 }
 
 /** 钱包日志 */
