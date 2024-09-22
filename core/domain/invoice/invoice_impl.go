@@ -3,6 +3,7 @@ package invoice
 import (
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/invoice"
@@ -132,8 +133,8 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 		r.InvoiceAmount += amount
 		r.TaxAmount += amount * v.TaxRate
 	}
-	if r.InvoiceAmount < 1000 {
-		return nil, errors.New("开票金额不能低于10元")
+	if r.InvoiceAmount <= 0 || r.InvoiceAmount > math.Pow10(6) {
+		return nil, errors.New("开票金额不正确")
 	}
 	r.CreateTime = int(time.Now().Unix())
 	r.IssueTenantId = v.IssueTenantId
