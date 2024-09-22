@@ -119,11 +119,16 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 		if title == nil {
 			return nil, errors.New("商户尚未设置开票信息")
 		}
-		r.PurchaserName = title.TitleName
-		r.PurchaserTaxCode = title.TaxCode
 		r.SellerName = title.TitleName
 		r.SellerTaxCode = title.TaxCode
 	}
+	// 申请人信息
+	title := i.GetInvoiceTitle(v.TitleId)
+	if title == nil {
+		return nil, errors.New("开票信息不存在")
+	}
+	r.PurchaserName = title.TitleName
+	r.PurchaserTaxCode = title.TaxCode
 	// 开票项目
 	if len(v.Items) == 0 {
 		return nil, errors.New("no such invoice items")
@@ -226,6 +231,13 @@ func (i *invoiceRecordDomainImpl) Revert(reason string) error {
 	i.value.IssueRemark = reason
 	i.value.UpdateTime = int(time.Now().Unix())
 	_, err := i.repo.Save(i.value)
+	if err == nil {
+		go eventbus.Publish(&invoice.InvoiceRevertEvent{
+			TenantId:  i.value.TenantId,
+			InvoiceId: i.value.Id,
+			Reason:    reason,
+		})
+	}
 	return err
 }
 

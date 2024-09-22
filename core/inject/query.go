@@ -125,6 +125,7 @@ var InjectProvideSets = wire.NewSet(
 	handler.NewEventHandler,
 	handler.NewPaymentEventHandler,
 	handler.NewMerchantEventHandler,
+	handler.NewInvoiceEventHandler,
 	// 其他
 	sp.NewSPConfig,
 )

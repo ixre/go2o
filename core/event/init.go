@@ -2,6 +2,7 @@ package event
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/approval"
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/payment"
@@ -15,13 +16,19 @@ type EventSource struct {
 	*handler.EventHandler
 	*handler.PaymentEventHandler
 	*handler.MerchantEventHandler
+	*handler.InvoiceEventHandler
 }
 
-func NewEventSource(h *handler.EventHandler, p *handler.PaymentEventHandler, m *handler.MerchantEventHandler) *EventSource {
+func NewEventSource(h *handler.EventHandler,
+	p *handler.PaymentEventHandler,
+	m *handler.MerchantEventHandler,
+	i *handler.InvoiceEventHandler,
+) *EventSource {
 	return &EventSource{
 		EventHandler:         h,
 		PaymentEventHandler:  p,
 		MerchantEventHandler: m,
+		InvoiceEventHandler:  i,
 	}
 }
 
@@ -39,6 +46,8 @@ func (e *EventSource) Bind() {
 
 	// 注册商户事件
 	e.initMchEvents()
+	// 注册发票事件
+	e.initInvoiceEvents()
 
 	// 注册审批事件
 	eventbus.Subscribe(approval.ApprovalProcessEvent{}, h.OnApprovalProcess)
@@ -59,6 +68,13 @@ func (e *EventSource) Bind() {
 	eventbus.Subscribe(staff.StaffRequireImInitEvent{}, e.HandleStaffRequireImInitEvent)
 }
 
+// 注册商户事件
 func (e *EventSource) initMchEvents() {
 	eventbus.Subscribe(merchant.MerchantBillSettleEvent{}, e.HandleMerchantBillSettleEvent)
+}
+
+// 注册发票事件
+func (e *EventSource) initInvoiceEvents() {
+	// 注册发票撤销事件
+	eventbus.Subscribe(invoice.InvoiceRevertEvent{}, e.HandleInvoiceRevertEvent)
 }

@@ -53,6 +53,7 @@ type (
 		GetInvoice(id int) InvoiceDomain
 	}
 
+	// InvoiceDomain 发票领域接口
 	InvoiceDomain interface {
 		domain.IDomain
 		// GetValue 获取发票记录
@@ -69,6 +70,13 @@ type (
 		Revert(reason string) error
 		// Save 保存发票
 		Save() error
+	}
+
+	// InvoiceRevertEvent 发票撤销事件
+	InvoiceRevertEvent struct {
+		TenantId  int
+		InvoiceId int
+		Reason    string
 	}
 )
 

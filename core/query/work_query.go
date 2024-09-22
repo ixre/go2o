@@ -30,7 +30,7 @@ func (q *WorkQuery) QueryMemberPagingWorkOrder(memberId int, p *fw.PagingParams)
 // 查询会员工单评论
 func (q *WorkQuery) QueryPagingWorkorderComments(workorderId int, p *fw.PagingParams) (*fw.PagingResult, error) {
 	p.Equal("order_id", workorderId)
-	p.OrderBy("create_time desc")
+	p.OrderBy("id asc")
 	ret, err := q.commentRepo.QueryPaging(p)
 	for i, v := range ret.Rows {
 		d, _ := types.ParseJSONObject(v)
