@@ -50,7 +50,7 @@ func DeepClone[T any](v *T) (t *T) {
 	return dst
 }
 
-// 转换为Json对象
+// ParseJSONObject 转换为Json对象
 func ParseJSONObject(v interface{}) (map[string]interface{}, error) {
 	var data []byte
 	switch v := v.(type) {
@@ -71,4 +71,27 @@ func ParseJSONObject(v interface{}) (map[string]interface{}, error) {
 		return result, nil
 	}
 	return nil, err
+}
+
+// ParseJSONArray 转换为Json数组
+func ParseJSONArray(v interface{}) ([]map[string]interface{}, error) {
+	var data []byte
+	switch v := v.(type) {
+	case []byte:
+		data = v
+	case string:
+		data = []byte(v)
+	default:
+		md, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
+		}
+		data = md
+	}
+	var result []map[string]interface{}
+	err := json.Unmarshal(data, &result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
