@@ -27,6 +27,7 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/gof/domain/eventbus"
 )
 
@@ -759,6 +760,9 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 	}
 	// 获取支付数据
 	chanMap := p.TradeMethods()
+	if len(chanMap) == 0 {
+		return 0, errors.New("支付单未使用可退款的支付方式")
+	}
 	// 计算第三方支付可退金额
 	spRefundAmount := 0
 	tx := collections.FindArray(chanMap, func(e *payment.PayTradeData) bool {
@@ -788,6 +792,7 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 	totalRefund := 0
 	for _, v := range chanMap {
 		amount := v.PayAmount - v.RefundAmount
+		logger.Error("退款金额:%d, 已退款:%d", v.PayAmount, v.RefundAmount)
 		if amount <= 0 {
 			continue
 		}
@@ -825,6 +830,7 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 		}
 		totalRefund += amount
 	}
+	logger.Error("totalRefund:%d, spRefundAmount:%d", totalRefund, spRefundAmount)
 	if totalRefund > 0 {
 		// 更新支付单退单金额
 		p.value.RefundAmount += totalRefund
