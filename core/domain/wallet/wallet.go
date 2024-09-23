@@ -273,7 +273,7 @@ func (w *WalletImpl) PrefreezeConsume(data wallet.TransactionData) error {
 		return wallet.ErrNoSuchAccountLog
 	}
 	if l.Kind != wallet.KFreeze {
-		return errors.New("交易流水类型错误: 非冻结")
+		return errors.New("交易流水类型错误: 非冻结不能预扣费")
 	}
 	l.Kind = wallet.KConsume
 	l.UpdateTime = int(time.Now().Unix())
@@ -283,10 +283,10 @@ func (w *WalletImpl) PrefreezeConsume(data wallet.TransactionData) error {
 	if len(data.TransactionRemark) > 0 {
 		l.Remark = data.TransactionRemark
 	}
-	err := w.saveWalletLog(l)
+	// 将冻结金额进行解冻，不退回余额
+	err := w.Unfreeze(l.ChangeValue, "预扣成功", l.OuterTxNo, false, 0, "")
 	if err == nil {
-		// 将冻结金额进行解冻，不退回余额
-		err = w.Unfreeze(l.ChangeValue, "预扣成功", l.OuterTxNo, false, 0, "")
+		err = w.saveWalletLog(l)
 	}
 	return err
 }
