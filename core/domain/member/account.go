@@ -159,7 +159,7 @@ func (a *accountImpl) Charge(account member.AccountType, title string,
 
 func (a *accountImpl) CarryTo(account member.AccountType, d member.AccountOperateData, freeze bool, transactionFee int) (int, error) {
 	if d.Amount <= 0 || math.IsNaN(float64(d.Amount)) {
-		return 0, member.ErrIncorrectQuota
+		return 0, member.ErrBankAccount
 	}
 	switch account {
 	case member.AccountIntegral:
@@ -236,7 +236,7 @@ func (a *accountImpl) Adjust(account member.AccountType, title string, amount in
 // 消耗
 func (a *accountImpl) Consume(account member.AccountType, title string, amount int, outerNo string, remark string) (int, error) {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return 0, member.ErrIncorrectQuota
+		return 0, member.ErrIncorrectAmount
 	}
 	switch account {
 	case member.AccountIntegral:
@@ -270,7 +270,7 @@ func (a *accountImpl) PrefreezeConsume(transactionId int, transactionTitle strin
 
 func (a *accountImpl) Discount(account member.AccountType, title string, amount int, outerNo string, remark string) (int, error) {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return 0, member.ErrIncorrectQuota
+		return 0, member.ErrIncorrectAmount
 	}
 	switch account {
 	case member.AccountIntegral:

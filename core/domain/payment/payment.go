@@ -703,7 +703,7 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 		case payment.MPaySP:
 			// 处理充值退款
 			var txId int
-			txId, err = p.handlePaymentOrderRefund(acc, totalRefund, reason)
+			txId, err = p.handlePaymentOrderRefund(acc, amount, reason)
 			if err == nil {
 				// 第三方支付原路退回, 异步发布退款事件
 				go eventbus.Publish(&payment.PaymentProviderRefundEvent{
@@ -802,7 +802,7 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 				amount = spRefundAmount
 				// 处理充值退款
 				var txId int
-				txId, err = p.handlePaymentOrderRefund(acc, totalRefund, remark)
+				txId, err = p.handlePaymentOrderRefund(acc, amount, remark)
 				if err == nil {
 					// 第三方支付原路退回, 异步发布退款事件
 					go eventbus.Publish(&payment.PaymentProviderRefundEvent{
