@@ -761,7 +761,7 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 	// 获取支付数据
 	chanMap := p.TradeMethods()
 	if len(chanMap) == 0 {
-		logger.Error("退款发生错误,支付单未使用可退款的支付方式,支付单ID:%d", p.GetAggregateRootId())
+		logger.Error("退款发生错误,支付单未使用可退款的支付方式,支付单ID:%d, 交易号：%s", p.GetAggregateRootId(), p.TradeNo())
 		return 0, errors.New("支付单未使用可退款的支付方式")
 	}
 	// 计算第三方支付可退金额
