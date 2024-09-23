@@ -153,3 +153,13 @@ func TestCompleteDivide(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestGetTradeMethods(t *testing.T) {
+	orderNo := "2240923848501316"
+	p := inject.GetPaymentRepo().GetPaymentOrder(orderNo)
+	methods := p.TradeMethods()
+	if len(methods) == 0 {
+		t.Log("支付方式为空")
+		t.FailNow()
+	}
+}

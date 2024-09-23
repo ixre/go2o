@@ -47,6 +47,7 @@ type paymentOrderImpl struct {
 	firstFinishPayment bool //第一次完成支付
 	paymentUser        member.IMemberAggregateRoot
 	buyer              member.IMemberAggregateRoot
+	_tradeMethods      []*payment.PayTradeData
 }
 
 func (p *paymentOrderImpl) GetAggregateRootId() int {
@@ -74,13 +75,13 @@ func (p *paymentOrderImpl) Flag() int {
 
 // TradeMethods 支付途径支付信息
 func (p *paymentOrderImpl) TradeMethods() []*payment.PayTradeData {
-	if p.value.TradeMethods == nil {
+	if p._tradeMethods == nil {
 		if p.GetAggregateRootId() <= 0 {
 			return make([]*payment.PayTradeData, 0)
 		}
-		p.value.TradeMethods = p.repo.GetTradeChannelItems(p.TradeNo())
+		p._tradeMethods = p.repo.GetTradeChannelItems(p.TradeNo())
 	}
-	return p.value.TradeMethods
+	return p._tradeMethods
 }
 
 // Submit 提交支付订单

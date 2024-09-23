@@ -27,7 +27,7 @@ func TestFlowAccount(t *testing.T) {
 	if err == nil {
 		err = acc.Charge(member.AccountFlow, "用户充值50元", 5000, "-", "")
 		if err == nil {
-			err = acc.Consume(member.AccountFlow, "消费150", 15000, "-", "")
+			_, err = acc.Consume(member.AccountFlow, "消费150", 15000, "-", "")
 		}
 	}
 	if err != nil {
@@ -76,8 +76,9 @@ func TestMemberWalletOperate(t *testing.T) {
 	})
 	assertError(t, err)
 	assertError(t, ic.ReviewWithdrawal(id, false, "退回提现"))
-	assertError(t, ic.Discount(member.AccountWallet, "钱包抵扣",
-		30000, "-", "测试"))
+	_, err = ic.Discount(member.AccountWallet, "钱包抵扣",
+		30000, "-", "测试")
+	assertError(t, err)
 	if final := int(ic.GetValue().WalletBalance); final != amount {
 		t.Log("want ", amount, " final ", final)
 		t.FailNow()

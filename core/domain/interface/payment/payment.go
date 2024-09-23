@@ -469,7 +469,7 @@ type Order struct {
 	// 优惠金额,todo: 删除但目前依赖于优惠券
 	DiscountAmount int64 `db:"-" gorm:"-:all"`
 	// 交易途径支付信息
-	TradeMethods []*PayTradeData `db:"-" gorm:"-:all"`
+	TradeMethods []*PayTradeData `json:"-" db:"-" gorm:"-:all"`
 }
 
 func (p Order) TableName() string {

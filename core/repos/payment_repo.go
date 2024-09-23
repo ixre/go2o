@@ -33,13 +33,14 @@ type paymentRepoImpl struct {
 	db.Connector
 	Storage storage.Interface
 	*payImpl.RepoBase
-	_memberRepo   member.IMemberRepo
-	_registryRepo registry.IRegistryRepo
-	_divideRepo   fw.Repository[payment.PayDivide]
-	_mchRepo      merchant.IMerchantRepo
-	_subMchRepo   fw.Repository[payment.PayMerchant]
-	_subMchMgr    payment.ISubMerchantManager
-	_orm          orm.Orm
+	_memberRepo      member.IMemberRepo
+	_registryRepo    registry.IRegistryRepo
+	_divideRepo      fw.Repository[payment.PayDivide]
+	_mchRepo         merchant.IMerchantRepo
+	_subMchRepo      fw.Repository[payment.PayMerchant]
+	_tradeMethodRepo fw.Repository[payment.PayTradeData]
+	_subMchMgr       payment.ISubMerchantManager
+	_orm             orm.Orm
 }
 
 // MerchantRepo implements payment.IPaymentRepo.
@@ -68,14 +69,15 @@ func NewPaymentRepo(sto storage.Interface, o orm.Orm,
 	}
 	//todo: 临时取消与orderRepo的循环依赖
 	r := &paymentRepoImpl{
-		Storage:       sto,
-		Connector:     o.Connector(),
-		_orm:          o,
-		_memberRepo:   mmRepo,
-		_mchRepo:      mchRepo,
-		_registryRepo: registryRepo,
-		_divideRepo:   &fw.BaseRepository[payment.PayDivide]{ORM: on},
-		_subMchRepo:   &fw.BaseRepository[payment.PayMerchant]{ORM: on},
+		Storage:          sto,
+		Connector:        o.Connector(),
+		_orm:             o,
+		_memberRepo:      mmRepo,
+		_mchRepo:         mchRepo,
+		_registryRepo:    registryRepo,
+		_divideRepo:      &fw.BaseRepository[payment.PayDivide]{ORM: on},
+		_subMchRepo:      &fw.BaseRepository[payment.PayMerchant]{ORM: on},
+		_tradeMethodRepo: &fw.BaseRepository[payment.PayTradeData]{ORM: on},
 	}
 	return r
 }
@@ -200,12 +202,9 @@ func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 }
 
 func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.PayTradeData {
-	list := make([]*payment.PayTradeData, 0)
-	err := p._orm.Select(&list, "trade_no= $1 LIMIT $2", tradeNo, 10)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
-	}
-	return list
+	return p._tradeMethodRepo.FindList(&fw.QueryOption{
+		Limit: 10,
+	}, "trade_no= ?", tradeNo)
 }
 
 func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.PayTradeData) (int, error) {
