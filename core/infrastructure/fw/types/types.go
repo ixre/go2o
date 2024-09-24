@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 
 	"golang.org/x/text/cases"
@@ -94,4 +95,17 @@ func ParseJSONArray(v interface{}) ([]map[string]interface{}, error) {
 		return nil, err
 	}
 	return result, nil
+}
+
+// 字符串转为int切片
+func ParseIntSlice(s string, delimer string) []int {
+	var arr []int
+	sArr := strings.Split(s, delimer)
+	for _, v := range sArr {
+		i, err := strconv.ParseInt(v, 10, 64)
+		if err == nil {
+			arr = append(arr, int(i))
+		}
+	}
+	return arr
 }
