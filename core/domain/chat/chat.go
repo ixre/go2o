@@ -42,7 +42,7 @@ func (c *chatUserAggregateRoot) GetConversation(convId int) chat.IConversation {
 }
 
 // BuildConversation implements chat.IChatUserAggregateRoot.
-func (c *chatUserAggregateRoot) BuildConversation(rid int, chatType chat.ChatType) (chat.IConversation, error) {
+func (c *chatUserAggregateRoot) BuildConversation(rid int, chatType chat.ChatType, outOrderNo string) (chat.IConversation, error) {
 
 	uid := []int{c.GetAggregateRootId(), rid}
 	cr := c.repo.Conversation()
@@ -50,11 +50,13 @@ func (c *chatUserAggregateRoot) BuildConversation(rid int, chatType chat.ChatTyp
 	if conv == nil {
 		key := fmt.Sprintf("%d-%d#%d", uid[0], uid[1], chatType)
 		key = crypto.Md5([]byte(key))[8:24]
+		// outOrderNo只有在新增时才指定OutOrderNo，后面只能通过BindOutOrderNo更改
 		v := &chat.ChatConversation{
-			Sid:      c.GetAggregateRootId(),
-			Rid:      rid,
-			Key:      key,
-			ChatType: int(chatType),
+			Sid:        c.GetAggregateRootId(),
+			Rid:        rid,
+			Key:        key,
+			ChatType:   int(chatType),
+			OutOrderNo: outOrderNo,
 		}
 		_, err := cr.Save(v)
 		if err != nil {
@@ -117,6 +119,20 @@ func (c *converstationImpl) Destroy() error {
 		err = c.repo.Conversation().Delete(&chat.ChatConversation{Id: c.GetDomainId()})
 	}
 	return err
+}
+
+// BindOutOrderNo implements chat.IConversation.
+func (c *converstationImpl) BindOutOrderNo(outOrderNo string) error {
+	if len(outOrderNo) <= 0 {
+		return errors.New("业务关联单号为空")
+	}
+	if c.value.OutOrderNo != outOrderNo {
+		c.value.OutOrderNo = outOrderNo
+		c.value.UpdateTime = int(time.Now().Unix())
+		_, err := c.repo.Conversation().Save(c.value)
+		return err
+	}
+	return nil
 }
 
 // FetchHistoryMsgList implements chat.IConversation.

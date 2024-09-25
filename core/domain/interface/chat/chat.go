@@ -35,7 +35,7 @@ type (
 		// GetConversation 获取聊天会话
 		GetConversation(convId int) IConversation
 		// BuildConversation 生成聊天会话
-		BuildConversation(rid int, chatType ChatType) (IConversation, error)
+		BuildConversation(rid int, chatType ChatType, outOrderNo string) (IConversation, error)
 	}
 
 	IConversation interface {
@@ -46,6 +46,8 @@ type (
 		GetMsg(msgId int) *ChatMsg
 		// Destroy 删除会话
 		Destroy() error
+		// BindOutOrderNo 绑定关联业务单号,当对创建时指定的外部业务单号进行更改时，调用此方法
+		BindOutOrderNo(outOrderNo string) error
 		// Greet 打招呼
 		Greet(msg string) error
 		// Send 发送消息，并返回消息编号
@@ -104,6 +106,8 @@ type ChatConversation struct {
 	LastChatTime int `json:"lastChatTime" db:"last_chat_time" gorm:"column:last_chat_time" bson:"lastChatTime"`
 	// LastMsg
 	LastMsg string `json:"lastMsg" db:"last_msg" gorm:"column:last_msg" bson:"lastMsg"`
+	// 关联业务单号
+	OutOrderNo string `json:"outOrderNo" db:"out_order_no" gorm:"column:out_order_no" bson:"outOrderNo"`
 	// 创建时间
 	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 	// 更新时间

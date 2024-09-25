@@ -1300,3 +1300,8 @@ ALTER TABLE "public".pay_order
   ADD COLUMN attr_flag int4 DEFAULT 0 NOT NULL;
 COMMENT ON COLUMN "public".pay_order.attr_flag IS '标志 1: 分账';
 
+-- 2024-09-25 聊天会话关联业务单号
+ALTER TABLE chat_conversation 
+  ADD COLUMN out_order_no varchar(40) DEFAULT '' NOT NULL;
+COMMENT ON COLUMN chat_conversation.out_order_no IS '关联业务单号';
+

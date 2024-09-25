@@ -29,7 +29,7 @@ func NewChatService(repo chat.IChatRepository, memberRepo member.IMemberRepo) pr
 // GetConversation implements proto.ChatServiceServer.
 func (c *chatServiceImpl) GetConversation(_ context.Context, req *proto.ChatConversationRequest) (*proto.ChatConversationResponse, error) {
 	iu := c.repo.GetChatUser(int(req.Uid))
-	ic, err := iu.BuildConversation(int(req.Rid), chat.ChatType(req.ChatType))
+	ic, err := iu.BuildConversation(int(req.Rid), chat.ChatType(req.ChatType), req.OutOrderNo)
 	if err != nil {
 		return &proto.ChatConversationResponse{
 			ErrCode: 1,
@@ -63,8 +63,19 @@ func (c *chatServiceImpl) GetConversation(_ context.Context, req *proto.ChatConv
 	return ret, nil
 }
 
+// BindOutOrderNo 绑定外部订单号
+func (c *chatServiceImpl) BindOutOrderNo(_ context.Context, req *proto.BindChatOutOrderNoRequest) (*proto.TxResult, error) {
+	iu := c.repo.GetChatUser(int(req.Uid))
+	ic := iu.GetConversation(int(req.ConvId))
+	if ic == nil {
+		return c.errorV2(errors.New("no such conversation")), nil
+	}
+	err := ic.BindOutOrderNo(req.OutOrderNo)
+	return c.errorV2(err), nil
+}
+
 // DeleteMsg implements proto.ChatServiceServer.
-func (c *chatServiceImpl) DeleteMsg(_ context.Context, req *proto.MsgIdRequest) (*proto.Result, error) {
+func (c *chatServiceImpl) DeleteMsg(_ context.Context, req *proto.MsgIdRequest) (*proto.TxResult, error) {
 	var err error
 	iu := c.repo.GetChatUser(int(req.Uid))
 	ic := iu.GetConversation(int(req.ConvId))
@@ -73,11 +84,11 @@ func (c *chatServiceImpl) DeleteMsg(_ context.Context, req *proto.MsgIdRequest) 
 	} else {
 		err = ic.DeleteMsg(int(req.MsgId))
 	}
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 // DestroyConversation implements proto.ChatServiceServer.
-func (c *chatServiceImpl) DestroyConversation(_ context.Context, req *proto.ConversationIdRequest) (*proto.Result, error) {
+func (c *chatServiceImpl) DestroyConversation(_ context.Context, req *proto.ConversationIdRequest) (*proto.TxResult, error) {
 	var err error
 	iu := c.repo.GetChatUser(int(req.Uid))
 	ic := iu.GetConversation(int(req.ConvId))
@@ -86,7 +97,7 @@ func (c *chatServiceImpl) DestroyConversation(_ context.Context, req *proto.Conv
 	} else {
 		err = ic.Destroy()
 	}
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 // FetchHistoryMsgList implements proto.ChatServiceServer.
@@ -140,7 +151,7 @@ func (c *chatServiceImpl) GetMsg(_ context.Context, req *proto.MsgIdRequest) (*p
 }
 
 // RevertMsg implements proto.ChatServiceServer.
-func (c *chatServiceImpl) RevertMsg(_ context.Context, req *proto.MsgIdRequest) (*proto.Result, error) {
+func (c *chatServiceImpl) RevertMsg(_ context.Context, req *proto.MsgIdRequest) (*proto.TxResult, error) {
 	iu := c.repo.GetChatUser(int(req.Uid))
 	ic := iu.GetConversation(int(req.ConvId))
 	var err error
@@ -149,7 +160,7 @@ func (c *chatServiceImpl) RevertMsg(_ context.Context, req *proto.MsgIdRequest) 
 	} else {
 		err = ic.RevertMsg(int(req.MsgId))
 	}
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }
 
 // Send implements proto.ChatServiceServer.
@@ -177,7 +188,7 @@ func (c *chatServiceImpl) Send(_ context.Context, req *proto.SendMsgRequest) (*p
 }
 
 // UpdateMsgAttrs implements proto.ChatServiceServer.
-func (c *chatServiceImpl) UpdateMsgAttrs(_ context.Context, req *proto.UpdateMsgAttrRequest) (*proto.Result, error) {
+func (c *chatServiceImpl) UpdateMsgAttrs(_ context.Context, req *proto.UpdateMsgAttrRequest) (*proto.TxResult, error) {
 	iu := c.repo.GetChatUser(int(req.Uid))
 	ic := iu.GetConversation(int(req.ConvId))
 	var err error
@@ -186,5 +197,5 @@ func (c *chatServiceImpl) UpdateMsgAttrs(_ context.Context, req *proto.UpdateMsg
 	} else {
 		err = ic.UpdateMsgAttrs(int(req.MsgId), req.Attr)
 	}
-	return c.error(err), nil
+	return c.errorV2(err), nil
 }

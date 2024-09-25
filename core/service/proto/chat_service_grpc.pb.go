@@ -36,6 +36,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	ChatService_GetConversation_FullMethodName     = "/ChatService/getConversation"
 	ChatService_DestroyConversation_FullMethodName = "/ChatService/destroyConversation"
+	ChatService_BindOutOrderNo_FullMethodName      = "/ChatService/bindOutOrderNo"
 	ChatService_Send_FullMethodName                = "/ChatService/send"
 	ChatService_FetchMsgList_FullMethodName        = "/ChatService/fetchMsgList"
 	ChatService_UpdateMsgAttrs_FullMethodName      = "/ChatService/updateMsgAttrs"
@@ -51,19 +52,21 @@ type ChatServiceClient interface {
 	// 获取聊天会话
 	GetConversation(ctx context.Context, in *ChatConversationRequest, opts ...grpc.CallOption) (*ChatConversationResponse, error)
 	// 删除会话
-	DestroyConversation(ctx context.Context, in *ConversationIdRequest, opts ...grpc.CallOption) (*Result, error)
+	DestroyConversation(ctx context.Context, in *ConversationIdRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// 绑定业务关联单号
+	BindOutOrderNo(ctx context.Context, in *BindChatOutOrderNoRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 发送消息，并返回消息编号
 	Send(ctx context.Context, in *SendMsgRequest, opts ...grpc.CallOption) (*SendMsgResponse, error)
 	// 获取最近的消息
 	FetchMsgList(ctx context.Context, in *FetchMsgRequest, opts ...grpc.CallOption) (*FetchMsgResponse, error)
 	// 更新消息扩展数据
-	UpdateMsgAttrs(ctx context.Context, in *UpdateMsgAttrRequest, opts ...grpc.CallOption) (*Result, error)
+	UpdateMsgAttrs(ctx context.Context, in *UpdateMsgAttrRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取消息
 	GetMsg(ctx context.Context, in *MsgIdRequest, opts ...grpc.CallOption) (*SMsg, error)
 	// 撤回消息
-	RevertMsg(ctx context.Context, in *MsgIdRequest, opts ...grpc.CallOption) (*Result, error)
+	RevertMsg(ctx context.Context, in *MsgIdRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 删除消息
-	DeleteMsg(ctx context.Context, in *MsgIdRequest, opts ...grpc.CallOption) (*Result, error)
+	DeleteMsg(ctx context.Context, in *MsgIdRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type chatServiceClient struct {
@@ -83,9 +86,18 @@ func (c *chatServiceClient) GetConversation(ctx context.Context, in *ChatConvers
 	return out, nil
 }
 
-func (c *chatServiceClient) DestroyConversation(ctx context.Context, in *ConversationIdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *chatServiceClient) DestroyConversation(ctx context.Context, in *ConversationIdRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ChatService_DestroyConversation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) BindOutOrderNo(ctx context.Context, in *BindChatOutOrderNoRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, ChatService_BindOutOrderNo_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,8 +122,8 @@ func (c *chatServiceClient) FetchMsgList(ctx context.Context, in *FetchMsgReques
 	return out, nil
 }
 
-func (c *chatServiceClient) UpdateMsgAttrs(ctx context.Context, in *UpdateMsgAttrRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *chatServiceClient) UpdateMsgAttrs(ctx context.Context, in *UpdateMsgAttrRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ChatService_UpdateMsgAttrs_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -128,8 +140,8 @@ func (c *chatServiceClient) GetMsg(ctx context.Context, in *MsgIdRequest, opts .
 	return out, nil
 }
 
-func (c *chatServiceClient) RevertMsg(ctx context.Context, in *MsgIdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *chatServiceClient) RevertMsg(ctx context.Context, in *MsgIdRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ChatService_RevertMsg_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -137,8 +149,8 @@ func (c *chatServiceClient) RevertMsg(ctx context.Context, in *MsgIdRequest, opt
 	return out, nil
 }
 
-func (c *chatServiceClient) DeleteMsg(ctx context.Context, in *MsgIdRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *chatServiceClient) DeleteMsg(ctx context.Context, in *MsgIdRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, ChatService_DeleteMsg_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -153,19 +165,21 @@ type ChatServiceServer interface {
 	// 获取聊天会话
 	GetConversation(context.Context, *ChatConversationRequest) (*ChatConversationResponse, error)
 	// 删除会话
-	DestroyConversation(context.Context, *ConversationIdRequest) (*Result, error)
+	DestroyConversation(context.Context, *ConversationIdRequest) (*TxResult, error)
+	// 绑定业务关联单号
+	BindOutOrderNo(context.Context, *BindChatOutOrderNoRequest) (*TxResult, error)
 	// 发送消息，并返回消息编号
 	Send(context.Context, *SendMsgRequest) (*SendMsgResponse, error)
 	// 获取最近的消息
 	FetchMsgList(context.Context, *FetchMsgRequest) (*FetchMsgResponse, error)
 	// 更新消息扩展数据
-	UpdateMsgAttrs(context.Context, *UpdateMsgAttrRequest) (*Result, error)
+	UpdateMsgAttrs(context.Context, *UpdateMsgAttrRequest) (*TxResult, error)
 	// 获取消息
 	GetMsg(context.Context, *MsgIdRequest) (*SMsg, error)
 	// 撤回消息
-	RevertMsg(context.Context, *MsgIdRequest) (*Result, error)
+	RevertMsg(context.Context, *MsgIdRequest) (*TxResult, error)
 	// 删除消息
-	DeleteMsg(context.Context, *MsgIdRequest) (*Result, error)
+	DeleteMsg(context.Context, *MsgIdRequest) (*TxResult, error)
 	mustEmbedUnimplementedChatServiceServer()
 }
 
@@ -176,8 +190,11 @@ type UnimplementedChatServiceServer struct {
 func (UnimplementedChatServiceServer) GetConversation(context.Context, *ChatConversationRequest) (*ChatConversationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConversation not implemented")
 }
-func (UnimplementedChatServiceServer) DestroyConversation(context.Context, *ConversationIdRequest) (*Result, error) {
+func (UnimplementedChatServiceServer) DestroyConversation(context.Context, *ConversationIdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DestroyConversation not implemented")
+}
+func (UnimplementedChatServiceServer) BindOutOrderNo(context.Context, *BindChatOutOrderNoRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BindOutOrderNo not implemented")
 }
 func (UnimplementedChatServiceServer) Send(context.Context, *SendMsgRequest) (*SendMsgResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
@@ -185,16 +202,16 @@ func (UnimplementedChatServiceServer) Send(context.Context, *SendMsgRequest) (*S
 func (UnimplementedChatServiceServer) FetchMsgList(context.Context, *FetchMsgRequest) (*FetchMsgResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchMsgList not implemented")
 }
-func (UnimplementedChatServiceServer) UpdateMsgAttrs(context.Context, *UpdateMsgAttrRequest) (*Result, error) {
+func (UnimplementedChatServiceServer) UpdateMsgAttrs(context.Context, *UpdateMsgAttrRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMsgAttrs not implemented")
 }
 func (UnimplementedChatServiceServer) GetMsg(context.Context, *MsgIdRequest) (*SMsg, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMsg not implemented")
 }
-func (UnimplementedChatServiceServer) RevertMsg(context.Context, *MsgIdRequest) (*Result, error) {
+func (UnimplementedChatServiceServer) RevertMsg(context.Context, *MsgIdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RevertMsg not implemented")
 }
-func (UnimplementedChatServiceServer) DeleteMsg(context.Context, *MsgIdRequest) (*Result, error) {
+func (UnimplementedChatServiceServer) DeleteMsg(context.Context, *MsgIdRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMsg not implemented")
 }
 func (UnimplementedChatServiceServer) mustEmbedUnimplementedChatServiceServer() {}
@@ -242,6 +259,24 @@ func _ChatService_DestroyConversation_Handler(srv interface{}, ctx context.Conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChatServiceServer).DestroyConversation(ctx, req.(*ConversationIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_BindOutOrderNo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BindChatOutOrderNoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).BindOutOrderNo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_BindOutOrderNo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).BindOutOrderNo(ctx, req.(*BindChatOutOrderNoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -368,6 +403,10 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "destroyConversation",
 			Handler:    _ChatService_DestroyConversation_Handler,
+		},
+		{
+			MethodName: "bindOutOrderNo",
+			Handler:    _ChatService_BindOutOrderNo_Handler,
 		},
 		{
 			MethodName: "send",
