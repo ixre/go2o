@@ -1100,7 +1100,7 @@ func (s *memberService) GetCertification(_ context.Context, id *proto.MemberIdRe
 	}, nil
 }
 
-// 保存实名认证信息
+// SubmitCertification 保存实名认证信息
 func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCertificationRequest) (result *proto.TxResult, err error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
@@ -1128,17 +1128,24 @@ func (s *memberService) SubmitCertification(_ context.Context, r *proto.SubmitCe
 	return s.successV2(nil), nil
 }
 
-// 审核实名认证,若重复审核将返回错误
+// ReviewCertification 审核实名认证,若重复审核将返回错误
 func (s *memberService) ReviewCertification(_ context.Context, r *proto.ReviewCertificationRequest) (*proto.TxResult, error) {
 	m := s.repo.GetMember(r.MemberId)
 	if m == nil {
 		return s.errorV2(member.ErrNoSuchMember), nil
 	}
 	err := m.Profile().ReviewCertification(r.ReviewPass, r.Remark)
-	if err != nil {
-		return s.errorV2(err), nil
+	return s.errorV2(err), nil
+}
+
+// RejectCertification 驳回实名认证,用于认证通过后退回，要求重新认证
+func (s *memberService) RejectCertification(_ context.Context, r *proto.RejectCertificationRequest) (*proto.TxResult, error) {
+	m := s.repo.GetMember(r.MemberId)
+	if m == nil {
+		return s.errorV2(member.ErrNoSuchMember), nil
 	}
-	return s.successV2(nil), nil
+	err := m.Profile().RejectCertification(r.Remark)
+	return s.errorV2(err), nil
 }
 
 /*********** 收货地址 ***********/
@@ -1399,7 +1406,7 @@ func (s *memberService) AccountConsume(_ context.Context, r *proto.AccountChange
 	if err == nil {
 		var txId int
 		acc := m.GetAccount()
-		txId,err = acc.Consume(member.AccountType(r.AccountType), r.TransactionTitle, int(r.Amount), r.OuterTransactionNo, r.TransactionRemark)
+		txId, err = acc.Consume(member.AccountType(r.AccountType), r.TransactionTitle, int(r.Amount), r.OuterTransactionNo, r.TransactionRemark)
 		if err == nil {
 			return s.txResult(txId, nil), nil
 		}

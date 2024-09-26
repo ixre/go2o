@@ -11,6 +11,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/infrastructure/logger"
+	"github.com/ixre/gof/domain/eventbus"
 )
 
 var _ staff.IStaffManager = new(staffManagerImpl)
@@ -161,15 +162,23 @@ func (e *staffManagerImpl) TransferApproval(trans *staff.StaffTransfer, event *a
 				return errors.New("商户不存在")
 			}
 			isn := e._stationRepo.GetStationByCity(im.GetValue().City)
-			staff := e.GetStaff(trans.StaffId)
-			staff.MchId = trans.TransferMchId
+			st := e.GetStaff(trans.StaffId)
+			st.MchId = trans.TransferMchId
 			if isn != nil {
-				staff.StationId = isn.GetAggregateRootId()
+				st.StationId = isn.GetAggregateRootId()
 			} else {
-				staff.StationId = 0
-				logger.Error("station not found, staffId: %d, mchId: %d", staff.Id, staff.MchId)
+				st.StationId = 0
+				logger.Error("station not found, staffId: %d, mchId: %d", st.Id, st.MchId)
 			}
-			_, err = e._repo.Save(staff)
+			_, err = e._repo.Save(st)
+			if err == nil {
+				// 发布员工转移审批通过事件
+				go eventbus.Publish(&staff.StaffTransferApprovedEvent{
+					Staff:         *st,
+					TransferMchId: trans.TransferMchId,
+					OriginMchId:   trans.OriginMchId,
+				})
+			}
 		}
 		return err
 	}

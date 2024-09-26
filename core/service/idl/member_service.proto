@@ -37,6 +37,8 @@ service MemberService {
     rpc SubmitCertification (SubmitCertificationRequest) returns (TxResult);
     /** 审核实名认证,若重复审核将返回错误 **/
     rpc ReviewCertification (ReviewCertificationRequest) returns (TxResult);
+    /** 驳回实名认证,用于认证通过后退回，要求重新认证 */
+    rpc RejectCertification (RejectCertificationRequest) returns (TxResult);
     /** 获取会员等级信息,id */
     rpc GetMemberLevel (Int32) returns (SMemberLevel);
     /** 保存等级 */
@@ -231,4 +233,11 @@ message RechargePaymentOrderResponse{
     string message = 2;
     // 订单号
     string orderNo = 3;
+}
+
+message RejectCertificationRequest{
+    // 会员编号
+    int64 memberId = 1;
+    // 驳回原因
+    string remark = 2;
 }

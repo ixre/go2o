@@ -26,6 +26,7 @@ const (
 	MemberService_GetCertification_FullMethodName           = "/MemberService/GetCertification"
 	MemberService_SubmitCertification_FullMethodName        = "/MemberService/SubmitCertification"
 	MemberService_ReviewCertification_FullMethodName        = "/MemberService/ReviewCertification"
+	MemberService_RejectCertification_FullMethodName        = "/MemberService/RejectCertification"
 	MemberService_GetMemberLevel_FullMethodName             = "/MemberService/GetMemberLevel"
 	MemberService_SaveMemberLevel_FullMethodName            = "/MemberService/SaveMemberLevel"
 	MemberService_GetLevelBySign_FullMethodName             = "/MemberService/GetLevelBySign"
@@ -133,6 +134,8 @@ type MemberServiceClient interface {
 	SubmitCertification(ctx context.Context, in *SubmitCertificationRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 审核实名认证,若重复审核将返回错误 *
 	ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// * 驳回实名认证,用于认证通过后退回，要求重新认证
+	RejectCertification(ctx context.Context, in *RejectCertificationRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// * 获取会员等级信息,id
 	GetMemberLevel(ctx context.Context, in *Int32, opts ...grpc.CallOption) (*SMemberLevel, error)
 	// * 保存等级
@@ -354,6 +357,15 @@ func (c *memberServiceClient) SubmitCertification(ctx context.Context, in *Submi
 func (c *memberServiceClient) ReviewCertification(ctx context.Context, in *ReviewCertificationRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MemberService_ReviewCertification_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) RejectCertification(ctx context.Context, in *RejectCertificationRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MemberService_RejectCertification_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1081,6 +1093,8 @@ type MemberServiceServer interface {
 	SubmitCertification(context.Context, *SubmitCertificationRequest) (*TxResult, error)
 	// * 审核实名认证,若重复审核将返回错误 *
 	ReviewCertification(context.Context, *ReviewCertificationRequest) (*TxResult, error)
+	// * 驳回实名认证,用于认证通过后退回，要求重新认证
+	RejectCertification(context.Context, *RejectCertificationRequest) (*TxResult, error)
 	// * 获取会员等级信息,id
 	GetMemberLevel(context.Context, *Int32) (*SMemberLevel, error)
 	// * 保存等级
@@ -1262,6 +1276,9 @@ func (UnimplementedMemberServiceServer) SubmitCertification(context.Context, *Su
 }
 func (UnimplementedMemberServiceServer) ReviewCertification(context.Context, *ReviewCertificationRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewCertification not implemented")
+}
+func (UnimplementedMemberServiceServer) RejectCertification(context.Context, *RejectCertificationRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RejectCertification not implemented")
 }
 func (UnimplementedMemberServiceServer) GetMemberLevel(context.Context, *Int32) (*SMemberLevel, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMemberLevel not implemented")
@@ -1629,6 +1646,24 @@ func _MemberService_ReviewCertification_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemberServiceServer).ReviewCertification(ctx, req.(*ReviewCertificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_RejectCertification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RejectCertificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).RejectCertification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemberService_RejectCertification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).RejectCertification(ctx, req.(*RejectCertificationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3053,6 +3088,10 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReviewCertification",
 			Handler:    _MemberService_ReviewCertification_Handler,
+		},
+		{
+			MethodName: "RejectCertification",
+			Handler:    _MemberService_RejectCertification_Handler,
 		},
 		{
 			MethodName: "GetMemberLevel",

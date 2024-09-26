@@ -716,6 +716,27 @@ func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error
 	return err
 }
 
+// RejectCertification 驳回实名认证
+func (p *profileManagerImpl) RejectCertification(remark string) error {
+	p.GetCertificationInfo()
+	if p.trustedInfo.ReviewStatus != int(enum.ReviewApproved) {
+		return errors.New("认证尚未通过,无需驳回")
+	}
+	// 会员状态改为被退回
+	p.trustedInfo.ReviewStatus = int(enum.ReviewRejected)
+	p.trustedInfo.Remark = remark
+	p.trustedInfo.ReviewTime = int(time.Now().Unix())
+	_, err := p.repo.SaveCertificationInfo(p.trustedInfo)
+	if err == nil {
+		// 标记会员为未认证
+		if p.member.ContainFlag(member.FlagTrusted) {
+			p.member.value.UserFlag ^= member.FlagTrusted
+			_, err = p.member.Save()
+		}
+	}
+	return err
+}
+
 // 银行卡是否绑定
 func (p *profileManagerImpl) bankCardIsExists(cardNo string) bool {
 	for _, v := range p.GetBankCards() {

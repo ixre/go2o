@@ -51,6 +51,16 @@ type (
 		Staff Staff
 	}
 
+	// StaffTransferApprovedEvent 员工转移审批通过事件
+	StaffTransferApprovedEvent struct {
+		// 员工信息
+		Staff Staff
+		// 原商户
+		OriginMchId int
+		// 转移商户
+		TransferMchId int
+	}
+
 	// MchStaff 商户代理人坐席(员工)
 	Staff struct {
 		// 编号

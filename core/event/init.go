@@ -70,7 +70,10 @@ func (e *EventSource) Bind() {
 
 // 注册商户事件
 func (e *EventSource) initMchEvents() {
+	// 注册商户结算事件
 	eventbus.Subscribe(merchant.MerchantBillSettleEvent{}, e.HandleMerchantBillSettleEvent)
+	// 注册员工转移审批通过事件
+	eventbus.Subscribe(staff.StaffTransferApprovedEvent{}, e.HandleStaffTransferApprovedEvent)
 }
 
 // 注册发票事件

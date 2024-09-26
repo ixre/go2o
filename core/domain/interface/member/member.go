@@ -180,6 +180,8 @@ type (
 		SaveCertificationInfo(v *CerticationInfo) error
 		// ReviewCertification 审核实名认证,若重复审核将返回错误
 		ReviewCertification(pass bool, remark string) error
+		// RejectCertification 驳回实名认证, 需在实名认证通过的情况下，进行驳回要求重新认证
+		RejectCertification(remark string) error
 		// CreateDeliver 创建配送地址
 		CreateDeliver(*ConsigneeAddress) IDeliverAddress
 		// GetDeliverAddress 获取配送地址

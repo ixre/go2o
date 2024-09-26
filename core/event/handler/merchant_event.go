@@ -28,3 +28,9 @@ func (m *MerchantEventHandler) HandleMerchantBillSettleEvent(event interface{}) 
 	// e := event.(*merchant.MerchantBillSettleEvent)
 	// 结算账单应在具体的实现中订阅事件并处理, 这里只是为了展示，不做任何处理
 }
+
+// HandleStaffTransferApprovedEvent 处理员工转移审批通过事件
+func (m *MerchantEventHandler) HandleStaffTransferApprovedEvent(event interface{}) {
+	//e := event.(*staff.StaffTransferApprovedEvent)
+	// 员工转移审批通过事件应在具体的实现中订阅事件并处理, 这里只是为了展示，不做任何处理
+}
