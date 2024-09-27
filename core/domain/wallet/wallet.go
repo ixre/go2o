@@ -377,7 +377,7 @@ func (w *WalletImpl) Unfreeze(value int, title, outerNo string, isRefundBalance 
 			value = -value
 		}
 		if w._value.FreezeAmount < value {
-			return wallet.ErrOutOfAmount
+			return errors.New("结冻金额超出")
 		}
 		if isRefundBalance {
 			w._value.Balance += value

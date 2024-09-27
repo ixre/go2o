@@ -286,7 +286,7 @@ message AccountChangeRequest {
   string transactionTitle = 3;
   // 金额
   int64 amount = 4;
-  // 外部校译号
+  // 外部交易号
   string outerTransactionNo = 5;
   // 备注
   string transactionRemark =6;
@@ -315,11 +315,11 @@ message AccountCarryRequest{
   EAccountType accountType = 2;
   // 明细标题
   string transactionTitle = 3;
-  // 已扣除手续费的金额
+  // 交易金额(包含手续费)
   int64 amount = 4;
   // 手续费
   int64 transactionFee = 5;
-  // 外部校译号
+  // 外部交易号
   string outerTransactionNo = 6;
   // 备注
   string transactionRemark =7;
@@ -355,7 +355,7 @@ message AccountUnfreezeRequest {
   string transactionTitle = 3;
   /** 冻结金额 */
   int64 amount =  4;
-  // 外部校译号
+  // 外部交易号
   string outerTransactionNo = 5;
   // 备注
   string transactionRemark =6;

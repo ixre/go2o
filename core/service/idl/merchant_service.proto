@@ -88,7 +88,7 @@ service MerchantService {
     // 获取钱包账户
     rpc GetAccount (MerchantId) returns (SMerchantAccount);
     // 账户入账
-    rpc CarryToAccount(UserWalletCarryRequest) returns (TxResult);
+    rpc CarryToAccount(MerchantAccountCarrayRequest) returns (TxResult);
     // 账户人工调整
     rpc AdjustAccount (UserWalletAdjustRequest) returns (TxResult);
     // 账户冻结
@@ -105,8 +105,8 @@ service MerchantService {
     rpc GetWalletTxLog (UserWalletTxId) returns (UserWalletTxResponse);
     // 根据月份时间,获取当前账单
     rpc GetBill (BillTimeRequest) returns (SMerchantBill);
-    // 调整账单商城金额
-	rpc AdjustBillAmount(AdjustMerchantBillAmountRequest) returns (TxResult);
+    // 手动调整商户账单金额,仅当账单金额对不上时进行调整
+	rpc ManualAdjustBillAmount(ManualAdjustMerchantBillAmountRequest) returns (TxResult);
 	// GenerateBill 生成当前月份的账单
 	rpc GenerateBill(MerchantId) returns (TxResult);
 	// ReviewBill 审核账单
@@ -119,6 +119,29 @@ service MerchantService {
     rpc GetSettleConf (MerchantId) returns (SSettleConf);
     //  保存结算设置
     rpc SaveSettleConf (SettleConfigSaveRequest) returns (TxResult);
+}
+
+
+/** 商户账户入账请求 */
+message MerchantAccountCarrayRequest{
+  // 会员编号
+  sint64 userId = 1;
+  // 明细标题
+  string transactionTitle = 2;
+  // 交易金额(包含手续费)
+  int64 amount = 3;
+  // 手续费
+  int64 transactionFee = 4;
+  // 账单金额类型: 1: 商城金额 2: 线下金额 3: 其他金额
+  int32 billAmountType = 5;
+  // 外部交易号
+  string outerTransactionNo = 6;
+  // 备注
+  string transactionRemark = 7;
+  // 是否先冻结
+  bool freeze = 8;
+  // 外部交易用户编号
+  int64 outerTxUid = 9;
 }
 
 // 员工请求
@@ -277,16 +300,23 @@ message SMerchantBill{
     // 更新时间
     int64 updateTime = 20;
 }
-// 调整商户账单金额请求
-message AdjustMerchantBillAmountRequest{
+
+// 手动调整商户账单金额请求
+message ManualAdjustMerchantBillAmountRequest{
     // 商户编号
     int64 mchId = 1;
-    // 调整类型: 1: 商城金额 2: 线下金额 3: 其他金额
-    int32 amountType = 2;
+    // 账单金额类型: 1: 商城金额 2: 线下金额 3: 其他金额
+    int32 billAmountType = 2;
+    // 调整标题
+    string title = 3;
     // 调整金额
-    int64 amount = 3;
+    int64 amount = 4;
     // 交易费
-    int64 txFee = 4;
+    int64 txFee = 5;
+    // 操作人编号
+    int64 oprUid = 6;
+    // 备注
+    string remark  = 7;
 }
 // 审核商户月度账单请求
 message ReviewMerchantBillRequest{

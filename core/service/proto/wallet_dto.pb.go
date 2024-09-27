@@ -90,11 +90,11 @@ type UserWalletCarryRequest struct {
 	UserId int64 `protobuf:"zigzag64,1,opt,name=userId,proto3" json:"userId"`
 	// 明细标题
 	TransactionTitle string `protobuf:"bytes,2,opt,name=transactionTitle,proto3" json:"transactionTitle"`
-	// 已扣除手续费的金额
+	// 交易金额(包含手续费)
 	Amount int64 `protobuf:"varint,3,opt,name=amount,proto3" json:"amount"`
 	// 手续费
 	TransactionFee int64 `protobuf:"varint,4,opt,name=transactionFee,proto3" json:"transactionFee"`
-	// 外部校译号
+	// 外部交易号
 	OuterTransactionNo string `protobuf:"bytes,5,opt,name=outerTransactionNo,proto3" json:"outerTransactionNo"`
 	// 备注
 	TransactionRemark string `protobuf:"bytes,6,opt,name=transactionRemark,proto3" json:"transactionRemark"`
@@ -461,7 +461,7 @@ type UserWalletUnfreezeRequest struct {
 	TransactionTitle string `protobuf:"bytes,3,opt,name=transactionTitle,proto3" json:"transactionTitle"`
 	// * 冻结金额
 	Amount int64 `protobuf:"varint,4,opt,name=amount,proto3" json:"amount"`
-	// 外部校译号
+	// 外部交易号
 	OuterTransactionNo string `protobuf:"bytes,5,opt,name=outerTransactionNo,proto3" json:"outerTransactionNo"`
 	// 备注
 	TransactionRemark string `protobuf:"bytes,6,opt,name=transactionRemark,proto3" json:"transactionRemark"`

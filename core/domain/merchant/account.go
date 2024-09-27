@@ -145,8 +145,11 @@ func (a *accountImpl) Consume(transactionTitle string, amount int, outerTxNo str
 
 // 订单结账
 func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
-	if p.Amount <= 0 || math.IsNaN(float64(p.Amount)) {
+	if p.Amount <= 0 {
 		return 0, merchant.ErrAmount
+	}
+	if p.BillAmountType <= 0 {
+		return 0, errors.New("未指定账单类型,无法入账")
 	}
 	// 计算金额
 	fAmount := int(p.Amount / 100)
@@ -172,7 +175,15 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 			a.value.SalesAmount += p.Amount - p.TransactionFee
 			// 添加手续费可开票金额
 			a.value.InvoiceableAmount += p.TransactionFee
+			// 同步钱包
 			err = a.asyncWallet()
+			if err == nil {
+				// 更新账单
+				err = a.mchImpl.SaleManager().AdjustBillAmount(
+					merchant.BillAmountType(p.BillAmountType),
+					int(p.Amount),
+					int(p.TransactionFee))
+			}
 		}
 		return txId, err
 		// 记录旧日志,todo:可能去掉

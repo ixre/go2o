@@ -1136,7 +1136,7 @@ func (m *merchantService) AdjustAccount(_ context.Context, req *proto.UserWallet
 }
 
 // CarryToAccount 商户账户入账
-func (m *merchantService) CarryToAccount(_ context.Context, req *proto.UserWalletCarryRequest) (*proto.TxResult, error) {
+func (m *merchantService) CarryToAccount(_ context.Context, req *proto.MerchantAccountCarrayRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(req.UserId))
 	if mch == nil {
 		return m.errorV2(member.ErrNoSuchMember), nil
@@ -1154,6 +1154,7 @@ func (m *merchantService) CarryToAccount(_ context.Context, req *proto.UserWalle
 		TransactionTitle:  req.TransactionTitle,
 		TransactionRemark: req.TransactionRemark,
 		OuterTxUid:        int(req.OuterTxUid),
+		BillAmountType:    int(req.BillAmountType),
 	})
 	if err != nil {
 		return m.errorV2(err), nil
@@ -1310,12 +1311,18 @@ func (m *merchantService) TransferStaff(_ context.Context, req *proto.TransferSt
 }
 
 // AdjustBillAmount implements proto.MerchantServiceServer.
-func (m *merchantService) AdjustBillAmount(_ context.Context, req *proto.AdjustMerchantBillAmountRequest) (*proto.TxResult, error) {
+func (m *merchantService) ManualAdjustBillAmount(_ context.Context, req *proto.ManualAdjustMerchantBillAmountRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(req.MchId))
 	if mch == nil {
 		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
-	err := mch.SaleManager().AdjustBillAmount(merchant.BillAmountType(req.AmountType), int(req.Amount), int(req.TxFee))
+	err := mch.Account().Adjust(req.Title, int(req.Amount), req.Remark, req.OprUid)
+	if err == nil {
+		err = mch.SaleManager().AdjustBillAmount(
+			merchant.BillAmountType(req.BillAmountType),
+			int(req.Amount),
+			int(req.TxFee))
+	}
 	if err != nil {
 		return m.errorV2(err), nil
 	}

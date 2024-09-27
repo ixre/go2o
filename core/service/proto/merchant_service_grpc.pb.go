@@ -66,7 +66,7 @@ const (
 	MerchantService_CompleteTransaction_FullMethodName         = "/MerchantService/CompleteTransaction"
 	MerchantService_GetWalletTxLog_FullMethodName              = "/MerchantService/GetWalletTxLog"
 	MerchantService_GetBill_FullMethodName                     = "/MerchantService/GetBill"
-	MerchantService_AdjustBillAmount_FullMethodName            = "/MerchantService/AdjustBillAmount"
+	MerchantService_ManualAdjustBillAmount_FullMethodName      = "/MerchantService/ManualAdjustBillAmount"
 	MerchantService_GenerateBill_FullMethodName                = "/MerchantService/GenerateBill"
 	MerchantService_ReviewBill_FullMethodName                  = "/MerchantService/ReviewBill"
 	MerchantService_SettleBill_FullMethodName                  = "/MerchantService/SettleBill"
@@ -154,7 +154,7 @@ type MerchantServiceClient interface {
 	// 获取钱包账户
 	GetAccount(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*SMerchantAccount, error)
 	// 账户入账
-	CarryToAccount(ctx context.Context, in *UserWalletCarryRequest, opts ...grpc.CallOption) (*TxResult, error)
+	CarryToAccount(ctx context.Context, in *MerchantAccountCarrayRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户人工调整
 	AdjustAccount(ctx context.Context, in *UserWalletAdjustRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 账户冻结
@@ -171,8 +171,8 @@ type MerchantServiceClient interface {
 	GetWalletTxLog(ctx context.Context, in *UserWalletTxId, opts ...grpc.CallOption) (*UserWalletTxResponse, error)
 	// 根据月份时间,获取当前账单
 	GetBill(ctx context.Context, in *BillTimeRequest, opts ...grpc.CallOption) (*SMerchantBill, error)
-	// 调整账单商城金额
-	AdjustBillAmount(ctx context.Context, in *AdjustMerchantBillAmountRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// 手动调整商户账单金额,仅当账单金额对不上时进行调整
+	ManualAdjustBillAmount(ctx context.Context, in *ManualAdjustMerchantBillAmountRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// GenerateBill 生成当前月份的账单
 	GenerateBill(ctx context.Context, in *MerchantId, opts ...grpc.CallOption) (*TxResult, error)
 	// ReviewBill 审核账单
@@ -537,7 +537,7 @@ func (c *merchantServiceClient) GetAccount(ctx context.Context, in *MerchantId, 
 	return out, nil
 }
 
-func (c *merchantServiceClient) CarryToAccount(ctx context.Context, in *UserWalletCarryRequest, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *merchantServiceClient) CarryToAccount(ctx context.Context, in *MerchantAccountCarrayRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MerchantService_CarryToAccount_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -618,9 +618,9 @@ func (c *merchantServiceClient) GetBill(ctx context.Context, in *BillTimeRequest
 	return out, nil
 }
 
-func (c *merchantServiceClient) AdjustBillAmount(ctx context.Context, in *AdjustMerchantBillAmountRequest, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *merchantServiceClient) ManualAdjustBillAmount(ctx context.Context, in *ManualAdjustMerchantBillAmountRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
-	err := c.cc.Invoke(ctx, MerchantService_AdjustBillAmount_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, MerchantService_ManualAdjustBillAmount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -760,7 +760,7 @@ type MerchantServiceServer interface {
 	// 获取钱包账户
 	GetAccount(context.Context, *MerchantId) (*SMerchantAccount, error)
 	// 账户入账
-	CarryToAccount(context.Context, *UserWalletCarryRequest) (*TxResult, error)
+	CarryToAccount(context.Context, *MerchantAccountCarrayRequest) (*TxResult, error)
 	// 账户人工调整
 	AdjustAccount(context.Context, *UserWalletAdjustRequest) (*TxResult, error)
 	// 账户冻结
@@ -777,8 +777,8 @@ type MerchantServiceServer interface {
 	GetWalletTxLog(context.Context, *UserWalletTxId) (*UserWalletTxResponse, error)
 	// 根据月份时间,获取当前账单
 	GetBill(context.Context, *BillTimeRequest) (*SMerchantBill, error)
-	// 调整账单商城金额
-	AdjustBillAmount(context.Context, *AdjustMerchantBillAmountRequest) (*TxResult, error)
+	// 手动调整商户账单金额,仅当账单金额对不上时进行调整
+	ManualAdjustBillAmount(context.Context, *ManualAdjustMerchantBillAmountRequest) (*TxResult, error)
 	// GenerateBill 生成当前月份的账单
 	GenerateBill(context.Context, *MerchantId) (*TxResult, error)
 	// ReviewBill 审核账单
@@ -912,7 +912,7 @@ func (UnimplementedMerchantServiceServer) TransferStaff(context.Context, *Transf
 func (UnimplementedMerchantServiceServer) GetAccount(context.Context, *MerchantId) (*SMerchantAccount, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccount not implemented")
 }
-func (UnimplementedMerchantServiceServer) CarryToAccount(context.Context, *UserWalletCarryRequest) (*TxResult, error) {
+func (UnimplementedMerchantServiceServer) CarryToAccount(context.Context, *MerchantAccountCarrayRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CarryToAccount not implemented")
 }
 func (UnimplementedMerchantServiceServer) AdjustAccount(context.Context, *UserWalletAdjustRequest) (*TxResult, error) {
@@ -939,8 +939,8 @@ func (UnimplementedMerchantServiceServer) GetWalletTxLog(context.Context, *UserW
 func (UnimplementedMerchantServiceServer) GetBill(context.Context, *BillTimeRequest) (*SMerchantBill, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBill not implemented")
 }
-func (UnimplementedMerchantServiceServer) AdjustBillAmount(context.Context, *AdjustMerchantBillAmountRequest) (*TxResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AdjustBillAmount not implemented")
+func (UnimplementedMerchantServiceServer) ManualAdjustBillAmount(context.Context, *ManualAdjustMerchantBillAmountRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ManualAdjustBillAmount not implemented")
 }
 func (UnimplementedMerchantServiceServer) GenerateBill(context.Context, *MerchantId) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GenerateBill not implemented")
@@ -1658,7 +1658,7 @@ func _MerchantService_GetAccount_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _MerchantService_CarryToAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserWalletCarryRequest)
+	in := new(MerchantAccountCarrayRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1670,7 +1670,7 @@ func _MerchantService_CarryToAccount_Handler(srv interface{}, ctx context.Contex
 		FullMethod: MerchantService_CarryToAccount_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).CarryToAccount(ctx, req.(*UserWalletCarryRequest))
+		return srv.(MerchantServiceServer).CarryToAccount(ctx, req.(*MerchantAccountCarrayRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1819,20 +1819,20 @@ func _MerchantService_GetBill_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MerchantService_AdjustBillAmount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AdjustMerchantBillAmountRequest)
+func _MerchantService_ManualAdjustBillAmount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ManualAdjustMerchantBillAmountRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MerchantServiceServer).AdjustBillAmount(ctx, in)
+		return srv.(MerchantServiceServer).ManualAdjustBillAmount(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MerchantService_AdjustBillAmount_FullMethodName,
+		FullMethod: MerchantService_ManualAdjustBillAmount_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).AdjustBillAmount(ctx, req.(*AdjustMerchantBillAmountRequest))
+		return srv.(MerchantServiceServer).ManualAdjustBillAmount(ctx, req.(*ManualAdjustMerchantBillAmountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2141,8 +2141,8 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MerchantService_GetBill_Handler,
 		},
 		{
-			MethodName: "AdjustBillAmount",
-			Handler:    _MerchantService_AdjustBillAmount_Handler,
+			MethodName: "ManualAdjustBillAmount",
+			Handler:    _MerchantService_ManualAdjustBillAmount_Handler,
 		},
 		{
 			MethodName: "GenerateBill",

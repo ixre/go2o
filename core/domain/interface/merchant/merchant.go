@@ -163,6 +163,8 @@ type (
 		Amount int
 		// 交易费
 		TransactionFee int
+		// 账单类型
+		BillAmountType int
 		// 退款金额
 		RefundAmount int
 		// 交易描述,如：订单结算
