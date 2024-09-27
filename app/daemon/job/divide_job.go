@@ -41,26 +41,31 @@ func SubmitPaymentProviderEndpointDivide(f func(o *payment.PayDivide) (string, e
 			logger.Error("查询待提交分账记录失败，错误信息:%s", err.Error())
 		}
 		for _, dv := range divides {
-			divideNo, err := f(dv)
-			remark := "成功"
-			if err != nil {
-				logger.Error("提交分账记录失败，分账ID:%d, 错误信息:%s", dv.Id, err.Error())
-				remark = err.Error()
-			}
-			ret, _ := ps.UpdateDivideStatus(context.TODO(), &proto.UpdateDivideStatusRequest{
-				PayId:    int64(dv.PayId),
-				DivideId: int64(dv.Id),
-				Success:  err == nil,
-				Remark:   remark,
-				DivideNo: divideNo,
-			})
-			if ret.Code > 0 {
-				logger.Error("更新分账记录提交状态失败，id:%d,错误信息:%s", dv.Id, ret.Message)
-				time.Sleep(time.Second * 5)
-			}
+			handleDivide(f, dv, ps)
 		}
 		if len(divides) < size {
 			break
 		}
+	}
+}
+
+// 处理分账
+func handleDivide(f func(o *payment.PayDivide) (string, error), dv *payment.PayDivide, ps proto.PaymentServiceServer) {
+	divideNo, err := f(dv)
+	remark := "成功"
+	if err != nil {
+		logger.Error("提交分账记录失败，分账ID:%d, 错误信息:%s", dv.Id, err.Error())
+		remark = err.Error()
+	}
+	ret, _ := ps.UpdateDivideStatus(context.TODO(), &proto.UpdateDivideStatusRequest{
+		PayId:    int64(dv.PayId),
+		DivideId: int64(dv.Id),
+		Success:  err == nil,
+		Remark:   remark,
+		DivideNo: divideNo,
+	})
+	if ret.Code > 0 {
+		logger.Error("更新分账记录提交状态失败，id:%d,错误信息:%s", dv.Id, ret.Message)
+		time.Sleep(time.Second * 5)
 	}
 }
