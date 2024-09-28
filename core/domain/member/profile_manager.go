@@ -297,7 +297,7 @@ func (p *profileManagerImpl) ChangeNickname(nickname string, limitTime bool) err
 		}
 		return err
 	}
-	return member.ErrPhoneHasBind
+	return member.ErrNicknameIsUse
 }
 
 // 设置头像
