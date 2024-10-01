@@ -6,6 +6,8 @@ import "github.com/ixre/go2o/core/infrastructure/domain"
 type IStationAggregateRoot interface {
 	// 获取聚合根编号
 	GetAggregateRootId() int
+	// 获取站点
+	GetValue() SubStation
 	// 设置值
 	SetValue(v SubStation) error
 	// 保存站点

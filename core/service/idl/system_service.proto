@@ -52,6 +52,8 @@ service SystemService {
     rpc updateSuperCredential (SuperPassswordRequest) returns (TxResult);
     // 创建同步登录的地址,returnUrl
     rpc GetSyncLoginUrl (String) returns (String);
+
+
     // 获取地区名称,如:获取多个城市对应的名称
     rpc GetDistrictNames (GetNamesRequest) returns (IntStringMapResponse);
     // 获取省市区字符串
@@ -60,6 +62,9 @@ service SystemService {
     rpc GetChildDistrict (DistrictChildrenRequest) returns (AreaListResponse);
     // 查找城市信息
     rpc FindCity(FindAreaRequest) returns (SArea);
+    // 获取站点信息
+    rpc GetStation(GetStationRequest) returns (SStation);
+
     // 获取移动应用设置
     rpc GetMoAppConf (Empty) returns (SMobileAppConfig);
     // 保存移动应用设置
@@ -156,4 +161,28 @@ message QueryBanksRequest{
     string name = 1;
     // 数量
     int32 size = 2;
+}
+
+// 获取站点请求
+message GetStationRequest{
+    // 城市代码
+    int64 stationId = 1;
+}
+
+// 地区子站
+message SStation{
+    // 编号
+    int64 id = 1;
+    // 城市代码
+    int64 cityCode = 2;
+    // 城市名称
+    string cityName = 3;
+    // 状态: 0: 待开通  1: 已开通  2: 已关闭
+    int32 status = 4;
+    // 首字母
+    string letter = 5;
+    // 是否热门
+    bool isHot = 6;
+    // 创建时间
+    int64 createTime = 7;
 }

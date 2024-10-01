@@ -40,6 +40,7 @@ const (
 	SystemService_GetAreaString_FullMethodName         = "/SystemService/GetAreaString"
 	SystemService_GetChildDistrict_FullMethodName      = "/SystemService/GetChildDistrict"
 	SystemService_FindCity_FullMethodName              = "/SystemService/FindCity"
+	SystemService_GetStation_FullMethodName            = "/SystemService/GetStation"
 	SystemService_GetMoAppConf_FullMethodName          = "/SystemService/GetMoAppConf"
 	SystemService_SaveMoAppConf_FullMethodName         = "/SystemService/SaveMoAppConf"
 	SystemService_GetWxApiConfig_FullMethodName        = "/SystemService/GetWxApiConfig"
@@ -104,6 +105,8 @@ type SystemServiceClient interface {
 	GetChildDistrict(ctx context.Context, in *DistrictChildrenRequest, opts ...grpc.CallOption) (*AreaListResponse, error)
 	// 查找城市信息
 	FindCity(ctx context.Context, in *FindAreaRequest, opts ...grpc.CallOption) (*SArea, error)
+	// 获取站点信息
+	GetStation(ctx context.Context, in *GetStationRequest, opts ...grpc.CallOption) (*SStation, error)
 	// 获取移动应用设置
 	GetMoAppConf(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SMobileAppConfig, error)
 	// 保存移动应用设置
@@ -317,6 +320,15 @@ func (c *systemServiceClient) FindCity(ctx context.Context, in *FindAreaRequest,
 	return out, nil
 }
 
+func (c *systemServiceClient) GetStation(ctx context.Context, in *GetStationRequest, opts ...grpc.CallOption) (*SStation, error) {
+	out := new(SStation)
+	err := c.cc.Invoke(ctx, SystemService_GetStation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *systemServiceClient) GetMoAppConf(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SMobileAppConfig, error) {
 	out := new(SMobileAppConfig)
 	err := c.cc.Invoke(ctx, SystemService_GetMoAppConf_FullMethodName, in, out, opts...)
@@ -435,6 +447,8 @@ type SystemServiceServer interface {
 	GetChildDistrict(context.Context, *DistrictChildrenRequest) (*AreaListResponse, error)
 	// 查找城市信息
 	FindCity(context.Context, *FindAreaRequest) (*SArea, error)
+	// 获取站点信息
+	GetStation(context.Context, *GetStationRequest) (*SStation, error)
 	// 获取移动应用设置
 	GetMoAppConf(context.Context, *Empty) (*SMobileAppConfig, error)
 	// 保存移动应用设置
@@ -518,6 +532,9 @@ func (UnimplementedSystemServiceServer) GetChildDistrict(context.Context, *Distr
 }
 func (UnimplementedSystemServiceServer) FindCity(context.Context, *FindAreaRequest) (*SArea, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindCity not implemented")
+}
+func (UnimplementedSystemServiceServer) GetStation(context.Context, *GetStationRequest) (*SStation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStation not implemented")
 }
 func (UnimplementedSystemServiceServer) GetMoAppConf(context.Context, *Empty) (*SMobileAppConfig, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMoAppConf not implemented")
@@ -931,6 +948,24 @@ func _SystemService_FindCity_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SystemService_GetStation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServiceServer).GetStation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SystemService_GetStation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServiceServer).GetStation(ctx, req.(*GetStationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SystemService_GetMoAppConf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
@@ -1147,6 +1182,10 @@ var SystemService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindCity",
 			Handler:    _SystemService_FindCity_Handler,
+		},
+		{
+			MethodName: "GetStation",
+			Handler:    _SystemService_GetStation_Handler,
 		},
 		{
 			MethodName: "GetMoAppConf",

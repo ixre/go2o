@@ -421,6 +421,30 @@ func (s *foundationService) FindCity(_ context.Context, req *proto.FindAreaReque
 	return ret, nil
 }
 
+// GetStation 获取站点
+func (s *foundationService) GetStation(_ context.Context, req *proto.GetStationRequest) (*proto.SStation, error) {
+	isa := s.stationRepo.GetStation(int(req.StationId))
+	if isa == nil {
+		return &proto.SStation{}, nil
+	}
+
+	v := isa.GetValue()
+	ia := s.sysRepo.GetSystemAggregateRoot().Address()
+	d := ia.GetDistrict(int(v.CityCode))
+	ret := &proto.SStation{
+		Id:         int64(isa.GetAggregateRootId()),
+		CityCode:   int64(v.CityCode),
+		Status:     int32(v.Status),
+		Letter:     v.Letter,
+		IsHot:      v.IsHot == 1,
+		CreateTime: v.CreateTime,
+	}
+	if d != nil {
+		ret.CityName = d.Name
+	}
+	return ret, nil
+}
+
 // GetPayPlatform 获取支付平台
 func (s *foundationService) GetPayPlatform(_ context.Context, r *proto.Empty) (*proto.PaymentPlatformResponse, error) {
 	m := module.Get(module.PAY).(*module.PaymentModule)

@@ -48,6 +48,8 @@ type (
 		GetDistrictNames(code ...int) map[int]string
 		// FindCity 查找城市
 		FindCity(name string) *District
+		// GetDistrict 获取区域信息
+		GetDistrict(id int) *District
 	}
 
 	// IOptionManager 选项管理器

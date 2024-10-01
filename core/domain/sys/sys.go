@@ -71,6 +71,13 @@ func (a *addressManagerImpl) FindCity(name string) *sys.District {
 	})
 }
 
+// GetDistrict 获取区域信息
+func (a *addressManagerImpl) GetDistrict(id int) *sys.District {
+	return collections.FindArray(a.getDistrictList(), func(d *sys.District) bool {
+		return d.Code == id
+	})
+}
+
 // getDistrictList 获取地区列表
 func (a *addressManagerImpl) getDistrictList() []*sys.District {
 	if a.districtList == nil {

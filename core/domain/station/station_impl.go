@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/infrastructure/fw/types"
 )
 
 var _ station.IStationAggregateRoot = new(StationImpl)
@@ -27,6 +28,10 @@ func (s *StationImpl) GetAggregateRootId() int {
 		return s.value.Id
 	}
 	return 0
+}
+
+func (s *StationImpl) GetValue() station.SubStation {
+	return *types.DeepClone(s.value)
 }
 
 // SetValue implements station.IStationAggregateRoot.
