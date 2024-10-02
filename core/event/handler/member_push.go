@@ -103,3 +103,9 @@ func (h EventHandler) HandleMemberAccountLogPushEvent(data interface{}) {
 		msq.PushDelay(msq.MemberAccountLogTopic, typeconv.MustJson(ev), 500)
 	}
 }
+
+// HandleMemberCertificationReviewEvent 处理会员实名认证审核事件
+func (h EventHandler) HandleMemberCertificationReviewEvent(data interface{}) {
+	//v := data.(*events.MemberCertificationReviewEvent)
+	// note: 这里不推送消息，可以在订阅该事件，做业务处理
+}

@@ -549,7 +549,7 @@ func (m *memberImpl) updateLevel(levelId int) error {
 	if levelId <= 0 {
 		level = lm.GetInitialLevel()
 	} else {
-		level = lm.GetLevelById(level.Id)
+		level = lm.GetLevelById(levelId)
 	}
 	if level == nil {
 		return member.ErrLevelNotExist.Apply(levelId)

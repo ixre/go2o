@@ -3,6 +3,7 @@ package event
 import (
 	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/invoice"
+	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/payment"
@@ -40,14 +41,14 @@ func (e *EventSource) Bind() {
 	eventbus.SubscribeAsync(events.OrderAffiliateRebateEvent{}, h.HandleOrderAffiliateRebateEvent)
 	eventbus.SubscribeAsync(events.SendSmsEvent{}, h.HandleSendSmsEvent)
 	eventbus.SubscribeAsync(events.SubOrderPushEvent{}, h.HandleSubOrderPushEvent)
-	eventbus.SubscribeAsync(events.MemberPushEvent{}, h.HandleMemberPushEvent)
-	eventbus.SubscribeAsync(events.MemberAccountPushEvent{}, h.HandleMemberAccountPushEvent)
 	eventbus.SubscribeAsync(events.WithdrawalPushEvent{}, h.HandleWithdrawalPushEvent)
 
 	// 注册商户事件
 	e.initMchEvents()
 	// 注册发票事件
 	e.initInvoiceEvents()
+	// 注册会员事件
+	e.initMemberEvents()
 
 	// 注册审批事件
 	eventbus.Subscribe(approval.ApprovalProcessEvent{}, h.OnApprovalProcess)
@@ -80,4 +81,13 @@ func (e *EventSource) initMchEvents() {
 func (e *EventSource) initInvoiceEvents() {
 	// 注册发票撤销事件
 	eventbus.Subscribe(invoice.InvoiceRevertEvent{}, e.HandleInvoiceRevertEvent)
+}
+
+func (e *EventSource) initMemberEvents() {
+	// 注册实名认证审核事件
+	eventbus.Subscribe(member.MemberCertificationReviewEvent{}, e.HandleMemberCertificationReviewEvent)
+	// 注册会员推送事件
+	eventbus.SubscribeAsync(events.MemberPushEvent{}, e.HandleMemberPushEvent)
+	// 注册会员账户推送事件
+	eventbus.SubscribeAsync(events.MemberAccountPushEvent{}, e.HandleMemberAccountPushEvent)
 }

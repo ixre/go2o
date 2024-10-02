@@ -27,6 +27,7 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/initial/provide"
+	"github.com/ixre/gof/domain/eventbus"
 )
 
 var _ member.IProfileManager = new(profileManagerImpl)
@@ -712,6 +713,14 @@ func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error
 	_, err := p.repo.SaveCertificationInfo(p.trustedInfo)
 	if err == nil {
 		_, err = p.member.Save()
+		if err == nil {
+			// 发送实名认证审核事件
+			go eventbus.Publish(&member.MemberCertificationReviewEvent{
+				Member: p.member,
+				Pass:   pass,
+				Remark: remark,
+			})
+		}
 	}
 	return err
 }

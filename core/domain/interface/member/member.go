@@ -203,6 +203,16 @@ type (
 		GetOAuthBindInfo(app string) *OAuthAccount
 	}
 
+	// MemberCertificationReviewEvent 会员实名认证审核事件
+	MemberCertificationReviewEvent struct {
+		// 会员
+		Member IMemberAggregateRoot
+		// 是否通过
+		Pass bool
+		// 备注
+		Remark string
+	}
+
 	// IFavoriteManager 收藏服务
 	IFavoriteManager interface {
 		// Favorite 收藏
