@@ -87,6 +87,8 @@ var (
 	SysSuspend = KeyFormat("SysSuspend")
 	// 系统挂起提示消息
 	SysSuspendMessage = KeyFormat("SysSuspendMessage")
+	// 接口签名盐
+	SysAPISignSalt = KeyFormat("sys_api_sign_salt")
 	// 接口JWT密钥
 	SysJWTSecret = KeyFormat("sys_jwt_secret")
 	// 超级管理员登录密钥
