@@ -1,8 +1,10 @@
 package tests
 
 import (
-	"github.com/ixre/go2o/core/infrastructure/domain"
 	"testing"
+
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/gof/crypto"
 )
 
 // 管理员密码
@@ -35,4 +37,10 @@ func TestMerchantPwd(t *testing.T) {
 	salt := ""
 	encPwd := domain.MerchantSha1Pwd(domain.Md5(pwd), salt)
 	t.Log(encPwd)
+}
+
+func TestMd5Sign(t *testing.T) {
+	sign := `{"classId":2,"wip":"LSP:S9240927001427853","subject":"需要","content":"","hopeDesc":"","photoList":"","contactWay":""}1727869234lsp_salt_202406`
+	str := crypto.Md5([]byte(sign))
+	t.Log(str)
 }
