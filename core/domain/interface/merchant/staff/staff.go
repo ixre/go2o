@@ -9,7 +9,7 @@ var (
 	// 离线
 	WorkStatusOffline = 1
 	// 在线空闲
-	WorkStatusFree = 2
+	WorkStatusIdle = 2
 	// 工作中
 	WorkStatusBusy = 3
 	// 离职
