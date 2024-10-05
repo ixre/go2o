@@ -401,6 +401,8 @@ func (m *memberImpl) GetRelation() *member.InviteRelation {
 				CardNo:    "",
 				InviterId: 0,
 				RegMchId:  0,
+				InviterD2: 0,
+				InviterD3: 0,
 			}
 			m.repo.SaveRelation(rel)
 		}

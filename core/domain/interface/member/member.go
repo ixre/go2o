@@ -549,15 +549,15 @@ func (m Member) TableName() string {
 
 // 会员邀请关系
 type InviteRelation struct {
-	// Id
-	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" bson:"id"`
-	// MemberId
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 会员编号
 	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
 	// CardNo
 	CardNo string `json:"cardNo" db:"card_no" gorm:"column:card_no" bson:"cardNo"`
 	// 邀请会员编号
 	InviterId int `json:"inviterId" db:"inviter_id" gorm:"column:inviter_id" bson:"inviterId"`
-	// RegMchId
+	// 关联商户编号
 	RegMchId int `json:"regMchId" db:"reg_mch_id" gorm:"column:reg_mch_id" bson:"regMchId"`
 	// 邀请会员编号(depth2)
 	InviterD2 int `json:"inviterD2" db:"inviter_d2" gorm:"column:inviter_d2" bson:"inviterD2"`

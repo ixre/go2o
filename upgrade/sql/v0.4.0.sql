@@ -1309,6 +1309,8 @@ COMMENT ON COLUMN chat_conversation.out_order_no IS '关联业务单号';
 ALTER TABLE "public".mm_relation 
 RENAME member_id TO id;
 ALTER TABLE "public".mm_relation 
+ALTER COLUMN id SET NOT NULL;
+ALTER TABLE "public".mm_relation 
 ADD COLUMN member_id int8 DEFAULT 0 NOT NULL;
 ALTER TABLE "public".mm_relation 
   DROP CONSTRAINT mm_relation_pkey;
@@ -1319,3 +1321,21 @@ COMMENT ON COLUMN "public".mm_relation.id IS '编号';
 COMMENT ON COLUMN "public".mm_relation.member_id IS '会员编号';
 
 update mm_relation set member_id=id;
+
+
+DROP TABLE IF EXISTS "public".mm_relation CASCADE;
+CREATE TABLE "public".mm_relation (
+  id         BIGSERIAL NOT NULL, 
+  member_id  int8 DEFAULT 0 NOT NULL, 
+  card_no    varchar(20) NOT NULL, 
+  inviter_id int8 DEFAULT 0 NOT NULL, 
+  reg_mch_id int8 NOT NULL, 
+  inviter_d2 int8 DEFAULT 0 NOT NULL, 
+  inviter_d3 int8 DEFAULT 0 NOT NULL, 
+  CONSTRAINT mm_relation_pkey 
+    PRIMARY KEY (id));
+COMMENT ON COLUMN "public".mm_relation.member_id IS '会员编号';
+COMMENT ON COLUMN "public".mm_relation.inviter_id IS '邀请会员编号';
+COMMENT ON COLUMN "public".mm_relation.reg_mch_id IS '关联商户编号';
+COMMENT ON COLUMN "public".mm_relation.inviter_d2 IS '邀请会员编号(depth2)';
+COMMENT ON COLUMN "public".mm_relation.inviter_d3 IS '邀请会员编号(depth3)';

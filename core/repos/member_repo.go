@@ -43,14 +43,15 @@ var (
 type MemberRepoImpl struct {
 	storage storage.Interface
 	db.Connector
-	walletRepo   wallet.IWalletRepo
-	valueRepo    valueobject.IValueRepo
-	mssRepo      mss.IMessageRepo
-	registryRepo registry.IRegistryRepo
-	_blockRepo   fw.Repository[member.BlockList]
-	_oauthRepo   fw.Repository[member.OAuthAccount]
-	_orm         orm.Orm
-	_o           fw.ORM
+	walletRepo    wallet.IWalletRepo
+	valueRepo     valueobject.IValueRepo
+	mssRepo       mss.IMessageRepo
+	registryRepo  registry.IRegistryRepo
+	_blockRepo    fw.Repository[member.BlockList]
+	_oauthRepo    fw.Repository[member.OAuthAccount]
+	_relationRepo fw.Repository[member.InviteRelation]
+	_orm          orm.Orm
+	_o            fw.ORM
 }
 
 // BlockRepo implements member.IMemberRepo.
@@ -78,14 +79,15 @@ func NewMemberRepo(sto storage.Interface, o orm.Orm, no fw.ORM,
 		OrmMapping(o)
 	}
 	return &MemberRepoImpl{
-		storage:      sto,
-		Connector:    o.Connector(),
-		_orm:         o,
-		_o:           no,
-		mssRepo:      mssRepo,
-		walletRepo:   walletRepo,
-		valueRepo:    valRepo,
-		registryRepo: registryRepo,
+		storage:       sto,
+		Connector:     o.Connector(),
+		_orm:          o,
+		_o:            no,
+		mssRepo:       mssRepo,
+		walletRepo:    walletRepo,
+		valueRepo:     valRepo,
+		registryRepo:  registryRepo,
+		_relationRepo: &fw.BaseRepository[member.InviteRelation]{ORM: no},
 	}
 }
 
@@ -527,15 +529,15 @@ func (m *MemberRepoImpl) getRelationCk(memberId int64) string {
 
 // 获取会员关联
 func (m *MemberRepoImpl) GetRelation(memberId int64) *member.InviteRelation {
-	e := member.InviteRelation{}
+	e := &member.InviteRelation{}
 	key := m.getRelationCk(memberId)
-	if m.storage.Get(key, &e) != nil {
-		if err := m._orm.GetBy(&e, "member_id=$1", memberId); err != nil {
-			return nil
+	if m.storage.Get(key, e) != nil {
+		e = m._relationRepo.FindBy("member_id=?", memberId)
+		if e != nil {
+			m.storage.Set(key, *e)
 		}
-		m.storage.Set(key, e)
 	}
-	return &e
+	return e
 }
 
 // 获取会员邀请的会员编号列表
@@ -588,14 +590,10 @@ func (m *MemberRepoImpl) CheckNicknameIsUse(phone string, memberId int64) bool {
 
 // 保存绑定
 func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
-	rel := m.GetRelation(int64(v.MemberId))
-	if rel == nil {
-		_, _, err = m._orm.Save(nil, v)
-	} else {
-		_, _, err = m._orm.Save(v.MemberId, v)
-	}
+	rst, err := m._relationRepo.Save(v)
 	if err == nil {
-		err = m.storage.Set(m.getRelationCk(int64(v.MemberId)), *v)
+		v.Id = rst.Id
+		err = m.storage.Set(m.getRelationCk(int64(v.MemberId)), *rst)
 	}
 	return err
 }
