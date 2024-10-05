@@ -297,22 +297,6 @@ type (
 		Signature string `json:"signature" db:"signature" gorm:"column:signature" bson:"signature"`
 	}
 
-	// 会员邀请关联表
-	InviteRelation struct {
-		// 会员编号
-		MemberId int `db:"member_id" pk:"yes"`
-		// 会员卡号
-		CardNo string `db:"card_no"`
-		// 邀请人（会员）
-		InviterId int `db:"inviter_id"`
-		// 邀请会员编号(depth2)
-		InviterD2 int `db:"inviter_d2"`
-		// 邀请会员编号(depth3)
-		InviterD3 int `db:"inviter_d3"`
-		// 注册关联商户编号
-		RegMchId int `db:"reg_mch_id"`
-	}
-
 	// 实名认证信息
 	CerticationInfo struct {
 		// 编号
@@ -561,4 +545,26 @@ type Member struct {
 
 func (m Member) TableName() string {
 	return "mm_member"
+}
+
+// 会员邀请关系
+type InviteRelation struct {
+	// Id
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" bson:"id"`
+	// MemberId
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// CardNo
+	CardNo string `json:"cardNo" db:"card_no" gorm:"column:card_no" bson:"cardNo"`
+	// 邀请会员编号
+	InviterId int `json:"inviterId" db:"inviter_id" gorm:"column:inviter_id" bson:"inviterId"`
+	// RegMchId
+	RegMchId int `json:"regMchId" db:"reg_mch_id" gorm:"column:reg_mch_id" bson:"regMchId"`
+	// 邀请会员编号(depth2)
+	InviterD2 int `json:"inviterD2" db:"inviter_d2" gorm:"column:inviter_d2" bson:"inviterD2"`
+	// 邀请会员编号(depth3)
+	InviterD3 int `json:"inviterD3" db:"inviter_d3" gorm:"column:inviter_d3" bson:"inviterD3"`
+}
+
+func (m InviteRelation) TableName() string {
+	return "mm_relation"
 }

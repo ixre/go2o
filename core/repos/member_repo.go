@@ -530,7 +530,7 @@ func (m *MemberRepoImpl) GetRelation(memberId int64) *member.InviteRelation {
 	e := member.InviteRelation{}
 	key := m.getRelationCk(memberId)
 	if m.storage.Get(key, &e) != nil {
-		if err := m._orm.Get(memberId, &e); err != nil {
+		if err := m._orm.GetBy(&e, "member_id=$1", memberId); err != nil {
 			return nil
 		}
 		m.storage.Set(key, e)

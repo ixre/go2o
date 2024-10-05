@@ -1305,3 +1305,17 @@ ALTER TABLE chat_conversation
   ADD COLUMN out_order_no varchar(40) DEFAULT '' NOT NULL;
 COMMENT ON COLUMN chat_conversation.out_order_no IS '关联业务单号';
 
+-- 2024-10-05 会员关系表
+ALTER TABLE "public".mm_relation 
+RENAME member_id TO id;
+ALTER TABLE "public".mm_relation 
+ADD COLUMN member_id int8 DEFAULT 0 NOT NULL;
+ALTER TABLE "public".mm_relation 
+  DROP CONSTRAINT mm_relation_pkey;
+ALTER TABLE "public".mm_relation 
+  ADD PRIMARY KEY(id);
+COMMENT ON TABLE "public".mm_relation IS '会员关系';
+COMMENT ON COLUMN "public".mm_relation.id IS '编号';
+COMMENT ON COLUMN "public".mm_relation.member_id IS '会员编号';
+
+update mm_relation set member_id=id;
