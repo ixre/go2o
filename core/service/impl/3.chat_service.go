@@ -32,8 +32,8 @@ func (c *chatServiceImpl) GetConversation(_ context.Context, req *proto.ChatConv
 	ic, err := iu.BuildConversation(int(req.Rid), chat.ChatType(req.ChatType), req.OutOrderNo)
 	if err != nil {
 		return &proto.ChatConversationResponse{
-			ErrCode: 1,
-			LastMsg: err.Error(),
+			Code:    1,
+			Message: err.Error(),
 		}, nil
 	}
 	v := ic.Get()
@@ -182,8 +182,8 @@ func (c *chatServiceImpl) Send(_ context.Context, req *proto.SendMsgRequest) (*p
 		err = err1
 	}
 	return &proto.SendMsgResponse{
-		ErrCode: 1,
-		ErrMsg:  err.Error(),
+		Code:    1,
+		Messsge: err.Error(),
 	}, nil
 }
 

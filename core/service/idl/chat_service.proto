@@ -103,19 +103,21 @@
  // 聊天会话响应
  message ChatConversationResponse{
     // 错误码
-    int32 errCode = 1;
+    int32 code = 1;
+    // 错误信息
+    string message = 2;
     // 编号
-    int64 convId = 2;
+    int64 convId = 3;
     // 编码
-    string key = 3;
+    string key = 4;
     // 会话发起人
-    int64 sid = 4;
+    int64 sid = 5;
     // 会话回复人
-    int64 rid = 5;
+    int64 rid = 6;
     // 回复人信息
-    SChatUserProfile chatProfile = 6;
+    SChatUserProfile chatProfile = 7;
     // 聊天类型
-    int32 chatType = 8; 
+    int32 chatType = 8;     
     // 最后消息
     string lastMsg = 9;
     // 最后聊天时间
@@ -185,9 +187,9 @@ message SendMsgRequest{
 // 发送消息消息响应
 message SendMsgResponse{
     // 错误码
-    int32 errCode = 1;
+    int32 code = 1;
     // 错误信息
-    string errMsg = 2;
+    string messsge = 2;
     // 消息编号
     int64 msgId = 3;
 }
