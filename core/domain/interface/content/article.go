@@ -31,7 +31,7 @@ type (
 		// Destory 删除文章
 		Destory() error
 		// 增加浏览次数
-		IncreaseViewCount(memberId int, count int) error
+		IncreaseViewCount(count int) error
 		// 喜欢
 		Like(memberId int) error
 		// 不喜欢

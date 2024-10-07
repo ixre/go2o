@@ -178,12 +178,12 @@ func (c *contentService) LikeArticle(_ context.Context, req *proto.ArticleLikeRe
 }
 
 // UpdateArticleViewsCount implements proto.ContentServiceServer.
-func (c *contentService) UpdateArticleViewsCount(_ context.Context, req *proto.ArticleViewsRequest) (*proto.TxResult, error) {
+func (c *contentService) AddArticleViewsCount(_ context.Context, req *proto.ArticleViewsRequest) (*proto.TxResult, error) {
 	art := c._sysContent.ArticleManager().GetArticle(int(req.Id))
 	if art == nil {
 		return c.errorV2(fmt.Errorf("no such article")), nil
 	}
-	err := art.IncreaseViewCount(int(req.MemberId), int(req.Count))
+	err := art.IncreaseViewCount(int(req.Count))
 	return c.errorV2(err), nil
 }
 

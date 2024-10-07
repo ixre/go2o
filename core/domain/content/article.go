@@ -111,12 +111,12 @@ func (a *articleImpl) Save() error {
 // Dislike implements content.IArticle.
 func (a *articleImpl) Dislike(memberId int) error {
 	//todo: 记录会员的点赞记录
-	a._value.DislikeCount += 1
+	a._value.DislikeCount -= 1
 	return a.Save()
 }
 
 // IncreaseViewCount implements content.IArticle.
-func (a *articleImpl) IncreaseViewCount(memberId int, count int) error {
+func (a *articleImpl) IncreaseViewCount(count int) error {
 	a._value.ViewCount += count
 	return a.Save()
 }

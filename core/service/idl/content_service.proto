@@ -8,34 +8,31 @@ option java_package = "com.github.go2o.rpc";
 /** 内容服务 */
 service ContentService {
     // 获取页面
-    rpc GetPage (IdOrName) returns (SPage) {
+    rpc getPage (IdOrName) returns (SPage) {
     }
     // 保存页面
-    rpc SavePage (SPage) returns (TxResult);
+    rpc savePage (SPage) returns (TxResult);
     // 删除页面
-    rpc DeletePage (Int64) returns (TxResult);
+    rpc deletePage (Int64) returns (TxResult);
 
     // 获取所有栏目
-    rpc GetArticleCategories (Empty) returns (ArticleCategoriesResponse) {
-    }
+    rpc getArticleCategories (Empty) returns (ArticleCategoriesResponse);
     // 获取文章栏目,可传入ID或者别名
-    rpc GetArticleCategory (IdOrName) returns (SArticleCategory) {
-    }
+    rpc getArticleCategory (IdOrName) returns (SArticleCategory);
     // 保存文章栏目
-    rpc SaveArticleCategory (SArticleCategory) returns (TxResult);
+    rpc saveArticleCategory (SArticleCategory) returns (TxResult);
     // 删除文章分类
-    rpc DeleteArticleCategory (Int64) returns (TxResult);
+    rpc deleteArticleCategory (Int64) returns (TxResult);
     // 获取文章
-    rpc GetArticle (IdOrName) returns (SArticle) {
-    }
+    rpc getArticle (IdOrName) returns (SArticle);
     // 更新文章浏览次数
-    rpc UpdateArticleViewsCount(ArticleViewsRequest) returns (TxResult){} 
+    rpc addArticleViewsCount(ArticleViewsRequest) returns (TxResult);
     // 喜欢/不喜欢文章
-    rpc LikeArticle(ArticleLikeRequest) returns (TxResult){} 
+    rpc likeArticle(ArticleLikeRequest) returns (TxResult);
     // 删除文章
-    rpc DeleteArticle (Int64) returns (TxResult);
+    rpc deleteArticle (Int64) returns (TxResult);
     // 保存文章
-    rpc SaveArticle (SArticle) returns (TxResult); 
+    rpc saveArticle (SArticle) returns (TxResult); 
 }
 
 
@@ -144,10 +141,8 @@ message ArticleCategoriesResponse {
 message ArticleViewsRequest{
     // 文章编号
     uint64 id = 1;
-    // 会员编号
-    uint32 memberId = 2;
     // 次数
-    uint32 count = 3;
+    uint32 count = 2;
 }
 
 // 文章点赞/不喜欢请求
