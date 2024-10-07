@@ -428,7 +428,7 @@ func UnifinedQueryPaging(o ORM, p *PagingParams, tables string, fields string) (
 	if ret.Total > 0 {
 		skipper := GetSkipperSQL(o, p)
 		sql = strings.Join([]string{"SELECT", fields, from, where, order, skipper}, " ")
-		rows, err := o.Offset(p.Begin).Limit(p.Size).Raw(sql, args...).Rows()
+		rows, err := o.Raw(sql, args...).Rows()
 		if err != nil {
 			log.Println("paging query rows error: %s", err.Error())
 		} else {

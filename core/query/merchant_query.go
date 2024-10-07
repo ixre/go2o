@@ -158,6 +158,10 @@ func (m *MerchantQuery) GetStaffTransferInfo(staffId int64) (ret struct {
 	if sf == nil {
 		return ret
 	}
+	if sf.ReviewStatus == int(enum.ReviewApproved) {
+		// 如果已通过，也不返回数据
+		return ret
+	}
 	staff := m._staffRepo.Get(staffId)
 	ret.TxId = sf.Id
 	mch := m._repo.Get(sf.OriginMchId)
@@ -179,7 +183,7 @@ func (m *MerchantQuery) QueryMerchantByName(name string) []map[string]interface{
 	list := m._repo.FindList(nil, "mch_name = ?", name)
 	return collections.MapList(list, func(m *merchant.Merchant) map[string]interface{} {
 		return map[string]interface{}{
-			"id":      m.Id,
+			"mchId":   m.Id,
 			"mchName": m.MchName,
 			"address": m.Address,
 		}
@@ -202,7 +206,7 @@ func (m *MerchantQuery) QueryMerchantPendingStaffs(p *fw.PagingParams) (*fw.Pagi
 }
 
 // 查询商户员工转商户信息
-func (m *MerchantQuery) QueryTransferStaffs(mchId int, transferType int) (*fw.PagingResult, error) {
+func (m *MerchantQuery) QueryTransferStaffs(mchId int, transferType int, p *fw.PagingParams) (*fw.PagingResult, error) {
 	tables := `mch_staff_transfer t
 		INNER JOIN mch_staff s ON s.id = t.staff_id
 		INNER JOIN approval a ON a.id = t.approval_id
@@ -215,12 +219,6 @@ func (m *MerchantQuery) QueryTransferStaffs(mchId int, transferType int) (*fw.Pa
 	(SELECT mch_name FROM mch_merchant WHERE id = t.origin_mch_id) as origin_mch_name,
 	(SELECT mch_name FROM mch_merchant WHERE id = t.transfer_mch_id) as transfer_mch_name
 	`
-
-	p := &fw.PagingParams{
-		Begin: 1,
-		Size:  100,
-		Order: "id DESC",
-	}
 	if transferType == 1 {
 		p.And("transfer_mch_id = ?", mchId)
 	} else {

@@ -101,6 +101,17 @@ func (e *staffManagerImpl) RequestTransfer(staffId int, mchId int) (int, error) 
 	if count > 0 {
 		return 0, errors.New("员工存在未审核的转移请求")
 	}
+
+	st := e.GetStaff(staffId)
+	if st == nil {
+		return 0, errors.New("员工不存在")
+	}
+	if st.MchId != e._mch.GetAggregateRootId() {
+		return 0, errors.New("员工不属于当前商户")
+	}
+	if st.MchId == mchId {
+		return 0, errors.New("员工已存在于目标商户")
+	}
 	mch := e._mchRepo.GetMerchant(mchId)
 	if mch == nil {
 		return 0, errors.New("商户不存在")
