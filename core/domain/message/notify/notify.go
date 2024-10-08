@@ -151,15 +151,15 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg mss.PhoneMessage,
 }
 
 func (n *notifyManagerImpl) getSmsTemplate(templateId string) *mss.NotifyTemplate {
-	arr := n.mssRepo.GetAllNotifyTemplate()
+	arr := n.mssRepo.NotifyRepo().GetAllNotifyTemplate()
 	return collections.FindArray(arr, func(t *mss.NotifyTemplate) bool {
-		return t.TempType == 2 && t.Code == templateId
+		return t.TplType == mss.TypeSMS && t.TplCode == templateId
 	})
 }
 func (n *notifyManagerImpl) getMailTemplate(templateId string) *mss.NotifyTemplate {
-	arr := n.mssRepo.GetAllNotifyTemplate()
+	arr := n.mssRepo.NotifyRepo().GetAllNotifyTemplate()
 	return collections.FindArray(arr, func(t *mss.NotifyTemplate) bool {
-		return t.TempType == 3 && t.Code == templateId
+		return t.TplType == mss.TypeEmail && t.TplCode == templateId
 	})
 }
 
@@ -172,6 +172,40 @@ func (n *notifyManagerImpl) SendEmail(to string,
 	}
 	ptName, _ := n.registryRepo.GetValue(registry.PlatformName)
 	message := util.ResolveMessage(tpl.Content, data)
-	subject := fmt.Sprintf("【%s】%s", ptName, tpl.TempName)
+	subject := fmt.Sprintf("【%s】%s", ptName, tpl.TplName)
 	return smtp.SendMail(subject, []string{to}, message)
+}
+
+// SaveNotifyTemplate 保存通知模板
+func (n *notifyManagerImpl) SaveNotifyTemplate(t *mss.NotifyTemplate) error {
+	if len(t.TplCode) == 0 {
+		return errors.New("模板编码不能为空")
+	}
+	if len(t.TplName) == 0 {
+		return errors.New("模板名称不能为空")
+	}
+	if len(t.Content) == 0 {
+		return errors.New("模板内容不能为空")
+	}
+
+	tplRepo := n.mssRepo.NotifyRepo().TemplateRepo()
+	if t.Id <= 0 {
+		v := tplRepo.FindBy("tpl_code=? and tpl_type=? and id <> ?", t.TplCode, t.TplType, t.Id)
+		if v != nil {
+			return errors.New("已存在相同编码的通知模板")
+		}
+		_, err := tplRepo.Save(t)
+		return err
+	}
+	v := tplRepo.Get(t.Id)
+	if v == nil {
+		return errors.New("不存在该通知模板")
+	}
+	v.TplName = t.TplName
+	v.Content = t.Content
+	v.Labels = t.Labels
+	v.SpCode = t.SpCode
+	v.SpTid = t.SpTid
+	_, err := tplRepo.Save(v)
+	return err
 }

@@ -157,14 +157,14 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 		// 根据消息类型发送信息
 		switch mssType {
 		default:
-		case mss.TypeEmailMessage:
+		case mss.TypeEmail:
 			n := mgr.GetNotifyItem("邮箱验证码")
 			c := &mss.MailMessage{
 				Subject: operation + "验证码",
 				Body:    n.Content,
 			}
 			err = mgr.SendEmail(m.value.Email, c, data, "")
-		case mss.TypePhoneMessage:
+		case mss.TypeSMS:
 			// 某些短信平台要求传入模板ID,在这里附加参数
 			// re := m.registryRepo.Get(registry.SmsMemberCheckTemplateId)
 			// data["templateId"] = re.StringValue()

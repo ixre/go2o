@@ -1339,3 +1339,18 @@ COMMENT ON COLUMN "public".mm_relation.inviter_id IS '邀请会员编号';
 COMMENT ON COLUMN "public".mm_relation.reg_mch_id IS '关联商户编号';
 COMMENT ON COLUMN "public".mm_relation.inviter_d2 IS '邀请会员编号(depth2)';
 COMMENT ON COLUMN "public".mm_relation.inviter_d3 IS '邀请会员编号(depth3)';
+
+
+-- 2024-10-08 通知模板
+ALTER TABLE "public".sys_notify_template 
+  RENAME COLUMN temp_name TO tpl_name;
+ALTER TABLE "public".sys_notify_template 
+  RENAME COLUMN code TO tpl_code;
+ALTER TABLE "public".sys_notify_template 
+  RENAME COLUMN temp_type TO tpl_type;
+
+ALTER TABLE "public".sys_notify_template 
+  ADD COLUMN tpl_flag int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".sys_notify_template.tpl_flag IS '模板标志,1:系统';
+
+

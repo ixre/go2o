@@ -9,39 +9,72 @@ option java_package = "com.github.go2o.rpc";
 /** 消息服务 */
 service MessageService {
     // 获取通知项,key
-    rpc GetNotifyItem (String) returns (SNotifyItem) {
-    }
+    rpc GetNotifyItem (String) returns (SNotifyItem);
     // 发送短信
-    rpc SendPhoneMessage (SendMessageRequest) returns (Result) {
-    }
+    rpc SendPhoneMessage (SendMessageRequest) returns (TxResult);
     // 获取所有通知项
-    rpc GetAllNotifyItem (Empty) returns (NotifyItemListResponse) {
-    }
+    rpc GetAllNotifyItem (Empty) returns (NotifyItemListResponse);
     // 保存通知项设置
-    rpc SaveNotifyItem (SNotifyItem) returns (Result) {
-    }
+    rpc SaveNotifyItem (SNotifyItem) returns (Result);
     // 获取邮件模版
-    rpc GetMailTemplate (Int64) returns (SMailTemplate) {
-    }
+    rpc GetMailTemplate (Int64) returns (SMailTemplate);
     // 保存邮件模板
-    rpc SaveMailTemplate (SMailTemplate) returns (Result) {
-    }
+    rpc SaveMailTemplate (SMailTemplate) returns (Result);
     // 获取邮件模板
-    rpc GetMailTemplates (Empty) returns (MailTemplateListResponse) {
-    }
+    rpc GetMailTemplates (Empty) returns (MailTemplateListResponse);
     // 删除邮件模板
-    rpc DeleteMailTemplate (Int64) returns (Result) {
-    }
+    rpc DeleteMailTemplate (Int64) returns (Result);
     // 获取邮件绑定
     //rpc GetConfig() mss.Config
     // 保存邮件
     //rpc SaveConfig(conf *mss.Config) error
     // 发送站内信
-    rpc SendSiteMessage (SendSiteMessageRequest) returns (Result) {
-    }
+    rpc SendSiteMessage (SendSiteMessageRequest) returns (Result);
     // 获取站内信
     //rpc GetSiteMessage(Int64) *dto.SiteMessage
 
     // 创建聊天会话
     //rpc CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error)
+// 保存系统通知模板
+    rpc SaveNotifyTemplate (SaveNotifyTemplateRequest) returns (TxResult);
 }
+
+
+enum NotifyType{
+    // 未知
+    NotifyTypeUnknown = 0;
+    // 站内信
+    SiteMessage = 1;
+    // 短信
+    SMS = 2;
+    // 邮件
+    Email = 3;
+}
+
+// 保存系统通知模板请求
+message SaveNotifyTemplateRequest{
+    // 编号
+    int64 id = 1;
+    // 模板编号
+    string tplCode = 2;
+    // 模板类型,1:站内信 2:短信 3:邮件
+    int32 tplType = 3;
+    // 模板名称
+    string tplName = 4;
+    // 模板内容
+    string content = 5;
+    // 模板标签, 多个用,隔开
+    string labels = 6;
+    // 短信服务商代码
+    string spCode = 7;
+    // 短信服务商模板编号
+    string spTid = 8;
+    // 创建时间
+    int64 createTime = 9;
+    // UpdateTime
+    int64 updateTime = 10;
+    // 是否删除,0:否 1:是
+    int32 isDeleted = 11;
+}
+
+

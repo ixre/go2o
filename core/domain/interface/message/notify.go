@@ -10,27 +10,37 @@ package mss
 
 import (
 	"errors"
+
+	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
 const (
-	TypeSiteMessage = iota
-	TypeEmailMessage
-	TypePhoneMessage
+	// 站内信
+	TypeSiteMessage int = 1
+	// 短信
+	TypeSMS int = 2
+	// 邮件
+	TypeEmail int = 3
+)
+
+const (
+	// 系统模板
+	TplFlagSystem int = 1
 )
 
 var (
 	// 类型字典
 	NotifyTypeMap = map[int]string{
-		TypeSiteMessage:  "站内信",
-		TypeEmailMessage: "邮件",
-		TypePhoneMessage: "短信",
+		TypeSiteMessage: "站内信",
+		TypeEmail:       "邮件",
+		TypeSMS:         "短信",
 	}
 
 	// 类型顺序
 	NotifyTypeIndex = []int{
 		TypeSiteMessage,
-		TypeEmailMessage,
-		TypePhoneMessage,
+		TypeEmail,
+		TypeSMS,
 	}
 
 	//todo: 已过期
@@ -47,7 +57,7 @@ var (
 			Key:        "验证手机",
 			TplId:      -1,
 			ReadonlyBy: true,
-			NotifyBy:   TypePhoneMessage,
+			NotifyBy:   TypeSMS,
 			Content:    "您好,本次{operation}验证码为{code},有效期为{minutes}分钟。",
 			Tags: map[string]string{
 				"operation": "操作,如找回密码,重置手机等",
@@ -59,7 +69,7 @@ var (
 			Key:        "验证邮箱",
 			TplId:      -1,
 			ReadonlyBy: true,
-			NotifyBy:   TypeEmailMessage,
+			NotifyBy:   TypeEmail,
 			Content:    "您好,本次{operation}验证码为{code},有效期为{minutes}分钟。",
 			Tags: map[string]string{
 				"operation": "操作,如找回密码,重置手机等",
@@ -101,6 +111,8 @@ type (
 	}
 
 	INotifyManager interface {
+		// 保存通知模板
+		SaveNotifyTemplate(tpl *NotifyTemplate) error
 		// 获取所有的通知项
 		GetAllNotifyItem() []NotifyItem
 		// 获取通知项配置
@@ -118,6 +130,8 @@ type (
 	}
 
 	INotifyRepo interface {
+		// 获取通知模板仓储
+		TemplateRepo() fw.Repository[NotifyTemplate]
 		// 获取所有的通知项
 		GetAllNotifyItem() []NotifyItem
 
@@ -126,6 +140,13 @@ type (
 
 		// 保存通知项
 		SaveNotifyItem(v *NotifyItem) error
+
+		// 保存或新增通知模板
+		SaveNotifyTemplate(t *NotifyTemplate) (*NotifyTemplate, error)
+		// GetNotifyTemplate Get 系统通知模板
+		GetAllNotifyTemplate() []*NotifyTemplate
+		// DeleteNotifyTemplate Delete 系统通知模板
+		DeleteNotifyTemplate(primary interface{}) error
 	}
 
 	// 通知项
@@ -145,30 +166,36 @@ type (
 
 	// 通知项集合
 	NotifyItemSet []*NotifyItem
-
-	// NotifyTemplate 系统通知模板
-	NotifyTemplate struct {
-		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"yes" json:"id" bson:"id"`
-		// 模板编号
-		Code string `db:"code" json:"code" bson:"code"`
-		// 模板类型,1:站内信 2:短信 3:邮件
-		TempType int `db:"temp_type" json:"tempType" bson:"tempType"`
-		// 模板名称
-		TempName string `db:"temp_name" json:"tempName" bson:"tempName"`
-		// 模板内容
-		Content string `db:"content" json:"content" bson:"content"`
-		// 模板标签, 多个用,隔开
-		Labels string `db:"labels" json:"labels" bson:"labels"`
-		// 短信服务商代码
-		SpCode string `db:"sp_code" json:"spCode" bson:"spCode"`
-		// 短信服务商模板编号
-		SpTid string `db:"sp_tid" json:"spTid" bson:"spTid"`
-		// 创建时间
-		CreateTime int64 `db:"create_time" json:"createTime" bson:"createTime"`
-		// UpdateTime
-		UpdateTime int64 `db:"update_time" json:"updateTime" bson:"updateTime"`
-		// 是否删除,0:否 1:是
-		IsDeleted int `db:"is_deleted" json:"isDeleted" bson:"isDeleted"`
-	}
 )
+
+// NotifyTemplate 系统通知模板
+type NotifyTemplate struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 模板编号
+	TplCode string `json:"tplCode" db:"tpl_code" gorm:"column:tpl_code" bson:"tplCode"`
+	// 模板类型,1:站内信 2:短信 3:邮件
+	TplType int `json:"tplType" db:"tpl_type" gorm:"column:tpl_type" bson:"tplType"`
+	// 模板标志,1:系统
+	TplFlag int `json:"tplFlag" db:"tpl_flag" gorm:"column:tpl_flag" bson:"tplFlag"`
+	// 模板名称
+	TplName string `json:"tplName" db:"tpl_name" gorm:"column:tpl_name" bson:"tplName"`
+	// 模板内容
+	Content string `json:"content" db:"content" gorm:"column:content" bson:"content"`
+	// 模板标签, 多个用,隔开
+	Labels string `json:"labels" db:"labels" gorm:"column:labels" bson:"labels"`
+	// 短信服务商代码
+	SpCode string `json:"spCode" db:"sp_code" gorm:"column:sp_code" bson:"spCode"`
+	// 短信服务商模板编号
+	SpTid string `json:"spTid" db:"sp_tid" gorm:"column:sp_tid" bson:"spTid"`
+	// 创建时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+	// UpdateTime
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// 是否删除,0:否 1:是
+	IsDeleted int `json:"isDeleted" db:"is_deleted" gorm:"column:is_deleted" bson:"isDeleted"`
+}
+
+func (s NotifyTemplate) TableName() string {
+	return "sys_notify_template"
+}

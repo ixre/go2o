@@ -28,6 +28,7 @@ const (
 	MessageService_GetMailTemplates_FullMethodName   = "/MessageService/GetMailTemplates"
 	MessageService_DeleteMailTemplate_FullMethodName = "/MessageService/DeleteMailTemplate"
 	MessageService_SendSiteMessage_FullMethodName    = "/MessageService/SendSiteMessage"
+	MessageService_SaveNotifyTemplate_FullMethodName = "/MessageService/SaveNotifyTemplate"
 )
 
 // MessageServiceClient is the client API for MessageService service.
@@ -37,7 +38,7 @@ type MessageServiceClient interface {
 	// 获取通知项,key
 	GetNotifyItem(ctx context.Context, in *String, opts ...grpc.CallOption) (*SNotifyItem, error)
 	// 发送短信
-	SendPhoneMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*Result, error)
+	SendPhoneMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取所有通知项
 	GetAllNotifyItem(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*NotifyItemListResponse, error)
 	// 保存通知项设置
@@ -56,6 +57,10 @@ type MessageServiceClient interface {
 	// rpc SaveConfig(conf *mss.Config) error
 	// 发送站内信
 	SendSiteMessage(ctx context.Context, in *SendSiteMessageRequest, opts ...grpc.CallOption) (*Result, error)
+	// 创建聊天会话
+	// rpc CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error)
+	// 保存系统通知模板
+	SaveNotifyTemplate(ctx context.Context, in *SaveNotifyTemplateRequest, opts ...grpc.CallOption) (*TxResult, error)
 }
 
 type messageServiceClient struct {
@@ -75,8 +80,8 @@ func (c *messageServiceClient) GetNotifyItem(ctx context.Context, in *String, op
 	return out, nil
 }
 
-func (c *messageServiceClient) SendPhoneMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *messageServiceClient) SendPhoneMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MessageService_SendPhoneMessage_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -147,6 +152,15 @@ func (c *messageServiceClient) SendSiteMessage(ctx context.Context, in *SendSite
 	return out, nil
 }
 
+func (c *messageServiceClient) SaveNotifyTemplate(ctx context.Context, in *SaveNotifyTemplateRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MessageService_SaveNotifyTemplate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MessageServiceServer is the server API for MessageService service.
 // All implementations must embed UnimplementedMessageServiceServer
 // for forward compatibility
@@ -154,7 +168,7 @@ type MessageServiceServer interface {
 	// 获取通知项,key
 	GetNotifyItem(context.Context, *String) (*SNotifyItem, error)
 	// 发送短信
-	SendPhoneMessage(context.Context, *SendMessageRequest) (*Result, error)
+	SendPhoneMessage(context.Context, *SendMessageRequest) (*TxResult, error)
 	// 获取所有通知项
 	GetAllNotifyItem(context.Context, *Empty) (*NotifyItemListResponse, error)
 	// 保存通知项设置
@@ -173,6 +187,10 @@ type MessageServiceServer interface {
 	// rpc SaveConfig(conf *mss.Config) error
 	// 发送站内信
 	SendSiteMessage(context.Context, *SendSiteMessageRequest) (*Result, error)
+	// 创建聊天会话
+	// rpc CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error)
+	// 保存系统通知模板
+	SaveNotifyTemplate(context.Context, *SaveNotifyTemplateRequest) (*TxResult, error)
 	mustEmbedUnimplementedMessageServiceServer()
 }
 
@@ -183,7 +201,7 @@ type UnimplementedMessageServiceServer struct {
 func (UnimplementedMessageServiceServer) GetNotifyItem(context.Context, *String) (*SNotifyItem, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNotifyItem not implemented")
 }
-func (UnimplementedMessageServiceServer) SendPhoneMessage(context.Context, *SendMessageRequest) (*Result, error) {
+func (UnimplementedMessageServiceServer) SendPhoneMessage(context.Context, *SendMessageRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendPhoneMessage not implemented")
 }
 func (UnimplementedMessageServiceServer) GetAllNotifyItem(context.Context, *Empty) (*NotifyItemListResponse, error) {
@@ -206,6 +224,9 @@ func (UnimplementedMessageServiceServer) DeleteMailTemplate(context.Context, *In
 }
 func (UnimplementedMessageServiceServer) SendSiteMessage(context.Context, *SendSiteMessageRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendSiteMessage not implemented")
+}
+func (UnimplementedMessageServiceServer) SaveNotifyTemplate(context.Context, *SaveNotifyTemplateRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveNotifyTemplate not implemented")
 }
 func (UnimplementedMessageServiceServer) mustEmbedUnimplementedMessageServiceServer() {}
 
@@ -382,6 +403,24 @@ func _MessageService_SendSiteMessage_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MessageService_SaveNotifyTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveNotifyTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).SaveNotifyTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MessageService_SaveNotifyTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).SaveNotifyTemplate(ctx, req.(*SaveNotifyTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MessageService_ServiceDesc is the grpc.ServiceDesc for MessageService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -424,6 +463,10 @@ var MessageService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendSiteMessage",
 			Handler:    _MessageService_SendSiteMessage_Handler,
+		},
+		{
+			MethodName: "SaveNotifyTemplate",
+			Handler:    _MessageService_SaveNotifyTemplate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
