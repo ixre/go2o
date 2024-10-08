@@ -21,6 +21,19 @@ func GetGender(gender int32) string {
 	return "-"
 }
 
+// 屏蔽手机号
+func MaskPhone(phone string) string {
+	l := len(strings.TrimSpace(phone))
+	// 手机号
+	if l == 11 {
+		return phone[:3] + strings.Repeat("*", 4) + phone[7:]
+	}
+	if l > 1 {
+		return phone[1:] + strings.Repeat("*", l-1)
+	}
+	return "****"
+}
+
 // 屏蔽昵称
 func MaskNickname(nickname string) string {
 	if strings.HasPrefix(nickname, "USER") {
@@ -30,7 +43,7 @@ func MaskNickname(nickname string) string {
 	l := len(nickname)
 	// 手机号
 	if l == 11 {
-		return nickname[:3] + strings.Repeat("*", 4) + nickname[8:]
+		return nickname[:3] + strings.Repeat("*", 4) + nickname[7:]
 	}
 	if l > 1 {
 		return nickname[1:] + strings.Repeat("*", l-1)
