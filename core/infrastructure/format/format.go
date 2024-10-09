@@ -36,10 +36,7 @@ func MaskPhone(phone string) string {
 
 // 屏蔽昵称
 func MaskNickname(nickname string) string {
-	if strings.HasPrefix(nickname, "USER") {
-		nickname = nickname[4:]
-	}
-
+	nickname = strings.TrimPrefix(nickname, "USER")
 	l := len(nickname)
 	// 手机号
 	if l == 11 {
