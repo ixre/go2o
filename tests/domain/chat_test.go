@@ -11,12 +11,12 @@ func TestChat(t *testing.T) {
 	repo := inject.GetChatRepo()
 	sender := repo.GetChatUser(848)
 	replayer := repo.GetChatUser(854)
-	ic, err := sender.BuildConversation(replayer.GetAggregateRootId(), 0)
+	ic, err := sender.BuildConversation(replayer.GetAggregateRootId(), 0, "")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	rc, _ := replayer.BuildConversation(sender.GetAggregateRootId(), 0)
+	rc, _ := replayer.BuildConversation(sender.GetAggregateRootId(), 0, "")
 	if rc.GetDomainId() != ic.GetDomainId() {
 		t.Error("conversation id not equal")
 		t.FailNow()

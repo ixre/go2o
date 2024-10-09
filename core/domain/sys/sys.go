@@ -11,9 +11,10 @@ import (
 var _ sys.ISystemAggregateRoot = new(systemAggregateRootImpl)
 
 type systemAggregateRootImpl struct {
-	_address sys.IAddressManager
-	_options sys.IOptionManager
-	_repo    sys.ISystemRepo
+	_address  sys.IAddressManager
+	_options  sys.IOptionManager
+	_stations sys.IStationManager
+	_repo     sys.ISystemRepo
 }
 
 func NewSystemAggregateRoot(repo sys.ISystemRepo) sys.ISystemAggregateRoot {
@@ -40,6 +41,14 @@ func (s *systemAggregateRootImpl) Options() sys.IOptionManager {
 		s._options = &optionManagerImpl{s._repo.Option(), nil}
 	}
 	return s._options
+}
+
+// Stations implements sys.ISystemAggregateRoot.
+func (s *systemAggregateRootImpl) Stations() sys.IStationManager {
+	if s._stations == nil {
+		s._stations = NewStationManager(s._repo.Station(), s._repo, s)
+	}
+	return s._stations
 }
 
 // FlushUpdateStatus implements sys.ISystemAggregateRoot.

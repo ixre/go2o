@@ -22,3 +22,13 @@ func TestGetAllCities(t *testing.T) {
 		t.Log(city)
 	}
 }
+
+// 测试根据城市获取站点
+func TestGetStationByCityCode(t *testing.T) {
+	city := 110100
+	ia := inject.GetSystemRepo().GetSystemAggregateRoot() // TODO: write test code here
+	d := ia.Address().GetDistrict(city)
+	t.Logf("district = %s \n", d.Name)
+	station := ia.Stations().FindStationByCity(city)
+	t.Logf("station = %#v \n", station.GetValue())
+}

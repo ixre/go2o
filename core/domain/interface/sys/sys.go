@@ -31,6 +31,9 @@ type (
 		// 获取银行列表
 		GetBanks() []*GeneralOption
 
+		// 获取站点管理器
+		Stations() IStationManager
+
 		// 标记更新状态,通常监听数据变更或事件后调用
 		FlushUpdateStatus()
 
@@ -75,6 +78,8 @@ type ISystemRepo interface {
 	District() fw.Repository[District]
 	// Option 获取选项仓储
 	Option() fw.Repository[GeneralOption]
+	// Station 获取站点仓储
+	Station() IStationRepo
 }
 
 type (

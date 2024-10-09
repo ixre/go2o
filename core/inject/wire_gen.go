@@ -36,7 +36,6 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/shipment"
-	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
@@ -83,10 +82,9 @@ func GetMerchantQueryService() *query.MerchantQuery {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo, iWalletRepo)
 	return merchantQuery
 }
@@ -123,10 +121,9 @@ func GetContentQueryService() *query.ContentQuery {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo, iWalletRepo)
 	memberQuery := query.NewMemberQuery(orm, db)
 	contentQuery := query.NewContentQuery(orm, db, merchantQuery, memberQuery, iMerchantRepo)
@@ -344,12 +341,11 @@ func GetWholesaleRepo() wholesaler.IWholesaleRepo {
 	return iWholesaleRepo
 }
 
-func GetStationRepo() station.IStationRepo {
-	orm := provide.GetOrmInstance()
+func GetStationRepo() sys.IStationRepo {
 	db := provide.GetGOrm()
 	storageInterface := provide.GetStorageInstance()
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
+	iStationRepo := repos.NewStationRepo(db, iSystemRepo)
 	return iStationRepo
 }
 
@@ -374,11 +370,10 @@ func GetMerchantRepo() merchant.IMerchantRepo {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	return iMerchantRepo
 }
 
@@ -403,11 +398,10 @@ func GetCartRepo() cart.ICartRepo {
 	iUserRepo := repos.NewUserRepo(orm)
 	iStaffRepo := repos.NewStaffRepo(db)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
 	return iCartRepo
 }
@@ -478,11 +472,10 @@ func GetOrderRepo() order.IOrderRepo {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, db, iMemberRepo, iMerchantRepo, iRegistryRepo)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
 	iPromotionRepo := repos.NewPromotionRepo(orm, iItemRepo, iMemberRepo)
@@ -513,11 +506,10 @@ func GetPaymentRepo() payment.IPaymentRepo {
 	iUserRepo := repos.NewUserRepo(orm)
 	iStaffRepo := repos.NewStaffRepo(db)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, db, iMemberRepo, iMerchantRepo, iRegistryRepo)
 	return iPaymentRepo
 }
@@ -543,11 +535,10 @@ func GetAfterSalesRepo() afterSales.IAfterSalesRepo {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, db, iMemberRepo, iMerchantRepo, iRegistryRepo)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
 	iPromotionRepo := repos.NewPromotionRepo(orm, iItemRepo, iMemberRepo)
@@ -642,8 +633,6 @@ func GetEventSource() *event.EventSource {
 	iNotifyRepo := repos.NewNotifyRepo(orm, db, iRegistryRepo)
 	iValueRepo := repos.NewValueRepo(orm, storageInterface)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
-	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iPortalDao := impl.NewPortalDao(orm)
 	iWholesaleRepo := repos.NewWholesaleRepo(orm)
 	iProductModelRepo := repos.NewProModelRepo(orm)
@@ -657,11 +646,12 @@ func GetEventSource() *event.EventSource {
 	iStaffRepo := repos.NewStaffRepo(db)
 	iWalletRepo := repos.NewWalletRepo(orm)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
-	eventHandler := handler.NewEventHandler(iRegistryRepo, iArticleRepo, iMessageRepo, iStationRepo, iPageRepo, iPortalDao, iMerchantRepo, iApprovalRepository, iStaffRepo)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	eventHandler := handler.NewEventHandler(iRegistryRepo, iArticleRepo, iMessageRepo, iPageRepo, iPortalDao, iMerchantRepo, iApprovalRepository, iStaffRepo, iSystemRepo)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, db, iMemberRepo, iMerchantRepo, iRegistryRepo)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
 	iPromotionRepo := repos.NewPromotionRepo(orm, iItemRepo, iMemberRepo)
@@ -701,7 +691,7 @@ func GetSystemService() proto.SystemServiceServer {
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
 	iNotifyRepo := repos.NewNotifyRepo(orm, db, iRegistryRepo)
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
+	iStationRepo := repos.NewStationRepo(db, iSystemRepo)
 	systemServiceServer := impl2.NewSystemService(iValueRepo, iRegistryRepo, iSystemRepo, storageInterface, iMessageRepo, iStationRepo)
 	return systemServiceServer
 }
@@ -728,11 +718,10 @@ func GetMemberService() proto.MemberServiceServer {
 	iUserRepo := repos.NewUserRepo(orm)
 	iStaffRepo := repos.NewStaffRepo(db)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	memberQuery := query.NewMemberQuery(orm, db)
 	orderQuery := query.NewOrderQuery(orm)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, db, iMemberRepo, iMerchantRepo, iRegistryRepo)
@@ -762,11 +751,10 @@ func GetMerchantService() proto.MerchantServiceServer {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	app := provide.GetApp()
 	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo, iWalletRepo)
 	orderQuery := query.NewOrderQuery(orm)
@@ -796,11 +784,10 @@ func GetShopService() proto.ShopServiceServer {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	shopQuery := query.NewShopQuery(orm, storageInterface)
 	shopServiceServer := impl2.NewShopService(iShopRepo, iMerchantRepo, iRegistryRepo, shopQuery)
 	return shopServiceServer
@@ -843,11 +830,10 @@ func GetItemService() proto.ItemServiceServer {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	itemServiceServer := impl2.NewItemService(storageInterface, iCategoryRepo, iItemRepo, itemQuery, iSaleLabelRepo, iProductModelRepo, iMerchantRepo, iValueRepo)
 	return itemServiceServer
 }
@@ -874,11 +860,10 @@ func GetOrderService() proto.OrderServiceServer {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, db, iMemberRepo, iMerchantRepo, iRegistryRepo)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
 	iPromotionRepo := repos.NewPromotionRepo(orm, iItemRepo, iMemberRepo)
@@ -912,11 +897,10 @@ func GetCartService() proto.CartServiceServer {
 	iUserRepo := repos.NewUserRepo(orm)
 	iStaffRepo := repos.NewStaffRepo(db)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
 	cartServiceServer := impl2.NewCartService(iCartRepo, iItemRepo, iMerchantRepo, iShopRepo)
 	return cartServiceServer
@@ -944,11 +928,10 @@ func GetAfterSalesService() proto.AfterSalesServiceServer {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, db, iMemberRepo, iMerchantRepo, iRegistryRepo)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
 	iPromotionRepo := repos.NewPromotionRepo(orm, iItemRepo, iMemberRepo)
@@ -984,11 +967,10 @@ func GetPaymentService() proto.PaymentServiceServer {
 	iUserRepo := repos.NewUserRepo(orm)
 	iStaffRepo := repos.NewStaffRepo(db)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, db, iMemberRepo, iMerchantRepo, iRegistryRepo)
 	iCartRepo := repos.NewCartRepo(orm, iMemberRepo, iMerchantRepo, iItemRepo)
 	iPromotionRepo := repos.NewPromotionRepo(orm, iItemRepo, iMemberRepo)
@@ -1071,10 +1053,9 @@ func GetContentService() proto.ContentServiceServer {
 	iMessageRepo := repos.NewMssRepo(orm, iNotifyRepo, iRegistryRepo, iValueRepo)
 	iMemberRepo := repos.NewMemberRepo(storageInterface, orm, db, iWalletRepo, iMessageRepo, iValueRepo, iRegistryRepo)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	merchantQuery := query.NewMerchantQuery(app, db, iStaffRepo, iApprovalRepository, iMerchantRepo, iWalletRepo)
 	memberQuery := query.NewMemberQuery(orm, db)
 	contentQuery := query.NewContentQuery(orm, db, merchantQuery, memberQuery, iMerchantRepo)
@@ -1202,11 +1183,10 @@ func GetCheckService() proto.CheckServiceServer {
 	iUserRepo := repos.NewUserRepo(orm)
 	iStaffRepo := repos.NewStaffRepo(db)
 	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
-	iStationRepo := repos.NewStationRepo(orm, iSystemRepo)
 	iInvoiceRepo := repos.NewInvoiceTenantRepo(db)
 	iApprovalRepository := repos.NewApprovalRepository(db)
 	iRbacRepository := repos.NewRbacRepo(db)
-	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iStationRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
+	iMerchantRepo := repos.NewMerchantRepo(orm, db, storageInterface, iWholesaleRepo, iItemRepo, iShopRepo, iUserRepo, iStaffRepo, iMemberRepo, iSystemRepo, iMessageRepo, iWalletRepo, iValueRepo, iRegistryRepo, iInvoiceRepo, iApprovalRepository, iRbacRepository)
 	checkServiceServer := impl2.NewCheckService(iMemberRepo, iMerchantRepo, iMessageRepo, iRegistryRepo, storageInterface)
 	return checkServiceServer
 }

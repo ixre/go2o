@@ -32,7 +32,7 @@ func (h EventHandler) HandleAppInitialEvent(data interface{}) {
 	initPortalNavGroup(h.portalDao)
 	initPages(h.pageRepo)
 	// 初始化站点
-	go h.stationRepo.GetManager().SyncStations()
+	go h._sysRepo.GetSystemAggregateRoot().Stations().SyncStations()
 	// 初始化通知模板
 	h.initNotifyTemplate()
 }

@@ -24,6 +24,7 @@ type systemRepoImpl struct {
 	lastUpdateTime int64
 	areaRepo       fw.Repository[sys.District]
 	optRepo        fw.Repository[sys.GeneralOption]
+	_stationRepo   sys.IStationRepo
 }
 
 func NewSystemRepo(o fw.ORM, st storage.Interface) sys.ISystemRepo {
@@ -75,6 +76,14 @@ func (s *systemRepoImpl) Option() fw.Repository[sys.GeneralOption] {
 		s.optRepo = newGeneralOptionRepoImpl(s.ORM)
 	}
 	return s.optRepo
+}
+
+// Station implements sys.ISystemRepo.
+func (s *systemRepoImpl) Station() sys.IStationRepo {
+	if s._stationRepo == nil {
+		s._stationRepo = NewStationRepo(s.ORM, s)
+	}
+	return s._stationRepo
 }
 
 // AreaRepo implements sys.ISystemRepo.

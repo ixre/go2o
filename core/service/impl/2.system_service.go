@@ -17,7 +17,6 @@ import (
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -39,7 +38,7 @@ type foundationService struct {
 	notifyRepo   mss.IMessageRepo
 	sysRepo      sys.ISystemRepo
 	_s           storage.Interface
-	stationRepo  station.IStationRepo
+	stationRepo  sys.IStationRepo
 	serviceUtil
 	proto.UnimplementedSystemServiceServer
 }
@@ -49,7 +48,7 @@ func NewSystemService(rep valueobject.IValueRepo,
 	sysRepo sys.ISystemRepo,
 	s storage.Interface,
 	notifyRepo mss.IMessageRepo,
-	stationRepo station.IStationRepo,
+	stationRepo sys.IStationRepo,
 ) proto.SystemServiceServer {
 	return &foundationService{
 		_rep:         rep,
@@ -404,7 +403,8 @@ func (s *foundationService) GetAreaString(_ context.Context, r *proto.AreaString
 
 // FindCity implements proto.SystemServiceServer.
 func (s *foundationService) FindCity(_ context.Context, req *proto.FindAreaRequest) (*proto.SArea, error) {
-	isa := s.sysRepo.GetSystemAggregateRoot().Address()
+	is := s.sysRepo.GetSystemAggregateRoot()
+	isa := is.Address()
 	city := isa.FindCity(req.Name)
 	if city == nil {
 		return &proto.SArea{}, nil
@@ -414,9 +414,9 @@ func (s *foundationService) FindCity(_ context.Context, req *proto.FindAreaReque
 		Name:      city.Name,
 		StationId: 0,
 	}
-	isn := s.stationRepo.GetStationByCity(city.Code)
+	isn := is.Stations().FindStationByCity(city.Code)
 	if isn != nil {
-		ret.StationId = int64(isn.GetAggregateRootId())
+		ret.StationId = int64(isn.GetDomainId())
 	}
 	return ret, nil
 }
@@ -432,12 +432,12 @@ func (s *foundationService) GetStation(_ context.Context, req *proto.GetStationR
 	ia := s.sysRepo.GetSystemAggregateRoot().Address()
 	d := ia.GetDistrict(int(v.CityCode))
 	ret := &proto.SStation{
-		Id:         int64(isa.GetAggregateRootId()),
+		Id:         int64(isa.GetDomainId()),
 		CityCode:   int64(v.CityCode),
 		Status:     int32(v.Status),
 		Letter:     v.Letter,
 		IsHot:      v.IsHot == 1,
-		CreateTime: v.CreateTime,
+		CreateTime: int64(v.CreateTime),
 	}
 	if d != nil {
 		ret.CityName = d.Name

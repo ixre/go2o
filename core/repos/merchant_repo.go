@@ -29,7 +29,7 @@ import (
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	merchantImpl "github.com/ixre/go2o/core/domain/merchant"
@@ -59,7 +59,7 @@ type merchantRepo struct {
 	_shopRepo     shop.IShopRepo
 	_valRepo      valueobject.IValueRepo
 	_memberRepo   member.IMemberRepo
-	_stationRepo  station.IStationRepo
+	_sysRepo      sys.ISystemRepo
 	_walletRepo   wallet.IWalletRepo
 	_registryRepo registry.IRegistryRepo
 	_invoiceRepo  invoice.IInvoiceRepo
@@ -75,7 +75,7 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
 	employeeRepo staff.IStaffRepo,
 	memberRepo member.IMemberRepo,
-	stationRepo station.IStationRepo,
+	sysRepo sys.ISystemRepo,
 	mssRepo mss.IMessageRepo,
 	walletRepo wallet.IWalletRepo,
 	valRepo valueobject.IValueRepo,
@@ -100,7 +100,7 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 		_employeeRepo: employeeRepo,
 		_mssRepo:      mssRepo,
 		_shopRepo:     shopRepo,
-		_stationRepo:  stationRepo,
+		_sysRepo:      sysRepo,
 		_valRepo:      valRepo,
 		_memberRepo:   memberRepo,
 		_walletRepo:   walletRepo,
@@ -141,7 +141,7 @@ func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchantAg
 		m._userRepo,
 		m._employeeRepo,
 		m._memberRepo,
-		m._stationRepo,
+		m._sysRepo,
 		m._walletRepo,
 		m._valRepo,
 		m._registryRepo,

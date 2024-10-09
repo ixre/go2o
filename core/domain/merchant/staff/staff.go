@@ -9,7 +9,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
-	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/gof/domain/eventbus"
 )
@@ -20,7 +20,7 @@ type staffManagerImpl struct {
 	_mch          merchant.IMerchantAggregateRoot
 	_repo         staff.IStaffRepo
 	_memberRepo   member.IMemberRepo
-	_stationRepo  station.IStationRepo
+	_sysRepo      sys.ISystemRepo
 	_mchRepo      merchant.IMerchantRepo
 	_approvalRepo approval.IApprovalRepository
 }
@@ -28,7 +28,7 @@ type staffManagerImpl struct {
 func NewStaffManager(mch merchant.IMerchantAggregateRoot,
 	staffRepo staff.IStaffRepo,
 	memberRepo member.IMemberRepo,
-	stationRepo station.IStationRepo,
+	sysRepo sys.ISystemRepo,
 	mchRepo merchant.IMerchantRepo,
 	approvalRepo approval.IApprovalRepository,
 ) staff.IStaffManager {
@@ -36,7 +36,7 @@ func NewStaffManager(mch merchant.IMerchantAggregateRoot,
 		_mch:          mch,
 		_repo:         staffRepo,
 		_memberRepo:   memberRepo,
-		_stationRepo:  stationRepo,
+		_sysRepo:      sysRepo,
 		_mchRepo:      mchRepo,
 		_approvalRepo: approvalRepo,
 	}
@@ -63,11 +63,11 @@ func (e *staffManagerImpl) Create(memberId int) error {
 	// 获取站点,站点允许为0
 	stationId := 0
 	cityCode := e._mch.GetValue().City
-	st := e._stationRepo.GetStationByCity(cityCode)
+	st := e._sysRepo.GetSystemAggregateRoot().Stations().FindStationByCity(cityCode)
 	if st != nil {
-		stationId = int(st.GetAggregateRootId())
+		stationId = int(st.GetDomainId())
 	}
-	// 创建职员
+
 	mv := mem.GetValue()
 	profile := mem.Profile().GetProfile()
 	v := &staff.Staff{
@@ -172,11 +172,11 @@ func (e *staffManagerImpl) TransferApproval(trans *staff.StaffTransfer, event *a
 			if im == nil {
 				return errors.New("商户不存在")
 			}
-			isn := e._stationRepo.GetStationByCity(im.GetValue().City)
+			isn := e._sysRepo.GetSystemAggregateRoot().Stations().FindStationByCity(im.GetValue().City)
 			st := e.GetStaff(trans.StaffId)
 			st.MchId = trans.TransferMchId
 			if isn != nil {
-				st.StationId = isn.GetAggregateRootId()
+				st.StationId = isn.GetDomainId()
 			} else {
 				st.StationId = 0
 				logger.Error("station not found, staffId: %d, mchId: %d", st.Id, st.MchId)
