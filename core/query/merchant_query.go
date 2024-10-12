@@ -11,6 +11,7 @@ package query
 import (
 	"fmt"
 	"regexp"
+	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
@@ -19,6 +20,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
+	"github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof"
@@ -255,4 +257,13 @@ func (m *MerchantQuery) QueryPagingBillItems(billId int, p *fw.PagingParams) (*f
 // 查询商户员工列表
 func (m *MerchantQuery) QueryPagingStaffs(p *fw.PagingParams) (*fw.PagingResult, error) {
 	return m._staffRepo.QueryPaging(p)
+}
+
+// QueryWaitGenerateBills 查询待生成日度账单的商户
+func (m *MerchantQuery) QueryWaitGenerateBills(size int, lastId int) []*merchant.MerchantBill {
+	// 以当天开始时间，作为账单生成的结束时间
+	endTime, _ := util.GetStartEndUnix(time.Now())
+	return m._repo.BillRepo().FindList(&fw.QueryOption{
+		Limit: size,
+	}, "end_time <? AND status = ? AND id > ?", endTime, merchant.BillStatusPending, lastId)
 }

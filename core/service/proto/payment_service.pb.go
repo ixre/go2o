@@ -3130,7 +3130,7 @@ type SSubMerchant struct {
 	LicenceNo string `protobuf:"bytes,10,opt,name=licenceNo,proto3" json:"licenceNo"`
 	// 商户简称
 	ShortName string `protobuf:"bytes,11,opt,name=shortName,proto3" json:"shortName"`
-	// 开户许可证图片
+	// 银行账户信息表图片
 	AccountLicencePic string `protobuf:"bytes,12,opt,name=accountLicencePic,proto3" json:"accountLicencePic"`
 	// 法人名称
 	LegalName string `protobuf:"bytes,13,opt,name=legalName,proto3" json:"legalName"`

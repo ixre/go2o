@@ -58,18 +58,24 @@ func (s *TransactionManagerImpl) AdjustBillAmount(amountType merchant.BillAmount
 }
 
 // GenerateBill implements merchant.IMerchantTransactionManager.
-func (s *TransactionManagerImpl) GenerateBill() error {
+func (s *TransactionManagerImpl) GenerateBill(billId int) error {
+	bill := s.GetBill(billId)
+	if bill == nil {
+		return errors.New("账单不存在")
+	}
 	now := time.Now().Unix()
-	bill := s.GetCurrentBill()
 	if now < int64(bill.EndTime) {
 		return errors.New("账单尚未到截止时间")
 	}
 	if bill.OtherTotalAmount+bill.ShopTotalAmount+bill.StoreTotalAmount < bill.TotalTxFee {
-		return errors.New("账单异常:总交易费大于总交易额")
+		bill.BillRemark = "账单异常:总交易费大于总交易额"
+		_, err := s._billRepo.Save(bill)
+		return err
 	}
 	bill.Status = int(merchant.BillStatusGenerated)
 	bill.BuildTime = int(now)
 	bill.UpdateTime = int(now)
+	bill.BillRemark = ""
 	_, err := s._billRepo.Save(bill)
 	return err
 }
@@ -79,6 +85,15 @@ func (s *TransactionManagerImpl) GetBillByTime(billTime int) *merchant.MerchantB
 	month, _ := fw.GetMonthStartEndUnix(int64(billTime))
 	bill := s._billRepo.FindBy("mch_id = ? AND bill_time = ?", s.mchId, month)
 	return bill
+}
+
+// GetBill 获取指定账单
+func (s *TransactionManagerImpl) GetBill(billId int) *merchant.MerchantBill {
+	v := s._billRepo.Get(billId)
+	if v != nil && v.MchId == s.mchId {
+		return v
+	}
+	return nil
 }
 
 // GetCurrentBill implements merchant.IMerchantTransactionManager.

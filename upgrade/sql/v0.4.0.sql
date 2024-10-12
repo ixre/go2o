@@ -1356,6 +1356,16 @@ COMMENT ON COLUMN "public".sys_notify_template.tpl_flag IS '模板标志,1:系�
 
 ALTER TABLE "public"."sys_general_option" RENAME COLUMN "name" TO "label"; 
 
+-- 2024-10-12 账单生成时间
+ALTER TABLE mch_bill 
+  ADD COLUMN review_remark varchar(40) DEFAULT '' NOT NULL;
+ALTER TABLE mch_bill 
+  ADD COLUMN bill_remark varchar(20) DEFAULT '' NOT NULL;
+ALTER TABLE mch_bill 
+  ADD COLUMN bill_type int4 DEFAULT 1 NOT NULL;
+COMMENT ON COLUMN mch_bill.bill_type IS '账单类型, 1: 日账单  2: 月度账单';
+COMMENT ON COLUMN mch_bill.review_remark IS '审核备注';
+COMMENT ON COLUMN mch_bill.bill_remark IS '账单备注';
 
 
 

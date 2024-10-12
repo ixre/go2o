@@ -290,7 +290,7 @@ func TestMerchantTransactionBill(t *testing.T) {
 	}
 	bill = tx.GetCurrentBill()
 	t.Logf("bill:%+v", bill)
-	err = tx.GenerateBill()
+	err = tx.GenerateBill(bill.Id)
 	if err != nil {
 		t.Error(err)
 	}

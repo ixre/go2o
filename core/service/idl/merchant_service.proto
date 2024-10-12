@@ -108,7 +108,7 @@ service MerchantService {
     // 手动调整商户账单金额,仅当账单金额对不上时进行调整
 	rpc ManualAdjustBillAmount(ManualAdjustMerchantBillAmountRequest) returns (TxResult);
 	// GenerateBill 生成当前月份的账单
-	rpc GenerateBill(MerchantId) returns (TxResult);
+	rpc GenerateBill(GenerateMerchantBillRequest) returns (TxResult);
 	// ReviewBill 审核账单
 	rpc ReviewBill(ReviewMerchantBillRequest) returns (TxResult);
 	// SettleBill 结算账单
@@ -318,6 +318,15 @@ message ManualAdjustMerchantBillAmountRequest{
     // 备注
     string remark  = 7;
 }
+
+// 生成商户账单请求
+message GenerateMerchantBillRequest{
+    // 商户编号
+    int64 mchId = 1;
+    // 账单编号
+    int64 billId = 2;
+}
+
 // 审核商户月度账单请求
 message ReviewMerchantBillRequest{
     // 商户编号

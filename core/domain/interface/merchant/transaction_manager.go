@@ -43,12 +43,14 @@ type IMerchantTransactionManager interface {
 	MathTransactionFee(tradeType int, amount int) (int, error)
 	// GetCurrentBill 获取当前月份的账单
 	GetCurrentBill() *MerchantBill
+	// GetBill 获取指定账单
+	GetBill(billId int) *MerchantBill
 	// GetBillByTime 获取指定月份的账单
 	GetBillByTime(billTime int) *MerchantBill
 	// AdjustBillShopAmount 调整账单商城金额
 	AdjustBillAmount(amountType BillAmountType, amount int, txFee int) error
-	// GenerateBill 生成当前月份的账单
-	GenerateBill() error
+	// GenerateBill 生成账单
+	GenerateBill(billId int) error
 	// ReviewBill 审核账单
 	ReviewBill(billId int, reviewerId int) error
 	// SettleBill 结算账单
@@ -75,6 +77,8 @@ type MerchantBill struct {
 	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
 	// 商户编号
 	MchId int `json:"mchId" db:"mch_id" gorm:"column:mch_id" bson:"mchId"`
+	// 账单类型: 1: 日账单  2: 月度账单
+	BillType int `json:"billType" db:"bill_type" gorm:"column:bill_type" bson:"billType"`
 	// 账单时间
 	BillTime int `json:"billTime" db:"bill_time" gorm:"column:bill_time" bson:"billTime"`
 	// 月份: 例:202408
@@ -103,8 +107,12 @@ type MerchantBill struct {
 	ReviewerId int `json:"reviewerId" db:"reviewer_id" gorm:"column:reviewer_id" bson:"reviewerId"`
 	// 审核人名称
 	ReviewerName string `json:"reviewerName" db:"reviewer_name" gorm:"column:reviewer_name" bson:"reviewerName"`
+	// 审核备注
+	ReviewRemark string `json:"reviewRemark" db:"review_remark" gorm:"column:review_remark" bson:"reviewRemark"`
 	// 审核时间
 	ReviewTime int `json:"reviewTime" db:"review_time" gorm:"column:review_time" bson:"reviewTime"`
+	// 账单备注
+	BillRemark string `json:"billRemark" db:"bill_remark" gorm:"column:bill_remark" bson:"billRemark"`
 	// 创建时间
 	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 	// 账单生成时间

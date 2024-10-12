@@ -1331,18 +1331,22 @@ func (m *merchantService) ManualAdjustBillAmount(_ context.Context, req *proto.M
 }
 
 // GenerateBill implements proto.MerchantServiceServer.
-func (m *merchantService) GenerateBill(_ context.Context, req *proto.MerchantId) (*proto.TxResult, error) {
-	mch := m._mchRepo.GetMerchant(int(req.Value))
+func (m *merchantService) GenerateBill(_ context.Context, req *proto.GenerateMerchantBillRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
 	if mch == nil {
 		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
 	manager := mch.SaleManager()
-	bill := manager.GetCurrentBill()
-	err := manager.GenerateBill()
+	if req.BillId <= 0 {
+		// 默认生成当前月份的账单
+		bill := manager.GetCurrentBill()
+		req.BillId = int64(bill.Id)
+	}
+	err := manager.GenerateBill(int(req.BillId))
 	if err != nil {
 		return m.errorV2(err), nil
 	}
-	return m.txResult(bill.Id, nil), nil
+	return m.txResult(0, nil), nil
 }
 
 // GetBill implements proto.MerchantServiceServer.
