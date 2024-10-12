@@ -561,7 +561,7 @@ type PayMerchant struct {
 	LicenceNo string `json:"licenceNo" db:"licence_no" gorm:"column:licence_no" bson:"licenceNo"`
 	// 商户简称
 	ShortName string `json:"shortName" db:"short_name" gorm:"column:short_name" bson:"shortName"`
-	// 开户许可证图片
+	// 银行账户信息表图片
 	AccountLicencePic string `json:"accountLicencePic" db:"account_licence_pic" gorm:"column:account_licence_pic" bson:"accountLicencePic"`
 	// 法人名称
 	LegalName string `json:"legalName" db:"legal_name" gorm:"column:legal_name" bson:"legalName"`

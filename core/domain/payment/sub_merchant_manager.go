@@ -228,7 +228,7 @@ func (s *subMerchantManagerImpl) Submit(code string) error {
 			return errors.New("商户简称不能为空")
 		}
 		if mch.AccountLicencePic == "" {
-			return errors.New("开户许可证图片不能为空")
+			return errors.New("账户信息表未上传")
 		}
 		if mch.LegalName == "" {
 			return errors.New("法人姓名不能为空")

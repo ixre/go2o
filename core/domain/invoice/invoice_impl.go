@@ -154,6 +154,10 @@ func (i *invoiceTenantAggregateRootImpl) createInvoice(v *invoice.InvoiceRecord,
 func (i *invoiceTenantAggregateRootImpl) GetInvoice(id int) invoice.InvoiceDomain {
 	v := i.repo.Records().Get(id)
 	if v != nil {
+		if v.TenantId != i.GetAggregateRootId() && v.IssueTenantId != i.GetAggregateRootId() {
+			// 其他用户的发票
+			return nil
+		}
 		items := i.repo.Items().FindList(nil, "invoice_id=?", id)
 		return i.createInvoice(v, items)
 	}

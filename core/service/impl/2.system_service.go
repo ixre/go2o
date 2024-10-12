@@ -29,10 +29,10 @@ import (
 	"github.com/ixre/gof/storage"
 )
 
-var _ proto.SystemServiceServer = new(foundationService)
+var _ proto.SystemServiceServer = new(systemServiceImpl)
 
 // 基础服务
-type foundationService struct {
+type systemServiceImpl struct {
 	_rep         valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
 	notifyRepo   mss.IMessageRepo
@@ -50,7 +50,7 @@ func NewSystemService(rep valueobject.IValueRepo,
 	notifyRepo mss.IMessageRepo,
 	stationRepo sys.IStationRepo,
 ) proto.SystemServiceServer {
-	return &foundationService{
+	return &systemServiceImpl{
 		_rep:         rep,
 		_s:           s,
 		notifyRepo:   notifyRepo,
@@ -61,7 +61,7 @@ func NewSystemService(rep valueobject.IValueRepo,
 }
 
 // GetSystemInfo implements proto.SystemServiceServer.
-func (s *foundationService) GetSystemInfo(context.Context, *proto.Empty) (*proto.SSystemInfo, error) {
+func (s *systemServiceImpl) GetSystemInfo(context.Context, *proto.Empty) (*proto.SSystemInfo, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot()
 	return &proto.SSystemInfo{
 		LastUpdateTime: uint64(isa.LastUpdateTime()),
@@ -69,13 +69,13 @@ func (s *foundationService) GetSystemInfo(context.Context, *proto.Empty) (*proto
 }
 
 // 检测是否包含敏感词
-func (s *foundationService) CheckSensitive(_ context.Context, r *proto.String) (*proto.Bool, error) {
+func (s *systemServiceImpl) CheckSensitive(_ context.Context, r *proto.String) (*proto.Bool, error) {
 	_, b := sensitive.Singleton().CheckSensitive(r.Value)
 	return &proto.Bool{Value: b}, nil
 }
 
 // 替换敏感词
-func (s *foundationService) ReplaceSensitive(_ context.Context, r *proto.ReplaceSensitiveRequest) (*proto.String, error) {
+func (s *systemServiceImpl) ReplaceSensitive(_ context.Context, r *proto.ReplaceSensitiveRequest) (*proto.String, error) {
 	v := sensitive.Singleton().ReplaceAll(r.Text, r.Replacement)
 	if r.Extra {
 		v = regex.ContainPhoneRegex.ReplaceAllString(v, "***")
@@ -88,7 +88,7 @@ func (s *foundationService) ReplaceSensitive(_ context.Context, r *proto.Replace
 	return &proto.String{Value: v}, nil
 }
 
-func (s *foundationService) CleanCache(_ context.Context, request *proto.CleanCacheRequest) (*proto.CleanCacheResponse, error) {
+func (s *systemServiceImpl) CleanCache(_ context.Context, request *proto.CleanCacheRequest) (*proto.CleanCacheResponse, error) {
 	if request.ClearGlobal {
 		isa := s.sysRepo.GetSystemAggregateRoot()
 		isa.FlushUpdateStatus()
@@ -106,7 +106,7 @@ func (s *foundationService) CleanCache(_ context.Context, request *proto.CleanCa
 }
 
 // 保存短信API凭据
-func (s *foundationService) SaveSmsSetting(_ context.Context, r *proto.SSmsProviderSetting) (*proto.Result, error) {
+func (s *systemServiceImpl) SaveSmsSetting(_ context.Context, r *proto.SSmsProviderSetting) (*proto.Result, error) {
 	manager := s.notifyRepo.NotifyManager()
 	if r.HttpExtra == nil {
 		r.HttpExtra = &proto.SSmsExtraSetting{}
@@ -131,7 +131,7 @@ func (s *foundationService) SaveSmsSetting(_ context.Context, r *proto.SSmsProvi
 }
 
 // 获取短信API凭据, @provider 短信服务商, 默认:http
-func (s *foundationService) GetSmsSetting(_ context.Context, req *proto.GetSmsSettingRequest) (*proto.SSmsProviderSetting, error) {
+func (s *systemServiceImpl) GetSmsSetting(_ context.Context, req *proto.GetSmsSettingRequest) (*proto.SSmsProviderSetting, error) {
 	manager := s.notifyRepo.NotifyManager()
 	perm := manager.GetSmsApiPerm(int(req.Provider))
 	if perm == nil {
@@ -153,7 +153,7 @@ func (s *foundationService) GetSmsSetting(_ context.Context, req *proto.GetSmsSe
 }
 
 // 保存面板HOOK数据,这通常是在第三方应用中初始化或调用,参见文档：BoardHooks
-func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.BoardHookSaveRequest) (*proto.Result, error) {
+func (s *systemServiceImpl) SaveBoardHook(_ context.Context, request *proto.BoardHookSaveRequest) (*proto.Result, error) {
 
 	mp := map[string]string{
 		registry.BoardHookURL:   request.HookURL,
@@ -188,7 +188,7 @@ func (s *foundationService) SaveBoardHook(_ context.Context, request *proto.Boar
 //}
 
 // 保存超级用户账号和密码
-func (s *foundationService) UpdateSuperCredential(_ context.Context, user *proto.SuperPassswordRequest) (*proto.TxResult, error) {
+func (s *systemServiceImpl) UpdateSuperCredential(_ context.Context, user *proto.SuperPassswordRequest) (*proto.TxResult, error) {
 	if len(user.NewPassword) != 32 || len(user.OldPassword) != 32 {
 		return s.errorV2(de.ErrNotMD5Format), nil
 	}
@@ -207,7 +207,7 @@ func (s *foundationService) UpdateSuperCredential(_ context.Context, user *proto
 //   - 1. 成功，并返回token
 //   - -1. 接口地址不正确
 //   - -2. 已经注册
-func (s *foundationService) RegisterApp(_ context.Context, app *proto.SSsoApp) (*proto.String, error) {
+func (s *systemServiceImpl) RegisterApp(_ context.Context, app *proto.SSsoApp) (*proto.String, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
 	token, err := sso.Register(app)
 	if err == nil {
@@ -221,13 +221,13 @@ func (s *foundationService) RegisterApp(_ context.Context, app *proto.SSsoApp) (
 }
 
 // 获取应用信息
-func (s *foundationService) GetApp(_ context.Context, s2 *proto.String) (*proto.SSsoApp, error) {
+func (s *systemServiceImpl) GetApp(_ context.Context, s2 *proto.String) (*proto.SSsoApp, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
 	return sso.Get(s2.Value), nil
 }
 
 // 获取单点登录应用
-func (s *foundationService) GetAllSsoApp(_ context.Context, _ *proto.Empty) (*proto.StringListResponse, error) {
+func (s *systemServiceImpl) GetAllSsoApp(_ context.Context, _ *proto.Empty) (*proto.StringListResponse, error) {
 	sso := module.Get(module.SSO).(*module.SSOModule)
 	return &proto.StringListResponse{
 		Value: sso.Array(),
@@ -235,7 +235,7 @@ func (s *foundationService) GetAllSsoApp(_ context.Context, _ *proto.Empty) (*pr
 }
 
 // 创建同步登录的地址
-func (s *foundationService) GetSyncLoginUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
+func (s *systemServiceImpl) GetSyncLoginUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
 	panic("not implement")
 	//return fmt.Sprintf("%_s://%_s%_s/auth?return_url=%_s",
 	//	consts.DOMAIN_PASSPORT_PROTO, consts.DOMAIN_PREFIX_PASSPORT,
@@ -243,7 +243,7 @@ func (s *foundationService) GetSyncLoginUrl(_ context.Context, s2 *proto.String)
 }
 
 // 获取移动应用设置
-func (s *foundationService) GetMoAppConf(_ context.Context, _ *proto.Empty) (*proto.SMobileAppConfig, error) {
+func (s *systemServiceImpl) GetMoAppConf(_ context.Context, _ *proto.Empty) (*proto.SMobileAppConfig, error) {
 	c := s._rep.GetMoAppConf()
 	return &proto.SMobileAppConfig{
 		AppName:           c.AppName,
@@ -258,7 +258,7 @@ func (s *foundationService) GetMoAppConf(_ context.Context, _ *proto.Empty) (*pr
 }
 
 // 保存移动应用设置
-func (s *foundationService) SaveMoAppConf(_ context.Context, config *proto.SMobileAppConfig) (*proto.Result, error) {
+func (s *systemServiceImpl) SaveMoAppConf(_ context.Context, config *proto.SMobileAppConfig) (*proto.Result, error) {
 	dst := &valueobject.MoAppConf{
 		AppName:           config.AppName,
 		AppIcon:           config.AppIcon,
@@ -276,7 +276,7 @@ func (s *foundationService) SaveMoAppConf(_ context.Context, config *proto.SMobi
 }
 
 // 获取微信接口配置
-func (s *foundationService) GetWxApiConfig(_ context.Context, empty *proto.Empty) (*proto.SWxApiConfig, error) {
+func (s *systemServiceImpl) GetWxApiConfig(_ context.Context, empty *proto.Empty) (*proto.SWxApiConfig, error) {
 	c := s._rep.GetWxApiConfig()
 	return &proto.SWxApiConfig{
 		AppId:               c.AppId,
@@ -295,7 +295,7 @@ func (s *foundationService) GetWxApiConfig(_ context.Context, empty *proto.Empty
 }
 
 // 保存微信接口配置
-func (s *foundationService) SaveWxApiConfig(_ context.Context, cfg *proto.SWxApiConfig) (*proto.Result, error) {
+func (s *systemServiceImpl) SaveWxApiConfig(_ context.Context, cfg *proto.SWxApiConfig) (*proto.Result, error) {
 	dst := &valueobject.WxApiConfig{
 		AppId:               cfg.AppId,
 		AppSecret:           cfg.AppSecret,
@@ -315,19 +315,19 @@ func (s *foundationService) SaveWxApiConfig(_ context.Context, cfg *proto.SWxApi
 }
 
 // ResourceUrl 获取资源地址
-func (s *foundationService) ResourceUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
+func (s *systemServiceImpl) ResourceUrl(_ context.Context, s2 *proto.String) (*proto.String, error) {
 	return &proto.String{Value: s2.Value}, nil
 }
 
 // GetSmsApiSet 获取短信设置
-func (s *foundationService) GetSmsApiSet() mss.SmsApiSet {
+func (s *systemServiceImpl) GetSmsApiSet() mss.SmsApiSet {
 	//return _s._rep.GetSmsApiSet()
 	//todo: will remove
 	return mss.SmsApiSet{}
 }
 
 // GetChildDistrict 获取下级区域
-func (s *foundationService) GetChildDistrict(_ context.Context, code *proto.DistrictChildrenRequest) (*proto.AreaListResponse, error) {
+func (s *systemServiceImpl) GetChildDistrict(_ context.Context, code *proto.DistrictChildrenRequest) (*proto.AreaListResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot()
 	addr := isa.Address()
 	arr := addr.GetChildrenDistricts(int(code.ParentId))
@@ -345,7 +345,7 @@ func (s *foundationService) GetChildDistrict(_ context.Context, code *proto.Dist
 }
 
 // GetDistrictNames 获取地区名称
-func (s *foundationService) GetDistrictNames(_ context.Context, request *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
+func (s *systemServiceImpl) GetDistrictNames(_ context.Context, request *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Address()
 	codes := collections.MapList(request.Value, func(i int32) int {
 		return int(i)
@@ -359,7 +359,7 @@ func (s *foundationService) GetDistrictNames(_ context.Context, request *proto.G
 	}, nil
 }
 
-func (s *foundationService) SaveGenericOption(_ context.Context, option *proto.SGenericOption) (*proto.TxResult, error) {
+func (s *systemServiceImpl) SaveGenericOption(_ context.Context, option *proto.SGenericOption) (*proto.TxResult, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Options()
 	err := isa.SaveOption(&sys.GeneralOption{
 		Id:      int(option.Id),
@@ -374,7 +374,7 @@ func (s *foundationService) SaveGenericOption(_ context.Context, option *proto.S
 }
 
 // GetOptionNames implements proto.SystemServiceServer.
-func (s *foundationService) GetOptionNames(_ context.Context, req *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
+func (s *systemServiceImpl) GetOptionNames(_ context.Context, req *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Options()
 	codes := collections.MapList(req.Value, func(i int32) int {
 		return int(i)
@@ -389,7 +389,7 @@ func (s *foundationService) GetOptionNames(_ context.Context, req *proto.GetName
 }
 
 // GetChildOptions implements proto.SystemServiceServer.
-func (s *foundationService) GetChildOptions(_ context.Context, req *proto.OptionsRequest) (*proto.OptionsResponse, error) {
+func (s *systemServiceImpl) GetChildOptions(_ context.Context, req *proto.OptionsRequest) (*proto.OptionsResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Options()
 	options := isa.GetChildOptions(int(req.ParentId), req.TypeName)
 
@@ -407,7 +407,7 @@ func (s *foundationService) GetChildOptions(_ context.Context, req *proto.Option
 }
 
 // GetAreaString 获取省市区字符串
-func (s *foundationService) GetAreaString(_ context.Context, r *proto.AreaStringRequest) (*proto.String, error) {
+func (s *systemServiceImpl) GetAreaString(_ context.Context, r *proto.AreaStringRequest) (*proto.String, error) {
 	if r.Province == 0 || r.City == 0 || r.District == 0 {
 		return &proto.String{Value: ""}, nil
 	}
@@ -416,7 +416,7 @@ func (s *foundationService) GetAreaString(_ context.Context, r *proto.AreaString
 }
 
 // FindCity implements proto.SystemServiceServer.
-func (s *foundationService) FindCity(_ context.Context, req *proto.FindAreaRequest) (*proto.SArea, error) {
+func (s *systemServiceImpl) FindCity(_ context.Context, req *proto.FindAreaRequest) (*proto.SArea, error) {
 	is := s.sysRepo.GetSystemAggregateRoot()
 	isa := is.Address()
 	city := isa.FindCity(req.Name)
@@ -436,7 +436,7 @@ func (s *foundationService) FindCity(_ context.Context, req *proto.FindAreaReque
 }
 
 // GetStation 获取站点
-func (s *foundationService) GetStation(_ context.Context, req *proto.GetStationRequest) (*proto.SStation, error) {
+func (s *systemServiceImpl) GetStation(_ context.Context, req *proto.GetStationRequest) (*proto.SStation, error) {
 	isa := s.stationRepo.GetStation(int(req.StationId))
 	if isa == nil {
 		return &proto.SStation{}, nil
@@ -460,7 +460,7 @@ func (s *foundationService) GetStation(_ context.Context, req *proto.GetStationR
 }
 
 // GetPayPlatform 获取支付平台
-func (s *foundationService) GetPayPlatform(_ context.Context, r *proto.Empty) (*proto.PaymentPlatformResponse, error) {
+func (s *systemServiceImpl) GetPayPlatform(_ context.Context, r *proto.Empty) (*proto.PaymentPlatformResponse, error) {
 	m := module.Get(module.PAY).(*module.PaymentModule)
 	pf := m.GetPayPlatform()
 	ret := &proto.PaymentPlatformResponse{
@@ -473,7 +473,7 @@ func (s *foundationService) GetPayPlatform(_ context.Context, r *proto.Empty) (*
 }
 
 // GetGlobMchSaleConf_ 获取全局商户销售设置
-func (s *foundationService) GetGlobMchSaleConf_(_ context.Context, r *proto.Empty) (*proto.SGlobMchSaleConf, error) {
+func (s *systemServiceImpl) GetGlobMchSaleConf_(_ context.Context, r *proto.Empty) (*proto.SGlobMchSaleConf, error) {
 	c := s._rep.GetGlobMchSaleConf()
 	return &proto.SGlobMchSaleConf{
 		FxSalesEnabled:          c.FxSalesEnabled,
@@ -489,7 +489,7 @@ func (s *foundationService) GetGlobMchSaleConf_(_ context.Context, r *proto.Empt
 }
 
 // 保存全局商户销售设置
-func (s *foundationService) SaveGlobMchSaleConf_(_ context.Context, conf *proto.SGlobMchSaleConf) (*proto.Result, error) {
+func (s *systemServiceImpl) SaveGlobMchSaleConf_(_ context.Context, conf *proto.SGlobMchSaleConf) (*proto.Result, error) {
 	dst := &valueobject.GlobMchSaleConf{
 		FxSalesEnabled:          conf.FxSalesEnabled,
 		CashBackPercent:         float64(conf.CashBackPercent),
@@ -505,7 +505,7 @@ func (s *foundationService) SaveGlobMchSaleConf_(_ context.Context, conf *proto.
 	return s.error(err), nil
 }
 
-func (s *foundationService) parsePayPlatform(v *bank.PaymentPlatform) *proto.PaymentPlatform {
+func (s *systemServiceImpl) parsePayPlatform(v *bank.PaymentPlatform) *proto.PaymentPlatform {
 	dst := &proto.PaymentPlatform{
 		Id:    v.ID,
 		Name:  v.Name,
@@ -520,7 +520,7 @@ func (s *foundationService) parsePayPlatform(v *bank.PaymentPlatform) *proto.Pay
 	return dst
 }
 
-func (s *foundationService) parseBankItem(v *bank.BankItem) *proto.BankItem {
+func (s *systemServiceImpl) parseBankItem(v *bank.BankItem) *proto.BankItem {
 	return &proto.BankItem{
 		Id:   v.ID,
 		Name: v.Name,
@@ -529,7 +529,7 @@ func (s *foundationService) parseBankItem(v *bank.BankItem) *proto.BankItem {
 }
 
 // QueryBanks 查询银行列表
-func (s *foundationService) QueryBanks(ctx context.Context, req *proto.QueryBanksRequest) (*proto.OptionsResponse, error) {
+func (s *systemServiceImpl) QueryBanks(ctx context.Context, req *proto.QueryBanksRequest) (*proto.OptionsResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot()
 	arr := isa.GetBanks()
 

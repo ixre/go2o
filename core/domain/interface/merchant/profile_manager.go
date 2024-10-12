@@ -65,7 +65,7 @@ type (
 		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 		// 身份证背面照片
 		PersonBackPic string `json:"personBackPic" db:"person_back_pic" gorm:"column:person_back_pic" bson:"personBackPic"`
-		// 开户许可证(企业)/银行卡(个体)
+		// 银行账户信息表(企业)/银行卡(个体)
 		BankAccountPic string `json:"bankAccountPic" db:"bank_account_pic" gorm:"column:bank_account_pic" bson:"bankAccountPic"`
 	}
 

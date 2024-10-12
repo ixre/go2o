@@ -251,3 +251,8 @@ func (m *MerchantQuery) GetBill(id int) *merchant.MerchantBill {
 func (m *MerchantQuery) QueryPagingBillItems(billId int, p *fw.PagingParams) (*fw.PagingResult, error) {
 	return m._walletLogRepo.QueryPaging(p)
 }
+
+// 查询商户员工列表
+func (m *MerchantQuery) QueryPagingStaffs(p *fw.PagingParams) (*fw.PagingResult, error) {
+	return m._staffRepo.QueryPaging(p)
+}

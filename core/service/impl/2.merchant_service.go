@@ -54,6 +54,7 @@ func (m *merchantService) GetSettleConf(_ context.Context, req *proto.MerchantId
 	settle := conf.GetSettleConf()
 	return &proto.SSettleConf{
 		MchId:       int64(settle.MchId),
+		MchName:     im.GetValue().MchName,
 		OrderTxRate: float32(settle.OrderTxRate),
 		OtherTxRate: float32(settle.OtherTxRate),
 		SubMchNo:    settle.SubMchNo,

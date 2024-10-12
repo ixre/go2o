@@ -580,7 +580,7 @@ message SSubMerchant{
     string licenceNo = 10;
     // 商户简称
     string shortName = 11;
-    // 开户许可证图片
+    // 银行账户信息表图片
     string accountLicencePic = 12;
     // 法人名称
     string legalName = 13;

@@ -349,13 +349,15 @@ message MerchantRequestInvoiceRequest{
 // 商户结算设置
 message SSettleConf {
     // 商户编号
-    int64 mchId = 1;
+    int64 mchId = 1;        
+    // 商户名称
+    string mchName = 2;
     // 订单交易费率
-    float orderTxRate = 2;
+    float orderTxRate = 4;
     // 其他交易费率
-    float otherTxRate = 3;
+    float otherTxRate = 5;
     // 子商户号
-    string subMchNo = 4;
+    string subMchNo = 6;
 }
 
 // 保存商户结算设置请求

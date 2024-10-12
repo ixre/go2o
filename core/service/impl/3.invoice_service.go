@@ -101,10 +101,13 @@ func (i *invoiceServiceImpl) getInvoice(tenantId, invoiceId int64) (invoice.Invo
 // GetInvoice implements proto.InvoiceServiceServer.
 func (i *invoiceServiceImpl) GetInvoice(_ context.Context, req *proto.InvoiceId) (*proto.SInvoice, error) {
 	v := i.repo.Records().Get(req.InvoiceId)
-	if v == nil || (req.TenantId > 0 && v.TenantId != int(req.TenantId)) {
+	if v == nil {
 		return nil, nil
 	}
 	iv := i.repo.GetTenant(v.TenantId).GetInvoice(v.Id)
+	if iv == nil {
+		return nil, nil
+	}
 	ret := &proto.SInvoice{
 		Id:               int64(v.Id),
 		InvoiceCode:      v.InvoiceCode,
