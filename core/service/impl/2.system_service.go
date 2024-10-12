@@ -359,6 +359,20 @@ func (s *foundationService) GetDistrictNames(_ context.Context, request *proto.G
 	}, nil
 }
 
+func (s *foundationService) SaveGenericOption(_ context.Context, option *proto.SGenericOption) (*proto.TxResult, error) {
+	isa := s.sysRepo.GetSystemAggregateRoot().Options()
+	err := isa.SaveOption(&sys.GeneralOption{
+		Id:      int(option.Id),
+		Type:    option.Type,
+		Pid:     int(option.Pid),
+		Label:   option.Label,
+		Value:   option.Value,
+		SortNum: int(option.SortNum),
+		Enabled: int(option.Enabled),
+	})
+	return s.errorV2(err), nil
+}
+
 // GetOptionNames implements proto.SystemServiceServer.
 func (s *foundationService) GetOptionNames(_ context.Context, req *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Options()

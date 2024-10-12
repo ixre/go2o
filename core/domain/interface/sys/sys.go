@@ -57,6 +57,8 @@ type (
 
 	// IOptionManager 选项管理器
 	IOptionManager interface {
+		// SaveOption 保存选项
+		SaveOption(option *GeneralOption) error
 		// GetOptionNames 获取选项名称
 		GetOptionNames(code ...int) map[int]string
 		// 获取下级选项
@@ -108,7 +110,7 @@ type GeneralOption struct {
 	// 上级编号
 	Pid int `json:"pid" db:"pid" gorm:"column:pid" bson:"pid"`
 	// 名称
-	Label string `json:"name" db:"name" gorm:"column:name" bson:"name"`
+	Label string `json:"label" db:"label" gorm:"column:label" bson:"label"`
 	// 值
 	Value string `json:"value" db:"value" gorm:"column:value" bson:"value"`
 	// 排列序号

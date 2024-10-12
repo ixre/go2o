@@ -1354,3 +1354,9 @@ ALTER TABLE "public".sys_notify_template
 COMMENT ON COLUMN "public".sys_notify_template.tpl_flag IS '模板标志,1:系统';
 
 
+ALTER TABLE "public"."sys_general_option" RENAME COLUMN "name" TO "label"; 
+
+
+
+
+

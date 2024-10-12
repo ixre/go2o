@@ -1,7 +1,9 @@
 package sys
 
 import (
+	"errors"
 	"strings"
+	"sync"
 
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/infrastructure/fw"
@@ -38,7 +40,9 @@ func (s *systemAggregateRootImpl) Address() sys.IAddressManager {
 // Options implements sys.ISystemAggregateRoot.
 func (s *systemAggregateRootImpl) Options() sys.IOptionManager {
 	if s._options == nil {
-		s._options = &optionManagerImpl{s._repo.Option(), nil}
+		s._options = &optionManagerImpl{
+			Repository: s._repo.Option(),
+		}
 	}
 	return s._options
 }
@@ -167,6 +171,7 @@ var _ sys.IOptionManager = new(optionManagerImpl)
 type optionManagerImpl struct {
 	fw.Repository[sys.GeneralOption]
 	allList []*sys.GeneralOption
+	rwlock  sync.RWMutex
 }
 
 // GetChildOptions implements sys.IOptionManager.
@@ -192,12 +197,25 @@ func (o *optionManagerImpl) GetChildOptions(parentId int, typeName string) []*sy
 	})
 }
 
+// getOption 获取选项
+func (o *optionManagerImpl) getOption(id int) *sys.GeneralOption {
+	return collections.FindArray(o.getList(), func(s *sys.GeneralOption) bool {
+		return s.Id == id
+	})
+}
+
 // getDistrictList 获取地区列表
 func (o *optionManagerImpl) getList() []*sys.GeneralOption {
+	o.rwlock.RLock()
 	if o.allList == nil {
+		o.rwlock.RUnlock()
+		o.rwlock.Lock()
 		o.allList = fw.ReduceFinds(func(opt *fw.QueryOption) []*sys.GeneralOption {
 			return o.FindList(opt, "")
 		}, 1000)
+		o.rwlock.Unlock()
+	} else {
+		o.rwlock.RUnlock()
 	}
 	return o.allList
 }
@@ -207,6 +225,53 @@ func (o *optionManagerImpl) IsLeaf(g *sys.GeneralOption) bool {
 	return collections.FindArray(o.getList(), func(n *sys.GeneralOption) bool {
 		return n.Pid == g.Id && n.Enabled == 1
 	}) == nil
+}
+
+func (o *optionManagerImpl) SaveOption(option *sys.GeneralOption) error {
+	if option.Pid != 0 {
+		pidOption := o.getOption(option.Pid)
+		if pidOption == nil {
+			return errors.New("上级节点不存在")
+		}
+	}
+	if len(option.Label) == 0 {
+		return errors.New("标签不能为空")
+	}
+	if len(option.Value) == 0 {
+		return errors.New("值不能为空")
+	}
+	if option.Pid == 0 && len(option.Type) == 0 {
+		return errors.New("类型不能为空")
+	}
+	var err error
+	if option.Id > 0 {
+		// 更新
+		origin := o.getOption(option.Id)
+		if origin == nil {
+			return errors.New("选项数据不存在")
+		}
+		origin.Enabled = option.Enabled
+		origin.Label = option.Label
+		origin.Value = option.Value
+		origin.SortNum = option.SortNum
+		_, err = o.Save(origin)
+	} else {
+		// 新增
+		_, err = o.Save(option)
+	}
+	if err == nil {
+		o.flushCache()
+	}
+	return err
+}
+
+// flushCache 刷新缓存
+func (o *optionManagerImpl) flushCache() {
+	o.rwlock.Lock()
+	o.allList = nil
+	o.rwlock.Unlock()
+	// 重新加载
+	o.getList()
 }
 
 // GetOptionNames implements sys.IOptionManager.

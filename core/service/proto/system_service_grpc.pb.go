@@ -25,6 +25,7 @@ const (
 	SystemService_FlushCache_FullMethodName            = "/SystemService/FlushCache"
 	SystemService_GetOptionNames_FullMethodName        = "/SystemService/GetOptionNames"
 	SystemService_GetChildOptions_FullMethodName       = "/SystemService/GetChildOptions"
+	SystemService_SaveGenericOption_FullMethodName     = "/SystemService/SaveGenericOption"
 	SystemService_QueryBanks_FullMethodName            = "/SystemService/QueryBanks"
 	SystemService_GetSmsSetting_FullMethodName         = "/SystemService/GetSmsSetting"
 	SystemService_SaveSmsSetting_FullMethodName        = "/SystemService/SaveSmsSetting"
@@ -66,6 +67,8 @@ type SystemServiceClient interface {
 	GetOptionNames(ctx context.Context, in *GetNamesRequest, opts ...grpc.CallOption) (*IntStringMapResponse, error)
 	// 获取下级选项,code
 	GetChildOptions(ctx context.Context, in *OptionsRequest, opts ...grpc.CallOption) (*OptionsResponse, error)
+	// 保存通用选项
+	SaveGenericOption(ctx context.Context, in *SGenericOption, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取银行列表
 	QueryBanks(ctx context.Context, in *QueryBanksRequest, opts ...grpc.CallOption) (*OptionsResponse, error)
 	// * 获取短信API凭据, provider 短信服务商, 默认:http
@@ -179,6 +182,15 @@ func (c *systemServiceClient) GetOptionNames(ctx context.Context, in *GetNamesRe
 func (c *systemServiceClient) GetChildOptions(ctx context.Context, in *OptionsRequest, opts ...grpc.CallOption) (*OptionsResponse, error) {
 	out := new(OptionsResponse)
 	err := c.cc.Invoke(ctx, SystemService_GetChildOptions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *systemServiceClient) SaveGenericOption(ctx context.Context, in *SGenericOption, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, SystemService_SaveGenericOption_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -408,6 +420,8 @@ type SystemServiceServer interface {
 	GetOptionNames(context.Context, *GetNamesRequest) (*IntStringMapResponse, error)
 	// 获取下级选项,code
 	GetChildOptions(context.Context, *OptionsRequest) (*OptionsResponse, error)
+	// 保存通用选项
+	SaveGenericOption(context.Context, *SGenericOption) (*TxResult, error)
 	// 获取银行列表
 	QueryBanks(context.Context, *QueryBanksRequest) (*OptionsResponse, error)
 	// * 获取短信API凭据, provider 短信服务商, 默认:http
@@ -487,6 +501,9 @@ func (UnimplementedSystemServiceServer) GetOptionNames(context.Context, *GetName
 }
 func (UnimplementedSystemServiceServer) GetChildOptions(context.Context, *OptionsRequest) (*OptionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChildOptions not implemented")
+}
+func (UnimplementedSystemServiceServer) SaveGenericOption(context.Context, *SGenericOption) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveGenericOption not implemented")
 }
 func (UnimplementedSystemServiceServer) QueryBanks(context.Context, *QueryBanksRequest) (*OptionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryBanks not implemented")
@@ -674,6 +691,24 @@ func _SystemService_GetChildOptions_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SystemServiceServer).GetChildOptions(ctx, req.(*OptionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SystemService_SaveGenericOption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SGenericOption)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServiceServer).SaveGenericOption(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SystemService_SaveGenericOption_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServiceServer).SaveGenericOption(ctx, req.(*SGenericOption))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1122,6 +1157,10 @@ var SystemService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetChildOptions",
 			Handler:    _SystemService_GetChildOptions_Handler,
+		},
+		{
+			MethodName: "SaveGenericOption",
+			Handler:    _SystemService_SaveGenericOption_Handler,
 		},
 		{
 			MethodName: "QueryBanks",

@@ -20,6 +20,8 @@ service SystemService {
     rpc GetOptionNames (GetNamesRequest) returns (IntStringMapResponse);
     // 获取下级选项,code
     rpc GetChildOptions (OptionsRequest) returns (OptionsResponse);
+    // 保存通用选项
+    rpc SaveGenericOption(SGenericOption)returns(TxResult);
     // 获取银行列表
     rpc QueryBanks (QueryBanksRequest) returns (OptionsResponse);
     /** 获取短信API凭据, provider 短信服务商, 默认:http */
@@ -142,11 +144,23 @@ message SArea{
 }
 
 // 通用选项
-message SGenericOptions{
+message SGenericOption{
+    // 编号
+    int64 id = 1;
+	// 类型
+	string type = 2;
     // 标签
-    string label = 1;
+    string label = 3;
     // 值
-    string value = 2;
+    string value = 4;
+	// 上级编号
+	int64 pid = 5;
+    // 排列序号
+    int32 sortNum = 6;
+    // 是否启用
+    int32 enabled = 7;
+    // 创建时间
+    int64 createTime = 8;
 }
 
 // 获取下级区域请求
