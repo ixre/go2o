@@ -1411,6 +1411,23 @@ func (m *merchantService) parseMerchantBill(bill *merchant.MerchantBill) *proto.
 	}
 }
 
+// ConfirmBill 商户核对账单
+func (m *merchantService) ConfirmBill(_ context.Context, req *proto.MerchantConfirmBillRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	bill := mch.TransactionManager().GetBill(int(req.BillId))
+	if bill == nil {
+		return m.errorV2(errors.New("账单不存在")), nil
+	}
+	err := bill.Confirm()
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(int(req.BillId), nil), nil
+}
+
 // ReviewBill implements proto.MerchantServiceServer.
 func (m *merchantService) ReviewBill(_ context.Context, req *proto.ReviewMerchantBillRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(req.MchId))

@@ -77,6 +77,7 @@ func (m *MerchantQuery) QueryMerchantList(begin, size int) []*merchant.Merchant 
 	return m._repo.FindList(&fw.QueryOption{
 		Skip:  begin,
 		Limit: size,
+		Order: "id ASC",
 	}, "")
 }
 

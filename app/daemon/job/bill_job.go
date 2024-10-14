@@ -14,6 +14,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/ixre/go2o/core/infrastructure/locker"
 	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/query"
@@ -21,6 +22,11 @@ import (
 )
 
 func GenerateMerchantBill() {
+	jobName := "merchant.generateMerchantBill"
+	if !locker.Lock(jobName, 600) {
+		return
+	}
+	defer locker.Unlock(jobName)
 	ms := inject.GetMerchantService()
 	qs := inject.GetMerchantQueryService()
 	// 生成日度账单
@@ -50,15 +56,22 @@ func generateMerchantDailyBill(ms proto.MerchantServiceServer, qs *query.Merchan
 	}
 }
 
+var monthBillDate time.Time
+
 // generateMerchantMonthlyBill 生成商户月度账单
 func generateMerchantMonthlyBill(ms proto.MerchantServiceServer, qs *query.MerchantQuery) {
 	day := time.Now().Day()
-	if day != 3 {
+	if day == 3 {
 		// 每月3日生成上个月账单
 		return
 	}
 	// 上个月时间
 	dt := time.Now().AddDate(0, -1, 0)
+	if dt == monthBillDate {
+		return
+	}
+	monthBillDate = dt
+	// 生成上个月账单
 	year, month := dt.Year(), dt.Month()
 	begin, size := 0, 100
 	for {
@@ -79,4 +92,5 @@ func generateMerchantMonthlyBill(ms proto.MerchantServiceServer, qs *query.Merch
 		}
 		begin += l
 	}
+	logger.Info("[ Job]: 生成商户月度(%d-%d)账单完成", year, month)
 }

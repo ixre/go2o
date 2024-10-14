@@ -70,6 +70,7 @@ const (
 	MerchantService_GenerateDailyBill_FullMethodName           = "/MerchantService/GenerateDailyBill"
 	MerchantService_GenerateMonthlyBill_FullMethodName         = "/MerchantService/GenerateMonthlyBill"
 	MerchantService_ReviewBill_FullMethodName                  = "/MerchantService/ReviewBill"
+	MerchantService_ConfirmBill_FullMethodName                 = "/MerchantService/ConfirmBill"
 	MerchantService_SettleBill_FullMethodName                  = "/MerchantService/SettleBill"
 	MerchantService_RequestInvoice_FullMethodName              = "/MerchantService/RequestInvoice"
 	MerchantService_GetSettleConf_FullMethodName               = "/MerchantService/GetSettleConf"
@@ -180,6 +181,8 @@ type MerchantServiceClient interface {
 	GenerateMonthlyBill(ctx context.Context, in *GenerateMerchantMonthlyBillRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// ReviewBill 审核账单
 	ReviewBill(ctx context.Context, in *ReviewMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// ConfirmBill 核对账单
+	ConfirmBill(ctx context.Context, in *MerchantConfirmBillRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// SettleBill 结算账单
 	SettleBill(ctx context.Context, in *SettleMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 商户申请发票
@@ -657,6 +660,15 @@ func (c *merchantServiceClient) ReviewBill(ctx context.Context, in *ReviewMercha
 	return out, nil
 }
 
+func (c *merchantServiceClient) ConfirmBill(ctx context.Context, in *MerchantConfirmBillRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MerchantService_ConfirmBill_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *merchantServiceClient) SettleBill(ctx context.Context, in *SettleMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MerchantService_SettleBill_FullMethodName, in, out, opts...)
@@ -797,6 +809,8 @@ type MerchantServiceServer interface {
 	GenerateMonthlyBill(context.Context, *GenerateMerchantMonthlyBillRequest) (*TxResult, error)
 	// ReviewBill 审核账单
 	ReviewBill(context.Context, *ReviewMerchantBillRequest) (*TxResult, error)
+	// ConfirmBill 核对账单
+	ConfirmBill(context.Context, *MerchantConfirmBillRequest) (*TxResult, error)
 	// SettleBill 结算账单
 	SettleBill(context.Context, *SettleMerchantBillRequest) (*TxResult, error)
 	// 商户申请发票
@@ -964,6 +978,9 @@ func (UnimplementedMerchantServiceServer) GenerateMonthlyBill(context.Context, *
 }
 func (UnimplementedMerchantServiceServer) ReviewBill(context.Context, *ReviewMerchantBillRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewBill not implemented")
+}
+func (UnimplementedMerchantServiceServer) ConfirmBill(context.Context, *MerchantConfirmBillRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfirmBill not implemented")
 }
 func (UnimplementedMerchantServiceServer) SettleBill(context.Context, *SettleMerchantBillRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SettleBill not implemented")
@@ -1908,6 +1925,24 @@ func _MerchantService_ReviewBill_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_ConfirmBill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerchantConfirmBillRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).ConfirmBill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_ConfirmBill_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).ConfirmBill(ctx, req.(*MerchantConfirmBillRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MerchantService_SettleBill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SettleMerchantBillRequest)
 	if err := dec(in); err != nil {
@@ -2190,6 +2225,10 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReviewBill",
 			Handler:    _MerchantService_ReviewBill_Handler,
+		},
+		{
+			MethodName: "ConfirmBill",
+			Handler:    _MerchantService_ConfirmBill_Handler,
 		},
 		{
 			MethodName: "SettleBill",

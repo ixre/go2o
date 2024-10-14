@@ -22,7 +22,7 @@ const (
 const (
 	// 账单状态:待生成
 	BillStatusPending BillStatus = 1
-	// 账单状态:已生成
+	// 账单状态:待核对
 	BillStatusWaitConfirm BillStatus = 2
 	// 账单状态:待复核
 	BillStatusWaitReview BillStatus = 3
@@ -35,6 +35,15 @@ type (
 	BillAmountType int
 	// 账单状态
 	BillStatus int
+)
+
+const (
+	// 未结算
+	BillNoSettlement = 0
+	// 待结算
+	BillWaitSettlement = 1
+	// 已结算
+	BillSettlemented = 2
 )
 
 const (

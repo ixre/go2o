@@ -9,7 +9,7 @@ import (
 
 // 检测已过期的订单并标记
 func CheckExpiresPaymentOrder() {
-	jobName := "/CheckExpiresPaymentOrder"
+	jobName := "payment.heckExpiresPaymentOrder"
 
 	if !locker.Lock(jobName, 600) {
 		return

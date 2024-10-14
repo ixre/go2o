@@ -113,6 +113,8 @@ service MerchantService {
     rpc GenerateMonthlyBill(GenerateMerchantMonthlyBillRequest) returns (TxResult);
 	// ReviewBill 审核账单
 	rpc ReviewBill(ReviewMerchantBillRequest) returns (TxResult);
+	// ConfirmBill 核对账单
+	rpc ConfirmBill(MerchantConfirmBillRequest) returns (TxResult);
 	// SettleBill 结算账单
 	rpc SettleBill(SettleMerchantBillRequest) returns (TxResult);
     // 商户申请发票
@@ -353,6 +355,14 @@ message ReviewMerchantBillRequest{
     int64 reviewUid = 3;
     // 审核备注
     string reviewRemark = 4;
+}
+
+// 商户核对月度账单请求
+message MerchantConfirmBillRequest{
+    // 商户编号
+    int64 mchId = 1;
+    // 账单编号
+    int64 billId = 2;
 }
 
 // 结算商户月度账单请求

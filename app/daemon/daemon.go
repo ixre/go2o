@@ -22,7 +22,6 @@ import (
 	"github.com/ixre/go2o/app/daemon/job"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/order"
-	"github.com/ixre/go2o/core/infrastructure/locker"
 	"github.com/ixre/go2o/core/initial"
 	"github.com/ixre/go2o/core/repos/clickhouse"
 	"github.com/ixre/go2o/core/service"
@@ -154,10 +153,6 @@ func AddCron(spec string, cmd func()) {
 // 运行定时任务
 func startCronTab() {
 
-	// 删除分布式锁,会导致重启一直不执行任务
-	locker.Unlock("/SyncWalletLogToClickHouse")
-	locker.Unlock("/CheckExpiresPaymentOrder")
-	locker.Unlock("/SubmitDivideJob")
 	// 注册任务
 	startClickhouseJob(cronTab)
 	// 注册定时任务

@@ -26,7 +26,7 @@ func SubmitPaymentProviderEndpointDivide(f func(o *payment.PayDivide) (string, e
 	if f == nil {
 		panic("分账处理函数不能为空")
 	}
-	jobName := "/SubmitDivideJob"
+	jobName := "merchant.submitDivideJob"
 	if !locker.Lock(jobName, 600) {
 		return
 	}
