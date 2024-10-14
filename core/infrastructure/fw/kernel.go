@@ -48,6 +48,8 @@ type (
 
 	// Repository 仓储接口
 	Repository[M any] interface {
+		// Raw 获取原始ORM
+		Raw() ORM
 		// Get 获取实体
 		Get(id interface{}) *M
 		// FindBy 根据条件获取实体
@@ -92,6 +94,10 @@ var _ Repository[any] = new(BaseRepository[any])
 // 基础仓储
 type BaseRepository[M any] struct {
 	ORM
+}
+
+func (r *BaseRepository[M]) Raw() ORM {
+	return r.ORM
 }
 
 func (r *BaseRepository[M]) Get(id interface{}) *M {

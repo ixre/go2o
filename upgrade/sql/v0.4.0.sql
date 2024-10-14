@@ -1369,4 +1369,55 @@ COMMENT ON COLUMN mch_bill.bill_remark IS '账单备注';
 
 
 
-
+-- 2024-10-14 商户账单改为日账单
+DROP TABLE IF EXISTS mch_bill CASCADE;
+CREATE TABLE mch_bill (
+  id             BIGSERIAL NOT NULL, 
+  mch_id         int8 NOT NULL, 
+  bill_type      int4 DEFAULT 1 NOT NULL, 
+  bill_time      int8 NOT NULL, 
+  bill_month     varchar(10) NOT NULL, 
+  start_time     int8 NOT NULL, 
+  end_time       int8 NOT NULL, 
+  tx_count       int4 NOT NULL, 
+  tx_amount      int8 NOT NULL, 
+  tx_fee         int8 NOT NULL, 
+  refund_amount  int8 NOT NULL, 
+  status         int4 NOT NULL, 
+  reviewer_id    int8 NOT NULL, 
+  reviewer_name  varchar(20) NOT NULL, 
+  review_remark  varchar(40) DEFAULT '' NOT NULL, 
+  review_time    int8 NOT NULL, 
+  bill_remark    varchar(20) DEFAULT '' NOT NULL, 
+  user_remark    varchar(40) NOT NULL, 
+  settle_status  int4 DEFAULT 0 NOT NULL, 
+  settle_sp_code varchar(20) NOT NULL, 
+  settle_tx_no   varchar(40) NOT NULL, 
+  settle_remark  varchar(20) NOT NULL, 
+  create_time    int8 NOT NULL, 
+  build_time     int8 NOT NULL, 
+  update_time    int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mch_bill IS '商户月度账单';
+COMMENT ON COLUMN mch_bill.id IS '编号';
+COMMENT ON COLUMN mch_bill.mch_id IS '商户编号';
+COMMENT ON COLUMN mch_bill.bill_type IS '账单类型, 1: 日账单  2: 月度账单';
+COMMENT ON COLUMN mch_bill.bill_time IS '账单时间';
+COMMENT ON COLUMN mch_bill.bill_month IS '月份: 例:202408';
+COMMENT ON COLUMN mch_bill.start_time IS '账单开始时间';
+COMMENT ON COLUMN mch_bill.end_time IS '账单结束时间';
+COMMENT ON COLUMN mch_bill.tx_count IS '交易笔数';
+COMMENT ON COLUMN mch_bill.tx_amount IS '交易总金额';
+COMMENT ON COLUMN mch_bill.tx_fee IS '交易手续费';
+COMMENT ON COLUMN mch_bill.refund_amount IS '交易退款金额';
+COMMENT ON COLUMN mch_bill.status IS '账单状态:  0: 待生成 1: 待确认 2: 待复核 3: 已复核';
+COMMENT ON COLUMN mch_bill.reviewer_id IS '审核人编号';
+COMMENT ON COLUMN mch_bill.reviewer_name IS '审核人名称';
+COMMENT ON COLUMN mch_bill.review_remark IS '审核备注';
+COMMENT ON COLUMN mch_bill.review_time IS '审核时间';
+COMMENT ON COLUMN mch_bill.bill_remark IS '账单备注';
+COMMENT ON COLUMN mch_bill.settle_status IS '0: 不需要结算 1: 待结算 2: 结算失败 3: 已结算';
+COMMENT ON COLUMN mch_bill.settle_remark IS '结算备注';
+COMMENT ON COLUMN mch_bill.create_time IS '创建时间';
+COMMENT ON COLUMN mch_bill.build_time IS '账单生成时间';
+COMMENT ON COLUMN mch_bill.update_time IS '更新时间';

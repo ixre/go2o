@@ -509,13 +509,14 @@ func (m *merchantImpl) ConfManager() merchant.IConfManager {
 	return m._confManager
 }
 
-// SaleManager 销售服务
-func (m *merchantImpl) SaleManager() merchant.IMerchantTransactionManager {
+// TransactionManager 销售服务
+func (m *merchantImpl) TransactionManager() merchant.IMerchantTransactionManager {
 	if m._saleManager == nil {
-		m._saleManager = newSaleManagerImpl(int(m.GetAggregateRootId()),
+		m._saleManager = newTransactionManagerImpl(int(m.GetAggregateRootId()),
 			m,
 			m._repo,
 			m._invoiceRepo,
+			m._walletRepo,
 			m._rbacRepo,
 			m._registryRepo)
 	}

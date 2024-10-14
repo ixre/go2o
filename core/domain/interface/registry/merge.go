@@ -161,6 +161,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("商户订单每月免服务费订单数", MchMonthFreeOrders, "0", "")
 	mergeAdd("商户交易单是否需上传发票", MchOrderRequireTicket, "false", "")
 	// 商户
+	mergeAdd("商户结算周期", MerchantSettlementPeriod, "2", "1:日结,2:月结")
 	mergeAdd("商户提现是否免费", MerchantTakeOutCashFree, "true", "")
 	mergeAdd("商户提现手续费费率", MerchantTakeOutCsn, "0.00", "")
 	mergeAdd("商户提现最低金额", MerchantMinTakeOutAmount, "1", "")

@@ -252,6 +252,9 @@ var (
 	MchOrderRequireTicket = KeyFormat("MchOrderRequireTicket")
 
 	/* 商户 */
+
+	// 商户结算周期
+	MerchantSettlementPeriod = KeyFormat("MerchantSettlementPeriod")
 	// 商户提现手续费
 	MerchantTakeOutCashFree = KeyFormat("MerchantTakeOutCashFree")
 	// 商户提现手续费费率

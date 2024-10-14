@@ -280,29 +280,44 @@ func TestTransferStaff(t *testing.T) {
 func TestMerchantTransactionBill(t *testing.T) {
 	repo := inject.GetMerchantRepo()
 	mch := repo.GetMerchant(1)
-	tx := mch.SaleManager()
-	bill := tx.GetCurrentBill()
-	t.Logf("bill:%+v", bill)
-	err := tx.AdjustBillAmount(merchant.BillAmountTypeOther, 1000, 10)
+	tx := mch.TransactionManager().GetCurrentDailyBill()
+	err := tx.UpdateBillAmount(10000, 1000)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	bill = tx.GetCurrentBill()
-	t.Logf("bill:%+v", bill)
-	err = tx.GenerateBill(bill.Id)
-	if err != nil {
-		t.Error(err)
-	}
-	err = tx.ReviewBill(bill.Id, 1)
+	err = tx.UpdateAmount()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = tx.SettleBill(bill.Id)
+	err = tx.Generate()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	t.Logf("结算成功")
+	err = tx.Confirm()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	err = tx.Review(1, "测试")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if tx.Value().BillType == merchant.BillTypeMonthly {
+		// 结算月度账单
+		err = tx.Settle()
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+		err = tx.UpdateSettleInfo("SP000001", "TX000001")
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+		t.Logf("结算成功")
+	}
 }

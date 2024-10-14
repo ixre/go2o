@@ -14,6 +14,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/member"
@@ -1155,7 +1156,6 @@ func (m *merchantService) CarryToAccount(_ context.Context, req *proto.MerchantA
 		TransactionTitle:  req.TransactionTitle,
 		TransactionRemark: req.TransactionRemark,
 		OuterTxUid:        int(req.OuterTxUid),
-		BillAmountType:    int(req.BillAmountType),
 	})
 	if err != nil {
 		return m.errorV2(err), nil
@@ -1319,10 +1319,8 @@ func (m *merchantService) ManualAdjustBillAmount(_ context.Context, req *proto.M
 	}
 	err := mch.Account().Adjust(req.Title, int(req.Amount), req.Remark, req.OprUid)
 	if err == nil {
-		err = mch.SaleManager().AdjustBillAmount(
-			merchant.BillAmountType(req.BillAmountType),
-			int(req.Amount),
-			int(req.TxFee))
+		bill := mch.TransactionManager().GetCurrentDailyBill()
+		err = bill.UpdateBillAmount(int(req.Amount), int(req.TxFee))
 	}
 	if err != nil {
 		return m.errorV2(err), nil
@@ -1330,19 +1328,43 @@ func (m *merchantService) ManualAdjustBillAmount(_ context.Context, req *proto.M
 	return m.txResult(0, nil), nil
 }
 
-// GenerateBill implements proto.MerchantServiceServer.
-func (m *merchantService) GenerateBill(_ context.Context, req *proto.GenerateMerchantBillRequest) (*proto.TxResult, error) {
+// GenerateDailyBill 生成商户日度账单
+func (m *merchantService) GenerateDailyBill(_ context.Context, req *proto.GenerateMerchantBillRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(req.MchId))
 	if mch == nil {
 		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
-	manager := mch.SaleManager()
-	if req.BillId <= 0 {
-		// 默认生成当前月份的账单
-		bill := manager.GetCurrentBill()
-		req.BillId = int64(bill.Id)
+	// 验证时间
+	if req.Unixtime > time.Now().Unix() {
+		return m.errorV2(errors.New("账单时间不能大于当前时间")), nil
 	}
-	err := manager.GenerateBill(int(req.BillId))
+	var bill merchant.IBillDomain
+	manager := mch.TransactionManager()
+	if req.BillId > 0 {
+		// 获取指定编号的账单
+		bill = manager.GetBill(int(req.BillId))
+	} else {
+		// 获取指定时间的账单
+		bill = manager.GetBillByTime(int(req.Unixtime))
+	}
+	if bill == nil {
+		return m.errorV2(errors.New("账单不存在")), nil
+	}
+	err := bill.Generate()
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(0, nil), nil
+}
+
+// GenerateMonthlyBill 生成商户月度账单
+func (m *merchantService) GenerateMonthlyBill(_ context.Context, req *proto.GenerateMerchantMonthlyBillRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	manager := mch.TransactionManager()
+	err := manager.GenerateMonthlyBill(int(req.Year), int(req.Month))
 	if err != nil {
 		return m.errorV2(err), nil
 	}
@@ -1355,36 +1377,37 @@ func (m *merchantService) GetBill(_ context.Context, req *proto.BillTimeRequest)
 	if mch == nil {
 		return nil, errors.New("商户不存在")
 	}
-	manager := mch.SaleManager()
+	manager := mch.TransactionManager()
 	bill := manager.GetBillByTime(int(req.BillTime))
 	if bill == nil {
 		return nil, errors.New("账单不存在")
 	}
-	return m.parseMerchantBill(bill), nil
+	return m.parseMerchantBill(bill.Value()), nil
 }
 
 func (m *merchantService) parseMerchantBill(bill *merchant.MerchantBill) *proto.SMerchantBill {
 	return &proto.SMerchantBill{
-		Id:               int64(bill.Id),
-		MchId:            int64(bill.MchId),
-		BillTime:         int64(bill.BillTime),
-		BillMonth:        bill.BillMonth,
-		StartTime:        int64(bill.StartTime),
-		EndTime:          int64(bill.EndTime),
-		ShopOrderCount:   int32(bill.ShopOrderCount),
-		StoreOrderCount:  int32(bill.StoreOrderCount),
-		ShopTotalAmount:  int64(bill.ShopTotalAmount),
-		StoreTotalAmount: int64(bill.StoreTotalAmount),
-		OtherOrderCount:  int32(bill.OtherOrderCount),
-		OtherTotalAmount: int64(bill.OtherTotalAmount),
-		TotalTxFee:       int64(bill.TotalTxFee),
-		Status:           int32(bill.Status),
-		ReviewerId:       int64(bill.ReviewerId),
-		ReviewerName:     bill.ReviewerName,
-		ReviewTime:       int64(bill.ReviewTime),
-		CreateTime:       int64(bill.CreateTime),
-		BuildTime:        int64(bill.BuildTime),
-		UpdateTime:       int64(bill.UpdateTime),
+		Id:                int64(bill.Id),
+		MchId:             int64(bill.MchId),
+		BillTime:          int64(bill.BillTime),
+		BillMonth:         bill.BillMonth,
+		StartTime:         int64(bill.StartTime),
+		EndTime:           int64(bill.EndTime),
+		TotalTxCount:      int64(bill.TxCount),
+		TotalTxAmount:     int64(bill.TxAmount),
+		TotalTxFee:        int64(bill.TxFee),
+		TotalRefundAmount: int64(bill.RefundAmount),
+		Status:            int32(bill.Status),
+		SettleStatus:      int32(bill.SettleStatus),
+		SettleSpCode:      bill.SettleSpCode,
+		SettleTxNo:        bill.SettleTxNo,
+		SettleRemark:      bill.SettleRemark,
+		ReviewerId:        int64(bill.ReviewerId),
+		ReviewerName:      bill.ReviewerName,
+		ReviewTime:        int64(bill.ReviewTime),
+		CreateTime:        int64(bill.CreateTime),
+		BuildTime:         int64(bill.BuildTime),
+		UpdateTime:        int64(bill.UpdateTime),
 	}
 }
 
@@ -1394,8 +1417,11 @@ func (m *merchantService) ReviewBill(_ context.Context, req *proto.ReviewMerchan
 	if mch == nil {
 		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
-	manager := mch.SaleManager()
-	err := manager.ReviewBill(int(req.BillId), int(req.ReviewerId))
+	bill := mch.TransactionManager().GetBill(int(req.BillId))
+	if bill == nil {
+		return m.errorV2(errors.New("账单不存在")), nil
+	}
+	err := bill.Review(int(req.ReviewUid), req.ReviewRemark)
 	if err != nil {
 		return m.errorV2(err), nil
 	}
@@ -1408,8 +1434,11 @@ func (m *merchantService) SettleBill(_ context.Context, req *proto.SettleMerchan
 	if mch == nil {
 		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
-	manager := mch.SaleManager()
-	err := manager.SettleBill(int(req.BillId))
+	bill := mch.TransactionManager().GetBill(int(req.BillId))
+	if bill == nil {
+		return m.errorV2(errors.New("账单不存在")), nil
+	}
+	err := bill.Settle()
 	if err != nil {
 		return m.errorV2(err), nil
 	}

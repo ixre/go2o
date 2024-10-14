@@ -25,7 +25,7 @@ func TestGetPaymentOrder(t *testing.T) {
 
 // 测试查询可用于分账的订单
 func TestQueryDivideOrders(t *testing.T) {
-	memberId := 848
+	memberId := 922
 	ret, err := inject.GetPaymentService().QueryDivideOrders(
 		context.TODO(),
 		&proto.DivideOrdersRequest{
@@ -65,5 +65,5 @@ func TestRefundAvailPaymentOrder(t *testing.T) {
 		t.Error(ret.Message)
 		t.FailNow()
 	}
-	t.Logf("ret: %v, 退款金额:%.2f", ret, float32(ret.Amount)/100)
+	t.Logf("ret: %v, 退款金额:%.2f", ret, float32(ret.RefundAmount)/100)
 }

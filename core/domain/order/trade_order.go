@@ -342,7 +342,7 @@ func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRo
 	sAmount := int64(float64(v.FinalAmount) * rate)
 	if sAmount > 0 {
 		totalAmount := int64(float64(sAmount) * enum.RATE_AMOUNT)
-		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, int(totalAmount))
 		sd := merchant.CarryParams{
 			OuterTxNo:         o.OrderNo(),

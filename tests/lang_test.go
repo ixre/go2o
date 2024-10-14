@@ -9,10 +9,11 @@
 package tests
 
 import (
-	"github.com/ixre/gof/log"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/ixre/gof/log"
 )
 
 type (
@@ -53,4 +54,14 @@ func TestI64ToStr(t *testing.T) {
 func TestPow(t *testing.T) {
 	i := 7
 	t.Log(i & 2)
+}
+
+func TestModifySlice(t *testing.T) {
+	s := []int{1, 1, 2, 3, 4, 8, 9}
+	for i, v := range s {
+		if v%2 == 0 {
+			s = append(s[:i], s[i+1:]...)
+		}
+		t.Log(i, v, s)
+	}
 }

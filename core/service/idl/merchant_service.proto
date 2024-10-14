@@ -107,8 +107,10 @@ service MerchantService {
     rpc GetBill (BillTimeRequest) returns (SMerchantBill);
     // 手动调整商户账单金额,仅当账单金额对不上时进行调整
 	rpc ManualAdjustBillAmount(ManualAdjustMerchantBillAmountRequest) returns (TxResult);
-	// GenerateBill 生成当前月份的账单
-	rpc GenerateBill(GenerateMerchantBillRequest) returns (TxResult);
+	// GenerateBill 生成商户日账单
+	rpc GenerateDailyBill(GenerateMerchantBillRequest) returns (TxResult);
+    // GenerateMonthlyBill 生成商户月度账单
+    rpc GenerateMonthlyBill(GenerateMerchantMonthlyBillRequest) returns (TxResult);
 	// ReviewBill 审核账单
 	rpc ReviewBill(ReviewMerchantBillRequest) returns (TxResult);
 	// SettleBill 结算账单
@@ -132,16 +134,14 @@ message MerchantAccountCarrayRequest{
   int64 amount = 3;
   // 手续费
   int64 transactionFee = 4;
-  // 账单金额类型: 1: 商城金额 2: 线下金额 3: 其他金额
-  int32 billAmountType = 5;
   // 外部交易号
-  string outerTransactionNo = 6;
+  string outerTransactionNo = 5;
   // 备注
-  string transactionRemark = 7;
+  string transactionRemark = 6;
   // 是否先冻结
-  bool freeze = 8;
+  bool freeze = 7;
   // 外部交易用户编号
-  int64 outerTxUid = 9;
+  int64 outerTxUid = 8;
 }
 
 // 员工请求
@@ -263,42 +263,46 @@ message SMerchantBill{
     int64 id = 1;
     // 商户编号
     int64 mchId = 2;
+    // 账单类型, 1: 日账单  2: 月度账单
+    int32 billType =3;
     // 账单时间
-    int64 billTime = 3;
+    int64 billTime = 4;
     // 月份: 例:202408
-    string billMonth = 4;
+    string billMonth = 5;
     // 账单开始时间
-    int64 startTime = 5;
+    int64 startTime = 6;
     // 账单结束时间
-    int64 endTime = 6;
-    // 商城订单数量
-    int32 shopOrderCount = 7;
-    // 线下订单数量
-    int32 storeOrderCount = 8;
-    // 商城总金额
-    int64 shopTotalAmount = 9;
-    // 线下总金额
-    int64 storeTotalAmount = 10;
-    // 其他订单总数量
-    int32 otherOrderCount = 11;
-    // 其他订单总金额
-    int64 otherTotalAmount = 12;
+    int64 endTime = 7;
+    // 总交易笔数
+    int64 totalTxCount = 8;
+    // 总交易金额
+    int64 totalTxAmount = 9;
     // 总交易费 
-    int64 totalTxFee = 13;
-    // 账单状态:  0: 待生成 1: 已生成 2: 已复核  3: 已结算
-    int32 status = 14;
+    int64 totalTxFee = 10;
+    // 总退款金额
+    int64 totalRefundAmount =11;
+    // 账单状态: 0: 待生成 1: 待确认 2: 待复核 3: 已复核
+    int32 status = 12;
     // 审核人编号
-    int64 reviewerId = 15;
+    int64 reviewerId = 13;
     // 审核人名称
-    string reviewerName = 16;
+    string reviewerName = 14;
     // 审核时间
-    int64 reviewTime = 17;
+    int64 reviewTime = 15;
+    // 结算状态: 0: 未结算 1: 已结算
+    int32 settleStatus = 16;
+    // 结算平台编码
+    string settleSpCode = 17;
+    // 结算单号
+    string settleTxNo = 18;
+    // 结算备注
+    string settleRemark = 19;
     // 创建时间
-    int64 createTime = 18;
+    int64 createTime = 20;
     // 账单生成时间
-    int64 buildTime = 19;
+    int64 buildTime = 21;
     // 更新时间
-    int64 updateTime = 20;
+    int64 updateTime = 22;
 }
 
 // 手动调整商户账单金额请求
@@ -325,6 +329,18 @@ message GenerateMerchantBillRequest{
     int64 mchId = 1;
     // 账单编号
     int64 billId = 2;
+    // 账单日期,当未传入账单编号时,使用当前日期生成
+    int64 unixtime = 3;
+}
+
+// 生成商户月度账单请求
+message GenerateMerchantMonthlyBillRequest{
+    // 商户编号
+    int64 mchId = 1;
+    // 年份
+    int32 year = 2;
+    // 月份
+    int32 month = 3;
 }
 
 // 审核商户月度账单请求
@@ -334,7 +350,9 @@ message ReviewMerchantBillRequest{
     // 账单编号
     int64 billId = 2;
     // 审核人编号
-    int64 reviewerId = 3;
+    int64 reviewUid = 3;
+    // 审核备注
+    string reviewRemark = 4;
 }
 
 // 结算商户月度账单请求

@@ -1,7 +1,10 @@
 // create for src 29/11/2017 ( jarrysix@gmail.com )
 package wallet
 
-import "github.com/ixre/go2o/core/infrastructure/domain"
+import (
+	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/fw"
+)
 
 var (
 	// 别名
@@ -247,6 +250,8 @@ type (
 
 	// 钱包仓储
 	IWalletRepo interface {
+		// LogRepo 日志仓储
+		LogRepo() fw.Repository[WalletLog]
 		// 创建钱包
 		CreateWallet(userId int, username string, walletType int, walletName string, flag int) IWallet
 		// 获取钱包账户

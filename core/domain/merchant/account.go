@@ -148,9 +148,6 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 	if p.Amount <= 0 {
 		return 0, merchant.ErrAmount
 	}
-	if p.BillAmountType <= 0 {
-		return 0, errors.New("未指定账单类型,无法入账")
-	}
 	// 计算金额
 	fAmount := int(p.Amount / 100)
 	fTradeFee := int(p.TransactionFee / 100)
@@ -179,10 +176,7 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 			err = a.asyncWallet()
 			if err == nil {
 				// 更新账单
-				err = a.mchImpl.SaleManager().AdjustBillAmount(
-					merchant.BillAmountType(p.BillAmountType),
-					int(p.Amount),
-					int(p.TransactionFee))
+				err = a.mchImpl.TransactionManager().GetCurrentDailyBill().UpdateAmount()
 			}
 		}
 		return txId, err

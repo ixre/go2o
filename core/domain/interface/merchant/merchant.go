@@ -81,8 +81,8 @@ type (
 		UserManager() user.IUserManager
 		// ConfManager 返回设置服务
 		ConfManager() IConfManager
-		// SaleManager 销售服务
-		SaleManager() IMerchantTransactionManager
+		// TransactionManager 销售服务
+		TransactionManager() IMerchantTransactionManager
 		// LevelManager 获取会员等级服务
 		LevelManager() ILevelManager
 		// KvManager 获取键值管理器
@@ -163,8 +163,6 @@ type (
 		Amount int
 		// 交易费
 		TransactionFee int
-		// 账单类型
-		BillAmountType int
 		// 退款金额
 		RefundAmount int
 		// 交易描述,如：订单结算

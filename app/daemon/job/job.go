@@ -28,8 +28,8 @@ func add(spec string, cmd func()) {
 func GetJobs() []JobInfo {
 	// 检查订单过期,1分钟检测一次
 	add("*/1 * * * *", CheckExpiresPaymentOrder)
-	// 生成商户日度账单,每天00:00执行
-	//add("0 0 0 * *", GenerateMerchantDailyBill)
-	add("*/1 * * * *", GenerateMerchantDailyBill)
+	// 生成商户日度/月度账单,每天02:00执行
+	//add("0 2 0 * *", GenerateMerchantDailyBill)
+	add("*/1 * * * *", GenerateMerchantBill)
 	return jobs
 }

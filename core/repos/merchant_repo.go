@@ -44,10 +44,10 @@ var mchMerchantDaoImplMapped = false
 
 type merchantRepo struct {
 	fw.BaseRepository[merchant.Merchant]
-	authRepo    fw.BaseRepository[merchant.Authenticate]
-	billRepo    fw.Repository[merchant.MerchantBill]
-	_settleRepo fw.Repository[merchant.SettleConf]
-	db.Connector
+	authRepo      fw.BaseRepository[merchant.Authenticate]
+	billRepo      fw.Repository[merchant.MerchantBill]
+	_settleRepo   fw.Repository[merchant.SettleConf]
+	Connector     db.Connector
 	_orm          orm.Orm
 	storage       storage.Interface
 	manager       merchant.IMerchantManager
@@ -298,7 +298,7 @@ func (m *merchantRepo) GetApiInfo(mchId int) *merchant.ApiInfo {
 // 根据API编号获取商户编号
 func (m *merchantRepo) GetMerchantIdByApiId(apiId string) int64 {
 	var mchId int64
-	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id= $1", &mchId, apiId)
+	m.Connector.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id= $1", &mchId, apiId)
 	return mchId
 }
 

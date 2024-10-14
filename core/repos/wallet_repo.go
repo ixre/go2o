@@ -7,22 +7,29 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	wi "github.com/ixre/go2o/core/domain/wallet"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )
 
 var _ wallet.IWalletRepo = new(WalletRepoImpl)
 
-func NewWalletRepo(o orm.Orm) wallet.IWalletRepo {
+func NewWalletRepo(o orm.Orm, fo fw.ORM) wallet.IWalletRepo {
 	return &WalletRepoImpl{
-		_orm:  o,
-		_conn: o.Connector(),
+		_orm:     o,
+		_conn:    o.Connector(),
+		_logRepo: &fw.BaseRepository[wallet.WalletLog]{ORM: fo},
 	}
 }
 
 type WalletRepoImpl struct {
-	_orm  orm.Orm
-	_conn db.Connector
+	_orm     orm.Orm
+	_conn    db.Connector
+	_logRepo fw.Repository[wallet.WalletLog]
+}
+
+func (w *WalletRepoImpl) LogRepo() fw.Repository[wallet.WalletLog] {
+	return w._logRepo
 }
 
 func (w *WalletRepoImpl) CreateWallet(userId int,

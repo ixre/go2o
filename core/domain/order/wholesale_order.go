@@ -711,7 +711,7 @@ func (o *wholesaleOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggrega
 	if sAmount > 0 {
 		totalAmount := sAmount
 		refundAmount := refund
-		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, int(totalAmount))
 		sd := merchant.CarryParams{
 			OuterTxNo:         o.OrderNo(),
@@ -735,7 +735,7 @@ func (o *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggrega
 	if sAmount > 0 {
 		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, totalAmount)
 		sd := merchant.CarryParams{
 			OuterTxNo:         o.OrderNo(),
@@ -756,7 +756,7 @@ func (o *wholesaleOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMercha
 	if fee > 0 {
 		totalAmount := int(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		transactionFee, _ := vendor.SaleManager().MathTransactionFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, totalAmount)
 		sd := merchant.CarryParams{
 			OuterTxNo:         o.OrderNo(),

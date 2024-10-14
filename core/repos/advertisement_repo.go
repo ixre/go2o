@@ -24,9 +24,9 @@ import (
 var _ ad.IAdRepo = new(advertisementRepo)
 
 type advertisementRepo struct {
-	db.Connector
-	storage storage.Interface
-	o       orm.Orm
+	Connector db.Connector
+	storage   storage.Interface
+	o         orm.Orm
 	fw.BaseRepository[ad.Ad]
 }
 
@@ -130,7 +130,7 @@ func (a *advertisementRepo) SetUserAd(adUserId, posId, adId int) error {
 		PosId:  posId,
 		AdId:   adId,
 	}
-	a.ExecScalar("SELECT id FROM ad_userset WHERE user_id=$1 AND ad_id=$2", &v.Id, adUserId, adId)
+	a.Connector.ExecScalar("SELECT id FROM ad_userset WHERE user_id=$1 AND ad_id=$2", &v.Id, adUserId, adId)
 	v.PosId = posId
 	_, err := orm.Save(a.o, v, int(v.Id))
 	if err == nil {

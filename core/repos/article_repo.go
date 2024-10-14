@@ -27,7 +27,7 @@ var _articleRepo content.IArticleRepo
 
 type contentRepo struct {
 	fw.BaseRepository[content.Article]
-	db.Connector
+	Connector     db.Connector
 	o             orm.Orm
 	pageRepo      content.IPageRepo
 	catRepo       content.IArticleCategoryRepo

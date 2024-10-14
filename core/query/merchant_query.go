@@ -72,6 +72,14 @@ func getHostRegexp() *regexp.Regexp {
 	return commHostRegexp
 }
 
+// QueryMerchantList 查询商户列表
+func (m *MerchantQuery) QueryMerchantList(begin, size int) []*merchant.Merchant {
+	return m._repo.FindList(&fw.QueryOption{
+		Skip:  begin,
+		Limit: size,
+	}, "")
+}
+
 // 根据主机查询商户编号
 func (m *MerchantQuery) QueryMerchantIdByHost(host string) int64 {
 	var mchId int64
@@ -259,11 +267,15 @@ func (m *MerchantQuery) QueryPagingStaffs(p *fw.PagingParams) (*fw.PagingResult,
 	return m._staffRepo.QueryPaging(p)
 }
 
-// QueryWaitGenerateBills 查询待生成日度账单的商户
-func (m *MerchantQuery) QueryWaitGenerateBills(size int, lastId int) []*merchant.MerchantBill {
+// QueryWaitGenerateDailyBills 查询待生成日度账单的商户
+func (m *MerchantQuery) QueryWaitGenerateDailyBills(size int, lastId int) []*merchant.MerchantBill {
 	// 以当天开始时间，作为账单生成的结束时间
 	endTime, _ := util.GetStartEndUnix(time.Now())
 	return m._repo.BillRepo().FindList(&fw.QueryOption{
 		Limit: size,
-	}, "end_time <? AND status = ? AND id > ?", endTime, merchant.BillStatusPending, lastId)
+	}, "end_time <? AND bill_type = ? AND status = ? AND id > ?",
+		endTime,
+		merchant.BillTypeDaily,
+		merchant.BillStatusPending,
+		lastId)
 }

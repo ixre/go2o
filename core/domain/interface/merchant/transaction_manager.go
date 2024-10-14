@@ -10,15 +10,24 @@
 
 package merchant
 
+import "github.com/ixre/go2o/core/infrastructure/domain"
+
+const (
+	// 账单类型:日度账单
+	BillTypeDaily = 1
+	// 账单类型:月度账单
+	BillTypeMonthly = 2
+)
+
 const (
 	// 账单状态:待生成
-	BillStatusPending BillStatus = 0
+	BillStatusPending BillStatus = 1
 	// 账单状态:已生成
-	BillStatusGenerated BillStatus = 1
+	BillStatusWaitConfirm BillStatus = 2
+	// 账单状态:待复核
+	BillStatusWaitReview BillStatus = 3
 	// 账单状态:已复核
-	BillStatusReviewed BillStatus = 2
-	// 账单状态:已结算
-	BillStatusSettled BillStatus = 3
+	BillStatusReviewed BillStatus = 4
 )
 
 type (
@@ -41,20 +50,39 @@ const (
 type IMerchantTransactionManager interface {
 	// 计算交易费用,返回交易费及错误
 	MathTransactionFee(tradeType int, amount int) (int, error)
-	// GetCurrentBill 获取当前月份的账单
-	GetCurrentBill() *MerchantBill
+	// GetSettlementType 获取系统设置结算周期
+	GetSettlementPeriod() int
+	// GetCurrentDailyBill 获取当前账单
+	GetCurrentDailyBill() IBillDomain
 	// GetBill 获取指定账单
-	GetBill(billId int) *MerchantBill
+	GetBill(billId int) IBillDomain
 	// GetBillByTime 获取指定月份的账单
-	GetBillByTime(billTime int) *MerchantBill
-	// AdjustBillShopAmount 调整账单商城金额
-	AdjustBillAmount(amountType BillAmountType, amount int, txFee int) error
-	// GenerateBill 生成账单
-	GenerateBill(billId int) error
-	// ReviewBill 审核账单
-	ReviewBill(billId int, reviewerId int) error
-	// SettleBill 结算账单
-	SettleBill(billId int) error
+	GetBillByTime(billTime int) IBillDomain
+	// GenerateMonthlyBill 生成月度账单,如果为日结，则账单会自动复核。
+	// 月度账单的生成时间需保证上月的日账单已复核完毕，
+	// 建议为手动生成每月账单,如未生成，则每月3日定时生成。
+	GenerateMonthlyBill(year, month int) error
+}
+
+// IBillDomain 账单领域
+type IBillDomain interface {
+	domain.IDomain
+	// 获取值
+	Value() *MerchantBill
+	// Update 更新账单金额
+	UpdateAmount() error
+	// UpdateBillAmount 调整账单金额,如果amount为负数,则表示退款
+	UpdateBillAmount(amount int, txFee int) error
+	// Generate 生成账单
+	Generate() error
+	// Confirm 确认账单,按日结算的账单不需要商户确认
+	Confirm() error
+	// Review 审核账单
+	Review(reviewerId int, remark string) error
+	// Settle 结算账单
+	Settle() error
+	// UpdateSettleInfo 更新结算信息
+	UpdateSettleInfo(spCode string, settleTxNo string) error
 }
 
 // MerchantBillSettleEvent 账单结算事件
@@ -71,13 +99,13 @@ type MerchantBillSettleEvent struct {
 	SettleRemark string
 }
 
-// MerchantBill 商户月度账单
+// MerchantBill 商户账单
 type MerchantBill struct {
 	// 编号
 	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
 	// 商户编号
 	MchId int `json:"mchId" db:"mch_id" gorm:"column:mch_id" bson:"mchId"`
-	// 账单类型: 1: 日账单  2: 月度账单
+	// 账单类型, 1: 日账单  2: 月度账单
 	BillType int `json:"billType" db:"bill_type" gorm:"column:bill_type" bson:"billType"`
 	// 账单时间
 	BillTime int `json:"billTime" db:"bill_time" gorm:"column:bill_time" bson:"billTime"`
@@ -87,21 +115,15 @@ type MerchantBill struct {
 	StartTime int `json:"startTime" db:"start_time" gorm:"column:start_time" bson:"startTime"`
 	// 账单结束时间
 	EndTime int `json:"endTime" db:"end_time" gorm:"column:end_time" bson:"endTime"`
-	// 商城订单数量
-	ShopOrderCount int `json:"shopOrderCount" db:"shop_order_count" gorm:"column:shop_order_count" bson:"shopOrderCount"`
-	// 线下订单数量
-	StoreOrderCount int `json:"storeOrderCount" db:"store_order_count" gorm:"column:store_order_count" bson:"storeOrderCount"`
-	// 商城总金额
-	ShopTotalAmount int `json:"shopTotalAmount" db:"shop_total_amount" gorm:"column:shop_total_amount" bson:"shopTotalAmount"`
-	// 线下总金额
-	StoreTotalAmount int `json:"storeTotalAmount" db:"store_total_amount" gorm:"column:store_total_amount" bson:"storeTotalAmount"`
-	// 其他订单总数量
-	OtherOrderCount int `json:"otherOrderCount" db:"other_order_count" gorm:"column:other_order_count" bson:"otherOrderCount"`
-	// 其他订单总金额
-	OtherTotalAmount int `json:"otherTotalAmount" db:"other_total_amount" gorm:"column:other_total_amount" bson:"otherTotalAmount"`
-	// 交易费
-	TotalTxFee int `json:"totalTxFee" db:"total_tx_fee" gorm:"column:total_tx_fee" bson:"totalTxFee"`
-	// 账单状态:  0: 待生成 1: 已生成 2: 已复核  3: 已结算
+	// 交易笔数
+	TxCount int `json:"txCount" db:"tx_count" gorm:"column:tx_count" bson:"txCount"`
+	// 交易总金额
+	TxAmount int `json:"txAmount" db:"tx_amount" gorm:"column:tx_amount" bson:"txAmount"`
+	// 交易手续费
+	TxFee int `json:"txFee" db:"tx_fee" gorm:"column:tx_fee" bson:"txFee"`
+	// 交易退款金额
+	RefundAmount int `json:"refundAmount" db:"refund_amount" gorm:"column:refund_amount" bson:"refundAmount"`
+	// 账单状态:  0: 待生成 1: 待确认   2: 待复核 3: 待结算  4: 已结算
 	Status int `json:"status" db:"status" gorm:"column:status" bson:"status"`
 	// 审核人编号
 	ReviewerId int `json:"reviewerId" db:"reviewer_id" gorm:"column:reviewer_id" bson:"reviewerId"`
@@ -113,11 +135,21 @@ type MerchantBill struct {
 	ReviewTime int `json:"reviewTime" db:"review_time" gorm:"column:review_time" bson:"reviewTime"`
 	// 账单备注
 	BillRemark string `json:"billRemark" db:"bill_remark" gorm:"column:bill_remark" bson:"billRemark"`
-	// 创建时间
+	// UserRemark
+	UserRemark string `json:"userRemark" db:"user_remark" gorm:"column:user_remark" bson:"userRemark"`
+	// SettleStatus
+	SettleStatus int `json:"settleStatus" db:"settle_status" gorm:"column:settle_status" bson:"settleStatus"`
+	// SettleSpCode
+	SettleSpCode string `json:"settleSpCode" db:"settle_sp_code" gorm:"column:settle_sp_code" bson:"settleSpCode"`
+	// SettleTxNo
+	SettleTxNo string `json:"settleTxNo" db:"settle_tx_no" gorm:"column:settle_tx_no" bson:"settleTxNo"`
+	// SettleRemark
+	SettleRemark string `json:"settleRemark" db:"settle_remark" gorm:"column:settle_remark" bson:"settleRemark"`
+	// CreateTime
 	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
-	// 账单生成时间
+	// BuildTime
 	BuildTime int `json:"buildTime" db:"build_time" gorm:"column:build_time" bson:"buildTime"`
-	// 更新时间
+	// UpdateTime
 	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 }
 
