@@ -21,8 +21,8 @@ func MakeThumbnail(filename string, width, height int) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	//dstImg := imaging.Fill(srcImage, 100, 100, imaging.Center, imaging.Lanczos)
-	dstImg := imaging.Resize(img, width, height, imaging.Lanczos)
+	dstImg := imaging.Fill(img, width, height, imaging.Center, imaging.Lanczos)
+	//dstImg := imaging.Resize(img, width, height, imaging.Lanczos)
 	buf := bytes.NewBuffer(nil)
 	err = jpeg.Encode(buf, dstImg, &jpeg.Options{Quality: 100})
 	if err != nil {

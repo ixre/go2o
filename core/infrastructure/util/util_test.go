@@ -23,7 +23,7 @@ func TestOrValue(t *testing.T) {
 }
 
 func TestResizeImage(t *testing.T) {
-	bytes, err := MakeThumbnail("./resize.png", 200, 200)
+	bytes, err := MakeThumbnail("./resize.png", 250, 250)
 	if err != nil {
 		t.Error(err)
 	}
