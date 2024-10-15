@@ -15,7 +15,6 @@ require (
 	github.com/nats-io/nats.go v1.37.0
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/smartwalle/resize v1.0.0
 	// indirect
 	google.golang.org/grpc v1.67.0
 )
@@ -24,6 +23,7 @@ require google.golang.org/protobuf v1.34.2
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.28.3
+	github.com/disintegration/imaging v1.6.2
 	github.com/google/wire v0.6.0
 	github.com/mozillazg/go-pinyin v0.20.0
 	github.com/silenceper/wechat/v2 v2.1.6
@@ -31,7 +31,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.1008
 	go.etcd.io/etcd/client/v3 v3.5.16
 	golang.org/x/net v0.29.0
-	golang.org/x/text v0.18.0
+	golang.org/x/text v0.19.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.12
@@ -53,6 +53,7 @@ require (
 	github.com/tidwall/gjson v1.17.3 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
+	golang.org/x/image v0.21.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect

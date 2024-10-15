@@ -341,6 +341,10 @@ func (b *billDomainImpl) Generate() error {
 			b._value.SettleStatus = merchant.BillNoSettlement
 		}
 	}
+	if b._value.TxAmount == 0 && b._value.TxFee == 0 {
+		// 未产生金额的账单直接更改为待复核，无需商户确认
+		b._value.Status = int(merchant.BillStatusWaitReview)
+	}
 	b._value.UpdateTime = int(now)
 	b._value.BillRemark = ""
 	_, err = b._repo.BillRepo().Save(b._value)

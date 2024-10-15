@@ -316,7 +316,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 		if usr == nil {
 			return nil, fmt.Errorf("no such user %v", r.UserId)
 		}
-		log.Println("ss1", time.Now().UnixMilli())
+		//log.Println("ss1", time.Now().UnixMilli())
 		// 获取用户角色
 		_, userRoles := p.getUserRoles(int(r.UserId))
 		roleList := make([]int, len(userRoles))
@@ -334,7 +334,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 		log.Println(typeconv.MustJson(roleResList))
 	}
 	// 准备菜单数据
-	log.Println("ss2", time.Now().UnixMilli())
+	//log.Println("ss2", time.Now().UnixMilli())
 	parents := make(map[int][]int, 0)
 	resMap := make(map[int]*rbac.RbacRes, 0)
 	for _, v := range resList {
@@ -362,7 +362,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 	wg := sync.WaitGroup{}
 
 	// 遍历函数
-	log.Println("sss", time.Now().UnixMilli())
+	//log.Println("sss", time.Now().UnixMilli())
 	var f func(w *sync.WaitGroup, root *proto.SUserMenu, arr map[int][]int)
 	f = func(w *sync.WaitGroup, root *proto.SUserMenu, arr map[int][]int) {
 		root.Children = []*proto.SUserMenu{}
