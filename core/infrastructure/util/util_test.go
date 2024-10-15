@@ -23,6 +23,9 @@ func TestOrValue(t *testing.T) {
 }
 
 func TestResizeImage(t *testing.T) {
+	// 自动适配高度
+	//bytes, err := MakeThumbnail("./resize.png", 250, 0)
+	// 自动适配宽度，高度裁剪
 	bytes, err := MakeThumbnail("./resize.png", 250, 250)
 	if err != nil {
 		t.Error(err)
