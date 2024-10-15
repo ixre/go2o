@@ -383,6 +383,10 @@ func (b *billDomainImpl) Review(reviewerId int, remark string) error {
 	b._value.ReviewTime = int(time.Now().Unix())
 	b._value.ReviewRemark = remark
 	b._value.Status = int(merchant.BillStatusReviewed)
+	if b._value.TxAmount == 0 && b._value.TxFee == 0 {
+		// 如果账单金额为零，则自动结算完成
+		b._value.SettleStatus = merchant.BillSettlemented
+	}
 	b._value.UpdateTime = int(time.Now().Unix())
 	_, err := b._repo.BillRepo().Save(b._value)
 	return err
@@ -428,12 +432,13 @@ func (b *billDomainImpl) Settle() error {
 }
 
 // UpdateSettleInfo 更新结算信息
-func (b *billDomainImpl) UpdateSettleInfo(spCode string, settleTxNo string) error {
+func (b *billDomainImpl) UpdateSettleInfo(spCode string, settleTxNo string, message string) error {
 	if b._value.SettleStatus != merchant.BillSettlemented {
 		return errors.New("账单尚未结算")
 	}
 	b._value.SettleSpCode = spCode
 	b._value.SettleTxNo = settleTxNo
+	b._value.SettleRemark = message
 	b._value.UpdateTime = int(time.Now().Unix())
 	_, err := b._repo.BillRepo().Save(b._value)
 	return err

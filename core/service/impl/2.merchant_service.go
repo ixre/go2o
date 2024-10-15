@@ -1462,6 +1462,23 @@ func (m *merchantService) SettleBill(_ context.Context, req *proto.SettleMerchan
 	return m.txResult(int(req.BillId), nil), nil
 }
 
+// UpdateSettlement 更新结算信息
+func (m *merchantService) UpdateSettlement(_ context.Context, req *proto.UpdateMerchantSettlementRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	bill := mch.TransactionManager().GetBill(int(req.BillId))
+	if bill == nil {
+		return m.errorV2(errors.New("账单不存在")), nil
+	}
+	err := bill.UpdateSettleInfo(req.SpCode, req.SettleTxNo, req.Message)
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(int(req.BillId), nil), nil
+}
+
 // RequestInvoice 商户申请发票
 func (m *merchantService) RequestInvoice(_ context.Context, req *proto.MerchantRequestInvoiceRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(req.MchId))

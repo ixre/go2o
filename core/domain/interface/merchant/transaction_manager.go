@@ -90,8 +90,8 @@ type IBillDomain interface {
 	Review(reviewerId int, remark string) error
 	// Settle 结算账单
 	Settle() error
-	// UpdateSettleInfo 更新结算信息
-	UpdateSettleInfo(spCode string, settleTxNo string) error
+	// UpdateSettleInfo 更新结算信息,settleTxNo 结算单号, message 错误信息
+	UpdateSettleInfo(spCode string, settleTxNo string, message string) error
 }
 
 // MerchantBillSettleEvent 账单结算事件

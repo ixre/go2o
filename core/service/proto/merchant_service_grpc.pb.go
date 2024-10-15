@@ -72,6 +72,7 @@ const (
 	MerchantService_ReviewBill_FullMethodName                  = "/MerchantService/ReviewBill"
 	MerchantService_ConfirmBill_FullMethodName                 = "/MerchantService/ConfirmBill"
 	MerchantService_SettleBill_FullMethodName                  = "/MerchantService/SettleBill"
+	MerchantService_UpdateSettlement_FullMethodName            = "/MerchantService/UpdateSettlement"
 	MerchantService_RequestInvoice_FullMethodName              = "/MerchantService/RequestInvoice"
 	MerchantService_GetSettleConf_FullMethodName               = "/MerchantService/GetSettleConf"
 	MerchantService_SaveSettleConf_FullMethodName              = "/MerchantService/SaveSettleConf"
@@ -185,6 +186,8 @@ type MerchantServiceClient interface {
 	ConfirmBill(ctx context.Context, in *MerchantConfirmBillRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// SettleBill 结算账单
 	SettleBill(ctx context.Context, in *SettleMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// UpdateSettlement 更新结算信息
+	UpdateSettlement(ctx context.Context, in *UpdateMerchantSettlementRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 商户申请发票
 	RequestInvoice(ctx context.Context, in *MerchantRequestInvoiceRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 获取结算设置
@@ -678,6 +681,15 @@ func (c *merchantServiceClient) SettleBill(ctx context.Context, in *SettleMercha
 	return out, nil
 }
 
+func (c *merchantServiceClient) UpdateSettlement(ctx context.Context, in *UpdateMerchantSettlementRequest, opts ...grpc.CallOption) (*TxResult, error) {
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, MerchantService_UpdateSettlement_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *merchantServiceClient) RequestInvoice(ctx context.Context, in *MerchantRequestInvoiceRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	out := new(TxResult)
 	err := c.cc.Invoke(ctx, MerchantService_RequestInvoice_FullMethodName, in, out, opts...)
@@ -813,6 +825,8 @@ type MerchantServiceServer interface {
 	ConfirmBill(context.Context, *MerchantConfirmBillRequest) (*TxResult, error)
 	// SettleBill 结算账单
 	SettleBill(context.Context, *SettleMerchantBillRequest) (*TxResult, error)
+	// UpdateSettlement 更新结算信息
+	UpdateSettlement(context.Context, *UpdateMerchantSettlementRequest) (*TxResult, error)
 	// 商户申请发票
 	RequestInvoice(context.Context, *MerchantRequestInvoiceRequest) (*TxResult, error)
 	// 获取结算设置
@@ -984,6 +998,9 @@ func (UnimplementedMerchantServiceServer) ConfirmBill(context.Context, *Merchant
 }
 func (UnimplementedMerchantServiceServer) SettleBill(context.Context, *SettleMerchantBillRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SettleBill not implemented")
+}
+func (UnimplementedMerchantServiceServer) UpdateSettlement(context.Context, *UpdateMerchantSettlementRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSettlement not implemented")
 }
 func (UnimplementedMerchantServiceServer) RequestInvoice(context.Context, *MerchantRequestInvoiceRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestInvoice not implemented")
@@ -1961,6 +1978,24 @@ func _MerchantService_SettleBill_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MerchantService_UpdateSettlement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMerchantSettlementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MerchantServiceServer).UpdateSettlement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MerchantService_UpdateSettlement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MerchantServiceServer).UpdateSettlement(ctx, req.(*UpdateMerchantSettlementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MerchantService_RequestInvoice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MerchantRequestInvoiceRequest)
 	if err := dec(in); err != nil {
@@ -2233,6 +2268,10 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SettleBill",
 			Handler:    _MerchantService_SettleBill_Handler,
+		},
+		{
+			MethodName: "UpdateSettlement",
+			Handler:    _MerchantService_UpdateSettlement_Handler,
 		},
 		{
 			MethodName: "RequestInvoice",
