@@ -716,9 +716,10 @@ func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error
 		if err == nil {
 			// 发送实名认证审核事件
 			go eventbus.Publish(&member.MemberCertificationReviewEvent{
-				Member: p.member,
-				Pass:   pass,
-				Remark: remark,
+				Member:        p.member,
+				Pass:          pass,
+				Remark:        remark,
+				CertifiedName: p.trustedInfo.RealName,
 			})
 		}
 	}

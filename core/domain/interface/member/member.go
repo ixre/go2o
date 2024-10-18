@@ -211,6 +211,8 @@ type (
 		Pass bool
 		// 备注
 		Remark string
+		// 认证姓名
+		CertifiedName string
 	}
 
 	// IFavoriteManager 收藏服务
