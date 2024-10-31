@@ -118,11 +118,18 @@ message MemberBlockShieldResponse {
   bool isShield = 2;
 }
 
+// 查找会员请求
 message FindMemberRequest {
   // 凭据类型
   ECredentials cred = 1;
   // 凭据的值
   string value = 2;
+}
+
+// 查找会员响应
+message FindMemberResponse {
+  // 会员编号
+  int64 memberId = 1;
 }
 
 message SMemberLevelListResponse {

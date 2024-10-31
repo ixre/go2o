@@ -50,7 +50,7 @@ service MemberService {
     // 根据会员编号获取会员信息
     rpc GetMember (MemberIdRequest) returns (SMember);
     /** 查找交换会员编号 */
-    rpc FindMember (FindMemberRequest) returns (Int64);
+    rpc FindMember (FindMemberRequest) returns (FindMemberResponse);
     // 根据会员编号获取会员资料
     rpc GetProfile (MemberIdRequest) returns (SProfile);
     // 保存资料

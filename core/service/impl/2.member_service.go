@@ -73,7 +73,7 @@ func NewMemberService(repo member.IMemberRepo,
 }
 
 // FindMember 交换会员编号
-func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest) (*proto.Int64, error) {
+func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest) (*proto.FindMemberResponse, error) {
 	var memberId int64
 	switch r.Cred {
 	default:
@@ -86,7 +86,7 @@ func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest
 	case proto.ECredentials_EMAIL:
 		memberId = s.repo.GetMemberIdByEmail(r.Value)
 	}
-	return &proto.Int64{Value: memberId}, nil
+	return &proto.FindMemberResponse{MemberId: memberId}, nil
 }
 
 //func (_s *memberService) init() *memberService {

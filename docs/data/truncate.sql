@@ -33,17 +33,20 @@ TRUNCATE TABLE "mm_deliver_addr";
 TRUNCATE TABLE "mm_relation";
 TRUNCATE TABLE "mm_cert_info";
 TRUNCATE TABLE "mm_favorite";
-TRUNCATE TABLE "mm_bank";
+TRUNCATE TABLE "mm_bank_card";
 TRUNCATE TABLE "mm_receipts_code";
 TRUNCATE TABLE "mm_levelup";
 TRUNCATE TABLE "mm_buyer_group";
 TRUNCATE TABLE "mm_lock_info";
 TRUNCATE TABLE "mm_lock_history";
+TRUNCATE TABLE "mm_oauth_account";
+TRUNCATE TABLE "mm_block_list";
+
+
 
 TRUNCATE TABLE "wal_wallet";
 TRUNCATE TABLE "wal_wallet_log";
 
-TRUNCATE TABLE "sale_order";
 TRUNCATE TABLE "sale_sub_order";
 TRUNCATE TABLE "sale_order_item";
 TRUNCATE TABLE "pt_order_coupon";
@@ -115,7 +118,8 @@ TRUNCATE TABLE "ws_cart_item";
 
 TRUNCATE TABLE "pay_order";
 TRUNCATE TABLE "pay_trade_data";
-TRUNCATE TABLE "pay_merge_order";
+TRUNCATE TABLE "PAY_MERGE_ORDER";
+TRUNCATE TABLE "pay_divide";
 
 
 TRUNCATE TABLE "pm_coupon";
@@ -145,7 +149,39 @@ TRUNCATE TABLE "portal_floor_ad";
 TRUNCATE TABLE "portal_floor_link";
 TRUNCATE TABLE "sys_kv";
 
+-- 2024-10-21
+TRUNCATE TABLE "invoice_item";
+TRUNCATE TABLE "invoice_record";
+TRUNCATE TABLE "invoice_tenant";
+TRUNCATE TABLE "invoice_title";
 
+TRUNCATE TABLE "approval";
+TRUNCATE TABLE "approval_flow";
+
+
+TRUNCATE TABLE "chat_conversation";
+TRUNCATE TABLE "chat_msg";
+
+TRUNCATE TABLE "mch_service_order";
+TRUNCATE TABLE "mch_transform_setting";
+TRUNCATE TABLE "mch_staff";
+TRUNCATE TABLE "mch_staff_extent";
+TRUNCATE TABLE "mch_staff_transfer";
+TRUNCATE TABLE "mch_bill";
+TRUNCATE TABLE "mch_balance_log";
+
+
+TRUNCATE TABLE "workorder";
+TRUNCATE TABLE "workorder_comment";
+
+
+
+delete from mch_merchant where id>1;
+
+DELETE FROM mch_authenticate where mch_id NOT IN(select id from mch_merchant);
+DELETE FROM mch_online_shop where vendor_id NOT IN(select id from mch_merchant);
+
+DELETE FROM mch_account where mch_id NOT IN(select id from mch_merchant);
 
 
 
