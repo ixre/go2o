@@ -258,7 +258,7 @@ func (a *ApprovalImpl) Process(nodeKey string, tx *approval.ApprovalLog) (err er
 			err = err1.(error)
 		}
 	}()
-	eventbus.Publish(&approval.ApprovalProcessEvent{
+	eventbus.Dispatch(&approval.ApprovalProcessEvent{
 		Approval: a,
 		NodeKey:  nodeKey,
 		Tx:       tx,

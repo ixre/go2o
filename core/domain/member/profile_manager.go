@@ -715,7 +715,7 @@ func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error
 		_, err = p.member.Save()
 		if err == nil {
 			// 发送实名认证审核事件
-			go eventbus.Publish(&member.MemberCertificationReviewEvent{
+			go eventbus.Dispatch(&member.MemberCertificationReviewEvent{
 				Member:        p.member,
 				Pass:          pass,
 				Remark:        remark,

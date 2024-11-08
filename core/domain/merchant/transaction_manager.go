@@ -424,7 +424,7 @@ func (b *billDomainImpl) Settle() error {
 		platformName, _ := b._registryRepo.GetValue(registry.PlatformName)
 		remark := fmt.Sprintf("%s结算账单:%s-%s", platformName, mchName, b._value.BillMonth)
 		// 发送结算事件
-		go eventbus.Publish(&merchant.MerchantBillSettleEvent{
+		go eventbus.Dispatch(&merchant.MerchantBillSettleEvent{
 			MchId:         b._value.MchId,
 			MchName:       mchName,
 			SubMerchantNo: conf.SubMchNo,

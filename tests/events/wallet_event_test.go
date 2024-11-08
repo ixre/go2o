@@ -25,7 +25,7 @@ func TestWalletLogUpdate(t *testing.T) {
 }
 
 func TestPushMemberRegisterEvent(t *testing.T) {
-	eventbus.Publish(&events.MemberPushEvent{
+	eventbus.Dispatch(&events.MemberPushEvent{
 		IsCreate:  false,
 		Member:    &member.Member{},
 		InviterId: 0,

@@ -141,7 +141,7 @@ func (w *WalletRepoImpl) SaveWalletLog_(v *wallet.WalletLog) (int, error) {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WalletLog")
 	}
 	// if err == nil && v.Id > 0 {
-	// 	eventbus.Publish(&events.AccountLogPushEvent{
+	// 	eventbus.Dispatch(&events.AccountLogPushEvent{
 	// 	})
 	// }
 	return id, err

@@ -184,7 +184,7 @@ func (e *staffManagerImpl) TransferApproval(trans *staff.StaffTransfer, event *a
 			_, err = e._repo.Save(st)
 			if err == nil {
 				// 发布员工转移审批通过事件
-				go eventbus.Publish(&staff.StaffTransferApprovedEvent{
+				go eventbus.Dispatch(&staff.StaffTransferApprovedEvent{
 					Staff:         *st,
 					TransferMchId: trans.TransferMchId,
 					OriginMchId:   trans.OriginMchId,

@@ -123,7 +123,7 @@ func (n *notifyManagerImpl) SendPhoneMessage(phone string, msg mss.PhoneMessage,
 	}
 	// 通过外部系统发送短信
 	if provider == int(mss.CUSTOM) {
-		eventbus.Publish(&events.SendSmsEvent{
+		eventbus.Dispatch(&events.SendSmsEvent{
 			Provider:     provider,
 			Phone:        phone,
 			Template:     string(msg),

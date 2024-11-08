@@ -453,7 +453,7 @@ func (m *memberImpl) Save() (int64, error) {
 
 func (m *memberImpl) pushSaveEvent(create bool) {
 	rl := m.GetRelation()
-	eventbus.Publish(&events.MemberPushEvent{
+	eventbus.Dispatch(&events.MemberPushEvent{
 		IsCreate:  create,
 		Member:    m.value,
 		InviterId: int(rl.InviterId),

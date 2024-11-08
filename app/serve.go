@@ -121,7 +121,7 @@ func Run(ch chan bool, after func(cfg *clientv3.Config, debug bool)) {
 	// 初始化事件
 	inject.GetEventSource().Bind()
 	// 发布应用初始化事件
-	eventbus.Publish(&events.AppInitialEvent{})
+	eventbus.Dispatch(&events.AppInitialEvent{})
 	InitialModules()
 	if runDaemon {
 		go daemon.Run(newApp)

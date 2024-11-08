@@ -235,7 +235,7 @@ func (o *subOrderImpl) saveSubOrder() error {
 		// 推送订单状态事件
 		if o._stateIsChange {
 			vo := o.ParentOrder().(*normalOrderImpl)
-			eventbus.Publish(&events.SubOrderPushEvent{
+			eventbus.Dispatch(&events.SubOrderPushEvent{
 				OrderNo:          o.value.OrderNo,
 				OrderAmount:      int(o.value.FinalAmount),
 				ConsigneeName:    vo.baseValue.ConsigneeName,
@@ -869,7 +869,7 @@ func (o *subOrderImpl) publishAffiliateEvent() {
 	}
 	// 发送分销事件
 	if len(affiliateItems) > 0 {
-		eventbus.Publish(&events.OrderAffiliateRebateEvent{
+		eventbus.Dispatch(&events.OrderAffiliateRebateEvent{
 			OrderNo:        o.value.OrderNo,
 			SubOrder:       true,
 			BuyerId:        o.value.BuyerId,

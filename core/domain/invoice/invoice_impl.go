@@ -236,7 +236,7 @@ func (i *invoiceRecordDomainImpl) Revert(reason string) error {
 	i.value.UpdateTime = int(time.Now().Unix())
 	_, err := i.repo.Save(i.value)
 	if err == nil {
-		go eventbus.Publish(&invoice.InvoiceRevertEvent{
+		go eventbus.Dispatch(&invoice.InvoiceRevertEvent{
 			TenantId:  i.value.TenantId,
 			InvoiceId: i.value.Id,
 			Reason:    reason,
@@ -263,7 +263,7 @@ func (i *invoiceRecordDomainImpl) SendMail(mail string) error {
 	if len(i.value.InvoicePic) == 0 {
 		return errors.New("invoice picture is empty")
 	}
-	eventbus.Publish(&events.SendEmailEvent{
+	eventbus.Dispatch(&events.SendEmailEvent{
 		Subject: "请查收发票",
 		To:      mail,
 		Body:    fmt.Sprintf(`<img src="%s" alt="发票图片"/>`, i.value.InvoicePic),

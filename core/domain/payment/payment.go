@@ -348,7 +348,7 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 func (p *paymentOrderImpl) applyPaymentFinish() error {
 	if p.GetAggregateRootId() > 0 {
 		// 发布支付成功事件，并进行其他业务处理
-		eventbus.Publish(&payment.PaymentSuccessEvent{
+		eventbus.Dispatch(&payment.PaymentSuccessEvent{
 			Order:         p,
 			TradeChannels: p.TradeMethods(),
 		})
@@ -708,7 +708,7 @@ func (p *paymentOrderImpl) Refund(amounts map[int]int, reason string) (err error
 			txId, err = p.handlePaymentOrderRefund(acc, amount, reason)
 			if err == nil {
 				// 第三方支付原路退回, 异步发布退款事件
-				go eventbus.Publish(&payment.PaymentProviderRefundEvent{
+				go eventbus.Dispatch(&payment.PaymentProviderRefundEvent{
 					Order:        p,
 					Amount:       amount,
 					Reason:       reason,
@@ -812,7 +812,7 @@ func (p *paymentOrderImpl) RefundAvail(remark string) (amount int, err error) {
 				txId, err = p.handlePaymentOrderRefund(acc, amount, remark)
 				if err == nil {
 					// 第三方支付原路退回, 异步发布退款事件
-					go eventbus.Publish(&payment.PaymentProviderRefundEvent{
+					go eventbus.Dispatch(&payment.PaymentProviderRefundEvent{
 						Order:        p,
 						Amount:       spRefundAmount,
 						Reason:       remark,
@@ -879,7 +879,7 @@ func (p *paymentOrderImpl) SupplementRefund(txId int) error {
 	}
 
 	// 第三方支付原路退回, 异步发布退款事件
-	go eventbus.Publish(&payment.PaymentProviderRefundEvent{
+	go eventbus.Dispatch(&payment.PaymentProviderRefundEvent{
 		Order:        p,
 		Amount:       int(math.Abs(float64(mtx.ChangeValue - mtx.TransactionFee))),
 		Reason:       mtx.Subject,
@@ -1080,7 +1080,7 @@ func (p *paymentOrderImpl) Divide(outTxNo string, divides []*payment.DivideData)
 	}
 	if err == nil {
 		// 发布分账事件
-		eventbus.Publish(&payment.PaymentDivideEvent{
+		eventbus.Dispatch(&payment.PaymentDivideEvent{
 			Order:   p,
 			Divides: divides,
 		})
@@ -1173,7 +1173,7 @@ func (p *paymentOrderImpl) checkDivideCommandExecuted() {
 	}
 	if isExecuted {
 		// 如果分账命令都已下发，则执行分账完成指令
-		go eventbus.Publish(&payment.PaymentCompleteDivideEvent{
+		go eventbus.Dispatch(&payment.PaymentCompleteDivideEvent{
 			Order: p,
 		})
 	}
@@ -1198,7 +1198,7 @@ func (p *paymentOrderImpl) RevertSubDivide(divideId int, remark string) error {
 	_, err := p.repo.DivideRepo().Save(divide)
 	if err == nil {
 		// 发布分账撤销事件
-		eventbus.Publish(&payment.PaymentRevertSubDivideEvent{
+		eventbus.Dispatch(&payment.PaymentRevertSubDivideEvent{
 			Order:   p,
 			Divides: []*payment.PayDivide{raw},
 		})

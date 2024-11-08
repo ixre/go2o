@@ -204,7 +204,7 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 		l.Id = int(id)
 	}
 	if w._value.WalletType == wallet.TPerson {
-		eventbus.Publish(&events.AccountLogPushEvent{
+		eventbus.Dispatch(&events.AccountLogPushEvent{
 			IsUpdateEvent: isUpdate,
 			MemberId:      int(w._value.UserId),
 			Account:       3,

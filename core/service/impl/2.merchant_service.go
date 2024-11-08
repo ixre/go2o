@@ -897,7 +897,7 @@ func (m *merchantService) GetStaffByMember(_ context.Context, req *proto.StaffRe
 func (m *merchantService) checkImInitialized(s *staff.Staff) {
 	if s.ImInitialized == 0 {
 		// 发布员工IM初始化事件
-		eventbus.Publish(&staff.StaffRequireImInitEvent{
+		eventbus.Dispatch(&staff.StaffRequireImInitEvent{
 			Staff: *s,
 		})
 	}

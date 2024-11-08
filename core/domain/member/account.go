@@ -109,7 +109,7 @@ func (a *accountImpl) Save() (int, error) {
 		}
 		// 推送钱包更新消息
 		if !isCreate {
-			eventbus.Publish(&events.MemberAccountPushEvent{
+			eventbus.Dispatch(&events.MemberAccountPushEvent{
 				Account: *a.value,
 			})
 		}
@@ -1024,7 +1024,7 @@ func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int, str
 		}
 
 		// 推送提现申请事件
-		eventbus.Publish(&events.WithdrawalPushEvent{
+		eventbus.Dispatch(&events.WithdrawalPushEvent{
 			MemberId:       a.value.MemberId,
 			RequestId:      int(id),
 			Amount:         w.Amount,
@@ -1044,7 +1044,7 @@ func (a *accountImpl) ReviewWithdrawal(transactionId int, pass bool, remark stri
 		if pass {
 			log := a.wallet.GetLog(int64(transactionId))
 			// 推送提现申请事件
-			eventbus.Publish(&events.WithdrawalPushEvent{
+			eventbus.Dispatch(&events.WithdrawalPushEvent{
 				MemberId:       a.value.MemberId,
 				RequestId:      int(transactionId),
 				Amount:         int(log.ChangeValue),

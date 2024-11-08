@@ -284,7 +284,7 @@ func (s *subMerchantManagerImpl) Submit(code string) error {
 	_, err := s.rep.MerchantRepo().Save(mch)
 	if err == nil {
 		// 发布商户入网事件
-		go eventbus.Publish(&payment.PaymentMerchantRegistrationEvent{
+		go eventbus.Dispatch(&payment.PaymentMerchantRegistrationEvent{
 			Merchant: mch,
 		})
 	}
