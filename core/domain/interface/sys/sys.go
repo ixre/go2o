@@ -22,17 +22,20 @@ type (
 	ISystemAggregateRoot interface {
 		domain.IAggregateRoot
 
-		// 获取地址管理器
+		// Address 获取地址管理器
 		Address() IAddressManager
 
-		// 获取选项管理器
+		// Options 获取选项管理器
 		Options() IOptionManager
 
-		// 获取银行列表
+		// GetBanks 获取银行列表
 		GetBanks() []*GeneralOption
 
-		// 获取站点管理器
+		// Stations 获取站点管理器
 		Stations() IStationManager
+
+		// Log 日志服务
+		Log() ILogManager
 
 		// 标记更新状态,通常监听数据变更或事件后调用
 		FlushUpdateStatus()
@@ -82,6 +85,8 @@ type ISystemRepo interface {
 	Option() fw.Repository[GeneralOption]
 	// Station 获取站点仓储
 	Station() IStationRepo
+	// Log 获取日志仓储
+	Log() ILogRepository
 }
 
 type (

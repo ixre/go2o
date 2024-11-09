@@ -203,3 +203,7 @@ func GetApprovalRepo() approval.IApprovalRepository {
 func GetRbacRepo() rbac.IRbacRepository {
 	panic(wire.Build(provideSets))
 }
+
+func GetLogRepo() sys.ILogRepository {
+	panic(wire.Build(provideSets))
+}

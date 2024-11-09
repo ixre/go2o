@@ -16,6 +16,7 @@ type systemAggregateRootImpl struct {
 	_address  sys.IAddressManager
 	_options  sys.IOptionManager
 	_stations sys.IStationManager
+	_log      sys.ILogManager
 	_repo     sys.ISystemRepo
 }
 
@@ -53,6 +54,14 @@ func (s *systemAggregateRootImpl) Stations() sys.IStationManager {
 		s._stations = NewStationManager(s._repo.Station(), s._repo, s)
 	}
 	return s._stations
+}
+
+// Log implements sys.ISystemAggregateRoot.
+func (s *systemAggregateRootImpl) Log() sys.ILogManager {
+	if s._log == nil {
+		s._log = newLogManager(s._repo)
+	}
+	return s._log
 }
 
 // FlushUpdateStatus implements sys.ISystemAggregateRoot.

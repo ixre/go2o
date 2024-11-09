@@ -25,6 +25,7 @@ type systemRepoImpl struct {
 	areaRepo       fw.Repository[sys.District]
 	optRepo        fw.Repository[sys.GeneralOption]
 	_stationRepo   sys.IStationRepo
+	_logRepo       sys.ILogRepository
 }
 
 func NewSystemRepo(o fw.ORM, st storage.Interface) sys.ISystemRepo {
@@ -34,6 +35,7 @@ func NewSystemRepo(o fw.ORM, st storage.Interface) sys.ISystemRepo {
 			st:             st,
 			lastUpdateTime: 0,
 		}
+		_sysRepo._logRepo = NewSysLogRepo(o)
 		_sysAggregate = impl.NewSystemAggregateRoot(_sysRepo)
 	})
 	return _sysRepo
@@ -92,6 +94,11 @@ func (s *systemRepoImpl) District() fw.Repository[sys.District] {
 		s.areaRepo = newDistrictRepository(s.ORM)
 	}
 	return s.areaRepo
+}
+
+// Log 获取日志仓储
+func (s *systemRepoImpl) Log() sys.ILogRepository {
+	return s._logRepo
 }
 
 // GetSystemAggregateRoot implements sys.ISystemRepo.

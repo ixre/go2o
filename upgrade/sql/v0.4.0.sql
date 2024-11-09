@@ -1421,3 +1421,4 @@ COMMENT ON COLUMN mch_bill.settle_remark IS '结算备注';
 COMMENT ON COLUMN mch_bill.create_time IS '创建时间';
 COMMENT ON COLUMN mch_bill.build_time IS '账单生成时间';
 COMMENT ON COLUMN mch_bill.update_time IS '更新时间';
+
