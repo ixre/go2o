@@ -11,6 +11,8 @@ package impl
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"regexp"
 	"strings"
 
@@ -33,7 +35,7 @@ var _ proto.SystemServiceServer = new(systemServiceImpl)
 
 // 基础服务
 type systemServiceImpl struct {
-	_rep         valueobject.IValueRepo
+	_repo        valueobject.IValueRepo
 	registryRepo registry.IRegistryRepo
 	notifyRepo   mss.IMessageRepo
 	sysRepo      sys.ISystemRepo
@@ -51,7 +53,7 @@ func NewSystemService(rep valueobject.IValueRepo,
 	stationRepo sys.IStationRepo,
 ) proto.SystemServiceServer {
 	return &systemServiceImpl{
-		_rep:         rep,
+		_repo:        rep,
 		_s:           s,
 		notifyRepo:   notifyRepo,
 		sysRepo:      sysRepo,
@@ -103,6 +105,34 @@ func (s *systemServiceImpl) CleanCache(_ context.Context, request *proto.CleanCa
 	return &proto.CleanCacheResponse{
 		Count: int32(count),
 	}, nil
+}
+
+// SubmitSystemLog 提交系统日志
+func (s *systemServiceImpl) SubmitSystemLog(_ context.Context, r *proto.SubmitSystemLogRequest) (*proto.TxResult, error) {
+	ia := s.sysRepo.GetSystemAggregateRoot()
+	l := ia.Log()
+	app := l.GetApp(r.AppName)
+	if app == nil {
+		return s.errorV2(errors.New("no such log app")), nil
+	}
+	extraInfo := ""
+	if r.ExtraInfo != nil && len(r.ExtraInfo) > 0 {
+		bytes, _ := json.Marshal(r.ExtraInfo)
+		extraInfo = string(bytes)
+	}
+	err := l.AddLog(&sys.SysLog{
+		AppId:           app.Id,
+		UserId:          int(r.UserId),
+		Username:        r.Username,
+		LogLevel:        int(r.Level),
+		Message:         r.Message,
+		Arguments:       r.Arguments,
+		TerminalModel:   r.TerminalModel,
+		TerminalName:    r.TerminalName,
+		TerminalVersion: r.TerminalVersion,
+		ExtraInfo:       extraInfo,
+	})
+	return s.errorV2(err), nil
 }
 
 // 保存短信API凭据
@@ -244,7 +274,7 @@ func (s *systemServiceImpl) GetSyncLoginUrl(_ context.Context, s2 *proto.String)
 
 // 获取移动应用设置
 func (s *systemServiceImpl) GetMoAppConf(_ context.Context, _ *proto.Empty) (*proto.SMobileAppConfig, error) {
-	c := s._rep.GetMoAppConf()
+	c := s._repo.GetMoAppConf()
 	return &proto.SMobileAppConfig{
 		AppName:           c.AppName,
 		AppIcon:           c.AppIcon,
@@ -271,13 +301,13 @@ func (s *systemServiceImpl) SaveMoAppConf(_ context.Context, config *proto.SMobi
 		WpVersion:         "",
 		WpReleaseUrl:      "",
 	}
-	err := s._rep.SaveMoAppConf(dst)
+	err := s._repo.SaveMoAppConf(dst)
 	return s.error(err), nil
 }
 
 // 获取微信接口配置
 func (s *systemServiceImpl) GetWxApiConfig(_ context.Context, empty *proto.Empty) (*proto.SWxApiConfig, error) {
-	c := s._rep.GetWxApiConfig()
+	c := s._repo.GetWxApiConfig()
 	return &proto.SWxApiConfig{
 		AppId:               c.AppId,
 		AppSecret:           c.AppSecret,
@@ -310,7 +340,7 @@ func (s *systemServiceImpl) SaveWxApiConfig(_ context.Context, cfg *proto.SWxApi
 		RedPackAmountLimit:  float32(cfg.RedPackAmountLimit),
 		RedPackDayTimeLimit: int(cfg.RedPackDayTimeLimit),
 	}
-	err := s._rep.SaveWxApiConfig(dst)
+	err := s._repo.SaveWxApiConfig(dst)
 	return s.error(err), nil
 }
 
@@ -411,7 +441,7 @@ func (s *systemServiceImpl) GetAreaString(_ context.Context, r *proto.AreaString
 	if r.Province == 0 || r.City == 0 || r.District == 0 {
 		return &proto.String{Value: ""}, nil
 	}
-	str := s._rep.GetAreaString(r.Province, r.City, r.District)
+	str := s._repo.GetAreaString(r.Province, r.City, r.District)
 	return &proto.String{Value: str}, nil
 }
 
@@ -474,7 +504,7 @@ func (s *systemServiceImpl) GetPayPlatform(_ context.Context, r *proto.Empty) (*
 
 // GetGlobMchSaleConf_ 获取全局商户销售设置
 func (s *systemServiceImpl) GetGlobMchSaleConf_(_ context.Context, r *proto.Empty) (*proto.SGlobMchSaleConf, error) {
-	c := s._rep.GetGlobMchSaleConf()
+	c := s._repo.GetGlobMchSaleConf()
 	return &proto.SGlobMchSaleConf{
 		FxSalesEnabled:          c.FxSalesEnabled,
 		CashBackPercent:         float64(c.CashBackPercent),
@@ -501,7 +531,7 @@ func (s *systemServiceImpl) SaveGlobMchSaleConf_(_ context.Context, conf *proto.
 		OrderConfirmAfterMinute: int(conf.OrderConfirmAfterMinute),
 		OrderTimeOutReceiveHour: int(conf.OrderTimeOutReceiveHour),
 	}
-	err := s._rep.SaveGlobMchSaleConf(dst)
+	err := s._repo.SaveGlobMchSaleConf(dst)
 	return s.error(err), nil
 }
 

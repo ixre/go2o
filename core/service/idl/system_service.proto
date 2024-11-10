@@ -22,6 +22,9 @@ service SystemService {
     rpc GetChildOptions (OptionsRequest) returns (OptionsResponse);
     // 保存通用选项
     rpc SaveGenericOption(SGenericOption)returns(TxResult);
+    // 提交系统日志
+    rpc SubmitSystemLog(SubmitSystemLogRequest)returns(TxResult);
+
     // 获取银行列表
     rpc QueryBanks (QueryBanksRequest) returns (OptionsResponse);
     /** 获取短信API凭据, provider 短信服务商, 默认:http */
@@ -199,4 +202,28 @@ message SStation{
     bool isHot = 6;
     // 创建时间
     int64 createTime = 7;
+}
+
+// 提交系统日志请求
+message SubmitSystemLogRequest{
+	// 应用编号
+	string appName = 1;
+	// 用户编号
+	int64 userId = 2;
+	// 用户名
+	string username =3;
+	// 日志级别, 1:信息  2: 警告  3: 错误 4: 其他
+	int32 level  = 4;
+	// 日志详情
+	string message = 5;
+	// 参数
+	string arguments = 6;
+	// 终端设备型号
+	string terminalModel = 7;
+	// 终端名称
+	string terminalName = 8;
+	// 终端应用版本
+	string terminalVersion = 9;
+	// 额外信息
+	map<string,string> extraInfo = 10;
 }
