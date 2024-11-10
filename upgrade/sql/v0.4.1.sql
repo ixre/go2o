@@ -36,3 +36,63 @@ COMMENT ON COLUMN sys_log_list.extra_info IS '额外信息';
 COMMENT ON COLUMN sys_log_list.create_time IS '创建时间';
 
 
+-- 20241110 系统应用版本
+CREATE TABLE IF NOT EXISTS public.sys_app_version
+(
+    id bigint NOT NULL,
+    version character varying(20) COLLATE pg_catalog."default",
+    version_code integer,
+    terminal_os character varying(10) COLLATE pg_catalog."default",
+    is_stable integer,
+    start_time bigint,
+    update_mode integer,
+    update_content character varying(128) COLLATE pg_catalog."default",
+    package_url character varying(128) COLLATE pg_catalog."default",
+    is_force integer,
+    is_notified integer,
+    create_time bigint,
+    update_time bigint,
+    CONSTRAINT sys_app_version_pkey PRIMARY KEY (id)
+)
+
+COMMENT ON TABLE public.sys_app_version
+    IS '应用版本';
+
+COMMENT ON COLUMN public.sys_app_version.id
+    IS '编号';
+
+COMMENT ON COLUMN public.sys_app_version.terminal_os
+    IS '终端系统, 如: android / ios';
+
+COMMENT ON COLUMN public.sys_app_version.is_stable
+    IS '是否正式版本, 0: 测试版  1: 正式版本';
+
+COMMENT ON COLUMN public.sys_app_version.version
+    IS '版本号';
+
+COMMENT ON COLUMN public.sys_app_version.version_code
+    IS '版本数字代号';
+
+COMMENT ON COLUMN public.sys_app_version.start_time
+    IS '开始时间';
+
+COMMENT ON COLUMN public.sys_app_version.update_content
+    IS '更新内容';
+
+COMMENT ON COLUMN public.sys_app_version.package_url
+    IS '下载包地址';
+
+COMMENT ON COLUMN public.sys_app_version.is_force
+    IS '是否强制更新';
+
+COMMENT ON COLUMN public.sys_app_version.is_notified
+    IS '是否已完成通知,完成后结束更新';
+
+COMMENT ON COLUMN public.sys_app_version.update_mode
+    IS '更新模式, 1:包更新  2: 更新通知';
+
+COMMENT ON COLUMN public.sys_app_version.create_time
+    IS '创建时间';
+
+COMMENT ON COLUMN public.sys_app_version.update_time
+    IS '更新时间';
