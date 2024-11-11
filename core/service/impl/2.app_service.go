@@ -158,7 +158,7 @@ func (a *appServiceImpl) CheckAppVersion(_ context.Context, req *proto.CheckAppV
 			HasNewVersion: false,
 		}, nil
 	}
-	if ver.VersionCode <= util.IntVersion(req.Version) {
+	if v := util.IntVersion(req.Version); ver.VersionCode <= v {
 		return &proto.CheckAppVersionResponse{
 			LatestVersion: req.Version,
 			VersionInfo:   "当前为最新版本",
@@ -168,11 +168,11 @@ func (a *appServiceImpl) CheckAppVersion(_ context.Context, req *proto.CheckAppV
 
 	return &proto.CheckAppVersionResponse{
 		HasNewVersion: true,
-		LatestVersion: req.Version,
+		LatestVersion: ver.Version,
 		PackageUrl:    ver.PackageUrl,
 		VersionInfo:   ver.UpdateContent,
 		ForceUpdate:   ver.IsForce == 1,
-		UpdateMode:    0,
+		UpdateMode:    int32(ver.UpdateMode),
 		ReleaseTime:   int64(ver.StartTime),
 	}, nil
 }

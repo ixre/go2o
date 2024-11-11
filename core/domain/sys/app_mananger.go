@@ -31,6 +31,12 @@ func newLogManager(repo sys.ISystemRepo) sys.IApplicationManager {
 // AddLog implements sys.ILogManager.
 func (l *LogManagerImpl) AddLog(log *sys.SysLog) error {
 	log.CreateTime = int(time.Now().Unix())
+	if len(log.TerminalName) > 40 {
+		log.TerminalName = log.TerminalName[:40]
+	}
+	if len(log.TerminalModel) > 40 {
+		log.TerminalModel = log.TerminalModel[:40]
+	}
 	_, err := l._repo.App().Log().Save(log)
 	return err
 }
@@ -190,10 +196,12 @@ func (l *LogManagerImpl) updateLatest(version *sys.SysAppVersion) error {
 
 // 获取最新版本
 func (l *LogManagerImpl) GetLatestVersion(distId int, terminalOS, terminalChannel string) *sys.SysAppVersion {
+	unix := time.Now().Unix()
 	return l._repo.App().Version().FindBy(
 		`distribution_id=? 
 		AND terminal_os=? 
 		AND terminal_channel=? 
+		AND start_time BETWEEN 0 AND ?
 		ORDER BY version_code DESC`,
-		distId, terminalOS, terminalChannel)
+		distId, terminalOS, terminalChannel, unix)
 }
