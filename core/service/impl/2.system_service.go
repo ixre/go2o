@@ -12,7 +12,6 @@ package impl
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"regexp"
 	"strings"
 
@@ -110,28 +109,32 @@ func (s *systemServiceImpl) CleanCache(_ context.Context, request *proto.CleanCa
 // SubmitSystemLog 提交系统日志
 func (s *systemServiceImpl) SubmitSystemLog(_ context.Context, r *proto.SubmitSystemLogRequest) (*proto.TxResult, error) {
 	ia := s.sysRepo.GetSystemAggregateRoot()
-	l := ia.Log()
-	app := l.GetApp(r.AppName)
-	if app == nil {
-		return s.errorV2(errors.New("no such log app")), nil
-	}
+
 	extraInfo := ""
-	if r.ExtraInfo != nil && len(r.ExtraInfo) > 0 {
+	if len(r.ExtraInfo) > 0 {
 		bytes, _ := json.Marshal(r.ExtraInfo)
 		extraInfo = string(bytes)
 	}
-	err := l.AddLog(&sys.SysLog{
-		AppId:           app.Id,
+	err := ia.Application().AddLog(&sys.SysLog{
 		UserId:          int(r.UserId),
 		Username:        r.Username,
 		LogLevel:        int(r.Level),
 		Message:         r.Message,
 		Arguments:       r.Arguments,
-		TerminalModel:   r.TerminalModel,
 		TerminalName:    r.TerminalName,
+		TerminalEntry:   r.TerminalEntry,
+		TerminalModel:   r.TerminalModel,
 		TerminalVersion: r.TerminalVersion,
 		ExtraInfo:       extraInfo,
 	})
+	return s.errorV2(err), nil
+}
+
+func (s *systemServiceImpl) DeleteSystemLog(_ context.Context, r *proto.DeleteSystemLogRequest) (*proto.TxResult, error) {
+	ia := s.sysRepo.GetSystemAggregateRoot().Application()
+	err := ia.DeleteLog(collections.MapList(r.Id, func(i int64) int {
+		return int(i)
+	}))
 	return s.errorV2(err), nil
 }
 

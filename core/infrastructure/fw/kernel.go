@@ -91,6 +91,11 @@ type (
 
 var _ Repository[any] = new(BaseRepository[any])
 
+// NewRepository 创建仓储
+func NewRepository[M any](orm ORM) Repository[M] {
+	return &BaseRepository[M]{ORM: orm}
+}
+
 // 基础仓储
 type BaseRepository[M any] struct {
 	ORM

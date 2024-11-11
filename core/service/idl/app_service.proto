@@ -7,85 +7,94 @@ option java_package = "com.github.go2o.rpc";
 
 // APP服务
 service AppService {
-    // 保存APP产品
-    rpc SaveProd (AppProdRequest) returns (Result) {
-    }
-    // 保存版本
-    rpc SaveVersion (AppVersionRequest) returns (Result) {
-    }
-    // 获取产品信息
-    rpc GetProd (AppId) returns (SAppProd) {
-    }
+    // 保存分发应用
+    rpc SaveAppDistribution (SAppDistribution) returns (TxResult);
+    // 获取分发应用
+    rpc GetAppDistribution (SysAppDistributionId) returns (SAppDistribution);
+    // 删除分发应用
+    rpc DeleteAppDistribution (SysAppDistributionId) returns (TxResult);
+
+    // 保存应用版本
+    rpc SaveAppVersion(SAppVersion)returns(TxResult);
     // 获取版本
-    rpc GetVersion (AppVersionId) returns (SAppVersion) {
-    }
-    // 删除产品
-    rpc DeleteProd (AppId) returns (Result) {
-    }
+    rpc GetAppVersion (AppVersionId) returns (SAppVersion);
     // 删除版本
-    rpc DeleteVersion (AppVersionId) returns (Result) {
-    }
-    // 检测版本更新
-    rpc CheckVersion (CheckVersionRequest) returns (CheckVersionResponse) {
-    }
+    rpc DeleteAppVersion (AppVersionId) returns (TxResult);
+    // 检测版本版本
+    rpc CheckAppVersion (CheckAppVersionRequest) returns (CheckAppVersionResponse);
 }
 
-message AppId {
-    int64 value =  1;
-}
 message AppVersionId {
     int64 value =  1;
 }
 
 // 检查版本请求
-message CheckVersionRequest {
-    // 版本号
-    int64 appId = 1;
+message CheckAppVersionRequest{
+    // 应用名称
+    string appName = 1;
+    // 终端系统, 如: android / ios
+    string terminalOS = 2;
     // 更新通道, stable|beta|nightly
-    string channel = 2;
-    // 当前版本
-    string version = 3;
+    string terminalChannel = 3;
+    // 当前版本号
+    string version = 4;
 }
 
 // 检测版本响应结果
-message CheckVersionResponse {
+message CheckAppVersionResponse {
+    // 是否有最新版本
+    bool hasNewVersion = 1;
     // 最新版本号
-    string latestVersion = 1;
+    string latestVersion = 2;
     // App更新资源地址
-    string appPkgURL = 2;
+    string packageUrl = 3;
     // 版本信息
-    string versionInfo = 3;
-    // 是否为最新版本
-    bool isLatest = 4;
+    string versionInfo = 4;
     // 是否强制升级
     bool forceUpdate = 5;
-    // 更新文件类型,如APK,EXE,ZIP等
-    string updateType = 6;
-    // 发布时间
+    // 更新模式, 1:包更新  2: 更新通知
+    int32 updateMode = 6;
+    // 发布时间,如为通知，则存在提前通知的情况，通过发布时间判定
     int64 releaseTime = 7;
 }
 
+
+
+// APP产品编号
+message SysAppDistributionId{
+   int64 value = 1;
+}
+
 // APP产品
-message AppProdRequest {
+message SAppDistribution{
     // 产品编号
     int64 id = 1;
     // 产品名称
-    string prodName = 2;
+    string appName = 2;
+    // 应用图标
+    string appIcon = 3;
     // 产品描述
-    string prodDes = 3;
-    // Icon
-    string icon = 4;
-    // 发布下载页面地址
-    string publishURL = 5;
-    // 正式版文件地址
-    string stableFileURL = 6;
-    // 内测版文件地址
-    string alphaFileURL = 8;
-    // 每夜版文件地址
-    string nightlyFileURL = 10;
-    // 更新方式,比如APK, EXE等
-    string updateType = 11;
+    string appDesc = 4;
+    // 更新模式, 1:包更新  2: 更新通知
+    int32 updateMode = 5;
+    // 分发下载页面地址
+    string distributeUrl = 6;
+    // 应用分发名称
+    string distributeName = 7;
+    // 稳定版本
+    string stableVersion = 8;
+    // 稳定版下载地址
+    string stableDownUrl = 9;
+    // 测试版本
+    string betaVersion = 10;
+    // 测试版下载地址
+    string betaDownUrl = 11;
+    // 创建时间
+    int64 createTime = 12;
+    // 更新时间
+    int64 updateTime = 13;
 }
+
 
 // APP版本
 message AppVersionRequest {
@@ -103,48 +112,34 @@ message AppVersionRequest {
     string updateContent = 6;
 }
 
-// APP产品
-message SAppProd {
-    // 产品编号
-    int64 id = 1;
-    // 产品名称
-    string prodName = 2;
-    // 产品描述
-    string prodDes = 3;
-    // 最新的版本ID
-    int64 latestVid = 4;
-    // 正式版文件hash值
-    string md5Hash = 5;
-    // 发布下载页面地址
-    string publishURL = 6;
-    // 正式版文件地址
-    string stableFileURL = 7;
-    // 内测版文件地址
-    string alphaFileURL = 8;
-    // 每夜版文件地址
-    string nightlyFileURL = 9;
-    // 更新方式,比如APK, EXE等
-    string updateType = 10;
-    // 更新时间
-    int64 updateTime = 11;
-}
-
-// APP版本
-message SAppVersion {
+// 应用版本
+message SAppVersion{
     // 编号
     int64 id = 1;
-    // 产品
-    int64 productId = 2;
-    // 更新通道, 0:stable|1:beta|2:nightly
-    int32 channel = 3;
+    // 产品编号
+    int64 distributionId = 2;
     // 版本号
-    string version = 4;
-    // 数字版本
-    int32 versionCode = 5;
-    // 是否强制升级
-    bool forceUpdate = 6;
+    string version = 3;
+    // 版本数字代号
+    int32 versionCode = 4;
+    // 终端系统, 如: android / ios
+    string terminalOs = 5;
+    // 终端通道, stable|beta|nightly
+    string terminalChannel = 6;
+    // 开始时间
+    int64 startTime = 7;
+    // 更新模式, 1:包更新  2: 更新通知
+    int32 updateMode = 8;
     // 更新内容
-    string updateContent = 7;
-    // 发布时间
-    int64 createTime = 8;
+    string updateContent = 9;
+    // 下载包地址
+    string packageUrl = 10;
+    // 是否强制更新
+    int32 isForce = 11;
+    // 是否已完成通知,完成后结束更新
+    int32 isNotified = 12;
+    // 创建时间
+    int64 createTime = 13;
+    // 更新时间
+    int64 updateTime = 14;
 }

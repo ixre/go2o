@@ -204,6 +204,6 @@ func GetRbacRepo() rbac.IRbacRepository {
 	panic(wire.Build(provideSets))
 }
 
-func GetLogRepo() sys.ILogRepository {
+func GetLogRepo() sys.IApplicationRepository {
 	panic(wire.Build(provideSets))
 }

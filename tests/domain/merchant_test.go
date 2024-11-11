@@ -313,7 +313,7 @@ func TestMerchantTransactionBill(t *testing.T) {
 			t.Error(err)
 			t.FailNow()
 		}
-		err = tx.UpdateSettleInfo("SP000001", "TX000001")
+		err = tx.UpdateSettleInfo("SP000001", "TX000001", "success")
 		if err != nil {
 			t.Error(err)
 			t.FailNow()

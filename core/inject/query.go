@@ -59,7 +59,7 @@ var provideSets = wire.NewSet(
 	repos.NewChatRepo,
 	repos.NewWorkorderRepo,
 	repos.NewRbacRepo,
-	repos.NewSysLogRepo,
+	repos.NewSysAppRepo,
 )
 var queryProvideSets = wire.NewSet(
 	provideSets,

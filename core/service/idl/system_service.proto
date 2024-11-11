@@ -24,7 +24,8 @@ service SystemService {
     rpc SaveGenericOption(SGenericOption)returns(TxResult);
     // 提交系统日志
     rpc SubmitSystemLog(SubmitSystemLogRequest)returns(TxResult);
-
+    // 删除系统日志
+    rpc DeleteSystemLog(DeleteSystemLogRequest)returns(TxResult);
     // 获取银行列表
     rpc QueryBanks (QueryBanksRequest) returns (OptionsResponse);
     /** 获取短信API凭据, provider 短信服务商, 默认:http */
@@ -206,8 +207,6 @@ message SStation{
 
 // 提交系统日志请求
 message SubmitSystemLogRequest{
-	// 应用编号
-	string appName = 1;
 	// 用户编号
 	int64 userId = 2;
 	// 用户名
@@ -218,12 +217,20 @@ message SubmitSystemLogRequest{
 	string message = 5;
 	// 参数
 	string arguments = 6;
-	// 终端设备型号
-	string terminalModel = 7;
 	// 终端名称
-	string terminalName = 8;
+	string terminalName = 7;
+	// 终端入口
+	string terminalEntry = 8;
+	// 终端设备型号
+	string terminalModel = 9;
 	// 终端应用版本
-	string terminalVersion = 9;
+	string terminalVersion = 10;
 	// 额外信息
-	map<string,string> extraInfo = 10;
+	map<string,string> extraInfo = 11;
+}
+
+// 删除系统日志请求
+message DeleteSystemLogRequest{
+    // 编号
+    repeated int64 id = 1;
 }

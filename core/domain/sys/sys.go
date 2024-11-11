@@ -16,7 +16,7 @@ type systemAggregateRootImpl struct {
 	_address  sys.IAddressManager
 	_options  sys.IOptionManager
 	_stations sys.IStationManager
-	_log      sys.ILogManager
+	_log      sys.IApplicationManager
 	_repo     sys.ISystemRepo
 }
 
@@ -56,8 +56,8 @@ func (s *systemAggregateRootImpl) Stations() sys.IStationManager {
 	return s._stations
 }
 
-// Log implements sys.ISystemAggregateRoot.
-func (s *systemAggregateRootImpl) Log() sys.ILogManager {
+// Application implements sys.ISystemAggregateRoot.
+func (s *systemAggregateRootImpl) Application() sys.IApplicationManager {
 	if s._log == nil {
 		s._log = newLogManager(s._repo)
 	}

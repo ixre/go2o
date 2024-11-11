@@ -175,7 +175,8 @@ func GetPaymentQueryService() *query.PaymentQuery {
 
 // GetSystemQueryService 获取系统查询服务
 func GetSystemQueryService() *query.SystemQuery {
-	systemQuery := query.NewSystemQuery()
+	db := provide.GetGOrm()
+	systemQuery := query.NewSystemQuery(db)
 	return systemQuery
 }
 
@@ -610,6 +611,12 @@ func GetRbacRepo() rbac.IRbacRepository {
 	db := provide.GetGOrm()
 	iRbacRepository := repos.NewRbacRepo(db)
 	return iRbacRepository
+}
+
+func GetLogRepo() sys.IApplicationRepository {
+	db := provide.GetGOrm()
+	iApplicationRepository := repos.NewSysAppRepo(db)
+	return iApplicationRepository
 }
 
 // Injectors from service.go:
@@ -1140,7 +1147,10 @@ func GetExecuteService() proto.ExecutionServiceServer {
 func GetAppService() proto.AppServiceServer {
 	storageInterface := provide.GetStorageInstance()
 	orm := provide.GetOrmInstance()
-	appServiceServer := impl2.NewAppService(storageInterface, orm)
+	db := provide.GetGOrm()
+	iApplicationRepository := repos.NewSysAppRepo(db)
+	iSystemRepo := repos.NewSystemRepo(db, storageInterface)
+	appServiceServer := impl2.NewAppService(storageInterface, orm, iApplicationRepository, iSystemRepo)
 	return appServiceServer
 }
 
@@ -1237,7 +1247,7 @@ func GetProviderService() proto.ServiceProviderServiceServer {
 
 // query.go:
 
-var provideSets = wire.NewSet(provide.GetOrm, provide.GetGOrm, provide.GetOrmInstance, provide.GetStorageInstance, provide.GetApp, provide.GetDb, repos.NewSystemRepo, repos.NewRegistryRepo, repos.NewProModelRepo, repos.NewValueRepo, repos.NewUserRepo, repos.NewWalletRepo, repos.NewNotifyRepo, repos.NewMssRepo, repos.NewExpressRepo, repos.NewShipmentRepo, repos.NewMemberRepo, repos.NewProductRepo, repos.NewItemWholesaleRepo, repos.NewCategoryRepo, repos.NewShopRepo, repos.NewGoodsItemRepo, repos.NewAfterSalesRepo, repos.NewCartRepo, repos.NewArticleRepo, repos.NewMerchantRepo, repos.NewOrderRepo, repos.NewPaymentRepo, repos.NewPromotionRepo, repos.NewStationRepo, repos.NewTagSaleRepo, repos.NewWholesaleRepo, repos.NewPersonFinanceRepository, repos.NewDeliverRepo, repos.NewAdvertisementRepo, repos.NewJobRepository, repos.NewStaffRepo, repos.NewApprovalRepository, repos.NewPageRepo, repos.NewArticleCategoryRepo, repos.NewInvoiceTenantRepo, repos.NewChatRepo, repos.NewWorkorderRepo, repos.NewRbacRepo)
+var provideSets = wire.NewSet(provide.GetOrm, provide.GetGOrm, provide.GetOrmInstance, provide.GetStorageInstance, provide.GetApp, provide.GetDb, repos.NewSystemRepo, repos.NewRegistryRepo, repos.NewProModelRepo, repos.NewValueRepo, repos.NewUserRepo, repos.NewWalletRepo, repos.NewNotifyRepo, repos.NewMssRepo, repos.NewExpressRepo, repos.NewShipmentRepo, repos.NewMemberRepo, repos.NewProductRepo, repos.NewItemWholesaleRepo, repos.NewCategoryRepo, repos.NewShopRepo, repos.NewGoodsItemRepo, repos.NewAfterSalesRepo, repos.NewCartRepo, repos.NewArticleRepo, repos.NewMerchantRepo, repos.NewOrderRepo, repos.NewPaymentRepo, repos.NewPromotionRepo, repos.NewStationRepo, repos.NewTagSaleRepo, repos.NewWholesaleRepo, repos.NewPersonFinanceRepository, repos.NewDeliverRepo, repos.NewAdvertisementRepo, repos.NewJobRepository, repos.NewStaffRepo, repos.NewApprovalRepository, repos.NewPageRepo, repos.NewArticleCategoryRepo, repos.NewInvoiceTenantRepo, repos.NewChatRepo, repos.NewWorkorderRepo, repos.NewRbacRepo, repos.NewSysAppRepo)
 
 var queryProvideSets = wire.NewSet(
 	provideSets, query.NewStationQuery, query.NewMerchantQuery, query.NewOrderQuery, query.NewMemberQuery, query.NewShopQuery, query.NewItemQuery, query.NewAfterSalesQuery, query.NewContentQuery, query.NewWorkQuery, query.NewWalletQuery, query.NewInvoiceQuery, query.NewAdvertisementQuery, query.NewStatisticsQuery, query.NewPaymentQuery, query.NewSystemQuery,

@@ -1,31 +1,40 @@
 package repos
 
 import (
+	"sync"
+
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
-var _ sys.ILogRepository = new(SysLogRepoImpl)
+var _ sys.IApplicationRepository = new(SysAppRepoImpl)
+var _singleton sys.IApplicationRepository
+var _once sync.Once
 
-type SysLogRepoImpl struct {
-	_logRepo fw.Repository[sys.SysLog]
-	_appRepo fw.Repository[sys.LogApp]
+type SysAppRepoImpl struct {
+	_logRepo          fw.Repository[sys.SysLog]
+	_versionRepo      fw.Repository[sys.SysAppVersion]
+	_distributionRepo fw.Repository[sys.SysAppDistribution]
 }
 
-func NewSysLogRepo(db fw.ORM) sys.ILogRepository {
-	return &SysLogRepoImpl{
-		_logRepo: &fw.BaseRepository[sys.SysLog]{
-			ORM: db,
-		},
-		_appRepo: &fw.BaseRepository[sys.LogApp]{
-			ORM: db,
-		},
-	}
+func NewSysAppRepo(db fw.ORM) sys.IApplicationRepository {
+	_once.Do(func() {
+		_singleton = &SysAppRepoImpl{
+			_logRepo:          fw.NewRepository[sys.SysLog](db),
+			_versionRepo:      fw.NewRepository[sys.SysAppVersion](db),
+			_distributionRepo: fw.NewRepository[sys.SysAppDistribution](db),
+		}
+	})
+	return _singleton
 }
 
-func (s *SysLogRepoImpl) App() fw.Repository[sys.LogApp] {
-	return s._appRepo
-}
-func (s *SysLogRepoImpl) Log() fw.Repository[sys.SysLog] {
+func (s *SysAppRepoImpl) Log() fw.Repository[sys.SysLog] {
 	return s._logRepo
+}
+func (s *SysAppRepoImpl) Version() fw.Repository[sys.SysAppVersion] {
+	return s._versionRepo
+}
+
+func (s *SysAppRepoImpl) Distribution() fw.Repository[sys.SysAppDistribution] {
+	return s._distributionRepo
 }
