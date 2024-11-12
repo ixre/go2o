@@ -37,6 +37,9 @@ func (l *LogManagerImpl) AddLog(log *sys.SysLog) error {
 	if len(log.TerminalModel) > 40 {
 		log.TerminalModel = log.TerminalModel[:40]
 	}
+	if len(log.Message) > 250 {
+		log.Message = log.Message[:250] + "..."
+	}
 	_, err := l._repo.App().Log().Save(log)
 	return err
 }
