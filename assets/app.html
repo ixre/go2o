@@ -46,7 +46,7 @@
             background-repeat: no-repeat;
             background-position: top right;
             background-color: rgb(240, 240, 240);
-            opacity: 0.5;
+            opacity: 0.95;
             z-index: -1;
           }
           .wrapper__modal--content {
@@ -66,24 +66,34 @@
         }
       }
 
+      .border {
+        padding: 15px 15px;
+        background: #fff;
+        margin: 0 15px;
+        border-radius: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
       .app {
         .wrapper__bar {
           padding: 1.5rem 15px;
+          flex-flow: column nowrap;
         }
         .app__info {
           .app__info--title {
-            font-size: 1rem;
+            font-size: 1.25rem;
             font-weight: 500;
             margin: 0;
+            display: flex;
+            align-items: center;
           }
           .app__info--version {
             font-size: 0.75rem;
-            margin: 0;
           }
         }
         .app__icon {
-          height: 32px;
-          width: 32px;
+          height: 96px;
+          width: 96px;
           overflow: hidden;
         }
         .app__tag {
@@ -99,18 +109,24 @@
         }
 
         .app__desc {
-          padding: 15px 15px;
-          background: #fff;
-          margin: 0 15px;
-          border-radius: 1rem;
-
           .app__desc--label {
-            font-size: 0.825rem;
+            font-size: 0.875rem;
             font-weight: bold;
             padding-bottom: 10px;
           }
           .app__desc--content {
-            font-size: 0.825rem;
+            font-size: 0.875rem;
+          }
+        }
+
+        .app__tile {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 0.875rem;
+          line-height: 1.5;
+          .app__tile--label {
+            font-weight: bold;
           }
         }
       }
@@ -127,7 +143,7 @@
         }
 
         .download__hint {
-          font-size: 0.725rem;
+          font-size: 0.825rem;
           text-align: center;
           padding-bottom: 10px;
           color: #999;
@@ -156,7 +172,7 @@
   </head>
   <body>
     <div class="wrapper">
-      <div id="wx-show" class="wrapper__modal">
+      <div class="wrapper__modal">
         <div class="wrapper__modal--mask"></div>
         <div class="wrapper__modal--content">
           <div class="wrapper__modal--hint-img">
@@ -171,40 +187,49 @@
             <div class="app__icon">
               <img
                 src="{{.appIcon}}"
-                width="32"
-                height="32"
+                width="96"
+                height="96"
                 alt="{{.appName}}"
               />
             </div>
             <div class="app__info">
               <h1 class="app__info--title">
-                {{.appName}}
-
-                <span class="app__tag">v{{.appVersion}}</span>
-                {{if .isBetaVersion}}
+                {{.appName}} {{if .isBetaVersion}}
                 <span class="app__tag app__tag--beta">测试版</span>
                 {{end}}
               </h1>
             </div>
           </div>
 
-          <div class="app__desc">
-            <div class="app__desc--label">软件介绍：</div>
-            {{if .hasAppDesc}}
-            <div class="app__desc--content">{{.appDesc}}</div>
-            {{else}}
-            <div class="app__desc--content">暂未添加APP介绍</div>
-            {{end}}
+          <div class="app__version border">
+            <div class="app__tile">
+              <div class="app__tile--label">最新版本</div>
+              <div class="app__tile--content">
+                <span class="app__tag">v{{.appVersion}}</span>
+              </div>
+            </div>
+            <div class="app__tile">
+              <div class="app__tile--label">更新时间</div>
+              <div class="app__tile--content">2024-11-13</div>
+            </div>
           </div>
+          {{if .hasAppDesc}}
+          <div class="app__desc border border-white">
+            <div class="app__desc--label">下载说明</div>
+            <div class="app__desc--content">{{.appDesc}}</div>
+          </div>
+          {{end}}
 
           <div class="download">
             <div class="download__hint">请选择对应系统型号，点击下载APP</div>
             <div class="download__buttons">
               {{if .androidPackage}}
-              <a href="{{.androidPackage}}" class="download__buttons--btn"
-                >安卓版</a
+              <a href="{{.packageUrl}}" class="download__buttons--btn"
+                >安卓版下载</a
               >{{end}} {{if .iosPackage}}
-              <a href="{{.iosPackage}}" class="download__buttons--btn">ios版</a>
+              <a href="{{.iosPackageUrl}}" class="download__buttons--btn"
+                >ios版下载</a
+              >
               >{{end}}
             </div>
           </div>
