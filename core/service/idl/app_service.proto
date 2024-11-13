@@ -89,10 +89,12 @@ message SAppDistribution{
     string betaVersion = 10;
     // 测试版下载地址
     string betaDownUrl = 11;
+    // ios下载地址
+    string iosDownUrl = 12;
     // 创建时间
-    int64 createTime = 12;
+    int64 createTime = 13;
     // 更新时间
-    int64 updateTime = 13;
+    int64 updateTime = 14;
 }
 
 
