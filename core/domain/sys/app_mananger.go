@@ -163,6 +163,7 @@ func (l *LogManagerImpl) SaveAppVersion(version *sys.SysAppVersion) error {
 	}
 	// 更新模式不能修改
 	version.UpdateMode = app.UpdateMode
+	version.UpdateTime = int(time.Now().Unix())
 	_, err := repo.Save(version)
 	if err == nil {
 		// 如果发布了更新版本,则更新最新的版本
@@ -183,14 +184,16 @@ func (l *LogManagerImpl) updateLatest(version *sys.SysAppVersion) error {
 		return errors.New("应用不存在")
 	}
 	latest := l.GetLatestVersion(app.Id, version.TerminalOs, version.TerminalChannel)
-	if latest == nil || version.Id == latest.Id {
+	if latest != nil {
 		// 如果是最新版本,则更新最新版本
-		if version.TerminalChannel == "stable" {
-			app.StableVersion = version.Version
+		if latest.TerminalChannel == "stable" {
+			app.StableVersion = latest.Version
+			app.StableDownUrl = latest.PackageUrl
 		} else {
-			app.BetaVersion = version.Version
+			app.BetaVersion = latest.Version
+			app.BetaDownUrl = latest.PackageUrl
 		}
-		app.UpdateTime = int(time.Now().Unix())
+		app.UpdateTime = latest.UpdateTime
 		_, err := l._repo.App().Distribution().Save(app)
 		return err
 	}
