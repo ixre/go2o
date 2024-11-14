@@ -247,9 +247,9 @@
        * history:
        */
       var appResURI = {
-        apk: "https://github.com/ixre/go2o/releases/download/v1.0.0/go2o-v1.0.0.apk",
+        apk: "{{.packageUrl}}",
         wxApk: "",
-        ios: "",
+        ios: "{{.iosPackageUrl}}",
       };
 
       function download(res) {
