@@ -249,15 +249,11 @@
         ios: "{{.iosPackageUrl}}",
       };
 
-      function download(res) {
-        setTimeout(() => {
-          if (res) {
-            location.href = res;
-          }
-        }, 500);
-      }
-
-      (function () {
+      /** 自动跳转下载 */
+      function download() {
+        var checkDownload = function (res) {
+          if (res) location.href = res;
+        };
         var userAgent = window.navigator.userAgent;
         var android = userAgent.match(/(Android)[\s\/]+([\d\.]+)/),
           ios = userAgent.match(/(iPad|iPhone|iPod)\s+OS\s([\d_\.]+)/),
@@ -271,14 +267,32 @@
         }
 
         if (ios) {
-          download(appResURI.ios);
+          checkDownload(appResURI.ios);
         } else if (android) {
           if (isWx) {
-            download(appResURI.wxApk);
+            checkDownload(appResURI.wxApk);
           } else {
-            download(appResURI.apk);
+            checkDownload(appResURI.apk);
           }
         }
+      }
+
+      (function () {
+        // 1秒后自动跳转下载
+        var timer = setTimeout(download, 3000);
+        // 唤起APP
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        iframe.src = "{{.urlScheme}}";
+        document.body.appendChild(iframe);
+        // 监听是否唤起了APP
+        window.addEventListener("visibilitychange", () => {
+          // 监听页面visibility
+          if (document.hidden) {
+            // 如果页面隐藏了，则表示唤起成功，这时候需要清除下载定时器
+            clearTimeout(timer);
+          }
+        });
       })();
     </script>
   </body>

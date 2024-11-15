@@ -91,10 +91,12 @@ message SAppDistribution{
     string betaDownUrl = 11;
     // ios下载地址
     string iosDownUrl = 12;
+    // URL Scheme
+    string urlScheme = 13;
     // 创建时间
-    int64 createTime = 13;
+    int64 createTime = 14;
     // 更新时间
-    int64 updateTime = 14;
+    int64 updateTime = 15;
 }
 
 
