@@ -35,6 +35,8 @@ type (
 		DeleteLog(ids []int) error
 		// CleanLog 清理日志
 		CleanLog(days int) error
+		// GetAllAppDistributions 获取所有应用分发
+		GetAllAppDistributions() []*SysAppDistribution
 		// GetAppDistribution 获取应用分发
 		GetAppDistribution(id int) *SysAppDistribution
 		// GetAppDistributionByName 获取应用分发

@@ -18,18 +18,18 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/util"
 )
 
-var _ sys.IApplicationManager = &LogManagerImpl{}
+var _ sys.IApplicationManager = &applicationManagerImpl{}
 
-type LogManagerImpl struct {
+type applicationManagerImpl struct {
 	_repo sys.ISystemRepo
 }
 
-func newLogManager(repo sys.ISystemRepo) sys.IApplicationManager {
-	return &LogManagerImpl{_repo: repo}
+func newApplicationManager(repo sys.ISystemRepo) sys.IApplicationManager {
+	return &applicationManagerImpl{_repo: repo}
 }
 
 // AddLog implements sys.ILogManager.
-func (l *LogManagerImpl) AddLog(log *sys.SysLog) error {
+func (a *applicationManagerImpl) AddLog(log *sys.SysLog) error {
 	log.CreateTime = int(time.Now().Unix())
 	if len(log.TerminalName) > 40 {
 		log.TerminalName = log.TerminalName[:40]
@@ -40,37 +40,42 @@ func (l *LogManagerImpl) AddLog(log *sys.SysLog) error {
 	if len(log.Message) > 250 {
 		log.Message = log.Message[:250] + "..."
 	}
-	_, err := l._repo.App().Log().Save(log)
+	_, err := a._repo.App().Log().Save(log)
 	return err
 }
 
 // CleanLog implements sys.ILogManager.
-func (l *LogManagerImpl) CleanLog(days int) error {
+func (a *applicationManagerImpl) CleanLog(days int) error {
 	model := sys.SysLog{}
-	r := l._repo.App().Log().Raw()
+	r := a._repo.App().Log().Raw()
 	lastTime := time.Now().Unix() - int64(days*86400)
 	tx := r.Model(&model).Delete("create_time < ?", lastTime)
 	return tx.Error
 }
 
 // DeleteLog 删除日志
-func (l *LogManagerImpl) DeleteLog(ids []int) error {
-	_, err := l._repo.App().Log().DeleteBy("id in ?", ids)
+func (a *applicationManagerImpl) DeleteLog(ids []int) error {
+	_, err := a._repo.App().Log().DeleteBy("id in ?", ids)
 	return err
 }
 
+// GetAllAppDistributions implements sys.IApplicationManager.
+func (a *applicationManagerImpl) GetAllAppDistributions() []*sys.SysAppDistribution {
+	return a._repo.App().Distribution().FindList(nil, "", "")
+}
+
 // GetAppDistribution 获取应用分发
-func (l *LogManagerImpl) GetAppDistribution(id int) *sys.SysAppDistribution {
-	return l._repo.App().Distribution().Get(id)
+func (a *applicationManagerImpl) GetAppDistribution(id int) *sys.SysAppDistribution {
+	return a._repo.App().Distribution().Get(id)
 }
 
 // GetAppDistributionByName 获取应用分发
-func (l *LogManagerImpl) GetAppDistributionByName(name string) *sys.SysAppDistribution {
-	return l._repo.App().Distribution().FindBy("app_name = ?", name)
+func (a *applicationManagerImpl) GetAppDistributionByName(name string) *sys.SysAppDistribution {
+	return a._repo.App().Distribution().FindBy("app_name = ?", name)
 }
 
 // SaveAppDistribution implements sys.IApplicationManager.
-func (l *LogManagerImpl) SaveAppDistribution(a *sys.SysAppDistribution) error {
+func (l *applicationManagerImpl) SaveAppDistribution(a *sys.SysAppDistribution) error {
 	repo := l._repo.App().Distribution()
 	if c, _ := repo.Count("app_name=? AND id <> ?",
 		a.AppName, a.Id); c > 0 {
@@ -93,7 +98,6 @@ func (l *LogManagerImpl) SaveAppDistribution(a *sys.SysAppDistribution) error {
 	dst.AppDesc = a.AppDesc
 	dst.DistributeUrl = a.DistributeUrl
 	dst.DistributeName = a.DistributeName
-	dst.UrlScheme = a.UrlScheme
 	dst.StableVersion = a.StableVersion
 	dst.StableDownUrl = a.StableDownUrl
 	dst.BetaVersion = a.BetaVersion
@@ -103,29 +107,29 @@ func (l *LogManagerImpl) SaveAppDistribution(a *sys.SysAppDistribution) error {
 }
 
 // DeleteAppDistribution 删除应用分发
-func (l *LogManagerImpl) DeleteAppDistribution(id int) error {
+func (a *applicationManagerImpl) DeleteAppDistribution(id int) error {
 	// 检测是否存在版本
-	if len, _ := l._repo.App().Version().Count("distribution_id = ?", id); len > 0 {
+	if len, _ := a._repo.App().Version().Count("distribution_id = ?", id); len > 0 {
 		return errors.New("已经存在版本,不能删除")
 	}
-	return l._repo.App().Distribution().Delete(&sys.SysAppDistribution{Id: id})
+	return a._repo.App().Distribution().Delete(&sys.SysAppDistribution{Id: id})
 }
 
 // GetAppVersion 获取应用版本
-func (l *LogManagerImpl) GetAppVersion(id int) *sys.SysAppVersion {
-	return l._repo.App().Version().Get(id)
+func (a *applicationManagerImpl) GetAppVersion(id int) *sys.SysAppVersion {
+	return a._repo.App().Version().Get(id)
 }
 
 // SaveVersion implements sys.IApplicationManager.
-func (l *LogManagerImpl) SaveAppVersion(version *sys.SysAppVersion) error {
-	app := l.GetAppDistribution(version.DistributionId)
+func (a *applicationManagerImpl) SaveAppVersion(version *sys.SysAppVersion) error {
+	app := a.GetAppDistribution(version.DistributionId)
 	if app == nil {
 		return errors.New("分发应用不存在")
 	}
 	if len(version.TerminalChannel) == 0 {
 		return errors.New("版本类型不能为空")
 	}
-	repo := l._repo.App().Version()
+	repo := a._repo.App().Version()
 	var dst *sys.SysAppVersion
 	if version.Id > 0 {
 		dst = repo.Get(version.Id)
@@ -148,7 +152,7 @@ func (l *LogManagerImpl) SaveAppVersion(version *sys.SysAppVersion) error {
 	if version.UpdateMode == 1 {
 		if len(version.PackageUrl) == 0 {
 			// 如果包地址为空,则使用上次版本的包地址
-			lastVer := l.GetLatestVersion(version.DistributionId, version.TerminalOs, version.TerminalChannel)
+			lastVer := a.GetLatestVersion(version.DistributionId, version.TerminalOs, version.TerminalChannel)
 			if lastVer == nil {
 				return errors.New("更新/安装包文件地址不能为空")
 			}
@@ -168,18 +172,18 @@ func (l *LogManagerImpl) SaveAppVersion(version *sys.SysAppVersion) error {
 	_, err := repo.Save(version)
 	if err == nil {
 		// 如果发布了更新版本,则更新最新的版本
-		err = l.updateLatest(version)
+		err = a.updateLatest(version)
 	}
 	return err
 }
 
 // DeleteVersion implements sys.IApplicationManager.
-func (l *LogManagerImpl) DeleteAppVersion(id int) error {
+func (l *applicationManagerImpl) DeleteAppVersion(id int) error {
 	return l._repo.App().Version().Delete(&sys.SysAppVersion{Id: id})
 }
 
 // 更新分发应用为最新版本
-func (l *LogManagerImpl) updateLatest(version *sys.SysAppVersion) error {
+func (l *applicationManagerImpl) updateLatest(version *sys.SysAppVersion) error {
 	app := l.GetAppDistribution(version.DistributionId)
 	if app == nil {
 		return errors.New("应用不存在")
@@ -202,7 +206,7 @@ func (l *LogManagerImpl) updateLatest(version *sys.SysAppVersion) error {
 }
 
 // 获取最新版本
-func (l *LogManagerImpl) GetLatestVersion(distId int, terminalOS, terminalChannel string) *sys.SysAppVersion {
+func (l *applicationManagerImpl) GetLatestVersion(distId int, terminalOS, terminalChannel string) *sys.SysAppVersion {
 	unix := time.Now().Unix()
 	return l._repo.App().Version().FindBy(
 		`distribution_id=? 

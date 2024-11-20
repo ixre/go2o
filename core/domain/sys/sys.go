@@ -59,7 +59,7 @@ func (s *systemAggregateRootImpl) Stations() sys.IStationManager {
 // Application implements sys.ISystemAggregateRoot.
 func (s *systemAggregateRootImpl) Application() sys.IApplicationManager {
 	if s._log == nil {
-		s._log = newLogManager(s._repo)
+		s._log = newApplicationManager(s._repo)
 	}
 	return s._log
 }

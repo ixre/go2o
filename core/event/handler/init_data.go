@@ -10,6 +10,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/content"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -35,6 +36,8 @@ func (h EventHandler) HandleAppInitialEvent(data interface{}) {
 	go h._sysRepo.GetSystemAggregateRoot().Stations().SyncStations()
 	// 初始化通知模板
 	h.initNotifyTemplate()
+	// 初始化分发应用
+	h.initDistributeApp()
 }
 
 func initSystemConfig(repo registry.IRegistryRepo) {
@@ -211,6 +214,23 @@ func (h *EventHandler) initNotifyTemplate() {
 	if len(tplArr) == 0 {
 		for _, v := range mss.InternalMailTemplate {
 			h.messageRepo.NotifyRepo().SaveNotifyTemplate(v)
+		}
+	}
+}
+
+// 初始化应用分发
+func (h *EventHandler) initDistributeApp() {
+	ia := h._sysRepo.GetSystemAggregateRoot().Application()
+	arr := ia.GetAllAppDistributions()
+	if len(arr) == 0 {
+		err := ia.SaveAppDistribution(&sys.SysAppDistribution{
+			AppName:        "app",
+			UpdateMode:     1,
+			UrlScheme:      "go2o://net.fze.go2o/open",
+			DistributeName: "默认APP",
+		})
+		if err != nil {
+			logger.Error("初始化应用分发失败:%s", err.Error())
 		}
 	}
 }

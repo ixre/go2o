@@ -32,7 +32,7 @@
         display: none;
       }
 
-      .wrapper.active {
+      .wrapper__modal.active {
         display: initial;
         transition: 0.75s all;
       }
@@ -259,7 +259,6 @@
           ios = userAgent.match(/(iPad|iPhone|iPod)\s+OS\s([\d_\.]+)/),
           wp = userAgent.match(/(Windows\s+Phone)\s([\d\.]+)/),
           isWx = /MicroMessenger/i.test(userAgent);
-
         if (isWx) {
           var wx = document.getElementsByClassName("wrapper__modal")[0];
           wx.setAttribute("class", "wrapper__modal active");
@@ -278,8 +277,8 @@
       }
 
       (function () {
-        // 3秒后自动跳转下载
-        var timer = setTimeout(download, 3000);
+        // 0.5秒后自动跳转下载
+        var timer = setTimeout(download, 500);
         // 唤起APP
         const iframe = document.createElement("iframe");
         iframe.style.display = "none";
