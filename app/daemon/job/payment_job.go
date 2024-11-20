@@ -10,15 +10,11 @@ import (
 // 检测已过期的订单并标记
 func CheckExpiresPaymentOrder() {
 	jobName := "payment.heckExpiresPaymentOrder"
-
 	if !locker.Lock(jobName, 600) {
 		return
 	}
 	defer locker.Unlock(jobName)
 	repo := inject.GetPaymentRepo()
-	//log.Println("[ job]: start sync wallet log to clickhouse..")
-	// job := getJob(jobName)
-	// lastId := job.GetValue().LastExecIndex
 	size := 200
 	lastId := 0
 	for {
