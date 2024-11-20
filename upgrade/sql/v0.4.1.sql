@@ -48,6 +48,7 @@ CREATE TABLE "public".sys_app_distribution (
   stable_down_url varchar(256) NOT NULL, 
   beta_version    varchar(20) NOT NULL, 
   beta_down_url   varchar(256) NOT NULL, 
+  url_scheme      varchar(40) DEFAULT '' NOT NULL, 
   create_time     int8 NOT NULL, 
   update_time     int8 NOT NULL, 
   CONSTRAINT app_prod_pkey 
@@ -64,8 +65,10 @@ COMMENT ON COLUMN "public".sys_app_distribution.stable_version IS '最新的版�
 COMMENT ON COLUMN "public".sys_app_distribution.stable_down_url IS '正式版文件地址';
 COMMENT ON COLUMN "public".sys_app_distribution.beta_version IS '测试版下载地址';
 COMMENT ON COLUMN "public".sys_app_distribution.beta_down_url IS '内测版文件地址';
+COMMENT ON COLUMN "public".sys_app_distribution.url_scheme IS '应用URL协议';
 COMMENT ON COLUMN "public".sys_app_distribution.create_time IS '创建时间';
 COMMENT ON COLUMN "public".sys_app_distribution.update_time IS '更新时间';
+
 
 
 
@@ -131,4 +134,8 @@ COMMENT ON COLUMN public.sys_app_version.create_time
 
 COMMENT ON COLUMN public.sys_app_version.update_time
     IS '更新时间';
-			
+
+-- 20241120 最后在线时间
+ALTER TABLE mch_staff 
+  ADD COLUMN last_online_time int8 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN mch_staff.last_online_time IS '最后在线时间';

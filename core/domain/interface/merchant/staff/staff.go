@@ -89,6 +89,8 @@ type (
 		CertifiedName string `json:"certifiedName" db:"certified_name" gorm:"column:certified_name" bson:"certifiedName"`
 		// 高级用户等级
 		PremiumLevel int `json:"premiumLevel" db:"premium_level" gorm:"column:premium_level" bson:"premiumLevel"`
+		// 最后在线时间
+		LastOnlineTime int `json:"lastOnlineTime" db:"last_online_time" gorm:"column:last_online_time" bson:"lastOnlineTime"`
 		// 创建时间
 		CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 		// 服务总次数

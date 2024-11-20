@@ -146,6 +146,8 @@ type SysAppDistribution struct {
 	UpdateMode int `json:"updateMode" db:"update_mode" gorm:"column:update_mode" bson:"updateMode"`
 	// DistributeUrl
 	DistributeUrl string `json:"distributeUrl" db:"distribute_url" gorm:"column:distribute_url" bson:"distributeUrl"`
+	// UrlScheme
+	UrlScheme string `json:"urlScheme" db:"url_scheme" gorm:"column:url_scheme" bson:"urlScheme"`
 	// DistributeName
 	DistributeName string `json:"distributeName" db:"distribute_name" gorm:"column:distribute_name" bson:"distributeName"`
 	// StableVersion

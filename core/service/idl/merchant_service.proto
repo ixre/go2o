@@ -187,8 +187,10 @@ message SStaff{
     int32 premiumLevel = 13;
     // 创建时间
     int64 createTime = 14;
+    // 最后在线时间
+    int64 lastOnlineTime = 15;
     // IM是否注册 0:否 1:是
-    int32 imInitialized = 15;
+    int32 imInitialized = 16;
 }
 
 // 保存员工请求

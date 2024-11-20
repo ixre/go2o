@@ -93,6 +93,7 @@ func (l *LogManagerImpl) SaveAppDistribution(a *sys.SysAppDistribution) error {
 	dst.AppDesc = a.AppDesc
 	dst.DistributeUrl = a.DistributeUrl
 	dst.DistributeName = a.DistributeName
+	dst.UrlScheme = a.UrlScheme
 	dst.StableVersion = a.StableVersion
 	dst.StableDownUrl = a.StableDownUrl
 	dst.BetaVersion = a.BetaVersion

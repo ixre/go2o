@@ -47,6 +47,7 @@ func TestGetAppDistribution(t *testing.T) {
 			AppDesc:        "测试应用",
 			UpdateMode:     1,
 			DistributeUrl:  "https://github.com/ixre/go2o",
+			UrlScheme:      "go2o://net.fze.go2o/open",
 			DistributeName: "测试应用",
 			StableVersion:  "1.0.0",
 			StableDownUrl:  "https://github.com/ixre/go2o/releases/download/v1.0.0/go2o-v1.0.0.apk",

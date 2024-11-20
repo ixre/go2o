@@ -71,20 +71,21 @@ func (e *staffManagerImpl) Create(memberId int) error {
 	mv := mem.GetValue()
 	profile := mem.Profile().GetProfile()
 	v := &staff.Staff{
-		Id:            0,
-		MemberId:      memberId,
-		StationId:     stationId,
-		MchId:         e._mch.GetAggregateRootId(),
-		Flag:          0,
-		Gender:        int(profile.Gender),
-		Nickname:      mv.Nickname,
-		WorkStatus:    staff.WorkStatusOffline,
-		Grade:         0,
-		Status:        1,
-		IsCertified:   0,
-		CertifiedName: "",
-		PremiumLevel:  0,
-		CreateTime:    int(time.Now().Unix()),
+		Id:             0,
+		MemberId:       memberId,
+		StationId:      stationId,
+		MchId:          e._mch.GetAggregateRootId(),
+		Flag:           0,
+		Gender:         int(profile.Gender),
+		Nickname:       mv.Nickname,
+		WorkStatus:     staff.WorkStatusOffline,
+		Grade:          0,
+		Status:         1,
+		IsCertified:    0,
+		CertifiedName:  "",
+		PremiumLevel:   0,
+		CreateTime:     int(time.Now().Unix()),
+		LastOnlineTime: int(time.Now().Unix()),
 	}
 	_, err := e._repo.Save(v)
 	return err

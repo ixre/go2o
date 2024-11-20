@@ -920,21 +920,22 @@ func (m *merchantService) SaveStaff(_ context.Context, r *proto.SaveStaffRequest
 
 func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {
 	return &proto.SStaff{
-		Id:            int64(src.Id),
-		MemberId:      int64(src.MemberId),
-		StationId:     int32(src.StationId),
-		MchId:         int64(src.MchId),
-		Flag:          int32(src.Flag),
-		Gender:        int32(src.Gender),
-		Nickname:      src.Nickname,
-		WorkStatus:    int32(src.WorkStatus),
-		Grade:         int32(src.Grade),
-		Status:        int32(src.Status),
-		IsCertified:   int32(src.IsCertified),
-		CertifiedName: src.CertifiedName,
-		PremiumLevel:  int32(src.PremiumLevel),
-		CreateTime:    int64(src.CreateTime),
-		ImInitialized: int32(src.ImInitialized),
+		Id:             int64(src.Id),
+		MemberId:       int64(src.MemberId),
+		StationId:      int32(src.StationId),
+		MchId:          int64(src.MchId),
+		Flag:           int32(src.Flag),
+		Gender:         int32(src.Gender),
+		Nickname:       src.Nickname,
+		WorkStatus:     int32(src.WorkStatus),
+		Grade:          int32(src.Grade),
+		Status:         int32(src.Status),
+		IsCertified:    int32(src.IsCertified),
+		CertifiedName:  src.CertifiedName,
+		PremiumLevel:   int32(src.PremiumLevel),
+		CreateTime:     int64(src.CreateTime),
+		LastOnlineTime: int64(src.LastOnlineTime),
+		ImInitialized:  int32(src.ImInitialized),
 	}
 }
 
