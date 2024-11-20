@@ -92,7 +92,6 @@ func (l *applicationManagerImpl) SaveAppDistribution(a *sys.SysAppDistribution) 
 		dst.CreateTime = int(time.Now().Unix())
 		dst.AppName = a.AppName
 		dst.UpdateMode = int(a.UpdateMode)
-
 	}
 	dst.AppIcon = a.AppIcon
 	dst.AppDesc = a.AppDesc
@@ -102,6 +101,7 @@ func (l *applicationManagerImpl) SaveAppDistribution(a *sys.SysAppDistribution) 
 	dst.StableDownUrl = a.StableDownUrl
 	dst.BetaVersion = a.BetaVersion
 	dst.BetaDownUrl = a.BetaDownUrl
+	dst.UrlScheme = a.UrlScheme
 	_, err := repo.Save(dst)
 	return err
 }

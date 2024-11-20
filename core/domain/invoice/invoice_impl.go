@@ -79,6 +79,12 @@ func (i *invoiceTenantAggregateRootImpl) CreateInvoiceTitle(title *invoice.Invoi
 	if title.TenantId > 0 && title.TenantId != i.GetAggregateRootId() {
 		return errors.New("invoice tenant error")
 	}
+	if i.repo.Title().FindBy("tenant_id=? AND title_name=? AND id <> ?",
+		i.GetAggregateRootId(),
+		title.TitleName,
+		title.Id) != nil {
+		return errors.New("发票抬头已经存在")
+	}
 	title.CreateTime = int(time.Now().Unix())
 	title.TenantId = i.GetAggregateRootId()
 	_, err := i.repo.Title().Save(title)

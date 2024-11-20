@@ -31,6 +31,22 @@ const (
 	IssueRevert = 4
 )
 
+const (
+	// 发票类型: 增值税普通发票
+	InvoiceTypeNormal = 1
+	// 发票类型: 增值税专用发票
+	InvoiceTypeSpecial = 2
+	// 发票类型: 形式发票
+	InvoiceTypeFormal = 3
+)
+
+const (
+	// 开具类型: 个人
+	IssueTypePersonal = 1
+	// 开具类型: 企业
+	IssueTypeEnterprise = 2
+)
+
 type (
 	// InvoiceUserAggregateRoot 发票用户聚合根
 	InvoiceUserAggregateRoot interface {

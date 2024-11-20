@@ -532,7 +532,7 @@ func (m *merchantImpl) TransactionManager() merchant.IMerchantTransactionManager
 // ProfileManager 企业资料管理器
 func (m *merchantImpl) ProfileManager() merchant.IProfileManager {
 	if m._profileManager == nil {
-		m._profileManager = newProfileManager(m, m._valRepo)
+		m._profileManager = newProfileManager(m, m._valRepo, m._invoiceRepo)
 	}
 	return m._profileManager
 }

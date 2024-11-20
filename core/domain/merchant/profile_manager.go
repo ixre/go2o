@@ -14,16 +14,19 @@ import (
 
 	"github.com/ixre/go2o/core/domain"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 )
 
 var _ merchant.IProfileManager = new(profileManagerImpl)
 
 type profileManagerImpl struct {
 	*merchantImpl
-	valRepo valueobject.IValueRepo
+	valRepo      valueobject.IValueRepo
+	_invoiceRepo invoice.IInvoiceRepo
 }
 
 // GetAuthenticate implements merchant.IProfileManager.
@@ -31,10 +34,13 @@ func (p *profileManagerImpl) GetAuthenticate() *merchant.Authenticate {
 	return p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 1)
 }
 
-func newProfileManager(m *merchantImpl, valRepo valueobject.IValueRepo) merchant.IProfileManager {
+func newProfileManager(m *merchantImpl, valRepo valueobject.IValueRepo,
+	invoiceRepo invoice.IInvoiceRepo,
+) merchant.IProfileManager {
 	return &profileManagerImpl{
 		merchantImpl: m,
 		valRepo:      valRepo,
+		_invoiceRepo: invoiceRepo,
 	}
 }
 
@@ -153,10 +159,41 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 		if err == nil {
 			_, err = p.merchantImpl.Save()
 		}
+		// 为商户添加开票信息
+		p.initInvoiceTitle(e)
 	} else {
 		e.ReviewStatus = int(enum.ReviewRejected)
 		e.ReviewRemark = message
 		_, err = p._repo.SaveAuthenticate(e)
+	}
+	return err
+}
+
+func (p *profileManagerImpl) initInvoiceTitle(e *merchant.Authenticate) error {
+	var err error
+	tenant := p._invoiceRepo.CreateTenant(&invoice.InvoiceTenant{
+		TenantType: int(invoice.TenantMerchant),
+		TenantUid:  p.merchantImpl.GetAggregateRootId(),
+	})
+	if tenant == nil {
+		err = errors.New("创建开票租户失败")
+	} else {
+		err = tenant.CreateInvoiceTitle(&invoice.InvoiceTitle{
+			InvoiceType: invoice.InvoiceTypeNormal,
+			IssueType:   invoice.IssueTypeEnterprise,
+			TitleName:   e.OrgName,
+			TaxCode:     e.LicenceNo,
+			SignAddress: e.OrgAddress,
+			SignTel:     e.PersonPhone,
+			BankName:    e.BankName,
+			BankAccount: e.BankAccount,
+			Remarks:     "",
+			IsDefault:   1,
+			CreateTime:  0,
+		})
+	}
+	if err != nil {
+		logger.Error("创建开票租户失败: mchId: %d, 错误:%s", p.merchantImpl.GetAggregateRootId(), err.Error())
 	}
 	return err
 }
