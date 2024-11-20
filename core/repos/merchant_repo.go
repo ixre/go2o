@@ -135,6 +135,7 @@ func (m *merchantRepo) GetManager() merchant.IMerchantManager {
 
 func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchantAggregateRoot {
 	return merchantImpl.NewMerchant(v,
+		m.storage,
 		m, m._wsRepo,
 		m._itemRepo,
 		m._shopRepo,

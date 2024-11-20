@@ -280,3 +280,11 @@ func (m *MerchantQuery) QueryWaitGenerateDailyBills(size int, lastId int) []*mer
 		merchant.BillStatusPending,
 		lastId)
 }
+
+// 查询离线员工列表
+func (m *MerchantQuery) QueryOfflineStaffList(beginTime, overTime int, begin, size int) []*staff.Staff {
+	return m._staffRepo.FindList(&fw.QueryOption{
+		Skip:  begin,
+		Limit: size,
+	}, "work_status = ? AND last_online_time BETWEEN ? AND ?", staff.WorkStatusOffline, beginTime, overTime)
+}

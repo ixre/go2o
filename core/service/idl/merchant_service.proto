@@ -80,9 +80,11 @@ service MerchantService {
     // 获取商户员工
     rpc GetStaff(StaffRequest) returns (SStaff);
     // 根据会员编号获取商户员工
-    rpc GetStaffByMember(StaffRequest) returns (SStaff);
+    rpc GetStaffByMember(MemberStaffRequest) returns (SStaff);
     // 保存员工
     rpc SaveStaff(SaveStaffRequest)returns(Result);
+    // 更新员工工作状态
+    rpc UpdateStaffWorkStatus(UpdateStaffWorkStatusRequest)returns(TxResult);
     // 员工转商户,生成审批请求
     rpc TransferStaff(TransferStaffRequest)returns(TxResult);
     // 获取钱包账户
@@ -151,10 +153,16 @@ message MerchantAccountCarrayRequest{
 
 // 员工请求
 message StaffRequest{
-    // 会员编号或员工编号
-    sint64 id = 1;
+    // 员工编号
+    sint64 staffId = 1;
     // 商户编号
     sint64 mchId = 2;
+}
+
+// 根据会员编号获取员工请求
+message MemberStaffRequest{
+    // 会员编号
+    sint64 memberId = 1;
 }
 
 // 商户员工
@@ -191,6 +199,10 @@ message SStaff{
     int64 lastOnlineTime = 15;
     // IM是否注册 0:否 1:是
     int32 imInitialized = 16;
+    // 用户代码
+    string userCode = 17;
+    // 是否保持上线
+    bool isKeepOnline = 18;
 }
 
 // 保存员工请求
@@ -209,6 +221,17 @@ message SaveStaffRequest{
     int32 grade = 9;
 }
 
+// 更新员工工作状态请求
+message UpdateStaffWorkStatusRequest{
+    // 商户编号
+    int64 mchId = 1;
+    // 员工编号
+    int64 staffId = 2;
+    // 工作状态
+    int32 workStatus = 3;
+    // 是否保持上线
+    bool isKeepOnline = 4;
+}
 
 message MerchantOrderRequest {
     // 商户编号

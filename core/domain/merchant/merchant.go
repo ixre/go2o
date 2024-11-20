@@ -36,11 +36,13 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/variable"
+	"github.com/ixre/gof/storage"
 )
 
 var _ merchant.IMerchantAggregateRoot = new(merchantImpl)
 
 type merchantImpl struct {
+	_storage         storage.Interface
 	_value           *merchant.Merchant
 	_account         merchant.IAccount
 	_wholesaler      wholesaler.IWholesaler
@@ -83,12 +85,15 @@ func (m *merchantImpl) EmployeeManager() staff.IStaffManager {
 			m._memberRepo,
 			m._sysRepo,
 			m._repo,
-			m._approvalRepo)
+			m._approvalRepo,
+			m._storage)
 	}
 	return m._employeeManager
 }
 
-func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
+func NewMerchant(v *merchant.Merchant,
+	storage storage.Interface,
+	rep merchant.IMerchantRepo,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
 	employeeRepo staff.IStaffRepo,
@@ -101,6 +106,7 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	rbacRepo rbac.IRbacRepository,
 ) merchant.IMerchantAggregateRoot {
 	mch := &merchantImpl{
+		_storage:      storage,
 		_value:        v,
 		_repo:         rep,
 		_wsRepo:       wsRepo,

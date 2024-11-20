@@ -34,6 +34,10 @@ type (
 		RequestTransfer(staffId, mchId int) (int, error)
 		// TransferApproval 处理转商户审批
 		TransferApproval(trans *StaffTransfer, event *approval.ApprovalProcessEvent) error
+		// UpdateWorkStatus 更新员工工作状态
+		UpdateWorkStatus(staffId int, workStatus int, isKeepOnline bool) error
+		// IsKeepOnline 是否保持上线
+		IsKeepOnline(staffId int) bool
 	}
 
 	// IStaffRepo 员工数据访问接口

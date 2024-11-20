@@ -867,7 +867,7 @@ func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.I
 
 // GetStaff implements proto.MerchantServiceServer.
 func (m *merchantService) GetStaff(_ context.Context, req *proto.StaffRequest) (*proto.SStaff, error) {
-	staff := m._staffRepo.Get(int(req.Id))
+	staff := m._staffRepo.Get(int(req.StaffId))
 	if staff == nil {
 		return &proto.SStaff{}, nil
 	}
@@ -880,15 +880,15 @@ func (m *merchantService) GetStaff(_ context.Context, req *proto.StaffRequest) (
 }
 
 // GetStaffByMember implements proto.MerchantServiceServer.
-func (m *merchantService) GetStaffByMember(_ context.Context, req *proto.StaffRequest) (*proto.SStaff, error) {
-	staff := m._staffRepo.GetStaffByMemberId(int(req.Id))
+func (m *merchantService) GetStaffByMember(_ context.Context, req *proto.MemberStaffRequest) (*proto.SStaff, error) {
+	staff := m._staffRepo.GetStaffByMemberId(int(req.MemberId))
 	if staff == nil {
 		return &proto.SStaff{}, nil
 	}
-	if req.MchId != 0 && req.MchId != int64(staff.MchId) {
-		// 如果商户不匹配，则返回空
-		return &proto.SStaff{}, nil
-	}
+	// if req.MchId != 0 && req.MchId != int64(staff.MchId) {
+	// 	// 如果商户不匹配，则返回空
+	// 	return &proto.SStaff{}, nil
+	// }
 	m.checkImInitialized(staff)
 	return m.parseStaffDto(staff), nil
 }
@@ -918,8 +918,18 @@ func (m *merchantService) SaveStaff(_ context.Context, r *proto.SaveStaffRequest
 	return m.result(err), nil
 }
 
+// UpdateStaffWorkStatus 更新员工工作状态
+func (m *merchantService) UpdateStaffWorkStatus(_ context.Context, req *proto.UpdateStaffWorkStatusRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(errors.New("no such merchant")), nil
+	}
+	err := mch.EmployeeManager().UpdateWorkStatus(int(req.StaffId), int(req.WorkStatus), req.IsKeepOnline)
+	return m.errorV2(err), nil
+}
+
 func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {
-	return &proto.SStaff{
+	dst := &proto.SStaff{
 		Id:             int64(src.Id),
 		MemberId:       int64(src.MemberId),
 		StationId:      int32(src.StationId),
@@ -937,6 +947,17 @@ func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {
 		LastOnlineTime: int64(src.LastOnlineTime),
 		ImInitialized:  int32(src.ImInitialized),
 	}
+	// 获取用户代码
+	mem := m._memberRepo.GetMember(int64(src.MemberId))
+	if mem != nil {
+		dst.UserCode = mem.GetValue().UserCode
+	}
+	// 获取商户是否保持上线
+	mch := m._mchRepo.GetMerchant(int(src.MchId))
+	if mch != nil {
+		dst.IsKeepOnline = mch.EmployeeManager().IsKeepOnline(int(src.Id))
+	}
+	return dst
 }
 
 func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto.QMerchant {

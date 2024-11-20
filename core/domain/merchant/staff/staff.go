@@ -2,6 +2,7 @@ package employee
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/approval"
@@ -12,6 +13,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/gof/domain/eventbus"
+	"github.com/ixre/gof/storage"
 )
 
 var _ staff.IStaffManager = new(staffManagerImpl)
@@ -23,6 +25,7 @@ type staffManagerImpl struct {
 	_sysRepo      sys.ISystemRepo
 	_mchRepo      merchant.IMerchantRepo
 	_approvalRepo approval.IApprovalRepository
+	_storage      storage.Interface
 }
 
 func NewStaffManager(mch merchant.IMerchantAggregateRoot,
@@ -31,6 +34,7 @@ func NewStaffManager(mch merchant.IMerchantAggregateRoot,
 	sysRepo sys.ISystemRepo,
 	mchRepo merchant.IMerchantRepo,
 	approvalRepo approval.IApprovalRepository,
+	storage storage.Interface,
 ) staff.IStaffManager {
 	return &staffManagerImpl{
 		_mch:          mch,
@@ -39,6 +43,7 @@ func NewStaffManager(mch merchant.IMerchantAggregateRoot,
 		_sysRepo:      sysRepo,
 		_mchRepo:      mchRepo,
 		_approvalRepo: approvalRepo,
+		_storage:      storage,
 	}
 }
 
@@ -204,4 +209,29 @@ func (e *staffManagerImpl) TransferApproval(trans *staff.StaffTransfer, event *a
 		}
 	}
 	return nil
+}
+
+// IsKeepOnline implements staff.IStaffManager.
+func (e *staffManagerImpl) IsKeepOnline(staffId int) bool {
+	key := fmt.Sprintf("go2o:staff:keep_online:%d", staffId)
+	v, _ := e._storage.GetInt(key)
+	return v == 1
+}
+
+// UpdateWorkStatus implements staff.IStaffManager.
+func (e *staffManagerImpl) UpdateWorkStatus(staffId int, workStatus int, isKeepOnline bool) error {
+	key := fmt.Sprintf("go2o:staff:keep_online:%d", staffId)
+	if isKeepOnline {
+		err := e._storage.Set(key, "1")
+		if err != nil {
+			return err
+		}
+	} else {
+		e._storage.Delete(key)
+	}
+	st := e.GetStaff(staffId)
+	st.WorkStatus = workStatus
+	st.LastOnlineTime = int(time.Now().Unix())
+	_, err := e._repo.Save(st)
+	return err
 }

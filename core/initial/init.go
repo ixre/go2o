@@ -10,7 +10,6 @@ package initial
 
 import (
 	"github.com/ixre/go2o/core/event/msq"
-	"github.com/ixre/go2o/core/infrastructure/locker"
 	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/variable"
@@ -25,8 +24,6 @@ func Startup(job func()) {
 func Init(a *AppImpl, debug, trace bool) bool {
 	provide.Configure(a)
 	a._debugMode = debug
-	// 初始化并发锁
-	locker.Configure(a.Storage())
 	// 初始化变量
 	variable.Domain = a.Config().GetString(variable.ServerDomain)
 	a.Loaded = true
