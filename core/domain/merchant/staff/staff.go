@@ -223,12 +223,12 @@ func (e *staffManagerImpl) IsKeepOnline(staffId int) bool {
 func (e *staffManagerImpl) UpdateWorkStatus(staffId int, workStatus int, isKeepOnline bool) error {
 	key := fmt.Sprintf("go2o:staff:keep_online:%d", staffId)
 	if isKeepOnline {
+		e._storage.Delete(key)
+	} else {
 		err := e._storage.Set(key, "-1")
 		if err != nil {
 			return err
 		}
-	} else {
-		e._storage.Delete(key)
 	}
 	st := e.GetStaff(staffId)
 	st.WorkStatus = workStatus
