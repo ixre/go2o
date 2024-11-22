@@ -333,7 +333,7 @@ func (s *checkServiceImpl) GrantAccessToken(_ context.Context, request *proto.Gr
 	// 创建token并返回
 	aud := fmt.Sprintf("%d@%d", request.UserId, request.UserType)
 	claims := api.CreateClaims(aud, "go2o", request.Sub, request.ExpiresTime).(jwt.MapClaims)
-	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
+	jwtSecret, err := s.registryRepo.GetValue(registry.SysPrivateKey)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
 		return &proto.GrantAccessTokenResponse{
@@ -401,7 +401,7 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 			Message: "令牌主题不能为空",
 		}, nil
 	}
-	jwtSecret, err := s.registryRepo.GetValue(registry.SysJWTSecret)
+	jwtSecret, err := s.registryRepo.GetValue(registry.SysPrivateKey)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
 		return &proto.CheckAccessTokenResponse{

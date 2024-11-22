@@ -31,7 +31,6 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/service/proto"
-	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/typeconv"
@@ -83,7 +82,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 	// 超级管理员登录
 	if r.Username == "master" {
 		superPwd, _ := p.registryRepo.GetValue(registry.SysSuperLoginToken)
-		encPwd := domain.Sha1Pwd(r.Username+r.Password, "")
+		encPwd := domain.SuperPassword(r.Username+r.Password, "")
 		if superPwd != encPwd {
 			p.createLoginLog(0, r.IpAddress, 1) // 登录失败
 			return &proto.RbacLoginResponse{
@@ -107,7 +106,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 			Message: "用户不存在",
 		}, nil
 	}
-	decPwd := crypto.Sha1([]byte(r.Password + usr.Salt))
+	decPwd := domain.RbacPassword(r.Password, usr.Salt)
 	if usr.Password != decPwd {
 		p.createLoginLog(usr.Id, r.IpAddress, 3) // 登录失败
 		return &proto.RbacLoginResponse{
@@ -159,7 +158,7 @@ func (p *rbacServiceImpl) createAccessToken(userId int64, username string, perm 
 		"name":   username,
 		"x-perm": perm,
 	}
-	key, _ := p.registryRepo.GetValue(registry.SysJWTSecret)
+	key, _ := p.registryRepo.GetValue(registry.SysPrivateKey)
 	// Create token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// Generate encoded token and send it as response.
@@ -171,7 +170,7 @@ func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.RbacC
 	if len(request.AccessToken) == 0 {
 		return &proto.RbacCheckTokenResponse{Code: 1001, Message: "令牌不能为空"}, nil
 	}
-	jwtSecret, err := p.registryRepo.GetValue(registry.SysJWTSecret)
+	jwtSecret, err := p.registryRepo.GetValue(registry.SysPrivateKey)
 	if err != nil {
 		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
 		return &proto.RbacCheckTokenResponse{Code: 1002, Message: err.Error()}, nil
@@ -233,7 +232,7 @@ func (p *rbacServiceImpl) CheckRBACToken(_ context.Context, request *proto.RbacC
 
 // 获取JWT密钥
 func (p *rbacServiceImpl) GetJwtToken(_ context.Context, empty *proto.Empty) (*proto.String, error) {
-	key, _ := p.registryRepo.GetValue(registry.SysJWTSecret)
+	key, _ := p.registryRepo.GetValue(registry.SysPrivateKey)
 	return &proto.String{Value: key}, nil
 }
 
@@ -622,7 +621,7 @@ func (p *rbacServiceImpl) SaveUser(_ context.Context, r *proto.SaveRbacUserReque
 				Message: "非32位md5密码",
 			}, nil
 		}
-		dst.Password = crypto.Sha1([]byte(r.Password + dst.Salt))
+		dst.Password = domain.RbacPassword(r.Password, dst.Salt)
 	}
 	if len(r.ProfilePhoto) == 0 {
 		filePath, _ := p.registryRepo.GetValue(registry.FileServerUrl)
@@ -665,12 +664,12 @@ func (p *rbacServiceImpl) UpdateUserPassword(_ context.Context, req *proto.RbacP
 		if l != 32 {
 			return p.errorV2(errors.New("非32位md5密码")), nil
 		}
-		origin := crypto.Sha1([]byte(req.OldPassword + iu.Salt))
+		origin := domain.RbacPassword(req.OldPassword, iu.Salt)
 		if origin != iu.Password {
 			return p.errorV2(errors.New("原密码不正确")), nil
 		}
 	}
-	iu.Password = crypto.Sha1([]byte(req.NewPassword + iu.Salt))
+	iu.Password = domain.RbacPassword(req.NewPassword, iu.Salt)
 	_, err := p.dao.SaveUser(iu)
 	return p.errorV2(err), nil
 }

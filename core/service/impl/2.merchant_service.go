@@ -106,7 +106,7 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.CreateMerch
 	mch := r.Mch
 	v := &merchant.Merchant{
 		Username: r.Username,
-		Password: domain.MerchantSha1Pwd(mch.Password, ""),
+		Password: domain.MerchantSha265Pwd(mch.Password, ""),
 		MchName:  mch.MchName,
 		IsSelf:   int16(r.IsSelf),
 		MemberId: int(r.MemberId),
@@ -508,29 +508,6 @@ func (m *merchantService) SaveTradeConf(_ context.Context, r *proto.TradeConfSav
 
 // 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, err error) {
-	user = strings.ToLower(strings.TrimSpace(user))
-	val := m._memberRepo.GetMemberByUser(user)
-	if val == nil {
-		val = m._memberRepo.GetMemberValueByPhone(user)
-	}
-	if val == nil {
-		return 0, member.ErrNoSuchMember
-	}
-	if val.Password != pwd {
-		//todo: 兼容旧密码
-		if val.Password != domain.Sha1(pwd) {
-			return 0, de.ErrPasswordNotMatch
-		}
-	}
-	if (val.UserFlag & member.FlagLocked) == member.FlagLocked {
-		return 0, member.ErrMemberLocked
-	}
-	return int64(val.Id), nil
-}
-
-// 登录，返回结果(Result_)和会员编号(Id);
-// Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMerchantAggregateRoot, errCode int32, err error) {
 	if user == "" || pwd == "" {
 		return nil, 1, de.ErrPasswordNotMatch
@@ -562,7 +539,7 @@ func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMercha
 	// }
 	mch := m._mchRepo.CreateMerchant(mchList[0])
 	mv := mch.GetValue()
-	if pwd := domain.MerchantSha1Pwd(pwd, mch.GetValue().Salt); pwd != mv.Password {
+	if pwd := domain.MerchantSha265Pwd(pwd, mch.GetValue().Salt); pwd != mv.Password {
 		return nil, 1, de.ErrPasswordNotMatch
 	}
 	return mch, 0, nil

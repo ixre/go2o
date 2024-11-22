@@ -6,6 +6,8 @@ import (
 
 	"github.com/ixre/go2o/core/inject"
 	"github.com/ixre/go2o/core/service/proto"
+	_ "github.com/ixre/go2o/tests"
+	"github.com/ixre/gof/crypto"
 )
 
 /**
@@ -25,4 +27,13 @@ func TestCheckSensitive(t *testing.T) {
 			Replacement: "*",
 		})
 	t.Log(ret.Value)
+}
+
+// 测试更新超级管理员密码
+func TestUpdateSuperPassword(t *testing.T) {
+	ret, _ := inject.GetSystemService().UpdateSuperCredential(context.TODO(), &proto.SuperPassswordRequest{
+		OldPassword: crypto.Md5([]byte("e2JQ4EaW")),
+		NewPassword: crypto.Md5([]byte("123456")),
+	})
+	t.Log(ret)
 }

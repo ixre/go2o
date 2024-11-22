@@ -90,7 +90,7 @@ var (
 	// 接口签名盐
 	SysAPISignSalt = KeyFormat("sys_api_sign_salt")
 	// 接口JWT密钥
-	SysJWTSecret = KeyFormat("sys_jwt_secret")
+	SysPrivateKey = KeyFormat("sys_private_key")
 	// 超级管理员登录密钥
 	SysSuperLoginToken = KeyFormat("sys_super_login_token")
 	/** 短信 */

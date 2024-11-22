@@ -217,12 +217,12 @@ func (p *profileManagerImpl) ChangePassword(newPassword, oldPassword string) err
 		if newPassword == oldPassword {
 			return domain.ErrPwdCannotSame
 		}
-		oldPassword = dm.MerchantSha1Pwd(oldPassword, p.merchantImpl.GetValue().Salt)
+		oldPassword = dm.MerchantSha265Pwd(oldPassword, p.merchantImpl.GetValue().Salt)
 		if oldPassword != p._value.Password {
 			return domain.ErrPwdOldPwdNotRight
 		}
 	}
-	p._value.Password = dm.MerchantSha1Pwd(newPassword, p.merchantImpl.GetValue().Salt)
+	p._value.Password = dm.MerchantSha265Pwd(newPassword, p.merchantImpl.GetValue().Salt)
 	_, err := p.Save()
 	return err
 }

@@ -139,3 +139,19 @@ COMMENT ON COLUMN public.sys_app_version.update_time
 ALTER TABLE mch_staff 
   ADD COLUMN last_online_time int8 DEFAULT 0 NOT NULL;
 COMMENT ON COLUMN mch_staff.last_online_time IS '最后在线时间';
+
+-- 20241122 修改应用私钥key
+update registry set key='sys_private_key' WHERE key='sys_jwt_secret';
+
+ALTER TABLE "public".mm_member 
+  ALTER COLUMN password SET DATA TYPE varchar(64);
+ALTER TABLE "public".mm_member 
+  ALTER COLUMN trade_pwd SET DATA TYPE varchar(64);
+ALTER TABLE "public".mm_member 
+  ALTER COLUMN profile_photo SET DATA TYPE varchar(180);
+
+ALTER TABLE "public".mch_merchant 
+  ALTER COLUMN password SET DATA TYPE varchar(64);
+
+ALTER TABLE "public".rbac_user 
+  ALTER COLUMN password SET DATA TYPE varchar(64);

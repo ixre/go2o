@@ -516,7 +516,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	v := &member.Member{
 		Username:     r.Username,
 		Salt:         salt,
-		Password:     domain.Sha1Pwd(r.Password, salt),
+		Password:     domain.MemberSha256Pwd(r.Password, salt),
 		Nickname:     r.Nickname,
 		RealName:     "",
 		ProfilePhoto: "", //todo: default avatar
@@ -756,12 +756,12 @@ func (s *memberService) ChangePassword(_ context.Context, r *proto.ChangePasswor
 	if l := len(r.NewPassword); l != 32 {
 		return s.errorV2(de.ErrNotMD5Format), nil
 	} else {
-		pwd = domain.MemberSha1Pwd(pwd, v.Salt)
+		pwd = domain.MemberSha256Pwd(pwd, v.Salt)
 	}
 	if l := len(old); l > 0 && l != 32 {
 		return s.errorV2(de.ErrNotMD5Format), nil
 	} else {
-		old = domain.MemberSha1Pwd(old, v.Salt)
+		old = domain.MemberSha256Pwd(old, v.Salt)
 	}
 	err := m.Profile().ChangePassword(pwd, old)
 	if err != nil {
@@ -815,7 +815,7 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 	im := s.repo.GetMember(memberId)
 	val := im.GetValue()
 
-	if s := domain.Sha1Pwd(pwd, val.Salt); s != val.Password {
+	if s := domain.MemberSha256Pwd(pwd, val.Salt); s != val.Password {
 		return nil, 1, de.ErrPasswordNotMatch
 	}
 	if val.UserFlag&member.FlagLocked == member.FlagLocked {

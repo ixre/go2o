@@ -12,8 +12,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/etcd"
 	"github.com/ixre/go2o/core/event/msq"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/initial"
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/inject"
@@ -76,4 +78,12 @@ func init() {
 	etcd.InitializeLocker(&cfg)
 	// 初始化事件
 	inject.GetEventSource().Bind()
+	// 初始化私钥
+	initPrivateKey()
+}
+
+func initPrivateKey() {
+	repo := inject.GetRegistryRepo()
+	key, _ := repo.GetValue(registry.SysPrivateKey)
+	domain.ConfigPrivateKey(key)
 }

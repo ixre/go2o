@@ -7,6 +7,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/inject"
 	_ "github.com/ixre/go2o/tests"
 	"github.com/ixre/gof/crypto"
@@ -35,7 +36,7 @@ func TestModifyMemberProfile(t *testing.T) {
 func TestModifyMemberPwd(t *testing.T) {
 	m := inject.GetMemberRepo().GetMember(31)
 	md5 := crypto.Md5([]byte("123456"))
-	pwd := domain.Sha1Pwd(md5, m.GetValue().Salt)
+	pwd := domain.MemberSha256Pwd(md5, m.GetValue().Salt)
 	// 7c4a8d09ca3762af61e59520943dc26494f8941b
 	err := m.Profile().ChangePassword(pwd, "")
 	if err != nil {
@@ -172,7 +173,7 @@ func TestToBePremium(t *testing.T) {
 func TestChangePassword(t *testing.T) {
 	repo := inject.GetMemberRepo()
 	m := repo.GetMember(2)
-	NewPassword := domain.MemberSha1Pwd(domain.Md5("13268240456"),
+	NewPassword := domain.MemberSha256Pwd(domain.Md5("13268240456"),
 		m.GetValue().Salt)
 	err := m.Profile().ChangePassword(NewPassword, "")
 	if err != nil {
@@ -327,4 +328,15 @@ func TestMemberWalletRefreeze(t *testing.T) {
 	}, 0)
 	l = wr.GetWalletLog_(tradeLogId)
 	t.Logf("冻结金额:%d, 钱包余额:%d", l.ChangeValue, l.Balance)
+}
+
+func TestBatchChangeMemberPassword(t *testing.T) {
+	db := provide.GetGOrm()
+	var memberList []*member.Member
+	tx := db.Model(&member.Member{})
+	tx.Scan(&memberList)
+	for _, v := range memberList {
+		v.Password = domain.MemberSha256Pwd(domain.Md5("123456"), v.Salt)
+		db.Save(v)
+	}
 }

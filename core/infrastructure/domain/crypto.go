@@ -11,20 +11,17 @@ package domain
 
 import (
 	"errors"
+
 	"github.com/ixre/gof/crypto"
-	"strings"
 )
 
 var (
-	Sha1OffSet = ""
+	// 私钥
+	privateKey = ""
 )
 
-// 密码SHA1加密
-func Sha1Pwd(pwd string, salt string) string {
-	if pwd == "" {
-		return ""
-	}
-	return crypto.Sha1([]byte(strings.Join([]string{pwd, salt}, "")))
+func ConfigPrivateKey(key string) {
+	privateKey = key
 }
 
 // MD5加密
@@ -42,14 +39,18 @@ func ChkPwdRight(pwd string) (bool, error) {
 	return true, nil
 }
 
-func Sha1(s string) string {
-	return crypto.Sha1([]byte(s))
+// HmacSha256
+func HmacSha256(s string) string {
+	if len(privateKey) == 0 {
+		panic("privateKey is empty, please call ConfigPrivateKey to set it")
+	}
+	return crypto.HmacSha256([]byte(s), []byte(privateKey))
 }
 
 // 加密会员密码,因为可能会使用手机号码登录，
 // 所以密码不能依据用户名作为生成凭据
-func MemberSha1Pwd(pwd string, salt string) string {
-	return Sha1Pwd(pwd, salt)
+func MemberSha256Pwd(pwd string, salt string) string {
+	return HmacSha256(pwd + salt)
 }
 
 // 交易密码
@@ -57,23 +58,23 @@ func TradePassword(pwd string, salt string) string {
 	if pwd == "" {
 		return ""
 	}
-	return Sha1Pwd(pwd, salt)
+	return HmacSha256(pwd + salt)
 }
 
 // 加密合作商密码
-func MerchantSha1Pwd(pwd string, salt string) string {
+func MerchantSha265Pwd(pwd string, salt string) string {
 	if pwd == "" {
 		return ""
 	}
-	return Sha1Pwd(pwd, salt)
+	return HmacSha256(pwd + salt)
 }
 
-// 密码Md5加密
-func Md5Pwd(pwd, str string) string {
-	return crypto.Md5([]byte(strings.Join([]string{str, Sha1OffSet, pwd}, "")))
+// 超级管理员密码
+func SuperPassword(username, pwd string) string {
+	return HmacSha256(username + pwd)
 }
 
-// 密码SHA1加密
-func ShaPwd(pwd, p string) string {
-	return crypto.Sha1([]byte(strings.Join([]string{p, pwd, Sha1OffSet}, "")))
+// 系统用户密码
+func RbacPassword(pwd string, salt string) string {
+	return HmacSha256(pwd + salt)
 }

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"strings"
 	"time"
 
@@ -60,8 +59,8 @@ func initSuperLoginToken(repo registry.IRegistryRepo) {
 	value, _ := repo.GetValue(registry.SysSuperLoginToken)
 	if strings.TrimSpace(value) == "" {
 		pwd := util.RandString(8)
-		log.Printf(`[ GO2O][ INFO]: the initial super pwd is '%s', it only show first time. plese save it.\n`, pwd)
-		token := domain.Sha1("master" + crypto.Md5([]byte(pwd)))
+		logger.Info(`[ GO2O][ INFO]: the initial super pwd is %s, it only show first time. plese save it.\n`, pwd)
+		token := domain.HmacSha256("master" + crypto.Md5([]byte(pwd)))
 		_ = repo.UpdateValue(registry.SysSuperLoginToken, token)
 	}
 
@@ -69,11 +68,12 @@ func initSuperLoginToken(repo registry.IRegistryRepo) {
 
 // 初始化jwt密钥
 func initJWTSecret(repo registry.IRegistryRepo) {
-	value, _ := repo.GetValue(registry.SysJWTSecret)
-	if strings.TrimSpace(value) == "" {
-		_, privateKey, _ := crypto.GenRsaKeys(2048)
-		_ = repo.UpdateValue(registry.SysJWTSecret, privateKey)
+	privateKey, _ := repo.GetValue(registry.SysPrivateKey)
+	if strings.TrimSpace(privateKey) == "" {
+		_, privateKey, _ = crypto.GenRsaKeys(2048)
+		_ = repo.UpdateValue(registry.SysPrivateKey, privateKey)
 	}
+	domain.ConfigPrivateKey(privateKey)
 }
 
 // 初始化导航数据

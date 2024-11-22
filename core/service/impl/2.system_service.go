@@ -226,12 +226,12 @@ func (s *systemServiceImpl) UpdateSuperCredential(_ context.Context, user *proto
 		return s.errorV2(de.ErrNotMD5Format), nil
 	}
 	username := "master"
-	oldPassword := domain.Sha1Pwd(username+user.OldPassword, "")
+	oldPassword := domain.SuperPassword(username, user.OldPassword)
 	pwd, _ := s.registryRepo.GetValue(registry.SysSuperLoginToken)
 	if pwd != oldPassword {
 		return s.errorV2(de.ErrPasswordNotMatch), nil
 	}
-	newPwd := domain.Sha1Pwd(username+user.NewPassword, "")
+	newPwd := domain.SuperPassword(username, user.NewPassword)
 	err := s.registryRepo.UpdateValue(registry.SysSuperLoginToken, newPwd)
 	return s.errorV2(err), nil
 }

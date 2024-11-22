@@ -8,13 +8,14 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/inject"
 	_ "github.com/ixre/go2o/tests"
 )
 
 func TestMerchantPwd2(t *testing.T) {
 	s := domain.Md5("123456")
-	println(domain.Sha1Pwd(s, ""))
+	println(domain.MerchantSha265Pwd(s, ""))
 }
 
 // 测试创建商户
@@ -32,7 +33,7 @@ func TestCreateMerchant(t *testing.T) {
 		City:     110000,
 		District: 0,
 	}
-	v.Password = domain.MerchantSha1Pwd(domain.Md5("123456"), v.Salt)
+	v.Password = domain.MerchantSha265Pwd(domain.Md5("123456"), v.Salt)
 	im := repo.CreateMerchant(v)
 	err := im.SetValue(v)
 	if err == nil {
@@ -319,5 +320,16 @@ func TestMerchantTransactionBill(t *testing.T) {
 			t.FailNow()
 		}
 		t.Logf("结算成功")
+	}
+}
+
+func TestBatchChangeMerchantPassword(t *testing.T) {
+	db := provide.GetGOrm()
+	var merchantList []*merchant.Merchant
+	tx := db.Model(&merchant.Merchant{})
+	tx.Scan(&merchantList)
+	for _, v := range merchantList {
+		v.Password = domain.MemberSha256Pwd(domain.Md5("123456"), v.Salt)
+		db.Save(v)
 	}
 }
