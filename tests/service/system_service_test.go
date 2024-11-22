@@ -32,8 +32,12 @@ func TestCheckSensitive(t *testing.T) {
 // 测试更新超级管理员密码
 func TestUpdateSuperPassword(t *testing.T) {
 	ret, _ := inject.GetSystemService().UpdateSuperCredential(context.TODO(), &proto.SuperPassswordRequest{
-		OldPassword: crypto.Md5([]byte("e2JQ4EaW")),
+		OldPassword: crypto.Md5([]byte("123456")),
 		NewPassword: crypto.Md5([]byte("123456")),
 	})
-	t.Log(ret)
+	if ret.Code != 0 {
+		t.Fatal(ret.Message)
+		t.FailNow()
+	}
+	t.Log("更新成功")
 }

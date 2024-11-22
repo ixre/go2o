@@ -82,7 +82,7 @@ func (p *rbacServiceImpl) UserLogin(_ context.Context, r *proto.RbacLoginRequest
 	// 超级管理员登录
 	if r.Username == "master" {
 		superPwd, _ := p.registryRepo.GetValue(registry.SysSuperLoginToken)
-		encPwd := domain.SuperPassword(r.Username+r.Password, "")
+		encPwd := domain.SuperPassword(r.Username, r.Password)
 		if superPwd != encPwd {
 			p.createLoginLog(0, r.IpAddress, 1) // 登录失败
 			return &proto.RbacLoginResponse{
