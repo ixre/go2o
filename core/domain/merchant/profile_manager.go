@@ -44,15 +44,15 @@ func newProfileManager(m *merchantImpl, valRepo valueobject.IValueRepo,
 	}
 }
 
+func (p *profileManagerImpl) getStagingAuthenticate() *merchant.Authenticate {
+	return p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 0)
+}
+
 // SaveAuthenticate implements merchant.IProfileManager.
 func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, error) {
 	err := p.checkAuthenticate(v)
 	if err != nil {
 		return 0, err
-	}
-	auth := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 0)
-	if auth != nil {
-		v.Id = auth.Id
 	}
 	v.MchId = int(p.GetAggregateRootId())
 	v.ReviewStatus = int(enum.ReviewPending)
@@ -61,24 +61,24 @@ func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, er
 	// aName := p.valRepo.GetDistrictNames([]int32{e.Province, e.City, e.District})
 	// e.Location = strings.Join(aName, "")
 	v.UpdateTime = int(time.Now().Unix())
-	e := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 0)
-	if e != nil {
-		v.Id = e.Id
+	auth := p.getStagingAuthenticate()
+	if auth != nil {
+		v.Id = auth.Id
 	}
 	id, err := p._repo.SaveAuthenticate(v)
 	if err == nil {
-		err = p.applyMerchantInitial()
+		err = p.applyMerchantWaitAuthStatus()
 	}
 	return id, err
 }
 
-func (p *profileManagerImpl) applyMerchantInitial() error {
+// 设置商户为待认证状态
+func (p *profileManagerImpl) applyMerchantWaitAuthStatus() error {
 	// 添加待审批标记
-	err := p.merchantImpl.GrantFlag(merchant.FlagAuthenticate)
+	err := p.merchantImpl.GrantFlag(merchant.FlagWaitAuthenticate)
 	if err == nil {
-		p.merchantImpl.Save()
+		_, err = p.merchantImpl.Save()
 	}
-	// 创建账户
 	return err
 }
 
@@ -125,53 +125,25 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 	var err error
 	e := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 0)
 	if e == nil {
-		return errors.New("未找到企业认证信息")
+		return errors.New("未找到待审核的商户认证信息")
 	}
 	if e.ReviewStatus != int(enum.ReviewPending) {
-		return errors.New("企业认证信息已审核")
+		return errors.New("商户认证信息已审核")
 	}
 	e.ReviewTime = int(time.Now().Unix())
 	// 通过审核,将审批的记录删除,同时更新到审核数据
 	if pass {
 		e.ReviewStatus = int(enum.ReviewApproved)
 		e.ReviewRemark = ""
-
 		// 更新企业认证信息
 		err = p.saveMerchantAuthenticate(e)
-		if err != nil {
-			return err
-		}
-		// 保存商户信息
-		v := p.merchantImpl.GetValue()
-		v.MchName = e.MchName
-		v.Address = e.OrgAddress
-		v.Province = e.Province
-		v.City = e.City
-		v.District = e.District
-		if len(v.Tel) == 0 {
-			v.Tel = e.PersonPhone
-		}
-		if v.Status == 0 {
-			// 如果商户状态为待认证,则设置商户已开通
-			v.Status = 1
-		}
-		if err = p.SetValue(&v); err != nil {
-			return err
-		}
-		// 去除待认证标记
-		err = p.merchantImpl.GrantFlag(-merchant.FlagAuthenticate)
-		if err == nil {
-			_, err = p.merchantImpl.Save()
-		}
-		// 为商户添加开票信息
-		p.initInvoiceTitle(e)
 	} else {
 		e.ReviewStatus = int(enum.ReviewRejected)
 		e.ReviewRemark = message
 		_, err = p._repo.SaveAuthenticate(e)
 		if err == nil {
 			// 添加待认证标志
-			err = p.merchantImpl.GrantFlag(merchant.FlagAuthenticate)
+			err = p.merchantImpl.GrantFlag(merchant.FlagWaitAuthenticate)
 			if err == nil {
 				_, err = p.merchantImpl.Save()
 			}
@@ -216,6 +188,33 @@ func (p *profileManagerImpl) saveMerchantAuthenticate(v *merchant.Authenticate) 
 	// 将当前信息作为审核通过的信息
 	v.Version = 1
 	_, err := p._repo.SaveAuthenticate(v)
+	if err == nil {
+		// 更新商户信息
+		mch := p.merchantImpl.GetValue()
+		mch.MchName = v.MchName
+		mch.Address = v.OrgAddress
+		mch.Province = v.Province
+		mch.City = v.City
+		mch.District = v.District
+		if len(mch.Tel) == 0 {
+			mch.Tel = v.PersonPhone
+		}
+		if mch.Status == 0 {
+			// 如果商户状态为待认证,则设置商户已开通
+			mch.Status = 1
+		}
+		err = p.SetValue(&mch)
+		if err != nil {
+			return err
+		}
+		// 去除待认证标记
+		err = p.merchantImpl.GrantFlag(-merchant.FlagWaitAuthenticate)
+		if err == nil {
+			_, err = p.merchantImpl.Save()
+		}
+		// 为商户添加开票信息
+		p.initInvoiceTitle(v)
+	}
 	return err
 }
 

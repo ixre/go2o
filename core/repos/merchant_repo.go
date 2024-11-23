@@ -569,6 +569,6 @@ func (m *merchantRepo) GetMerchantAuthenticate(mchId int, version int) *merchant
 }
 
 func (m *merchantRepo) DeleteOthersAuthenticate(mchId int, id int) error {
-	_, err := m.authRepo.DeleteBy("mch_id = $1 AND id <> $2", mchId, id)
+	_, err := m.authRepo.DeleteBy("mch_id = ? AND id <> ?", mchId, id)
 	return err
 }
