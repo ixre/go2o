@@ -50,6 +50,9 @@ func (p *profileManagerImpl) getStagingAuthenticate() *merchant.Authenticate {
 
 // SaveAuthenticate implements merchant.IProfileManager.
 func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, error) {
+	if v.Id > 0 && v.Version > 0 {
+		return 0, errors.New("已经通过认证,不能再次进行提交认证")
+	}
 	err := p.checkAuthenticate(v)
 	if err != nil {
 		return 0, err
@@ -122,14 +125,15 @@ func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 
 // ReviewAuthenticate 审核商户企业认证信息
 func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error {
-	var err error
 	e := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 0)
 	if e == nil {
+		// 只对待审核的资料进行审核
 		return errors.New("未找到待审核的商户认证信息")
 	}
 	if e.ReviewStatus != int(enum.ReviewPending) {
 		return errors.New("商户认证信息已审核")
 	}
+	var err error
 	e.ReviewTime = int(time.Now().Unix())
 	// 通过审核,将审批的记录删除,同时更新到审核数据
 	if pass {
