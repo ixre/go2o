@@ -155,3 +155,11 @@ ALTER TABLE "public".mch_merchant
 
 ALTER TABLE "public".rbac_user 
   ALTER COLUMN password SET DATA TYPE varchar(64);
+
+-- 20241123 商户认证
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN contact_name varchar(10) DEFAULT '' NOT NULL;
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN contact_phone varchar(11) DEFAULT '' NOT NULL;
+COMMENT ON COLUMN "public".mch_authenticate.contact_name IS '联系人姓名';
+COMMENT ON COLUMN "public".mch_authenticate.contact_phone IS '联系人电话';

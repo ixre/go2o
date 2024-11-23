@@ -176,6 +176,8 @@ func (m *merchantService) SaveAuthenticate(_ context.Context, r *proto.SaveAuthe
 		BankAccountPic:   r.BankAccountPic,
 		BankNo:           r.BankNo,
 		ExtraData:        r.ExtraData,
+		ContactName:      r.ContactName,
+		ContactPhone:     r.ContactPhone,
 		Version:          0,
 	}
 	_, err := mch.ProfileManager().SaveAuthenticate(v)

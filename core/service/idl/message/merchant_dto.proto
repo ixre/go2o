@@ -36,7 +36,7 @@ message SaveAuthenticateRequest{
       // 省
   int32  province = 3;
     // 市
-  int32 city  = 4;
+  int32 city = 4;
     // 区
   int32  district = 5;
   // 公司名称
@@ -73,6 +73,10 @@ message SaveAuthenticateRequest{
   string extraData = 19;
   // 联系人手机
   string personPhone = 20;
+  // 联系人姓名
+  string contactName = 23;
+  // 联系人电话
+  string contactPhone = 24;
 }
 
 

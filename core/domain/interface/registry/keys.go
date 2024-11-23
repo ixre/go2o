@@ -261,7 +261,8 @@ var (
 	MerchantTakeOutCsn = KeyFormat("MerchantTakeOutCsn")
 	// 商户提现
 	MerchantMinTakeOutAmount = KeyFormat("MerchantMinTakeOutAmount")
-
+	// 商户许可授权书/服务协议书模板路径
+	MerchantAuthorityTemplatePath = KeyFormat("MerchantAuthorityTemplatePath")
 	// 商品默认图片
 	GoodsDefaultImage = KeyFormat("GoodsDefaultImage")
 	// 商品最低利润率,既(销售价-供货价)/销售价的比例

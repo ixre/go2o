@@ -67,6 +67,10 @@ type (
 		PersonBackPic string `json:"personBackPic" db:"person_back_pic" gorm:"column:person_back_pic" bson:"personBackPic"`
 		// 银行账户信息表(企业)/银行卡(个体)
 		BankAccountPic string `json:"bankAccountPic" db:"bank_account_pic" gorm:"column:bank_account_pic" bson:"bankAccountPic"`
+		// 联系人姓名
+		ContactName string `json:"contactName" db:"contact_name" gorm:"column:contact_name" bson:"contactName"`
+		// 联系人电话
+		ContactPhone string `json:"contactPhone" db:"contact_phone" gorm:"column:contact_phone" bson:"contactPhone"`
 	}
 
 	// 基本资料管理器
