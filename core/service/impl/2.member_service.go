@@ -30,6 +30,7 @@ import (
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/module"
 	"github.com/ixre/go2o/core/query"
@@ -818,6 +819,8 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 	val := im.GetValue()
 
 	if s := domain.MemberSha256Pwd(pwd, val.Salt); s != val.Password {
+		logger.Info("登陆失败,期望: %s, 实际: %s", val.Password, s)
+
 		return nil, 1, de.ErrPasswordNotMatch
 	}
 	if val.UserFlag&member.FlagLocked == member.FlagLocked {

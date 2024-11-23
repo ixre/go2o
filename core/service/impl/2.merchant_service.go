@@ -523,23 +523,9 @@ func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMercha
 	if len(mchList) > 1 {
 		return nil, 6, errors.New("存在多个相同用户名的商户")
 	}
-	// if mch == nil {
-	// 	// 使用会员身份登录
-	// 	var id int64
-	// 	id, err = m.testMemberLogin(user, domain.MemberSha1Pwd(pwd, ""))
-	// 	if err != nil {
-	// 		return nil, 2, err
-	// 	}
-	// 	mchId, _ := m.GetMerchantIdByMember(context.TODO(), &proto.MemberId{Value: id})
-	// 	if mchId.Value > 0 {
-	// 		mch = m._mchRepo.GetMerchant(int(mchId.Value))
-	// 		return mch, 0, nil
-	// 	}
-	// 	return nil, 2, merchant.ErrNoSuchMerchant
-	// }
 	mch := m._mchRepo.CreateMerchant(mchList[0])
 	mv := mch.GetValue()
-	if pwd := domain.MerchantSha265Pwd(pwd, mch.GetValue().Salt); pwd != mv.Password {
+	if encPwd := domain.MerchantSha265Pwd(pwd, mch.GetValue().Salt); encPwd != mv.Password {
 		return nil, 1, de.ErrPasswordNotMatch
 	}
 	return mch, 0, nil

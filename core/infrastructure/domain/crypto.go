@@ -10,6 +10,8 @@
 package domain
 
 import (
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
 	"strings"
 
@@ -22,7 +24,17 @@ var (
 )
 
 func ConfigPrivateKey(key string) {
-	privateKey = key
+	// 解析私钥
+	block, _ := pem.Decode([]byte(key))
+	if block == nil || block.Type != "RSA PRIVATE KEY" {
+		panic("privateKey is not a valid RSA private key")
+	}
+
+	_, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		panic("privateKey is not a valid RSA private key:" + err.Error())
+	}
+	privateKey = strings.TrimSpace(key)
 }
 
 // MD5加密

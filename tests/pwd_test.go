@@ -24,9 +24,18 @@ func TestMasterPwd(t *testing.T) {
 }
 
 func TestMemberPwd(t *testing.T) {
-	pwd := domain.Md5("594488")
+
+	// 96a28f426f26afb6ba747626bc518f10e7a6d80ddd133232ff228aab254e3f03
+	// 0a45e3f114becc7894987b3e2507a5052294796280f043de1d19b8f706145b99
+	// real:
+	// 1d6dffa5443e6e2dc859c3beb12f302d18537324156d85d31c2c259e2949eae7
+	pwd := domain.Md5("123456")
+	salt := "eAhLIi"
 	t.Log("--pwd=", pwd, "\n")
-	pwd = domain.HmacSha256(pwd)
+	pwd = domain.MemberSha256Pwd(pwd, salt)
+	t.Log("--pwd=", pwd, "\n")
+
+	pwd = domain.MerchantSha265Pwd(pwd, salt)
 	t.Log("--pwd=", pwd, "\n")
 }
 
