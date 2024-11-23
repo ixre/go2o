@@ -137,7 +137,7 @@ COMMENT ON COLUMN "public".mch_merchant.district IS '所在区';
 COMMENT ON COLUMN "public".mch_merchant.address IS '公司地址';
 COMMENT ON COLUMN "public".mch_merchant.logo IS '标志';
 COMMENT ON COLUMN "public".mch_merchant.tel IS '公司电话';
-COMMENT ON COLUMN "public".mch_merchant.status IS '状态: 0:待审核 1:已开通  2:停用  3: 关闭';
+COMMENT ON COLUMN "public".mch_merchant.status IS '状态: 0:未审核 1:已开通  2:停用  3: 关闭';
 COMMENT ON COLUMN "public".mch_merchant.expires_time IS '过期时间';
 COMMENT ON COLUMN "public".mch_merchant.last_login_time IS '最后登录时间';
 COMMENT ON COLUMN "public".mch_merchant.create_time IS '创建时间';

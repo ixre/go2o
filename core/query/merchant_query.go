@@ -132,8 +132,8 @@ func (m *MerchantQuery) QueryPagingMerchantList(p *fw.PagingParams) (_ *fw.Pagin
 }
 
 // GetMerchantAuthenticate 查询商户的认证信息
-func (m *MerchantQuery) GetMerchantAuthenticate(mchId int) *merchant.Authenticate {
-	return m.AuthRepo.FindBy("mch_id = ?", mchId)
+func (m *MerchantQuery) GetMerchantAuthenticate(mchId int, version int) *merchant.Authenticate {
+	return m.AuthRepo.FindBy("mch_id = ? AND version=?", mchId, version)
 }
 
 // 查询分页商户待审核记录

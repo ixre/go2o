@@ -137,7 +137,7 @@ message QMerchant{
   string logo = 13;
   // 公司电话
   string telephone = 14;
-  // 状态: 0:待审核 1:已开通  2:停用  3: 关闭
+  // 状态: 0:未审核 1:已开通  2:停用  3: 关闭
   int32 status = 15;
   // 过期时间
   int64 expiresTime = 16;

@@ -623,7 +623,7 @@ type QMerchant struct {
 	Logo string `protobuf:"bytes,13,opt,name=logo,proto3" json:"logo"`
 	// 公司电话
 	Telephone string `protobuf:"bytes,14,opt,name=telephone,proto3" json:"telephone"`
-	// 状态: 0:待审核 1:已开通  2:停用  3: 关闭
+	// 状态: 0:未审核 1:已开通  2:停用  3: 关闭
 	Status int32 `protobuf:"varint,15,opt,name=status,proto3" json:"status"`
 	// 过期时间
 	ExpiresTime int64 `protobuf:"varint,16,opt,name=expiresTime,proto3" json:"expiresTime"`

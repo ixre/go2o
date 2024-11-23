@@ -255,7 +255,7 @@ type (
 		Logo string `json:"logo" db:"logo" gorm:"column:logo" bson:"logo"`
 		// 公司电话
 		Tel string `json:"tel" db:"tel" gorm:"column:tel" bson:"tel"`
-		// 状态: 0:待审核 1:已开通  2:停用  3: 关闭
+		// 状态: 0:未审核 1:已开通  2:停用  3: 关闭
 		Status int16 `json:"status" db:"status" gorm:"column:status" bson:"status"`
 		// 过期时间
 		ExpiresTime int `json:"expiresTime" db:"expires_time" gorm:"column:expires_time" bson:"expiresTime"`

@@ -50,6 +50,10 @@ func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, er
 	if err != nil {
 		return 0, err
 	}
+	auth := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 0)
+	if auth != nil {
+		v.Id = auth.Id
+	}
 	v.MchId = int(p.GetAggregateRootId())
 	v.ReviewStatus = int(enum.ReviewPending)
 	v.ReviewRemark = ""
@@ -165,6 +169,13 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 		e.ReviewStatus = int(enum.ReviewRejected)
 		e.ReviewRemark = message
 		_, err = p._repo.SaveAuthenticate(e)
+		if err == nil {
+			// 添加待认证标志
+			err = p.merchantImpl.GrantFlag(merchant.FlagAuthenticate)
+			if err == nil {
+				_, err = p.merchantImpl.Save()
+			}
+		}
 	}
 	return err
 }

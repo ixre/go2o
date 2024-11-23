@@ -559,24 +559,13 @@ func (m *merchantRepo) GetMerchantByMemberId(memberId int) merchant.IMerchantAgg
 
 // SaveAuthenticate Save 商户认证信息
 func (m *merchantRepo) SaveAuthenticate(v *merchant.Authenticate) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.Id))
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:Authenticate\n", err.Error())
-	}
-	return id, err
+	dst, err := m.authRepo.Save(v)
+	return dst.Id, err
 }
 
 // GetMerchantAuthenticate implements merchant.IMerchantRepo.
 func (m *merchantRepo) GetMerchantAuthenticate(mchId int, version int) *merchant.Authenticate {
-	e := merchant.Authenticate{}
-	err := m._orm.GetBy(&e, "mch_id = $1 AND version= $2", mchId, version)
-	if err == nil {
-		return &e
-	}
-	if err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:Authenticate\n", err.Error())
-	}
-	return nil
+	return m.authRepo.FindBy("mch_id = ? AND version= ?", mchId, version)
 }
 
 func (m *merchantRepo) DeleteOthersAuthenticate(mchId int, id int) error {
