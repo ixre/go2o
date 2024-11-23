@@ -93,8 +93,8 @@ func TestChangePasswordAndCheckLogin(t *testing.T) {
 
 func TestCheckUserLogin(t *testing.T) {
 	ret, _ := inject.GetMemberService().CheckLogin(context.TODO(), &proto.LoginRequest{
-		Username: "13162222872",
-		Password: "14e1b600b1fd579f47433b88e8d85291",
+		Username: "13068686358",
+		Password: crypto.Md5([]byte("309303")),
 	})
 	if ret.Code > 0 {
 		t.Error(ret.Message)

@@ -758,10 +758,12 @@ func (s *memberService) ChangePassword(_ context.Context, r *proto.ChangePasswor
 	} else {
 		pwd = domain.MemberSha256Pwd(pwd, v.Salt)
 	}
-	if l := len(old); l > 0 && l != 32 {
-		return s.errorV2(de.ErrNotMD5Format), nil
-	} else {
-		old = domain.MemberSha256Pwd(old, v.Salt)
+	if l := len(old); l > 0 {
+		if l != 32 {
+			return s.errorV2(de.ErrNotMD5Format), nil
+		} else {
+			old = domain.MemberSha256Pwd(old, v.Salt)
+		}
 	}
 	err := m.Profile().ChangePassword(pwd, old)
 	if err != nil {
