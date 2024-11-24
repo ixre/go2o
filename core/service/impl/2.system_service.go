@@ -13,6 +13,7 @@ import (
 	"context"
 	"encoding/json"
 	"regexp"
+	"sort"
 	"strings"
 
 	de "github.com/ixre/go2o/core/domain/interface/domain"
@@ -425,7 +426,7 @@ func (s *systemServiceImpl) GetOptionNames(_ context.Context, req *proto.GetName
 func (s *systemServiceImpl) GetChildOptions(_ context.Context, req *proto.OptionsRequest) (*proto.OptionsResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Options()
 	options := isa.GetChildOptions(int(req.ParentId), req.TypeName)
-
+	sort.Sort(sys.GeneralOptions(options))
 	ret := collections.MapList(options, func(o *sys.GeneralOption) *proto.SOption {
 		return &proto.SOption{
 			Id:     int64(o.Id),

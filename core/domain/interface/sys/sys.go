@@ -13,6 +13,8 @@
 package sys
 
 import (
+	"sort"
+
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
@@ -132,4 +134,23 @@ type GeneralOption struct {
 
 func (s GeneralOption) TableName() string {
 	return "sys_general_option"
+}
+
+// GeneralOptions 通用选项列表排序
+var _ sort.Interface = GeneralOptions{}
+
+type GeneralOptions []*GeneralOption
+
+// Less implements sort.Interface.
+func (s GeneralOptions) Less(i int, j int) bool {
+	return s[i].SortNum < s[j].SortNum
+}
+
+// Swap implements sort.Interface.
+func (s GeneralOptions) Swap(i int, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s GeneralOptions) Len() int {
+	return len(s)
 }

@@ -149,13 +149,6 @@ func (m *MerchantQuery) QueryPagingAuthenticates(p *fw.PagingParams) (_ *fw.Pagi
 	return ret, err
 }
 
-// 查询商户的认证信息
-func (m *MerchantQuery) QueryMerchantAuthenticates(mchId int) []*merchant.Authenticate {
-	var ret []*merchant.Authenticate
-	m.ORM.Find(&ret, "mch_id = ?", mchId)
-	return ret
-}
-
 // GetStaffTransferInfo 获取转商户信息
 func (m *MerchantQuery) GetStaffTransferInfo(staffId int64) (ret struct {
 	TxId            int                     `json:"txId"`
