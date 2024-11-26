@@ -163,3 +163,62 @@ ALTER TABLE "public".mch_authenticate
   ADD COLUMN contact_phone varchar(11) DEFAULT '' NOT NULL;
 COMMENT ON COLUMN "public".mch_authenticate.contact_name IS '联系人姓名';
 COMMENT ON COLUMN "public".mch_authenticate.contact_phone IS '联系人电话';
+
+ -- 20241126 商户全称
+ALTER TABLE "public".mch_merchant 
+  ADD COLUMN full_name varchar(128) DEFAULT '' NOT NULL;
+COMMENT ON COLUMN "public".mch_merchant.full_name IS '商户全称';
+
+update "public".mch_merchant set full_name=(select org_name from "public".mch_authenticate where mch_id=id);
+update "public".mch_merchant set full_name=mch_name where full_name='';
+
+ALTER TABLE "public".mm_member 
+  ADD COLUMN country_code varchar(20) DEFAULT 'CN' NOT NULL;
+ALTER TABLE "public".mm_member 
+  ADD COLUMN region_code int8 DEFAULT 0 NOT NULL;
+ALTER TABLE "public".mm_member 
+  ADD COLUMN create_time int8 DEFAULT 0 NOT NULL;
+
+COMMENT ON COLUMN "public".mm_member.country_code IS '国家代码';
+COMMENT ON COLUMN "public".mm_member.region_code IS '城市编码';
+COMMENT ON COLUMN "public".mm_member.create_time IS '注册时间';
+
+-- 更新注册时间
+update "public".mm_member set create_time=reg_time;
+
+
+DROP TABLE IF EXISTS mm_extra_field CASCADE;
+CREATE TABLE mm_extra_field (
+  id                   BIGSERIAL NOT NULL, 
+  member_id            int8 NOT NULL, 
+  exp                  int8 DEFAULT '0'::bigint NOT NULL, 
+  reg_ip               varchar(20) NOT NULL, 
+  reg_from             varchar(20) NOT NULL, 
+  reg_time             int8 NOT NULL, 
+  check_code           varchar(8) NOT NULL, 
+  check_expires        int4 NOT NULL, 
+  personal_service_uid int4 NOT NULL, 
+  login_time           int4 NOT NULL, 
+  last_login_time      int4 DEFAULT 0 NOT NULL, 
+  update_time          int8 DEFAULT 0 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mm_extra_field IS '会员额外属性';
+COMMENT ON COLUMN mm_extra_field.exp IS '经验值';
+COMMENT ON COLUMN mm_extra_field.reg_ip IS '注册IP';
+COMMENT ON COLUMN mm_extra_field.reg_from IS '注册来源';
+COMMENT ON COLUMN mm_extra_field.reg_time IS '注册时间';
+COMMENT ON COLUMN mm_extra_field.check_code IS '校验码';
+COMMENT ON COLUMN mm_extra_field.check_expires IS '校验码过期时间';
+COMMENT ON COLUMN mm_extra_field.personal_service_uid IS '私人客服人员编号';
+COMMENT ON COLUMN mm_extra_field.login_time IS '登录时间';
+COMMENT ON COLUMN mm_extra_field.last_login_time IS '最后登录时间';
+COMMENT ON COLUMN mm_extra_field.update_time IS '更新时间';
+
+-- 插入会员扩展信息
+insert into mm_extra_field (member_id, exp, reg_ip, reg_from, 
+reg_time, check_code, check_expires, personal_service_uid,
+ login_time, last_login_time, update_time)
+select id, exp, reg_ip, reg_from, reg_time, check_code, 
+check_expires, 0, login_time, 
+last_login_time, update_time from mm_member
+WHERE id < 10;

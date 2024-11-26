@@ -90,6 +90,8 @@ type (
 		Invitation() IInvitationManager
 		// GetValue 获取值
 		GetValue() Member
+		// ExtraFields 获取扩展字段
+		Extra() ExtraField
 		// GetAccount 获取账户
 		GetAccount() IAccount
 		// SendCheckCode 发送验证码,传入操作及消息类型,并返回验证码,及错误
@@ -140,6 +142,9 @@ type (
 
 		// Save 保存
 		Save() (int64, error)
+
+		// SubmitRegistration 提交注册
+		SubmitRegistration(data *SubmitRegistrationData) error
 	}
 
 	// IProfileManager 会员资料服务
@@ -223,6 +228,14 @@ type (
 		Favored(favType int, referId int64) bool
 		// Cancel 取消收藏
 		Cancel(favType int, referId int64) error
+	}
+
+	SubmitRegistrationData struct {
+
+		// 注册IP
+		RegIp string
+		// 注册来源
+		RegFrom string
 	}
 
 	// ComplexMember 会员概览信息
@@ -502,29 +515,31 @@ type Member struct {
 	// 交易密码
 	TradePassword string `json:"tradePwd" db:"trade_pwd" gorm:"column:trade_pwd" bson:"tradePwd"`
 	// 经验值
-	Exp int `json:"exp" db:"exp" gorm:"column:exp" bson:"exp"`
+	//Exp int `json:"exp" db:"exp" gorm:"column:exp" bson:"exp"`
 	// 等级
 	Level int `json:"level" db:"level" gorm:"column:level" bson:"level"`
+	// 国家代码
+	CountryCode string `json:"countryCode" db:"country_code" gorm:"column:country_code" bson:"countryCode"`
+	// 城市编码
+	RegionCode int `json:"regionCode" db:"region_code" gorm:"column:region_code" bson:"regionCode"`
 	// 高级用户类型
 	PremiumUser int `json:"premiumUser" db:"premium_user" gorm:"column:premium_user" bson:"premiumUser"`
 	// 高级用户过期时间
 	PremiumExpires int `json:"premiumExpires" db:"premium_expires" gorm:"column:premium_expires" bson:"premiumExpires"`
 	// 注册IP
-	RegIp string `json:"regIp" db:"reg_ip" gorm:"column:reg_ip" bson:"regIp"`
+	//RegIp string `json:"regIp" db:"reg_ip" gorm:"column:reg_ip" bson:"regIp"`
 	// 注册来源
-	RegFrom string `json:"regFrom" db:"reg_from" gorm:"column:reg_from" bson:"regFrom"`
+	//RegFrom string `json:"regFrom" db:"reg_from" gorm:"column:reg_from" bson:"regFrom"`
 	// 注册时间
-	RegTime int `json:"regTime" db:"reg_time" gorm:"column:reg_time" bson:"regTime"`
+	//RegTime int `json:"regTime" db:"reg_time" gorm:"column:reg_time" bson:"regTime"`
 	// 校验码
-	CheckCode string `json:"checkCode" db:"check_code" gorm:"column:check_code" bson:"checkCode"`
+	//CheckCode string `json:"checkCode" db:"check_code" gorm:"column:check_code" bson:"checkCode"`
 	// 校验码过期时间
-	CheckExpires int `json:"checkExpires" db:"check_expires" gorm:"column:check_expires" bson:"checkExpires"`
+	//CheckExpires int `json:"checkExpires" db:"check_expires" gorm:"column:check_expires" bson:"checkExpires"`
 	// 登录时间
-	LoginTime int `json:"loginTime" db:"login_time" gorm:"column:login_time" bson:"loginTime"`
+	//LoginTime int `json:"loginTime" db:"login_time" gorm:"column:login_time" bson:"loginTime"`
 	// 最后登录时间
-	LastLoginTime int `json:"lastLoginTime" db:"last_login_time" gorm:"column:last_login_time" bson:"lastLoginTime"`
-	// 更新时间
-	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	//LastLoginTime int `json:"lastLoginTime" db:"last_login_time" gorm:"column:last_login_time" bson:"lastLoginTime"`
 	// 会员标志
 	UserFlag int `json:"userFlag" db:"user_flag" gorm:"column:user_flag" bson:"userFlag"`
 	// 用户编码
@@ -543,10 +558,42 @@ type Member struct {
 	Salt string `json:"salt" db:"salt" gorm:"column:salt" bson:"salt"`
 	// 角色标志
 	RoleFlag int `json:"roleFlag" db:"role_flag" gorm:"column:role_flag" bson:"roleFlag"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// 注册时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 }
 
 func (m Member) TableName() string {
 	return "mm_member"
+}
+
+// ExtraField 会员额外属性
+type ExtraField struct {
+	// Id
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// MemberId
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// 经验值
+	Exp int `json:"exp" db:"exp" gorm:"column:exp" bson:"exp"`
+	// 注册IP
+	RegIp string `json:"regIp" db:"reg_ip" gorm:"column:reg_ip" bson:"regIp"`
+	// 注册来源
+	RegFrom string `json:"regFrom" db:"reg_from" gorm:"column:reg_from" bson:"regFrom"`
+	// 注册时间
+	RegTime int `json:"regTime" db:"reg_time" gorm:"column:reg_time" bson:"regTime"`
+	// 校验码
+	CheckCode string `json:"checkCode" db:"check_code" gorm:"column:check_code" bson:"checkCode"`
+	// 校验码过期时间
+	CheckExpires int `json:"checkExpires" db:"check_expires" gorm:"column:check_expires" bson:"checkExpires"`
+	// 私人客服人员编号
+	PersonalServiceUid int `json:"personalServiceUid" db:"personal_service_uid" gorm:"column:personal_service_uid" bson:"personalServiceUid"`
+	// 登录时间
+	LoginTime int `json:"loginTime" db:"login_time" gorm:"column:login_time" bson:"loginTime"`
+	// 最后登录时间
+	LastLoginTime int `json:"lastLoginTime" db:"last_login_time" gorm:"column:last_login_time" bson:"lastLoginTime"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 }
 
 // 会员邀请关系

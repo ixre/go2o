@@ -17,32 +17,28 @@ message SMember {
     sint32 role = 4;
     /** 用户名 */
     string username = 5;
-    /** 经验值 */
-    sint64 exp = 6;
     /** 等级  */
-    sint32 level = 7;
+    sint32 level = 6;
+    /** 国家代码 */
+    string countryCode = 7;
+    /** 地区代码 */
+    sint32 regionCode = 8;
     /** 会员头像 */
-    string profilePhoto = 8;
+    string profilePhoto = 9;
     /** 昵称 */
-    string nickname = 9;
-    /** 注册IP */
-    string regIp = 10;
-    /** 注册来源 */
-    string regFrom = 11;
+    string nickname = 11;
     /** 手机号  */
-    string phone = 12;
+    string phone = 14;
     /** 电子邮箱 */
-    string email = 13;
+    string email = 15;
     /** 真实姓名 */
-    string realName = 14;
+    string realName = 16;
     /** 高级用户级别 */
-    sint32 premiumUser = 15;
+    sint32 premiumUser = 17;
     /** 高级用户过期时间 */
-    sint64 premiumExpires = 16;
+    sint64 premiumExpires = 18;
     /** 注册时间 */
-    int64 regTime = 17;
-    /** 最后登录时间 */
-    int64 lastLoginTime = 18;
+    int64 createTime = 19;
   }
   
 

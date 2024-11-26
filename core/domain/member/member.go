@@ -40,6 +40,7 @@ var _ member.IMemberAggregateRoot = new(memberImpl)
 type memberImpl struct {
 	manager         member.IMemberManager
 	value           *member.Member
+	_extra          *member.ExtraField
 	account         member.IAccount
 	level           *member.Level
 	repo            member.IMemberRepo
@@ -80,11 +81,12 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	lv := m.GetLevel()
 	pf := m.Profile()
 	tr := pf.GetCertificationInfo()
+	extra := m.Extra()
 	s := &member.ComplexMember{
 		Nickname:            mv.Nickname,
 		RealName:            mv.RealName,
 		Avatar:              mv.ProfilePhoto,
-		Exp:                 mv.Exp,
+		Exp:                 extra.Exp,
 		Level:               mv.Level,
 		LevelName:           lv.Name,
 		TrustAuthState:      tr.ReviewStatus,
@@ -139,13 +141,43 @@ func (m *memberImpl) GetValue() member.Member {
 	return *m.value
 }
 
+func (m *memberImpl) Extra() member.ExtraField {
+	return *m.getExtra()
+}
+
+// getExtra 获取扩展字段
+func (m *memberImpl) getExtra() *member.ExtraField {
+	if m._extra == nil {
+		m._extra = m.repo.ExtraRepo().FindBy("member_id=?", m.GetAggregateRootId())
+		if m._extra == nil {
+			m._extra = &member.ExtraField{
+				Id:                 0,
+				MemberId:           m.GetAggregateRootId(),
+				Exp:                0,
+				RegIp:              "",
+				RegFrom:            "",
+				RegTime:            0,
+				CheckCode:          "",
+				CheckExpires:       0,
+				PersonalServiceUid: 0,
+				LoginTime:          0,
+				LastLoginTime:      0,
+				UpdateTime:         0,
+			}
+			m.repo.ExtraRepo().Save(m._extra)
+		}
+	}
+	return m._extra
+}
+
 // SendCheckCode 发送验证码,并返回验证码
 func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error) {
+	extra := m.getExtra()
 	const expiresMinutes = 10 //10分钟生效
 	code := domain.NewCheckCode(4)
-	m.value.CheckCode = code
-	m.value.CheckExpires = int(time.Now().Add(time.Minute * expiresMinutes).Unix())
-	_, err := m.Save()
+	extra.CheckCode = code
+	extra.CheckExpires = int(time.Now().Add(time.Minute * expiresMinutes).Unix())
+	_, err := m.repo.ExtraRepo().Save(extra)
 	if err == nil {
 		// 创建参数
 		data := []string{
@@ -179,10 +211,11 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 
 // CompareCode 对比验证码
 func (m *memberImpl) CompareCode(code string) error {
-	if m.value.CheckCode != strings.TrimSpace(code) {
+	extra := m.getExtra()
+	if extra.CheckCode != strings.TrimSpace(code) {
 		return de.ErrCheckCodeError
 	}
-	if m.value.CheckExpires < int(time.Now().Unix()) {
+	if extra.CheckExpires < int(time.Now().Unix()) {
 		return de.ErrCheckCodeExpires
 	}
 	return nil
@@ -204,9 +237,13 @@ func (m *memberImpl) GetAccount() member.IAccount {
 
 // AddExp 增加经验值
 func (m *memberImpl) AddExp(exp int) error {
-	m.value.Exp += exp
-	_, err := m.Save()
-	m.checkLevelUp() //判断是否升级
+	extra := m.getExtra()
+	extra.Exp += exp
+	_, err := m.repo.ExtraRepo().Save(extra)
+	if err == nil {
+		// 判断是否升级
+		m.checkLevelUp()
+	}
 	return err
 }
 
@@ -238,7 +275,8 @@ func (m *memberImpl) GetLevel() *member.Level {
 // 检查升级
 func (m *memberImpl) checkLevelUp() bool {
 	lg := m.manager.LevelManager()
-	levelId := lg.GetLevelIdByExp(m.value.Exp)
+	extra := m.getExtra()
+	levelId := lg.GetLevelIdByExp(extra.Exp)
 	if levelId == 0 {
 		return false
 	}
@@ -303,11 +341,14 @@ func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
 		if err = m.updateLevel(level); err != nil {
 			return err
 		}
-		m.value.Exp = lv.RequireExp
-		m.value.UpdateTime = int(unix)
 		_, err = m.Save()
 		if err == nil {
 			m.level = nil
+			// 更新经验值
+			extra := m.getExtra()
+			extra.Exp = lv.RequireExp
+			extra.UpdateTime = int(unix)
+			_, err = m.repo.ExtraRepo().Save(extra)
 		}
 	}
 	return err
@@ -359,9 +400,13 @@ func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
 				if err = m.updateLevel(l.TargetLevel); err != nil {
 					return err
 				}
-				m.value.Exp = lv.RequireExp
-				m.value.UpdateTime = int(time.Now().Unix())
 				_, err = m.Save()
+				if err == nil {
+					extra := m.getExtra()
+					extra.Exp = lv.RequireExp
+					extra.UpdateTime = int(time.Now().Unix())
+					_, err = m.repo.ExtraRepo().Save(extra)
+				}
 			}
 			return err
 		} else {
@@ -431,10 +476,11 @@ func (m *memberImpl) ChangeUsername(user string) error {
 // UpdateLoginTime 更新登录时间
 func (m *memberImpl) UpdateLoginTime() error {
 	unix := time.Now().Unix()
-	m.value.LastLoginTime = m.value.LoginTime
-	m.value.LoginTime = int(unix)
-	m.value.UpdateTime = int(unix)
-	_, err := m.Save()
+	extra := m.getExtra()
+	extra.LastLoginTime = extra.LoginTime
+	extra.LoginTime = int(unix)
+	extra.UpdateTime = int(unix)
+	_, err := m.repo.ExtraRepo().Save(extra)
 	return err
 }
 
@@ -448,15 +494,22 @@ func (m *memberImpl) Save() (int64, error) {
 		}
 		return int64(m.value.Id), err
 	}
-	return m.create(m.value)
+	return 0, errors.New("member not registration")
 }
 
 func (m *memberImpl) pushSaveEvent(create bool) {
 	rl := m.GetRelation()
+	regFrom := ""
+	if create {
+		// 推送注册来源
+		extra := m.getExtra()
+		regFrom = extra.RegFrom
+	}
 	eventbus.Dispatch(&events.MemberPushEvent{
 		IsCreate:  create,
 		Member:    m.value,
 		InviterId: int(rl.InviterId),
+		RegFrom:   regFrom,
 	})
 }
 
@@ -524,7 +577,7 @@ func (m *memberImpl) Unlock() error {
 }
 
 // 根据注册来源计算会员角色身份
-func (m *memberImpl) getUserRoleFlag(v *member.Member) int {
+func (m *memberImpl) getUserRoleFlag(v *member.ExtraField) int {
 	ret := member.RoleUser
 	if len(v.RegFrom) != 0 {
 		// 根据注册来源设置角色
@@ -565,29 +618,46 @@ func (m *memberImpl) updateLevel(levelId int) error {
 }
 
 // 创建会员
-func (m *memberImpl) create(v *member.Member) (int64, error) {
+func (m *memberImpl) SubmitRegistration(data *member.SubmitRegistrationData) error {
+	v := m.value
 	err := m.prepare()
+	extra := &member.ExtraField{}
 	if err == nil {
 		unix := time.Now().Unix()
-		v.RegTime = int(unix)
-		v.LastLoginTime = int(unix)
+		// 初始化经验值
+		extra.Exp = 0
+		extra.RegTime = int(unix)
+		extra.LastLoginTime = int(unix)
+		extra.RegIp = data.RegIp
+		extra.RegFrom = data.RegFrom
+
+		v.CreateTime = int(unix)
 		// 初始化等级
 		m.updateLevel(0)
-		v.Exp = 0
+		// 初始化国家信息
+		if v.CountryCode == "" {
+			v.CountryCode = "CN"
+		}
+		// 初始化城市
+		if v.RegionCode <= 0 {
+			v.RegionCode = -1
+		}
+
 		// 设置VIP用户信息
 		v.PremiumUser = member.PremiumNormal
 		v.PremiumExpires = 0
 		// 创建一个用户编码/邀请码
 		v.UserCode = m.generateMemberCode()
 		id, err1 := m.repo.SaveMember(v)
+
 		if err1 == nil {
 			m.value.Id = int(id)
-			go m.memberInit()
+			go m.memberInit(extra)
 		} else {
 			err = err1
 		}
 	}
-	return int64(m.GetAggregateRootId()), err
+	return err
 }
 
 // 验证用户名
@@ -605,11 +675,21 @@ func (m *memberImpl) checkUser(user string) error {
 }
 
 // 会员初始化
-func (m *memberImpl) memberInit() error {
+func (m *memberImpl) memberInit(extra *member.ExtraField) error {
 	// 创建账户
 	m.account = newAccount(m, &member.Account{},
 		m.repo, m.manager, m.walletRepo, m.registryRepo)
-	if _, err := m.account.Save(); err != nil {
+	_, err := m.account.Save()
+	if err != nil {
+		return err
+	}
+	// 创建初始化数据
+	extra.MemberId = int(m.GetAggregateRootId())
+	_, err = m.repo.ExtraRepo().Save(extra)
+	if err == nil {
+		// 如果为中国大陆IP,则记录IP信息
+		go m.updateRegionInfo(extra)
+	} else {
 		return err
 	}
 	// 注册后赠送积分
@@ -624,6 +704,13 @@ func (m *memberImpl) memberInit() error {
 	}
 	go m.pushSaveEvent(true)
 	return nil
+}
+
+func (m *memberImpl) updateRegionInfo(extra *member.ExtraField) {
+	if m.value.CountryCode == "CN" && extra.RegIp != "" {
+		// 如果为中国大陆IP,则记录IP信息
+		//todo:...
+	}
 }
 
 // 检查注册信息是否正确

@@ -50,6 +50,7 @@ type MemberRepoImpl struct {
 	_blockRepo    fw.Repository[member.BlockList]
 	_oauthRepo    fw.Repository[member.OAuthAccount]
 	_relationRepo fw.Repository[member.InviteRelation]
+	_extraRepo    fw.Repository[member.ExtraField]
 	_orm          orm.Orm
 	_o            fw.ORM
 }
@@ -67,6 +68,10 @@ func (m *MemberRepoImpl) OAuthRepo() fw.Repository[member.OAuthAccount] {
 		m._oauthRepo = &fw.BaseRepository[member.OAuthAccount]{ORM: m._o}
 	}
 	return m._oauthRepo
+}
+
+func (m *MemberRepoImpl) ExtraRepo() fw.Repository[member.ExtraField] {
+	return m._extraRepo
 }
 
 var memberRepoImplMapped = false
@@ -87,7 +92,8 @@ func NewMemberRepo(sto storage.Interface, o orm.Orm, no fw.ORM,
 		walletRepo:    walletRepo,
 		valueRepo:     valRepo,
 		registryRepo:  registryRepo,
-		_relationRepo: &fw.BaseRepository[member.InviteRelation]{ORM: no},
+		_relationRepo: fw.NewRepository[member.InviteRelation](no),
+		_extraRepo:    fw.NewRepository[member.ExtraField](no),
 	}
 }
 

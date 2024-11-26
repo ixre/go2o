@@ -15,6 +15,8 @@ import (
 )
 
 type IMemberRepo interface {
+	// 额外属性仓储
+	ExtraRepo() fw.Repository[ExtraField]
 	// 黑名单仓储
 	BlockRepo() fw.Repository[BlockList]
 	// OAuth仓储

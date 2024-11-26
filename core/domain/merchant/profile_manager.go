@@ -140,7 +140,7 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 		e.ReviewStatus = int(enum.ReviewApproved)
 		e.ReviewRemark = ""
 		// 更新企业认证信息
-		err = p.saveMerchantAuthenticate(e)
+		err = p.saveMerchantApprovedAuthenticate(e)
 	} else {
 		e.ReviewStatus = int(enum.ReviewRejected)
 		e.ReviewRemark = message
@@ -186,7 +186,7 @@ func (p *profileManagerImpl) initInvoiceTitle(e *merchant.Authenticate) error {
 }
 
 // 保存企业认证信息
-func (p *profileManagerImpl) saveMerchantAuthenticate(v *merchant.Authenticate) error {
+func (p *profileManagerImpl) saveMerchantApprovedAuthenticate(v *merchant.Authenticate) error {
 	// 删除之前已认证过的信息
 	p._repo.DeleteOthersAuthenticate(p.GetAggregateRootId(), v.Id)
 	// 将当前信息作为审核通过的信息
@@ -196,6 +196,7 @@ func (p *profileManagerImpl) saveMerchantAuthenticate(v *merchant.Authenticate) 
 		// 更新商户信息
 		mch := p.merchantImpl.GetValue()
 		mch.MchName = v.MchName
+		mch.FullName = v.OrgName
 		mch.Address = v.OrgAddress
 		mch.Province = v.Province
 		mch.City = v.City

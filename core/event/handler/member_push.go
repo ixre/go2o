@@ -15,22 +15,21 @@ func (h *EventHandler) HandleMemberPushEvent(data interface{}) {
 	}
 	m := v.Member
 	ev := &proto.EVMemberPushEventData{
-		MemberId:      int64(v.Member.Id),
-		IsNewMember:   v.IsCreate,
-		UserCode:      m.UserCode,
-		UserFlag:      int32(m.UserFlag),
-		Role:          int32(m.RoleFlag),
-		Username:      m.Username,
-		Exp:           int64(m.Exp),
-		Level:         int32(m.Level),
-		Nickname:      m.Nickname,
-		ProfilePhoto:  m.ProfilePhoto,
-		Phone:         m.Phone,
-		Email:         m.Email,
-		RegFrom:       m.RegFrom,
-		InviterId:     int64(v.InviterId),
-		RealName:      m.RealName,
-		LastLoginTime: int64(v.Member.LastLoginTime),
+		MemberId:     int64(v.Member.Id),
+		IsNewMember:  v.IsCreate,
+		UserCode:     m.UserCode,
+		UserFlag:     int32(m.UserFlag),
+		Role:         int32(m.RoleFlag),
+		Username:     m.Username,
+		CountryCode:  m.CountryCode,
+		Level:        int32(m.Level),
+		Nickname:     m.Nickname,
+		ProfilePhoto: m.ProfilePhoto,
+		Phone:        m.Phone,
+		Email:        m.Email,
+		RegFrom:      v.RegFrom,
+		InviterId:    int64(v.InviterId),
+		RealName:     m.RealName,
 	}
 
 	msq.Push(msq.MemberUpdated, typeconv.MustJson(ev))

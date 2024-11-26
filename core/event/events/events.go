@@ -75,6 +75,8 @@ type MemberPushEvent struct {
 	Member *member.Member
 	// 邀请人编号
 	InviterId int
+	// 注册来源
+	RegFrom string
 }
 
 // 会员账户推送事件

@@ -237,6 +237,8 @@ type (
 		Salt string `json:"salt" db:"salt" gorm:"column:salt" bson:"salt"`
 		// 名称
 		MchName string `json:"mchName" db:"mch_name" gorm:"column:mch_name" bson:"mchName"`
+		// 全称
+		FullName string `json:"fullName" db:"full_name" gorm:"column:full_name" bson:"fullName"`
 		// 是否自营
 		IsSelf int16 `json:"isSelf" db:"is_self" gorm:"column:is_self" bson:"isSelf"`
 		// 标志

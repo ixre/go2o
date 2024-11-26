@@ -433,7 +433,8 @@ func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.MemberIdReq
 	im := s.repo.GetMember(id.MemberId)
 	if im != nil {
 		v := im.GetValue()
-		level.Exp = int32(v.Exp)
+		extra := im.Extra()
+		level.Exp = int32(extra.Exp)
 		level.Level = int32(v.Level)
 		lv := im.GetLevel()
 		level.LevelName = lv.Name
@@ -445,7 +446,7 @@ func (s *memberService) MemberLevelInfo(_ context.Context, id *proto.MemberIdReq
 			level.NextLevel = int32(nextLv.Id)
 			level.NextLevelName = nextLv.Name
 			level.NextProgramSignal = nextLv.ProgramSignal
-			level.RequireExp = int32(nextLv.RequireExp - v.Exp)
+			level.RequireExp = int32(nextLv.RequireExp - extra.Exp)
 		}
 	}
 	return level, nil
@@ -516,16 +517,15 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	salt := util.RandString(6)
 	v := &member.Member{
 		Username:     r.Username,
-		Salt:         salt,
 		Password:     domain.MemberSha256Pwd(r.Password, salt),
+		Salt:         salt,
 		Nickname:     r.Nickname,
+		CountryCode:  r.CountryCode,
 		RealName:     "",
 		ProfilePhoto: "", //todo: default avatar
 		RoleFlag:     int(r.UserType),
 		Phone:        r.Phone,
 		Email:        r.Email,
-		RegFrom:      r.RegFrom,
-		RegIp:        r.RegIp,
 	}
 	// 验证邀请码
 	inviterId, err := s.repo.GetManager().CheckInviteRegister(r.InviterCode)
@@ -545,7 +545,11 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	}
 	// 创建会员
 	m := s.repo.CreateMember(v)
-	id, err := m.Save()
+	err = m.SubmitRegistration(&member.SubmitRegistrationData{
+		RegIp:   r.RegIp,
+		RegFrom: r.RegFrom,
+	})
+	id := m.GetAggregateRootId()
 	if err == nil {
 		if inviterId > 0 {
 			// 绑定邀请人
@@ -566,7 +570,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 			ErrMsg:  err.Error(),
 		}, nil
 	}
-	return &proto.RegisterResponse{MemberId: id}, nil
+	return &proto.RegisterResponse{MemberId: int64(id)}, nil
 }
 
 // 获取注册商户雇员的商户信息,如果其他角色,则返回nil
@@ -1673,12 +1677,11 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		Id:             int64(src.Id),
 		Username:       src.Username,
 		UserCode:       src.UserCode,
-		Exp:            int64(src.Exp),
 		Level:          int32(src.Level),
+		CountryCode:    src.CountryCode,
+		RegionCode:     int32(src.RegionCode),
 		PremiumUser:    int32(src.PremiumUser),
 		PremiumExpires: int64(src.PremiumExpires),
-		RegIp:          src.RegIp,
-		RegFrom:        src.RegFrom,
 		UserFlag:       int32(src.UserFlag),
 		Role:           int32(src.RoleFlag),
 		ProfilePhoto:   src.ProfilePhoto,
@@ -1686,8 +1689,7 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		Email:          src.Email,
 		Nickname:       src.Nickname,
 		RealName:       src.RealName,
-		RegTime:        int64(src.RegTime),
-		LastLoginTime:  int64(src.LastLoginTime),
+		CreateTime:     int64(src.CreateTime),
 	}
 }
 

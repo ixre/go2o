@@ -29,20 +29,22 @@ message RegisterMemberRequest {
   string password = 2;
   // 昵称
   string nickname = 3;
+  // 国家代码
+  string countryCode = 4;
   // 手机
-  string phone = 4;
+  string phone = 5;
   // 邮箱
-  string email = 5;
+  string email = 6;
   // 邀请人代码
-  string inviterCode = 6;
+  string inviterCode = 7;
   // 角色标志,1: 用户, 2:商户雇员, 4:扩展1, 8:扩展2, 16:扩展3  
-  sint32 userType = 7;
+  sint32 userType = 8;
   // 注册IP
-  string regIp = 8;
+  string regIp = 9;
   // 注册来源
-  string regFrom = 9;
+  string regFrom = 10;
   // 扩展字段
-  map<string,string> ext = 10;
+  map<string,string> ext = 11;
 }
 
 // 登录请求
