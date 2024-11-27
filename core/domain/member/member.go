@@ -168,7 +168,6 @@ func (m *memberImpl) getExtra() *member.ExtraField {
 				LastLoginTime:      0,
 				UpdateTime:         0,
 			}
-			m.repo.ExtraRepo().Save(m._extra)
 		}
 	}
 	return m._extra
