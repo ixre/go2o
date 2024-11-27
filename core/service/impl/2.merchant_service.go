@@ -1386,6 +1386,7 @@ func (m *merchantService) parseMerchantBill(bill *merchant.MerchantBill) *proto.
 		TotalRefundAmount: int64(bill.RefundAmount),
 		Status:            int32(bill.Status),
 		SettleStatus:      int32(bill.SettleStatus),
+		SettleResult:      int32(bill.SettleResult),
 		SettleSpCode:      bill.SettleSpCode,
 		SettleTxNo:        bill.SettleTxNo,
 		SettleRemark:      bill.SettleRemark,
@@ -1459,7 +1460,7 @@ func (m *merchantService) UpdateSettlement(_ context.Context, req *proto.UpdateM
 	if bill == nil {
 		return m.errorV2(errors.New("账单不存在")), nil
 	}
-	err := bill.UpdateSettleInfo(req.SpCode, req.SettleTxNo, req.Message)
+	err := bill.UpdateSettleInfo(req.SpCode, req.SettleTxNo, int(req.SettleResult), req.Message)
 	if err != nil {
 		return m.errorV2(err), nil
 	}

@@ -232,6 +232,7 @@ func (s *transactionManagerImpl) GenerateMonthlyBill(year, month int) error {
 			BillRemark:   "",
 			UserRemark:   "",
 			SettleStatus: merchant.BillWaitSettlement, // 待结算
+			SettleResult: merchant.BillResultNone,     // 结算在途
 			SettleSpCode: "",
 			SettleTxNo:   "",
 			SettleRemark: "",
@@ -255,11 +256,15 @@ func (s *transactionManagerImpl) GenerateMonthlyBill(year, month int) error {
 		bill.Status = int(merchant.BillStatusReviewed)
 		// 月结账单不需结算
 		bill.SettleStatus = merchant.BillNoSettlement
+		// 结算结果
+		bill.SettleResult = merchant.BillResultNone
 	} else {
 		// 月结账单,需要商户确认
 		bill.Status = int(merchant.BillStatusWaitConfirm)
 		// 待结算
 		bill.SettleStatus = merchant.BillWaitSettlement
+		// 结算在途
+		bill.SettleResult = merchant.BillResultPending
 	}
 	_, err := s._billRepo.Save(bill)
 	return err
@@ -325,9 +330,13 @@ func (b *billDomainImpl) Generate() error {
 		b._value.Status = int(merchant.BillStatusWaitReview)
 		if period == merchant.BillTypeDaily {
 			b._value.SettleStatus = merchant.BillWaitSettlement
+			// 结算结果
+			b._value.SettleResult = merchant.BillResultPending
 		} else {
 			// 结算周期为：月结, 不需结算
 			b._value.SettleStatus = merchant.BillNoSettlement
+			// 结算结果
+			b._value.SettleResult = merchant.BillResultNone
 		}
 	} else {
 		// 月结账单
@@ -335,10 +344,14 @@ func (b *billDomainImpl) Generate() error {
 			// 结算周期为: 需要商户确认
 			b._value.Status = int(merchant.BillStatusWaitConfirm)
 			b._value.SettleStatus = merchant.BillWaitSettlement
+			// 结算结果
+			b._value.SettleResult = merchant.BillResultPending
 		} else {
 			// 结算周期为：日结, 不需要商户确认
 			b._value.Status = int(merchant.BillStatusWaitReview)
 			b._value.SettleStatus = merchant.BillNoSettlement
+			// 结算结果
+			b._value.SettleResult = merchant.BillResultNone
 		}
 	}
 	if b._value.TxAmount == 0 && b._value.TxFee == 0 {
@@ -390,6 +403,7 @@ func (b *billDomainImpl) Review(reviewerId int, remark string) error {
 	if b._value.TxAmount == 0 && b._value.TxFee == 0 {
 		// 如果账单金额为零，则自动结算完成
 		b._value.SettleStatus = merchant.BillSettlemented
+		b._value.SettleResult = merchant.BillResultSuccess
 	}
 	b._value.UpdateTime = int(time.Now().Unix())
 	_, err := b._repo.BillRepo().Save(b._value)
@@ -436,13 +450,20 @@ func (b *billDomainImpl) Settle() error {
 }
 
 // UpdateSettleInfo 更新结算信息
-func (b *billDomainImpl) UpdateSettleInfo(spCode string, settleTxNo string, message string) error {
+func (b *billDomainImpl) UpdateSettleInfo(spCode string, settleTxNo string, settleResult int, message string) error {
 	if b._value.SettleStatus != merchant.BillSettlemented {
 		return errors.New("账单尚未结算")
 	}
+	if b._value.SettleStatus == merchant.BillNoSettlement {
+		return errors.New("账单无需结算")
+	}
+	// if b._value.SettleResult == merchant.BillResultSuccess {
+	// 	return errors.New("结算结果为成功,无需更新")
+	// }
 	b._value.SettleSpCode = spCode
 	b._value.SettleTxNo = settleTxNo
 	b._value.SettleRemark = message
+	b._value.SettleResult = settleResult
 	b._value.UpdateTime = int(time.Now().Unix())
 	_, err := b._repo.BillRepo().Save(b._value)
 	return err

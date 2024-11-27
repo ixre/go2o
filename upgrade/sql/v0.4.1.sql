@@ -169,8 +169,7 @@ ALTER TABLE "public".mch_merchant
   ADD COLUMN full_name varchar(128) DEFAULT '' NOT NULL;
 COMMENT ON COLUMN "public".mch_merchant.full_name IS '商户全称';
 
-update "public".mch_merchant set full_name=(select org_name from "public".mch_authenticate where mch_id=id);
-update "public".mch_merchant set full_name=mch_name where full_name='';
+update "public".mch_merchant set full_name=COALESCE((select org_name from "public".mch_authenticate where mch_id=id),mch_name);
 
 ALTER TABLE "public".mm_member 
   ADD COLUMN country_code varchar(20) DEFAULT 'CN' NOT NULL;
@@ -256,3 +255,16 @@ ALTER TABLE "public".mm_member
   DROP COLUMN last_login_time;
 ALTER TABLE "public".mm_member 
   DROP COLUMN exp;
+
+
+-- 20241127 账单状态
+ALTER TABLE mch_bill 
+  ADD COLUMN settle_result int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN mch_bill.status IS '账单状态:  0: 待生成 1: 待确认   2: 待复核 3: 已复核';
+COMMENT ON COLUMN mch_bill.settle_status IS '0: 不需要结算 1: 待结算 2: 结算失败 3: 已结算';
+COMMENT ON COLUMN mch_bill.settle_result IS '结算结果 0: 无结算 1:  结算在途  2: 结算失败  3: 结算到帐';
+COMMENT ON COLUMN mch_bill.settle_remark IS '结算备注';
+COMMENT ON COLUMN mch_bill.create_time IS '创建时间';
+COMMENT ON COLUMN mch_bill.build_time IS '账单生成时间';
+COMMENT ON COLUMN mch_bill.update_time IS '更新时间';
+

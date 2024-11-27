@@ -47,6 +47,17 @@ const (
 )
 
 const (
+	// 无需结算
+	BillResultNone = 0
+	// 结算在途
+	BillResultPending = 1
+	// 结算失败
+	BillResultFailed = 2
+	// 结算到帐
+	BillResultSuccess = 3
+)
+
+const (
 	// 账单金额类型:商城
 	BillAmountTypeShop = 0
 	// 账单金额类型:线下
@@ -91,7 +102,7 @@ type IBillDomain interface {
 	// Settle 结算账单
 	Settle() error
 	// UpdateSettleInfo 更新结算信息,settleTxNo 结算单号, message 错误信息
-	UpdateSettleInfo(spCode string, settleTxNo string, message string) error
+	UpdateSettleInfo(spCode string, settleTxNo string, settleResult int, message string) error
 }
 
 // MerchantBillSettleEvent 账单结算事件
@@ -144,21 +155,23 @@ type MerchantBill struct {
 	ReviewTime int `json:"reviewTime" db:"review_time" gorm:"column:review_time" bson:"reviewTime"`
 	// 账单备注
 	BillRemark string `json:"billRemark" db:"bill_remark" gorm:"column:bill_remark" bson:"billRemark"`
-	// UserRemark
+	// 用户备注
 	UserRemark string `json:"userRemark" db:"user_remark" gorm:"column:user_remark" bson:"userRemark"`
-	// SettleStatus
+	// 结算状态 0: 无需结算 1: 待结算 2: 已结算
 	SettleStatus int `json:"settleStatus" db:"settle_status" gorm:"column:settle_status" bson:"settleStatus"`
-	// SettleSpCode
+	// 结算通道编码
 	SettleSpCode string `json:"settleSpCode" db:"settle_sp_code" gorm:"column:settle_sp_code" bson:"settleSpCode"`
-	// SettleTxNo
+	// 结算单号
 	SettleTxNo string `json:"settleTxNo" db:"settle_tx_no" gorm:"column:settle_tx_no" bson:"settleTxNo"`
-	// SettleRemark
+	// 结算结果 0: 无需结算 1: 结算在途  2: 结算失败  3: 结算到帐
+	SettleResult int `json:"settleResult" db:"settle_result" gorm:"column:settle_result" bson:"settleResult"`
+	// 结算备注
 	SettleRemark string `json:"settleRemark" db:"settle_remark" gorm:"column:settle_remark" bson:"settleRemark"`
-	// CreateTime
+	// 创建时间
 	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
-	// BuildTime
+	// 账单生成时间
 	BuildTime int `json:"buildTime" db:"build_time" gorm:"column:build_time" bson:"buildTime"`
-	// UpdateTime
+	// 更新时间
 	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 }
 

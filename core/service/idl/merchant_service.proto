@@ -325,14 +325,16 @@ message SMerchantBill{
     string settleSpCode = 17;
     // 结算单号
     string settleTxNo = 18;
+    // 结算结果: 0: 无需结算 1: 结算在途 2: 结算失败 3: 结算到帐
+    int32 settleResult = 19;
     // 结算备注
-    string settleRemark = 19;
+    string settleRemark = 20;
     // 创建时间
-    int64 createTime = 20;
+    int64 createTime = 21;
     // 账单生成时间
-    int64 buildTime = 21;
+    int64 buildTime = 22;
     // 更新时间
-    int64 updateTime = 22;
+    int64 updateTime = 23;
 }
 
 // 手动调整商户账单金额请求
@@ -411,8 +413,10 @@ message UpdateMerchantSettlementRequest{
     string spCode = 3;
     // 结算单号
     string settleTxNo = 4;
+    // 结算结果: 1: 结算在途 2: 结算失败 3: 结算到帐
+    int32 settleResult = 5;
     // 结算备注
-    string message = 5;
+    string message = 6;
 }
 
 // 商户申请发票请求
