@@ -125,7 +125,7 @@ func (m *MerchantQuery) QueryPagingMerchantList(p *fw.PagingParams) (_ *fw.Pagin
         (SELECT COUNT(1) FROM mch_online_shop s WHERE s.vendor_id=p.id) as online_shops`)
 	// (SELECT COUNT(1) FROM mch_offline_shop s WHERE s.mch_id=p.id AND shop_type=2) as ofs_num`)
 	for _, v := range ret.Rows {
-		r := fw.ParsePagingRow(v)
+		r := fw.ParseRow(v)
 		r.Excludes("password")
 	}
 	return ret, err
@@ -143,7 +143,7 @@ func (m *MerchantQuery) QueryPagingAuthenticates(p *fw.PagingParams) (_ *fw.Pagi
 	ret, err := fw.UnifinedQueryPaging(m.ORM, p, tables, `
 			 a.*,p.mch_name`)
 	for _, v := range ret.Rows {
-		r := fw.ParsePagingRow(v)
+		r := fw.ParseRow(v)
 		r.Excludes("password")
 	}
 	return ret, err
@@ -230,7 +230,7 @@ func (m *MerchantQuery) QueryTransferStaffs(mchId int, transferType int, p *fw.P
 	}
 	rows, err := fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
 	for _, row := range rows.Rows {
-		r := fw.ParsePagingRow(row)
+		r := fw.ParseRow(row)
 		isApproval := r.Get("assignUid").(int64) == int64(mchId) && r.Get("reviewStatus").(int64) == 1
 		r.Put("isApproval", isApproval)
 		r.Put("isTransferIn", r.Get("transferMchId").(int64) == int64(mchId))
@@ -242,7 +242,7 @@ func (m *MerchantQuery) QueryTransferStaffs(mchId int, transferType int, p *fw.P
 func (m *MerchantQuery) QueryPagingBills(p *fw.PagingParams) (*fw.PagingResult, error) {
 	tables := `mch_bill b
 		INNER JOIN mch_merchant m ON m.id = b.mch_id`
-	fields := `b.*,m.mch_name`
+	fields := `b.*,m.mch_name,m.full_name`
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
 }
 

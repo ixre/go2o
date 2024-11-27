@@ -28,11 +28,12 @@ type MemberQuery struct {
 	db.Connector
 	o orm.Orm
 	fw.BaseRepository[member.Member]
-	balanceLog  fw.BaseRepository[member.BalanceLog]
-	integralLog fw.BaseRepository[member.IntegralLog]
-	walletLog   fw.BaseRepository[wallet.WalletLog]
-	levelRepo   fw.BaseRepository[member.Level]
-	certRepo    fw.BaseRepository[member.CerticationInfo]
+	_balanceLog  fw.BaseRepository[member.BalanceLog]
+	_integralLog fw.BaseRepository[member.IntegralLog]
+	_walletLog   fw.BaseRepository[wallet.WalletLog]
+	_levelRepo   fw.BaseRepository[member.Level]
+	_certRepo    fw.BaseRepository[member.CerticationInfo]
+	_extraRepo   fw.Repository[member.ExtraField]
 }
 
 func NewMemberQuery(o orm.Orm, fo fw.ORM) *MemberQuery {
@@ -40,11 +41,12 @@ func NewMemberQuery(o orm.Orm, fo fw.ORM) *MemberQuery {
 		Connector: o.Connector(),
 		o:         o}
 	q.ORM = fo
-	q.balanceLog.ORM = fo
-	q.integralLog.ORM = fo
-	q.walletLog.ORM = fo
-	q.levelRepo.ORM = fo
-	q.certRepo.ORM = fo
+	q._balanceLog.ORM = fo
+	q._integralLog.ORM = fo
+	q._walletLog.ORM = fo
+	q._levelRepo.ORM = fo
+	q._certRepo.ORM = fo
+	q._extraRepo = fw.NewRepository[member.ExtraField](fo)
 	return q
 }
 
@@ -431,12 +433,29 @@ LEFT JOIN mm_account ac ON m.id = ac.member_id
 LEFT JOIN mm_profile pro ON pro.member_id = m.id`
 
 	fields := `
-	distinct(m.id),m.nickname,m.real_name,m.username,m.exp,m.profile_photo,pro.gender,pro.birthday,
+	distinct(m.id),m.nickname,m.real_name,m.username,m.profile_photo,pro.gender,pro.birthday,
 	m.phone,m.level,m.user_flag,ac.integral,ac.balance,
-	ac.total_pay,ac.wallet_balance,m.reg_from,m.reg_time,m.login_time,
+	ac.total_pay,ac.wallet_balance,m.create_time,
 	(SELECT id FROM mm_member m2 WHERE m2.id = r.inviter_id) as inviter_id
 `
-	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+	rows, err := fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+	if err == nil {
+		members := make([]int, len(rows.Rows))
+		memberMap := make(map[int]*fw.EffectRow, len(rows.Rows))
+		for i, v := range rows.Rows {
+			r := fw.ParseRow(v)
+			members[i] = r.GetInt("id")
+			memberMap[members[i]] = r
+		}
+		extraFields := m._extraRepo.FindList(&fw.QueryOption{
+			Limit: len(members),
+		}, "member_id IN ?", members)
+		for _, v := range extraFields {
+			memberMap[v.MemberId].Put("loginTime", v.LoginTime)
+			memberMap[v.MemberId].Put("regFrom", v.RegFrom)
+		}
+	}
+	return rows, err
 }
 
 // QueryPagingStaffs 查询商户员工列表
@@ -469,12 +488,12 @@ func (m *MemberQuery) QueryMemberBlockList(p *fw.PagingParams) (*fw.PagingResult
 
 func (m *MemberQuery) QueryPagingMemberBalanceLogs(memberId int, p *fw.PagingParams) (*fw.PagingResult, error) {
 	p.Equal("member_id", memberId)
-	return m.balanceLog.QueryPaging(p)
+	return m._balanceLog.QueryPaging(p)
 }
 
 func (m *MemberQuery) QueryPagingMemberIntegralLogs(memberId int, p *fw.PagingParams) (*fw.PagingResult, error) {
 	p.Equal("member_id", memberId)
-	return m.integralLog.QueryPaging(p)
+	return m._integralLog.QueryPaging(p)
 }
 
 func (m *MemberQuery) QueryPagingMemberWalletLogs(memberId int, p *fw.PagingParams) (*fw.PagingResult, error) {
@@ -484,7 +503,7 @@ func (m *MemberQuery) QueryPagingMemberWalletLogs(memberId int, p *fw.PagingPara
 		return nil, fmt.Errorf("user no such wallet,id=%d", memberId)
 	}
 	p.Equal("wallet_id", walletId)
-	return m.walletLog.QueryPaging(p)
+	return m._walletLog.QueryPaging(p)
 }
 
 // QueryPagingCertifications 查询会员认证列表
@@ -498,5 +517,10 @@ ti.review_status,ti.remark,ti.update_time,ti.card_id`
 
 // QueryPagingLevels 查询会员等级列表
 func (m *MemberQuery) QueryPagingLevels(p *fw.PagingParams) (*fw.PagingResult, error) {
-	return m.levelRepo.QueryPaging(p)
+	return m._levelRepo.QueryPaging(p)
+}
+
+// GetMemberExtraField 获取会员扩展字段
+func (m *MemberQuery) GetMemberExtraField(memberId int64) *member.ExtraField {
+	return m._extraRepo.FindBy("member_id = ?", memberId)
 }

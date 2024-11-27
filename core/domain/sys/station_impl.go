@@ -89,7 +89,7 @@ func NewStationManager(repo sys.IStationRepo, sysRepo sys.ISystemRepo, sysRootIm
 // SyncStations implements sys.IStationManager.
 func (s *stationManagerImpl) SyncStations() error {
 	is := s.sysRepo.GetSystemAggregateRoot()
-	arr := is.Address().GetAllCities()
+	arr := is.Location().GetAllCities()
 	stations := s.repo.GetStations()
 	syncArray := make([]*sys.District, 0)
 	for _, v := range arr {
@@ -159,7 +159,7 @@ func (s *stationManagerImpl) FindStationByCity(cityCode int) sys.IStationDomain 
 		return s.repo.GetStation(dst.Id)
 	}
 	// 查找直辖市站点
-	d := s.sysRootImpl.Address().GetDistrict(cityCode)
+	d := s.sysRootImpl.Location().GetDistrict(cityCode)
 	if d == nil {
 		// 地区不存在
 		return nil

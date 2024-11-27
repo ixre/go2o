@@ -363,7 +363,7 @@ func (s *systemServiceImpl) GetSmsApiSet() mss.SmsApiSet {
 // GetChildDistrict 获取下级区域
 func (s *systemServiceImpl) GetChildDistrict(_ context.Context, code *proto.DistrictChildrenRequest) (*proto.AreaListResponse, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot()
-	addr := isa.Address()
+	addr := isa.Location()
 	arr := addr.GetChildrenDistricts(int(code.ParentId))
 	ret := collections.MapList(arr, func(d *sys.District) *proto.SDistrict {
 		return &proto.SDistrict{
@@ -380,7 +380,7 @@ func (s *systemServiceImpl) GetChildDistrict(_ context.Context, code *proto.Dist
 
 // GetDistrictNames 获取地区名称
 func (s *systemServiceImpl) GetDistrictNames(_ context.Context, request *proto.GetNamesRequest) (*proto.IntStringMapResponse, error) {
-	isa := s.sysRepo.GetSystemAggregateRoot().Address()
+	isa := s.sysRepo.GetSystemAggregateRoot().Location()
 	codes := collections.MapList(request.Value, func(i int32) int {
 		return int(i)
 	})
@@ -452,7 +452,7 @@ func (s *systemServiceImpl) GetAreaString(_ context.Context, r *proto.AreaString
 // FindCity implements proto.SystemServiceServer.
 func (s *systemServiceImpl) FindCity(_ context.Context, req *proto.FindAreaRequest) (*proto.SArea, error) {
 	is := s.sysRepo.GetSystemAggregateRoot()
-	isa := is.Address()
+	isa := is.Location()
 	city := isa.FindCity(req.Name)
 	if city == nil {
 		return &proto.SArea{}, nil
@@ -477,7 +477,7 @@ func (s *systemServiceImpl) GetStation(_ context.Context, req *proto.GetStationR
 	}
 
 	v := isa.GetValue()
-	ia := s.sysRepo.GetSystemAggregateRoot().Address()
+	ia := s.sysRepo.GetSystemAggregateRoot().Location()
 	d := ia.GetDistrict(int(v.CityCode))
 	ret := &proto.SStation{
 		Id:         int64(isa.GetDomainId()),

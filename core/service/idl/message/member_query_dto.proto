@@ -21,24 +21,22 @@ message SMember {
     sint32 level = 6;
     /** 国家代码 */
     string countryCode = 7;
-    /** 地区代码 */
-    sint32 regionCode = 8;
     /** 会员头像 */
-    string profilePhoto = 9;
+    string profilePhoto = 8;
     /** 昵称 */
-    string nickname = 11;
+    string nickname = 9;
     /** 手机号  */
-    string phone = 14;
+    string phone = 10;
     /** 电子邮箱 */
-    string email = 15;
+    string email = 11;
     /** 真实姓名 */
-    string realName = 16;
+    string realName = 12;
     /** 高级用户级别 */
-    sint32 premiumUser = 17;
+    sint32 premiumUser = 13;
     /** 高级用户过期时间 */
-    sint64 premiumExpires = 18;
+    sint64 premiumExpires = 14;
     /** 注册时间 */
-    int64 createTime = 19;
+    int64 createTime = 15;
   }
   
 

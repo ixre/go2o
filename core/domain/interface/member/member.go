@@ -514,32 +514,14 @@ type Member struct {
 	Password string `json:"password" db:"password" gorm:"column:password" bson:"password"`
 	// 交易密码
 	TradePassword string `json:"tradePwd" db:"trade_pwd" gorm:"column:trade_pwd" bson:"tradePwd"`
-	// 经验值
-	//Exp int `json:"exp" db:"exp" gorm:"column:exp" bson:"exp"`
 	// 等级
 	Level int `json:"level" db:"level" gorm:"column:level" bson:"level"`
 	// 国家代码
 	CountryCode string `json:"countryCode" db:"country_code" gorm:"column:country_code" bson:"countryCode"`
-	// 城市编码
-	RegionCode int `json:"regionCode" db:"region_code" gorm:"column:region_code" bson:"regionCode"`
 	// 高级用户类型
 	PremiumUser int `json:"premiumUser" db:"premium_user" gorm:"column:premium_user" bson:"premiumUser"`
 	// 高级用户过期时间
 	PremiumExpires int `json:"premiumExpires" db:"premium_expires" gorm:"column:premium_expires" bson:"premiumExpires"`
-	// 注册IP
-	//RegIp string `json:"regIp" db:"reg_ip" gorm:"column:reg_ip" bson:"regIp"`
-	// 注册来源
-	//RegFrom string `json:"regFrom" db:"reg_from" gorm:"column:reg_from" bson:"regFrom"`
-	// 注册时间
-	//RegTime int `json:"regTime" db:"reg_time" gorm:"column:reg_time" bson:"regTime"`
-	// 校验码
-	//CheckCode string `json:"checkCode" db:"check_code" gorm:"column:check_code" bson:"checkCode"`
-	// 校验码过期时间
-	//CheckExpires int `json:"checkExpires" db:"check_expires" gorm:"column:check_expires" bson:"checkExpires"`
-	// 登录时间
-	//LoginTime int `json:"loginTime" db:"login_time" gorm:"column:login_time" bson:"loginTime"`
-	// 最后登录时间
-	//LastLoginTime int `json:"lastLoginTime" db:"last_login_time" gorm:"column:last_login_time" bson:"lastLoginTime"`
 	// 会员标志
 	UserFlag int `json:"userFlag" db:"user_flag" gorm:"column:user_flag" bson:"userFlag"`
 	// 用户编码
@@ -578,6 +560,8 @@ type ExtraField struct {
 	Exp int `json:"exp" db:"exp" gorm:"column:exp" bson:"exp"`
 	// 注册IP
 	RegIp string `json:"regIp" db:"reg_ip" gorm:"column:reg_ip" bson:"regIp"`
+	// 城市编码
+	RegionCode int `json:"regionCode" db:"region_code" gorm:"column:region_code" bson:"regionCode"`
 	// 注册来源
 	RegFrom string `json:"regFrom" db:"reg_from" gorm:"column:reg_from" bson:"regFrom"`
 	// 注册时间
@@ -594,6 +578,10 @@ type ExtraField struct {
 	LastLoginTime int `json:"lastLoginTime" db:"last_login_time" gorm:"column:last_login_time" bson:"lastLoginTime"`
 	// 更新时间
 	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+}
+
+func (e *ExtraField) TableName() string {
+	return "mm_extra_field"
 }
 
 // 会员邀请关系

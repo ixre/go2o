@@ -24,8 +24,8 @@ type (
 	ISystemAggregateRoot interface {
 		domain.IAggregateRoot
 
-		// Address 获取地址管理器
-		Address() IAddressManager
+		// Location 获取地址管理器
+		Location() ILocationManager
 
 		// Options 获取选项管理器
 		Options() IOptionManager
@@ -46,8 +46,8 @@ type (
 		LastUpdateTime() int64
 	}
 
-	// IAddressManager 地址管理器
-	IAddressManager interface {
+	// ILocationManager 地址管理器
+	ILocationManager interface {
 		// GetAllCities 获取所有城市
 		GetAllCities() []*District
 		// GetChildrenDistricts 获取区域信息
@@ -58,6 +58,8 @@ type (
 		FindCity(name string) *District
 		// GetDistrict 获取区域信息
 		GetDistrict(id int) *District
+		// FindRegionByIp 根据IP查找区域信息
+		FindRegionByIp(ip string) (*District, error)
 	}
 
 	// IOptionManager 选项管理器

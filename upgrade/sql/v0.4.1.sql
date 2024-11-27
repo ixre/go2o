@@ -174,13 +174,11 @@ update "public".mch_merchant set full_name=mch_name where full_name='';
 
 ALTER TABLE "public".mm_member 
   ADD COLUMN country_code varchar(20) DEFAULT 'CN' NOT NULL;
-ALTER TABLE "public".mm_member 
-  ADD COLUMN region_code int8 DEFAULT 0 NOT NULL;
+
 ALTER TABLE "public".mm_member 
   ADD COLUMN create_time int8 DEFAULT 0 NOT NULL;
 
 COMMENT ON COLUMN "public".mm_member.country_code IS '国家代码';
-COMMENT ON COLUMN "public".mm_member.region_code IS '城市编码';
 COMMENT ON COLUMN "public".mm_member.create_time IS '注册时间';
 
 -- 更新注册时间
@@ -191,6 +189,7 @@ DROP TABLE IF EXISTS mm_extra_field CASCADE;
 CREATE TABLE mm_extra_field (
   id                   BIGSERIAL NOT NULL, 
   member_id            int8 NOT NULL, 
+  region_code          int8 DEFAULT 0 NOT NULL, 
   exp                  int8 DEFAULT '0'::bigint NOT NULL, 
   reg_ip               varchar(20) NOT NULL, 
   reg_from             varchar(20) NOT NULL, 
@@ -203,6 +202,7 @@ CREATE TABLE mm_extra_field (
   update_time          int8 DEFAULT 0 NOT NULL, 
   PRIMARY KEY (id));
 COMMENT ON TABLE mm_extra_field IS '会员额外属性';
+COMMENT ON COLUMN mm_extra_field.region_code IS '城市编码';
 COMMENT ON COLUMN mm_extra_field.exp IS '经验值';
 COMMENT ON COLUMN mm_extra_field.reg_ip IS '注册IP';
 COMMENT ON COLUMN mm_extra_field.reg_from IS '注册来源';
@@ -214,11 +214,45 @@ COMMENT ON COLUMN mm_extra_field.login_time IS '登录时间';
 COMMENT ON COLUMN mm_extra_field.last_login_time IS '最后登录时间';
 COMMENT ON COLUMN mm_extra_field.update_time IS '更新时间';
 
+
 -- 插入会员扩展信息
-insert into mm_extra_field (member_id, exp, reg_ip, reg_from, 
+insert into mm_extra_field (member_id, exp, reg_ip,region_code, reg_from, 
 reg_time, check_code, check_expires, personal_service_uid,
  login_time, last_login_time, update_time)
-select id, exp, reg_ip, reg_from, reg_time, check_code, 
+select id, exp, reg_ip,0, reg_from, reg_time, check_code, 
 check_expires, 0, login_time, 
 last_login_time, update_time from mm_member
 WHERE id < 10;
+
+
+ALTER TABLE "public".mm_member 
+  alter column user_code set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column salt set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column profile_photo set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column phone set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column email set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column nickname set default ''::character varying;
+ALTER TABLE "public".mm_member 
+  alter column real_name set default ''::character varying;
+
+ALTER TABLE "public".mm_member 
+  DROP COLUMN reg_ip;
+ALTER TABLE "public".mm_member 
+  DROP COLUMN reg_from;
+ALTER TABLE "public".mm_member 
+  DROP COLUMN reg_time;
+ALTER TABLE "public".mm_member 
+  DROP COLUMN check_code;
+ALTER TABLE "public".mm_member 
+  DROP COLUMN check_expires;
+ALTER TABLE "public".mm_member 
+  DROP COLUMN login_time;
+ALTER TABLE "public".mm_member 
+  DROP COLUMN last_login_time;
+ALTER TABLE "public".mm_member 
+  DROP COLUMN exp;

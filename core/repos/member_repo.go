@@ -20,6 +20,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	memberImpl "github.com/ixre/go2o/core/domain/member"
@@ -47,6 +48,7 @@ type MemberRepoImpl struct {
 	valueRepo     valueobject.IValueRepo
 	mssRepo       mss.IMessageRepo
 	registryRepo  registry.IRegistryRepo
+	_systemRepo   sys.ISystemRepo
 	_blockRepo    fw.Repository[member.BlockList]
 	_oauthRepo    fw.Repository[member.OAuthAccount]
 	_relationRepo fw.Repository[member.InviteRelation]
@@ -78,7 +80,8 @@ var memberRepoImplMapped = false
 
 func NewMemberRepo(sto storage.Interface, o orm.Orm, no fw.ORM,
 	walletRepo wallet.IWalletRepo, mssRepo mss.IMessageRepo,
-	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMemberRepo {
+	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo,
+	systemRepo sys.ISystemRepo) member.IMemberRepo {
 	if !memberRepoImplMapped {
 		memberRepoImplMapped = true
 		OrmMapping(o)
@@ -92,6 +95,7 @@ func NewMemberRepo(sto storage.Interface, o orm.Orm, no fw.ORM,
 		walletRepo:    walletRepo,
 		valueRepo:     valRepo,
 		registryRepo:  registryRepo,
+		_systemRepo:   systemRepo,
 		_relationRepo: fw.NewRepository[member.InviteRelation](no),
 		_extraRepo:    fw.NewRepository[member.ExtraField](no),
 	}
@@ -349,7 +353,7 @@ func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
 // 创建会员
 func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMemberAggregateRoot {
 	return memberImpl.NewMember(m.GetManager(), v, m,
-		m.walletRepo, m.mssRepo, m.valueRepo, m.registryRepo)
+		m.walletRepo, m.mssRepo, m.valueRepo, m.registryRepo, m._systemRepo)
 }
 
 // 创建会员,仅作为某些操作使用,不保存

@@ -16,7 +16,7 @@ func TestGetOptions(t *testing.T) {
 
 func TestGetAllCities(t *testing.T) {
 	ia := inject.GetSystemRepo().GetSystemAggregateRoot() // TODO: write test code here
-	cities := ia.Address().GetAllCities()
+	cities := ia.Location().GetAllCities()
 	if len(cities) == 0 {
 		t.Error("No cities found")
 	}
@@ -29,7 +29,7 @@ func TestGetAllCities(t *testing.T) {
 func TestGetStationByCityCode(t *testing.T) {
 	city := 110100
 	ia := inject.GetSystemRepo().GetSystemAggregateRoot() // TODO: write test code here
-	d := ia.Address().GetDistrict(city)
+	d := ia.Location().GetDistrict(city)
 	t.Logf("district = %s \n", d.Name)
 	station := ia.Stations().FindStationByCity(city)
 	t.Logf("station = %#v \n", station.GetValue())

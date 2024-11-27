@@ -23,11 +23,13 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/util"
@@ -45,6 +47,7 @@ type memberImpl struct {
 	level           *member.Level
 	repo            member.IMemberRepo
 	walletRepo      wallet.IWalletRepo
+	_systemRepo     sys.ISystemRepo
 	relation        *member.InviteRelation
 	invitation      member.IInvitationManager
 	mssRepo         mss.IMessageRepo
@@ -58,7 +61,7 @@ type memberImpl struct {
 func NewMember(manager member.IMemberManager, val *member.Member,
 	rep member.IMemberRepo, walletRepo wallet.IWalletRepo,
 	mp mss.IMessageRepo, valRepo valueobject.IValueRepo,
-	registryRepo registry.IRegistryRepo) member.IMemberAggregateRoot {
+	registryRepo registry.IRegistryRepo, systemRepo sys.ISystemRepo) member.IMemberAggregateRoot {
 	return &memberImpl{
 		manager:      manager,
 		value:        val,
@@ -67,6 +70,7 @@ func NewMember(manager member.IMemberManager, val *member.Member,
 		walletRepo:   walletRepo,
 		valueRepo:    valRepo,
 		registryRepo: registryRepo,
+		_systemRepo:  systemRepo,
 	}
 }
 
@@ -621,15 +625,8 @@ func (m *memberImpl) updateLevel(levelId int) error {
 func (m *memberImpl) SubmitRegistration(data *member.SubmitRegistrationData) error {
 	v := m.value
 	err := m.prepare()
-	extra := &member.ExtraField{}
 	if err == nil {
 		unix := time.Now().Unix()
-		// 初始化经验值
-		extra.Exp = 0
-		extra.RegTime = int(unix)
-		extra.LastLoginTime = int(unix)
-		extra.RegIp = data.RegIp
-		extra.RegFrom = data.RegFrom
 
 		v.CreateTime = int(unix)
 		// 初始化等级
@@ -638,11 +635,6 @@ func (m *memberImpl) SubmitRegistration(data *member.SubmitRegistrationData) err
 		if v.CountryCode == "" {
 			v.CountryCode = "CN"
 		}
-		// 初始化城市
-		if v.RegionCode <= 0 {
-			v.RegionCode = -1
-		}
-
 		// 设置VIP用户信息
 		v.PremiumUser = member.PremiumNormal
 		v.PremiumExpires = 0
@@ -652,7 +644,8 @@ func (m *memberImpl) SubmitRegistration(data *member.SubmitRegistrationData) err
 
 		if err1 == nil {
 			m.value.Id = int(id)
-			go m.memberInit(extra)
+
+			go m.memberInit(data)
 		} else {
 			err = err1
 		}
@@ -675,7 +668,7 @@ func (m *memberImpl) checkUser(user string) error {
 }
 
 // 会员初始化
-func (m *memberImpl) memberInit(extra *member.ExtraField) error {
+func (m *memberImpl) memberInit(data *member.SubmitRegistrationData) error {
 	// 创建账户
 	m.account = newAccount(m, &member.Account{},
 		m.repo, m.manager, m.walletRepo, m.registryRepo)
@@ -684,7 +677,18 @@ func (m *memberImpl) memberInit(extra *member.ExtraField) error {
 		return err
 	}
 	// 创建初始化数据
-	extra.MemberId = int(m.GetAggregateRootId())
+	unix := int(time.Now().Unix())
+	extra := &member.ExtraField{
+		Id:            0,
+		MemberId:      int(m.GetAggregateRootId()),
+		Exp:           0,
+		RegIp:         data.RegIp,
+		RegionCode:    0,
+		RegFrom:       data.RegFrom,
+		LoginTime:     unix,
+		LastLoginTime: unix,
+		UpdateTime:    unix,
+	}
 	_, err = m.repo.ExtraRepo().Save(extra)
 	if err == nil {
 		// 如果为中国大陆IP,则记录IP信息
@@ -706,10 +710,20 @@ func (m *memberImpl) memberInit(extra *member.ExtraField) error {
 	return nil
 }
 
+// 更新会员区域信息
 func (m *memberImpl) updateRegionInfo(extra *member.ExtraField) {
 	if m.value.CountryCode == "CN" && extra.RegIp != "" {
 		// 如果为中国大陆IP,则记录IP信息
-		//todo:...
+		ir := m._systemRepo.GetSystemAggregateRoot()
+		region, err := ir.Location().FindRegionByIp(extra.RegIp)
+		if err == nil && region != nil {
+			extra.RegionCode = region.Code
+			_, err := m.repo.ExtraRepo().Save(extra)
+			if err != nil {
+				logger.Error("更新会员区域信息失败! memberId:%d, ip:%s, error:%s",
+					m.GetAggregateRootId(), extra.RegIp, err.Error())
+			}
+		}
 	}
 }
 

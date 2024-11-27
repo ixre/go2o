@@ -471,15 +471,15 @@ func GetSkipperSQL(o ORM, p *PagingParams) string {
 }
 
 // 分页行
-type pagingRow struct {
+type EffectRow struct {
 	v map[string]interface{}
 }
 
-func ParsePagingRow(v interface{}) *pagingRow {
-	return &pagingRow{v: v.(map[string]interface{})}
+func ParseRow(v interface{}) *EffectRow {
+	return &EffectRow{v: v.(map[string]interface{})}
 }
 
-func (p *pagingRow) AsInt(keys ...string) {
+func (p *EffectRow) AsInt(keys ...string) {
 	for _, key := range keys {
 		v, ok := p.v[key].([]uint8)
 		if ok {
@@ -490,7 +490,7 @@ func (p *pagingRow) AsInt(keys ...string) {
 }
 
 // 转换为float类型
-func (p *pagingRow) AsFloat(keys ...string) {
+func (p *EffectRow) AsFloat(keys ...string) {
 	for _, key := range keys {
 		v, ok := p.v[key].([]uint8)
 		if ok {
@@ -501,20 +501,25 @@ func (p *pagingRow) AsFloat(keys ...string) {
 }
 
 // Excludes 排除字段
-func (p *pagingRow) Excludes(keys ...string) {
+func (p *EffectRow) Excludes(keys ...string) {
 	for _, key := range keys {
 		delete(p.v, key)
 	}
 }
 
 // Put 添加/更新字段
-func (p *pagingRow) Put(key string, v interface{}) {
+func (p *EffectRow) Put(key string, v interface{}) {
 	p.v[key] = v
 }
 
 // Get 获取字段
-func (p *pagingRow) Get(key string) interface{} {
+func (p *EffectRow) Get(key string) interface{} {
 	return p.v[key]
+}
+
+// GetInt 获取int类型字段
+func (p *EffectRow) GetInt(key string) int {
+	return typeconv.Int(p.Get(key))
 }
 
 /** 错误处理 */

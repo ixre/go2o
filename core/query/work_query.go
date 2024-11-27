@@ -34,7 +34,7 @@ func (q *WorkQuery) QueryPagingWorkorderComments(workorderId int, p *fw.PagingPa
 	ret, err := q.commentRepo.QueryPaging(p)
 	for i, v := range ret.Rows {
 		d, _ := types.ParseJSONObject(v)
-		r := fw.ParsePagingRow(d)
+		r := fw.ParseRow(d)
 		r.Excludes("orderId")
 		ret.Rows[i] = d
 	}
@@ -52,7 +52,7 @@ func (q *WorkQuery) QueryPagingWorkorders(p *fw.PagingParams) (*fw.PagingResult,
 		return nil, err
 	}
 	for _, v := range ret.Rows {
-		r := fw.ParsePagingRow(v)
+		r := fw.ParseRow(v)
 		r.Excludes("content")
 	}
 	return ret, nil

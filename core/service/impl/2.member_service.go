@@ -1679,7 +1679,6 @@ func (s *memberService) parseMemberDto(src *member.Member) *proto.SMember {
 		UserCode:       src.UserCode,
 		Level:          int32(src.Level),
 		CountryCode:    src.CountryCode,
-		RegionCode:     int32(src.RegionCode),
 		PremiumUser:    int32(src.PremiumUser),
 		PremiumExpires: int64(src.PremiumExpires),
 		UserFlag:       int32(src.UserFlag),

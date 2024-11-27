@@ -8,12 +8,13 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
+	"github.com/ixre/go2o/core/infrastructure/util/lbs"
 )
 
 var _ sys.ISystemAggregateRoot = new(systemAggregateRootImpl)
 
 type systemAggregateRootImpl struct {
-	_address  sys.IAddressManager
+	_address  sys.ILocationManager
 	_options  sys.IOptionManager
 	_stations sys.IStationManager
 	_log      sys.IApplicationManager
@@ -30,9 +31,9 @@ func (s *systemAggregateRootImpl) GetAggregateRootId() int {
 }
 
 // Address implements sys.ISystemAggregateRoot.
-func (s *systemAggregateRootImpl) Address() sys.IAddressManager {
+func (s *systemAggregateRootImpl) Location() sys.ILocationManager {
 	if s._address == nil {
-		s._address = &addressManagerImpl{
+		s._address = &locationManagerImpl{
 			s._repo.District(), nil}
 	}
 	return s._address
@@ -79,29 +80,29 @@ func (s *systemAggregateRootImpl) GetBanks() []*sys.GeneralOption {
 	return sys.BankCodes
 }
 
-var _ sys.IAddressManager = new(addressManagerImpl)
+var _ sys.ILocationManager = new(locationManagerImpl)
 
-type addressManagerImpl struct {
+type locationManagerImpl struct {
 	fw.Repository[sys.District]
 	districtList []*sys.District
 }
 
 // FindCity 查找城市
-func (a *addressManagerImpl) FindCity(name string) *sys.District {
+func (a *locationManagerImpl) FindCity(name string) *sys.District {
 	return collections.FindArray(a.GetAllCities(), func(d *sys.District) bool {
 		return d.Name == name
 	})
 }
 
 // GetDistrict 获取区域信息
-func (a *addressManagerImpl) GetDistrict(id int) *sys.District {
+func (a *locationManagerImpl) GetDistrict(id int) *sys.District {
 	return collections.FindArray(a.getDistrictList(), func(d *sys.District) bool {
 		return d.Code == id
 	})
 }
 
 // getDistrictList 获取地区列表
-func (a *addressManagerImpl) getDistrictList() []*sys.District {
+func (a *locationManagerImpl) getDistrictList() []*sys.District {
 	if a.districtList == nil {
 		a.districtList = fw.ReduceFinds(func(opt *fw.QueryOption) []*sys.District {
 			return a.FindList(opt, "")
@@ -111,12 +112,12 @@ func (a *addressManagerImpl) getDistrictList() []*sys.District {
 }
 
 // getProvinces 获取省列表
-func (a *addressManagerImpl) getProvinces() []*sys.District {
+func (a *locationManagerImpl) getProvinces() []*sys.District {
 	return a.GetChildrenDistricts(0)
 }
 
 // GetDistrictNames implements sys.IAddressManager.
-func (a *addressManagerImpl) GetDistrictNames(code ...int) map[int]string {
+func (a *locationManagerImpl) GetDistrictNames(code ...int) map[int]string {
 	mp := make(map[int]string)
 	for _, v := range a.getDistrictList() {
 		if len(mp) == len(code) {
@@ -132,7 +133,7 @@ func (a *addressManagerImpl) GetDistrictNames(code ...int) map[int]string {
 }
 
 // GetAllCities 获取所有城市列表
-func (a *addressManagerImpl) GetAllCities() []*sys.District {
+func (a *locationManagerImpl) GetAllCities() []*sys.District {
 	provinceList := a.getProvinces()
 	provinceCodes := collections.MapList(provinceList,
 		func(s *sys.District) int {
@@ -168,11 +169,32 @@ func (a *addressManagerImpl) GetAllCities() []*sys.District {
 }
 
 // GetChildrenDistricts implements sys.IAddressManager.
-func (a *addressManagerImpl) GetChildrenDistricts(parentId int) []*sys.District {
+func (a *locationManagerImpl) GetChildrenDistricts(parentId int) []*sys.District {
 	return collections.FilterArray(a.getDistrictList(), func(a *sys.District) bool {
 		return a.Parent == parentId && a.Code != 0
 	})
+}
 
+// FindRegionByIp 根据IP查找区域信息
+func (a *locationManagerImpl) FindRegionByIp(ip string) (*sys.District, error) {
+	if strings.HasPrefix(ip, "127.") ||
+		strings.HasPrefix(ip, "172.") ||
+		strings.HasPrefix(ip, "192.") ||
+		strings.HasPrefix(ip, "10.") ||
+		strings.HasPrefix(ip, "0.") ||
+		strings.HasPrefix(ip, "::1") {
+		// 本地网络IP不更新位置
+		return &sys.District{Code: 0, Name: "局域网", Parent: 0}, nil
+	}
+	provider := lbs.GetProvider()
+	if provider == nil {
+		return nil, errors.New("未配置位置服务提供者")
+	}
+	info, err := provider.QueryLocation(ip)
+	if err != nil {
+		return nil, err
+	}
+	return a.FindCity(info.City), nil
 }
 
 var _ sys.IOptionManager = new(optionManagerImpl)

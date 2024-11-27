@@ -330,6 +330,7 @@ func TestMemberWalletRefreeze(t *testing.T) {
 	t.Logf("冻结金额:%d, 钱包余额:%d", l.ChangeValue, l.Balance)
 }
 
+// 测试批量更改会员密码
 func TestBatchChangeMemberPassword(t *testing.T) {
 	db := provide.GetGOrm()
 	var memberList []*member.Member
@@ -338,5 +339,23 @@ func TestBatchChangeMemberPassword(t *testing.T) {
 	for _, v := range memberList {
 		v.Password = domain.MemberSha256Pwd(domain.Md5("123456"), v.Salt)
 		db.Save(v)
+	}
+}
+
+// 测试更新会员区域信息
+func TestUpdateMemberRegionInfo(t *testing.T) {
+	// select region_code,count(1),(select name from sys_district WHERE code=region_code) FROM mm_extra_field group by region_code
+	db := provide.GetGOrm()
+	ir := inject.GetSystemRepo().GetSystemAggregateRoot()
+	var memberList []*member.ExtraField
+	tx := db.Model(&member.ExtraField{})
+	tx.Scan(&memberList)
+	for _, v := range memberList {
+		region, err := ir.Location().FindRegionByIp(v.RegIp)
+		if err == nil && region != nil {
+			v.RegionCode = region.Code
+			db.Save(v)
+			t.Logf("更新会员区域信息: memberId:%d, region:%s", v.Id, region.Name)
+		}
 	}
 }
