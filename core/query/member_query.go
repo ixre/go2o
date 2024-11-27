@@ -467,7 +467,7 @@ func (m *MemberQuery) QueryPagingStaffs(p *fw.PagingParams) (*fw.PagingResult, e
 	fields := `
 	distinct(m.id),m.nickname,m.real_name,m.username,m.exp,m.profile_photo,pro.gender,pro.birthday,
 	m.phone,m.level,m.user_flag,
-	m.reg_from,m.reg_time,m.login_time,
+	m.reg_from,m.reg_time,(SELECT login_time FROM mm_extra_field WHERE member_id=m.id) as login_time,
 	s.certified_name,s.is_certified,mch.mch_name
 	`
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
