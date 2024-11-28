@@ -169,7 +169,8 @@ ALTER TABLE "public".mch_merchant
   ADD COLUMN full_name varchar(128) DEFAULT '' NOT NULL;
 COMMENT ON COLUMN "public".mch_merchant.full_name IS '商户全称';
 
-update "public".mch_merchant set full_name=COALESCE((select org_name from "public".mch_authenticate where mch_id=id),mch_name);
+update "public".mch_merchant set full_name=COALESCE((select org_name from "public".mch_authenticate where mch_authenticate.mch_id=mch_merchant.id),mch_name);
+
 
 ALTER TABLE "public".mm_member 
   ADD COLUMN country_code varchar(20) DEFAULT 'CN' NOT NULL;

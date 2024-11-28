@@ -275,9 +275,7 @@ type (
 		// Save WalletLog
 		SaveWalletLog_(v *WalletLog) (int, error)
 		// Delete WalletLog
-		DeleteWalletLog_(primary interface{}) error
-		// Batch Delete WalletLog
-		BatchDeleteWalletLog_(where string, v ...interface{}) (int64, error)
+		DeleteWalletLog(id int) error
 
 		// GetBy Wallet
 		GetWalletBy_(where string, v ...interface{}) *Wallet

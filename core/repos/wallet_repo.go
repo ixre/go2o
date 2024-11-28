@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	wi "github.com/ixre/go2o/core/domain/wallet"
@@ -12,20 +13,26 @@ import (
 	"github.com/ixre/gof/db/orm"
 )
 
-var _ wallet.IWalletRepo = new(WalletRepoImpl)
+var _instance wallet.IWalletRepo
+var _walletOnce sync.Once
 
 func NewWalletRepo(o orm.Orm, fo fw.ORM) wallet.IWalletRepo {
-	return &WalletRepoImpl{
-		_orm:     o,
-		_conn:    o.Connector(),
-		_logRepo: &fw.BaseRepository[wallet.WalletLog]{ORM: fo},
-	}
+	_walletOnce.Do(func() {
+		_instance = &WalletRepoImpl{
+			_orm:        o,
+			_conn:       o.Connector(),
+			_logRepo:    fw.NewRepository[wallet.WalletLog](fo),
+			_walletRepo: fw.NewRepository[wallet.Wallet](fo),
+		}
+	})
+	return _instance
 }
 
 type WalletRepoImpl struct {
-	_orm     orm.Orm
-	_conn    db.Connector
-	_logRepo fw.Repository[wallet.WalletLog]
+	_orm        orm.Orm
+	_conn       db.Connector
+	_logRepo    fw.Repository[wallet.WalletLog]
+	_walletRepo fw.Repository[wallet.Wallet]
 }
 
 func (w *WalletRepoImpl) LogRepo() fw.Repository[wallet.WalletLog] {
@@ -35,7 +42,7 @@ func (w *WalletRepoImpl) LogRepo() fw.Repository[wallet.WalletLog] {
 func (w *WalletRepoImpl) CreateWallet(userId int,
 	username string, walletType int,
 	walletName string, flag int) wallet.IWallet {
-	return w.createWallet1(&wallet.Wallet{
+	return w.createWallet(&wallet.Wallet{
 		UserId:     userId,
 		Username:   username,
 		WalletType: walletType,
@@ -44,7 +51,7 @@ func (w *WalletRepoImpl) CreateWallet(userId int,
 	})
 }
 
-func (w *WalletRepoImpl) createWallet1(v *wallet.Wallet) wallet.IWallet {
+func (w *WalletRepoImpl) createWallet(v *wallet.Wallet) wallet.IWallet {
 	if v != nil {
 		return wi.NewWallet(v, w)
 	}
@@ -52,17 +59,17 @@ func (w *WalletRepoImpl) createWallet1(v *wallet.Wallet) wallet.IWallet {
 }
 
 func (w *WalletRepoImpl) GetWallet(walletId int) wallet.IWallet {
-	return w.createWallet1(w.getWallet_(walletId))
+	return w.createWallet(w.getWallet_(walletId))
 }
 
 func (w *WalletRepoImpl) GetWalletByCode(code string) wallet.IWallet {
 	l := w.GetWalletBy_("hash_code= $1", code)
-	return w.createWallet1(l)
+	return w.createWallet(l)
 }
 
 func (w *WalletRepoImpl) GetWalletByUserId(userId int64, walletType int) wallet.IWallet {
 	l := w.GetWalletBy_("user_id= $1 AND wallet_type= $2 LIMIT 1", userId, walletType)
-	return w.createWallet1(l)
+	return w.createWallet(l)
 }
 
 func (w *WalletRepoImpl) CheckWalletUserMatch(userId int64, walletType int, walletId int64) bool {
@@ -148,21 +155,8 @@ func (w *WalletRepoImpl) SaveWalletLog_(v *wallet.WalletLog) (int, error) {
 }
 
 // DeleteWalletLog_ Delete WalletLog
-func (w *WalletRepoImpl) DeleteWalletLog_(primary interface{}) error {
-	err := w._orm.DeleteByPk(wallet.WalletLog{}, primary)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WalletLog")
-	}
-	return err
-}
-
-// BatchDeleteWalletLog_ Batch Delete WalletLog
-func (w *WalletRepoImpl) BatchDeleteWalletLog_(where string, v ...interface{}) (int64, error) {
-	r, err := w._orm.Delete(wallet.WalletLog{}, where, v...)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WalletLog")
-	}
-	return r, err
+func (w *WalletRepoImpl) DeleteWalletLog(primary int) error {
+	return w._logRepo.Delete(&wallet.WalletLog{Id: primary})
 }
 
 // Get Wallet

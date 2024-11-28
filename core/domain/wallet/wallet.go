@@ -128,8 +128,8 @@ func (w *WalletImpl) checkWallet() error {
 }
 
 // 检查数值、操作人员信息
-func (w *WalletImpl) checkValueOpu(value int, checkOpu bool, operatorUid int, operatorName string) error {
-	if value == 0 {
+func (w *WalletImpl) checkValueOpu(value int, checkOpu bool, operatorUid int, operatorName string, allowZeroAmount bool) error {
+	if !allowZeroAmount && value == 0 {
 		return wallet.ErrAmountZero
 	}
 	if checkOpu && (operatorUid <= 0 || len(operatorName) == 0) {
@@ -225,7 +225,7 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 // Adjust 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
 func (w *WalletImpl) Adjust(value int, title, outerNo string,
 	remark string, operatorUid int, operatorName string) error {
-	err := w.checkValueOpu(value, true, operatorUid, operatorName)
+	err := w.checkValueOpu(value, true, operatorUid, operatorName, false)
 	if len(remark) == 0 {
 		return errors.New("remark can't be empty")
 	}
@@ -283,17 +283,22 @@ func (w *WalletImpl) PrefreezeConsume(data wallet.TransactionData) error {
 	if len(data.TransactionRemark) > 0 {
 		l.Remark = data.TransactionRemark
 	}
-	// 将冻结金额进行解冻，不退回余额
-	err := w.Unfreeze(l.ChangeValue, "预扣成功", l.OuterTxNo, false, 0, "")
+	err := w.saveWalletLog(l)
 	if err == nil {
-		err = w.saveWalletLog(l)
+		value := int(math.Abs(float64(l.ChangeValue)))
+		if w._value.FreezeAmount < value {
+			return errors.New("预扣消费结冻金额超出,无法扣减")
+		}
+		// 将冻结金额进行解冻，不退回余额
+		w._value.FreezeAmount -= value
+		_, err = w.Save()
 	}
 	return err
 }
 
 // Discount 支付抵扣,must是否必须大于0
 func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) (int, error) {
-	err := w.checkValueOpu(value, false, 0, "")
+	err := w.checkValueOpu(value, false, 0, "", false)
 	if err == nil {
 		if value > 0 {
 			value = -value
@@ -316,7 +321,8 @@ func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) (int,
 }
 
 func (w *WalletImpl) Freeze(data wallet.TransactionData, operator wallet.Operator) (int, error) {
-	err := w.checkValueOpu(data.Amount, false, operator.OperatorUid, operator.OperatorName)
+	allowZeroAmount := data.TransactionId > 0
+	err := w.checkValueOpu(data.Amount, false, operator.OperatorUid, operator.OperatorName, allowZeroAmount)
 	if err == nil {
 		if data.Amount > 0 {
 			data.Amount = -data.Amount
@@ -353,17 +359,25 @@ func (w *WalletImpl) refreeze(data wallet.TransactionData) (int, error) {
 	if l == nil || l.WalletId != w.GetAggregateRootId() {
 		return 0, errors.New("冻结失败,交易日志不存在")
 	}
-	diffValue := int(math.Abs(float64(data.Amount - int(l.ChangeValue))))
-	if w._value.Balance < diffValue {
+	intChgValue := int(math.Abs(float64(l.ChangeValue)))
+	// 计算差值(增加或减少的金额)
+	diffValue := int(math.Abs(float64(data.Amount))) - intChgValue
+	if diffValue > 0 && w._value.Balance < diffValue {
+		// 如果要扣减，则判断余额是否足够
 		return 0, wallet.ErrOutOfAmount
 	}
+	var err error
 	w._value.Balance -= diffValue
 	w._value.FreezeAmount += diffValue
 	l.OuterTxNo = data.OuterTxNo
 	l.ChangeValue = data.Amount
 	l.Balance = w._value.Balance
 	l.OuterTxUid = data.OuterTxUid
-	err := w.saveWalletLog(l)
+	if l.ChangeValue == 0 {
+		err = w._repo.DeleteWalletLog(l.Id)
+	} else {
+		err = w.saveWalletLog(l)
+	}
 	if err == nil {
 		_, err = w.Save()
 	}
@@ -371,7 +385,7 @@ func (w *WalletImpl) refreeze(data wallet.TransactionData) (int, error) {
 }
 
 func (w *WalletImpl) Unfreeze(value int, title, outerNo string, isRefundBalance bool, operatorUid int, operatorName string) error {
-	err := w.checkValueOpu(value, false, operatorUid, operatorName)
+	err := w.checkValueOpu(value, false, operatorUid, operatorName, false)
 	if err == nil {
 		if value < 0 {
 			value = -value
@@ -417,7 +431,7 @@ func (w *WalletImpl) FreezeExpired(value int, remark string) error {
 
 // CarryTo 入账
 func (w *WalletImpl) CarryTo(tx wallet.TransactionData, review bool) (int, error) {
-	err := w.checkValueOpu(tx.Amount, false, 0, "")
+	err := w.checkValueOpu(tx.Amount, false, 0, "", false)
 	if err == nil {
 		if tx.Amount < 0 {
 			tx.Amount = -tx.Amount
@@ -477,7 +491,7 @@ func (w *WalletImpl) ReviewCarryTo(transactionId int, pass bool, reason string) 
 
 func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark string, operatorUid int, operatorName string) error {
 	needOprUid := by == wallet.CServiceAgentCharge
-	err := w.checkValueOpu(value, needOprUid, operatorUid, operatorName)
+	err := w.checkValueOpu(value, needOprUid, operatorUid, operatorName, false)
 	if err == nil {
 		if value < 0 {
 			value = -value
@@ -512,7 +526,7 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark str
 }
 
 func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, operatorUid int, operatorName string) error {
-	err := w.checkValueOpu(value, false, operatorUid, operatorName)
+	err := w.checkValueOpu(value, false, operatorUid, operatorName, false)
 	if err == nil {
 		if value < 0 {
 			value = -value
@@ -644,7 +658,7 @@ func (w *WalletImpl) RequestWithdrawal(tx wallet.WithdrawTransaction) (int, stri
 }
 
 func (w *WalletImpl) ReviewWithdrawal(transactionId int, pass bool, remark string, operatorUid int, operatorName string) error {
-	if err := w.checkValueOpu(1, true, operatorUid, operatorName); err != nil {
+	if err := w.checkValueOpu(1, true, operatorUid, operatorName, false); err != nil {
 		return err
 	}
 	l := w.getLog(int64(transactionId))
