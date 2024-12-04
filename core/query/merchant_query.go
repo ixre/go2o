@@ -201,9 +201,9 @@ func (m *MerchantQuery) QueryMerchantPendingStaffs(p *fw.PagingParams) (*fw.Pagi
 		LEFT JOIN mm_profile pro ON pro.member_id = m.id
 		LEFT JOIN mm_cert_info c ON c.member_id = m.id AND version=0 AND review_status <> %d`, enum.ReviewApproved)
 	fields := `
-	distinct(s.id),m.nickname,c.real_name,m.username,m.exp,m.profile_photo,pro.gender,
+	distinct(s.id),m.nickname,c.real_name,m.username,m.profile_photo,pro.gender,
 	m.phone,m.level,m.user_flag,
-	m.reg_from,m.reg_time,(SELECT login_time FROM mm_extra_field WHERE member_id=m.id) as login_time,
+	m.create_time,(SELECT login_time FROM mm_extra_field WHERE member_id=m.id) as login_time,
 	s.certified_name,s.is_certified,c.review_status,c.remark,c.manual_review
 	`
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)

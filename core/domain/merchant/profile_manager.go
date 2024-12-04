@@ -127,8 +127,12 @@ func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error {
 	e := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 0)
 	if e == nil {
+		if !pass {
+			// 驳回已审核
+			return p.rejectReviewedAuthenticate(message)
+		}
 		// 只对待审核的资料进行审核
-		return errors.New("未找到待审核的商户认证信息")
+		return errors.New("无法进行审核通过操作")
 	}
 	if e.ReviewStatus != int(enum.ReviewPending) {
 		return errors.New("商户认证信息已审核")
@@ -151,6 +155,26 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 			if err == nil {
 				_, err = p.merchantImpl.Save()
 			}
+		}
+	}
+	return err
+}
+
+// rejectReviewedAuthenticate 驳回已审核商户认证信息
+func (p *profileManagerImpl) rejectReviewedAuthenticate(message string) error {
+	e := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 1)
+	if e == nil {
+		return errors.New("商户未提交认证信息")
+	}
+	e.ReviewStatus = int(enum.ReviewRejected)
+	e.ReviewRemark = message
+	e.Version = 0
+	_, err := p._repo.SaveAuthenticate(e)
+	if err == nil {
+		// 添加待认证标志
+		err = p.merchantImpl.GrantFlag(merchant.FlagWaitAuthenticate)
+		if err == nil {
+			_, err = p.merchantImpl.Save()
 		}
 	}
 	return err

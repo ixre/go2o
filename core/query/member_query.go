@@ -59,7 +59,7 @@ func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
 	}
 	if len(ids) > 0 {
 		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
-		query := fmt.Sprintf(`SELECT m.id,m.user,m.nick_name,m.profile_photo,m.exp,m.level,
+		query := fmt.Sprintf(`SELECT m.id,m.user,m.nick_name,m.profile_photo,m.level,
 				lv.name as level_name,a.integral,a.balance,a.wallet_balance,
 				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
 				m.update_time FROM mm_member m INNER JOIN mm_level lv
@@ -465,9 +465,9 @@ func (m *MemberQuery) QueryPagingStaffs(p *fw.PagingParams) (*fw.PagingResult, e
 		INNER JOIN mch_merchant mch ON mch.id = s.mch_id
 		LEFT JOIN mm_profile pro ON pro.member_id = m.id`
 	fields := `
-	distinct(m.id),m.nickname,m.real_name,m.username,m.exp,m.profile_photo,pro.gender,pro.birthday,
+	distinct(m.id),m.nickname,m.real_name,m.username,m.profile_photo,pro.gender,pro.birthday,
 	m.phone,m.level,m.user_flag,
-	m.reg_from,m.reg_time,(SELECT login_time FROM mm_extra_field WHERE member_id=m.id) as login_time,
+	m.create_time,(SELECT login_time FROM mm_extra_field WHERE member_id=m.id) as login_time,
 	s.certified_name,s.is_certified,mch.mch_name
 	`
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)

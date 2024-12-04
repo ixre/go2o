@@ -694,6 +694,9 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error {
 	p.GetCertificationInfo()
 	if pass {
+		if p.trustedInfo.ReviewStatus == int(enum.ReviewApproved) {
+			return errors.New("认证已通过,无需重复审核")
+		}
 		p.trustedInfo.ReviewStatus = int(enum.ReviewApproved)
 		p.member.value.UserFlag |= member.FlagTrusted
 		p.member.value.RealName = p.trustedInfo.RealName
