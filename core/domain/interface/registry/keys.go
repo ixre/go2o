@@ -255,6 +255,8 @@ var (
 
 	// 商户结算周期
 	MerchantSettlementPeriod = KeyFormat("MerchantSettlementPeriod")
+	// MerchantSettlementMode 商户结算模式
+	MerchantSettlementMode = KeyFormat("MerchantSettlementMode")
 	// 商户提现手续费
 	MerchantTakeOutCashFree = KeyFormat("MerchantTakeOutCashFree")
 	// 商户提现手续费费率
