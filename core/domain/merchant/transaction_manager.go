@@ -184,7 +184,7 @@ func (s *transactionManagerImpl) GetCurrentDailyBill() merchant.IBillDomain {
 		s._billRepo.Save(bill)
 	}
 	s.currentBill = bill
-	return newBillDomainImpl(s.currentBill, s._mchRepo, s._rbacRepo, s._registryRepo, s)
+	return newBillDomainImpl(s.currentBill, s.mch, s._mchRepo, s._rbacRepo, s._registryRepo, s)
 }
 
 // TransactionAmounts 交易统计数据
