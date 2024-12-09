@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"strconv"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
@@ -88,7 +89,13 @@ func (s *transactionManagerImpl) GetBillByTime(billTime int) merchant.IBillDomai
 	month, _ := fw.GetMonthStartEndUnix(int64(billTime))
 	bill := s._billRepo.FindBy("mch_id = ? AND bill_time = ?", s.mchId, month)
 	if bill != nil {
-		return newBillDomainImpl(bill, s._mchRepo, s._rbacRepo, s._registryRepo, s)
+		return newBillDomainImpl(bill,
+			s.mch,
+			s._mchRepo,
+			s._rbacRepo,
+			s._registryRepo,
+			s,
+		)
 	}
 	return nil
 }
@@ -97,7 +104,13 @@ func (s *transactionManagerImpl) GetBillByTime(billTime int) merchant.IBillDomai
 func (s *transactionManagerImpl) GetBill(billId int) merchant.IBillDomain {
 	v := s._billRepo.Get(billId)
 	if v != nil && v.MchId == s.mchId {
-		return newBillDomainImpl(v, s._mchRepo, s._rbacRepo, s._registryRepo, s)
+		return newBillDomainImpl(v,
+			s.mch,
+			s._mchRepo,
+			s._rbacRepo,
+			s._registryRepo,
+			s,
+		)
 	}
 	return nil
 }
@@ -132,7 +145,14 @@ func (s *transactionManagerImpl) GetCurrentDailyBill() merchant.IBillDomain {
 	startTime, endTime := util.GetStartEndUnix(time.Now())
 	if s.currentBill != nil && s.currentBill.BillTime == int(startTime) {
 		// 如果当前账单存在,则直接返回
-		return newBillDomainImpl(s.currentBill, s._mchRepo, s._rbacRepo, s._registryRepo, s)
+		return newBillDomainImpl(
+			s.currentBill,
+			s.mch,
+			s._mchRepo,
+			s._rbacRepo,
+			s._registryRepo,
+			s,
+		)
 	}
 	bill := s._billRepo.FindBy("mch_id = ? AND bill_type=? AND bill_time = ?", s.mchId, merchant.BillTypeDaily, startTime)
 	if bill == nil {
@@ -274,6 +294,7 @@ var _ merchant.IBillDomain = new(billDomainImpl)
 
 // 账单领域
 type billDomainImpl struct {
+	_mch          merchant.IMerchantAggregateRoot
 	_value        *merchant.MerchantBill
 	_repo         merchant.IMerchantRepo
 	_rbacRepo     rbac.IRbacRepository
@@ -282,11 +303,19 @@ type billDomainImpl struct {
 }
 
 func newBillDomainImpl(value *merchant.MerchantBill,
+	mch merchant.IMerchantAggregateRoot,
 	mchRepo merchant.IMerchantRepo,
 	rbacRepo rbac.IRbacRepository,
 	registryRepo registry.IRegistryRepo,
 	manager merchant.IMerchantTransactionManager) merchant.IBillDomain {
-	return &billDomainImpl{_value: value, _repo: mchRepo, _rbacRepo: rbacRepo, _registryRepo: registryRepo, _manager: manager}
+	return &billDomainImpl{
+		_mch:          mch,
+		_value:        value,
+		_repo:         mchRepo,
+		_rbacRepo:     rbacRepo,
+		_registryRepo: registryRepo,
+		_manager:      manager,
+	}
 }
 
 // Value 获取值
@@ -429,9 +458,15 @@ func (b *billDomainImpl) Settle() error {
 	if len(conf.SubMchNo) == 0 {
 		return errors.New("商户尚未在支付平台入网,无法完成结算")
 	}
+	// 扣除商户余额
+	err := b._mch.Account().Consume("账单结算-"+b._value.BillMonth,
+		b._value.TxAmount, strconv.Itoa(b._value.Id), "系统扣除")
+	if err != nil {
+		return errors.New("结算扣款失败:" + err.Error())
+	}
 	b._value.SettleStatus = merchant.BillSettlemented // 结算成功
 	b._value.UpdateTime = int(time.Now().Unix())
-	_, err := b._repo.BillRepo().Save(b._value)
+	_, err = b._repo.BillRepo().Save(b._value)
 	if err == nil {
 		mchName := mch.GetValue().MchName
 		// 生成结算备注

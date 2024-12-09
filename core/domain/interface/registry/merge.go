@@ -166,6 +166,7 @@ func MergeRegistries() []*Registry {
 	mergeAdd("商户提现手续费费率", MerchantTakeOutCsn, "0.00", "")
 	mergeAdd("商户提现最低金额", MerchantMinTakeOutAmount, "1", "")
 	mergeAdd("商户许可授权书/服务协议书模板路径", MerchantAuthorityTemplatePath, "", "")
+	mergeAdd("商户结算模式", MerchantSettlementMode, "0", "0:手动结算 1:入网结算")
 
 	mergeAdd("会员默认个人签名", MemberDefaultPersonRemark, "什么也没留下", "")
 	mergeAdd("商品默认图片", GoodsDefaultImage, "res/nopic.gif", "")
