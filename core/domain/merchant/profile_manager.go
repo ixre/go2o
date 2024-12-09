@@ -19,6 +19,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/logger"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 )
 
 var _ merchant.IProfileManager = new(profileManagerImpl)
@@ -58,12 +59,7 @@ func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, er
 		return 0, err
 	}
 	v.MchId = int(p.GetAggregateRootId())
-	if p._repo.IsExistsOrganizationName(v.OrgName, p.GetAggregateRootId()) {
-		return 0, errors.New("企业名称已被使用")
-	}
-	if p._repo.IsExistsMerchantName(v.MchName, p.GetAggregateRootId()) {
-		return 0, errors.New("商户简称已被使用")
-	}
+
 	v.ReviewStatus = int(enum.ReviewPending)
 	v.ReviewRemark = ""
 	v.ReviewTime = 0
@@ -99,11 +95,17 @@ func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 	if v == nil || len(v.MchName) < 2 {
 		return errors.New("商户名称不能为空")
 	}
-	if v.Province == 0 || v.City == 0 || v.District == 0 {
-		return errors.New("请选择所在地区")
+	if p._repo.IsExistsMerchantName(v.MchName, p.GetAggregateRootId()) {
+		return errors.New("商户名称已被使用")
 	}
 	if len(v.OrgName) < 2 {
 		return errors.New("企业名称不能为空")
+	}
+	if p._repo.IsExistsOrganizationName(v.OrgName, p.GetAggregateRootId()) {
+		return errors.New("企业名称已被使用")
+	}
+	if v.Province == 0 || v.City == 0 || v.District == 0 {
+		return errors.New("请选择所在地区")
 	}
 	if len(v.LicenceNo) == 0 {
 		return errors.New("企业营业执照号不能为空")
@@ -121,7 +123,16 @@ func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 		return errors.New("法人身份证正面照片不能为空")
 	}
 	if len(v.PersonBackPic) == 0 {
-		return errors.New("法人身份证背面照片不能为空")
+		return errors.New("负责人身份证背面照片不能为空")
+	}
+	if !regex.IsPhone(v.PersonPhone) {
+		return errors.New("负责人联系电话不正确")
+	}
+	if len(v.ContactName) == 0 {
+		return errors.New("联系人姓名不能为空")
+	}
+	if !regex.IsPhone(v.ContactPhone) {
+		return errors.New("联系人电话不正确")
 	}
 	// if len(v.AuthorityPic) == 0 {
 	// 	return errors.New("未上传授权书")
