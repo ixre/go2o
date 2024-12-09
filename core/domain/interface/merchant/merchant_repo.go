@@ -132,4 +132,8 @@ type IMerchantRepo interface {
 	GetMerchantAuthenticate(mchId int, version int) *Authenticate
 	// DeleteOthersAuthenticate 删除其他认证信息
 	DeleteOthersAuthenticate(mchId int, id int) error
+	// 检查商户是否存在
+	IsExistsMerchantName(name string, id int) bool
+	// 检查商户是否存在
+	IsExistsOrganizationName(name string, id int) bool
 }

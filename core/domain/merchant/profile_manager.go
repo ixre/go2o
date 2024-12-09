@@ -58,6 +58,12 @@ func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, er
 		return 0, err
 	}
 	v.MchId = int(p.GetAggregateRootId())
+	if p._repo.IsExistsOrganizationName(v.OrgName, p.GetAggregateRootId()) {
+		return 0, errors.New("企业名称已被使用")
+	}
+	if p._repo.IsExistsMerchantName(v.MchName, p.GetAggregateRootId()) {
+		return 0, errors.New("商户简称已被使用")
+	}
 	v.ReviewStatus = int(enum.ReviewPending)
 	v.ReviewRemark = ""
 	v.ReviewTime = 0

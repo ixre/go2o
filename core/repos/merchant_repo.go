@@ -572,3 +572,15 @@ func (m *merchantRepo) DeleteOthersAuthenticate(mchId int, id int) error {
 	_, err := m.authRepo.DeleteBy("mch_id = ? AND id <> ?", mchId, id)
 	return err
 }
+
+// IsExistsMerchantName implements merchant.IMerchantRepo.
+func (m *merchantRepo) IsExistsMerchantName(name string, id int) bool {
+	count, err := m.authRepo.Count("mch_id <> ? AND mch_name = ?", id, name)
+	return err == nil && count > 0
+}
+
+// IsExistsOrganizationName implements merchant.IMerchantRepo.
+func (m *merchantRepo) IsExistsOrganizationName(name string, id int) bool {
+	count, err := m.authRepo.Count("mch_id <> ? AND org_name = ?", id, name)
+	return err == nil && count > 0
+}
