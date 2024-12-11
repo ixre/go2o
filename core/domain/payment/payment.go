@@ -1167,6 +1167,8 @@ func (p *paymentOrderImpl) checkDivideCommandExecuted() {
 	}
 	for _, v := range divides {
 		if v.SubmitStatus != payment.DivideItemStatusSuccess {
+			logger.Error("[ Pay][ Divide]: 执行完成分账,下发指令失败，需人工处理! 原因: 分账记录未分账成功(id:%d), 分账状态:%d, 备注:%s",
+				v.Id, v.SubmitStatus, v.SubmitRemark)
 			isExecuted = false
 			break
 		}
