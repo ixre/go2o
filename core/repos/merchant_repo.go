@@ -39,14 +39,15 @@ import (
 	"github.com/ixre/gof/storage"
 )
 
-var _ merchant.IMerchantRepo = new(merchantRepo)
-var mchMerchantDaoImplMapped = false
+var _mchInstance merchant.IMerchantRepo
+var _mchOnce sync.Once
 
 type merchantRepo struct {
 	fw.BaseRepository[merchant.Merchant]
-	authRepo      fw.BaseRepository[merchant.Authenticate]
-	billRepo      fw.Repository[merchant.MerchantBill]
+	_authRepo     fw.BaseRepository[merchant.Authenticate]
+	_billRepo     fw.Repository[merchant.MerchantBill]
 	_settleRepo   fw.Repository[merchant.SettleConf]
+	_mchRepo      fw.Repository[merchant.Merchant]
 	Connector     db.Connector
 	_orm          orm.Orm
 	storage       storage.Interface
@@ -68,8 +69,6 @@ type merchantRepo struct {
 	mux           *sync.RWMutex
 }
 
-// GetBalanceAccountLog implements merchant.IMerchantRepo
-
 func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
@@ -84,41 +83,42 @@ func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 	approvalRepo approval.IApprovalRepository,
 	rbacRepo rbac.IRbacRepository,
 ) merchant.IMerchantRepo {
-	if !mchMerchantDaoImplMapped {
+	_mchOnce.Do(func() {
 		// 映射实体
 		o.Mapping(merchant.Merchant{}, "mch_merchant")
 		o.Mapping(merchant.Authenticate{}, "mch_authenticate")
-		mchMerchantDaoImplMapped = true
-	}
-	r := &merchantRepo{
-		Connector:     o.Connector(),
-		_orm:          o,
-		storage:       storage,
-		_wsRepo:       wsRepo,
-		_itemRepo:     itemRepo,
-		_userRepo:     userRepo,
-		_employeeRepo: employeeRepo,
-		_mssRepo:      mssRepo,
-		_shopRepo:     shopRepo,
-		_sysRepo:      sysRepo,
-		_valRepo:      valRepo,
-		_memberRepo:   memberRepo,
-		_walletRepo:   walletRepo,
-		_registryRepo: registryRepo,
-		_invoiceRepo:  invoiceRepo,
-		_approvalRepo: approvalRepo,
-		_rbacRepo:     rbacRepo,
-		mux:           &sync.RWMutex{},
-	}
-	r.ORM = on
-	r.authRepo.ORM = on
-	r.billRepo = &fw.BaseRepository[merchant.MerchantBill]{ORM: on}
-	r._settleRepo = &fw.BaseRepository[merchant.SettleConf]{ORM: on}
-	return r
+		r := &merchantRepo{
+			Connector:     o.Connector(),
+			_orm:          o,
+			storage:       storage,
+			_wsRepo:       wsRepo,
+			_itemRepo:     itemRepo,
+			_userRepo:     userRepo,
+			_employeeRepo: employeeRepo,
+			_mssRepo:      mssRepo,
+			_shopRepo:     shopRepo,
+			_sysRepo:      sysRepo,
+			_valRepo:      valRepo,
+			_memberRepo:   memberRepo,
+			_walletRepo:   walletRepo,
+			_registryRepo: registryRepo,
+			_invoiceRepo:  invoiceRepo,
+			_approvalRepo: approvalRepo,
+			_rbacRepo:     rbacRepo,
+			mux:           &sync.RWMutex{},
+		}
+		r.ORM = on
+		r._authRepo.ORM = on
+		r._billRepo = fw.NewRepository[merchant.MerchantBill](on)
+		r._settleRepo = fw.NewRepository[merchant.SettleConf](on)
+		r._mchRepo = fw.NewRepository[merchant.Merchant](on)
+		_mchInstance = r
+	})
+	return _mchInstance
 }
 
 func (m *merchantRepo) BillRepo() fw.Repository[merchant.MerchantBill] {
-	return m.billRepo
+	return m._billRepo
 }
 
 func (m *merchantRepo) SettleRepo() fw.Repository[merchant.SettleConf] {
@@ -559,28 +559,34 @@ func (m *merchantRepo) GetMerchantByMemberId(memberId int) merchant.IMerchantAgg
 
 // SaveAuthenticate Save 商户认证信息
 func (m *merchantRepo) SaveAuthenticate(v *merchant.Authenticate) (int, error) {
-	dst, err := m.authRepo.Save(v)
+	dst, err := m._authRepo.Save(v)
 	return dst.Id, err
 }
 
 // GetMerchantAuthenticate implements merchant.IMerchantRepo.
 func (m *merchantRepo) GetMerchantAuthenticate(mchId int, version int) *merchant.Authenticate {
-	return m.authRepo.FindBy("mch_id = ? AND version= ?", mchId, version)
+	return m._authRepo.FindBy("mch_id = ? AND version= ?", mchId, version)
 }
 
 func (m *merchantRepo) DeleteOthersAuthenticate(mchId int, id int) error {
-	_, err := m.authRepo.DeleteBy("mch_id = ? AND id <> ?", mchId, id)
+	_, err := m._authRepo.DeleteBy("mch_id = ? AND id <> ?", mchId, id)
 	return err
 }
 
 // IsExistsMerchantName implements merchant.IMerchantRepo.
 func (m *merchantRepo) IsExistsMerchantName(name string, id int) bool {
-	count, err := m.authRepo.Count("mch_id <> ? AND mch_name = ?", id, name)
+	count, err := m._authRepo.Count("mch_id <> ? AND mch_name = ?", id, name)
 	return err == nil && count > 0
 }
 
 // IsExistsOrganizationName implements merchant.IMerchantRepo.
 func (m *merchantRepo) IsExistsOrganizationName(name string, id int) bool {
-	count, err := m.authRepo.Count("mch_id <> ? AND org_name = ?", id, name)
+	count, err := m._authRepo.Count("mch_id <> ? AND org_name = ?", id, name)
+	return err == nil && count > 0
+}
+
+// IsExistsEmail 检查邮箱是否已使用
+func (m *merchantRepo) IsExistsEmail(email string, id int) bool {
+	count, err := m._mchRepo.Count("id <> ? AND mail_addr = ?", id, email)
 	return err == nil && count > 0
 }

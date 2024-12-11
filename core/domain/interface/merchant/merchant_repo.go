@@ -35,7 +35,8 @@ type IMerchantRepo interface {
 
 	// 保存
 	SaveMerchant(*Merchant) (int, error)
-
+	// IsExistsEmail 检查邮箱是否已使用
+	IsExistsEmail(email string, id int) bool
 	// 获取账户
 	GetAccount(mchId int) *Account
 	// 保存会员账户

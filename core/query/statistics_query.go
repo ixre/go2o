@@ -75,7 +75,7 @@ func (s *StatisticsQuery) QuerySummary() *SummaryStatistics {
 	var todayBeginTime = tool.GetStartDate(time.Now()).Unix()
 	err := s.Connector.QueryRow(`
 		SELECT (SELECT COUNT(1) FROM mm_member) as totalMembers,
-		(SELECT COUNT(1) FROM mm_member WHERE reg_time > $1) as totalMembers,
+		(SELECT COUNT(1) FROM mm_member WHERE create_time > $1) as totalMembers,
 		(SELECT COUNT(1) FROM mm_member WHERE login_time > $1) as todayLoginMembers,
 		(SELECT COUNT(1) FROM sale_sub_order WHERE create_time > $1) as todayCreateOrders,
 		(SELECT COUNT(1) FROM sale_sub_order WHERE status = $2) as awaitShipmentOrders,

@@ -92,7 +92,7 @@ func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 	if v == nil {
 		return errors.New("商户认证信息不能为空")
 	}
-	if v == nil || len(v.MchName) < 2 {
+	if len(v.MchName) < 2 {
 		return errors.New("商户名称不能为空")
 	}
 	if p._repo.IsExistsMerchantName(v.MchName, p.GetAggregateRootId()) {

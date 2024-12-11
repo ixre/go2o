@@ -182,6 +182,7 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 
 	if m.GetAggregateRootId() <= 0 {
 		m._value.MemberId = v.MemberId
+		m._value.MailAddr = v.MailAddr
 	}
 	if len(tv.Username) == 0 {
 		tv.Username = v.Username
@@ -201,6 +202,16 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 // 检查商户注册信息是否正确
 func (m *merchantImpl) check(v *merchant.Merchant) error {
 	//todo: validate and check merchant name exists
+	if m.GetAggregateRootId() <= 0 {
+		// 新注册商户
+		if len(v.MailAddr) == 0 {
+			return errors.New("邮箱不能为空")
+		}
+		if m._repo.IsExistsEmail(v.MailAddr, m.GetAggregateRootId()) {
+			return errors.New("邮箱已使用")
+		}
+	}
+
 	if len(v.MchName) > 0 {
 		//todo: 检查商户名称是否存在
 		//return merchant.ErrMissingMerchantName
@@ -416,31 +427,7 @@ func (m *merchantImpl) createMerchant() (int64, error) {
 	if m._value.MemberId > 0 {
 		err = m.applyBindMember()
 	}
-	// 初始化认证信息
-	auth := &merchant.Authenticate{
-		Id:               0,
-		MchId:            0,
-		OrgName:          "",
-		LicenceNo:        "",
-		LicencePic:       "",
-		WorkCity:         0,
-		QualificationPic: "",
-		PersonId:         "",
-		PersonName:       "",
-		PersonFrontPic:   "",
-		PersonBackPic:    "",
-		PersonPhone:      "",
-		AuthorityPic:     "",
-		BankName:         "",
-		BankAccount:      "",
-		BankNo:           "",
-		ExtraData:        "",
-		ReviewTime:       0,
-		ReviewStatus:     0,
-		ReviewRemark:     "",
-		UpdateTime:       int(unix),
-	}
-	auth.Id, _ = m._repo.SaveAuthenticate(auth)
+	// note: 无需初始化认证信息
 
 	// 创建API
 	api := &merchant.ApiInfo{

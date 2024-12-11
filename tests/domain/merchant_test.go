@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/initial/provide"
@@ -22,35 +21,36 @@ func TestMerchantPwd2(t *testing.T) {
 func TestCreateMerchant(t *testing.T) {
 	repo := inject.GetMerchantRepo()
 	v := &merchant.Merchant{
-		Username: "zy",
-		MchName:  "天猫",
+		MailAddr: "zy11@fze.net",
+		MchName:  "天猫B",
 		Salt:     "000",
-		MemberId: 4,
 		IsSelf:   1,
 		Level:    0,
 		Logo:     "",
-		Province: 0,
+		Province: 110000,
 		City:     110000,
-		District: 0,
+		District: 110000,
 	}
+	v.Username = v.MailAddr
 	v.Password = domain.MerchantSha265Pwd(domain.Md5("123456"), v.Salt)
 	im := repo.CreateMerchant(v)
 	err := im.SetValue(v)
 	if err == nil {
 		_, err = im.Save()
-		if err == nil {
-			o := shop.OnlineShop{
-				ShopName:   v.MchName,
-				Logo:       "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-				Host:       "",
-				Alias:      "zy",
-				Telephone:  "",
-				Addr:       "",
-				ShopTitle:  "",
-				ShopNotice: "",
-			}
-			_, err = im.ShopManager().CreateOnlineShop(&o)
-		}
+		// 商户要求认证后，才能开通
+		// if err == nil {
+		// 	o := shop.OnlineShop{
+		// 		ShopName:   v.MchName,
+		// 		Logo:       "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		// 		Host:       "",
+		// 		Alias:      "zy",
+		// 		Telephone:  "",
+		// 		Addr:       "",
+		// 		ShopTitle:  "",
+		// 		ShopNotice: "",
+		// 	}
+		// 	_, err = im.ShopManager().CreateOnlineShop(&o)
+		// }
 	}
 	if err != nil {
 		t.Error(err)
@@ -60,9 +60,10 @@ func TestCreateMerchant(t *testing.T) {
 
 // 保存商户认证信息
 func TestSaveMerchantAuthenticate(t *testing.T) {
-	mch := inject.GetMerchantRepo().GetMerchant(1)
+	mch := inject.GetMerchantRepo().GetMerchant(21)
 	v := &merchant.Authenticate{
-		OrgName:          "天猫有限公司",
+		OrgName:          "中国天空有限公司",
+		MchName:          "中的国际",
 		LicenceNo:        "00000000",
 		LicencePic:       "https://so1.360tres.com/dr/220__/t0146eaced4b2c0a82d.jpg",
 		WorkCity:         0,
@@ -76,6 +77,11 @@ func TestSaveMerchantAuthenticate(t *testing.T) {
 		BankName:         "花旗银行",
 		BankAccount:      "田猫",
 		BankNo:           "622601345897234",
+		City:             110000,
+		District:         110101,
+		Province:         110000,
+		ContactName:      "田猫",
+		ContactPhone:     "13888888888",
 	}
 	id, err := mch.ProfileManager().SaveAuthenticate(v)
 	if err != nil {
@@ -314,7 +320,7 @@ func TestMerchantTransactionBill(t *testing.T) {
 			t.Error(err)
 			t.FailNow()
 		}
-		err = tx.UpdateSettleInfo("SP000001", "TX000001", "success")
+		err = tx.UpdateSettleInfo("SP000001", "TX000001", merchant.BillResultSuccess, "success")
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
