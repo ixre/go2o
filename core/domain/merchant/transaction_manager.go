@@ -332,9 +332,9 @@ func (b *billDomainImpl) UpdateAmount() error {
 	b._value.TxAmount = txData.TxAmount
 	b._value.TxFee = txData.TxFee
 	b._value.RefundAmount = txData.RefundAmount
+	b._value.FinalAmount = b._value.TxAmount - b._value.TxFee - b._value.RefundAmount
 	b._value.UpdateTime = int(time.Now().Unix())
-	_, err := b._repo.BillRepo().Save(b._value)
-	return err
+	return b.save()
 }
 
 // GenerateBill implements merchant.IBillDomain.
@@ -389,8 +389,7 @@ func (b *billDomainImpl) Generate() error {
 	}
 	b._value.UpdateTime = int(now)
 	b._value.BillRemark = ""
-	_, err = b._repo.BillRepo().Save(b._value)
-	return err
+	return b.save()
 }
 
 // GetDomainId implements merchant.IBillDomain.
@@ -408,8 +407,7 @@ func (b *billDomainImpl) Confirm() error {
 	}
 	b._value.Status = int(merchant.BillStatusWaitReview)
 	b._value.UpdateTime = int(time.Now().Unix())
-	_, err := b._repo.BillRepo().Save(b._value)
-	return err
+	return b.save()
 }
 
 // ReviewBill implements merchant.IBillDomain.
@@ -435,8 +433,7 @@ func (b *billDomainImpl) Review(reviewerId int, remark string) error {
 		b._value.SettleResult = merchant.BillResultSuccess
 	}
 	b._value.UpdateTime = int(time.Now().Unix())
-	_, err := b._repo.BillRepo().Save(b._value)
-	return err
+	return b.save()
 }
 
 // SettleBill implements merchant.IBillDomain.
@@ -460,13 +457,13 @@ func (b *billDomainImpl) Settle() error {
 	}
 	// 扣除商户余额
 	err := b._mch.Account().Consume("账单结算-"+b._value.BillMonth,
-		b._value.TxAmount, strconv.Itoa(b._value.Id), "系统扣除")
+		b._value.FinalAmount, strconv.Itoa(b._value.Id), "系统扣除")
 	if err != nil {
 		return errors.New("结算扣款失败:" + err.Error())
 	}
 	b._value.SettleStatus = merchant.BillSettlemented // 结算成功
 	b._value.UpdateTime = int(time.Now().Unix())
-	_, err = b._repo.BillRepo().Save(b._value)
+	err = b.save()
 	if err == nil {
 		mchName := mch.GetValue().MchName
 		// 生成结算备注
@@ -500,8 +497,7 @@ func (b *billDomainImpl) UpdateSettleInfo(spCode string, settleTxNo string, sett
 	b._value.SettleRemark = message
 	b._value.SettleResult = settleResult
 	b._value.UpdateTime = int(time.Now().Unix())
-	_, err := b._repo.BillRepo().Save(b._value)
-	return err
+	return b.save()
 }
 
 // UpdateBillAmount 更新账单金额
@@ -517,6 +513,15 @@ func (b *billDomainImpl) UpdateBillAmount(amount int, txFee int) error {
 		b._value.RefundAmount += -amount
 	}
 	b._value.UpdateTime = int(time.Now().Unix())
+	return b.save()
+}
+
+func (b *billDomainImpl) save() error {
+	b.updateAmount()
 	_, err := b._repo.BillRepo().Save(b._value)
 	return err
+}
+
+func (b *billDomainImpl) updateAmount() {
+	b._value.FinalAmount = b._value.TxAmount - b._value.TxFee - b._value.RefundAmount
 }

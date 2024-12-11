@@ -269,3 +269,10 @@ COMMENT ON COLUMN mch_bill.create_time IS '创建时间';
 COMMENT ON COLUMN mch_bill.build_time IS '账单生成时间';
 COMMENT ON COLUMN mch_bill.update_time IS '更新时间';
 
+
+
+-- 20241211 账单备注
+ALTER TABLE mch_bill 
+  ADD COLUMN final_amount int8 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN mch_bill.final_amount IS '实际账单金额';
+update mch_bill set final_amount=(tx_amount-tx_fee-refund_amount);

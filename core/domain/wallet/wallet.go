@@ -132,7 +132,7 @@ func (w *WalletImpl) checkValueOpu(value int, checkOpu bool, operatorUid int, op
 	if !allowZeroAmount && value == 0 {
 		return wallet.ErrAmountZero
 	}
-	if checkOpu && (operatorUid <= 0 || len(operatorName) == 0) {
+	if checkOpu && (operatorUid < 0 || len(operatorName) == 0) {
 		return wallet.ErrMissingOperator
 	}
 	return w.checkWalletState(w, false)

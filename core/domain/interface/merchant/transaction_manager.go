@@ -143,6 +143,8 @@ type MerchantBill struct {
 	TxFee int `json:"txFee" db:"tx_fee" gorm:"column:tx_fee" bson:"txFee"`
 	// 交易退款金额
 	RefundAmount int `json:"refundAmount" db:"refund_amount" gorm:"column:refund_amount" bson:"refundAmount"`
+	// 实际账单金额
+	FinalAmount int `json:"finalAmount" db:"final_amount" gorm:"column:final_amount" bson:"finalAmount"`
 	// 账单状态:  0: 待生成 1: 待确认   2: 待复核 3: 待结算  4: 已结算
 	Status int `json:"status" db:"status" gorm:"column:status" bson:"status"`
 	// 审核人编号
