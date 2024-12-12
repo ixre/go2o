@@ -265,11 +265,11 @@ func (o *optionManagerImpl) SaveOption(option *sys.GeneralOption) error {
 			return errors.New("上级节点不存在")
 		}
 	}
+	if option.SortNum == 0 {
+		option.SortNum = o.getMaxSortNum(option.Pid) + 1
+	}
 	if len(option.Label) == 0 {
 		return errors.New("标签不能为空")
-	}
-	if len(option.Value) == 0 {
-		return errors.New("值不能为空")
 	}
 	if option.Pid == 0 && len(option.Type) == 0 {
 		return errors.New("类型不能为空")
@@ -290,6 +290,40 @@ func (o *optionManagerImpl) SaveOption(option *sys.GeneralOption) error {
 		// 新增
 		_, err = o.Save(option)
 	}
+	if err == nil {
+		o.flushCache()
+	}
+	return err
+}
+
+// getMaxSortNum 获取最大排序号
+func (o *optionManagerImpl) getMaxSortNum(pid int) int {
+	var max int
+	for _, v := range o.getList() {
+		if v.Pid == pid {
+			if v.SortNum > max {
+				max = v.SortNum
+			}
+		}
+	}
+	return max
+}
+
+// Delete 删除选项
+func (o *optionManagerImpl) Delete(option *sys.GeneralOption) error {
+	var opt *sys.GeneralOption
+	for _, v := range o.getList() {
+		if v.Pid == option.Id {
+			return errors.New("存在下级选项,无法删除")
+		}
+		if v.Id == option.Id {
+			opt = v
+		}
+	}
+	if opt == nil {
+		return errors.New("no such data")
+	}
+	err := o.Repository.Delete(opt)
 	if err == nil {
 		o.flushCache()
 	}

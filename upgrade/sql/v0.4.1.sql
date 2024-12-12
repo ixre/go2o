@@ -276,3 +276,7 @@ ALTER TABLE mch_bill
   ADD COLUMN final_amount int8 DEFAULT 0 NOT NULL;
 COMMENT ON COLUMN mch_bill.final_amount IS '实际账单金额';
 update mch_bill set final_amount=(tx_amount-tx_fee-refund_amount);
+
+
+ALTER TABLE sys_general_option 
+  ALTER COLUMN label TYPE character varying(30);

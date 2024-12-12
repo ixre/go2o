@@ -72,6 +72,8 @@ type (
 		GetChildOptions(parentId int, typeName string) []*GeneralOption
 		// 是否为叶子节点
 		IsLeaf(n *GeneralOption) bool
+		// 删除选项
+		Delete(option *GeneralOption) error
 	}
 )
 

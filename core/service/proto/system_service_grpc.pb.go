@@ -25,7 +25,8 @@ const (
 	SystemService_FlushCache_FullMethodName            = "/SystemService/FlushCache"
 	SystemService_GetOptionNames_FullMethodName        = "/SystemService/GetOptionNames"
 	SystemService_GetChildOptions_FullMethodName       = "/SystemService/GetChildOptions"
-	SystemService_SaveGenericOption_FullMethodName     = "/SystemService/SaveGenericOption"
+	SystemService_SaveGeneralOption_FullMethodName     = "/SystemService/SaveGeneralOption"
+	SystemService_DeleteGeneralOption_FullMethodName   = "/SystemService/DeleteGeneralOption"
 	SystemService_SubmitSystemLog_FullMethodName       = "/SystemService/SubmitSystemLog"
 	SystemService_DeleteSystemLog_FullMethodName       = "/SystemService/DeleteSystemLog"
 	SystemService_QueryBanks_FullMethodName            = "/SystemService/QueryBanks"
@@ -72,7 +73,9 @@ type SystemServiceClient interface {
 	// 获取下级选项,code
 	GetChildOptions(ctx context.Context, in *OptionsRequest, opts ...grpc.CallOption) (*OptionsResponse, error)
 	// 保存通用选项
-	SaveGenericOption(ctx context.Context, in *SGenericOption, opts ...grpc.CallOption) (*TxResult, error)
+	SaveGeneralOption(ctx context.Context, in *SGeneralOption, opts ...grpc.CallOption) (*TxResult, error)
+	// 删除通用选项
+	DeleteGeneralOption(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*TxResult, error)
 	// 提交系统日志
 	SubmitSystemLog(ctx context.Context, in *SubmitSystemLogRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// 删除系统日志
@@ -202,10 +205,20 @@ func (c *systemServiceClient) GetChildOptions(ctx context.Context, in *OptionsRe
 	return out, nil
 }
 
-func (c *systemServiceClient) SaveGenericOption(ctx context.Context, in *SGenericOption, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *systemServiceClient) SaveGeneralOption(ctx context.Context, in *SGeneralOption, opts ...grpc.CallOption) (*TxResult, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(TxResult)
-	err := c.cc.Invoke(ctx, SystemService_SaveGenericOption_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SystemService_SaveGeneralOption_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *systemServiceClient) DeleteGeneralOption(ctx context.Context, in *Int64, opts ...grpc.CallOption) (*TxResult, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TxResult)
+	err := c.cc.Invoke(ctx, SystemService_DeleteGeneralOption_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -481,7 +494,9 @@ type SystemServiceServer interface {
 	// 获取下级选项,code
 	GetChildOptions(context.Context, *OptionsRequest) (*OptionsResponse, error)
 	// 保存通用选项
-	SaveGenericOption(context.Context, *SGenericOption) (*TxResult, error)
+	SaveGeneralOption(context.Context, *SGeneralOption) (*TxResult, error)
+	// 删除通用选项
+	DeleteGeneralOption(context.Context, *Int64) (*TxResult, error)
 	// 提交系统日志
 	SubmitSystemLog(context.Context, *SubmitSystemLogRequest) (*TxResult, error)
 	// 删除系统日志
@@ -569,8 +584,11 @@ func (UnimplementedSystemServiceServer) GetOptionNames(context.Context, *GetName
 func (UnimplementedSystemServiceServer) GetChildOptions(context.Context, *OptionsRequest) (*OptionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChildOptions not implemented")
 }
-func (UnimplementedSystemServiceServer) SaveGenericOption(context.Context, *SGenericOption) (*TxResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveGenericOption not implemented")
+func (UnimplementedSystemServiceServer) SaveGeneralOption(context.Context, *SGeneralOption) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveGeneralOption not implemented")
+}
+func (UnimplementedSystemServiceServer) DeleteGeneralOption(context.Context, *Int64) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGeneralOption not implemented")
 }
 func (UnimplementedSystemServiceServer) SubmitSystemLog(context.Context, *SubmitSystemLogRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitSystemLog not implemented")
@@ -776,20 +794,38 @@ func _SystemService_GetChildOptions_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SystemService_SaveGenericOption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SGenericOption)
+func _SystemService_SaveGeneralOption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SGeneralOption)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SystemServiceServer).SaveGenericOption(ctx, in)
+		return srv.(SystemServiceServer).SaveGeneralOption(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: SystemService_SaveGenericOption_FullMethodName,
+		FullMethod: SystemService_SaveGeneralOption_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SystemServiceServer).SaveGenericOption(ctx, req.(*SGenericOption))
+		return srv.(SystemServiceServer).SaveGeneralOption(ctx, req.(*SGeneralOption))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SystemService_DeleteGeneralOption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Int64)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServiceServer).DeleteGeneralOption(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SystemService_DeleteGeneralOption_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServiceServer).DeleteGeneralOption(ctx, req.(*Int64))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1276,8 +1312,12 @@ var SystemService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SystemService_GetChildOptions_Handler,
 		},
 		{
-			MethodName: "SaveGenericOption",
-			Handler:    _SystemService_SaveGenericOption_Handler,
+			MethodName: "SaveGeneralOption",
+			Handler:    _SystemService_SaveGeneralOption_Handler,
+		},
+		{
+			MethodName: "DeleteGeneralOption",
+			Handler:    _SystemService_DeleteGeneralOption_Handler,
 		},
 		{
 			MethodName: "SubmitSystemLog",

@@ -21,7 +21,9 @@ service SystemService {
     // 获取下级选项,code
     rpc GetChildOptions (OptionsRequest) returns (OptionsResponse);
     // 保存通用选项
-    rpc SaveGenericOption(SGenericOption)returns(TxResult);
+    rpc SaveGeneralOption(SGeneralOption)returns(TxResult);
+    // 删除通用选项
+    rpc DeleteGeneralOption(Int64)returns(TxResult);
     // 提交系统日志
     rpc SubmitSystemLog(SubmitSystemLogRequest)returns(TxResult);
     // 删除系统日志
@@ -148,7 +150,7 @@ message SArea{
 }
 
 // 通用选项
-message SGenericOption{
+message SGeneralOption{
     // 编号
     int64 id = 1;
 	// 类型

@@ -393,7 +393,7 @@ func (s *systemServiceImpl) GetDistrictNames(_ context.Context, request *proto.G
 	}, nil
 }
 
-func (s *systemServiceImpl) SaveGenericOption(_ context.Context, option *proto.SGenericOption) (*proto.TxResult, error) {
+func (s *systemServiceImpl) SaveGeneralOption(_ context.Context, option *proto.SGeneralOption) (*proto.TxResult, error) {
 	isa := s.sysRepo.GetSystemAggregateRoot().Options()
 	err := isa.SaveOption(&sys.GeneralOption{
 		Id:      int(option.Id),
@@ -404,6 +404,13 @@ func (s *systemServiceImpl) SaveGenericOption(_ context.Context, option *proto.S
 		SortNum: int(option.SortNum),
 		Enabled: int(option.Enabled),
 	})
+	return s.errorV2(err), nil
+}
+
+// 删除通用选项
+func (s *systemServiceImpl) DeleteGeneralOption(_ context.Context, req *proto.Int64) (*proto.TxResult, error) {
+	isa := s.sysRepo.GetSystemAggregateRoot().Options()
+	err := isa.Delete(&sys.GeneralOption{Id: int(req.Value)})
 	return s.errorV2(err), nil
 }
 
