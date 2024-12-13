@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/infrastructure/fw"
@@ -287,6 +288,7 @@ func (o *optionManagerImpl) SaveOption(option *sys.GeneralOption) error {
 		origin.SortNum = option.SortNum
 		_, err = o.Save(origin)
 	} else {
+		option.CreateTime = int(time.Now().Unix())
 		// 新增
 		_, err = o.Save(option)
 	}
