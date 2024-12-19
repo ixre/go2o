@@ -79,6 +79,9 @@ func (i *invoiceTenantAggregateRootImpl) CreateInvoiceTitle(title *invoice.Invoi
 	if title.TenantId > 0 && title.TenantId != i.GetAggregateRootId() {
 		return errors.New("invoice tenant error")
 	}
+	if i, _ := i.repo.Title().Count("tenant_id=?", i.GetAggregateRootId()); i >= 5 {
+		return errors.New("发票抬头数量不能超过5个")
+	}
 	if i.repo.Title().FindBy("tenant_id=? AND title_name=? AND id <> ?",
 		i.GetAggregateRootId(),
 		title.TitleName,

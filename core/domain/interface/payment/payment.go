@@ -224,8 +224,7 @@ type (
 		// 2. 需要退全款时, 退款后结束分账流程
 		// 2. 补发分账完成指令,如果分账失败(如子商户未入网等)，进行补发
 		CompleteDivide() error
-		// UpdateDivideStatus 更新分账提交状态
-		// 当订单状态为分账完成，且所有分账方状态均成功时，结算分账资金
+		// UpdateDivideStatus 更新分账提交状态,当订单状态为分账完成，且所有分账方状态均成功时，将发送指令结算分账资金
 		UpdateSubDivideStatus(divideId int, success bool, divideNo string, remark string) error
 		// RevertDivide 请求分账归还，发起后将更新为撤销状态并发送事件进行归还处理
 		RevertSubDivide(divideId int, remark string) error
