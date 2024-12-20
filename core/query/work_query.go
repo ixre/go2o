@@ -67,3 +67,8 @@ func (q *WorkQuery) QueryLatestWorkorderComments(workorderId int, p *fw.PagingPa
 		Order: p.Order,
 	}, p.Arguments[0].(string), p.Arguments[1:]...)
 }
+
+// 根据工单号查找工单
+func (q *WorkQuery) FindWorkorderByWIP(wip string) *workorder.Workorder {
+	return q.FindBy("wip = ?", wip)
+}
