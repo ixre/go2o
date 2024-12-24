@@ -23,7 +23,7 @@ var (
 	privateKey = ""
 )
 
-func ConfigPrivateKey(key string) {
+func ConfigureHmacPrivateKey(key string) {
 	// 解析私钥
 	block, _ := pem.Decode([]byte(key))
 	if block == nil || block.Type != "RSA PRIVATE KEY" {
@@ -99,4 +99,18 @@ func RbacPassword(pwd string, salt string) string {
 		return ""
 	}
 	return HmacSha256(pwd + salt)
+}
+
+func AesEncrypt(data string, key string, iv string) string {
+	if strings.TrimSpace(data) == "" {
+		return ""
+	}
+	return crypto.AesEncrypt([]byte(data), []byte(key), []byte(iv))
+}
+
+func AesDecrypt(data string, key string, iv string) string {
+	if strings.TrimSpace(data) == "" {
+		return ""
+	}
+	return crypto.AesDecrypt([]byte(data), []byte(key), []byte(iv))
 }

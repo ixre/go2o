@@ -89,8 +89,12 @@ var (
 	SysSuspendMessage = KeyFormat("SysSuspendMessage")
 	// 接口签名盐
 	SysAPISignSalt = KeyFormat("sys_api_sign_salt")
-	// 接口JWT密钥
+	// 应用加密私钥
 	SysPrivateKey = KeyFormat("sys_private_key")
+	// 应用AES算法密钥
+	SysAESKey = KeyFormat("sys_aes_key")
+	// 应用AES算法初始化向量
+	SysAESIV = KeyFormat("sys_aes_iv")
 	// 超级管理员登录密钥
 	SysSuperLoginToken = KeyFormat("sys_super_login_token")
 	/** 短信 */

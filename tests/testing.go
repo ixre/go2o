@@ -85,5 +85,5 @@ func init() {
 func initPrivateKey() {
 	repo := inject.GetRegistryRepo()
 	key, _ := repo.GetValue(registry.SysPrivateKey)
-	domain.ConfigPrivateKey(key)
+	domain.ConfigureHmacPrivateKey(key)
 }

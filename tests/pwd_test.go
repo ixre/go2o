@@ -12,7 +12,7 @@ import (
 func init() {
 	repo := inject.GetRegistryRepo()
 	key, _ := repo.GetValue(registry.SysPrivateKey)
-	domain.ConfigPrivateKey(key)
+	domain.ConfigureHmacPrivateKey(key)
 }
 
 // 管理员密码
@@ -58,7 +58,7 @@ func TestHmacSha256(t *testing.T) {
 	//  \ouput: c95b645cc57b18b3a080505dde495f97f5a2ae5755c663815be64b9d7727ff00 len: 64
 	repo := inject.GetRegistryRepo()
 	key, _ := repo.GetValue(registry.SysPrivateKey)
-	domain.ConfigPrivateKey(key)
+	domain.ConfigureHmacPrivateKey(key)
 	str := domain.HmacSha256(crypto.Md5([]byte("123456")))
 	t.Log(str, "len:", len(str))
 }

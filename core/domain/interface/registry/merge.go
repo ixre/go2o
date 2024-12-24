@@ -3,6 +3,7 @@ package registry
 import (
 	"strconv"
 
+	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/util"
 )
 
@@ -73,13 +74,16 @@ func MergeRegistries() []*Registry {
 	mergeAdd("是否开启多店铺模式", PlatformMultipleShopEnabled, "1", "0:关闭,1:启用")
 
 	/** 系统 */
+	md5 := crypto.Md5([]byte("go2o"))
 	mergeAdd("启用商户店铺商品分类", EnableMchGoodsCategory, "false", "")
 	mergeAdd("启用商户页面分类", EnableMchPageCategory, "false", "")
 	mergeAdd("开启调试模式", EnableDebugMode, "false", "")
 	mergeAdd("系统是否挂起", SysSuspend, "false", "")
 	mergeAdd("系统挂起提示消息", SysSuspendMessage, "系统正在升级维护，请稍后再试!", "")
 	mergeAdd("接口签名盐", SysAPISignSalt, "go2o_salt", "用于接口安全验证，需与前端配置保持一致")
-	mergeAdd("应用私钥", SysPrivateKey, "", "")
+	mergeAdd("应用私钥", SysPrivateKey, "", "RSA2048算法密钥")
+	mergeAdd("应用AES算法密钥", SysAESKey, md5, "16位AES算法密钥")
+	mergeAdd("应用AES算法初始化向量", SysAESIV, md5[8:24], "16位AES算法初始化向量")
 	mergeAdd("超级管理员登录密钥", SysSuperLoginToken, "", "")
 	mergeAdd("收货提示信息", OrderReceiveAlertMessage, "确认收货后,款项将转给商户。请在收货前确保已经商品没有损坏和缺少!", "")
 

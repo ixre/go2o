@@ -73,7 +73,7 @@ func initJWTSecret(repo registry.IRegistryRepo) {
 		_, privateKey, _ = crypto.GenRsaKeys(2048)
 		_ = repo.UpdateValue(registry.SysPrivateKey, privateKey)
 	}
-	domain.ConfigPrivateKey(privateKey)
+	domain.ConfigureHmacPrivateKey(privateKey)
 }
 
 // 初始化导航数据
