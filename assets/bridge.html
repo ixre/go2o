@@ -88,7 +88,7 @@
        * history:
        * 示例: http://localhost:1428/g/bridge?url=https://h5.g2.56x.net/&title=%E8%BD%BD%E5%85%A5%E4%B8%AD&preload=https://h5.g2.56x.net/js/nutui.js,https://h5.g2.56x.net/js/taro.js,https://h5.g2.56x.net/js/app.js
        */
-      document.title = "{{.title}}" || "加载中";
+      document.title = "{{.title}}";
       var url = "{{.url}}";
       var preloads = "{{.preload}}".split(",");
       if (url.indexOf("%") != -1) url = decodeURIComponent(url);
