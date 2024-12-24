@@ -100,17 +100,3 @@ func RbacPassword(pwd string, salt string) string {
 	}
 	return HmacSha256(pwd + salt)
 }
-
-func AesEncrypt(data string, key string, iv string) string {
-	if strings.TrimSpace(data) == "" {
-		return ""
-	}
-	return crypto.AesEncrypt([]byte(data), []byte(key), []byte(iv))
-}
-
-func AesDecrypt(data string, key string, iv string) string {
-	if strings.TrimSpace(data) == "" {
-		return ""
-	}
-	return crypto.AesDecrypt([]byte(data), []byte(key), []byte(iv))
-}
