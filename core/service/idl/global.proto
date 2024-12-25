@@ -33,14 +33,16 @@ message Result {
     map<string, string> data = 3;
 }
 
-//传输结果对象
-message ResultV2 {
+// 传输结果对象
+message TxResult {
     /* 状态码,如为0表示成功 */
     sint32 code = 1;
     /* 消息 */
-    string msg = 2;
-    /** 数据字典 */
-    map<string, string> data = 3;
+    string message = 2;
+    /** 操作返回业务编号 */
+    int64 txId = 3;
+    /** 操作返回其他数据 */
+    map<string, string> data = 4;
 }
 
 

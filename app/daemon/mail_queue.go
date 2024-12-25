@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/ixre/go2o/core/domain/interface/message"
-	mssIns "github.com/ixre/go2o/core/infrastructure/mss"
+	mss "github.com/ixre/go2o/core/domain/interface/message"
+	"github.com/ixre/go2o/core/infrastructure/util/smtp"
 	"github.com/ixre/go2o/core/initial"
 	"github.com/ixre/go2o/core/variable"
 )
@@ -59,7 +59,7 @@ func handleMailQueue(list []*mss.MailTask) {
 	mailChan = make(chan int, len(list))
 	for _, v := range list {
 		go func(ch chan int, t *mss.MailTask) {
-			err := mssIns.SendMailWithDefaultConfig(t.Subject, []string{t.SendTo}, []byte(t.Body))
+			err := smtp.SendMail(t.Subject, []string{t.SendTo}, t.Body)
 			if err != nil {
 				appCtx.Log().Error(err)
 				t.IsFailed = 1

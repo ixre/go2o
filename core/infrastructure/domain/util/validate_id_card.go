@@ -28,12 +28,12 @@ import (
 // if(!/^\d{17}(\d|x)$/i.test(sId)) return "&nbsp;";
 // sId=sId.replace(/x$/i,"a");
 // if(aCity[parseInt(sId.substr(0,2))]==null) return "&nbsp;";
-// sBirthDay=sId.substr(6,4)+"-"+Number(sId.substr(10,2))+"-"+Number(sId.substr(12,2));
-// var d=new Date(sBirthDay.replace(/-/g,"/")) ;
-// if(sBirthDay!=(d.getFullYear()+"-"+ (d.getMonth()+1) + "-" + d.getDate()))return "&nbsp;";
+// sBirthday=sId.substr(6,4)+"-"+Number(sId.substr(10,2))+"-"+Number(sId.substr(12,2));
+// var d=new Date(sBirthday.replace(/-/g,"/")) ;
+// if(sBirthday!=(d.getFullYear()+"-"+ (d.getMonth()+1) + "-" + d.getDate()))return "&nbsp;";
 // for(var i = 17;i>=0;i --) iSum += (Math.pow(2,i) % 11) * parseInt(sId.charAt(17 - i),11) ;
 // if(iSum%11!=1) return "&nbsp;";
-// return true;//aCity[parseInt(sId.substr(0,2))]+","+sBirthDay+","+ (sId.substr(16,1)%2?"男":"女")
+// return true;//aCity[parseInt(sId.substr(0,2))]+","+sBirthday+","+ (sId.substr(16,1)%2?"男":"女")
 //}
 
 var (
@@ -65,7 +65,7 @@ func CheckChineseCardID(sId string) error {
 		return errors.New("身份证出生日期错误")
 	}
 	//for (var i = 17; i>=0; i --) iSum += (Math.pow(2, i) % 11) * parseInt(sId.charAt(17 - i), 11);
-	////aCity[parseInt(sId.substr(0,2))]+","+sBirthDay+","+ (sId.substr(16,1)%2?"男":"女")
+	////aCity[parseInt(sId.substr(0,2))]+","+sBirthday+","+ (sId.substr(16,1)%2?"男":"女")
 	var iSum int64 = 0
 	for i := 17; i >= 0; i-- {
 		b, err := strconv.ParseInt(sId[17-i:17-i+1], 11, 32)

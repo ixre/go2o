@@ -1,19 +1,25 @@
 package sys
 
 import (
+	"errors"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/infrastructure/fw"
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
+	"github.com/ixre/go2o/core/infrastructure/util/lbs"
 )
 
 var _ sys.ISystemAggregateRoot = new(systemAggregateRootImpl)
 
 type systemAggregateRootImpl struct {
-	_address sys.IAddressManager
-	_options sys.IOptionManager
-	_repo    sys.ISystemRepo
+	_address  sys.ILocationManager
+	_options  sys.IOptionManager
+	_stations sys.IStationManager
+	_log      sys.IApplicationManager
+	_repo     sys.ISystemRepo
 }
 
 func NewSystemAggregateRoot(repo sys.ISystemRepo) sys.ISystemAggregateRoot {
@@ -26,9 +32,9 @@ func (s *systemAggregateRootImpl) GetAggregateRootId() int {
 }
 
 // Address implements sys.ISystemAggregateRoot.
-func (s *systemAggregateRootImpl) Address() sys.IAddressManager {
+func (s *systemAggregateRootImpl) Location() sys.ILocationManager {
 	if s._address == nil {
-		s._address = &addressManagerImpl{
+		s._address = &locationManagerImpl{
 			s._repo.District(), nil}
 	}
 	return s._address
@@ -37,9 +43,27 @@ func (s *systemAggregateRootImpl) Address() sys.IAddressManager {
 // Options implements sys.ISystemAggregateRoot.
 func (s *systemAggregateRootImpl) Options() sys.IOptionManager {
 	if s._options == nil {
-		s._options = &optionManagerImpl{s._repo.Option(), nil}
+		s._options = &optionManagerImpl{
+			Repository: s._repo.Option(),
+		}
 	}
 	return s._options
+}
+
+// Stations implements sys.ISystemAggregateRoot.
+func (s *systemAggregateRootImpl) Stations() sys.IStationManager {
+	if s._stations == nil {
+		s._stations = NewStationManager(s._repo.Station(), s._repo, s)
+	}
+	return s._stations
+}
+
+// Application implements sys.ISystemAggregateRoot.
+func (s *systemAggregateRootImpl) Application() sys.IApplicationManager {
+	if s._log == nil {
+		s._log = newApplicationManager(s._repo)
+	}
+	return s._log
 }
 
 // FlushUpdateStatus implements sys.ISystemAggregateRoot.
@@ -52,32 +76,49 @@ func (s *systemAggregateRootImpl) LastUpdateTime() int64 {
 	return s._repo.LastUpdateTime()
 }
 
-var _ sys.IAddressManager = new(addressManagerImpl)
+// GetBanks 获取银行列表
+func (s *systemAggregateRootImpl) GetBanks() []*sys.GeneralOption {
+	return sys.BankCodes
+}
 
-type addressManagerImpl struct {
+var _ sys.ILocationManager = new(locationManagerImpl)
+
+type locationManagerImpl struct {
 	fw.Repository[sys.District]
-	areaList []*sys.District
+	districtList []*sys.District
 }
 
-// getDistrictList 获取地区列表
-func (a *addressManagerImpl) getDistrictList() []*sys.District {
-	if a.areaList == nil {
-		a.areaList = fw.ReduceFinds(func(opt *fw.QueryOption) []*sys.District {
-			return a.FindList(opt, "")
-		}, 1000)
-	}
-	return a.areaList
-}
-
-// getProvinces 获取省列表
-func (a *addressManagerImpl) getProvinces() []*sys.District {
-	return collections.FilterArray(a.getDistrictList(), func(a *sys.District) bool {
-		return a.Parent == 0 && a.Code != 0
+// FindCity 查找城市
+func (a *locationManagerImpl) FindCity(name string) *sys.District {
+	return collections.FindArray(a.GetAllCities(), func(d *sys.District) bool {
+		return d.Name == name
 	})
 }
 
+// GetDistrict 获取区域信息
+func (a *locationManagerImpl) GetDistrict(id int) *sys.District {
+	return collections.FindArray(a.getDistrictList(), func(d *sys.District) bool {
+		return d.Code == id
+	})
+}
+
+// getDistrictList 获取地区列表
+func (a *locationManagerImpl) getDistrictList() []*sys.District {
+	if a.districtList == nil {
+		a.districtList = fw.ReduceFinds(func(opt *fw.QueryOption) []*sys.District {
+			return a.FindList(opt, "")
+		}, 1000)
+	}
+	return a.districtList
+}
+
+// getProvinces 获取省列表
+func (a *locationManagerImpl) getProvinces() []*sys.District {
+	return a.GetChildrenDistricts(0)
+}
+
 // GetDistrictNames implements sys.IAddressManager.
-func (a *addressManagerImpl) GetDistrictNames(code ...int) map[int]string {
+func (a *locationManagerImpl) GetDistrictNames(code ...int) map[int]string {
 	mp := make(map[int]string)
 	for _, v := range a.getDistrictList() {
 		if len(mp) == len(code) {
@@ -93,7 +134,7 @@ func (a *addressManagerImpl) GetDistrictNames(code ...int) map[int]string {
 }
 
 // GetAllCities 获取所有城市列表
-func (a *addressManagerImpl) GetAllCities() []*sys.District {
+func (a *locationManagerImpl) GetAllCities() []*sys.District {
 	provinceList := a.getProvinces()
 	provinceCodes := collections.MapList(provinceList,
 		func(s *sys.District) int {
@@ -128,9 +169,33 @@ func (a *addressManagerImpl) GetAllCities() []*sys.District {
 	return ret
 }
 
-// GetDistrictList implements sys.IAddressManager.
-func (a *addressManagerImpl) GetDistrictList(parentId int) []*sys.District {
-	return a.FindList(nil, "parent=$1", parentId)
+// GetChildrenDistricts implements sys.IAddressManager.
+func (a *locationManagerImpl) GetChildrenDistricts(parentId int) []*sys.District {
+	return collections.FilterArray(a.getDistrictList(), func(a *sys.District) bool {
+		return a.Parent == parentId && a.Code != 0
+	})
+}
+
+// FindRegionByIp 根据IP查找区域信息
+func (a *locationManagerImpl) FindRegionByIp(ip string) (*sys.District, error) {
+	if strings.HasPrefix(ip, "127.") ||
+		strings.HasPrefix(ip, "172.") ||
+		strings.HasPrefix(ip, "192.") ||
+		strings.HasPrefix(ip, "10.") ||
+		strings.HasPrefix(ip, "0.") ||
+		strings.HasPrefix(ip, "::1") {
+		// 本地网络IP不更新位置
+		return &sys.District{Code: 0, Name: "局域网", Parent: 0}, nil
+	}
+	provider := lbs.GetProvider()
+	if provider == nil {
+		return nil, errors.New("未配置位置服务提供者")
+	}
+	info, err := provider.QueryLocation(ip)
+	if err != nil {
+		return nil, err
+	}
+	return a.FindCity(info.City), nil
 }
 
 var _ sys.IOptionManager = new(optionManagerImpl)
@@ -138,6 +203,7 @@ var _ sys.IOptionManager = new(optionManagerImpl)
 type optionManagerImpl struct {
 	fw.Repository[sys.GeneralOption]
 	allList []*sys.GeneralOption
+	rwlock  sync.RWMutex
 }
 
 // GetChildOptions implements sys.IOptionManager.
@@ -163,12 +229,25 @@ func (o *optionManagerImpl) GetChildOptions(parentId int, typeName string) []*sy
 	})
 }
 
+// getOption 获取选项
+func (o *optionManagerImpl) getOption(id int) *sys.GeneralOption {
+	return collections.FindArray(o.getList(), func(s *sys.GeneralOption) bool {
+		return s.Id == id
+	})
+}
+
 // getDistrictList 获取地区列表
 func (o *optionManagerImpl) getList() []*sys.GeneralOption {
+	o.rwlock.RLock()
 	if o.allList == nil {
+		o.rwlock.RUnlock()
+		o.rwlock.Lock()
 		o.allList = fw.ReduceFinds(func(opt *fw.QueryOption) []*sys.GeneralOption {
 			return o.FindList(opt, "")
 		}, 1000)
+		o.rwlock.Unlock()
+	} else {
+		o.rwlock.RUnlock()
 	}
 	return o.allList
 }
@@ -178,6 +257,88 @@ func (o *optionManagerImpl) IsLeaf(g *sys.GeneralOption) bool {
 	return collections.FindArray(o.getList(), func(n *sys.GeneralOption) bool {
 		return n.Pid == g.Id && n.Enabled == 1
 	}) == nil
+}
+
+func (o *optionManagerImpl) SaveOption(option *sys.GeneralOption) error {
+	if option.Pid != 0 {
+		pidOption := o.getOption(option.Pid)
+		if pidOption == nil {
+			return errors.New("上级节点不存在")
+		}
+	}
+	if option.SortNum == 0 {
+		option.SortNum = o.getMaxSortNum(option.Pid) + 1
+	}
+	if len(option.Label) == 0 {
+		return errors.New("标签不能为空")
+	}
+	if option.Pid == 0 && len(option.Type) == 0 {
+		return errors.New("类型不能为空")
+	}
+	var err error
+	if option.Id > 0 {
+		// 更新
+		origin := o.getOption(option.Id)
+		if origin == nil {
+			return errors.New("选项数据不存在")
+		}
+		origin.Enabled = option.Enabled
+		origin.Label = option.Label
+		origin.Value = option.Value
+		origin.SortNum = option.SortNum
+		_, err = o.Save(origin)
+	} else {
+		option.CreateTime = int(time.Now().Unix())
+		// 新增
+		_, err = o.Save(option)
+	}
+	if err == nil {
+		o.flushCache()
+	}
+	return err
+}
+
+// getMaxSortNum 获取最大排序号
+func (o *optionManagerImpl) getMaxSortNum(pid int) int {
+	var max int
+	for _, v := range o.getList() {
+		if v.Pid == pid {
+			if v.SortNum > max {
+				max = v.SortNum
+			}
+		}
+	}
+	return max
+}
+
+// Delete 删除选项
+func (o *optionManagerImpl) Delete(option *sys.GeneralOption) error {
+	var opt *sys.GeneralOption
+	for _, v := range o.getList() {
+		if v.Pid == option.Id {
+			return errors.New("存在下级选项,无法删除")
+		}
+		if v.Id == option.Id {
+			opt = v
+		}
+	}
+	if opt == nil {
+		return errors.New("no such data")
+	}
+	err := o.Repository.Delete(opt)
+	if err == nil {
+		o.flushCache()
+	}
+	return err
+}
+
+// flushCache 刷新缓存
+func (o *optionManagerImpl) flushCache() {
+	o.rwlock.Lock()
+	o.allList = nil
+	o.rwlock.Unlock()
+	// 重新加载
+	o.getList()
 }
 
 // GetOptionNames implements sys.IOptionManager.
@@ -190,7 +351,7 @@ func (o *optionManagerImpl) GetOptionNames(code ...int) map[int]string {
 		if collections.AnyArray(code, func(c int) bool {
 			return c == v.Id
 		}) {
-			mp[v.Id] = v.Name
+			mp[v.Id] = v.Label
 		}
 	}
 	return mp

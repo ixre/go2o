@@ -17,7 +17,7 @@ import (
 var _ content.IPageManager = new(pageManagerImpl)
 
 type pageManagerImpl struct {
-	tenantId   int
+	tenantId int
 	pageRepo content.IPageRepo
 }
 
@@ -51,17 +51,17 @@ func (c *pageManagerImpl) DeletePage(id int) error {
 var _ content.IPage = new(pageImpl)
 
 type pageImpl struct {
-	repo   content.IPageRepo
+	repo     content.IPageRepo
 	tenantId int
-	value  *content.Page
+	value    *content.Page
 }
 
 func NewPage(tenantId int, repo content.IPageRepo,
 	v *content.Page) content.IPage {
 	return &pageImpl{
-		repo:   repo,
+		repo:     repo,
 		tenantId: tenantId,
-		value:  v,
+		value:    v,
 	}
 }
 
@@ -101,7 +101,7 @@ func (p *pageImpl) SetValue(v *content.Page) error {
 
 // Save 保存
 func (p *pageImpl) Save() (int, error) {
-	p.value.UpdateTime = time.Now().Unix()
+	p.value.UpdateTime = int(time.Now().Unix())
 	err := p.repo.SavePage(p.tenantId, p.value)
 	return p.GetDomainId(), err
 }

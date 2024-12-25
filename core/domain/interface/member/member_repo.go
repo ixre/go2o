@@ -11,9 +11,16 @@ package member
 
 import (
 	"github.com/ixre/go2o/core/dto"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
 type IMemberRepo interface {
+	// 额外属性仓储
+	ExtraRepo() fw.Repository[ExtraField]
+	// 黑名单仓储
+	BlockRepo() fw.Repository[BlockList]
+	// OAuth仓储
+	OAuthRepo() fw.Repository[OAuthAccount]
 	// 获取管理服务
 	GetManager() IMemberManager
 
@@ -78,16 +85,16 @@ type IMemberRepo interface {
 	// CheckNicknameIsUse 昵称是否使用
 	CheckNicknameIsUse(nickname string, memberId int64) bool
 	// CheckPhoneBind 手机号码是否使用
-	CheckPhoneBind(phone string, memberId int64) bool
+	CheckPhoneBind(phone string, memberId int) bool
 
 	// 保存绑定
 	SaveRelation(*InviteRelation) error
 
 	// 获取账户
-	GetAccount(memberId int64) *Account
+	GetAccount(memberId int) *Account
 
 	// 保存账户，传入会员编号
-	SaveAccount(*Account) (int64, error)
+	SaveAccount(*Account) (int, error)
 	// 获取银行卡
 	BankCards(memberId int64) []BankCard
 	// 保存银行卡信息

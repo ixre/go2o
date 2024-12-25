@@ -206,7 +206,7 @@ func (i *itemRepoImpl) GetOnShelvesGoods(mchId int64, start, end int, sortBy str
 		 ORDER BY %s,update_time DESC LIMIT $5 OFFSET $4`,
 		sortBy)
 
-	_ = i.o.SelectByQuery(&e, s, mchId, enum.ReviewPass,
+	_ = i.o.SelectByQuery(&e, s, mchId, enum.ReviewApproved,
 		item.ShelvesOn, start, end-start)
 	return e
 }

@@ -33,7 +33,7 @@ func SyncWalletLogToClickHouse() {
 				time.Sleep(3 * time.Second)
 				continue
 			}
-			lastId = list[len(list)-1].Id
+			lastId = int64(list[len(list)-1].Id)
 			if err = job.UpdateExecCursor(int(lastId)); err == nil {
 				err = job.Save()
 			}
@@ -67,12 +67,12 @@ update_time)`)
 			int32(l.Kind),
 			l.Subject,
 			l.OuterChan,
-			l.OuterNo,
+			l.OuterTxNo,
 			l.ChangeValue,
 			l.Balance,
-			int32(l.ProcedureFee),
-			int64(l.OperatorUid),
-			l.OperatorName,
+			int32(l.TransactionFee),
+			int64(l.OprUid),
+			l.OprName,
 			l.AccountNo,
 			l.AccountName,
 			l.BankName,

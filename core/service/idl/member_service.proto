@@ -5,6 +5,7 @@ import "message/bank_dto.proto";
 import "message/member_dto.proto";
 import "message/member_query_dto.proto";
 import "message/payment_dto.proto";
+import "message/wallet_dto.proto";
 
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
@@ -22,254 +23,184 @@ service MemberService {
      * @param extend 扩展数据
      * @return 注册结果，返回user_code
      */
-    rpc Register (RegisterMemberRequest) returns (RegisterResponse) {
-    }
+    rpc Register (RegisterMemberRequest) returns (RegisterResponse);
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-    rpc CheckLogin (LoginRequest) returns (LoginResponse) {
-    }
-
-   
+    rpc CheckLogin (LoginRequest) returns (LoginResponse);
     /** 验证交易密码 */
-    rpc VerifyTradePassword (VerifyPasswordRequest) returns (Result) {
-    }
+    rpc VerifyTradePassword (VerifyPasswordRequest) returns (Result);
     /** 等级列表 */
-    rpc GetLevels (Empty) returns (SMemberLevelListResponse) {
-    }
+    rpc GetLevels (Empty) returns (SMemberLevelListResponse);
     /* 获取实名信息,memberId */
-    rpc GetCertification (MemberIdRequest) returns (SCertificationInfo) {
-    }
+    rpc GetCertification (MemberIdRequest) returns (SCertificationInfo);
     /** 提交实名信息 */
-    rpc SubmitCertification (SubmitCertificationRequest) returns (Result) {
-    }
+    rpc SubmitCertification (SubmitCertificationRequest) returns (TxResult);
     /** 审核实名认证,若重复审核将返回错误 **/
-    rpc ReviewCertification (ReviewCertificationRequest) returns (Result) {
-    }
+    rpc ReviewCertification (ReviewCertificationRequest) returns (TxResult);
+    /** 驳回实名认证,用于认证通过后退回，要求重新认证 */
+    rpc RejectCertification (RejectCertificationRequest) returns (TxResult);
     /** 获取会员等级信息,id */
-    rpc GetMemberLevel (Int32) returns (SMemberLevel) {
-    }
+    rpc GetMemberLevel (Int32) returns (SMemberLevel);
     /** 保存等级 */
-    rpc SaveMemberLevel (SMemberLevel) returns (Result) {
-    }
+    rpc SaveMemberLevel (SMemberLevel) returns (Result);
     // 根据SIGN获取等级,sign
-    rpc GetLevelBySign (String) returns (SMemberLevel) {
-    }
+    rpc GetLevelBySign (String) returns (SMemberLevel);
     // 删除会员等级
-    rpc DeleteMemberLevel (Int64) returns (Result) {
-    }
+    rpc DeleteMemberLevel (Int64) returns (Result);
     // 根据会员编号获取会员信息
-    rpc GetMember (MemberIdRequest) returns (SMember) {
-    }
+    rpc GetMember (MemberIdRequest) returns (SMember);
     /** 查找交换会员编号 */
-    rpc FindMember (FindMemberRequest) returns (Int64) {
-    }
+    rpc FindMember (FindMemberRequest) returns (FindMemberResponse);
     // 根据会员编号获取会员资料
-    rpc GetProfile (MemberIdRequest) returns (SProfile) {
-    }
+    rpc GetProfile (MemberIdRequest) returns (SProfile);
     // 保存资料
-    rpc SaveProfile (SProfile) returns (Result) {
-    }
+    rpc SaveProfile (SProfile) returns (Result);
     // 获取会员邀请人信息
-    rpc GetInviter (MemberIdRequest) returns (MemberInviterResponse) {
-    }
-
+    rpc GetInviter (MemberIdRequest) returns (MemberInviterResponse);
     // 获取会员邀请数量
-    rpc GetInviteCount (MemberIdRequest) returns (MemberInviteCountResponse) {
-    }
-
+    rpc GetInviteCount (MemberIdRequest) returns (MemberInviteCountResponse);
+    // 会员屏蔽或拉黑操作及取消屏蔽和取消拉黑操作
+    rpc BlockOrShield (MemberBlockShieldRequest) returns (TxResult);
+    // 是否屏蔽或拉黑
+    rpc IsBlockOrShield (MembersIdRequest) returns (MemberBlockShieldResponse);
     // 获取会员绑定银行卡信息
-    rpc GetBankCards (MemberIdRequest) returns (BankCardListResponse) {
-    }
+    rpc GetBankCards (MemberIdRequest) returns (BankCardListResponse);
     // 添加银行卡
-    rpc AddBankCard (BankCardAddRequest) returns (Result) {
-    }
+    rpc AddBankCard (BankCardAddRequest) returns (Result);
     // 移除绑定的银行卡
-    rpc RemoveBankCard (BankCardRequest) returns (Result) {
-    }
+    rpc RemoveBankCard (BankCardRequest) returns (Result);
     /** 激活会员,memberId */
-    rpc Active (MemberIdRequest) returns (Result) {
-    }
+    rpc Active (MemberIdRequest) returns (TxResult);
     /** 锁定,minutes锁定分钟数,默认:-1永久锁定 */
-    rpc Lock (LockRequest) returns (Result) {
-    }
+    rpc Lock (LockRequest) returns (TxResult);
     /** 解锁会员 */
-    rpc Unlock (MemberIdRequest) returns (Result) {
-    }
+    rpc Unlock (MemberIdRequest) returns (TxResult);
     /** 标志赋值, 如果flag小于零, 则异或运算 */
-    rpc GrantFlag (GrantFlagRequest) returns (Result) {
-    }
+    rpc GrantFlag (GrantFlagRequest) returns (TxResult);
     /** 获取会员汇总信息,memberId */
-    rpc Complex (MemberIdRequest) returns (SComplexMember) {
-    }
+    rpc Complex (MemberIdRequest) returns (SComplexMember);
     /** 发送会员验证码消息, 并返回验证码, 验证码通过data.code获取 */
-    rpc SendCode (SendCodeRequest) returns (SendCodeResponse) {
-    }
+    rpc SendCode (SendCodeRequest) returns (SendCodeResponse);
     /** 比较验证码是否正确 */
-    rpc CompareCode (CompareCodeRequest) returns (Result) {
-    }
+    rpc compareCode (CompareCodeRequest) returns (TxResult);
     /** 获取收款码 */
-    rpc ReceiptsCodes (MemberIdRequest) returns (SReceiptsCodeListResponse) {
-    }
+    rpc ReceiptsCodes (MemberIdRequest) returns (SReceiptsCodeListResponse);
     /** 保存收款码 */
-    rpc SaveReceiptsCode (ReceiptsCodeSaveRequest) returns (Result) {
-    }
+    rpc SaveReceiptsCode (ReceiptsCodeSaveRequest) returns (Result);
     //设置余额优先支付
-    rpc SetPayPriority (PayPriorityRequest) returns (Result) {
-    }
+    rpc SetPayPriority (PayPriorityRequest) returns (Result);
     // 检查资料是否完成
-    rpc CheckProfileComplete (MemberIdRequest) returns (Result) {
-    }
+    rpc CheckProfileComplete (MemberIdRequest) returns (Result);
     /** 获取会员等级信息 */
-    rpc MemberLevelInfo (MemberIdRequest) returns (SMemberLevelInfo) {
-    }
+    rpc MemberLevelInfo (MemberIdRequest) returns (SMemberLevelInfo);
     // 更改会员等级
-    rpc ChangeLevel (ChangeLevelRequest) returns (Result) {
-    }
+    rpc ChangeLevel (ChangeLevelRequest) returns (TxResult);
     // 审核升级申请
-    rpc ReviewLevelUpRequest (LevelUpReviewRequest) returns (Result) {
-    }
+    rpc ReviewLevelUpRequest (LevelUpReviewRequest) returns (Result);
     // 确认升级申请
-    rpc ConfirmLevelUpRequest (LevelUpConfirmRequest) returns (Result) {
-    }
+    rpc ConfirmLevelUpRequest (LevelUpConfirmRequest) returns (Result);
     /* 更改手机号码，不验证手机格式 */
-    rpc ChangePhone (ChangePhoneRequest) returns (Result) {
-    }
+    rpc ChangePhone (ChangePhoneRequest) returns (TxResult);
     /* 更改用户名 */
-    rpc ChangeUsername (ChangeUsernameRequest) returns (Result) {
-    }
+    rpc ChangeUsername (ChangeUsernameRequest) returns (TxResult);
     // 更改昵称
-    rpc ChangeNickname(ChangeNicknameRequest) returns (Result) {}
+    rpc ChangeNickname(ChangeNicknameRequest) returns (TxResult);
 
     // 上传会员头像
-    rpc ChangeProfilePhoto (ChangeProfilePhotoRequest) returns (Result) {
-    }
+    rpc ChangeProfilePhoto (ChangeProfilePhotoRequest) returns (TxResult);
     /** 更改密码 */
-    rpc ChangePassword (ChangePasswordRequest) returns (Result) {
-    }
+    rpc ChangePassword (ChangePasswordRequest) returns (TxResult);
     /** 更改交易密码 */
-    rpc ChangeTradePassword (ChangePasswordRequest) returns (Result) {
-    }
+    rpc ChangeTradePassword (ChangePasswordRequest) returns (TxResult);
     // 检查资料是否完善
-    rpc CheckProfileCompleted (Int64) returns (Bool) {
-    }
+    rpc CheckProfileCompleted (Int64) returns (Bool);
     /** 设置或更改邀请人 */
-    rpc SetInviter (SetInviterRequest) returns (Result) {
-    }
+    rpc SetInviter (SetInviterRequest) returns (TxResult);
    
 
     // 升级为高级会员
-    rpc Premium (PremiumRequest) returns (Result) {
-    }
+    rpc Premium (PremiumRequest) returns (Result);
     // 获取会员的会员Token,reset表示是否重置token
-    rpc GetToken (GetTokenRequest) returns (String) {
-    }
+    rpc GetToken (GetTokenRequest) returns (String);
     // 检查会员的会话Token是否正确，如正确返回: 1
-    rpc CheckToken (CheckTokenRequest) returns (Bool) {
-    }
+    rpc CheckToken (CheckTokenRequest) returns (Bool);
     // 移除会员的Token,memberId
-    rpc RemoveToken (MemberIdRequest) returns (Empty) {
-    }
+    rpc RemoveToken (MemberIdRequest) returns (Empty);
     // 获取会员的收货地址,memberId
-    rpc GetAddressList (MemberIdRequest) returns (AddressListResponse) {
-    }
+    rpc GetAddressList (MemberIdRequest) returns (AddressListResponse);
     // 保存会员的收货地址
-    rpc SaveAddress (SaveAddressRequest) returns (SaveAddressResponse) {
-    }
+    rpc SaveAddress (SaveAddressRequest) returns (SaveAddressResponse);
     // 获取地址，如果addrId为0，则返回默认地址
-    rpc GetAddress (GetAddressRequest) returns (SAddress) {
-    }
+    rpc GetAddress (GetAddressRequest) returns (SAddress);
     //删除配送地址
-    rpc DeleteAddress (AddressIdRequest) returns (Result) {
-    }
+    rpc DeleteAddress (AddressIdRequest) returns (Result);
     // 获取会员账户信息,memberId
-    rpc GetAccount (MemberIdRequest) returns (SAccount) {
-    }
+    rpc GetAccount (MemberIdRequest) returns (SAccount);
     //判断会员是否由指定会员邀请推荐的
-    rpc IsInvitation (IsInvitationRequest) returns (Bool) {
-    }
+    rpc IsInvitation (IsInvitationRequest) returns (Bool);
     // 获取自己的邀请人会员编号数组
-    rpc InviterArray (DepthRequest) returns (InviterIdListResponse) {
-    }
+    rpc InviterArray (DepthRequest) returns (InviterIdListResponse);
     // 获取邀请会员的数量
-    rpc InviteMembersQuantity (DepthRequest) returns (Int32) {
-    }
+    rpc InviteMembersQuantity (DepthRequest) returns (Int32);
     // 按条件获取荐指定等级会员的数量
-    rpc QueryInviteQuantity (InviteQuantityRequest) returns (Int64) {
-    }
+    rpc QueryInviteQuantity (InviteQuantityRequest) returns (Int64);
     // 按条件获取荐指定等级会员的列表
-    rpc QueryInviteArray (InviteQuantityRequest) returns (MemberIdListResponse) {
-    }
+    rpc QueryInviteArray (InviteQuantityRequest) returns (MemberIdListResponse);
     // 获取我邀请的会员及会员邀请的人数
-    rpc GetPagingInvitationMembers (MemberInvitationPagingRequest) returns (MemberInvitationPagingResponse) {
-    }
+    rpc GetPagingInvitationMembers (MemberInvitationPagingRequest) returns (MemberInvitationPagingResponse);
     // 账户充值,amount精确到分
-    rpc AccountCharge (AccountChangeRequest) returns (Result) {
-    }
+    rpc AccountCharge (AccountChangeRequest) returns (TxResult);
     // 账户入账
-    rpc AccountCarryTo(AccountCarryRequest) returns (AccountCarryResponse){
-    }
+    rpc AccountCarryTo(AccountCarryRequest) returns (TxResult);
     // 账户消耗,amount精确到分
-    rpc AccountConsume (AccountChangeRequest) returns (Result) {
-    }
+    rpc AccountConsume (AccountChangeRequest) returns (TxResult);
+    // 账户预扣消耗(预扣转消费),amount精确到分
+    rpc PrefreezeConsume (UserPrefreezeConsumeRequest) returns (TxResult);
     // 账户抵扣,amount精确到分
-    rpc AccountDiscount (AccountChangeRequest) returns (Result) {
-    }
+    rpc AccountDiscount (AccountChangeRequest) returns (TxResult);
     /** 账户冻结 */
-    rpc Freeze (AccountFreezeRequest) returns (AccountFreezeResponse) {
-    }
+    rpc Freeze (AccountFreezeRequest) returns (TxResult);
     /** 账户解冻 */
-    rpc Unfreeze (AccountUnfreezeRequest) returns (Result) {
-    }
-
+    rpc Unfreeze (AccountUnfreezeRequest) returns (TxResult);
     // 账户退款,amount精确到分
-    rpc AccountRefund (AccountChangeRequest) returns (Result) {
-    }
+    rpc AccountRefund (AccountChangeRequest) returns (TxResult);
     // 账户人工调整
-    rpc AccountAdjust (AccountAdjustRequest) returns (Result) {
-    }
+    rpc AccountAdjust (AccountAdjustRequest) returns (TxResult);
     // 转账转账
-    rpc AccountTransfer (AccountTransferRequest) returns (Result) {
-    }
+    rpc AccountTransfer (AccountTransferRequest) returns (TxResult);
     // 提现并返回提现编号,交易号以及错误信息
-    rpc Withdraw (WithdrawRequest) returns (WithdrawalResponse) {
-    }
+    rpc RequestWithdrawal (UserWithdrawRequest) returns (TxResult);
     // 确认提现
-    rpc ReviewWithdrawal (ReviewWithdrawalRequest) returns (Result) {
-    }
-    // 收到款项,完成提现
-    rpc FinishWithdrawal (FinishWithdrawalRequest) returns (Result) {
-    }
+    rpc ReviewWithdrawal (ReviewUserWithdrawalRequest) returns (TxResult);
+    // 完成交易(如：提现到账)
+    rpc CompleteTransaction (FinishUserTransactionRequest) returns (TxResult);
     // 查询提现记录
-    rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogResponse) {
-    }
+    rpc QueryWithdrawalLog (WithdrawalLogRequest) returns (WithdrawalLogResponse);
+    // 提交充值支付单
+    rpc SubmitRechargePaymentOrder(SubmitRechargePaymentOrderRequest)returns(RechargePaymentOrderResponse);
 
     // 绑定第三方应用
-    rpc	BindOAuthApp(SMemberOAuthAccount) returns (Result){}
+    rpc	BindOAuthApp(SMemberOAuthAccount) returns (Result);
 
     // 解除第三方应用绑定
-    rpc	UnbindOAuthApp(MemberOAuthRequest)returns (Result){}
+    rpc	UnbindOAuthApp(MemberOAuthRequest)returns (Result);
     
     // 获取第三方应用绑定信息
-    rpc	GetOAuthBindInfo(MemberOAuthRequest) returns (SMemberOAuthAccount){}
+    rpc	GetOAuthBindInfo(MemberOAuthRequest) returns (SMemberOAuthAccount);
 
     // !银行四要素认证
-    rpc B4EAuth (B4EAuthRequest) returns (Result) {
-    }
-
+    rpc B4EAuth (B4EAuthRequest) returns (Result);
     // 获取钱包流水记录
-    rpc GetWalletLog (WalletLogRequest) returns (WalletLogResponse);
+    rpc GetWalletTxLog (UserWalletTxId) returns (UserWalletTxResponse);
+
     // 取消收藏
-    rpc RemoveFavorite (FavoriteRequest) returns (Result) {
-    }
+    rpc RemoveFavorite (FavoriteRequest) returns (Result);
     // 收藏商品
-    rpc Favorite (FavoriteRequest) returns (Result) {
-    }
+    rpc Favorite (FavoriteRequest) returns (Result);
     // 是否已收藏
-    rpc IsFavored (FavoriteRequest) returns (Bool) {
-    }
+    rpc IsFavored (FavoriteRequest) returns (Bool);
     // 查询优惠券
-    rpc QueryCoupons (MemberCouponPagingRequest) returns (MemberCouponListResponse) {
-    }
+    rpc QueryCoupons (MemberCouponPagingRequest) returns (MemberCouponListResponse);
 }
 
 message LevelUpReviewRequest {
@@ -282,4 +213,31 @@ message LevelUpReviewRequest {
 message LevelUpConfirmRequest {
     int64 memberId = 1;
     int64 requestId = 2;
+}
+
+// 提交会员充值支付单
+message SubmitRechargePaymentOrderRequest{
+    // 会员编号
+    int64 memberId = 1;
+    // 充值金额
+    int64 amount = 3;
+    // 是否分账
+    bool divide = 4;
+}
+
+// 提交会员充值单响应
+message RechargePaymentOrderResponse{
+    // 状态
+    int32 code = 1;
+    // 信息
+    string message = 2;
+    // 订单号
+    string orderNo = 3;
+}
+
+message RejectCertificationRequest{
+    // 会员编号
+    int64 memberId = 1;
+    // 驳回原因
+    string remark = 2;
 }

@@ -184,7 +184,7 @@ func (r *refundOrderImpl) backAmount(amount int) error {
 
 	//支付单与父订单关联。多个子订单合并付款
 	po := r.paymentRepo.GetPaymentBySalesOrderId(o.OrderId)
-	return po.Refund(amount)
+	return po.Refund(nil, "订单退款")
 
 	/*
 		 *  重构支付单时已经更改

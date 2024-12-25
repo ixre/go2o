@@ -75,6 +75,8 @@ type MemberPushEvent struct {
 	Member *member.Member
 	// 邀请人编号
 	InviterId int
+	// 注册来源
+	RegFrom string
 }
 
 // 会员账户推送事件
@@ -101,13 +103,13 @@ type SubOrderPushEvent struct {
 // 提现申请推送事件
 type WithdrawalPushEvent struct {
 	// 会员编号
-	MemberId int64
+	MemberId int
 	// 流水号Id
 	RequestId int
 	// 提现金额
 	Amount int
 	// 手续费
-	ProcedureFee int
+	TransactionFee int
 	// 是否为已审核通过的事件
 	IsReviewEvent bool
 	// 是否审核通过

@@ -26,14 +26,14 @@ import (
 func (o *subOrderImpl) getReferArr(memberId int64, level int32) []int64 {
 	arr := make([]int64, level)
 	var i int32
-	referId := memberId
+	referId := int64(memberId)
 	for i <= level-1 {
 		rl := o.memberRepo.GetRelation(referId)
 		if rl == nil || rl.InviterId <= 0 {
 			break
 		}
-		arr[i] = rl.InviterId
-		referId = arr[i]
+		arr[i] = int64(rl.InviterId)
+		referId = int64(arr[i])
 		i++
 	}
 	return arr
@@ -57,11 +57,11 @@ func (o *subOrderImpl) handleCashBack() error {
 		var back_fee int64
 		saleConf := mch.ConfManager().GetSaleConf()
 
-		if saleConf.CashBackPercent > 0 {
-			back_fee = int64(float32(v.FinalAmount) * saleConf.CashBackPercent)
+		if saleConf.CbPercent > 0 {
+			back_fee = int64(float64(v.FinalAmount) * saleConf.CbPercent)
 			//将此次消费记入会员账户
 			err = o.updateShoppingMemberBackFee(mch.GetValue().MchName, buyer,
-				int64(float32(back_fee)*saleConf.CashBackMemberPercent), now)
+				int64(float64(back_fee)*saleConf.CbMemberPercent), now)
 			domain.HandleError(err, "domain")
 
 		}
@@ -83,19 +83,19 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMemberAggregateRoot,
 		//更新账户
 		acc := m.GetAccount()
 		acv := acc.GetValue()
-		acv.WalletBalance += fee
-		acv.TotalWalletAmount += fee
-		acv.UpdateTime = unixTime
+		acv.WalletBalance += int(fee)
+		acv.TotalWalletAmount += int(fee)
+		acv.UpdateTime = int(unixTime)
 		_, err := acc.Save()
 		if err == nil {
 			//给自己返现
 			tit := fmt.Sprintf("订单:%s(商户:%s,会员:%s)收入￥%.2f元",
 				o.value.OrderNo, ptName, mName, fee)
 			_, err = acc.CarryTo(member.AccountWallet, member.AccountOperateData{
-				Title:   tit,
-				Amount:  int(fee * 100),
-				OuterNo: o.value.OrderNo,
-				Remark:  "sys",
+				TransactionTitle:   tit,
+				Amount:             int(fee * 100),
+				OuterTransactionNo: o.value.OrderNo,
+				TransactionRemark:  "sys",
 			}, false, 0)
 		}
 		return err
@@ -110,24 +110,24 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchantAggregateRoot, m member.I
 		i := 0
 		mName := m.Profile().GetProfile().Name
 		saleConf := mch.ConfManager().GetSaleConf()
-		percent := saleConf.CashBackTg2Percent
+		percent := saleConf.CbTg2Percent
 		for i < 2 {
 			rl := m.GetRelation()
 			if rl == nil || rl.InviterId == 0 {
 				break
 			}
 
-			m = o.memberRepo.GetMember(rl.InviterId)
+			m = o.memberRepo.GetMember(int64(rl.InviterId))
 			if m == nil {
 				break
 			}
 
 			if i == 1 {
-				percent = saleConf.CashBackTg1Percent
+				percent = saleConf.CbTg1Percent
 			}
 
 			err = o.updateMemberAccount(m, mch.GetValue().MchName, mName,
-				int64(float32(back_fee)*percent), unixTime)
+				int64(float64(back_fee)*percent), unixTime)
 			if err != nil {
 				domain.HandleError(err, "domain")
 				break
@@ -175,7 +175,7 @@ func cashBack3R(level int, m member.IMemberAggregateRoot, o order.IOrder,
 			break
 		}
 
-		cm = memberRepo.GetMember(rl.InviterId)
+		cm = memberRepo.GetMember(int64(rl.InviterId))
 
 		// fmt.Println("-------- BACK ",cm == nil)
 		if m == nil {
@@ -201,21 +201,20 @@ func backCashForMember(m member.IMemberAggregateRoot, o order.IOrder,
 	//更新账户
 	acc := m.GetAccount()
 	acv := acc.GetValue()
-	bFee := int64(fee)
-	acv.WalletBalance += bFee // 更新赠送余额
-	acv.TotalWalletAmount += bFee
-	acv.UpdateTime = time.Now().Unix()
+	acv.WalletBalance += fee // 更新赠送余额
+	acv.TotalWalletAmount += fee
+	acv.UpdateTime = int(time.Now().Unix())
 	_, err := acc.Save()
 
 	if err == nil {
 		orderNo := o.OrderNo()
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
-			format.FormatIntMoney(bFee), orderNo, refName)
+			format.FormatIntMoney(int64(fee)), orderNo, refName)
 		_, err = acc.CarryTo(member.AccountWallet, member.AccountOperateData{
-			Title:   tit,
-			Amount:  fee * 100,
-			OuterNo: orderNo,
-			Remark:  "sys",
+			TransactionTitle:   tit,
+			Amount:             fee * 100,
+			OuterTransactionNo: orderNo,
+			TransactionRemark:  "sys",
 		}, false, 0)
 	}
 	return err

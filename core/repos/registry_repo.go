@@ -84,6 +84,11 @@ func (r *registryRepo) getStorageKey(key string) string {
 }
 
 func (r *registryRepo) GetValue(key string) (string, error) {
+
+	rv := r.Get(key)
+	if rv != nil {
+		return rv.Value().Value, nil
+	}
 	k := r.getStorageKey(key)
 	v, err := r.store.GetString(k)
 	if err == nil {

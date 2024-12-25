@@ -76,7 +76,7 @@ func (p *productImpl) checkValue(v *product.Product) error {
 func (p *productImpl) SetValue(v *product.Product) error {
 	//if p.GetAggregateRootId() <= 0 {
 	//    p.value.ShelveState = item.ShelvesDown
-	//    p.value.ReviewStatus = enum.ReviewAwaiting
+	//    p.value.ReviewStatus = enum.ReviewPending
 	//}
 	//if p.value.ShelveState == item.ShelvesIncorrect {
 	//    return product.ErrItemIncorrect

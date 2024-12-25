@@ -1,3 +1,12 @@
+/**
+ * Copyright (C) 2007-2024 fze.NET,All rights reserved.
+ *
+ * name : payment_test.go
+ * author : jarrysix (jarrysix#gmail.com)
+ * date : 2015-09-08 10:02
+ * description : 支付测试
+ * history :
+ */
 package domain
 
 import (
@@ -10,8 +19,9 @@ import (
 	"github.com/ixre/go2o/core/inject"
 )
 
+// 测试支付完成
 func TestPaymentSuccess(t *testing.T) {
-	orderNo := "1220607000313450"
+	orderNo := "2240907702773876"
 	repo := inject.GetPaymentRepo()
 	ip := repo.GetPaymentOrder(orderNo)
 	if ip == nil {
@@ -66,7 +76,7 @@ func TestCreateChargePaymentOrder(t *testing.T) {
 			payment.MBankCard, payment.MPaySP, payment.MBalance,
 			payment.MIntegral, payment.MWallet}),
 		OutTradeNo: "",
-		SubmitTime: unix,
+		SubmitTime: int(unix),
 		PaidTime:   0,
 	})
 	if err := ip.Submit(); err != nil {
@@ -130,6 +140,26 @@ func TestCancelPaymentOrder(t *testing.T) {
 	p := inject.GetPaymentRepo().GetPaymentOrder(orderNo)
 	if err := p.Cancel(); err != nil {
 		t.Error(err)
+		t.FailNow()
+	}
+}
+
+// 测试完成分账
+func TestCompleteDivide(t *testing.T) {
+	orderNo := "2240919848713167"
+	p := inject.GetPaymentRepo().GetPaymentOrder(orderNo)
+	if err := p.CompleteDivide(); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+}
+
+func TestGetTradeMethods(t *testing.T) {
+	orderNo := "2240923848501316"
+	p := inject.GetPaymentRepo().GetPaymentOrder(orderNo)
+	methods := p.TradeMethods()
+	if len(methods) == 0 {
+		t.Log("支付方式为空")
 		t.FailNow()
 	}
 }

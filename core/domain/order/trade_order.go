@@ -197,7 +197,7 @@ func (o *tradeOrderImpl) fixFinalAmount() {
 func (o *tradeOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
 	v.SellerId = int(o.value.VendorId)
-	v.TotalAmount = o.value.FinalAmount
+	v.TotalAmount = int(o.value.FinalAmount)
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
 	return o.paymentOrder.Submit()
 }
@@ -218,7 +218,7 @@ func (o *tradeOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
 func (o *tradeOrderImpl) CashPay() error {
 	py := o.GetPaymentOrder()
 	pv := py.Get()
-	switch int(pv.State) {
+	switch int(pv.Status) {
 	case payment.StateClosed:
 		return payment.ErrOrderClosed
 	case payment.StateFinished:
@@ -229,8 +229,10 @@ func (o *tradeOrderImpl) CashPay() error {
 	vp := (1 - v.TradeRate) * float64(pv.TotalAmount)
 	if vp > 0 {
 		va := o.mchRepo.GetMerchant(int(v.VendorId))
-		err := va.Account().TakePayment(o.OrderNo(), int(vp), 0,
-			"交易费-"+o.value.Subject)
+		err := va.Account().Consume(
+			"交易费-"+o.value.Subject,
+			int(vp),
+			o.OrderNo(), o.value.Subject)
 		if err != nil {
 			return err
 		}
@@ -340,10 +342,18 @@ func (o *tradeOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRo
 	sAmount := int64(float64(v.FinalAmount) * rate)
 	if sAmount > 0 {
 		totalAmount := int64(float64(sAmount) * enum.RATE_AMOUNT)
-		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, int(totalAmount))
-		return vendor.Account().SettleOrder(o.OrderNo(),
-			int(totalAmount), tradeFee, 0, "交易单结算-"+v.Subject)
+		sd := merchant.CarryParams{
+			OuterTxNo:         o.OrderNo(),
+			Amount:            int(totalAmount),
+			TransactionFee:    transactionFee,
+			RefundAmount:      0,
+			TransactionTitle:  "交易单结算",
+			TransactionRemark: v.Subject,
+		}
+		_, err := vendor.Account().Carry(sd)
+		return err
 	}
 	return nil
 }
@@ -378,19 +388,19 @@ func (o *tradeOrderImpl) updateAccountForOrder() error {
 	if integral > 0 {
 		_, err = acc.CarryTo(member.AccountIntegral,
 			member.AccountOperateData{
-				Title:   "购物消费赠送积分",
-				Amount:  integral,
-				OuterNo: o.OrderNo(),
-				Remark:  "sys",
+				TransactionTitle:   "购物消费赠送积分",
+				Amount:             integral,
+				OuterTransactionNo: o.OrderNo(),
+				TransactionRemark:  "sys",
 			}, false, 0)
 		if err != nil {
 			return err
 		}
 	}
 	acv := acc.GetValue()
-	acv.TotalExpense += ov.FinalAmount
-	acv.TotalPay += ov.FinalAmount
-	acv.UpdateTime = time.Now().Unix()
+	acv.TotalExpense += int(ov.FinalAmount)
+	acv.TotalPay += int(ov.FinalAmount)
+	acv.UpdateTime = int(time.Now().Unix())
 	_, err = acc.Save()
 	return err
 }

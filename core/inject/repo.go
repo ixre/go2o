@@ -6,6 +6,7 @@ import (
 	"github.com/google/wire"
 	"github.com/ixre/go2o/core/domain/interface/ad"
 	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
+	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/cart"
 	"github.com/ixre/go2o/core/domain/interface/chat"
 	"github.com/ixre/go2o/core/domain/interface/content"
@@ -27,9 +28,9 @@ import (
 	promodel "github.com/ixre/go2o/core/domain/interface/pro_model"
 	"github.com/ixre/go2o/core/domain/interface/product"
 	"github.com/ixre/go2o/core/domain/interface/promotion"
+	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/shipment"
-	"github.com/ixre/go2o/core/domain/interface/station"
 	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
@@ -114,7 +115,7 @@ func GetWholesaleRepo() wholesaler.IWholesaleRepo {
 
 }
 
-func GetStationRepo() station.IStationRepo {
+func GetStationRepo() sys.IStationRepo {
 	panic(wire.Build(provideSets))
 
 }
@@ -183,7 +184,7 @@ func GetPageRepo() content.IPageRepo {
 	panic(wire.Build(provideSets))
 }
 
-func GetInvoiceTenantRepo() invoice.IInvoiceTenantRepo {
+func GetInvoiceTenantRepo() invoice.IInvoiceRepo {
 	panic(wire.Build(provideSets))
 }
 
@@ -192,5 +193,17 @@ func GetChatRepo() chat.IChatRepository {
 }
 
 func GetWorkorderRepo() workorder.IWorkorderRepo {
+	panic(wire.Build(provideSets))
+}
+
+func GetApprovalRepo() approval.IApprovalRepository {
+	panic(wire.Build(provideSets))
+}
+
+func GetRbacRepo() rbac.IRbacRepository {
+	panic(wire.Build(provideSets))
+}
+
+func GetLogRepo() sys.IApplicationRepository {
 	panic(wire.Build(provideSets))
 }

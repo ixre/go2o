@@ -17,10 +17,11 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	payImpl "github.com/ixre/go2o/core/domain/payment"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
@@ -32,29 +33,58 @@ type paymentRepoImpl struct {
 	db.Connector
 	Storage storage.Interface
 	*payImpl.RepoBase
-	memberRepo   member.IMemberRepo
-	orderRepo    order.IOrderRepo
-	registryRepo registry.IRegistryRepo
-	_orm         orm.Orm
+	_memberRepo      member.IMemberRepo
+	_registryRepo    registry.IRegistryRepo
+	_divideRepo      fw.Repository[payment.PayDivide]
+	_mchRepo         merchant.IMerchantRepo
+	_subMchRepo      fw.Repository[payment.PayMerchant]
+	_tradeMethodRepo fw.Repository[payment.PayTradeData]
+	_subMchMgr       payment.ISubMerchantManager
+	_orm             orm.Orm
+}
+
+// MerchantRepo implements payment.IPaymentRepo.
+func (p *paymentRepoImpl) MerchantRepo() fw.Repository[payment.PayMerchant] {
+	return p._subMchRepo
+}
+
+// SubMerchantManager implements payment.IPaymentRepo.
+func (p *paymentRepoImpl) SubMerchantManager() payment.ISubMerchantManager {
+	if p._subMchMgr == nil {
+		p._subMchMgr = payImpl.NewSubMerchantManager(p, p._mchRepo, p._memberRepo)
+	}
+	return p._subMchMgr
 }
 
 var payIntegrateAppDaoImplMapped = false
 
-func NewPaymentRepo(sto storage.Interface, o orm.Orm, mmRepo member.IMemberRepo,
+func NewPaymentRepo(sto storage.Interface, o orm.Orm,
+	on fw.ORM,
+	mmRepo member.IMemberRepo,
+	mchRepo merchant.IMerchantRepo,
 	registryRepo registry.IRegistryRepo) payment.IPaymentRepo {
 	if !payIntegrateAppDaoImplMapped {
 		_ = o.Mapping(payment.IntegrateApp{}, "pay_integrate_app")
 		payIntegrateAppDaoImplMapped = true
 	}
 	//todo: 临时取消与orderRepo的循环依赖
-	return &paymentRepoImpl{
-		Storage:    sto,
-		Connector:  o.Connector(),
-		_orm:       o,
-		memberRepo: mmRepo,
-		//orderRepo:    orderRepo,
-		registryRepo: registryRepo,
+	r := &paymentRepoImpl{
+		Storage:          sto,
+		Connector:        o.Connector(),
+		_orm:             o,
+		_memberRepo:      mmRepo,
+		_mchRepo:         mchRepo,
+		_registryRepo:    registryRepo,
+		_divideRepo:      &fw.BaseRepository[payment.PayDivide]{ORM: on},
+		_subMchRepo:      &fw.BaseRepository[payment.PayMerchant]{ORM: on},
+		_tradeMethodRepo: &fw.BaseRepository[payment.PayTradeData]{ORM: on},
 	}
+	return r
+}
+
+// DivideRepo implements payment.IPaymentRepo.
+func (p *paymentRepoImpl) DivideRepo() fw.Repository[payment.PayDivide] {
+	return p._divideRepo
 }
 
 // 根据订单号获取支付单
@@ -92,7 +122,7 @@ func (p *paymentRepoImpl) DeletePaymentOrder(id int) error {
 
 // DeletePaymentTradeData 删除支付单的支付数据
 func (p *paymentRepoImpl) DeletePaymentTradeData(orderId int) error {
-	_, err := p._orm.Delete(payment.TradeMethodData{}, "order_id=$1", orderId)
+	_, err := p._orm.Delete(payment.PayTradeData{}, "order_id=$1", orderId)
 	return err
 }
 
@@ -130,14 +160,14 @@ func (p *paymentRepoImpl) GetPaymentOrder(paymentNo string) payment.IPaymentOrde
 func (p *paymentRepoImpl) CreatePaymentOrder(
 	o *payment.Order) payment.IPaymentOrder {
 	return p.RepoBase.CreatePaymentOrder(o, p,
-		p.memberRepo, p.orderRepo.Manager(), p.registryRepo)
+		p._memberRepo, p._registryRepo)
 }
 
 // 保存支付单
 func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
-	stat := v.State
+	stat := v.Status
 	if v.Id > 0 {
-		stat = p.GetPaymentOrderById(v.Id).Get().State
+		stat = p.GetPaymentOrderById(v.Id).Get().Status
 	}
 	id, err := orm.Save(p._orm, v, v.Id)
 	if err == nil {
@@ -147,7 +177,7 @@ func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 		// 缓存订单号与订单的关系
 		p.Storage.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.Id, DefaultCacheSeconds*10)
 		// 已经更改过状态,且为已成功,则推送到队列中
-		if stat != v.State && v.State == payment.StateFinished {
+		if stat != v.Status && v.Status == payment.StateFinished {
 			p.notifyPaymentFinish(v.Id)
 		}
 	}
@@ -171,16 +201,13 @@ func (p *paymentRepoImpl) CheckTradeNoMatch(tradeNo string, id int) bool {
 	return i == 0
 }
 
-func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.TradeMethodData {
-	list := make([]*payment.TradeMethodData, 0)
-	err := p._orm.Select(&list, "trade_no= $1 LIMIT $2", tradeNo, 10)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PayTradeChan")
-	}
-	return list
+func (p *paymentRepoImpl) GetTradeChannelItems(tradeNo string) []*payment.PayTradeData {
+	return p._tradeMethodRepo.FindList(&fw.QueryOption{
+		Limit: 10,
+	}, "trade_no= ?", tradeNo)
 }
 
-func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.TradeMethodData) (int, error) {
+func (p *paymentRepoImpl) SavePaymentTradeChan(tradeNo string, tradeChan *payment.PayTradeData) (int, error) {
 	tradeChan.TradeNo = tradeNo
 	id, err := orm.Save(p._orm, tradeChan, tradeChan.Id)
 	if err != nil && err != sql.ErrNoRows {
@@ -278,7 +305,7 @@ func (p *paymentRepoImpl) DeleteIntegrateApp(primary interface{}) error {
 func (p *paymentRepoImpl) GetAwaitCloseOrders(lastId int, size int) []payment.IPaymentOrder {
 	list := make([]*payment.Order, 0)
 	err := p._orm.Select(&list, `
-		state = 1 AND expires_time < $1 
+		status = 1 AND expires_time < $1 
 		AND id > $2 ORDER BY id LIMIT $3`,
 		time.Now().Unix(),
 		lastId,

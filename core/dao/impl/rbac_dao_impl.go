@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/ixre/go2o/core/dao"
-	"github.com/ixre/go2o/core/dao/model"
+	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
@@ -23,14 +23,14 @@ var rbacDaoImplMapped = false
 // Create new PermDeptDao
 func NewRbacDao(o orm.Orm) dao.IRbacDao {
 	if !rbacDaoImplMapped {
-		_ = o.Mapping(model.RbacDepart{}, "rbac_depart")
-		_ = o.Mapping(model.RbacJob{}, "rbac_job")
-		_ = o.Mapping(model.RbacUser{}, "rbac_user")
-		_ = o.Mapping(model.RbacRole{}, "rbac_role")
-		_ = o.Mapping(model.RbacRes{}, "rbac_res")
-		_ = o.Mapping(model.RbacRoleDept{}, "rbac_role_dept")
-		_ = o.Mapping(model.RbacRoleRes{}, "rbac_role_res")
-		_ = o.Mapping(model.RbacUserRole{}, "rbac_user_role")
+		_ = o.Mapping(rbac.RbacDepart{}, "rbac_depart")
+		_ = o.Mapping(rbac.RbacJob{}, "rbac_job")
+		_ = o.Mapping(rbac.RbacUser{}, "rbac_user")
+		_ = o.Mapping(rbac.RbacRole{}, "rbac_role")
+		_ = o.Mapping(rbac.RbacRes{}, "rbac_res")
+		_ = o.Mapping(rbac.RbacRoleDept{}, "rbac_role_dept")
+		_ = o.Mapping(rbac.RbacRoleRes{}, "rbac_role_res")
+		_ = o.Mapping(rbac.RbacUserRole{}, "rbac_user_role")
 
 		rbacDaoImplMapped = true
 	}
@@ -39,14 +39,14 @@ func NewRbacDao(o orm.Orm) dao.IRbacDao {
 	}
 }
 
-func (p *rbacDaoImpl) GetRoleResList(roles []int) []*model.RbacRoleRes {
+func (p *rbacDaoImpl) GetRoleResList(roles []int) []*rbac.RbacRoleRes {
 	where := fmt.Sprintf("role_id IN (%s)", util.JoinIntArray(roles, ","))
 	return p.SelectPermRoleRes(where)
 }
 
 // Get 部门
-func (p *rbacDaoImpl) GetDepart(primary interface{}) *model.RbacDepart {
-	e := model.RbacDepart{}
+func (p *rbacDaoImpl) GetDepart(primary interface{}) *rbac.RbacDepart {
+	e := rbac.RbacDepart{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
 		return &e
@@ -58,8 +58,8 @@ func (p *rbacDaoImpl) GetDepart(primary interface{}) *model.RbacDepart {
 }
 
 // GetBy 部门
-func (p *rbacDaoImpl) GetDepartBy(where string, v ...interface{}) *model.RbacDepart {
-	e := model.RbacDepart{}
+func (p *rbacDaoImpl) GetDepartBy(where string, v ...interface{}) *rbac.RbacDepart {
+	e := rbac.RbacDepart{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
@@ -72,12 +72,12 @@ func (p *rbacDaoImpl) GetDepartBy(where string, v ...interface{}) *model.RbacDep
 
 // Count 部门 by condition
 func (p *rbacDaoImpl) CountPermDept(where string, v ...interface{}) (int, error) {
-	return p._orm.Count(model.RbacDepart{}, where, v...)
+	return p._orm.Count(rbac.RbacDepart{}, where, v...)
 }
 
 // Select 部门
-func (p *rbacDaoImpl) SelectPermDept(where string, v ...interface{}) []*model.RbacDepart {
-	list := make([]*model.RbacDepart, 0)
+func (p *rbacDaoImpl) SelectPermDept(where string, v ...interface{}) []*rbac.RbacDepart {
+	list := make([]*rbac.RbacDepart, 0)
 	err := p._orm.Select(&list, where+" 1=1 ORDER BY id ASC", v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermDept")
@@ -86,7 +86,7 @@ func (p *rbacDaoImpl) SelectPermDept(where string, v ...interface{}) []*model.Rb
 }
 
 // Save 部门
-func (p *rbacDaoImpl) SaveDepart(v *model.RbacDepart) (int, error) {
+func (p *rbacDaoImpl) SaveDepart(v *rbac.RbacDepart) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermDept")
@@ -96,7 +96,7 @@ func (p *rbacDaoImpl) SaveDepart(v *model.RbacDepart) (int, error) {
 
 // Delete 部门
 func (p *rbacDaoImpl) DeleteDepart(primary interface{}) error {
-	err := p._orm.DeleteByPk(model.RbacDepart{}, primary)
+	err := p._orm.DeleteByPk(rbac.RbacDepart{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermDept")
 	}
@@ -105,7 +105,7 @@ func (p *rbacDaoImpl) DeleteDepart(primary interface{}) error {
 
 // Batch Delete 部门
 func (p *rbacDaoImpl) BatchDeleteDepart(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(model.RbacDepart{}, where, v...)
+	r, err := p._orm.Delete(rbac.RbacDepart{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermDept")
 	}
@@ -113,8 +113,8 @@ func (p *rbacDaoImpl) BatchDeleteDepart(where string, v ...interface{}) (int64, 
 }
 
 // Get 岗位
-func (p *rbacDaoImpl) GetJob(primary interface{}) *model.RbacJob {
-	e := model.RbacJob{}
+func (p *rbacDaoImpl) GetJob(primary interface{}) *rbac.RbacJob {
+	e := rbac.RbacJob{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
 		return &e
@@ -126,8 +126,8 @@ func (p *rbacDaoImpl) GetJob(primary interface{}) *model.RbacJob {
 }
 
 // GetBy 岗位
-func (p *rbacDaoImpl) GetJobBy(where string, v ...interface{}) *model.RbacJob {
-	e := model.RbacJob{}
+func (p *rbacDaoImpl) GetJobBy(where string, v ...interface{}) *rbac.RbacJob {
+	e := rbac.RbacJob{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
@@ -140,12 +140,12 @@ func (p *rbacDaoImpl) GetJobBy(where string, v ...interface{}) *model.RbacJob {
 
 // Count 岗位 by condition
 func (p *rbacDaoImpl) CountPermJob(where string, v ...interface{}) (int, error) {
-	return p._orm.Count(model.RbacJob{}, where, v...)
+	return p._orm.Count(rbac.RbacJob{}, where, v...)
 }
 
 // Select 岗位
-func (p *rbacDaoImpl) SelectPermJob(where string, v ...interface{}) []*model.RbacJob {
-	list := make([]*model.RbacJob, 0)
+func (p *rbacDaoImpl) SelectPermJob(where string, v ...interface{}) []*rbac.RbacJob {
+	list := make([]*rbac.RbacJob, 0)
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermJob")
@@ -154,7 +154,7 @@ func (p *rbacDaoImpl) SelectPermJob(where string, v ...interface{}) []*model.Rba
 }
 
 // Save 岗位
-func (p *rbacDaoImpl) SaveJob(v *model.RbacJob) (int, error) {
+func (p *rbacDaoImpl) SaveJob(v *rbac.RbacJob) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermJob")
@@ -164,7 +164,7 @@ func (p *rbacDaoImpl) SaveJob(v *model.RbacJob) (int, error) {
 
 // Delete 岗位
 func (p *rbacDaoImpl) DeleteJob(primary interface{}) error {
-	err := p._orm.DeleteByPk(model.RbacJob{}, primary)
+	err := p._orm.DeleteByPk(rbac.RbacJob{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermJob")
 	}
@@ -173,7 +173,7 @@ func (p *rbacDaoImpl) DeleteJob(primary interface{}) error {
 
 // Batch Delete 岗位
 func (p *rbacDaoImpl) BatchDeleteJob(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(model.RbacJob{}, where, v...)
+	r, err := p._orm.Delete(rbac.RbacJob{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermJob")
 	}
@@ -181,7 +181,7 @@ func (p *rbacDaoImpl) BatchDeleteJob(where string, v ...interface{}) (int64, err
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryJob(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingJob(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -208,8 +208,8 @@ func (p *rbacDaoImpl) PagingQueryJob(begin, end int, where, orderBy string) (tot
 }
 
 // Get 系统用户
-func (p *rbacDaoImpl) GetUser(primary interface{}) *model.RbacUser {
-	e := model.RbacUser{}
+func (p *rbacDaoImpl) GetUser(primary interface{}) *rbac.RbacUser {
+	e := rbac.RbacUser{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
 		return &e
@@ -221,8 +221,8 @@ func (p *rbacDaoImpl) GetUser(primary interface{}) *model.RbacUser {
 }
 
 // GetBy 系统用户
-func (p *rbacDaoImpl) GetUserBy(where string, v ...interface{}) *model.RbacUser {
-	e := model.RbacUser{}
+func (p *rbacDaoImpl) GetUserBy(where string, v ...interface{}) *rbac.RbacUser {
+	e := rbac.RbacUser{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
@@ -235,12 +235,12 @@ func (p *rbacDaoImpl) GetUserBy(where string, v ...interface{}) *model.RbacUser 
 
 // Count 系统用户 by condition
 func (p *rbacDaoImpl) CountPermUser(where string, v ...interface{}) (int, error) {
-	return p._orm.Count(model.RbacUser{}, where, v...)
+	return p._orm.Count(rbac.RbacUser{}, where, v...)
 }
 
 // Select 系统用户
-func (p *rbacDaoImpl) SelectPermUser(where string, v ...interface{}) []*model.RbacUser {
-	list := make([]*model.RbacUser, 0)
+func (p *rbacDaoImpl) SelectPermUser(where string, v ...interface{}) []*rbac.RbacUser {
+	list := make([]*rbac.RbacUser, 0)
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermUser")
@@ -249,7 +249,7 @@ func (p *rbacDaoImpl) SelectPermUser(where string, v ...interface{}) []*model.Rb
 }
 
 // Save 系统用户
-func (p *rbacDaoImpl) SaveUser(v *model.RbacUser) (int, error) {
+func (p *rbacDaoImpl) SaveUser(v *rbac.RbacUser) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermUser")
@@ -259,7 +259,7 @@ func (p *rbacDaoImpl) SaveUser(v *model.RbacUser) (int, error) {
 
 // Delete 系统用户
 func (p *rbacDaoImpl) DeleteUser(primary interface{}) error {
-	err := p._orm.DeleteByPk(model.RbacUser{}, primary)
+	err := p._orm.DeleteByPk(rbac.RbacUser{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermUser")
 	}
@@ -268,7 +268,7 @@ func (p *rbacDaoImpl) DeleteUser(primary interface{}) error {
 
 // Batch Delete 系统用户
 func (p *rbacDaoImpl) BatchDeleteUser(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(model.RbacUser{}, where, v...)
+	r, err := p._orm.Delete(rbac.RbacUser{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermUser")
 	}
@@ -276,7 +276,7 @@ func (p *rbacDaoImpl) BatchDeleteUser(where string, v ...interface{}) (int64, er
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryPermUser(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingPermUser(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -302,8 +302,8 @@ func (p *rbacDaoImpl) PagingQueryPermUser(begin, end int, where, orderBy string)
 }
 
 // Get 角色
-func (p *rbacDaoImpl) GetRole(primary interface{}) *model.RbacRole {
-	e := model.RbacRole{}
+func (p *rbacDaoImpl) GetRole(primary interface{}) *rbac.RbacRole {
+	e := rbac.RbacRole{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
 		return &e
@@ -315,8 +315,8 @@ func (p *rbacDaoImpl) GetRole(primary interface{}) *model.RbacRole {
 }
 
 // GetBy 角色
-func (p *rbacDaoImpl) GetRoleBy(where string, v ...interface{}) *model.RbacRole {
-	e := model.RbacRole{}
+func (p *rbacDaoImpl) GetRoleBy(where string, v ...interface{}) *rbac.RbacRole {
+	e := rbac.RbacRole{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
@@ -329,12 +329,12 @@ func (p *rbacDaoImpl) GetRoleBy(where string, v ...interface{}) *model.RbacRole 
 
 // Count 角色 by condition
 func (p *rbacDaoImpl) CountPermRole(where string, v ...interface{}) (int, error) {
-	return p._orm.Count(model.RbacRole{}, where, v...)
+	return p._orm.Count(rbac.RbacRole{}, where, v...)
 }
 
 // Select 角色
-func (p *rbacDaoImpl) SelectPermRole(where string, v ...interface{}) []*model.RbacRole {
-	list := make([]*model.RbacRole, 0)
+func (p *rbacDaoImpl) SelectPermRole(where string, v ...interface{}) []*rbac.RbacRole {
+	list := make([]*rbac.RbacRole, 0)
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRole")
@@ -343,7 +343,7 @@ func (p *rbacDaoImpl) SelectPermRole(where string, v ...interface{}) []*model.Rb
 }
 
 // Save 角色
-func (p *rbacDaoImpl) SavePermRole(v *model.RbacRole) (int, error) {
+func (p *rbacDaoImpl) SavePermRole(v *rbac.RbacRole) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRole")
@@ -353,7 +353,7 @@ func (p *rbacDaoImpl) SavePermRole(v *model.RbacRole) (int, error) {
 
 // Delete 角色
 func (p *rbacDaoImpl) DeletePermRole(primary interface{}) error {
-	err := p._orm.DeleteByPk(model.RbacRole{}, primary)
+	err := p._orm.DeleteByPk(rbac.RbacRole{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRole")
 	}
@@ -362,7 +362,7 @@ func (p *rbacDaoImpl) DeletePermRole(primary interface{}) error {
 
 // Batch Delete 角色
 func (p *rbacDaoImpl) BatchDeletePermRole(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(model.RbacRole{}, where, v...)
+	r, err := p._orm.Delete(rbac.RbacRole{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRole")
 	}
@@ -370,10 +370,8 @@ func (p *rbacDaoImpl) BatchDeletePermRole(where string, v ...interface{}) (int64
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryPermRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
-	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy
-	}
+func (p *rbacDaoImpl) QueryPagingPermRole(begin, end int, where string) (total int, rows []map[string]interface{}) {
+	orderBy := "ORDER BY id ASC"
 	if where == "" {
 		where = "1=1"
 	}
@@ -396,8 +394,8 @@ func (p *rbacDaoImpl) PagingQueryPermRole(begin, end int, where, orderBy string)
 }
 
 // Get PermRes
-func (p *rbacDaoImpl) GetRbacResource(primary interface{}) *model.RbacRes {
-	e := model.RbacRes{}
+func (p *rbacDaoImpl) GetRbacResource(primary interface{}) *rbac.RbacRes {
+	e := rbac.RbacRes{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
 		return &e
@@ -409,8 +407,8 @@ func (p *rbacDaoImpl) GetRbacResource(primary interface{}) *model.RbacRes {
 }
 
 // GetBy PermRes
-func (p *rbacDaoImpl) GetRbacResourceBy(where string, v ...interface{}) *model.RbacRes {
-	e := model.RbacRes{}
+func (p *rbacDaoImpl) GetRbacResourceBy(where string, v ...interface{}) *rbac.RbacRes {
+	e := rbac.RbacRes{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
@@ -423,12 +421,12 @@ func (p *rbacDaoImpl) GetRbacResourceBy(where string, v ...interface{}) *model.R
 
 // Count PermRes by condition
 func (p *rbacDaoImpl) CountPermRes(where string, v ...interface{}) (int, error) {
-	return p._orm.Count(model.RbacRes{}, where, v...)
+	return p._orm.Count(rbac.RbacRes{}, where, v...)
 }
 
 // Select PermRes
-func (p *rbacDaoImpl) SelectPermRes(where string, v ...interface{}) []*model.RbacRes {
-	list := make([]*model.RbacRes, 0)
+func (p *rbacDaoImpl) SelectPermRes(where string, v ...interface{}) []*rbac.RbacRes {
+	list := make([]*rbac.RbacRes, 0)
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRes")
@@ -454,7 +452,7 @@ func (p *rbacDaoImpl) GetMaxResouceKey(parentId int) string {
 }
 
 // Save PermRes
-func (p *rbacDaoImpl) SaveRbacResource(v *model.RbacRes) (int, error) {
+func (p *rbacDaoImpl) SaveRbacResource(v *rbac.RbacRes) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRes")
@@ -464,7 +462,7 @@ func (p *rbacDaoImpl) SaveRbacResource(v *model.RbacRes) (int, error) {
 
 // Delete PermRes
 func (p *rbacDaoImpl) DeleteRbacResource(primary interface{}) error {
-	err := p._orm.DeleteByPk(model.RbacRes{}, primary)
+	err := p._orm.DeleteByPk(rbac.RbacRes{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRes")
 	}
@@ -473,7 +471,7 @@ func (p *rbacDaoImpl) DeleteRbacResource(primary interface{}) error {
 
 // Batch Delete PermRes
 func (p *rbacDaoImpl) BatchDeleteRbacResource(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(model.RbacRes{}, where, v...)
+	r, err := p._orm.Delete(rbac.RbacRes{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRes")
 	}
@@ -481,8 +479,8 @@ func (p *rbacDaoImpl) BatchDeleteRbacResource(where string, v ...interface{}) (i
 }
 
 // Get 用户角色关联
-func (p *rbacDaoImpl) GetUserRole(primary interface{}) *model.RbacUserRole {
-	e := model.RbacUserRole{}
+func (p *rbacDaoImpl) GetUserRole(primary interface{}) *rbac.RbacUserRole {
+	e := rbac.RbacUserRole{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
 		return &e
@@ -494,8 +492,8 @@ func (p *rbacDaoImpl) GetUserRole(primary interface{}) *model.RbacUserRole {
 }
 
 // GetBy 用户角色关联
-func (p *rbacDaoImpl) GetUserRoleBy(where string, v ...interface{}) *model.RbacUserRole {
-	e := model.RbacUserRole{}
+func (p *rbacDaoImpl) GetUserRoleBy(where string, v ...interface{}) *rbac.RbacUserRole {
+	e := rbac.RbacUserRole{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
@@ -508,12 +506,12 @@ func (p *rbacDaoImpl) GetUserRoleBy(where string, v ...interface{}) *model.RbacU
 
 // Count 用户角色关联 by condition
 func (p *rbacDaoImpl) CountPermUserRole(where string, v ...interface{}) (int, error) {
-	return p._orm.Count(model.RbacUserRole{}, where, v...)
+	return p._orm.Count(rbac.RbacUserRole{}, where, v...)
 }
 
 // Select 用户角色关联
-func (p *rbacDaoImpl) SelectPermUserRole(where string, v ...interface{}) []*model.RbacUserRole {
-	list := make([]*model.RbacUserRole, 0)
+func (p *rbacDaoImpl) SelectPermUserRole(where string, v ...interface{}) []*rbac.RbacUserRole {
+	list := make([]*rbac.RbacUserRole, 0)
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermUserRole")
@@ -522,7 +520,7 @@ func (p *rbacDaoImpl) SelectPermUserRole(where string, v ...interface{}) []*mode
 }
 
 // Save 用户角色关联
-func (p *rbacDaoImpl) SaveUserRole(v *model.RbacUserRole) (int, error) {
+func (p *rbacDaoImpl) SaveUserRole(v *rbac.RbacUserRole) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermUserRole")
@@ -532,7 +530,7 @@ func (p *rbacDaoImpl) SaveUserRole(v *model.RbacUserRole) (int, error) {
 
 // Delete 用户角色关联
 func (p *rbacDaoImpl) DeleteUserRole(primary interface{}) error {
-	err := p._orm.DeleteByPk(model.RbacUserRole{}, primary)
+	err := p._orm.DeleteByPk(rbac.RbacUserRole{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermUserRole")
 	}
@@ -541,7 +539,7 @@ func (p *rbacDaoImpl) DeleteUserRole(primary interface{}) error {
 
 // Batch Delete 用户角色关联
 func (p *rbacDaoImpl) BatchDeleteUserRole(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(model.RbacUserRole{}, where, v...)
+	r, err := p._orm.Delete(rbac.RbacUserRole{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermUserRole")
 	}
@@ -549,7 +547,7 @@ func (p *rbacDaoImpl) BatchDeleteUserRole(where string, v ...interface{}) (int64
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryPermUserRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingPermUserRole(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -575,8 +573,8 @@ func (p *rbacDaoImpl) PagingQueryPermUserRole(begin, end int, where, orderBy str
 }
 
 // Get 角色菜单关联
-func (p *rbacDaoImpl) GetRoleRes(primary interface{}) *model.RbacRoleRes {
-	e := model.RbacRoleRes{}
+func (p *rbacDaoImpl) GetRoleRes(primary interface{}) *rbac.RbacRoleRes {
+	e := rbac.RbacRoleRes{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
 		return &e
@@ -588,8 +586,8 @@ func (p *rbacDaoImpl) GetRoleRes(primary interface{}) *model.RbacRoleRes {
 }
 
 // GetBy 角色菜单关联
-func (p *rbacDaoImpl) GetRoleResBy(where string, v ...interface{}) *model.RbacRoleRes {
-	e := model.RbacRoleRes{}
+func (p *rbacDaoImpl) GetRoleResBy(where string, v ...interface{}) *rbac.RbacRoleRes {
+	e := rbac.RbacRoleRes{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
@@ -602,12 +600,12 @@ func (p *rbacDaoImpl) GetRoleResBy(where string, v ...interface{}) *model.RbacRo
 
 // Count 角色菜单关联 by condition
 func (p *rbacDaoImpl) CountPermRoleRes(where string, v ...interface{}) (int, error) {
-	return p._orm.Count(model.RbacRoleRes{}, where, v...)
+	return p._orm.Count(rbac.RbacRoleRes{}, where, v...)
 }
 
 // Select 角色菜单关联
-func (p *rbacDaoImpl) SelectPermRoleRes(where string, v ...interface{}) []*model.RbacRoleRes {
-	list := make([]*model.RbacRoleRes, 0)
+func (p *rbacDaoImpl) SelectPermRoleRes(where string, v ...interface{}) []*rbac.RbacRoleRes {
+	list := make([]*rbac.RbacRoleRes, 0)
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRoleRes")
@@ -616,7 +614,7 @@ func (p *rbacDaoImpl) SelectPermRoleRes(where string, v ...interface{}) []*model
 }
 
 // Save 角色菜单关联
-func (p *rbacDaoImpl) SavePermRoleRes(v *model.RbacRoleRes) (int, error) {
+func (p *rbacDaoImpl) SavePermRoleRes(v *rbac.RbacRoleRes) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRoleRes")
@@ -626,7 +624,7 @@ func (p *rbacDaoImpl) SavePermRoleRes(v *model.RbacRoleRes) (int, error) {
 
 // Delete 角色菜单关联
 func (p *rbacDaoImpl) DeletePermRoleRes(primary interface{}) error {
-	err := p._orm.DeleteByPk(model.RbacRoleRes{}, primary)
+	err := p._orm.DeleteByPk(rbac.RbacRoleRes{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRoleRes")
 	}
@@ -635,7 +633,7 @@ func (p *rbacDaoImpl) DeletePermRoleRes(primary interface{}) error {
 
 // Batch Delete 角色菜单关联
 func (p *rbacDaoImpl) BatchDeletePermRoleRes(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(model.RbacRoleRes{}, where, v...)
+	r, err := p._orm.Delete(rbac.RbacRoleRes{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRoleRes")
 	}
@@ -643,7 +641,7 @@ func (p *rbacDaoImpl) BatchDeletePermRoleRes(where string, v ...interface{}) (in
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryPermRoleRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingPermRoleRes(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -669,8 +667,8 @@ func (p *rbacDaoImpl) PagingQueryPermRoleRes(begin, end int, where, orderBy stri
 }
 
 // Get 角色部门关联
-func (p *rbacDaoImpl) GetRoleDept(primary interface{}) *model.RbacRoleDept {
-	e := model.RbacRoleDept{}
+func (p *rbacDaoImpl) GetRoleDept(primary interface{}) *rbac.RbacRoleDept {
+	e := rbac.RbacRoleDept{}
 	err := p._orm.Get(primary, &e)
 	if err == nil {
 		return &e
@@ -682,8 +680,8 @@ func (p *rbacDaoImpl) GetRoleDept(primary interface{}) *model.RbacRoleDept {
 }
 
 // GetBy 角色部门关联
-func (p *rbacDaoImpl) GetRoleDeptBy(where string, v ...interface{}) *model.RbacRoleDept {
-	e := model.RbacRoleDept{}
+func (p *rbacDaoImpl) GetRoleDeptBy(where string, v ...interface{}) *rbac.RbacRoleDept {
+	e := rbac.RbacRoleDept{}
 	err := p._orm.GetBy(&e, where, v...)
 	if err == nil {
 		return &e
@@ -696,12 +694,12 @@ func (p *rbacDaoImpl) GetRoleDeptBy(where string, v ...interface{}) *model.RbacR
 
 // Count 角色部门关联 by condition
 func (p *rbacDaoImpl) CountPermRoleDept(where string, v ...interface{}) (int, error) {
-	return p._orm.Count(model.RbacRoleDept{}, where, v...)
+	return p._orm.Count(rbac.RbacRoleDept{}, where, v...)
 }
 
 // Select 角色部门关联
-func (p *rbacDaoImpl) SelectPermRoleDept(where string, v ...interface{}) []*model.RbacRoleDept {
-	list := make([]*model.RbacRoleDept, 0)
+func (p *rbacDaoImpl) SelectPermRoleDept(where string, v ...interface{}) []*rbac.RbacRoleDept {
+	list := make([]*rbac.RbacRoleDept, 0)
 	err := p._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRoleDept")
@@ -710,7 +708,7 @@ func (p *rbacDaoImpl) SelectPermRoleDept(where string, v ...interface{}) []*mode
 }
 
 // Save 角色部门关联
-func (p *rbacDaoImpl) SavePermRoleDept(v *model.RbacRoleDept) (int, error) {
+func (p *rbacDaoImpl) SavePermRoleDept(v *rbac.RbacRoleDept) (int, error) {
 	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRoleDept")
@@ -720,7 +718,7 @@ func (p *rbacDaoImpl) SavePermRoleDept(v *model.RbacRoleDept) (int, error) {
 
 // Delete 角色部门关联
 func (p *rbacDaoImpl) DeletePermRoleDept(primary interface{}) error {
-	err := p._orm.DeleteByPk(model.RbacRoleDept{}, primary)
+	err := p._orm.DeleteByPk(rbac.RbacRoleDept{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRoleDept")
 	}
@@ -729,7 +727,7 @@ func (p *rbacDaoImpl) DeletePermRoleDept(primary interface{}) error {
 
 // Batch Delete 角色部门关联
 func (p *rbacDaoImpl) BatchDeletePermRoleDept(where string, v ...interface{}) (int64, error) {
-	r, err := p._orm.Delete(model.RbacRoleDept{}, where, v...)
+	r, err := p._orm.Delete(rbac.RbacRoleDept{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PermRoleDept")
 	}
@@ -737,7 +735,7 @@ func (p *rbacDaoImpl) BatchDeletePermRoleDept(where string, v ...interface{}) (i
 }
 
 // Params paging data
-func (p *rbacDaoImpl) PagingQueryPermRoleDept(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+func (p *rbacDaoImpl) QueryPagingPermRoleDept(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
@@ -762,13 +760,13 @@ func (p *rbacDaoImpl) PagingQueryPermRoleDept(begin, end int, where, orderBy str
 	return total, rows
 }
 
-func (p *rbacDaoImpl) GetUserRoles(id int) []*model.RbacUserRole {
+func (p *rbacDaoImpl) GetUserRoles(id int) []*rbac.RbacUserRole {
 	return p.SelectPermUserRole("user_id = $1", id)
 }
 
-func (p *rbacDaoImpl) GetRoleResources(roles []int) []*model.RbacRes {
+func (p *rbacDaoImpl) GetRoleResources(roles []int) []*rbac.RbacRes {
 	where := fmt.Sprintf("role_id IN (%s)", util.JoinIntArray(roles, ","))
-	var arr []*model.RbacRes
+	var arr []*rbac.RbacRes
 	err := p._orm.SelectByQuery(&arr, `SELECT * FROM rbac_res 
 			INNER JOIN rbac_role_res ON rbac_role_res.res_id = rbac_res.id
 			WHERE is_forbidden <> 1 AND is_enabled = 1 AND `+where)
@@ -778,8 +776,8 @@ func (p *rbacDaoImpl) GetRoleResources(roles []int) []*model.RbacRes {
 	return arr
 }
 
-// PagingQueryLoginLog Query paging data
-func (p *rbacDaoImpl) PagingQueryLoginLog(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
+// QueryPagingLoginLog Query paging data
+func (p *rbacDaoImpl) QueryPagingLoginLog(begin, end int, where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}

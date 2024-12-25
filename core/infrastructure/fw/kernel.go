@@ -2,9 +2,12 @@ package fw
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
+	"testing"
 
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 	"github.com/ixre/gof/db"
@@ -45,6 +48,8 @@ type (
 
 	// Repository 仓储接口
 	Repository[M any] interface {
+		// Raw 获取原始ORM
+		Raw() ORM
 		// Get 获取实体
 		Get(id interface{}) *M
 		// FindBy 根据条件获取实体
@@ -55,12 +60,14 @@ type (
 		Save(v *M) (*M, error)
 		// Update 更新实体的非零字段
 		Update(v *M) (*M, error)
+		// 统计数量
+		Count(where string, v ...interface{}) (int, error)
 		// Delete 删除
 		Delete(v *M) error
 		// DeleteBy 根据条件删除
 		DeleteBy(where string, v ...interface{}) (int, error)
-		// PagingQuery 查询分页数据
-		PagingQuery(p *PagingParams) (r *PagingResult, err error)
+		// QueryPaging 查询分页数据
+		QueryPaging(p *PagingParams) (r *PagingResult, err error)
 		// Count 统计条数
 		//Count(where string, v ...interface{}) (int, error)
 	}
@@ -73,19 +80,29 @@ type (
 		Save(v *M) (*M, error)
 		// FindList 查找列表
 		FindList(opt *QueryOption, where string, args ...interface{}) []*M
-
+		// 统计数量
+		Count(where string, v ...interface{}) (int, error)
 		// Delete 删除
 		Delete(v *M) error
-		// PagingQuery 查询分页数据
-		PagingQuery(p *PagingParams) (r *PagingResult, err error)
+		// QueryPaging 查询分页数据
+		QueryPaging(p *PagingParams) (r *PagingResult, err error)
 	}
 )
 
 var _ Repository[any] = new(BaseRepository[any])
 
+// NewRepository 创建仓储
+func NewRepository[M any](orm ORM) Repository[M] {
+	return &BaseRepository[M]{ORM: orm}
+}
+
 // 基础仓储
 type BaseRepository[M any] struct {
 	ORM
+}
+
+func (r *BaseRepository[M]) Raw() ORM {
+	return r.ORM
 }
 
 func (r *BaseRepository[M]) Get(id interface{}) *M {
@@ -151,6 +168,13 @@ func (r *BaseRepository[M]) Update(v *M) (*M, error) {
 	return v, ctx.Error
 }
 
+func (r *BaseRepository[M]) Count(where string, v ...interface{}) (int, error) {
+	var count int64
+	var m M
+	tx := r.ORM.Model(&m).Where(where, v...).Count(&count)
+	return int(count), tx.Error
+}
+
 func (r *BaseRepository[M]) Delete(v *M) error {
 	tx := r.ORM.Delete(v)
 	return tx.Error
@@ -162,7 +186,7 @@ func (r *BaseRepository[M]) DeleteBy(where string, v ...interface{}) (int, error
 	return int(tx.RowsAffected), nil
 }
 
-func (r *BaseRepository[M]) PagingQuery(p *PagingParams) (ret *PagingResult, err error) {
+func (r *BaseRepository[M]) QueryPaging(p *PagingParams) (ret *PagingResult, err error) {
 	var m M
 	var t int64
 	wh := func(tx *gorm.DB) *gorm.DB {
@@ -214,12 +238,16 @@ func (m *BaseService[M]) FindList(opt *QueryOption, where string, args ...interf
 	return m.Repo.FindList(opt, where, args...)
 }
 
+func (m *BaseService[M]) Count(where string, args ...interface{}) (int, error) {
+	return m.Repo.Count(where, args...)
+}
+
 func (m *BaseService[M]) Delete(v *M) error {
 	return m.Repo.Delete(v)
 }
 
-func (m *BaseService[M]) PagingQuery(p *PagingParams) (ret *PagingResult, err error) {
-	return m.Repo.PagingQuery(p)
+func (m *BaseService[M]) QueryPaging(p *PagingParams) (ret *PagingResult, err error) {
+	return m.Repo.QueryPaging(p)
 }
 
 // 分页参数
@@ -240,7 +268,7 @@ type PagingParams struct {
 }
 
 // Where 添加条件
-func (p *PagingParams) where(field string, exp string, value interface{}) *PagingParams {
+func (p *PagingParams) where(field string, exp string, value ...interface{}) *PagingParams {
 	buf := bytes.NewBuffer(nil)
 	isBlank := len(p.Arguments) == 0
 	if !isBlank {
@@ -249,11 +277,11 @@ func (p *PagingParams) where(field string, exp string, value interface{}) *Pagin
 	}
 	buf.WriteString(fmt.Sprintf("%s %s", field, exp))
 	if isBlank {
-		p.Arguments = []interface{}{buf.String(), value}
+		p.Arguments = []interface{}{buf.String()}
 	} else {
 		p.Arguments[0] = buf.String()
-		p.Arguments = append(p.Arguments, value)
 	}
+	p.Arguments = append(p.Arguments, value...)
 	return p
 }
 
@@ -313,6 +341,16 @@ func (p *PagingParams) Like(field string, value interface{}) *PagingParams {
 	return p.where(field, "LIKE ?", value)
 }
 
+// Gt 大于
+func (p *PagingParams) Gt(field string, value interface{}) *PagingParams {
+	return p.where(field, "> ?", value)
+}
+
+// Lt 小于
+func (p *PagingParams) Lt(field string, value interface{}) *PagingParams {
+	return p.where(field, "< ?", value)
+}
+
 func (p *PagingParams) And(where string, values ...interface{}) *PagingParams {
 	buf := bytes.NewBuffer(nil)
 	isBlank := len(p.Arguments) == 0
@@ -327,6 +365,26 @@ func (p *PagingParams) And(where string, values ...interface{}) *PagingParams {
 		p.Arguments[0] = buf.String()
 	}
 	p.Arguments = append(p.Arguments, values...)
+	return p
+}
+
+func (p *PagingParams) Between(field string, arr []string) (*PagingParams, error) {
+	if len(arr) != 2 {
+		return nil, errors.New("between need two value")
+	}
+	return p.where(field, "BETWEEN ? AND ?", arr[0], arr[1]), nil
+}
+
+func (p *PagingParams) BetweenInts(field string, arr []int) (*PagingParams, error) {
+	if len(arr) != 2 {
+		return nil, errors.New("between need two value")
+	}
+	return p.where(field, "BETWEEN ? AND ?", arr[0], arr[1]), nil
+}
+
+// OrderBy 添加排序条件
+func (p *PagingParams) OrderBy(order string) *PagingParams {
+	p.Order = order
 	return p
 }
 
@@ -360,11 +418,11 @@ func ReduceFinds[T any](fn func(opt *QueryOption) []*T, size int) (arr []*T) {
 	return arr
 }
 
-// UnifinedPagingQuery 通用查询
+// UnifinedQueryPaging 通用查询
 //
 //	tables Like: mm_member m ON m.id = o.member_id INNER JOIN mch_merchant mch ON mch.id = o.mch_id
 //	fields like: s.gender,m.nickname,certified_name
-func UnifinedPagingQuery(o ORM, p *PagingParams, tables string, fields string) (_ *PagingResult, err error) {
+func UnifinedQueryPaging(o ORM, p *PagingParams, tables string, fields string) (_ *PagingResult, err error) {
 	var ret PagingResult
 	from := `FROM ` + tables
 	// 查询条件
@@ -379,8 +437,9 @@ func UnifinedPagingQuery(o ORM, p *PagingParams, tables string, fields string) (
 	// 查询行数
 	order := types.Ternary(p.Order != "", " ORDER BY "+p.Order, "")
 	if ret.Total > 0 {
-		sql = fmt.Sprintf(`SELECT %s %s %s %s`, fields, from, where, order)
-		rows, err := o.Raw(sql, args...).Offset(p.Begin).Limit(p.Size).Rows()
+		skipper := GetSkipperSQL(o, p)
+		sql = strings.Join([]string{"SELECT", fields, from, where, order, skipper}, " ")
+		rows, err := o.Raw(sql, args...).Rows()
 		if err != nil {
 			log.Println("paging query rows error: %s", err.Error())
 		} else {
@@ -393,17 +452,45 @@ func UnifinedPagingQuery(o ORM, p *PagingParams, tables string, fields string) (
 	return &ret, nil
 }
 
+// 生成分页条件
+func GetSkipperSQL(o ORM, p *PagingParams) string {
+	if p.Size <= 0 {
+		return ""
+	}
+	switch o.Dialector.Name() {
+	case "mysql":
+		return fmt.Sprintf(" LIMIT %d,%d", p.Begin, p.Size)
+	case "postgres":
+		return fmt.Sprintf(" OFFSET %d LIMIT %d", p.Begin, p.Size)
+	case "sqlite3":
+		return fmt.Sprintf(" LIMIT %d OFFSET %d", p.Size, p.Begin)
+	case "mssql":
+		return fmt.Sprintf(" OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", p.Begin, p.Size)
+	}
+	panic("not support dialect")
+}
+
 // 分页行
-type pagingRow struct {
+type EffectRow struct {
 	v map[string]interface{}
 }
 
-func ParsePagingRow(v interface{}) *pagingRow {
-	return &pagingRow{v: v.(map[string]interface{})}
+func ParseRow(v interface{}) *EffectRow {
+	return &EffectRow{v: v.(map[string]interface{})}
+}
+
+func (p *EffectRow) AsInt(keys ...string) {
+	for _, key := range keys {
+		v, ok := p.v[key].([]uint8)
+		if ok {
+			f := typeconv.MustInt(string(v))
+			p.v[key] = f
+		}
+	}
 }
 
 // 转换为float类型
-func (p *pagingRow) AsFloat(keys ...string) {
+func (p *EffectRow) AsFloat(keys ...string) {
 	for _, key := range keys {
 		v, ok := p.v[key].([]uint8)
 		if ok {
@@ -414,18 +501,58 @@ func (p *pagingRow) AsFloat(keys ...string) {
 }
 
 // Excludes 排除字段
-func (p *pagingRow) Excludes(keys ...string) {
+func (p *EffectRow) Excludes(keys ...string) {
 	for _, key := range keys {
 		delete(p.v, key)
 	}
 }
 
 // Put 添加/更新字段
-func (p *pagingRow) Put(key string, v interface{}) {
+func (p *EffectRow) Put(key string, v interface{}) {
 	p.v[key] = v
 }
 
 // Get 获取字段
-func (p *pagingRow) Get(key string) interface{} {
+func (p *EffectRow) Get(key string) interface{} {
 	return p.v[key]
+}
+
+// GetInt 获取int类型字段
+func (p *EffectRow) GetInt(key string) int {
+	return typeconv.Int(p.Get(key))
+}
+
+/** 错误处理 */
+type Error struct {
+	// 错误码
+	Code int `json:"code"`
+	// 错误信息
+	Message string `json:"message"`
+}
+
+// 解析错误
+func ParseError(err error) *Error {
+	if err != nil {
+		return &Error{
+			Code:    1,
+			Message: err.Error(),
+		}
+	}
+	return nil
+}
+
+// NewError 创建错误
+func NewError(code int, message string) *Error {
+	return &Error{
+		Code:    code,
+		Message: message,
+	}
+}
+
+// 断言错误
+func AssertError(t *testing.T, err error) {
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 }

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	s "github.com/ixre/go2o/core/infrastructure/util/sms"
 	"github.com/ixre/go2o/core/inject"
 	_ "github.com/ixre/go2o/tests"

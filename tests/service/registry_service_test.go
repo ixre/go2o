@@ -18,8 +18,8 @@ func TestRegistryUpateValueMap(t *testing.T) {
 	ret, _ := inject.GetRegistryService().UpdateValues(context.TODO(), &proto.StringMap{
 		Value: mp,
 	})
-	if ret.ErrCode > 0 {
-		t.Error(ret.ErrMsg)
+	if ret.Code > 0 {
+		t.Error(ret.Message)
 	}
 	t.Log(typeconv.MustJson(ret))
 }
@@ -39,8 +39,8 @@ func TestRegistryClientUpateValueMap(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	if ret.ErrCode > 0 {
-		t.Error(ret.ErrMsg)
+	if ret.Code > 0 {
+		t.Error(ret.Message)
 	}
 	t.Log(typeconv.MustJson(ret))
 }

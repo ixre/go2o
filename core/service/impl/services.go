@@ -45,11 +45,11 @@ func (s serviceUtil) error(err error) *proto.Result {
 }
 
 // 返回错误的结果
-func (s serviceUtil) errorV2(err error) *proto.ResultV2 {
+func (s serviceUtil) errorV2(err error) *proto.TxResult {
 	if err == nil {
-		return &proto.ResultV2{Data: map[string]string{}}
+		return &proto.TxResult{Data: map[string]string{}}
 	}
-	return &proto.ResultV2{Code: 1, Msg: err.Error(), Data: map[string]string{}}
+	return &proto.TxResult{Code: 1, Message: err.Error(), Data: map[string]string{}}
 }
 
 // 返回结果
@@ -58,6 +58,11 @@ func (s serviceUtil) result(err error) *proto.Result {
 		return s.success(nil)
 	}
 	return s.error(err)
+}
+
+// 返回自定义编码的结果
+func (s serviceUtil) resultWithCodeV2(code int, message string) *proto.TxResult {
+	return &proto.TxResult{Code: int32(code), Message: message, Data: map[string]string{}}
 }
 
 // 返回自定义编码的结果
@@ -81,6 +86,24 @@ func (s serviceUtil) success(data map[string]string) *proto.Result {
 		data = map[string]string{}
 	}
 	return &proto.Result{ErrCode: 0, ErrMsg: "", Data: data}
+}
+
+// 返回成功的结果
+func (s serviceUtil) txResult(txId int, data map[string]string) *proto.TxResult {
+	return &proto.TxResult{
+		Code:    0,
+		Message: "",
+		TxId:    int64(txId),
+		Data:    data,
+	}
+}
+
+// 返回成功的结果
+func (s serviceUtil) successV2(data map[string]string) *proto.TxResult {
+	if data == nil {
+		data = map[string]string{}
+	}
+	return &proto.TxResult{Code: 0, Message: "", Data: data}
 }
 
 // 将int32数组装换为int数组

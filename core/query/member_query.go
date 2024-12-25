@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/ixre/go2o/core/domain/interface/member"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/service/proto"
@@ -27,6 +28,12 @@ type MemberQuery struct {
 	db.Connector
 	o orm.Orm
 	fw.BaseRepository[member.Member]
+	_balanceLog  fw.BaseRepository[member.BalanceLog]
+	_integralLog fw.BaseRepository[member.IntegralLog]
+	_walletLog   fw.BaseRepository[wallet.WalletLog]
+	_levelRepo   fw.BaseRepository[member.Level]
+	_certRepo    fw.BaseRepository[member.CerticationInfo]
+	_extraRepo   fw.Repository[member.ExtraField]
 }
 
 func NewMemberQuery(o orm.Orm, fo fw.ORM) *MemberQuery {
@@ -34,6 +41,12 @@ func NewMemberQuery(o orm.Orm, fo fw.ORM) *MemberQuery {
 		Connector: o.Connector(),
 		o:         o}
 	q.ORM = fo
+	q._balanceLog.ORM = fo
+	q._integralLog.ORM = fo
+	q._walletLog.ORM = fo
+	q._levelRepo.ORM = fo
+	q._certRepo.ORM = fo
+	q._extraRepo = fw.NewRepository[member.ExtraField](fo)
 	return q
 }
 
@@ -46,7 +59,7 @@ func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
 	}
 	if len(ids) > 0 {
 		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
-		query := fmt.Sprintf(`SELECT m.id,m.user,m.nick_name,m.avatar,m.exp,m.level,
+		query := fmt.Sprintf(`SELECT m.id,m.user,m.nick_name,m.profile_photo,m.level,
 				lv.name as level_name,a.integral,a.balance,a.wallet_balance,
 				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
 				m.update_time FROM mm_member m INNER JOIN mm_level lv
@@ -72,7 +85,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, valueFilter int32, 
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(1) FROM mm_balance_log
 			WHERE member_id= $1 %s`, where), &num, memberId)
-	sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,procedure_fee,
+	sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_tx_no,change_value,transaction_fee,
 	balance,review_status,create_time FROM mm_balance_log
 			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`,
 		where, orderBy)
@@ -80,7 +93,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, valueFilter int32, 
 		for _rows.Next() {
 			e := proto.SMemberAccountLog{}
 			_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
-				&e.Value, &e.ProcedureFee, &e.Balance,
+				&e.Value, &e.TransactionFee, &e.Balance,
 				&e.ReviewStatus, &e.CreateTime)
 			rows = append(rows, &e)
 		}
@@ -110,7 +123,7 @@ func (m *MemberQuery) PagedIntegralAccountLog(memberId int64, valueFilter int32,
 		if sortBy != "" {
 			orderBy = "ORDER BY " + sortBy
 		}
-		sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,
+		sqlLine := fmt.Sprintf(`SELECT id,kind,subject,outer_tx_no,change_value,
 		balance,review_status,create_time FROM mm_integral_log 
 			WHERE member_id= $1 %s %s LIMIT $3 OFFSET $2`, where, orderBy)
 		err := d.Query(sqlLine, func(_rows *sql.Rows) {
@@ -152,7 +165,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 	//rows = make([]*proto.SMemberAccountLog,0)
 
 	if num > 0 {
-		cmd := fmt.Sprintf(`SELECT id,kind,subject,outer_no,change_value,procedure_fee,
+		cmd := fmt.Sprintf(`SELECT id,kind,subject,outer_tx_no,change_value,transaction_fee,
 			balance,review_status,create_time FROM wal_wallet_log 
 			WHERE wallet_id = $1 %s %s LIMIT $3 OFFSET $2`,
 			where, orderBy)
@@ -160,7 +173,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int64, valueFilter int32, b
 			for _rows.Next() {
 				e := proto.SMemberAccountLog{}
 				_rows.Scan(&e.Id, &e.Kind, &e.Subject, &e.OuterNo,
-					&e.Value, &e.ProcedureFee, &e.Balance,
+					&e.Value, &e.TransactionFee, &e.Balance,
 					&e.ReviewStatus, &e.CreateTime)
 				rows = append(rows, &e)
 			}
@@ -189,7 +202,7 @@ func (m *MemberQuery) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember 
 	var id int
 	var user, name, phone, portrait string
 	m.Query(`SELECT id,user,mm_profile.name,mm_profile.phone,
-        mm_profile.avatar FROM mm_member
+        mm_profile.profile_photo FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
         WHERE user LIKE $1 OR mm_profile.name LIKE $2 OR
         mm_profile.phone LIKE $3`, func(rows *sql.Rows) {
@@ -210,7 +223,7 @@ func (m *MemberQuery) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember 
 func (m *MemberQuery) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
 	e := dto.SimpleMember{}
 	err := m.QueryRow(`SELECT id,user,mm_profile.name,mm_profile.phone,
-        mm_profile.avatar FROM mm_member
+        mm_profile.profile_photo FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
         WHERE user = $1 OR mm_profile.phone = $2`, func(rows *sql.Row) error {
 		er := rows.Scan(&e.Id, &e.User, &e.Name, &e.Phone, &e.Avatar)
@@ -251,20 +264,20 @@ func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp str
 	m.Query(fmt.Sprintf(`SELECT id,user,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
  (SELECT COUNT(1) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id = m.id
-	AND r.reg_mchid=rl.reg_mchid  AND m1.reg_time BETWEEN
+	AND r.reg_mch_id=rl.reg_mch_id  AND m1.reg_time BETWEEN
   $1 AND $2 ) as invi_num,
 	((SELECT COUNT(1) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id = m.id
-	AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
+	AND r.reg_mch_id=rl.reg_mch_id AND m1.reg_time BETWEEN
   $3 AND $4 )+
  (SELECT COUNT(1) FROM mm_relation r INNER JOIN mm_member m1
   ON m1.id = r.member_id WHERE (m1.level%s) AND inviter_id IN
 	(SELECT member_id FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.inviter_id =
-    m.id AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
+    m.id AND r.reg_mch_id=rl.reg_mch_id AND m1.reg_time BETWEEN
   $5 AND $6 ))) as all_num
  FROM mm_member m INNER JOIN mm_relation rl ON m.id= rl.member_id
- WHERE rl.reg_mchid = $7 AND state= $8) t ORDER BY %s,t.reg_time asc
+ WHERE rl.reg_mch_id = $7 AND state= $8) t ORDER BY %s,t.reg_time asc
  LIMIT $9`, levelCompStr, levelCompStr, levelCompStr, levelCompStr, sortField), func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &user, &name, &inviNum, &totalNum, &regTime)
@@ -411,4 +424,103 @@ func (m *MemberQuery) OrdersQuantity(memberId int64) map[int]int {
 		log.Println("[ GO2O][ ERROR]: query order quantity failed! ", err.Error())
 	}
 	return mp
+}
+
+// QueryPagingMemberList 查询会员列表
+func (m *MemberQuery) QueryPagingMemberList(p *fw.PagingParams) (*fw.PagingResult, error) {
+	tables := `mm_member m LEFT JOIN mm_relation r ON m.id = r.member_id
+LEFT JOIN mm_account ac ON m.id = ac.member_id
+LEFT JOIN mm_profile pro ON pro.member_id = m.id`
+
+	fields := `
+	distinct(m.id),m.nickname,m.real_name,m.username,m.profile_photo,pro.gender,pro.birthday,
+	m.phone,m.level,m.user_flag,ac.integral,ac.balance,
+	ac.total_pay,ac.wallet_balance,m.create_time,
+	(SELECT id FROM mm_member m2 WHERE m2.id = r.inviter_id) as inviter_id
+`
+	rows, err := fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+	if err == nil {
+		members := make([]int, len(rows.Rows))
+		memberMap := make(map[int]*fw.EffectRow, len(rows.Rows))
+		for i, v := range rows.Rows {
+			r := fw.ParseRow(v)
+			members[i] = r.GetInt("id")
+			memberMap[members[i]] = r
+		}
+		extraFields := m._extraRepo.FindList(&fw.QueryOption{
+			Limit: len(members),
+		}, "member_id IN ?", members)
+		for _, v := range extraFields {
+			memberMap[v.MemberId].Put("loginTime", v.LoginTime)
+			memberMap[v.MemberId].Put("regFrom", v.RegFrom)
+		}
+	}
+	return rows, err
+}
+
+// QueryPagingStaffs 查询商户员工列表
+func (m *MemberQuery) QueryPagingStaffs(p *fw.PagingParams) (*fw.PagingResult, error) {
+	tables := `mm_member m
+		INNER JOIN mch_staff s ON s.member_id=m.id
+		INNER JOIN mch_merchant mch ON mch.id = s.mch_id
+		LEFT JOIN mm_profile pro ON pro.member_id = m.id`
+	fields := `
+	distinct(m.id),m.nickname,m.real_name,m.username,m.profile_photo,pro.gender,pro.birthday,
+	m.phone,m.level,m.user_flag,
+	m.create_time,(SELECT login_time FROM mm_extra_field WHERE member_id=m.id) as login_time,
+	s.certified_name,s.is_certified,mch.mch_name
+	`
+	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+}
+
+// QueryMemberBlockList 查询会员拉黑列表
+func (m *MemberQuery) QueryMemberBlockList(p *fw.PagingParams) (*fw.PagingResult, error) {
+	tables := `mm_block_list b INNER JOIN mm_member m ON b.block_member_id = m.id`
+	fields := `b.id,
+	b.block_member_id,
+	b.block_flag,
+	m.profile_photo,
+	m.nickname,
+	m.username,
+	b.create_time`
+	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+}
+
+func (m *MemberQuery) QueryPagingMemberBalanceLogs(memberId int, p *fw.PagingParams) (*fw.PagingResult, error) {
+	p.Equal("member_id", memberId)
+	return m._balanceLog.QueryPaging(p)
+}
+
+func (m *MemberQuery) QueryPagingMemberIntegralLogs(memberId int, p *fw.PagingParams) (*fw.PagingResult, error) {
+	p.Equal("member_id", memberId)
+	return m._integralLog.QueryPaging(p)
+}
+
+func (m *MemberQuery) QueryPagingMemberWalletLogs(memberId int, p *fw.PagingParams) (*fw.PagingResult, error) {
+	var walletId int
+	m.ORM.Raw("SELECT id FROM wal_wallet WHERE user_id=? AND wallet_type=? ", memberId, wallet.TPerson).Scan(&walletId)
+	if walletId == 0 {
+		return nil, fmt.Errorf("user no such wallet,id=%d", memberId)
+	}
+	p.Equal("wallet_id", walletId)
+	return m._walletLog.QueryPaging(p)
+}
+
+// QueryPagingCertifications 查询会员认证列表
+func (m *MemberQuery) QueryPagingCertifications(p *fw.PagingParams) (*fw.PagingResult, error) {
+	tables := `mm_cert_info ti INNER JOIN mm_member m ON m.id=ti.member_id`
+	fields := `m.id,ti.member_id,ti.card_type, m.username,m.nickname,m.phone,ti.real_name,
+ti.review_status,ti.remark,ti.update_time,ti.card_id`
+	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)
+
+}
+
+// QueryPagingLevels 查询会员等级列表
+func (m *MemberQuery) QueryPagingLevels(p *fw.PagingParams) (*fw.PagingResult, error) {
+	return m._levelRepo.QueryPaging(p)
+}
+
+// GetMemberExtraField 获取会员扩展字段
+func (m *MemberQuery) GetMemberExtraField(memberId int64) *member.ExtraField {
+	return m._extraRepo.FindBy("member_id = ?", memberId)
 }

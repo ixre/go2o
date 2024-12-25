@@ -220,30 +220,30 @@ func (s *orderServiceImpl) PrepareOrder(_ context.Context, r *proto.PrepareOrder
 		domain.TestFlag(int(r.PaymentFlag), payment.MWallet); fb || fw {
 		// 更新抵扣余额之后的金额
 		if fb {
-			if balance >= ov.FinalAmount {
-				deductAmount += ov.FinalAmount
+			if balance >= int(ov.FinalAmount) {
+				deductAmount += int64(ov.FinalAmount)
 				ov.FinalAmount = 0
 			} else {
-				deductAmount += balance
-				ov.FinalAmount -= balance
+				deductAmount += int64(balance)
+				ov.FinalAmount -= int64(balance)
 			}
 		}
 		// 更新抵扣钱包余额之后的金额
 		if fw {
-			if walletBalance >= ov.FinalAmount {
-				deductAmount += ov.FinalAmount
+			if walletBalance >= int(ov.FinalAmount) {
+				deductAmount += int64(ov.FinalAmount)
 				ov.FinalAmount = 0
 			} else {
-				deductAmount += walletBalance
-				ov.FinalAmount -= walletBalance
+				deductAmount += int64(walletBalance)
+				ov.FinalAmount -= int64(walletBalance)
 			}
 		}
 	}
 	rsp := parser.PrepareOrderDto(ov)
 	rsp.ShipmentAddressId = addressId
 	rsp.DeductAmount = deductAmount
-	rsp.BuyerBalance = balance
-	rsp.BuyerWallet = walletBalance
+	rsp.BuyerBalance = int64(balance)
+	rsp.BuyerWallet = int64(walletBalance)
 	rsp.BuyerIntegral = int64(acc.GetValue().Integral)
 	rsp.Sellers = s.parsePrepareItemsFromCart(ic)
 	return rsp, err
@@ -362,12 +362,12 @@ func (s *orderServiceImpl) GetOrder(_ context.Context, r *proto.OrderRequest) (*
 				pv := po.Get()
 				ret.DeductAmount = int32(pv.DeductAmount)
 				ret.FinalAmount = int32(pv.FinalAmount)
-				ret.ExpiresTime = pv.ExpiresTime
+				ret.ExpiresTime = int64(pv.ExpiresTime)
 				ret.TotalAmount = int32(pv.TotalAmount)
-				ret.PaymentTime = pv.PaidTime
+				ret.PaymentTime = int64(pv.PaidTime)
 				for _, t := range po.TradeMethods() {
 					pm := s.parseTradeMethodDataDto(t)
-					pm.ChanName = po.ChanName(t.Method)
+					pm.ChanName = po.ChanName(t.PayMethod)
 					if len(pm.ChanName) == 0 {
 						pm.ChanName = pv.OutTradeSp
 					}
@@ -415,11 +415,11 @@ func (s *orderServiceImpl) BreakPaymentOrder(_ context.Context, r *proto.BreakPa
 	return &proto.Result{}, nil
 }
 
-func (s *orderServiceImpl) parseTradeMethodDataDto(src *payment.TradeMethodData) *proto.SOrderPayChanData {
+func (s *orderServiceImpl) parseTradeMethodDataDto(src *payment.PayTradeData) *proto.SOrderPayChanData {
 	return &proto.SOrderPayChanData{
-		ChanId:     int32(src.Method),
-		Amount:     src.Amount,
-		ChanCode:   src.Code,
+		ChanId:     int32(src.PayMethod),
+		Amount:     int64(src.PayAmount),
+		ChanCode:   src.OutTradeCode,
 		OutTradeNo: src.OutTradeNo,
 	}
 }

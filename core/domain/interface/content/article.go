@@ -11,7 +11,7 @@ package content
 import (
 	"reflect"
 
-	"github.com/ixre/go2o/core/domain"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
@@ -31,7 +31,7 @@ type (
 		// Destory 删除文章
 		Destory() error
 		// 增加浏览次数
-		IncreaseViewCount(memberId int, count int) error
+		IncreaseViewCount(count int) error
 		// 喜欢
 		Like(memberId int) error
 		// 不喜欢
@@ -72,28 +72,28 @@ type (
 
 	// Category 栏目
 	Category struct {
-		//编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
-		//父类编号,如为一级栏目则为0
-		ParentId int `db:"parent_id"`
-		// 浏览权限
-		PermFlag int `db:"perm_flag"`
-		// 名称(唯一)
-		Name string `db:"name"`
-		// 别名
-		Alias string `db:"cat_alias" gorm:"column:cat_alias"`
-		// 排序编号
-		SortNum int `db:"sort_num"`
-		// 定位路径（打开栏目页定位到的路径）
-		Location string `db:"location"`
-		// 页面标题
-		Title string `db:"title"`
-		// 关键字
-		Keywords string `db:"keywords"`
+		// 编号
+		Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+		// 上级编号
+		Pid int `json:"pid" db:"pid" gorm:"column:pid" bson:"pid"`
+		// 权限标志
+		Flag int `json:"flag" db:"flag" gorm:"column:flag" bson:"flag"`
+		// 分类编号
+		Name string `json:"name" db:"name" gorm:"column:name" bson:"name"`
+		// 分类别名
+		Alias string `json:"alias" db:"alias" gorm:"column:alias" bson:"alias"`
+		// 标题
+		Title string `json:"title" db:"title" gorm:"column:title" bson:"title"`
+		// 关键词
+		Keywords string `json:"keywords" db:"keywords" gorm:"column:keywords" bson:"keywords"`
 		// 描述
-		Description string `db:"describe"`
+		Description string `json:"description" db:"description" gorm:"column:description" bson:"description"`
+		// 排序编号
+		SortNo int `json:"sortNo" db:"sort_no" gorm:"column:sort_no" bson:"sortNo"`
+		// 地址
+		Location string `json:"location" db:"location" gorm:"column:location" bson:"location"`
 		// 更新时间
-		UpdateTime int64 `db:"update_time"`
+		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 	}
 
 	// Article 文章

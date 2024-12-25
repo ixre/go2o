@@ -22,7 +22,6 @@ import (
 	"github.com/ixre/go2o/app/daemon/job"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/order"
-	"github.com/ixre/go2o/core/infrastructure/locker"
 	"github.com/ixre/go2o/core/initial"
 	"github.com/ixre/go2o/core/repos/clickhouse"
 	"github.com/ixre/go2o/core/service"
@@ -144,20 +143,26 @@ func SetLastUnix(key string, unix int64) {
 	signHandled(key, unix)
 }
 
+// 添加定时任务
+func AddCron(spec string, cmd func()) {
+	mux.Lock()
+	defer mux.Unlock()
+	cronTab.AddFunc(spec, cmd)
+}
+
 // 运行定时任务
 func startCronTab() {
 
-	// 删除分布式锁,会导致重启一直不执行任务
-	locker.Unlock("/SyncWalletLogToClickHouse")
-	locker.Unlock("/CheckExpiresPaymentOrder")
 	// 注册任务
 	startClickhouseJob(cronTab)
+	// 注册定时任务
+	for _, j := range job.GetJobs() {
+		cronTab.AddFunc(j.Spec, j.Cmd)
+	}
 	//商户每日报表
 	//cronTab.AddFunc("0 0 0 * * *", mchDayChart)
 	//个人金融结算,每天00:20更新数据
 	//cronTab.AddFunc("0 20 0 * * *", personFinanceSettle)
-	//检查订单过期,1分钟检测一次
-	cronTab.AddFunc("* * * * *", job.CheckExpiresPaymentOrder)
 	//订单自动收货,2分钟检测一次
 	//cronTab.AddFunc("0 */2 * * * *", orderAutoReceive)
 	// 自动解锁会员
@@ -171,13 +176,6 @@ func startClickhouseJob(tab *cron.Cron) {
 		return
 	}
 	tab.AddFunc("@every 2s", job.SyncWalletLogToClickHouse)
-}
-
-// 添加定时任务
-func AddCron(spec string, cmd func()) {
-	mux.Lock()
-	defer mux.Unlock()
-	cronTab.AddFunc(spec, cmd)
 }
 
 type defaultService struct {

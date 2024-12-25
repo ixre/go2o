@@ -18,25 +18,104 @@ import (
 var _ member.IInvitationManager = new(invitationManager)
 
 type invitationManager struct {
-	member *memberImpl
+	member      *memberImpl
+	_memberRepo member.IMemberRepo
+}
+
+func (i *invitationManager) getBlockInfo(memberId int) *member.BlockList {
+	return i._memberRepo.BlockRepo().FindBy("member_id = ? AND block_member_id = ?",
+		i.member.GetAggregateRootId(), memberId)
+}
+
+// Block implements member.IInvitationManager.
+func (i *invitationManager) Block(memberId int) error {
+	v := i.getBlockInfo(memberId)
+	if v != nil {
+		v.BlockFlag |= member.BlockFlagBlack
+	} else {
+		v = &member.BlockList{
+			Id:            memberId,
+			MemberId:      int(i.member.GetAggregateRootId()),
+			BlockMemberId: memberId,
+			BlockFlag:     member.BlockFlagBlack,
+			CreateTime:    int(time.Now().Unix()),
+		}
+	}
+	_, err := i._memberRepo.BlockRepo().Save(v)
+	return err
+}
+
+// IsBlockOrShield implements member.IInvitationManager.
+func (i *invitationManager) IsBlockOrShield(memberId int) (bool, int) {
+	v := i.getBlockInfo(memberId)
+	if v == nil {
+		return false, 0
+	}
+	return true, v.BlockFlag
+}
+
+// Shield implements member.IInvitationManager.
+func (i *invitationManager) Shield(memberId int) error {
+	v := i.getBlockInfo(memberId)
+	if v != nil {
+		v.BlockFlag |= member.BlockFlagShield
+	} else {
+		v = &member.BlockList{
+			Id:            memberId,
+			MemberId:      int(i.member.GetAggregateRootId()),
+			BlockMemberId: memberId,
+			BlockFlag:     member.BlockFlagShield,
+			CreateTime:    int(time.Now().Unix()),
+		}
+	}
+	_, err := i._memberRepo.BlockRepo().Save(v)
+	return err
+}
+
+// UnBlock implements member.IInvitationManager.
+func (i *invitationManager) UnBlock(memberId int) (err error) {
+	v := i.getBlockInfo(memberId)
+	if v != nil {
+		v.BlockFlag ^= member.BlockFlagBlack
+		if v.BlockFlag == 0 {
+			err = i._memberRepo.BlockRepo().Delete(v)
+		} else {
+			_, err = i._memberRepo.BlockRepo().Save(v)
+		}
+	}
+	return err
+}
+
+// UnShield implements member.IInvitationManager.
+func (i *invitationManager) UnShield(memberId int) (err error) {
+	v := i.getBlockInfo(memberId)
+	if v != nil {
+		v.BlockFlag ^= member.BlockFlagBlack
+		if v.BlockFlag == 0 {
+			err = i._memberRepo.BlockRepo().Delete(v)
+		} else {
+			_, err = i._memberRepo.BlockRepo().Save(v)
+		}
+	}
+	return err
 }
 
 // 更换邀请人
-func (i *invitationManager) UpdateInviter(inviterId int64, sync bool) error {
+func (i *invitationManager) UpdateInviter(inviterId int, sync bool) error {
 	id := i.member.GetAggregateRootId()
 	var rl *member.InviteRelation
 	if inviterId > 0 {
-		rl = i.member.repo.GetRelation(inviterId)
+		rl = i.member.repo.GetRelation(int64(inviterId))
 	}
 	// 判断邀请人是否为下级的被邀请会员
-	if i.checkInvitation(id, inviterId) {
+	if i.checkInvitation(int64(inviterId), int64(id)) {
 		return member.ErrInvalidInviteLevel
 	}
 	if !sync {
-		return i.walkUpdateInvitation(id, rl)
+		return i.walkUpdateInvitation(int64(id), rl)
 	}
 	// 异步更新
-	go i.walkUpdateInvitation(id, rl)
+	go i.walkUpdateInvitation(int64(id), rl)
 	return nil
 }
 
@@ -69,9 +148,9 @@ func (i *invitationManager) walkUpdateInvitation(id int64, p *member.InviteRelat
 // 更新邀请关系
 func (m *memberImpl) updateDepthInvite(r *member.InviteRelation) error {
 	if r.InviterId > 0 {
-		arr := m.Invitation().InviterArray(r.InviterId, 2)
-		r.InviterD2 = arr[0]
-		r.InviterD3 = arr[1]
+		arr := m.Invitation().InviterArray(int64(r.InviterId), 2)
+		r.InviterD2 = int(arr[0])
+		r.InviterD3 = int(arr[1])
 	} else {
 		r.InviterD2 = 0
 		r.InviterD3 = 0
@@ -93,7 +172,7 @@ func (i *invitationManager) InviterArray(memberId int64, depth int) []int64 {
 		if rl == nil || rl.InviterId <= 0 {
 			break
 		}
-		arr[di] = rl.InviterId
+		arr[di] = int64(rl.InviterId)
 		inviterId = arr[di]
 		di++
 	}
@@ -104,7 +183,7 @@ func (i *invitationManager) InviterArray(memberId int64, depth int) []int64 {
 func (i *invitationManager) InvitationBy(memberId int64) bool {
 	rl := i.member.GetRelation()
 	if rl != nil {
-		return rl.InviterId == memberId
+		return int(rl.InviterId) == int(memberId)
 	}
 	return false
 }
@@ -113,7 +192,7 @@ func (i *invitationManager) InvitationBy(memberId int64) bool {
 func (i *invitationManager) GetInvitationMembers(begin, end int) (
 	int, []*dto.InvitationMember) {
 	return i.member.repo.GetMyInvitationMembers(
-		i.member.GetAggregateRootId(), begin, end)
+		int64(i.member.GetAggregateRootId()), begin, end)
 }
 
 // 获取邀请会员下级邀请数量
@@ -121,13 +200,13 @@ func (i *invitationManager) GetSubInvitationNum(memberIdArr []int32) map[int32]i
 	if memberIdArr == nil || len(memberIdArr) == 0 {
 		return map[int32]int{}
 	}
-	return i.member.repo.GetSubInvitationNum(i.member.GetAggregateRootId(),
+	return i.member.repo.GetSubInvitationNum(int64(i.member.GetAggregateRootId()),
 		memberIdArr)
 }
 
 // 获取邀请要的会员
 func (i *invitationManager) GetInvitationMeMember() *member.Member {
-	return i.member.repo.GetInvitationMeMember(i.member.GetAggregateRootId())
+	return i.member.repo.GetInvitationMeMember(int64(i.member.GetAggregateRootId()))
 }
 
 // 是否存在邀请关系

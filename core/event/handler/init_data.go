@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"strings"
 	"time"
 
@@ -10,11 +9,12 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/content"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/infrastructure/logger"
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/util"
 )
@@ -32,20 +32,26 @@ func (h EventHandler) HandleAppInitialEvent(data interface{}) {
 	initPortalNavGroup(h.portalDao)
 	initPages(h.pageRepo)
 	// 初始化站点
-	go h.stationRepo.GetManager().SyncStations()
+	go h._sysRepo.GetSystemAggregateRoot().Stations().SyncStations()
 	// 初始化通知模板
 	h.initNotifyTemplate()
+	// 初始化分发应用
+	h.initDistributeApp()
 }
 
 func initSystemConfig(repo registry.IRegistryRepo) {
 	// 初始化系统配置
 	re := repo.Get(registry.Domain)
 	if re != nil && re.StringValue() == re.Value().DefaultValue {
-		logger.Error("domain is not initialized, please set the domain in registry.")
+		logger.Error("主域未配置，会导致部分功能无法使用, 请在系统设置中配置")
 	}
 	re = repo.Get(registry.FileServerUrl)
 	if re != nil && re.StringValue() == re.Value().DefaultValue {
-		logger.Error("file server url is not initialized, please set the domain in registry.")
+		logger.Error("文件服务器地址未配置，会导致图片无法上传, 请在系统设置中配置")
+	}
+	re = repo.Get(registry.MchServerUrl)
+	if re != nil && re.StringValue() == re.Value().DefaultValue {
+		logger.Error("B端商户服务器地址未配置，会导致商户部分功能不能正常使用, 请在系统设置中配置")
 	}
 }
 
@@ -53,8 +59,8 @@ func initSuperLoginToken(repo registry.IRegistryRepo) {
 	value, _ := repo.GetValue(registry.SysSuperLoginToken)
 	if strings.TrimSpace(value) == "" {
 		pwd := util.RandString(8)
-		log.Printf(`[ GO2O][ INFO]: the initial super pwd is '%s', it only show first time. plese save it.\n`, pwd)
-		token := domain.Sha1("master" + crypto.Md5([]byte(pwd)))
+		logger.Info(`[ GO2O][ INFO]: the initial super pwd is %s, it only show first time. plese save it.\n`, pwd)
+		token := domain.HmacSha256("master" + crypto.Md5([]byte(pwd)))
 		_ = repo.UpdateValue(registry.SysSuperLoginToken, token)
 	}
 
@@ -62,11 +68,12 @@ func initSuperLoginToken(repo registry.IRegistryRepo) {
 
 // 初始化jwt密钥
 func initJWTSecret(repo registry.IRegistryRepo) {
-	value, _ := repo.GetValue(registry.SysJWTSecret)
-	if strings.TrimSpace(value) == "" {
-		_, privateKey, _ := crypto.GenRsaKeys(2048)
-		_ = repo.UpdateValue(registry.SysJWTSecret, privateKey)
+	privateKey, _ := repo.GetValue(registry.SysPrivateKey)
+	if strings.TrimSpace(privateKey) == "" {
+		_, privateKey, _ = crypto.GenRsaKeys(2048)
+		_ = repo.UpdateValue(registry.SysPrivateKey, privateKey)
 	}
+	domain.ConfigureHmacPrivateKey(privateKey)
 }
 
 // 初始化导航数据
@@ -182,7 +189,7 @@ func initPages(repo content.IPageRepo) {
 		for _, v := range pages {
 			v.Flag |= content.FCategoryInternal
 			v.Enabled = 1
-			v.UpdateTime = time.Now().Unix()
+			v.UpdateTime = int(time.Now().Unix())
 			repo.SavePage(0, v)
 		}
 	}
@@ -190,14 +197,40 @@ func initPages(repo content.IPageRepo) {
 
 // 初始化通知模板
 func (h *EventHandler) initNotifyTemplate() {
-	arr := h.messageRepo.GetAllNotifyTemplate()
+	arr := h.messageRepo.NotifyRepo().GetAllNotifyTemplate()
 	// 初始化短信模板
-	smsArray := collections.FilterArray(arr, func(t *mss.NotifyTemplate) bool {
-		return t.TempType == 2
+	tplArr := collections.FilterArray(arr, func(t *mss.NotifyTemplate) bool {
+		return t.TplType == 2
 	})
-	if len(smsArray) == 0 {
+	if len(tplArr) == 0 {
 		for _, v := range mss.InternalSmsTemplate {
-			h.messageRepo.SaveNotifyTemplate(v)
+			h.messageRepo.NotifyRepo().SaveNotifyTemplate(v)
+		}
+	}
+	// 初始化邮件模板
+	tplArr = collections.FilterArray(arr, func(t *mss.NotifyTemplate) bool {
+		return t.TplType == 3
+	})
+	if len(tplArr) == 0 {
+		for _, v := range mss.InternalMailTemplate {
+			h.messageRepo.NotifyRepo().SaveNotifyTemplate(v)
+		}
+	}
+}
+
+// 初始化应用分发
+func (h *EventHandler) initDistributeApp() {
+	ia := h._sysRepo.GetSystemAggregateRoot().Application()
+	arr := ia.GetAllAppDistributions()
+	if len(arr) == 0 {
+		err := ia.SaveAppDistribution(&sys.SysAppDistribution{
+			AppName:        "app",
+			UpdateMode:     1,
+			UrlScheme:      "go2o://net.fze.go2o/open",
+			DistributeName: "默认APP",
+		})
+		if err != nil {
+			logger.Error("初始化应用分发失败:%s", err.Error())
 		}
 	}
 }

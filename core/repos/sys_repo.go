@@ -24,6 +24,8 @@ type systemRepoImpl struct {
 	lastUpdateTime int64
 	areaRepo       fw.Repository[sys.District]
 	optRepo        fw.Repository[sys.GeneralOption]
+	_stationRepo   sys.IStationRepo
+	_sysAppRepo    sys.IApplicationRepository
 }
 
 func NewSystemRepo(o fw.ORM, st storage.Interface) sys.ISystemRepo {
@@ -33,6 +35,7 @@ func NewSystemRepo(o fw.ORM, st storage.Interface) sys.ISystemRepo {
 			st:             st,
 			lastUpdateTime: 0,
 		}
+		_sysRepo._sysAppRepo = NewSysAppRepo(o)
 		_sysAggregate = impl.NewSystemAggregateRoot(_sysRepo)
 	})
 	return _sysRepo
@@ -77,12 +80,25 @@ func (s *systemRepoImpl) Option() fw.Repository[sys.GeneralOption] {
 	return s.optRepo
 }
 
+// Station implements sys.ISystemRepo.
+func (s *systemRepoImpl) Station() sys.IStationRepo {
+	if s._stationRepo == nil {
+		s._stationRepo = NewStationRepo(s.ORM, s)
+	}
+	return s._stationRepo
+}
+
 // AreaRepo implements sys.ISystemRepo.
 func (s *systemRepoImpl) District() fw.Repository[sys.District] {
 	if s.areaRepo == nil {
 		s.areaRepo = newDistrictRepository(s.ORM)
 	}
 	return s.areaRepo
+}
+
+// App 获取应用仓储
+func (s *systemRepoImpl) App() sys.IApplicationRepository {
+	return s._sysAppRepo
 }
 
 // GetSystemAggregateRoot implements sys.ISystemRepo.

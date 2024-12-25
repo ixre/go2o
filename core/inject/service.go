@@ -108,7 +108,7 @@ func GetContentService() proto.ContentServiceServer {
 }
 
 // 广告服务
-func GetAdService() proto.AdvertisementServiceServer {
+func GetAdvertisementService() proto.AdvertisementServiceServer {
 	panic(wire.Build(InjectProvideSets))
 }
 
@@ -170,5 +170,14 @@ func GetChatService() proto.ChatServiceServer {
 }
 
 func GetWorkorderService() proto.WorkorderServiceServer {
+	panic(wire.Build(InjectProvideSets))
+}
+
+func GetApprovalService() proto.ApprovalServiceServer {
+	panic(wire.Build(InjectProvideSets))
+}
+
+// ServiceProviderService 服务提供者服务
+func GetProviderService() proto.ServiceProviderServiceServer {
 	panic(wire.Build(InjectProvideSets))
 }

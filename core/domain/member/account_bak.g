@@ -119,11 +119,11 @@ func (a *accountImpl) walletDiscount_(title string, amount float32, outerNo stri
 
 // 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
-	amount2 int, tradeFee int, bankAccountNo string) (int32, string, error) {
+	amount2 int, transactionFee int, bankAccountNo string) (int32, string, error) {
 	amount := float32(amount2) / 100
 	if takeKind != wallet.KWithdrawExchange &&
 		takeKind != wallet.KWithdrawToBankCard &&
-		takeKind != wallet.KWithdrawToThirdPart {
+		takeKind != wallet.KWithdrawToPayWallet {
 		return 0, "", member.ErrNotSupportTakeOutBusinessKind
 	}
 	if amount <= 0 || math.IsNaN(float64(amount)) {
@@ -176,7 +176,7 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 	}
 
 	tradeNo := domain.NewTradeNo(8, int(a.member.GetAggregateRootId()))
-	csnAmount := float32(tradeFee) / 100
+	csnAmount := float32(transactionFee) / 100
 	finalAmount := amount - csnAmount
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
@@ -189,7 +189,7 @@ func (a *accountImpl) RequestWithdrawal_(takeKind int, title string,
 		OuterNo:     tradeNo,
 		Amount:      finalAmount,
 		CsnFee:      csnAmount,
-		ReviewStatus: enum.ReviewAwaiting,
+		ReviewStatus: enum.ReviewPending,
 		RelateUser:  member.DefaultRelateUser,
 		Remark:      "",
 		CreateTime:  unix,
@@ -217,7 +217,7 @@ func (a *accountImpl) ReviewWithdrawal_(id int32, pass bool, remark string) erro
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
 	}
-	if v.ReviewStatus != enum.ReviewAwaiting {
+	if v.ReviewStatus != enum.ReviewPending {
 		return member.ErrTakeOutState
 	}
 	// todo: 应该先冻结, 再扣除
@@ -243,7 +243,7 @@ func (a *accountImpl) ReviewWithdrawal_(id int32, pass bool, remark string) erro
 }
 
 // 完成提现
-func (a *accountImpl) FinishWithdrawal_(id int32, tradeNo string) error {
+func (a *accountImpl) CompleteTransaction_(id int32, tradeNo string) error {
 	v := a.GetWalletLog(id)
 	if v == nil || v.MemberId != a.value.MemberId {
 		return member.ErrIncorrectInfo
@@ -252,14 +252,14 @@ func (a *accountImpl) FinishWithdrawal_(id int32, tradeNo string) error {
 		return member.ErrTakeOutState
 	}
 	v.OuterNo = tradeNo
-	v.ReviewStatus = enum.ReviewConfirm
+	v.ReviewStatus = enum.ReviewCompleted
 	v.Remark = "转款凭证:" + tradeNo
 	_, err := a.rep.SaveWalletAccountLog(v)
 	return err
 
 	//if v.Kind == member.KindWalletTakeOutToBankCard {
 	//    v.OuterNo = tradeNo
-	//    v.State = enum.ReviewConfirm
+	//    v.State = enum.ReviewCompleted
 	//    v.Remark = "银行凭证:" + tradeNo
 	//    _, err := a.repo.SaveWalletAccountLog(v)
 	//    return err

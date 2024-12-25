@@ -15,22 +15,21 @@ func (h *EventHandler) HandleMemberPushEvent(data interface{}) {
 	}
 	m := v.Member
 	ev := &proto.EVMemberPushEventData{
-		MemberId:      m.Id,
-		IsNewMember:   v.IsCreate,
-		UserCode:      m.UserCode,
-		UserFlag:      int32(m.UserFlag),
-		Role:          int32(m.RoleFlag),
-		Username:      m.Username,
-		Exp:           int64(m.Exp),
-		Level:         int32(m.Level),
-		Nickname:      m.Nickname,
-		ProfilePhoto:  m.ProfilePhoto,
-		Phone:         m.Phone,
-		Email:         m.Email,
-		RegFrom:       m.RegFrom,
-		InviterId:     int64(v.InviterId),
-		RealName:      m.RealName,
-		LastLoginTime: m.LastLoginTime,
+		MemberId:     int64(v.Member.Id),
+		IsNewMember:  v.IsCreate,
+		UserCode:     m.UserCode,
+		UserFlag:     int32(m.UserFlag),
+		Role:         int32(m.RoleFlag),
+		Username:     m.Username,
+		CountryCode:  m.CountryCode,
+		Level:        int32(m.Level),
+		Nickname:     m.Nickname,
+		ProfilePhoto: m.ProfilePhoto,
+		Phone:        m.Phone,
+		Email:        m.Email,
+		RegFrom:      v.RegFrom,
+		InviterId:    int64(v.InviterId),
+		RealName:     m.RealName,
 	}
 
 	msq.Push(msq.MemberUpdated, typeconv.MustJson(ev))
@@ -46,14 +45,14 @@ func (h *EventHandler) HandleMemberAccountPushEvent(data interface{}) {
 		ev := &proto.EVMemberAccountEventData{
 			//MemberId:v.MemberId,
 			Integral:      int64(v.Integral),
-			Balance:       v.Balance,
+			Balance:       int64(v.Balance),
 			WalletCode:    v.WalletCode,
-			WalletBalance: v.WalletBalance,
-			FlowBalance:   v.FlowBalance,
-			GrowBalance:   v.GrowBalance,
-			TotalExpense:  v.TotalExpense,
-			TotalCharge:   v.TotalCharge,
-			UpdateTime:    v.UpdateTime,
+			WalletBalance: int64(v.WalletBalance),
+			FlowBalance:   int64(v.FlowBalance),
+			GrowBalance:   int64(v.GrowBalance),
+			TotalExpense:  int64(v.TotalExpense),
+			TotalCharge:   int64(v.TotalCharge),
+			UpdateTime:    int64(v.UpdateTime),
 		}
 		msq.PushDelay(msq.MemberAccountUpdated, typeconv.MustJson(ev), 500)
 	}
@@ -68,12 +67,12 @@ func (h EventHandler) HandleWithdrawalPushEvent(data interface{}) {
 	isPush := h.registryRepo.Get(registry.MemberWithdrawalPushEnabled).BoolValue()
 	if isPush {
 		ev := &proto.EVMemberWithdrawalPushEventData{
-			MemberId:      v.MemberId,
-			RequestId:     int64(v.RequestId),
-			Amount:        int64(v.Amount),
-			ProcedureFee:  int64(v.ProcedureFee),
-			ReviewResult:  v.ReviewResult,
-			IsReviewEvent: v.IsReviewEvent,
+			MemberId:       int64(v.MemberId),
+			RequestId:      int64(v.RequestId),
+			Amount:         int64(v.Amount),
+			TransactionFee: int64(v.TransactionFee),
+			ReviewResult:   v.ReviewResult,
+			IsReviewEvent:  v.IsReviewEvent,
 		}
 		msq.PushDelay(msq.MembertWithdrawalTopic, typeconv.MustJson(ev), 500)
 	}
@@ -87,19 +86,25 @@ func (h EventHandler) HandleMemberAccountLogPushEvent(data interface{}) {
 	isPush := h.registryRepo.Get(registry.MemberAccountLogPushEnabled).BoolValue()
 	if isPush {
 		ev := &proto.EVAccountLogPushEventData{
-			Account:       int32(v.Account),
-			IsUpdateEvent: v.IsUpdateEvent,
-			UserId:        int64(v.MemberId),
-			LogId:         int64(v.LogId),
-			LogKind:       int32(v.LogKind),
-			Subject:       v.Subject,
-			OuterNo:       v.OuterNo,
-			ChangeValue:   int64(v.ChangeValue),
-			Balance:       int64(v.Balance),
-			ProcedureFee:  int64(v.ProcedureFee),
-			ReviewStatus:  int32(v.ReviewStatus),
-			CreateTime:    int64(v.CreateTime),
+			Account:        int32(v.Account),
+			IsUpdateEvent:  v.IsUpdateEvent,
+			UserId:         int64(v.MemberId),
+			LogId:          int64(v.LogId),
+			LogKind:        int32(v.LogKind),
+			Subject:        v.Subject,
+			OuterNo:        v.OuterNo,
+			ChangeValue:    int64(v.ChangeValue),
+			Balance:        int64(v.Balance),
+			TransactionFee: int64(v.ProcedureFee),
+			ReviewStatus:   int32(v.ReviewStatus),
+			CreateTime:     int64(v.CreateTime),
 		}
 		msq.PushDelay(msq.MemberAccountLogTopic, typeconv.MustJson(ev), 500)
 	}
+}
+
+// HandleMemberCertificationReviewEvent 处理会员实名认证审核事件
+func (h EventHandler) HandleMemberCertificationReviewEvent(data interface{}) {
+	//v := data.(*events.MemberCertificationReviewEvent)
+	// note: 这里不推送消息，可以在订阅该事件，做业务处理
 }

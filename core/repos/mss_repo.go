@@ -11,7 +11,6 @@ package repos
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
@@ -62,6 +61,11 @@ func (m *messageRepoImpl) MessageManager() mss.IMessageManager {
 	return m._sysManger
 }
 
+// 通知仓储
+func (m *messageRepoImpl) NotifyRepo() mss.INotifyRepo {
+	return m._notifyRepo
+}
+
 // 通知服务
 func (m *messageRepoImpl) NotifyManager() mss.INotifyManager {
 	if m._notifyManger == nil {
@@ -76,34 +80,6 @@ func (m *messageRepoImpl) GetProvider() mss.IUserMessageManager {
 		m._globMss = mssImpl.NewMssManager(0, m)
 	}
 	return m._globMss
-}
-
-// SelectNotifyTemplate Select 系统通知模板
-func (s *messageRepoImpl) GetAllNotifyTemplate() []*mss.NotifyTemplate {
-	list := make([]*mss.NotifyTemplate, 0)
-	err := s._orm.Select(&list, "")
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:NotifyTemplate\n", err.Error())
-	}
-	return list
-}
-
-// SaveNotifyTemplate Save 系统通知模板
-func (s *messageRepoImpl) SaveNotifyTemplate(v *mss.NotifyTemplate) (int, error) {
-	id, err := orm.Save(s._orm, v, int(v.Id))
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:NotifyTemplate\n", err.Error())
-	}
-	return id, err
-}
-
-// DeleteNotifyTemplate Delete 系统通知模板
-func (s *messageRepoImpl) DeleteNotifyTemplate(primary interface{}) error {
-	err := s._orm.DeleteByPk(mss.NotifyTemplate{}, primary)
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:NotifyTemplate\n", err.Error())
-	}
-	return err
 }
 
 // 获取短信配置

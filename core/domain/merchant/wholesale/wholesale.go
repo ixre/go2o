@@ -43,9 +43,9 @@ func (w *wholesalerImpl) Value() *wholesaler.WsWholesaler {
 func (w *wholesalerImpl) Review(pass bool, reason string) error {
 	if w.value.ReviewStatus == enum.ReviewPending {
 		if pass {
-			w.value.ReviewStatus = enum.ReviewPass
+			w.value.ReviewStatus = enum.ReviewApproved
 		} else {
-			w.value.ReviewStatus = enum.ReviewReject
+			w.value.ReviewStatus = enum.ReviewRejected
 		}
 		_, err := w.Save()
 		return err
@@ -78,7 +78,7 @@ func (w *wholesalerImpl) SyncItems(syncPrice bool) map[string]int32 {
 			failed = append(failed, itemId)
 		}
 	}
-	_, del := w.repo.SyncItems(w.mchId, item.ShelvesInWarehouse, enum.ReviewPass)
+	_, del := w.repo.SyncItems(w.mchId, item.ShelvesInWarehouse, enum.ReviewApproved)
 	return map[string]int32{
 		"add":    int32(len(add)),
 		"del":    int32(del),

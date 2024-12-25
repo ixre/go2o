@@ -4,6 +4,8 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"github.com/ixre/go2o/assets"
 )
 
 // ref：https://github.com/TomatoMr/SensitiveWords
@@ -16,18 +18,20 @@ var s *SensitiveMap
 
 func Singleton() *SensitiveMap {
 	if s == nil {
-		s = initDictionary("./assets/sensitive_dict.txt")
+		//dictionary := readDictionary("./assets/sensitive_dict.txt")
+		dictionary := strings.Fields(string(assets.SensitiveDict))
+		s = initDictionary(dictionary)
 	}
 	return s
 }
 
 // 初始化敏感词词典，根据DFA算法构建trie
-func initDictionary(dictionaryPath string) *SensitiveMap {
+func initDictionary(dictionary []string) *SensitiveMap {
+
 	s := &SensitiveMap{
 		sensitiveNode: make(map[string]interface{}),
 		isEnd:         false,
 	}
-	dictionary := readDictionary(dictionaryPath)
 	for _, words := range dictionary {
 		sMapTmp := s
 		w := []rune(words)

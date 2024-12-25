@@ -3,7 +3,7 @@ package invoice
 import (
 	"reflect"
 
-	"github.com/ixre/go2o/core/domain"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 )
 
@@ -31,6 +31,22 @@ const (
 	IssueRevert = 4
 )
 
+const (
+	// 发票类型: 增值税普通发票
+	InvoiceTypeNormal = 1
+	// 发票类型: 增值税专用发票
+	InvoiceTypeSpecial = 2
+	// 发票类型: 形式发票
+	InvoiceTypeFormal = 3
+)
+
+const (
+	// 开具类型: 个人
+	IssueTypePersonal = 1
+	// 开具类型: 企业
+	IssueTypeEnterprise = 2
+)
+
 type (
 	// InvoiceUserAggregateRoot 发票用户聚合根
 	InvoiceUserAggregateRoot interface {
@@ -43,6 +59,8 @@ type (
 		Create() error
 		// GetInvoiceTitle 获取发票抬头
 		GetInvoiceTitle(id int) *InvoiceTitle
+		// GetDefaultInvoiceTitle 获取默认发票抬头
+		GetDefaultInvoiceTitle() *InvoiceTitle
 		// CreateInvoiceTitle 保存发票抬头
 		CreateInvoiceTitle(title *InvoiceTitle) error
 		// CreateInvoice 创建发票
@@ -51,6 +69,7 @@ type (
 		GetInvoice(id int) InvoiceDomain
 	}
 
+	// InvoiceDomain 发票领域接口
 	InvoiceDomain interface {
 		domain.IDomain
 		// GetValue 获取发票记录
@@ -58,7 +77,7 @@ type (
 		// GetItems 获取发票明细
 		GetItems() []*InvoiceItem
 		// Issue 开具发票,更新发票图片
-		Issue(picture string) error
+		Issue(picture string, remark string) error
 		// Issue 发票开具失败
 		IssueFail(reason string) error
 		// SendMail 发送发票到邮件中
@@ -67,6 +86,13 @@ type (
 		Revert(reason string) error
 		// Save 保存发票
 		Save() error
+	}
+
+	// InvoiceRevertEvent 发票撤销事件
+	InvoiceRevertEvent struct {
+		TenantId  int
+		InvoiceId int
+		Reason    string
 	}
 )
 
@@ -90,8 +116,8 @@ type InvoiceRequestData struct {
 
 var _ domain.IValueObject = new(InvoiceItem)
 
-// IInvoiceTenantRepo 发票租户仓储接口
-type IInvoiceTenantRepo interface {
+// IInvoiceRepo 发票仓储接口
+type IInvoiceRepo interface {
 	fw.Repository[InvoiceTenant]
 	// Title 获取发票抬头仓储接口
 	Title() IInvoiceTitleRepo
@@ -103,6 +129,8 @@ type IInvoiceTenantRepo interface {
 	GetTenant(id int) InvoiceUserAggregateRoot
 	// CreateTenant 创建租户
 	CreateTenant(v *InvoiceTenant) InvoiceUserAggregateRoot
+	// FindTenant 获取租户
+	FindTenant(tenantType int, tenantId int) *InvoiceTenant
 }
 
 // IInvoiceTitlesRepo 发票抬头仓储接口

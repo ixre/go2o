@@ -72,8 +72,7 @@ func OrmMapping(orm orm.Orm) {
 	orm.Mapping(registry.Registry{}, "registry")
 	// ad
 	orm.Mapping(ad.Ad{}, "ad_list")
-	orm.Mapping(ad.Image{}, "ad_image")
-	orm.Mapping(ad.HyperLink{}, "ad_hyperlink")
+	orm.Mapping(ad.Data{}, "ad_data")
 	orm.Mapping(ad.Position{}, "ad_position")
 	orm.Mapping(ad.AdUserSet{}, "ad_userset")
 
@@ -180,7 +179,7 @@ func OrmMapping(orm orm.Orm) {
 
 	// 支付
 	orm.Mapping(payment.Order{}, "pay_order")
-	orm.Mapping(payment.TradeMethodData{}, "pay_trade_data")
+	orm.Mapping(payment.PayTradeData{}, "pay_trade_data")
 	orm.Mapping(payment.MergeOrder{}, "pay_merge_order")
 
 	// 促销

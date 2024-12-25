@@ -52,11 +52,14 @@ var provideSets = wire.NewSet(
 	repos.NewAdvertisementRepo,
 	repos.NewJobRepository,
 	repos.NewStaffRepo,
+	repos.NewApprovalRepository,
 	repos.NewPageRepo,
 	repos.NewArticleCategoryRepo,
 	repos.NewInvoiceTenantRepo,
 	repos.NewChatRepo,
 	repos.NewWorkorderRepo,
+	repos.NewRbacRepo,
+	repos.NewSysAppRepo,
 )
 var queryProvideSets = wire.NewSet(
 	provideSets,
@@ -68,6 +71,13 @@ var queryProvideSets = wire.NewSet(
 	query.NewItemQuery,
 	query.NewAfterSalesQuery,
 	query.NewContentQuery,
+	query.NewWorkQuery,
+	query.NewWalletQuery,
+	query.NewInvoiceQuery,
+	query.NewAdvertisementQuery,
+	query.NewStatisticsQuery,
+	query.NewPaymentQuery,
+	query.NewSystemQuery,
 )
 
 var daoProvideSets = wire.NewSet(
@@ -109,9 +119,14 @@ var InjectProvideSets = wire.NewSet(
 	impl.NewInvoiceService,
 	impl.NewChatService,
 	impl.NewWorkorderService,
+	impl.NewApprovalService,
+	impl.NewServiceProviderService,
 	// 事件
 	event.NewEventSource,
 	handler.NewEventHandler,
+	handler.NewPaymentEventHandler,
+	handler.NewMerchantEventHandler,
+	handler.NewInvoiceEventHandler,
 	// 其他
 	sp.NewSPConfig,
 )
@@ -131,6 +146,40 @@ func GetMemberQueryService() *query.MemberQuery {
 }
 
 // GetContentQuery 获取内容查询服务
-func GetContentQuery() *query.ContentQuery {
+func GetContentQueryService() *query.ContentQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+func GetWorkQueryService() *query.WorkQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+// GetWalletQueryService 获取钱包查询服务
+func GetWalletQueryService() *query.WalletQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+// GetInvoiceQueryService 获取发票查询服务
+func GetInvoiceQueryService() *query.InvoiceQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+// GetOrderQueryService 获取广告查询服务
+func GetAdvertisementQueryService() *query.AdvertisementQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+// GetStatisticsQueryService 获取统计查询服务
+func GetStatisticsQueryService() *query.StatisticsQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+// GetPaymentQueryService 获取支付查询服务
+func GetPaymentQueryService() *query.PaymentQuery {
+	panic(wire.Build(queryProvideSets))
+}
+
+// GetSystemQueryService 获取系统查询服务
+func GetSystemQueryService() *query.SystemQuery {
 	panic(wire.Build(queryProvideSets))
 }

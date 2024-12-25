@@ -102,7 +102,7 @@ var (
 		//域名
 		Host: "",
 		//前台Logo
-		Logo: "static/init/nopic.png",
+		Logo: "static/init/nopic.jpg",
 		//首页标题
 		ShopTitle: "",
 		// ShopNotice

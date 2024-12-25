@@ -32,9 +32,7 @@ func (a *attrServiceImpl) SaveAttr(v *promodel.Attr) (id int, err error) {
 	if v.Id <= 0 {
 		i, err = a.repo.SaveAttr(v)
 		v.Id = i
-		if v == nil {
-			return v.Id, err
-		}
+		return v.Id, err
 	}
 	// 保存项
 	if v.Items != nil {

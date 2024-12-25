@@ -12,12 +12,12 @@ var _ proto.InvoiceServiceServer = new(invoiceServiceImpl)
 
 type invoiceServiceImpl struct {
 	_    proto.InvoiceServiceServer
-	repo invoice.IInvoiceTenantRepo
+	repo invoice.IInvoiceRepo
 	proto.UnimplementedInvoiceServiceServer
 	serviceUtil
 }
 
-func NewInvoiceService(repo invoice.IInvoiceTenantRepo) proto.InvoiceServiceServer {
+func NewInvoiceService(repo invoice.IInvoiceRepo) proto.InvoiceServiceServer {
 	return &invoiceServiceImpl{
 		repo: repo,
 	}
@@ -31,8 +31,8 @@ func (i *invoiceServiceImpl) GetTenant(_ context.Context, req *proto.InvoiceTena
 	})
 	if tenant == nil {
 		return &proto.SInvoiceTenant{
-			Code: 1,
-			Msg:  "无法创建租户",
+			Code:    1,
+			Message: "无法创建租户",
 		}, nil
 	}
 	return &proto.SInvoiceTenant{
@@ -45,8 +45,8 @@ func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.Invoic
 	tenant := i.repo.GetTenant(int(req.TenantId))
 	if tenant == nil {
 		return &proto.RequestInvoiceResponse{
-			Code: 2,
-			Msg:  "无法申请发票",
+			Code:    2,
+			Message: "无法申请发票",
 		}, nil
 	}
 	rd := &invoice.InvoiceRequestData{
@@ -75,8 +75,8 @@ func (i *invoiceServiceImpl) RequestInvoice(_ context.Context, req *proto.Invoic
 	}
 	if err != nil {
 		return &proto.RequestInvoiceResponse{
-			Code: 1,
-			Msg:  err.Error(),
+			Code:    1,
+			Message: err.Error(),
 		}, nil
 	}
 	return &proto.RequestInvoiceResponse{
@@ -100,11 +100,14 @@ func (i *invoiceServiceImpl) getInvoice(tenantId, invoiceId int64) (invoice.Invo
 
 // GetInvoice implements proto.InvoiceServiceServer.
 func (i *invoiceServiceImpl) GetInvoice(_ context.Context, req *proto.InvoiceId) (*proto.SInvoice, error) {
-	it, iv := i.getInvoice(req.TenantId, req.InvoiceId)
-	if it == nil || iv == nil {
+	v := i.repo.Records().Get(req.InvoiceId)
+	if v == nil {
 		return nil, nil
 	}
-	v := iv.GetValue()
+	iv := i.repo.GetTenant(v.TenantId).GetInvoice(v.Id)
+	if iv == nil {
+		return nil, nil
+	}
 	ret := &proto.SInvoice{
 		Id:               int64(v.Id),
 		InvoiceCode:      v.InvoiceCode,
@@ -143,25 +146,25 @@ func (i *invoiceServiceImpl) GetInvoice(_ context.Context, req *proto.InvoiceId)
 }
 
 // Issue implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) Issue(_ context.Context, req *proto.InvoiceIssueRequest) (*proto.ResultV2, error) {
+func (i *invoiceServiceImpl) Issue(_ context.Context, req *proto.InvoiceIssueRequest) (*proto.TxResult, error) {
 	it, iv := i.getInvoice(req.TenantId, req.InvoiceId)
 	if it == nil || iv == nil {
-		return &proto.ResultV2{
-			Code: 1,
-			Msg:  "no any tenant or invoice",
+		return &proto.TxResult{
+			Code:    1,
+			Message: "no any tenant or invoice",
 		}, nil
 	}
-	err := iv.Issue(req.InvoicePic)
+	err := iv.Issue(req.InvoicePic, req.IssueRemark)
 	return i.errorV2(err), nil
 }
 
 // IssueFail implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) IssueFail(_ context.Context, req *proto.InvoiceIssueFailRequest) (*proto.ResultV2, error) {
+func (i *invoiceServiceImpl) IssueFail(_ context.Context, req *proto.InvoiceIssueFailRequest) (*proto.TxResult, error) {
 	it, iv := i.getInvoice(req.TenantId, req.InvoiceId)
 	if it == nil || iv == nil {
-		return &proto.ResultV2{
-			Code: 1,
-			Msg:  "no any tenant or invoice",
+		return &proto.TxResult{
+			Code:    1,
+			Message: "no any tenant or invoice",
 		}, nil
 	}
 	err := iv.IssueFail(req.Reason)
@@ -169,12 +172,12 @@ func (i *invoiceServiceImpl) IssueFail(_ context.Context, req *proto.InvoiceIssu
 }
 
 // Revert implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) Revert(_ context.Context, req *proto.InvoiceRevertRequest) (*proto.ResultV2, error) {
+func (i *invoiceServiceImpl) Revert(_ context.Context, req *proto.InvoiceRevertRequest) (*proto.TxResult, error) {
 	it, iv := i.getInvoice(req.TenantId, req.InvoiceId)
 	if it == nil || iv == nil {
-		return &proto.ResultV2{
-			Code: 1,
-			Msg:  "no any tenant or invoice",
+		return &proto.TxResult{
+			Code:    1,
+			Message: "no any tenant or invoice",
 		}, nil
 	}
 	err := iv.Revert(req.Reason)
@@ -202,8 +205,8 @@ func (i *invoiceServiceImpl) CreateInvoiceTitle(_ context.Context, req *proto.Cr
 	err := t.CreateInvoiceTitle(v)
 	if err != nil {
 		return &proto.CreateInvoiceTitleResponse{
-			Code: 1,
-			Msg:  err.Error(),
+			Code:    1,
+			Message: err.Error(),
 		}, nil
 	}
 	return &proto.CreateInvoiceTitleResponse{
@@ -212,12 +215,12 @@ func (i *invoiceServiceImpl) CreateInvoiceTitle(_ context.Context, req *proto.Cr
 }
 
 // SendMail implements proto.InvoiceServiceServer.
-func (i *invoiceServiceImpl) SendMail(_ context.Context, req *proto.InvoiceSendMailRequest) (*proto.ResultV2, error) {
+func (i *invoiceServiceImpl) SendMail(_ context.Context, req *proto.InvoiceSendMailRequest) (*proto.TxResult, error) {
 	it, iv := i.getInvoice(req.TenantId, req.InvoiceId)
 	if it == nil || iv == nil {
-		return &proto.ResultV2{
-			Code: 1,
-			Msg:  "no any tenant or invoice",
+		return &proto.TxResult{
+			Code:    1,
+			Message: "no any tenant or invoice",
 		}, nil
 	}
 	err := iv.SendMail(req.Email)

@@ -97,7 +97,7 @@ message QPaymentRequest {
     // 商户订单号
     string orderNo = 1;
     // 支付金额,实际金额*100,无小数
-    int32 tradeFee = 2;
+    int32 transactionFee = 2;
     // 支付商品名称
     string subject = 3;
     // 银行授权码
@@ -168,7 +168,7 @@ message CardTransferRequest {
     // 是否为对私转账
     bool personTransfer = 3;
     // 付款金额,实际金额*100,无小数
-    int32 tradeFee = 4;
+    int32 transactionFee = 4;
     // 银行账户
     string bankCardNo = 5;
     // 收款人姓名,如：张三

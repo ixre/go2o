@@ -10,8 +10,8 @@ package member
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -24,9 +24,10 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/domain/util"
-	"github.com/ixre/go2o/core/infrastructure/domain/validate"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/initial/provide"
+	"github.com/ixre/gof/domain/eventbus"
 )
 
 var _ member.IProfileManager = new(profileManagerImpl)
@@ -107,7 +108,7 @@ func newProfileManagerImpl(m *memberImpl, memberId int64,
 
 // 手机号码是否占用
 func (p *profileManagerImpl) phoneIsExist(phone string) bool {
-	return p.repo.CheckPhoneBind(phone, p.memberId)
+	return p.repo.CheckPhoneBind(phone, int(p.memberId))
 }
 
 // 验证数据,用v.updateTime > 0 判断是否为新创建用户
@@ -125,13 +126,13 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 		return member.ErrAddress
 	}
 	// 检查邮箱
-	if len(v.Email) != 0 && !validate.IsEmail(v.Email) {
+	if len(v.Email) != 0 && !regex.IsEmail(v.Email) {
 		return member.ErrInvalidEmail
 	}
 	// 检查手机
 	checkPhone := p.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
 	if len(v.Phone) != 0 && checkPhone {
-		if !validate.IsPhone(v.Phone) {
+		if !regex.IsPhone(v.Phone) {
 			return member.ErrInvalidPhone
 		}
 	}
@@ -168,10 +169,10 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	dst.City = v.City
 	dst.District = v.District
 	dst.Address = v.Address
-	dst.BirthDay = v.BirthDay
+	dst.Birthday = v.Birthday
 	dst.Im = v.Im
 	dst.Email = v.Email
-
+	dst.Signature = v.Signature
 	//todo: 如果手机不需要验证，则可以随意设置
 	if dst.Phone == "" {
 		dst.Phone = v.Phone
@@ -185,8 +186,8 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	dst.Ext4 = v.Ext4
 	dst.Ext5 = v.Ext5
 	dst.Ext6 = v.Ext6
-	if v.Avatar != "" {
-		dst.Avatar = v.Avatar
+	if v.ProfilePhoto != "" {
+		dst.ProfilePhoto = v.ProfilePhoto
 	}
 	return nil
 }
@@ -194,7 +195,7 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 func (p *profileManagerImpl) ProfileCompleted() bool {
 	v := p.GetProfile()
 	r := len(v.Name) != 0 &&
-		len(v.BirthDay) != 0 && len(v.Address) != 0 && v.Gender != 0 &&
+		len(v.Birthday) != 0 && len(v.Address) != 0 && v.Gender != 0 &&
 		v.Province != 0 && v.City != 0 && v.District != 0
 	if r {
 		imRequire := p.registryRepo.Get(registry.MemberImRequired).BoolValue()
@@ -210,7 +211,7 @@ func (p *profileManagerImpl) CheckProfileComplete() error {
 	if v.Phone == "" {
 		return errors.New("phone")
 	}
-	if v.BirthDay == "" {
+	if v.Birthday == "" {
 		return errors.New("birthday")
 	}
 	if v.Province <= 0 || v.City <= 0 || v.District <= 0 || v.Address == "" {
@@ -238,7 +239,7 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 	ptr := p.GetProfile()
 	err := p.copyProfile(v, &ptr)
 	if err == nil {
-		ptr.MemberId = p.memberId
+		ptr.MemberId = int(p.memberId)
 		err = p.repo.SaveProfile(&ptr)
 		if err == nil {
 			// 完善资料通知
@@ -264,7 +265,7 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 	if phone == "" {
 		return member.ErrInvalidPhone
 	}
-	used := p.repo.CheckPhoneBind(phone, p.memberId)
+	used := p.repo.CheckPhoneBind(phone, int(p.memberId))
 	if !used {
 		v := p.GetProfile()
 		v.Phone = phone
@@ -297,23 +298,19 @@ func (p *profileManagerImpl) ChangeNickname(nickname string, limitTime bool) err
 		}
 		return err
 	}
-	return member.ErrPhoneHasBind
+	return member.ErrNicknameIsUse
 }
 
 // 设置头像
-func (p *profileManagerImpl) ChangeProfilePhoto(portrait string) error {
-	if portrait == "" {
+func (p *profileManagerImpl) ChangeProfilePhoto(profilePhoto string) error {
+	if profilePhoto == "" {
 		return member.ErrInvalidHeadPortrait
 	}
 	v := p.GetProfile()
-	if p.profile != nil {
-		p.profile.Avatar = portrait
-	}
-	v.Avatar = portrait
+	v.ProfilePhoto = profilePhoto
 	err := p.repo.SaveProfile(&v)
 	if err == nil {
-		//todo: phone as user
-		p.member.value.Phone = portrait
+		p.member.value.ProfilePhoto = profilePhoto
 		_, err = p.member.Save()
 	}
 	return err
@@ -342,7 +339,7 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchantAggregateRoot) 
 		if mailTpl != nil {
 			v := &mss.Message{
 				// 消息类型
-				Type: mss.TypeEmailMessage,
+				Type: mss.TypeEmail,
 				// 消息用途
 				UseFor: mss.UseForNotify,
 				// 发送人角色
@@ -576,7 +573,7 @@ func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 func (p *profileManagerImpl) copyCertificationInfo(src member.CerticationInfo, dst *member.CerticationInfo) error {
 	if dst == nil {
 		dst = &member.CerticationInfo{
-			MemberId:     p.memberId,
+			MemberId:     int(p.memberId),
 			ReviewStatus: int(enum.ReviewPending),
 		}
 	}
@@ -584,9 +581,10 @@ func (p *profileManagerImpl) copyCertificationInfo(src member.CerticationInfo, d
 	dst.CountryCode = src.CountryCode
 	dst.CardId = src.CardId
 	dst.CardType = src.CardType
-	dst.CertImage = src.CertImage
-	dst.CertReverseImage = src.CertReverseImage
+	dst.CertFrontPic = src.CertFrontPic
+	dst.CertBackPic = src.CertBackPic
 	dst.ExtraCertFile = src.ExtraCertFile
+	dst.ExtraCertNo = src.ExtraCertNo
 	dst.ExtraCertExt1 = src.ExtraCertExt1
 	dst.ExtraCertExt2 = src.ExtraCertExt2
 	dst.TrustImage = src.TrustImage
@@ -600,7 +598,7 @@ func (p *profileManagerImpl) GetCertificationInfo() *member.CerticationInfo {
 		p.trustedInfo = p.repo.GetCertificationInfo(int(p.memberId))
 		if p.trustedInfo == nil {
 			p.trustedInfo = &member.CerticationInfo{
-				MemberId:     p.memberId,
+				MemberId:     int(p.memberId),
 				ReviewStatus: int(enum.ReviewPending),
 			}
 		}
@@ -613,7 +611,7 @@ func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 	_db := provide.GetDb()
 	_db.ExecScalar(`SELECT COUNT(1) FROM mm_cert_info WHERE 
 			review_status= $1 AND card_id= $2 AND member_id <> $3 LIMIT 1`,
-		&mId, enum.ReviewPass, cardId, memberId)
+		&mId, enum.ReviewApproved, cardId, memberId)
 	return mId == 0
 }
 
@@ -623,9 +621,10 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	v.CardId = strings.TrimSpace(v.CardId)
 	v.RealName = strings.TrimSpace(v.RealName)
 	v.TrustImage = strings.TrimSpace(v.TrustImage)
-	v.CertImage = strings.TrimSpace(v.CertImage)
-	v.CertReverseImage = strings.TrimSpace(v.CertReverseImage)
+	v.CertFrontPic = strings.TrimSpace(v.CertFrontPic)
+	v.CertBackPic = strings.TrimSpace(v.CertBackPic)
 	v.ExtraCertFile = strings.TrimSpace(v.ExtraCertFile)
+	v.ExtraCertNo = strings.TrimSpace(v.ExtraCertNo)
 	v.ExtraCertExt1 = strings.TrimSpace(v.ExtraCertExt1)
 	v.ExtraCertExt2 = strings.TrimSpace(v.ExtraCertExt2)
 	if len(v.RealName) == 0 || len(v.CardId) == 0 {
@@ -656,8 +655,8 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	}
 	// 检测证件照片
 	requireCardImg := p.registryRepo.Get(registry.MemberTrustRequireCardImage).BoolValue()
-	if v.CertImage != "" {
-		if len(v.CertImage) < 10 {
+	if v.CertFrontPic != "" {
+		if len(v.CertFrontPic) < 10 {
 			return member.ErrTrustMissingCardImage
 		}
 	} else if requireCardImg {
@@ -668,7 +667,7 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	if v.ManualReview < 0 {
 		// 如果外部未指定(默认值),则根据配置决定是否需要审核
 		b, _ := p.registryRepo.GetValue(registry.MemberCertificationReviewOff)
-		autoReviewPass = b == "1"
+		autoReviewPass, _ = strconv.ParseBool(b)
 		v.ManualReview = types.Ternary(autoReviewPass, 0, 1)
 	}
 	// 保存
@@ -677,7 +676,7 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	if err == nil {
 		current.Remark = ""
 		current.ReviewStatus = int(enum.ReviewPending) //标记为待处理
-		current.UpdateTime = time.Now().Unix()
+		current.UpdateTime = int(time.Now().Unix())
 		p.trustedInfo = current
 		_, err = p.repo.SaveCertificationInfo(p.trustedInfo)
 		if err == nil {
@@ -695,7 +694,10 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error {
 	p.GetCertificationInfo()
 	if pass {
-		p.trustedInfo.ReviewStatus = int(enum.ReviewPass)
+		if p.trustedInfo.ReviewStatus == int(enum.ReviewApproved) {
+			return errors.New("认证已通过,无需重复审核")
+		}
+		p.trustedInfo.ReviewStatus = int(enum.ReviewApproved)
 		p.member.value.UserFlag |= member.FlagTrusted
 		p.member.value.RealName = p.trustedInfo.RealName
 	} else {
@@ -703,17 +705,47 @@ func (p *profileManagerImpl) ReviewCertification(pass bool, remark string) error
 		if remark == "" {
 			return member.ErrEmptyReviewRemark
 		}
-		p.trustedInfo.ReviewStatus = int(enum.ReviewReject)
+		p.trustedInfo.ReviewStatus = int(enum.ReviewRejected)
 		if p.member.ContainFlag(member.FlagTrusted) {
 			p.member.value.UserFlag ^= member.FlagTrusted
 		}
 	}
 	unix := time.Now().Unix()
 	p.trustedInfo.Remark = remark
-	p.trustedInfo.ReviewTime = unix
+	p.trustedInfo.ReviewTime = int(unix)
 	_, err := p.repo.SaveCertificationInfo(p.trustedInfo)
 	if err == nil {
 		_, err = p.member.Save()
+		if err == nil {
+			// 发送实名认证审核事件
+			go eventbus.Dispatch(&member.MemberCertificationReviewEvent{
+				Member:        p.member,
+				Pass:          pass,
+				Remark:        remark,
+				CertifiedName: p.trustedInfo.RealName,
+			})
+		}
+	}
+	return err
+}
+
+// RejectCertification 驳回实名认证
+func (p *profileManagerImpl) RejectCertification(remark string) error {
+	p.GetCertificationInfo()
+	if p.trustedInfo.ReviewStatus != int(enum.ReviewApproved) {
+		return errors.New("认证尚未通过,无需驳回")
+	}
+	// 会员状态改为被退回
+	p.trustedInfo.ReviewStatus = int(enum.ReviewRejected)
+	p.trustedInfo.Remark = remark
+	p.trustedInfo.ReviewTime = int(time.Now().Unix())
+	_, err := p.repo.SaveCertificationInfo(p.trustedInfo)
+	if err == nil {
+		// 标记会员为未认证
+		if p.member.ContainFlag(member.FlagTrusted) {
+			p.member.value.UserFlag ^= member.FlagTrusted
+			_, err = p.member.Save()
+		}
 	}
 	return err
 }
@@ -732,15 +764,19 @@ func (p *profileManagerImpl) bankCardIsExists(cardNo string) bool {
 func (p *profileManagerImpl) BindOAuthApp(app string, openId string, authToken string) error {
 	b := p.GetOAuthBindInfo(app)
 	if b != nil {
-		return fmt.Errorf("app %s aready has binding info", app)
-	}
-	b = &member.OAuthAccount{
-		MemberId:   p.memberId,
-		AppCode:    app,
-		OpenId:     openId,
-		AuthToken:  authToken,
-		HeadImgUrl: "",
-		UpdateTime: time.Now().Unix(),
+		b.OpenId = openId
+		b.AuthToken = authToken
+	} else {
+		b = &member.OAuthAccount{
+			Id:           0,
+			MemberId:     int(p.memberId),
+			AppCode:      app,
+			OpenId:       openId,
+			UnionId:      "",
+			AuthToken:    authToken,
+			ProfilePhoto: "",
+			UpdateTime:   int(time.Now().Unix()),
+		}
 	}
 	_, err := p.repo.SaveOAuthAccount(b)
 	return err

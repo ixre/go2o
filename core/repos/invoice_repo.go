@@ -2,27 +2,23 @@ package repos
 
 import (
 	"github.com/ixre/go2o/core/domain/interface/invoice"
-	"github.com/ixre/go2o/core/domain/interface/merchant"
 	impl "github.com/ixre/go2o/core/domain/invoice"
 	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/infrastructure/logger"
 )
 
-var _ invoice.IInvoiceTenantRepo = new(invoiceTenantRepoImpl)
+var _ invoice.IInvoiceRepo = new(invoiceTenantRepoImpl)
 
 type invoiceTenantRepoImpl struct {
 	fw.BaseRepository[invoice.InvoiceTenant]
 	headerRepo invoice.IInvoiceTitleRepo
 	itemRepo   invoice.IInvoiceItemRepo
 	recordRepo invoice.IInvoiceRecordRepo
-	mchRepo    merchant.IMerchantRepo
 }
 
 // NewInvoiceTenantRepo 创建发票租户仓储
-func NewInvoiceTenantRepo(o fw.ORM, mchRepo merchant.IMerchantRepo) invoice.IInvoiceTenantRepo {
-	r := &invoiceTenantRepoImpl{
-		mchRepo: mchRepo,
-	}
+func NewInvoiceTenantRepo(o fw.ORM) invoice.IInvoiceRepo {
+	r := &invoiceTenantRepoImpl{}
 	r.ORM = o
 	return r
 }
@@ -56,9 +52,9 @@ func (i *invoiceTenantRepoImpl) CreateTenant(v *invoice.InvoiceTenant) invoice.I
 	e := i.FindBy("tenant_type=? AND tenant_uid=?", v.TenantType, v.TenantUid)
 	if e != nil {
 		// 已经存在租户
-		return impl.NewInvoiceTenant(e, i, i.mchRepo)
+		return impl.NewInvoiceTenant(e, i)
 	}
-	t := impl.NewInvoiceTenant(v, i, i.mchRepo)
+	t := impl.NewInvoiceTenant(v, i)
 	err := t.Create()
 	if err != nil {
 		logger.Error("创建租户失败: %+v", v)
@@ -71,9 +67,14 @@ func (i *invoiceTenantRepoImpl) CreateTenant(v *invoice.InvoiceTenant) invoice.I
 func (i *invoiceTenantRepoImpl) GetTenant(id int) invoice.InvoiceUserAggregateRoot {
 	v := i.Get(id)
 	if v != nil {
-		return impl.NewInvoiceTenant(v, i, i.mchRepo)
+		return impl.NewInvoiceTenant(v, i)
 	}
 	return nil
+}
+
+// FindTenant implements invoice.IInvoiceRepo.
+func (i *invoiceTenantRepoImpl) FindTenant(tenantType int, tenantId int) *invoice.InvoiceTenant {
+	return i.FindBy("tenant_type=? AND tenant_uid=?", tenantType, tenantId)
 }
 
 var _ invoice.IInvoiceTitleRepo = new(invoiceTitleRepoImpl)

@@ -520,7 +520,7 @@ func (i *itemImpl) Save() (_ int64, err error) {
 			}
 		}
 	}
-	if err == nil && i.value.ReviewStatus == enum.ReviewPass {
+	if err == nil && i.value.ReviewStatus == enum.ReviewApproved {
 		_, err = i.repo.SnapshotService().GenerateSnapshot(i.value)
 	}
 	return i.value.Id, err
@@ -624,7 +624,7 @@ func (i *itemImpl) SetShelve(state int32, remark string) error {
 		return product.ErrNilRejectRemark
 	}
 	i.value.ShelveState = state
-	if i.value.ReviewStatus != enum.ReviewPass {
+	if i.value.ReviewStatus != enum.ReviewApproved {
 		i.value.ReviewStatus = enum.ReviewPending
 	}
 	i.value.ReviewRemark = remark
@@ -649,14 +649,14 @@ func (i *itemImpl) Incorrect(remark string) error {
 // 审核
 func (i *itemImpl) Review(pass bool, remark string) error {
 	if pass {
-		i.value.ReviewStatus = enum.ReviewPass
+		i.value.ReviewStatus = enum.ReviewApproved
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return item.ErrEmptyReviewRemark
 		}
 		i.value.ShelveState = item.ShelvesDown
-		i.value.ReviewStatus = enum.ReviewReject
+		i.value.ReviewStatus = enum.ReviewRejected
 	}
 	i.value.ReviewRemark = remark
 	_, err := i.Save()

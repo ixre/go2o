@@ -39,11 +39,11 @@ func TestGetMember(t *testing.T) {
 func TestChangeProfilePhoto(t *testing.T) {
 	r, _ := inject.GetMemberService().ChangeProfilePhoto(context.TODO(),
 		&proto.ChangeProfilePhotoRequest{
-			MemberId:    702,
-			PortraitUrl: "",
+			MemberId:        702,
+			ProfilePhotoUrl: "",
 		})
-	if r.ErrCode > 0 {
-		t.Log(r.ErrMsg)
+	if r.Code > 0 {
+		t.Log(r.Message)
 		t.FailNow()
 	}
 }
@@ -57,8 +57,8 @@ func TestChangeMemberLevel(t *testing.T) {
 			Review:         false,
 			PaymentOrderId: 0,
 		})
-	if r.ErrCode > 0 {
-		t.Log(r.ErrMsg)
+	if r.Code > 0 {
+		t.Log(r.Message)
 		t.FailNow()
 	}
 }
@@ -67,8 +67,8 @@ func TestChangeUsername(t *testing.T) {
 		MemberId: 729,
 		Username: "哈哈",
 	})
-	if ret.ErrCode > 0 {
-		t.Log(ret.ErrMsg)
+	if ret.Code > 0 {
+		t.Log(ret.Message)
 	}
 }
 func TestChangePasswordAndCheckLogin(t *testing.T) {
@@ -79,25 +79,28 @@ func TestChangePasswordAndCheckLogin(t *testing.T) {
 			MemberId:    1,
 			NewPassword: pwd,
 		})
-	if r.ErrCode > 0 {
-		t.Error(r.ErrMsg)
+	if r.Code > 0 {
+		t.Error(r.Message)
 	}
 	ret, _ := inject.GetMemberService().CheckLogin(context.TODO(), &proto.LoginRequest{
 		Username: "13162222872",
 		Password: pwd,
 	})
-	if ret.ErrCode > 0 {
-		t.Error(ret.ErrMsg)
+	if ret.Code > 0 {
+		t.Error(ret.Message)
 	}
 }
 
 func TestCheckUserLogin(t *testing.T) {
+	// "7c8066747712c712820b2743599a2e95"
+	// "299293a2100f1e3b8f7d1ba708d9604c2107fc24cb7d1afe5d8ed149883ed0df"
+
 	ret, _ := inject.GetMemberService().CheckLogin(context.TODO(), &proto.LoginRequest{
-		Username: "13162222872",
-		Password: "14e1b600b1fd579f47433b88e8d85291",
+		Username: "13068686358",
+		Password: crypto.Md5([]byte("123456")),
 	})
-	if ret.ErrCode > 0 {
-		t.Error(ret.ErrMsg)
+	if ret.Code > 0 {
+		t.Error(ret.Message)
 	}
 }
 
@@ -140,5 +143,20 @@ func TestRegisterMerchantStaff(t *testing.T) {
 		t.Error(ret.ErrMsg)
 	} else {
 		t.Log("ok")
+	}
+}
+
+// 测试提交充值订单
+func TestSubmitRechargeOrd(t *testing.T) {
+	ret, _ := inject.GetMemberService().SubmitRechargePaymentOrder(context.TODO(),
+		&proto.SubmitRechargePaymentOrderRequest{
+			MemberId: 702,
+			Amount:   10000,
+		})
+	if ret.Code != 0 {
+		t.Error(ret.Message)
+		t.FailNow()
+	} else {
+		t.Log("ok:", ret.OrderNo)
 	}
 }

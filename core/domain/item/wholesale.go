@@ -57,7 +57,7 @@ func (w *wholesaleItemImpl) GetDomainId() int64 {
 
 // 是否允许批发
 func (w *wholesaleItemImpl) CanWholesale() bool {
-	return w.IsOnShelves() && w.value.ReviewStatus == enum.ReviewPass
+	return w.IsOnShelves() && w.value.ReviewStatus == enum.ReviewApproved
 }
 
 // 保存
@@ -95,14 +95,14 @@ func (w *wholesaleItemImpl) Incorrect(remark string) error {
 // 审核
 func (w *wholesaleItemImpl) Review(pass bool, remark string) error {
 	if pass {
-		w.value.ReviewStatus = enum.ReviewPass
+		w.value.ReviewStatus = enum.ReviewApproved
 
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return item.ErrEmptyReviewRemark
 		}
-		w.value.ReviewStatus = enum.ReviewReject
+		w.value.ReviewStatus = enum.ReviewRejected
 	}
 	w.value.ReviewRemark = remark
 	_, err := w.Save()

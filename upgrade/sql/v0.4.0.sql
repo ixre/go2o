@@ -137,7 +137,7 @@ COMMENT ON COLUMN "public".mch_merchant.district IS '所在区';
 COMMENT ON COLUMN "public".mch_merchant.address IS '公司地址';
 COMMENT ON COLUMN "public".mch_merchant.logo IS '标志';
 COMMENT ON COLUMN "public".mch_merchant.tel IS '公司电话';
-COMMENT ON COLUMN "public".mch_merchant.status IS '状态: 0:待审核 1:已开通  2:停用  3: 关闭';
+COMMENT ON COLUMN "public".mch_merchant.status IS '状态: 0:未审核 1:已开通  2:停用  3: 关闭';
 COMMENT ON COLUMN "public".mch_merchant.expires_time IS '过期时间';
 COMMENT ON COLUMN "public".mch_merchant.last_login_time IS '最后登录时间';
 COMMENT ON COLUMN "public".mch_merchant.create_time IS '创建时间';
@@ -148,6 +148,10 @@ DROP TABLE IF EXISTS mch_authenticate;
 CREATE TABLE "public".mch_authenticate (
   id                BIGSERIAL NOT NULL, 
   mch_id            int4 NOT NULL, 
+  mch_name          CHARACTER VARYING(20) NOT NULL,
+  province          int4 NOT NULL, 
+  city              int4 NOT NULL,
+  district          int4 NOT NULL,
   org_name          varchar(45) NOT NULL, 
   org_no            varchar(45) NOT NULL, 
   org_address          varchar(120) NOT NULL, 
@@ -157,6 +161,7 @@ CREATE TABLE "public".mch_authenticate (
   person_id         varchar(20) NOT NULL, 
   person_name       varchar(10) NOT NULL, 
   person_pic        varchar(120) NOT NULL, 
+  person_phone      varchar(11) NOT NULL,
   authority_pic     varchar(120) NOT NULL, 
   bank_name         varchar(20) NOT NULL, 
   bank_account      varchar(20) NOT NULL, 
@@ -165,6 +170,7 @@ CREATE TABLE "public".mch_authenticate (
   review_time       int4 NOT NULL, 
   review_status     int4 NOT NULL, 
   review_remark     varchar(45) NOT NULL, 
+  version int4 NOT NULL DEFAULT 0,
   update_time       int8 NOT NULL, 
   CONSTRAINT mch_authenticate_pkey 
     PRIMARY KEY (id));
@@ -188,15 +194,16 @@ COMMENT ON COLUMN "public".mch_authenticate.review_time IS '审核时间';
 COMMENT ON COLUMN "public".mch_authenticate.review_status IS '审核状态';
 COMMENT ON COLUMN "public".mch_authenticate.review_remark IS '审核备注';
 COMMENT ON COLUMN "public".mch_authenticate.update_time IS '更新时间';
-
-
-ALTER TABLE "public".mch_authenticate 
-  ADD COLUMN person_phone varchar(11) NOT NULL;
+COMMENT ON COLUMN mch_authenticate.province IS '省';
+COMMENT ON COLUMN mch_authenticate.city IS '市';
+COMMENT ON COLUMN mch_authenticate.district IS '区';
+COMMENT ON COLUMN mch_authenticate.mch_name IS '商户名称';
+COMMENT ON COLUMN "public".mch_authenticate.version IS '版本号: 0: 待审核 1: 已审核';
 COMMENT ON COLUMN "public".mch_authenticate.person_phone IS '联系人手机';
 
-ALTER TABLE "public".mch_authenticate 
-  ADD COLUMN version int4 NOT NULL DEFAULT 0;
-COMMENT ON COLUMN "public".mch_authenticate.version IS '版本号: 0: 待审核 1: 已审核';
+
+
+
 
 ALTER TABLE "public".mm_member 
   ADD COLUMN role_flag int4 DEFAULT 0 NOT NULL;
@@ -682,8 +689,10 @@ ALTER TABLE "public"."mm_member" RENAME COLUMN "portrait" TO "profile_photo";
 /** 2024-07-20 workorder */
 DROP TABLE IF EXISTS work_order CASCADE;
 DROP TABLE IF EXISTS workorder CASCADE;
+
 CREATE TABLE workorder (
   id              BIGSERIAL NOT NULL, 
+  order_no        varchar(20) NOT NULL, 
   member_id       int8 NOT NULL, 
   class_id        int4 NOT NULL, 
   mch_id          int8 NOT NULL, 
@@ -695,6 +704,7 @@ CREATE TABLE workorder (
   hope_desc       varchar(64) NOT NULL, 
   first_photo     varchar(80) NOT NULL, 
   photo_list      varchar(350) NOT NULL, 
+  contact_way     varchar(20) NOT NULL, 
   status          int4 NOT NULL, 
   allocate_aid    int8 NOT NULL, 
   service_rank    int4 NOT NULL, 
@@ -705,6 +715,7 @@ CREATE TABLE workorder (
   PRIMARY KEY (id));
 COMMENT ON TABLE workorder IS '工单';
 COMMENT ON COLUMN workorder.id IS '编号';
+COMMENT ON COLUMN workorder.order_no IS '工单号';
 COMMENT ON COLUMN workorder.member_id IS '会员编号';
 COMMENT ON COLUMN workorder.class_id IS '类型, 1: 建议 2:申诉';
 COMMENT ON COLUMN workorder.mch_id IS '关联商户';
@@ -715,6 +726,7 @@ COMMENT ON COLUMN workorder.is_opened IS '是否开放评论';
 COMMENT ON COLUMN workorder.hope_desc IS '诉求描述';
 COMMENT ON COLUMN workorder.first_photo IS '图片';
 COMMENT ON COLUMN workorder.photo_list IS '图片列表';
+COMMENT ON COLUMN workorder.contact_way IS '联系方式';
 COMMENT ON COLUMN workorder.status IS '状态,1:待处理 2:处理中 3:已完结';
 COMMENT ON COLUMN workorder.allocate_aid IS '分配的客服编号';
 COMMENT ON COLUMN workorder.service_rank IS '服务评分';
@@ -722,6 +734,7 @@ COMMENT ON COLUMN workorder.service_apprise IS '服务评价';
 COMMENT ON COLUMN workorder.is_usefully IS '是否有用 0:未评价 1:是 2:否';
 COMMENT ON COLUMN workorder.create_time IS '创建时间';
 COMMENT ON COLUMN workorder.update_time IS '更新时间';
+
 
 
 DROP TABLE IF EXISTS workorder_details CASCADE;
@@ -745,10 +758,667 @@ COMMENT ON COLUMN workorder_comment.is_revert IS '是否撤回 0:否 1:是';
 COMMENT ON COLUMN workorder_comment.ref_cid IS '引用评论编号';
 COMMENT ON COLUMN workorder_comment.create_time IS '创建时间';
 
+/** 2024-07-25 */
+ALTER TABLE "public"."wal_wallet_log" RENAME COLUMN "outer_no" TO "outer_tx_no";
+ALTER TABLE "public"."wal_wallet_log" RENAME COLUMN "procedure_fee" TO "transaction_fee"; 
+
+ALTER TABLE "public"."wal_wallet_log" ADD COLUMN "outer_tx_uid" BIGINT NOT NULL DEFAULT 0;
+COMMENT ON COLUMN wal_wallet_log.outer_tx_uid IS '交易外部用户';
 
 
 
 
+ALTER TABLE "public"."article_category" RENAME COLUMN "parent_id" TO "pid";
+ALTER TABLE "public"."article_category" RENAME COLUMN "perm_flag" TO "flag";
+ALTER TABLE "public"."article_category" RENAME COLUMN "cat_alias" TO "alias";
+ALTER TABLE "public"."article_category" RENAME COLUMN "sort_num" TO "sort_no";
+
+ALTER TABLE "public"."article_category" RENAME COLUMN "describe" TO "description";
+
+/** 2024-08-02 更改头像 */
+ALTER TABLE "public"."mm_member" ALTER COLUMN "profile_photo" TYPE character varying(180);
+
+ALTER TABLE "public"."mm_profile" RENAME COLUMN "avatar" TO "profile_photo"; 
+ALTER TABLE "public"."mm_profile" ALTER COLUMN "profile_photo" TYPE character varying(180);
+
+ALTER TABLE "public"."rbac_user" RENAME COLUMN "avatar" TO "profile_photo";
 
 
+-- ALTER TABLE "public"."mch_authenticate" ADD COLUMN "mch_name" CHARACTER VARYING(20) NOT NULL;
+-- COMMENT ON COLUMN mch_authenticate.mch_name IS '商户名称';
+
+-- ALTER TABLE "public"."mch_authenticate" ADD COLUMN "province" INTEGER NOT NULL , 
+-- ADD COLUMN "city" INTEGER NOT NULL , ADD COLUMN "district" INTEGER NOT NULL ,
+-- COMMENT ON COLUMN mch_authenticate.province IS '省';
+-- COMMENT ON COLUMN mch_authenticate.city IS '市';
+-- COMMENT ON COLUMN mch_authenticate.district IS '区';
+
+
+ALTER TABLE "public".mch_authenticate 
+  RENAME COLUMN person_pic TO person_front_pic;
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN person_back_pic varchar(128) DEFAULT '' NOT NULL;
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN bank_account_pic varchar(128) DEFAULT '' NOT NULL;
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN bank_card_pic varchar(128) DEFAULT '' NOT NULL;
+COMMENT ON COLUMN "public".mch_authenticate.person_front_pic IS '法人身份证照片(正反面)';
+COMMENT ON COLUMN "public".mch_authenticate.person_back_pic IS '身份证背面照片';
+COMMENT ON COLUMN "public".mch_authenticate.bank_account_pic IS '开户许可证(企业)';
+COMMENT ON COLUMN "public".mch_authenticate.bank_card_pic IS '银行卡照片(个体)';
+
+
+ALTER TABLE "public".mch_authenticate 
+  ALTER COLUMN person_front_pic SET DATA TYPE varchar(128);
+COMMENT ON COLUMN "public".mch_authenticate.bank_account_pic IS '开户许可证(企业)/银行卡(个体)';
+
+
+ALTER TABLE "public".mm_cert_info 
+  ALTER COLUMN cert_image SET DATA TYPE varchar(128);
+ALTER TABLE "public".mm_cert_info 
+  ALTER COLUMN cert_reverse_image SET DATA TYPE varchar(128);
+  
+ALTER TABLE "public".mm_cert_info 
+  RENAME COLUMN cert_image TO cert_front_pic;
+ALTER TABLE "public".mm_cert_info 
+  RENAME COLUMN cert_reverse_image TO cert_back_pic;
+
+
+ALTER TABLE "public".mm_profile 
+  ADD COLUMN signature varchar(80) DEFAULT '';
+COMMENT ON COLUMN "public".mm_profile.signature IS '个人签名';
+
+/** 2024-08-07 */
+
+ALTER TABLE "public"."mm_cert_info" ADD COLUMN "extra_cert_no" CHARACTER VARYING(40) NOT NULL DEFAULT '' ;
+
+COMMENT ON COLUMN "public".mm_cert_info.extra_cert_no IS '额外资质证书编号';
+
+
+/** 2024-08-10 */
+ALTER TABLE "public"."mch_account" ALTER COLUMN "mch_id" TYPE bigint USING "mch_id"::bigint,
+ALTER COLUMN "mch_id" SET NOT NULL, 
+ALTER COLUMN "mch_id" SET DEFAULT nextval('mch_account_mch_id_seq'::regclass),
+ALTER COLUMN "balance" TYPE bigint USING "balance"::bigint, 
+ALTER COLUMN "balance" SET NOT NULL, ALTER COLUMN "balance" DROP DEFAULT,
+ALTER COLUMN "freeze_amount" TYPE bigint USING "freeze_amount"::bigint, 
+ALTER COLUMN "freeze_amount" SET NOT NULL,
+ALTER COLUMN "freeze_amount" DROP DEFAULT, 
+ALTER COLUMN "await_amount" TYPE bigint USING "await_amount"::bigint,
+ALTER COLUMN "await_amount" SET NOT NULL, ALTER COLUMN "await_amount" DROP DEFAULT, 
+ALTER COLUMN "present_amount" TYPE bigint USING "present_amount"::bigint, 
+ALTER COLUMN "present_amount" SET NOT NULL, ALTER COLUMN "present_amount" DROP DEFAULT,
+ALTER COLUMN "sales_amount" TYPE bigint USING "sales_amount"::bigint,
+ALTER COLUMN "sales_amount" SET NOT NULL, ALTER COLUMN "sales_amount" DROP DEFAULT, 
+ALTER COLUMN "refund_amount" TYPE bigint USING "refund_amount"::bigint, 
+ALTER COLUMN "refund_amount" SET NOT NULL, ALTER COLUMN "refund_amount" DROP DEFAULT,
+ALTER COLUMN "take_amount" TYPE bigint USING "take_amount"::bigint, 
+ALTER COLUMN "take_amount" SET NOT NULL, ALTER COLUMN "take_amount" DROP DEFAULT, 
+ALTER COLUMN "offline_sales" TYPE bigint USING "offline_sales"::bigint,
+ALTER COLUMN "offline_sales" SET NOT NULL, ALTER COLUMN "offline_sales" DROP DEFAULT, 
+ALTER COLUMN "update_time" TYPE bigint USING "update_time"::bigint,
+ALTER COLUMN "update_time" SET NOT NULL,
+ALTER COLUMN "update_time" DROP DEFAULT; 
+
+/** 2024-08-11 -ad */
+ALTER TABLE ad_image RENAME TO ad_data;
+DROP TABLE ad_hyperlink;
+DROP TABLE ad_image_ad;
+
+
+/** 2024-08-16 mch_staff_transfer */
+DROP TABLE IF EXISTS mch_staff_transfer CASCADE;
+CREATE TABLE mch_staff_transfer (
+  id              BIGSERIAL NOT NULL, 
+  staff_id        int8 NOT NULL, 
+  origin_mch_id   int8 NOT NULL, 
+  transfer_mch_id int8 NOT NULL, 
+  approval_id     int8 NOT NULL, 
+  review_status   int4 NOT NULL, 
+  review_remark   varchar(40) NOT NULL, 
+  create_time     int8 NOT NULL, 
+  update_time     int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mch_staff_transfer IS '员工转商户';
+COMMENT ON COLUMN mch_staff_transfer.staff_id IS '员工编号';
+COMMENT ON COLUMN mch_staff_transfer.origin_mch_id IS '原商户';
+COMMENT ON COLUMN mch_staff_transfer.transfer_mch_id IS '转移商户';
+COMMENT ON COLUMN mch_staff_transfer.approval_id IS '审批编号';
+COMMENT ON COLUMN mch_staff_transfer.review_status IS '审核状态';
+COMMENT ON COLUMN mch_staff_transfer.review_remark IS '审核备注';
+COMMENT ON COLUMN mch_staff_transfer.create_time IS '创建时间';
+COMMENT ON COLUMN mch_staff_transfer.update_time IS '更新时间';
+
+
+DROP TABLE IF EXISTS approval CASCADE;
+CREATE TABLE approval (
+  id           BIGSERIAL NOT NULL, 
+  approval_no  varchar(40) NOT NULL, 
+  flow_id      int4 NOT NULL, 
+  biz_id       int8 NOT NULL, 
+  node_id      int4 NOT NULL, 
+  assign_uid   int8 NOT NULL, 
+  assign_name  varchar(20) NOT NULL, 
+  final_status int4 NOT NULL, 
+  create_time  int8 NOT NULL, 
+  update_time  int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE approval IS '审批表';
+COMMENT ON COLUMN approval.id IS '编号';
+COMMENT ON COLUMN approval.approval_no IS '审批流水号';
+COMMENT ON COLUMN approval.flow_id IS '工作流编号';
+COMMENT ON COLUMN approval.biz_id IS '业务编号';
+COMMENT ON COLUMN approval.node_id IS '当前节点编号';
+COMMENT ON COLUMN approval.assign_uid IS '审批人';
+COMMENT ON COLUMN approval.assign_name IS '审批人名称';
+COMMENT ON COLUMN approval.final_status IS '最终状态,  0: 审核中  1: 已通过  2:不通过';
+COMMENT ON COLUMN approval.create_time IS '创建时间';
+COMMENT ON COLUMN approval.update_time IS '更新时间';
+
+
+DROP TABLE IF EXISTS approval_log CASCADE;
+CREATE TABLE approval_log (
+  id              BIGSERIAL NOT NULL, 
+  approval_id     int8 NOT NULL, 
+  node_id         int4 NOT NULL, 
+  node_name       varchar(20) NOT NULL, 
+  assign_uid      int4 NOT NULL, 
+  assign_name     varchar(40) NOT NULL, 
+  approval_status int4 NOT NULL, 
+  approval_remark varchar(40) NOT NULL, 
+  approval_time   int4 NOT NULL, 
+  create_time     int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE approval_log IS '审核日志';
+COMMENT ON COLUMN approval_log.id IS '编号';
+COMMENT ON COLUMN approval_log.approval_id IS '审批编号';
+COMMENT ON COLUMN approval_log.node_id IS '节点编号';
+COMMENT ON COLUMN approval_log.node_name IS '节点名称';
+COMMENT ON COLUMN approval_log.assign_uid IS '审批人编号';
+COMMENT ON COLUMN approval_log.assign_name IS '审批人名称';
+COMMENT ON COLUMN approval_log.approval_status IS '审核状态';
+COMMENT ON COLUMN approval_log.approval_remark IS '审核备注';
+COMMENT ON COLUMN approval_log.approval_time IS '审核时间';
+COMMENT ON COLUMN approval_log.create_time IS '创建时间';
+
+
+DROP TABLE IF EXISTS approval_flow CASCADE;
+CREATE TABLE approval_flow (
+  id        BIGSERIAL NOT NULL, 
+  flow_name varchar(20) NOT NULL, 
+  flow_desc varchar(120) NOT NULL, 
+  tx_prefix varchar(10) NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON COLUMN approval_flow.flow_name IS '工作流名称';
+COMMENT ON COLUMN approval_flow.flow_desc IS '工作流描述';
+COMMENT ON COLUMN approval_flow.tx_prefix IS '流水号前缀';
+
+
+
+
+DROP TABLE IF EXISTS approval_flow_node CASCADE;
+CREATE TABLE approval_flow_node (
+  id        BIGSERIAL NOT NULL, 
+  flow_id   int8 NOT NULL, 
+  node_key  varchar(20) NOT NULL, 
+  node_type int4 NOT NULL, 
+  node_name varchar(20) NOT NULL, 
+  node_desc varchar(120) NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON COLUMN approval_flow_node.flow_id IS '工作流编号';
+COMMENT ON COLUMN approval_flow_node.node_key IS '节点KEY';
+COMMENT ON COLUMN approval_flow_node.node_type IS '节点类型 1:起始节点   2: 结束节点   3: 其他节点';
+COMMENT ON COLUMN approval_flow_node.node_name IS '节点名称';
+COMMENT ON COLUMN approval_flow_node.node_desc IS '节点描述';
+
+
+DROP TABLE IF EXISTS mm_block_list CASCADE;
+CREATE TABLE mm_block_list (
+  id              BIGSERIAL NOT NULL, 
+  member_id       int8 NOT NULL, 
+  block_member_id int8 NOT NULL, 
+  block_flag      int4 NOT NULL, 
+  create_time     int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mm_block_list IS '会员拉黑列表';
+COMMENT ON COLUMN mm_block_list.id IS '编号';
+COMMENT ON COLUMN mm_block_list.member_id IS '会员编号';
+COMMENT ON COLUMN mm_block_list.block_member_id IS '拉黑会员编号';
+COMMENT ON COLUMN mm_block_list.block_flag IS '拉黑标志，1: 屏蔽  2: 拉黑';
+COMMENT ON COLUMN mm_block_list.create_time IS '拉黑时间';
+
+
+-- 2024-08-24 17:56 会员绑定商户
+ALTER TABLE "public"."mm_relation" RENAME COLUMN "reg_mchid" TO "reg_mch_id";
+ALTER TABLE "public"."mm_relation"
+ALTER COLUMN "member_id" TYPE bigint USING "member_id"::bigint,
+ALTER COLUMN "member_id" SET NOT NULL, ALTER COLUMN "member_id" DROP DEFAULT, 
+ALTER COLUMN "card_no" TYPE character varying(20) USING "card_no"::character varying,
+ALTER COLUMN "card_no" SET NOT NULL, ALTER COLUMN "card_no" DROP DEFAULT,
+ALTER COLUMN "inviter_id" TYPE bigint USING "inviter_id"::bigint, 
+ALTER COLUMN "inviter_id" SET NOT NULL, ALTER COLUMN "inviter_id" SET DEFAULT 0, 
+ALTER COLUMN "reg_mch_id" TYPE bigint USING "reg_mch_id"::bigint, 
+ALTER COLUMN "reg_mch_id" SET NOT NULL, ALTER COLUMN "reg_mch_id" DROP DEFAULT,
+ALTER COLUMN "inviter_d2" TYPE bigint USING "inviter_d2"::bigint, 
+ALTER COLUMN "inviter_d2" SET NOT NULL, ALTER COLUMN "inviter_d2" SET DEFAULT 0, 
+ALTER COLUMN "inviter_d3" TYPE bigint USING "inviter_d3"::bigint, 
+ALTER COLUMN "inviter_d3" SET NOT NULL, ALTER COLUMN "inviter_d3" SET DEFAULT 0; 
+
+-- 初始化数据
+update mm_relation set reg_mch_id=mch_staff.mch_id
+FROM mch_staff WHERE  mch_staff.member_id=mm_relation.member_id;
+
+
+DROP TABLE IF EXISTS mch_bill CASCADE;
+CREATE TABLE mch_bill (
+  id                 BIGSERIAL NOT NULL, 
+  mch_id             int8 NOT NULL, 
+  bill_time          int8 NOT NULL, 
+  bill_month         varchar(10) NOT NULL, 
+  start_time         int8 NOT NULL, 
+  end_time           int8 NOT NULL, 
+  shop_order_count   int4 NOT NULL, 
+  store_order_count  int4 NOT NULL, 
+  shop_total_amount  int8 NOT NULL, 
+  store_total_amount int8 NOT NULL, 
+  other_order_count  int4 NOT NULL, 
+  other_total_amount int8 NOT NULL, 
+  total_tx_fee       int8 NOT NULL, 
+  status             int4 NOT NULL, 
+  reviewer_id        int8 NOT NULL, 
+  reviewer_name      varchar(20) NOT NULL, 
+  review_time        int8 NOT NULL, 
+  create_time        int8 NOT NULL, 
+  build_time         int8 NOT NULL, 
+  update_time        int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mch_bill IS '商户月度账单';
+COMMENT ON COLUMN mch_bill.id IS '编号';
+COMMENT ON COLUMN mch_bill.mch_id IS '商户编号';
+COMMENT ON COLUMN mch_bill.bill_time IS '账单时间';
+COMMENT ON COLUMN mch_bill.bill_month IS '月份: 例:202408';
+COMMENT ON COLUMN mch_bill.start_time IS '账单开始时间';
+COMMENT ON COLUMN mch_bill.end_time IS '账单结束时间';
+COMMENT ON COLUMN mch_bill.shop_order_count IS '商城订单数量';
+COMMENT ON COLUMN mch_bill.store_order_count IS '线下订单数量';
+COMMENT ON COLUMN mch_bill.shop_total_amount IS '商城总金额';
+COMMENT ON COLUMN mch_bill.store_total_amount IS '线下总金额';
+COMMENT ON COLUMN mch_bill.other_order_count IS '其他订单总数量';
+COMMENT ON COLUMN mch_bill.other_total_amount IS '其他订单总金额';
+COMMENT ON COLUMN mch_bill.total_tx_fee IS '交易手续费';
+COMMENT ON COLUMN mch_bill.status IS '账单状态:  0: 待生成 1: 已生成 2: 已复核  3: 已结算';
+COMMENT ON COLUMN mch_bill.reviewer_id IS '审核人编号';
+COMMENT ON COLUMN mch_bill.reviewer_name IS '审核人名称';
+COMMENT ON COLUMN mch_bill.review_time IS '审核时间';
+COMMENT ON COLUMN mch_bill.create_time IS '创建时间';
+COMMENT ON COLUMN mch_bill.build_time IS '账单生成时间';
+COMMENT ON COLUMN mch_bill.update_time IS '更新时间';
+
+-- 2024-08-29 18:00 开票金额字段
+ALTER TABLE "public".mch_account 
+  ADD COLUMN invoiceable_amount int8 NOT NULL;
+COMMENT ON COLUMN "public".mch_account.invoiceable_amount IS '可开票金额';
+
+
+ALTER TABLE "public".mm_account 
+  ADD COLUMN invoiceable_amount int8 NOT NULL;
+ALTER TABLE "public".mm_account 
+  alter column wallet_code set default ''::character varying;
+COMMENT ON COLUMN "public".mm_account.invoiceable_amount IS '可开票金额';
+
+
+-- 2024-09-01 09:52:00 
+DROP TABLE IF EXISTS "public".mch_sale_conf CASCADE;
+CREATE TABLE "public".mch_sale_conf (
+  mch_id            BIGSERIAL NOT NULL, 
+  fx_sales          int4 NOT NULL, 
+  cb_percent        numeric(4, 2) NOT NULL, 
+  cb_tg1_percent    numeric(4, 2) NOT NULL, 
+  cb_tg2_percent    numeric(4, 2) NOT NULL, 
+  cb_member_percent numeric(4, 2) NOT NULL, 
+  oa_open           bool DEFAULT 'false' NOT NULL, 
+  oa_timeout_minute int4 NOT NULL, 
+  oa_confirm_minute int4 NOT NULL, 
+  oa_receive_hour   int4 NOT NULL, 
+  update_time       int8 NOT NULL, 
+  CONSTRAINT mch_sale_conf_pkey 
+    PRIMARY KEY (mch_id));
+COMMENT ON TABLE "public".mch_sale_conf IS '商户销售设置';
+COMMENT ON COLUMN "public".mch_sale_conf.fx_sales IS '是否启用分销,0:不启用, 1:启用';
+COMMENT ON COLUMN "public".mch_sale_conf.cb_percent IS '反现比例,0则不返现';
+COMMENT ON COLUMN "public".mch_sale_conf.cb_tg1_percent IS '一级比例';
+COMMENT ON COLUMN "public".mch_sale_conf.cb_tg2_percent IS '二级比例';
+COMMENT ON COLUMN "public".mch_sale_conf.cb_member_percent IS '会员比例';
+COMMENT ON COLUMN "public".mch_sale_conf.oa_open IS '开启自动设置订单';
+COMMENT ON COLUMN "public".mch_sale_conf.oa_timeout_minute IS '订单超时取消（分钟）';
+COMMENT ON COLUMN "public".mch_sale_conf.oa_confirm_minute IS '订单自动确认（分钟）';
+COMMENT ON COLUMN "public".mch_sale_conf.oa_receive_hour IS '超时自动收货（小时）';
+
+
+CREATE TABLE mch_settle_conf (
+  id            BIGSERIAL NOT NULL, 
+  mch_id        int8 NOT NULL, 
+  order_tx_rate numeric(4, 2) NOT NULL, 
+  other_tx_rate numeric(4, 2) NOT NULL, 
+  sub_mch_no    varchar(40) NOT NULL, 
+  update_time   int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mch_settle_conf IS '商户结算设置';
+COMMENT ON COLUMN mch_settle_conf.id IS '编号';
+COMMENT ON COLUMN mch_settle_conf.mch_id IS '商户编号';
+COMMENT ON COLUMN mch_settle_conf.order_tx_rate IS '订单交易费率';
+COMMENT ON COLUMN mch_settle_conf.other_tx_rate IS '其他服务手续费比例';
+COMMENT ON COLUMN mch_settle_conf.sub_mch_no IS '结算子商户号';
+COMMENT ON COLUMN mch_settle_conf.update_time IS '创建时间';
+CREATE INDEX mch_settle_conf_mch_id 
+  ON mch_settle_conf (mch_id);
+
+-- 删除rbac资源component_name
+ALTER TABLE rbac_res DROP COLUMN "component_name";
+
+-- oauth账号
+CREATE TABLE "public".mm_oauth_account (
+  id            bigserial NOT NULL, 
+  member_id     int8 NOT NULL, 
+  app_code      varchar(20) NOT NULL, 
+  open_id       varchar(60) NOT NULL, 
+  union_id      varchar(60) NOT NULL, 
+  auth_token    varchar(40) NOT NULL, 
+  profile_photo varchar(120) NOT NULL, 
+  update_time   int8 NOT NULL, 
+  CONSTRAINT mm_oauth_account_pkey 
+    PRIMARY KEY (id));
+COMMENT ON TABLE "public".mm_oauth_account IS '关联第三方应用账号';
+COMMENT ON COLUMN "public".mm_oauth_account.id IS '编号';
+COMMENT ON COLUMN "public".mm_oauth_account.member_id IS '会员ID';
+COMMENT ON COLUMN "public".mm_oauth_account.app_code IS '应用代码,如wechat-mp';
+COMMENT ON COLUMN "public".mm_oauth_account.open_id IS '第三方应用id';
+COMMENT ON COLUMN "public".mm_oauth_account.union_id IS 'unionId';
+COMMENT ON COLUMN "public".mm_oauth_account.auth_token IS '第三方应用认证令牌';
+COMMENT ON COLUMN "public".mm_oauth_account.profile_photo IS '头像地址';
+COMMENT ON COLUMN "public".mm_oauth_account.update_time IS '更新时间';
+
+DROP TABLE IF EXISTS "public".mm_oauth_account CASCADE;
+
+
+-- 2024-09-08 分账
+
+ALTER TABLE "public".pay_order 
+  ADD COLUMN divide_status int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".pay_order.divide_status IS '分账状态 0:未分账  1:分账中  2:已完成分账';
+
+DROP TABLE IF EXISTS pay_divide CASCADE;
+CREATE TABLE pay_divide (
+  id               BIGSERIAL NOT NULL, 
+  pay_id           int8 NOT NULL, 
+  divide_type      int4 NOT NULL, 
+  user_id          int8 NOT NULL, 
+  divide_amount    int8 NOT NULL, 
+  out_tx_no        varchar(40) NOT NULL, 
+  remark           varchar(20) NOT NULL, 
+  submit_status    int4 NOT NULL, 
+  submit_remark    varchar(40) NOT NULL, 
+  submit_divide_no varchar(40) DEFAULT '' NOT NULL, 
+  submit_time      int8 NOT NULL, 
+  create_time      int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE pay_divide IS '支付分账';
+COMMENT ON COLUMN pay_divide.id IS '编号';
+COMMENT ON COLUMN pay_divide.pay_id IS '支付单ID';
+COMMENT ON COLUMN pay_divide.divide_type IS '分账类型: 1: 平台  2: 商户  3: 会员';
+COMMENT ON COLUMN pay_divide.user_id IS '分账接收方ID';
+COMMENT ON COLUMN pay_divide.divide_amount IS '分账金额';
+COMMENT ON COLUMN pay_divide.out_tx_no IS '外部交易单号';
+COMMENT ON COLUMN pay_divide.remark IS '备注';
+COMMENT ON COLUMN pay_divide.submit_status IS '分账提交状态 1:待提交  2: 成功  3:失败';
+COMMENT ON COLUMN pay_divide.submit_remark IS '分账备注';
+COMMENT ON COLUMN pay_divide.submit_divide_no IS '分账单号';
+COMMENT ON COLUMN pay_divide.submit_time IS '分账提交时间';
+COMMENT ON COLUMN pay_divide.create_time IS '创建时间';
+
+
+ALTER TABLE "public".pay_order 
+  ADD COLUMN divide_status int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".pay_order.divide_status IS '分账状态 0:未分账  1: 分账中  2: 已完成分账';
+
+ALTER TABLE pay_order RENAME COLUMN state TO status;
+ALTER TABLE pay_order RENAME COLUMN procedure_fee TO transaction_fee;
+
+-- 2024-09-10 支付单支付途径
+ALTER TABLE "public".pay_trade_data 
+  ADD COLUMN refund_amount int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".pay_trade_data.refund_amount IS '退款金额';
+
+ALTER TABLE "public"."pay_trade_data" RENAME COLUMN "pay_code" TO "out_trade_code"; 
+
+COMMENT ON COLUMN "public".pay_trade_data.id IS '编号';
+COMMENT ON COLUMN "public".pay_trade_data.trade_no IS '交易单号';
+COMMENT ON COLUMN "public".pay_trade_data.pay_method IS '支付方式';
+COMMENT ON COLUMN "public".pay_trade_data.internal IS '是否为内置支付方式';
+COMMENT ON COLUMN "public".pay_trade_data.pay_amount IS '支付金额';
+COMMENT ON COLUMN "public".pay_trade_data.out_trade_code IS '外部交易方式';
+COMMENT ON COLUMN "public".pay_trade_data.out_trade_no IS '外部交易单号';
+COMMENT ON COLUMN "public".pay_trade_data.pay_time IS '支付时间';
+
+-- 2024-09-11 支付入网商户
+DROP TABLE IF EXISTS pay_merchant CASCADE;
+
+CREATE TABLE pay_merchant (
+  id                      int8 NOT NULL UNIQUE, 
+  code                    varchar(20) NOT NULL, 
+  user_type               int4 NOT NULL, 
+  user_id                 int8 NOT NULL, 
+  mch_type                int4 NOT NULL, 
+  mch_role                int4 NOT NULL, 
+  licence_pic             varchar(120) NOT NULL, 
+  sign_name               varchar(20) NOT NULL, 
+  sign_type               int4 NOT NULL, 
+  licence_no              varchar(20) NOT NULL, 
+  short_name              varchar(20) NOT NULL, 
+  account_licence_pic     varchar(120) NOT NULL, 
+  legal_name              varchar(20) NOT NULL, 
+  legal_licence_type      int4 NOT NULL, 
+  legal_licence_no        varchar(40) NOT NULL, 
+  legal_front_pic         varchar(120) NOT NULL, 
+  legal_back_pic          varchar(120) NOT NULL, 
+  contact_name            varchar(20) NOT NULL, 
+  contact_phone           varchar(20) NOT NULL, 
+  contact_email           varchar(40) NOT NULL, 
+  contact_licence_no      varchar(20) NOT NULL, 
+  account_email           varchar(40) NOT NULL, 
+  account_phone           varchar(20) NOT NULL, 
+  primary_industry_code   varchar(20) NOT NULL, 
+  secondary_industry_code varchar(20) NOT NULL, 
+  province_code           int4 NOT NULL, 
+  city_code               int4 NOT NULL, 
+  district_code           int4 NOT NULL, 
+  address                 varchar(40) NOT NULL, 
+  settle_direction        int4 NOT NULL, 
+  settle_bank_code        varchar(20) NOT NULL, 
+  settle_account_type     int4 NOT NULL, 
+  settle_bank_account     varchar(20) NOT NULL, 
+  issue_mch_no            varchar(40) NOT NULL, 
+  agreement_sign_url      varchar(120) NOT NULL, 
+  issue_status            int4 NOT NULL, 
+  issue_message           varchar(128) NOT NULL, 
+  create_time             int8 NOT NULL, 
+  update_time             int8 NOT NULL);
+COMMENT ON TABLE pay_merchant IS '支付入网商户';
+COMMENT ON COLUMN pay_merchant.id IS '编号';
+COMMENT ON COLUMN pay_merchant.code IS '申请单编号';
+COMMENT ON COLUMN pay_merchant.user_type IS '用户类型 1:会员  2:商户';
+COMMENT ON COLUMN pay_merchant.user_id IS '用户编号';
+COMMENT ON COLUMN pay_merchant.mch_type IS '商户类型 1:企业/个体  2:小微(个人)';
+COMMENT ON COLUMN pay_merchant.mch_role IS '商户角色 1:标准商户  2: 平台商 3: 平台商子商户 4: 分账接收方';
+COMMENT ON COLUMN pay_merchant.licence_pic IS '商户证件照片地址';
+COMMENT ON COLUMN pay_merchant.sign_name IS '商户签约名,与商户证件主体名称一致。';
+COMMENT ON COLUMN pay_merchant.sign_type IS '商户签约类型  1: 个体  2: 企业   3: 事业单位  4: 社会团体';
+COMMENT ON COLUMN pay_merchant.licence_no IS '商户证件号码';
+COMMENT ON COLUMN pay_merchant.short_name IS '商户简称';
+COMMENT ON COLUMN pay_merchant.account_licence_pic IS '开户许可证图片';
+COMMENT ON COLUMN pay_merchant.legal_name IS '法人名称';
+COMMENT ON COLUMN pay_merchant.legal_licence_type IS '法人证件类型 1: 身份证 2: 永久居留身份证 3: 护照  4:港澳通行证  5: 台胞证';
+COMMENT ON COLUMN pay_merchant.legal_licence_no IS '法人证件编号';
+COMMENT ON COLUMN pay_merchant.legal_front_pic IS '法人证件正面照片地址';
+COMMENT ON COLUMN pay_merchant.legal_back_pic IS '法人证件背面照片地址';
+COMMENT ON COLUMN pay_merchant.contact_name IS '联系人姓名';
+COMMENT ON COLUMN pay_merchant.contact_phone IS '联系人手机号';
+COMMENT ON COLUMN pay_merchant.contact_email IS '联系人邮箱';
+COMMENT ON COLUMN pay_merchant.contact_licence_no IS '联系人证件号码';
+COMMENT ON COLUMN pay_merchant.account_email IS '商户后台管理员邮箱';
+COMMENT ON COLUMN pay_merchant.account_phone IS '商户后台管理员手机号';
+COMMENT ON COLUMN pay_merchant.primary_industry_code IS '一级行业分类编码';
+COMMENT ON COLUMN pay_merchant.secondary_industry_code IS '二级行业分类编码';
+COMMENT ON COLUMN pay_merchant.province_code IS '经营省';
+COMMENT ON COLUMN pay_merchant.city_code IS '经营市';
+COMMENT ON COLUMN pay_merchant.district_code IS '经营区';
+COMMENT ON COLUMN pay_merchant.address IS '经营地址';
+COMMENT ON COLUMN pay_merchant.settle_direction IS '结算方向 1: 支付账户  2:公户';
+COMMENT ON COLUMN pay_merchant.settle_bank_code IS '开户总行编码';
+COMMENT ON COLUMN pay_merchant.settle_account_type IS '银行账户类型,1:个体户 2: 对公账户 2:个人借记卡 4:存折';
+COMMENT ON COLUMN pay_merchant.settle_bank_account IS '银行账户号码';
+COMMENT ON COLUMN pay_merchant.issue_mch_no IS '下发商户编号';
+COMMENT ON COLUMN pay_merchant.agreement_sign_url IS '协议签署地址';
+COMMENT ON COLUMN pay_merchant.issue_status IS '入网状态 1: 审核中  2: 被驳回 3: 待签署协议 4: 开通中 5: 已开通';
+COMMENT ON COLUMN pay_merchant.issue_message IS '入网结果信息';
+COMMENT ON COLUMN pay_merchant.create_time IS '创建时间';
+COMMENT ON COLUMN pay_merchant.update_time IS '更新时间';
+
+
+-- 2024-09-12 商户员工IM注册
+ALTER TABLE mch_staff 
+  ADD COLUMN im_initialized int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN mch_staff.im_initialized IS 'IM是否注册 0:否  1:是';
+
+
+-- 2024-09-18 支付单退款金额
+ALTER TABLE "public".pay_order 
+  ADD COLUMN refund_amount int8 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".pay_order.refund_amount IS '退款金额';
+
+ALTER TABLE "public".pay_order 
+  ADD COLUMN attr_flag int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".pay_order.attr_flag IS '标志 1: 分账';
+
+-- 2024-09-25 聊天会话关联业务单号
+ALTER TABLE chat_conversation 
+  ADD COLUMN out_order_no varchar(40) DEFAULT '' NOT NULL;
+COMMENT ON COLUMN chat_conversation.out_order_no IS '关联业务单号';
+
+-- 2024-10-05 会员关系表
+ALTER TABLE "public".mm_relation 
+RENAME member_id TO id;
+ALTER TABLE "public".mm_relation 
+ALTER COLUMN id SET NOT NULL;
+ALTER TABLE "public".mm_relation 
+ADD COLUMN member_id int8 DEFAULT 0 NOT NULL;
+ALTER TABLE "public".mm_relation 
+  DROP CONSTRAINT mm_relation_pkey;
+ALTER TABLE "public".mm_relation 
+  ADD PRIMARY KEY(id);
+COMMENT ON TABLE "public".mm_relation IS '会员关系';
+COMMENT ON COLUMN "public".mm_relation.id IS '编号';
+COMMENT ON COLUMN "public".mm_relation.member_id IS '会员编号';
+
+update mm_relation set member_id=id;
+
+
+DROP TABLE IF EXISTS "public".mm_relation CASCADE;
+CREATE TABLE "public".mm_relation (
+  id         BIGSERIAL NOT NULL, 
+  member_id  int8 DEFAULT 0 NOT NULL, 
+  card_no    varchar(20) NOT NULL, 
+  inviter_id int8 DEFAULT 0 NOT NULL, 
+  reg_mch_id int8 NOT NULL, 
+  inviter_d2 int8 DEFAULT 0 NOT NULL, 
+  inviter_d3 int8 DEFAULT 0 NOT NULL, 
+  CONSTRAINT mm_relation_pkey 
+    PRIMARY KEY (id));
+COMMENT ON COLUMN "public".mm_relation.member_id IS '会员编号';
+COMMENT ON COLUMN "public".mm_relation.inviter_id IS '邀请会员编号';
+COMMENT ON COLUMN "public".mm_relation.reg_mch_id IS '关联商户编号';
+COMMENT ON COLUMN "public".mm_relation.inviter_d2 IS '邀请会员编号(depth2)';
+COMMENT ON COLUMN "public".mm_relation.inviter_d3 IS '邀请会员编号(depth3)';
+
+
+-- 2024-10-08 通知模板
+ALTER TABLE "public".sys_notify_template 
+  RENAME COLUMN temp_name TO tpl_name;
+ALTER TABLE "public".sys_notify_template 
+  RENAME COLUMN code TO tpl_code;
+ALTER TABLE "public".sys_notify_template 
+  RENAME COLUMN temp_type TO tpl_type;
+
+ALTER TABLE "public".sys_notify_template 
+  ADD COLUMN tpl_flag int4 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".sys_notify_template.tpl_flag IS '模板标志,1:系统';
+
+
+ALTER TABLE "public"."sys_general_option" RENAME COLUMN "name" TO "label"; 
+
+-- 2024-10-12 账单生成时间
+ALTER TABLE mch_bill 
+  ADD COLUMN review_remark varchar(40) DEFAULT '' NOT NULL;
+ALTER TABLE mch_bill 
+  ADD COLUMN bill_remark varchar(20) DEFAULT '' NOT NULL;
+ALTER TABLE mch_bill 
+  ADD COLUMN bill_type int4 DEFAULT 1 NOT NULL;
+COMMENT ON COLUMN mch_bill.bill_type IS '账单类型, 1: 日账单  2: 月度账单';
+COMMENT ON COLUMN mch_bill.review_remark IS '审核备注';
+COMMENT ON COLUMN mch_bill.bill_remark IS '账单备注';
+
+
+
+-- 2024-10-14 商户账单改为日账单
+DROP TABLE IF EXISTS mch_bill CASCADE;
+CREATE TABLE mch_bill (
+  id             BIGSERIAL NOT NULL, 
+  mch_id         int8 NOT NULL, 
+  bill_type      int4 DEFAULT 1 NOT NULL, 
+  bill_time      int8 NOT NULL, 
+  bill_month     varchar(10) NOT NULL, 
+  start_time     int8 NOT NULL, 
+  end_time       int8 NOT NULL, 
+  tx_count       int4 NOT NULL, 
+  tx_amount      int8 NOT NULL, 
+  tx_fee         int8 NOT NULL, 
+  refund_amount  int8 NOT NULL, 
+  status         int4 NOT NULL, 
+  reviewer_id    int8 NOT NULL, 
+  reviewer_name  varchar(20) NOT NULL, 
+  review_remark  varchar(40) DEFAULT '' NOT NULL, 
+  review_time    int8 NOT NULL, 
+  bill_remark    varchar(20) DEFAULT '' NOT NULL, 
+  user_remark    varchar(40) NOT NULL, 
+  settle_status  int4 DEFAULT 0 NOT NULL, 
+  settle_sp_code varchar(20) NOT NULL, 
+  settle_tx_no   varchar(40) NOT NULL, 
+  settle_remark  varchar(20) NOT NULL, 
+  create_time    int8 NOT NULL, 
+  build_time     int8 NOT NULL, 
+  update_time    int8 NOT NULL, 
+  PRIMARY KEY (id));
+COMMENT ON TABLE mch_bill IS '商户月度账单';
+COMMENT ON COLUMN mch_bill.id IS '编号';
+COMMENT ON COLUMN mch_bill.mch_id IS '商户编号';
+COMMENT ON COLUMN mch_bill.bill_type IS '账单类型, 1: 日账单  2: 月度账单';
+COMMENT ON COLUMN mch_bill.bill_time IS '账单时间';
+COMMENT ON COLUMN mch_bill.bill_month IS '月份: 例:202408';
+COMMENT ON COLUMN mch_bill.start_time IS '账单开始时间';
+COMMENT ON COLUMN mch_bill.end_time IS '账单结束时间';
+COMMENT ON COLUMN mch_bill.tx_count IS '交易笔数';
+COMMENT ON COLUMN mch_bill.tx_amount IS '交易总金额';
+COMMENT ON COLUMN mch_bill.tx_fee IS '交易手续费';
+COMMENT ON COLUMN mch_bill.refund_amount IS '交易退款金额';
+COMMENT ON COLUMN mch_bill.status IS '账单状态:  0: 待生成 1: 待确认 2: 待复核 3: 已复核';
+COMMENT ON COLUMN mch_bill.reviewer_id IS '审核人编号';
+COMMENT ON COLUMN mch_bill.reviewer_name IS '审核人名称';
+COMMENT ON COLUMN mch_bill.review_remark IS '审核备注';
+COMMENT ON COLUMN mch_bill.review_time IS '审核时间';
+COMMENT ON COLUMN mch_bill.bill_remark IS '账单备注';
+COMMENT ON COLUMN mch_bill.settle_status IS '0: 不需要结算 1: 待结算 2: 结算失败 3: 已结算';
+COMMENT ON COLUMN mch_bill.settle_remark IS '结算备注';
+COMMENT ON COLUMN mch_bill.create_time IS '创建时间';
+COMMENT ON COLUMN mch_bill.build_time IS '账单生成时间';
+COMMENT ON COLUMN mch_bill.update_time IS '更新时间';
 

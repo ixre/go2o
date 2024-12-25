@@ -16,25 +16,19 @@ service WorkorderService {
     rpc GetWorkorder (WorkorderId) returns (SWorkorder) {
     }
     // 删除工单
-    rpc DeleteWorkorder (WorkorderId) returns (ResultV2) {
-    }
+    rpc DeleteWorkorder (WorkorderId) returns (TxResult);
 
     // 分配客服
-    rpc AllocateAgentId(AllocateWorkorderAgentRequest) returns (ResultV2) {
-    }
+    rpc AllocateAgentId(AllocateWorkorderAgentRequest) returns (TxResult);
 	// 完结
-	rpc Finish(WorkorderId) returns (ResultV2) {
-    }
+	rpc FinishWorkorder(WorkorderId) returns (TxResult);
 	// 用户关闭工单
-	rpc Close(WorkorderId) returns (ResultV2) {
-    }
+	rpc CloseWorkorder(WorkorderId) returns (TxResult);
 	// 评价
-    rpc Apprise(WorkorderAppriseRequest) returns (ResultV2) {
-    }
+    rpc AppriseWorkorder(WorkorderAppriseRequest) returns (TxResult);
 
 	// 提交回复
-	rpc SubmitComment(SubmitWorkorderCommentRequest) returns (ResultV2) {
-    }
+	rpc SubmitComment(SubmitWorkorderCommentRequest) returns (TxResult);
 
 }
 
@@ -53,9 +47,9 @@ message WorkorderAppriseRequest{
    // 是否有用
    bool isUsefully = 2;
    // 评分
-   int32 rank = 3;
+   int32 serviceRank = 3;
    // 评价
-   string apprise = 4;
+   string serviceApprise = 4;
 }
 
 // 提交工单评论请求
@@ -89,12 +83,14 @@ message SubmitWorkorderRequest{
     string hopeDesc = 8;
     // 图片列表
     string photoList = 9;
+    // 联系方式
+    string contactWay = 10;
 }
 
 // 保存工单响应
 message SubmitWorkorderResponse{
     int32 code = 1;
-    string msg = 2;
+    string message = 2;
     int64 workorderId = 3;
 }
 
@@ -108,40 +104,44 @@ message WorkorderId{
 message SWorkorder{
     // 编号
     int64 id = 1;
+    // 工单号
+    string orderNo = 2;
     // 会员编号
-    int64 memberId = 2;
+    int64 memberId = 3;
     // 类型, 1: 建议 2:申诉
-    int32 classId = 3;
+    int32 classId = 4;
     // 关联商户
-    int64 mchId = 4;
+    int64 mchId = 5;
     // 标志, 1:用户关闭
-    int32 flag = 5;
+    int32 flag = 6;
     // 关联业务, 如:CHARGE:2014050060
-    string wip = 6;
+    string wip = 7;
     // Subject
-    string subject = 7;
+    string subject = 8;
     // 投诉内容
-    string content = 8;
+    string content = 9;
     // 是否开放评论
-    int32 isOpened = 9;
+    int32 isOpened = 10;
     // 诉求描述
-    string hopeDesc = 10;
+    string hopeDesc = 11;
     // 图片
-    string firstPhoto = 11;
-    //m 
-    string photoList = 12;
+    string firstPhoto = 12;
+    // 图片列表 
+    string photoList = 13;
     // 状态,1:待处理 2:处理中 3:已完结
-    int32 status = 13;
+    int32 status = 14;
     // 分配的客服编号
-    int64 allocateAid = 14;
+    int64 allocateAid = 15;
     // 服务评分
-    int32 serviceRank = 15;
+    int32 serviceRank = 16;
     // 服务评价
-    string serviceApprise = 16;
+    string serviceApprise = 17;
     // 是否有用 0:未评价 1:是 2:否
-    int32 isUsefully = 17;
+    int32 isUsefully = 18;
     // 创建时间
-    int64 createTime = 18;
+    int64 createTime = 19;
     // 更新时间
-    int64 updateTime = 19;
+    int64 updateTime = 20;
+    // 联系方式
+    string contactWay = 21;
 }

@@ -28,8 +28,8 @@ func TestCheckRBACToken(t *testing.T) {
 	ret, _ := inject.GetRbacService().CheckRBACToken(context.TODO(), &proto.RbacCheckTokenRequest{
 		AccessToken: accessToken,
 	})
-	if len(ret.Error) > 0 {
-		t.Log(ret.Error)
+	if ret.Code > 0 {
+		t.Log(ret.Message)
 		t.FailNow()
 	}
 	t.Log(typeconv.MustJson(ret))
@@ -58,11 +58,11 @@ func TestGetJoinList(t *testing.T) {
 // 测试创建新的资源Key
 func TestGenerateResourceKey(t *testing.T) {
 	// gk := inject.GetRbacService().GenerateResourceKey
-	// ret := gk(model.RbacRes{Id: 0})
+	// ret := gk(rbac.RbacRes{Id: 0})
 	// t.Log("新建一级:", ret)
-	// ret = gk(model.RbacRes{Id: 2328, ResKey: "D"})
+	// ret = gk(rbac.RbacRes{Id: 2328, ResKey: "D"})
 	// t.Log("新建商户二级:", ret)
-	// ret = gk(model.RbacRes{Id: 2321, ResKey: "B0101"})
+	// ret = gk(rbac.RbacRes{Id: 2321, ResKey: "B0101"})
 	// t.Log("新建商户三级:", ret)
 }
 
@@ -73,17 +73,16 @@ func TestSaveRbacResource(t *testing.T) {
 		Value: 2383,
 	})
 	ret, _ := s.SaveRbacResource(context.TODO(), &proto.SaveRbacResRequest{
-		Id:            0,
-		Name:          r.Name,
-		ResType:       r.ResType,
-		Pid:           2321,
-		Path:          r.Path,
-		Icon:          r.Icon,
-		SortNum:       r.SortNum,
-		IsMenu:        r.IsMenu,
-		IsEnabled:     r.IsEnabled,
-		CreateTime:    r.CreateTime,
-		ComponentName: r.ComponentName,
+		Id:         0,
+		Name:       r.Name,
+		ResType:    r.ResType,
+		Pid:        2321,
+		Path:       r.Path,
+		Icon:       r.Icon,
+		SortNum:    r.SortNum,
+		IsMenu:     r.IsMenu,
+		IsEnabled:  r.IsEnabled,
+		CreateTime: r.CreateTime,
 	})
 	t.Logf(typeconv.MustJson(ret))
 }

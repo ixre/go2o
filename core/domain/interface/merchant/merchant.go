@@ -10,16 +10,17 @@
 package merchant
 
 import (
-	"github.com/ixre/go2o/core/domain"
 	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 )
 
 const (
 	KindAccountCharge           = 1
-	KindAccountSettleOrder      = 2
+	KindAccountCarry            = 2
 	KindAccountPresent          = 3
 	KindAccountTakePayment      = 4
 	KindAccountTransferToMember = 5
@@ -28,6 +29,15 @@ const (
 	KindＭachTakeOutToBankCard = 100
 	// KindＭachTakOutRefund 商户提现失败返还给会员
 	KindＭachTakOutRefund = 101
+)
+
+const (
+	// FSelfSales 是否自营
+	FSelfSales = 1 << iota
+	// FLocked 停用
+	FLocked
+	// 已认证
+	FAuthenticated
 )
 
 type (
@@ -47,8 +57,10 @@ type (
 		// Stat 获取商户的状态,判断 过期时间、判断是否停用。
 		// 过期时间通常按: 试合作期,即1个月, 后面每年延长一次。或者会员付费开通。
 		Stat() error
-		// SetEnabled 设置商户启用或停用
-		SetEnabled(enabled bool) error
+		// Lock 锁定
+		Lock() error
+		// Unlock 解锁
+		Unlock() error
 		// SelfSales 是否自营
 		SelfSales() bool
 		// Member 返回对应的会员编号
@@ -69,8 +81,8 @@ type (
 		UserManager() user.IUserManager
 		// ConfManager 返回设置服务
 		ConfManager() IConfManager
-		// SaleManager 销售服务
-		SaleManager() ISaleManager
+		// TransactionManager 销售服务
+		TransactionManager() IMerchantTransactionManager
 		// LevelManager 获取会员等级服务
 		LevelManager() ILevelManager
 		// KvManager 获取键值管理器
@@ -91,8 +103,7 @@ type (
 
 	// IAccount 账户
 	IAccount interface {
-		// GetDomainId 获取领域对象编号
-		GetDomainId() int64
+		domain.IDomain
 		// GetValue 获取账户值
 		GetValue() *Account
 		// Save 保存
@@ -103,13 +114,33 @@ type (
 		//GetBalanceLogByOuterNo(outerNo string) *BalanceLog
 		// SaveBalanceLog 保存余额变动信息
 		SaveBalanceLog(*BalanceLog) (int, error)
-		// SettleOrder 订单结账
-		SettleOrder(orderNo string, amount int, tradeFee int, refundAmount int, remark string) error
-		// TakePayment 支出
-		TakePayment(outerNo string, amount int, csn int, remark string) error
 
-		// 提现
-		//todo:???
+		// GetWalletLog 获取钱包账户日志
+		GetWalletLog(txId int64) *wallet.WalletLog
+
+		// Carry 订单结账(商户结算),返回交易流水编号和错误
+		Carry(p CarryParams) (txId int, err error)
+
+		// Consume 消耗商户支出，例如广告费、提现等
+		Consume(transactionTitle string, amount int, outerTxNo string, transactionRemark string) error
+
+		// Freeze 账户冻结
+		Freeze(d wallet.TransactionData, relateUser int64) (int, error)
+
+		// Unfreeze 账户解冻, isRefundBalance 是否退回余额
+		Unfreeze(d wallet.TransactionData, isRefundBalance bool, relateUser int64) error
+
+		// Adjust 客服调整
+		Adjust(title string, amount int, remark string, relateUser int64) error
+
+		// RequestWithdrawal 申请提现(只支持钱包),drawType：提现方式,返回info_id,交易号 及错误
+		RequestWithdrawal(w *wallet.WithdrawTransaction) (int, string, error)
+
+		// ReviewWithdrawal 提现审核
+		ReviewWithdrawal(transactionId int, pass bool, reason string) error
+
+		// CompleteTransaction 完成交易(打款),outerTransactionNo为外部交易号
+		CompleteTransaction(transactionId int, outerTransactionNo string) error
 
 		// TransferToMember todo: 以下需要重构或移除
 		// 转到会员账户
@@ -118,14 +149,29 @@ type (
 		// TransferToMember1 商户积分转会员积分
 		TransferToMember1(amount float32) error
 
-		// Present 赠送
-		Present(amount int, remark string) error
-
-		// Charge 充值
-		Charge(kind int32, amount int, title, outerNo string,
-			relateUser int64) error
+		// RequestInvoice 申请发票,返回发票申请ID和错误
+		RequestInvoice(amount int, remark string) (int, error)
 	}
 
+	// 订单参数
+	CarryParams struct {
+		// 是否先冻结
+		Freeze bool
+		// 外部订单号,非订单添加前缀，如:XT:100000
+		OuterTxNo string
+		// 订单金额(含交易费)
+		Amount int
+		// 交易费
+		TransactionFee int
+		// 退款金额
+		RefundAmount int
+		// 交易描述,如：订单结算
+		TransactionTitle string
+		// 交易备注,如：洗衣液
+		TransactionRemark string
+		// 关联的外部用户编号,可为空
+		OuterTxUid int
+	}
 	IMerchantManager interface {
 		// GetMerchantByMemberId 获取会员关联的商户
 		GetMerchantByMemberId(memberId int) IMerchantAggregateRoot
@@ -137,17 +183,21 @@ type (
 		// 关联的会员编号,作为结算账户
 		MemberId int64
 		// 用户
-		Usr string
+		Username string
 		// 密码
 		Pwd string
 		// 商户名称
 		Name string
 		// 是否自营
 		SelfSales int32
+		Flag      int
 		// 商户等级
 		Level int32
 		// 标志
-		Logo string
+		Logo    string
+		Address string
+		// 电话
+		Telephone string
 		// 公司名称
 		CompanyName string
 		// 省
@@ -162,6 +212,7 @@ type (
 		ExpiresTime int64
 		// 注册时间
 		JoinTime int64
+		Status   int
 		// 更新时间
 		UpdateTime int64
 		// 登录时间
@@ -186,6 +237,8 @@ type (
 		Salt string `json:"salt" db:"salt" gorm:"column:salt" bson:"salt"`
 		// 名称
 		MchName string `json:"mchName" db:"mch_name" gorm:"column:mch_name" bson:"mchName"`
+		// 全称
+		FullName string `json:"fullName" db:"full_name" gorm:"column:full_name" bson:"fullName"`
 		// 是否自营
 		IsSelf int16 `json:"isSelf" db:"is_self" gorm:"column:is_self" bson:"isSelf"`
 		// 标志
@@ -204,7 +257,7 @@ type (
 		Logo string `json:"logo" db:"logo" gorm:"column:logo" bson:"logo"`
 		// 公司电话
 		Tel string `json:"tel" db:"tel" gorm:"column:tel" bson:"tel"`
-		// 状态: 0:待审核 1:已开通  2:停用  3: 关闭
+		// 状态: 0:未审核 1:已开通  2:停用  3: 关闭
 		Status int16 `json:"status" db:"status" gorm:"column:status" bson:"status"`
 		// 过期时间
 		ExpiresTime int `json:"expiresTime" db:"expires_time" gorm:"column:expires_time" bson:"expiresTime"`
@@ -212,30 +265,6 @@ type (
 		LastLoginTime int `json:"lastLoginTime" db:"last_login_time" gorm:"column:last_login_time" bson:"lastLoginTime"`
 		// 创建时间
 		CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
-	}
-
-	// 商户账户表
-	Account struct {
-		// 商户编号
-		MchId int64 `db:"mch_id" pk:"yes"`
-		// 余额
-		Balance int64 `db:"balance"`
-		// 冻结金额
-		FreezeAmount int64 `db:"freeze_amount"`
-		// 待入账金额
-		AwaitAmount int64 `db:"await_amount"`
-		// 平台赠送金额
-		PresentAmount int64 `db:"present_amount"`
-		// 累计销售总额
-		SalesAmount int64 `db:"sales_amount"`
-		// 累计退款金额
-		RefundAmount int64 `db:"refund_amount"`
-		// 已提取金额
-		WithdrawAmount int64 `db:"take_amount"`
-		// 线下销售金额
-		OfflineSales int64 `db:"offline_sales"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
 	}
 
 	// 商户余额日志
@@ -297,4 +326,34 @@ type (
 
 func (m Merchant) TableName() string {
 	return "mch_merchant"
+}
+
+// MchAccount 商户账户
+type Account struct {
+	// 商户编号
+	MchId int `json:"mchId" db:"mch_id" gorm:"column:mch_id" pk:"yes" auto:"yes" bson:"mchId"`
+	// 余额
+	Balance int `json:"balance" db:"balance" gorm:"column:balance" bson:"balance"`
+	// 冻结金额
+	FreezeAmount int `json:"freezeAmount" db:"freeze_amount" gorm:"column:freeze_amount" bson:"freezeAmount"`
+	// 待入账金额
+	AwaitAmount int `json:"awaitAmount" db:"await_amount" gorm:"column:await_amount" bson:"awaitAmount"`
+	// 平台赠送金额
+	PresentAmount int `json:"presentAmount" db:"present_amount" gorm:"column:present_amount" bson:"presentAmount"`
+	// 累计销售总额
+	SalesAmount int `json:"salesAmount" db:"sales_amount" gorm:"column:sales_amount" bson:"salesAmount"`
+	// 累计退款金额
+	RefundAmount int `json:"refundAmount" db:"refund_amount" gorm:"column:refund_amount" bson:"refundAmount"`
+	// 已提取金额
+	WithdrawalAmount int `json:"takeAmount" db:"take_amount" gorm:"column:take_amount" bson:"takeAmount"`
+	// 线下销售金额
+	OfflineSales int `json:"offlineSales" db:"offline_sales" gorm:"column:offline_sales" bson:"offlineSales"`
+	// 可开票金额
+	InvoiceableAmount int `json:"invoiceableAmount" db:"invoiceable_amount" gorm:"column:invoiceable_amount" bson:"invoiceableAmount"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+}
+
+func (m Account) TableName() string {
+	return "mch_account"
 }

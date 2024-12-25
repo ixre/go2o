@@ -422,7 +422,7 @@ func (o *wholesaleOrderImpl) SetComment(comment string) {
 func (o *wholesaleOrderImpl) createPaymentForOrder() error {
 	v := o.baseOrderImpl.createPaymentOrder()
 	v.SellerId = int(o.value.VendorId)
-	v.TotalAmount = o.baseValue.FinalAmount
+	v.TotalAmount = int(o.baseValue.FinalAmount)
 	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
 	return o.paymentOrder.Submit()
 }
@@ -711,10 +711,18 @@ func (o *wholesaleOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggrega
 	if sAmount > 0 {
 		totalAmount := sAmount
 		refundAmount := refund
-		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, int(totalAmount))
-		return vendor.Account().SettleOrder(o.OrderNo(),
-			int(totalAmount), tradeFee, refundAmount, "批发订单结算")
+		sd := merchant.CarryParams{
+			OuterTxNo:         o.OrderNo(),
+			Amount:            refundAmount,
+			TransactionFee:    transactionFee,
+			RefundAmount:      refundAmount,
+			TransactionTitle:  "批发订单结算",
+			TransactionRemark: o.baseValue.Subject,
+		}
+		_, err := vendor.Account().Carry(sd)
+		return err
 	}
 	return nil
 }
@@ -727,10 +735,18 @@ func (o *wholesaleOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggrega
 	if sAmount > 0 {
 		totalAmount := int(sAmount * float32(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, totalAmount)
-		return vendor.Account().SettleOrder(o.OrderNo(),
-			totalAmount, tradeFee, refundAmount, "批发订单结算")
+		sd := merchant.CarryParams{
+			OuterTxNo:         o.OrderNo(),
+			Amount:            amount,
+			TransactionFee:    transactionFee,
+			RefundAmount:      refundAmount,
+			TransactionTitle:  "批发订单结算",
+			TransactionRemark: o.baseValue.Subject,
+		}
+		_, err := vendor.Account().Carry(sd)
+		return err
 	}
 	return nil
 }
@@ -740,11 +756,18 @@ func (o *wholesaleOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMercha
 	if fee > 0 {
 		totalAmount := int(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKWholesaleOrder, totalAmount)
-		return vendor.Account().SettleOrder(o.value.OrderNo,
-			totalAmount, tradeFee, refundAmount, "零售订单结算")
-
+		sd := merchant.CarryParams{
+			OuterTxNo:         o.OrderNo(),
+			Amount:            amount,
+			TransactionFee:    transactionFee,
+			RefundAmount:      refundAmount,
+			TransactionTitle:  "批发订单结算",
+			TransactionRemark: o.baseValue.Subject,
+		}
+		_, err := vendor.Account().Carry(sd)
+		return err
 	}
 	return nil
 }
@@ -797,19 +820,19 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 	if integral > 0 {
 		_, err = acc.CarryTo(member.AccountIntegral,
 			member.AccountOperateData{
-				Title:   "购物消费赠送积分",
-				Amount:  integral,
-				OuterNo: o.OrderNo(),
-				Remark:  "sys",
+				TransactionTitle:   "购物消费赠送积分",
+				Amount:             integral,
+				OuterTransactionNo: o.OrderNo(),
+				TransactionRemark:  "sys",
 			}, false, 0)
 		if err != nil {
 			return err
 		}
 	}
 	acv := acc.GetValue()
-	acv.TotalExpense += ov.ItemAmount
-	acv.TotalPay += ov.FinalAmount
-	acv.UpdateTime = time.Now().Unix()
+	acv.TotalExpense += int(ov.ItemAmount)
+	acv.TotalPay += int(ov.FinalAmount)
+	acv.UpdateTime = int(time.Now().Unix())
 	_, err = acc.Save()
 	return err
 }

@@ -3,17 +3,12 @@ package impl
 import (
 	"context"
 	"errors"
-	"strconv"
-	"strings"
-	"time"
 
-	"github.com/ixre/go2o/core/dao"
-	"github.com/ixre/go2o/core/dao/impl"
-	"github.com/ixre/go2o/core/dao/model"
+	"github.com/ixre/go2o/core/domain/interface/sys"
+	"github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types"
 )
 
 /**
@@ -29,196 +24,157 @@ import (
 var _ proto.AppServiceServer = new(appServiceImpl)
 
 type appServiceImpl struct {
-	dao dao.IAppProdDao
-	s   storage.Interface
+	_repo    sys.IApplicationRepository
+	_sysRepo sys.ISystemRepo
+	s        storage.Interface
 	serviceUtil
 	proto.UnimplementedAppServiceServer
 }
 
-func NewAppService(s storage.Interface, o orm.Orm) proto.AppServiceServer {
+func NewAppService(s storage.Interface, o orm.Orm,
+	repo sys.IApplicationRepository,
+	sysRepo sys.ISystemRepo,
+) proto.AppServiceServer {
 	return &appServiceImpl{
-		s:   s,
-		dao: impl.NewAppProdDao(o),
+		s:        s,
+		_repo:    repo,
+		_sysRepo: sysRepo,
 	}
 }
 
-func IntVersion(s string) int {
-	arr := strings.Split(s, ".")
-	for i, v := range arr {
-		if l := len(v); l < 3 {
-			arr[i] = strings.Repeat("0", 3-l) + v
-		}
-	}
-	intVer, err := strconv.Atoi(strings.Join(arr, ""))
-	if err != nil {
-		panic(err)
-	}
-	return intVer
+func (a *appServiceImpl) SaveAppDistribution(_ context.Context,
+	r *proto.SAppDistribution) (*proto.TxResult, error) {
+	im := a._sysRepo.GetSystemAggregateRoot().Application()
+	err := im.SaveAppDistribution(&sys.SysAppDistribution{
+		Id:             int(r.Id),
+		AppName:        r.AppName,
+		AppIcon:        r.AppIcon,
+		AppDesc:        r.AppDesc,
+		UpdateMode:     int(r.UpdateMode),
+		DistributeUrl:  r.DistributeUrl,
+		DistributeName: r.DistributeName,
+		UrlScheme:      r.UrlScheme,
+		StableVersion:  r.StableVersion,
+		StableDownUrl:  r.StableDownUrl,
+		BetaVersion:    r.BetaVersion,
+		BetaDownUrl:    r.BetaDownUrl,
+	})
+	return a.errorV2(err), nil
 }
 
-func (a *appServiceImpl) SaveProd(_ context.Context, r *proto.AppProdRequest) (*proto.Result, error) {
-	if c, _ := a.dao.Count("prod_name=$1 AND id <> $2",
-		r.ProdName, r.Id); c > 0 {
-		return a.error(errors.New("APP已经存在")), nil
-	}
-	var dst *model.AppProd
-	if r.Id > 0 {
-		dst = a.dao.Get(r.Id)
-	} else {
-		dst = &model.AppProd{}
-	}
-	dst.ProdName = r.ProdName
-	dst.ProdDes = r.ProdDes
-	dst.PublishUrl = r.PublishURL
-	dst.StableFileUrl = r.StableFileURL
-	dst.AlphaFileUrl = r.AlphaFileURL
-	dst.NightlyFileUrl = r.NightlyFileURL
-	dst.UpdateType = r.UpdateType
-	dst.UpdateTime = time.Now().Unix()
-	_, err := a.dao.Save(dst)
-	return a.error(err), nil
+func (a *appServiceImpl) SaveAppVersion(_ context.Context, r *proto.SAppVersion) (*proto.TxResult, error) {
+	im := a._sysRepo.GetSystemAggregateRoot().Application()
+	err := im.SaveAppVersion(&sys.SysAppVersion{
+		Id:              int(r.Id),
+		DistributionId:  int(r.DistributionId),
+		Version:         r.Version,
+		VersionCode:     util.IntVersion(r.Version),
+		TerminalOs:      r.TerminalOs,
+		TerminalChannel: r.TerminalChannel,
+		StartTime:       int(r.StartTime),
+		UpdateMode:      int(r.UpdateMode),
+		UpdateContent:   r.UpdateContent,
+		PackageUrl:      r.PackageUrl,
+		IsForce:         int(r.IsForce),
+		IsNotified:      int(r.IsNotified),
+		CreateTime:      int(r.CreateTime),
+		UpdateTime:      int(r.UpdateTime),
+	})
+	return a.errorV2(err), nil
 }
 
-func (a *appServiceImpl) SaveVersion(_ context.Context, r *proto.AppVersionRequest) (*proto.Result, error) {
-	if c, _ := a.dao.Count("version=$1 AND id <> $2",
-		r.Version, r.Id); c > 0 {
-		return a.error(errors.New("版本已经存在")), nil
-	}
-	dst := &model.AppVersion{
-		Id:            r.Id,
-		ProductId:     r.ProductId,
-		Channel:       int16(r.Channel),
-		Version:       r.Version,
-		VersionCode:   IntVersion(r.Version),
-		ForceUpdate:   int16(types.ElseInt(r.ForceUpdate, 1, 0)),
-		UpdateContent: r.UpdateContent,
-	}
-	if r.Id <= 0 {
-		dst.CreateTime = time.Now().Unix()
-	}
-	id, err := a.dao.SaveVersion(dst)
-	// 如果发布了更新版本,则更新最新的版本
-	if err == nil && r.Channel == 0 {
-		r.Id = int64(id)
-		err = a.updateLatest(r)
-	}
-	return a.error(err), nil
-}
-
-// 更新最新版本
-func (a *appServiceImpl) updateLatest(r *proto.AppVersionRequest) error {
-	latest := a.getLatest(r.ProductId, int16(r.Channel))
-	if latest == nil || IntVersion(r.Version) > IntVersion(latest.Version) {
-		prod := a.dao.Get(r.ProductId)
-		prod.LatestVid = r.Id
-		prod.UpdateTime = time.Now().Unix()
-		_, err := a.dao.Save(prod)
-		return err
-	}
-	return nil
-}
-
-// 获取最新版本
-func (a *appServiceImpl) getLatest(prodId int64, channel int16) *model.AppVersion {
-	return a.dao.GetVersionBy(
-		"product_id=$1 AND channel=$2 ORDER BY version_code DESC LIMIT 1",
-		prodId, channel)
-}
-
-func (a *appServiceImpl) GetProd(_ context.Context, id *proto.AppId) (*proto.SAppProd, error) {
-	v := a.dao.Get(id.Value)
-	if v == nil {
+// GetAppDistribution 获取应用分发
+func (a *appServiceImpl) GetAppDistribution(_ context.Context, req *proto.SysAppDistributionId) (*proto.SAppDistribution, error) {
+	dist := a._sysRepo.GetSystemAggregateRoot().Application().GetAppDistribution(int(req.Value))
+	if dist == nil {
 		return nil, errors.New("no such app product")
 	}
-	return &proto.SAppProd{
-		Id:             v.Id,
-		ProdName:       v.ProdName,
-		ProdDes:        v.ProdDes,
-		LatestVid:      v.LatestVid,
-		Md5Hash:        v.Md5Hash,
-		PublishURL:     v.PublishUrl,
-		StableFileURL:  v.StableFileUrl,
-		AlphaFileURL:   v.AlphaFileUrl,
-		NightlyFileURL: v.NightlyFileUrl,
-		UpdateType:     v.UpdateType,
-		UpdateTime:     v.UpdateTime,
+	return &proto.SAppDistribution{
+		Id:             int64(dist.Id),
+		AppName:        dist.AppName,
+		AppIcon:        dist.AppIcon,
+		AppDesc:        dist.AppDesc,
+		UpdateMode:     int32(dist.UpdateMode),
+		DistributeUrl:  dist.DistributeUrl,
+		UrlScheme:      dist.UrlScheme,
+		DistributeName: dist.DistributeName,
+		StableVersion:  dist.StableVersion,
+		StableDownUrl:  dist.StableDownUrl,
+		BetaVersion:    dist.BetaVersion,
+		BetaDownUrl:    dist.BetaDownUrl,
+		CreateTime:     int64(dist.CreateTime),
+		UpdateTime:     int64(dist.UpdateTime),
 	}, nil
 }
 
-func (a *appServiceImpl) GetVersion(_ context.Context, id *proto.AppVersionId) (*proto.SAppVersion, error) {
-	v := a.dao.GetVersion(id.Value)
-	if v == nil {
+// GetAppVersion 获取应用版本
+func (a *appServiceImpl) GetAppVersion(_ context.Context, id *proto.AppVersionId) (*proto.SAppVersion, error) {
+	ia := a._sysRepo.GetSystemAggregateRoot().Application()
+	version := ia.GetAppVersion(int(id.Value))
+	if version == nil {
 		return nil, errors.New("no such version")
 	}
 	return &proto.SAppVersion{
-		Id:            v.Id,
-		ProductId:     v.ProductId,
-		Channel:       int32(v.Channel),
-		Version:       v.Version,
-		VersionCode:   int32(v.VersionCode),
-		ForceUpdate:   v.ForceUpdate == 1,
-		UpdateContent: v.UpdateContent,
-		CreateTime:    v.CreateTime,
+		Id:              int64(version.Id),
+		DistributionId:  int64(version.DistributionId),
+		Version:         version.Version,
+		VersionCode:     int32(version.VersionCode),
+		TerminalOs:      version.TerminalOs,
+		TerminalChannel: version.TerminalChannel,
+		StartTime:       int64(version.StartTime),
+		UpdateMode:      int32(version.UpdateMode),
+		UpdateContent:   version.UpdateContent,
+		PackageUrl:      version.PackageUrl,
+		IsForce:         int32(version.IsForce),
+		IsNotified:      int32(version.IsNotified),
+		CreateTime:      int64(version.CreateTime),
+		UpdateTime:      int64(version.UpdateTime),
 	}, nil
 }
 
-func (a *appServiceImpl) DeleteProd(_ context.Context, id *proto.AppId) (*proto.Result, error) {
-	err := a.dao.Delete(id.Value)
-	return a.error(err), nil
+// DeleteAppDistribution 删除应用分发
+func (a *appServiceImpl) DeleteAppDistribution(_ context.Context, req *proto.SysAppDistributionId) (*proto.TxResult, error) {
+	err := a._sysRepo.GetSystemAggregateRoot().Application().DeleteAppDistribution(int(req.Value))
+	return a.errorV2(err), nil
 }
 
-func (a *appServiceImpl) DeleteVersion(_ context.Context, id *proto.AppVersionId) (*proto.Result, error) {
-	err := a.dao.Delete(id.Value)
-	return a.error(err), nil
+// DeleteAppVersion 删除应用版本
+func (a *appServiceImpl) DeleteAppVersion(_ context.Context, id *proto.AppVersionId) (*proto.TxResult, error) {
+	err := a._sysRepo.GetSystemAggregateRoot().Application().DeleteAppVersion(int(id.Value))
+	return a.errorV2(err), nil
 }
 
-func (a *appServiceImpl) CheckVersion(_ context.Context, r *proto.CheckVersionRequest) (*proto.CheckVersionResponse, error) {
-	var v *model.AppVersion
-	prod := a.dao.Get(r.AppId)
-	switch r.Channel {
-	case "stable":
-		v = a.dao.GetVersion(prod.LatestVid)
-	case "nightly":
-		v = a.getLatest(r.AppId, 2)
-	case "alpha":
-		v = a.getLatest(r.AppId, 1)
-	}
-	if v == nil {
-		return &proto.CheckVersionResponse{
-			VersionInfo: "没有最近发布的版本",
-			IsLatest:    true,
+func (a *appServiceImpl) CheckAppVersion(_ context.Context, req *proto.CheckAppVersionRequest) (*proto.CheckAppVersionResponse, error) {
+	ia := a._sysRepo.GetSystemAggregateRoot().Application()
+	prod := ia.GetAppDistributionByName(req.AppName)
+	if prod == nil {
+		return &proto.CheckAppVersionResponse{
+			VersionInfo:   "应用不存在",
+			HasNewVersion: false,
 		}, nil
 	}
-	if v.VersionCode <= IntVersion(r.Version) {
-		return &proto.CheckVersionResponse{
-			LatestVersion: r.Version,
+	ver := ia.GetLatestVersion(prod.Id, req.TerminalOS, req.TerminalChannel)
+	if ver == nil {
+		return &proto.CheckAppVersionResponse{
+			VersionInfo:   "没有最近发布的版本",
+			HasNewVersion: false,
+		}, nil
+	}
+	if v := util.IntVersion(req.Version); ver.VersionCode <= v {
+		return &proto.CheckAppVersionResponse{
+			LatestVersion: req.Version,
 			VersionInfo:   "当前为最新版本",
-			IsLatest:      true,
+			HasNewVersion: false,
 		}, nil
 	}
 
-	return &proto.CheckVersionResponse{
-		LatestVersion: r.Version,
-		AppPkgURL:     a.getVersionPkgURL(prod, r.Channel, r.Version),
-		VersionInfo:   v.UpdateContent,
-		IsLatest:      false,
-		ForceUpdate:   v.ForceUpdate == 1,
-		UpdateType:    prod.UpdateType,
-		ReleaseTime:   v.CreateTime,
+	return &proto.CheckAppVersionResponse{
+		HasNewVersion: true,
+		LatestVersion: ver.Version,
+		PackageUrl:    ver.PackageUrl,
+		VersionInfo:   ver.UpdateContent,
+		ForceUpdate:   ver.IsForce == 1,
+		UpdateMode:    int32(ver.UpdateMode),
+		ReleaseTime:   int64(ver.StartTime),
 	}, nil
-}
-
-// 获取版本更新包地址
-func (a *appServiceImpl) getVersionPkgURL(prod *model.AppProd,
-	channel string, version string) string {
-	s := ""
-	switch channel {
-	case "stable":
-		s = prod.StableFileUrl
-	case "nightly":
-		s = prod.NightlyFileUrl
-	case "alpha":
-		s = prod.AlphaFileUrl
-	}
-	return strings.Replace(s, "{version}", version, -1)
 }

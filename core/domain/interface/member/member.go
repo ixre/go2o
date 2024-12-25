@@ -9,6 +9,8 @@
 
 package member
 
+import "github.com/ixre/go2o/core/infrastructure/domain"
+
 const (
 	// DefaultRelateUser 默认操作用户
 	DefaultRelateUser int64 = 0
@@ -75,8 +77,7 @@ const (
 
 type (
 	IMemberAggregateRoot interface {
-		// GetAggregateRootId 获取聚合根编号
-		GetAggregateRootId() int64
+		domain.IAggregateRoot
 		// Complex 会员汇总信息
 		Complex() *ComplexMember
 		// Profile 会员资料服务
@@ -89,6 +90,8 @@ type (
 		Invitation() IInvitationManager
 		// GetValue 获取值
 		GetValue() Member
+		// ExtraFields 获取扩展字段
+		Extra() ExtraField
 		// GetAccount 获取账户
 		GetAccount() IAccount
 		// SendCheckCode 发送验证码,传入操作及消息类型,并返回验证码,及错误
@@ -104,7 +107,9 @@ type (
 		// GetRelation 获取关联的会员
 		GetRelation() *InviteRelation
 		// BindInviter 绑定邀请人,如果已邀请,force为true时更新
-		BindInviter(memberId int64, force bool) error
+		BindInviter(memberId int, force bool) error
+		// BindMerchantId 绑定商户
+		BindMerchantId(mchId int, force bool) error
 		// AddExp 增加经验值
 		AddExp(exp int) error
 		// Premium 升级为高级会员
@@ -137,6 +142,9 @@ type (
 
 		// Save 保存
 		Save() (int64, error)
+
+		// SubmitRegistration 提交注册
+		SubmitRegistration(data *SubmitRegistrationData) error
 	}
 
 	// IProfileManager 会员资料服务
@@ -177,6 +185,8 @@ type (
 		SaveCertificationInfo(v *CerticationInfo) error
 		// ReviewCertification 审核实名认证,若重复审核将返回错误
 		ReviewCertification(pass bool, remark string) error
+		// RejectCertification 驳回实名认证, 需在实名认证通过的情况下，进行驳回要求重新认证
+		RejectCertification(remark string) error
 		// CreateDeliver 创建配送地址
 		CreateDeliver(*ConsigneeAddress) IDeliverAddress
 		// GetDeliverAddress 获取配送地址
@@ -198,6 +208,18 @@ type (
 		GetOAuthBindInfo(app string) *OAuthAccount
 	}
 
+	// MemberCertificationReviewEvent 会员实名认证审核事件
+	MemberCertificationReviewEvent struct {
+		// 会员
+		Member IMemberAggregateRoot
+		// 是否通过
+		Pass bool
+		// 备注
+		Remark string
+		// 认证姓名
+		CertifiedName string
+	}
+
 	// IFavoriteManager 收藏服务
 	IFavoriteManager interface {
 		// Favorite 收藏
@@ -206,6 +228,14 @@ type (
 		Favored(favType int, referId int64) bool
 		// Cancel 取消收藏
 		Cancel(favType int, referId int64) error
+	}
+
+	SubmitRegistrationData struct {
+
+		// 注册IP
+		RegIp string
+		// 注册来源
+		RegFrom string
 	}
 
 	// ComplexMember 会员概览信息
@@ -236,160 +266,92 @@ type (
 		UpdateTime int64
 	}
 
-	Member struct {
-		// 编号
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
-		// 用户编码
-		UserCode string `db:"user_code"`
-		// 昵称
-		Nickname string `db:"nickname"`
-		// 真实姓名
-		RealName string `db:"real_name"`
-		// 用户名
-		Username string `db:"username"`
-		// 加密盐
-		Salt string `db:"salt"`
-		// 密码
-		Password string `db:"password"`
-		// 头像
-		ProfilePhoto string `db:"profile_photo"`
-		// 交易密码
-		TradePassword string `db:"trade_pwd"`
-		// 经验值
-		Exp int `db:"exp"`
-		// 等级
-		Level int `db:"level"`
-		// 高级用户类型
-		PremiumUser int `db:"premium_user"`
-		// 高级用户过期时间
-		PremiumExpires int64 `db:"premium_expires"`
-		// 手机号码
-		Phone string `db:"phone"`
-		// 电子邮箱
-		Email string `db:"email"`
-		// 注册来源
-		RegFrom string `db:"reg_from"`
-		// 注册IP
-		RegIp string `db:"reg_ip"`
-		// 注册时间
-		RegTime int64 `db:"reg_time"`
-		// 校验码
-		CheckCode string `db:"check_code"`
-		// 校验码过期时间
-		CheckExpires int64 `db:"check_expires"`
-		// 会员标志
-		UserFlag int `db:"user_flag"`
-		// 角色标志
-		RoleFlag int `db:"role_flag"`
-		// 登录时间
-		LoginTime int64 `db:"login_time"`
-		// 最后登录时间
-		LastLoginTime int64 `db:"last_login_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-		// 超时时间
-		TimeoutTime int64 `db:"-"`
-	}
-
 	// 会员资料
 	Profile struct {
-		//会员编号
-		MemberId int64 `db:"member_id" pk:"yes" auto:"no"`
-		//昵称
-		Name string `db:"name"`
-		//头像
-		Avatar string `db:"avatar"`
-		//性别
-		Gender int32 `db:"gender"`
-		//生日
-		BirthDay string `db:"birthday"`
-		//电话
-		Phone string `db:"phone"`
-		//地址
-		Address string `db:"address"`
-		//即时通讯
-		Im string `db:"im"`
-		//电子邮件
-		Email string `db:"email"`
-		// 省
-		Province int32 `db:"province"`
-		// 市
-		City int32 `db:"city"`
-		// 区
-		District int32 `db:"district"`
-		//备注
-		Remark string `db:"remark"`
-
-		// 扩展1
-		Ext1 string `db:"ext_1"`
-		// 扩展2
-		Ext2 string `db:"ext_2"`
-		// 扩展3
-		Ext3 string `db:"ext_3"`
-		// 扩展4
-		Ext4 string `db:"ext_4"`
-		// 扩展5
-		Ext5 string `db:"ext_5"`
-		// 扩展6
-		Ext6 string `db:"ext_6"`
-		//更新时间
-		UpdateTime int64 `db:"update_time"`
-	}
-
-	// 会员邀请关联表
-	InviteRelation struct {
-		// 会员编号
-		MemberId int64 `db:"member_id" pk:"yes"`
-		// 会员卡号
-		CardCard string `db:"card_no"`
-		// 邀请人（会员）
-		InviterId int64 `db:"inviter_id"`
-		// 邀请会员编号(depth2)
-		InviterD2 int64 `db:"inviter_d2"`
-		// 邀请会员编号(depth3)
-		InviterD3 int64 `db:"inviter_d3"`
-		// 注册关联商户编号
-		RegMchId int64 `db:"reg_mchid"`
+		// MemberId
+		MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" pk:"yes" bson:"memberId"`
+		// Name
+		Name string `json:"name" db:"name" gorm:"column:name" bson:"name"`
+		// Gender
+		Gender int `json:"gender" db:"gender" gorm:"column:gender" bson:"gender"`
+		// ProfilePhoto
+		ProfilePhoto string `json:"profilePhoto" db:"profile_photo" gorm:"column:profile_photo" bson:"profilePhoto"`
+		// Birthday
+		Birthday string `json:"birthday" db:"birthday" gorm:"column:birthday" bson:"birthday"`
+		// Phone
+		Phone string `json:"phone" db:"phone" gorm:"column:phone" bson:"phone"`
+		// Address
+		Address string `json:"address" db:"address" gorm:"column:address" bson:"address"`
+		// Im
+		Im string `json:"im" db:"im" gorm:"column:im" bson:"im"`
+		// Email
+		Email string `json:"email" db:"email" gorm:"column:email" bson:"email"`
+		// Province
+		Province int `json:"province" db:"province" gorm:"column:province" bson:"province"`
+		// City
+		City int `json:"city" db:"city" gorm:"column:city" bson:"city"`
+		// District
+		District int `json:"district" db:"district" gorm:"column:district" bson:"district"`
+		// Ext1
+		Ext1 string `json:"ext1" db:"ext_1" gorm:"column:ext_1" bson:"ext1"`
+		// Ext2
+		Ext2 string `json:"ext2" db:"ext_2" gorm:"column:ext_2" bson:"ext2"`
+		// Ext3
+		Ext3 string `json:"ext3" db:"ext_3" gorm:"column:ext_3" bson:"ext3"`
+		// Ext4
+		Ext4 string `json:"ext4" db:"ext_4" gorm:"column:ext_4" bson:"ext4"`
+		// Ext5
+		Ext5 string `json:"ext5" db:"ext_5" gorm:"column:ext_5" bson:"ext5"`
+		// Ext6
+		Ext6 string `json:"ext6" db:"ext_6" gorm:"column:ext_6" bson:"ext6"`
+		// Remark
+		Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
+		// UpdateTime
+		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+		// 个人签名
+		Signature string `json:"signature" db:"signature" gorm:"column:signature" bson:"signature"`
 	}
 
 	// 实名认证信息
 	CerticationInfo struct {
 		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
-		// 会员编号
-		MemberId int64 `db:"member_id" pk:"yes"`
-		// 真实姓名
-		RealName string `db:"real_name"`
+		Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+		// MemberId
+		MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
 		// 国家代码
-		CountryCode string `db:"country_code"`
+		CountryCode string `json:"countryCode" db:"country_code" gorm:"column:country_code" bson:"countryCode"`
+		// 真实姓名
+		RealName string `json:"realName" db:"real_name" gorm:"column:real_name" bson:"realName"`
 		// 证件类型
-		CardType int `db:"card_type"`
-		// 证件号码
-		CardId string `db:"card_id"`
+		CardType int `json:"cardType" db:"card_type" gorm:"column:card_type" bson:"cardType"`
+		// 证件编号
+		CardId string `json:"cardId" db:"card_id" gorm:"column:card_id" bson:"cardId"`
 		// 证件图片
-		CertImage string `db:"cert_image" json:"certImage" bson:"certImage"`
+		CertFrontPic string `json:"certFrontPic" db:"cert_front_pic" gorm:"column:cert_front_pic" bson:"certFrontPic"`
 		// 证件反面图片
-		CertReverseImage string `db:"cert_reverse_image" json:"certReverseImage" bson:"certReverseImage"`
+		CertBackPic string `json:"certBackPic" db:"cert_back_pic" gorm:"column:cert_back_pic" bson:"certBackPic"`
 		// 认证图片,人与身份证的图像等
-		TrustImage string `db:"trust_image"`
+		TrustImage string `json:"trustImage" db:"trust_image" gorm:"column:trust_image" bson:"trustImage"`
 		// 其他认证资料
-		ExtraCertFile string `db:"extra_cert_file" json:"extraCertFile" bson:"extraCertFile"`
+		ExtraCertFile string `json:"extraCertFile" db:"extra_cert_file" gorm:"column:extra_cert_file" bson:"extraCertFile"`
+		// 额外资质证书编号
+		ExtraCertNo string `json:"extraCertNo" db:"extra_cert_no" gorm:"column:extra_cert_no" bson:"extraCertNo"`
 		// 扩展认证资料1
-		ExtraCertExt1 string `db:"extra_cert_ext1" json:"extraCertExt1" bson:"extraCertExt1"`
+		ExtraCertExt1 string `json:"extraCertExt1" db:"extra_cert_ext1" gorm:"column:extra_cert_ext1" bson:"extraCertExt1"`
 		// 扩展认证资料2
-		ExtraCertExt2 string `db:"extra_cert_ext2" json:"extraCertExt2" bson:"extraCertExt2"`
-		// 是否人工审核认证
-		ManualReview int `db:"manual_review"`
-		// 是否审核通过
-		ReviewStatus int `db:"review_status"`
-		// 审核时间
-		ReviewTime int64 `db:"review_time"`
-		// 审核备注
-		Remark string `db:"remark"`
+		ExtraCertExt2 string `json:"extraCertExt2" db:"extra_cert_ext2" gorm:"column:extra_cert_ext2" bson:"extraCertExt2"`
 		// 版本
-		Version int `db:"version" json:"version" bson:"version"`
+		Version int `json:"version" db:"version" gorm:"column:version" bson:"version"`
+		// 人工审核
+		ManualReview int `json:"manualReview" db:"manual_review" gorm:"column:manual_review" bson:"manualReview"`
+		// 审核状态
+		ReviewStatus int `json:"reviewStatus" db:"review_status" gorm:"column:review_status" bson:"reviewStatus"`
+		// 审核时间
+		ReviewTime int `json:"reviewTime" db:"review_time" gorm:"column:review_time" bson:"reviewTime"`
+		// 备注
+		Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
 		// 更新时间
-		UpdateTime int64 `db:"update_time"`
+		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 	}
 
 	// 银行卡信息,因为重要且非频繁更新的数据
@@ -502,27 +464,6 @@ type (
 		IsDefault int `db:"is_default"`
 	}
 
-	// 会员升级日志
-	LevelUpLog struct {
-		Id int `db:"id" pk:"yes" auto:"yes"`
-		// 会员编号
-		MemberId int64 `db:"member_id"`
-		// 原来等级
-		OriginLevel int `db:"origin_level"`
-		// 现在等级
-		TargetLevel int `db:"target_level"`
-		// 是否为免费升级的会员
-		IsFree int `db:"is_free"`
-		// 支付单编号
-		PaymentId int `db:"payment_id"`
-		// 是否审核及处理
-		ReviewStatus int `db:"review_status"`
-		// 升级方式,1:自动升级 2:客服更改 3:系统升级
-		UpgradeMode int `db:"upgrade_mode"`
-		// 升级时间
-		CreateTime int64 `db:"create_time"`
-	}
-
 	// MmLockInfo 会员锁定记录
 	MmLockInfo struct {
 		// 编号
@@ -563,6 +504,104 @@ func (b BankCard) Locked() bool {
 	//return b.IsLocked == BankLocked
 }
 
+// Member 会员
+type Member struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 用户名
+	Username string `json:"username" db:"username" gorm:"column:username" bson:"username"`
+	// 密码
+	Password string `json:"password" db:"password" gorm:"column:password" bson:"password"`
+	// 交易密码
+	TradePassword string `json:"tradePwd" db:"trade_pwd" gorm:"column:trade_pwd" bson:"tradePwd"`
+	// 等级
+	Level int `json:"level" db:"level" gorm:"column:level" bson:"level"`
+	// 国家代码
+	CountryCode string `json:"countryCode" db:"country_code" gorm:"column:country_code" bson:"countryCode"`
+	// 高级用户类型
+	PremiumUser int `json:"premiumUser" db:"premium_user" gorm:"column:premium_user" bson:"premiumUser"`
+	// 高级用户过期时间
+	PremiumExpires int `json:"premiumExpires" db:"premium_expires" gorm:"column:premium_expires" bson:"premiumExpires"`
+	// 会员标志
+	UserFlag int `json:"userFlag" db:"user_flag" gorm:"column:user_flag" bson:"userFlag"`
+	// 用户编码
+	UserCode string `json:"userCode" db:"user_code" gorm:"column:user_code" bson:"userCode"`
+	// 头像
+	ProfilePhoto string `json:"profilePhoto" db:"profile_photo" gorm:"column:profile_photo" bson:"profilePhoto"`
+	// 手机号码
+	Phone string `json:"phone" db:"phone" gorm:"column:phone" bson:"phone"`
+	// 电子邮箱
+	Email string `json:"email" db:"email" gorm:"column:email" bson:"email"`
+	// 昵称
+	Nickname string `json:"nickname" db:"nickname" gorm:"column:nickname" bson:"nickname"`
+	// 真实姓名
+	RealName string `json:"realName" db:"real_name" gorm:"column:real_name" bson:"realName"`
+	// 加密盐
+	Salt string `json:"salt" db:"salt" gorm:"column:salt" bson:"salt"`
+	// 角色标志
+	RoleFlag int `json:"roleFlag" db:"role_flag" gorm:"column:role_flag" bson:"roleFlag"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// 注册时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+}
+
 func (m Member) TableName() string {
 	return "mm_member"
+}
+
+// ExtraField 会员额外属性
+type ExtraField struct {
+	// Id
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// MemberId
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// 经验值
+	Exp int `json:"exp" db:"exp" gorm:"column:exp" bson:"exp"`
+	// 注册IP
+	RegIp string `json:"regIp" db:"reg_ip" gorm:"column:reg_ip" bson:"regIp"`
+	// 城市编码
+	RegionCode int `json:"regionCode" db:"region_code" gorm:"column:region_code" bson:"regionCode"`
+	// 注册来源
+	RegFrom string `json:"regFrom" db:"reg_from" gorm:"column:reg_from" bson:"regFrom"`
+	// 注册时间
+	RegTime int `json:"regTime" db:"reg_time" gorm:"column:reg_time" bson:"regTime"`
+	// 校验码
+	CheckCode string `json:"checkCode" db:"check_code" gorm:"column:check_code" bson:"checkCode"`
+	// 校验码过期时间
+	CheckExpires int `json:"checkExpires" db:"check_expires" gorm:"column:check_expires" bson:"checkExpires"`
+	// 私人客服人员编号
+	PersonalServiceUid int `json:"personalServiceUid" db:"personal_service_uid" gorm:"column:personal_service_uid" bson:"personalServiceUid"`
+	// 登录时间
+	LoginTime int `json:"loginTime" db:"login_time" gorm:"column:login_time" bson:"loginTime"`
+	// 最后登录时间
+	LastLoginTime int `json:"lastLoginTime" db:"last_login_time" gorm:"column:last_login_time" bson:"lastLoginTime"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+}
+
+func (e *ExtraField) TableName() string {
+	return "mm_extra_field"
+}
+
+// 会员邀请关系
+type InviteRelation struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 会员编号
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// CardNo
+	CardNo string `json:"cardNo" db:"card_no" gorm:"column:card_no" bson:"cardNo"`
+	// 邀请会员编号
+	InviterId int `json:"inviterId" db:"inviter_id" gorm:"column:inviter_id" bson:"inviterId"`
+	// 关联商户编号
+	RegMchId int `json:"regMchId" db:"reg_mch_id" gorm:"column:reg_mch_id" bson:"regMchId"`
+	// 邀请会员编号(depth2)
+	InviterD2 int `json:"inviterD2" db:"inviter_d2" gorm:"column:inviter_d2" bson:"inviterD2"`
+	// 邀请会员编号(depth3)
+	InviterD3 int `json:"inviterD3" db:"inviter_d3" gorm:"column:inviter_d3" bson:"inviterD3"`
+}
+
+func (m InviteRelation) TableName() string {
+	return "mm_relation"
 }

@@ -20,11 +20,13 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	memberImpl "github.com/ixre/go2o/core/domain/member"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	tool "github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/db"
@@ -42,31 +44,60 @@ var (
 type MemberRepoImpl struct {
 	storage storage.Interface
 	db.Connector
-	walletRepo   wallet.IWalletRepo
-	valueRepo    valueobject.IValueRepo
-	mssRepo      mss.IMessageRepo
-	registryRepo registry.IRegistryRepo
-	_orm         orm.Orm
+	walletRepo    wallet.IWalletRepo
+	valueRepo     valueobject.IValueRepo
+	mssRepo       mss.IMessageRepo
+	registryRepo  registry.IRegistryRepo
+	_systemRepo   sys.ISystemRepo
+	_blockRepo    fw.Repository[member.BlockList]
+	_oauthRepo    fw.Repository[member.OAuthAccount]
+	_relationRepo fw.Repository[member.InviteRelation]
+	_extraRepo    fw.Repository[member.ExtraField]
+	_orm          orm.Orm
+	_o            fw.ORM
+}
+
+// BlockRepo implements member.IMemberRepo.
+func (m *MemberRepoImpl) BlockRepo() fw.Repository[member.BlockList] {
+	if m._blockRepo == nil {
+		m._blockRepo = &fw.BaseRepository[member.BlockList]{ORM: m._o}
+	}
+	return m._blockRepo
+}
+
+func (m *MemberRepoImpl) OAuthRepo() fw.Repository[member.OAuthAccount] {
+	if m._oauthRepo == nil {
+		m._oauthRepo = &fw.BaseRepository[member.OAuthAccount]{ORM: m._o}
+	}
+	return m._oauthRepo
+}
+
+func (m *MemberRepoImpl) ExtraRepo() fw.Repository[member.ExtraField] {
+	return m._extraRepo
 }
 
 var memberRepoImplMapped = false
 
-func NewMemberRepo(sto storage.Interface, o orm.Orm,
+func NewMemberRepo(sto storage.Interface, o orm.Orm, no fw.ORM,
 	walletRepo wallet.IWalletRepo, mssRepo mss.IMessageRepo,
-	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) member.IMemberRepo {
+	valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo,
+	systemRepo sys.ISystemRepo) member.IMemberRepo {
 	if !memberRepoImplMapped {
-		_ = o.Mapping(member.OAuthAccount{}, "mm_app_account")
 		memberRepoImplMapped = true
 		OrmMapping(o)
 	}
 	return &MemberRepoImpl{
-		storage:      sto,
-		Connector:    o.Connector(),
-		_orm:         o,
-		mssRepo:      mssRepo,
-		walletRepo:   walletRepo,
-		valueRepo:    valRepo,
-		registryRepo: registryRepo,
+		storage:       sto,
+		Connector:     o.Connector(),
+		_orm:          o,
+		_o:            no,
+		mssRepo:       mssRepo,
+		walletRepo:    walletRepo,
+		valueRepo:     valRepo,
+		registryRepo:  registryRepo,
+		_systemRepo:   systemRepo,
+		_relationRepo: fw.NewRepository[member.InviteRelation](no),
+		_extraRepo:    fw.NewRepository[member.ExtraField](no),
 	}
 }
 
@@ -88,7 +119,7 @@ func (m *MemberRepoImpl) GetProfile(memberId int64) *member.Profile {
 		if err := m._orm.Get(memberId, e); err != nil {
 			if err == sql.ErrNoRows {
 				//todo: 没有资料应该到会员注册时候创建
-				e.MemberId = memberId
+				e.MemberId = int(memberId)
 				orm.Save(m._orm, e, 0)
 			}
 		} else {
@@ -102,7 +133,7 @@ func (m *MemberRepoImpl) GetProfile(memberId int64) *member.Profile {
 func (m *MemberRepoImpl) SaveProfile(v *member.Profile) error {
 	_, _, err := m._orm.Save(v.MemberId, v)
 	if err == nil {
-		err = m.storage.Set(m.getProfileCk(v.MemberId), *v)
+		err = m.storage.Set(m.getProfileCk(int64(v.MemberId)), *v)
 	}
 	return err
 }
@@ -237,7 +268,7 @@ func (m *MemberRepoImpl) GetMemberIdByEmail(email string) int64 {
 func (m *MemberRepoImpl) getMemberCk(memberId int64) string {
 	return fmt.Sprintf("go2o:repo:mm:inf:%d", memberId)
 }
-func (m *MemberRepoImpl) getAccountCk(memberId int64) string {
+func (m *MemberRepoImpl) getAccountCk(memberId int) string {
 	return fmt.Sprintf("go2o:repo:mm:%d:acc", memberId)
 }
 func (m *MemberRepoImpl) getProfileCk(memberId int64) string {
@@ -249,7 +280,6 @@ func (m *MemberRepoImpl) GetMember(memberId int64) member.IMemberAggregateRoot {
 	e := &member.Member{}
 	key := m.getMemberCk(memberId)
 	if err := m.storage.Get(key, &e); err != nil {
-		//log.("-- mm",err)
 		err = m._orm.Get(memberId, e)
 		if err != nil {
 			return nil
@@ -273,10 +303,10 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 		_, _, err := m._orm.Save(v.Id, v)
 		if err == nil {
 			// 存储到缓存中
-			err = m.storage.Set(m.getMemberCk(v.Id), *v)
-			m.storage.Delete(m.getProfileCk(v.Id))
+			err = m.storage.Set(m.getMemberCk(int64(v.Id)), *v)
+			m.storage.Delete(m.getProfileCk(int64(v.Id)))
 		}
-		return v.Id, err
+		return int64(v.Id), err
 	}
 	return m.createMember(v)
 }
@@ -287,8 +317,8 @@ func (m *MemberRepoImpl) createMember(v *member.Member) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	v.Id = id
-	return v.Id, err
+	v.Id = int(id)
+	return int64(v.Id), err
 }
 
 // 删除会员
@@ -323,7 +353,7 @@ func (m *MemberRepoImpl) GetMemberIdByUser(user string) int64 {
 // 创建会员
 func (m *MemberRepoImpl) CreateMember(v *member.Member) member.IMemberAggregateRoot {
 	return memberImpl.NewMember(m.GetManager(), v, m,
-		m.walletRepo, m.mssRepo, m.valueRepo, m.registryRepo)
+		m.walletRepo, m.mssRepo, m.valueRepo, m.registryRepo, m._systemRepo)
 }
 
 // 创建会员,仅作为某些操作使用,不保存
@@ -331,7 +361,7 @@ func (m *MemberRepoImpl) CreateMemberById(memberId int64) member.IMemberAggregat
 	if memberId <= 0 {
 		return nil
 	}
-	return m.CreateMember(&member.Member{Id: memberId})
+	return m.CreateMember(&member.Member{Id: int(memberId)})
 }
 
 // 获取会员最后更新时间
@@ -343,7 +373,7 @@ func (m *MemberRepoImpl) GetMemberLatestUpdateTime(memberId int64) int64 {
 }
 
 // GetAccount 获取账户
-func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
+func (m *MemberRepoImpl) GetAccount(memberId int) *member.Account {
 	e := &member.Account{}
 	key := m.getAccountCk(memberId)
 	if m.storage.Get(key, &e) != nil {
@@ -356,7 +386,7 @@ func (m *MemberRepoImpl) GetAccount(memberId int64) *member.Account {
 }
 
 // SaveAccount 保存账户，传入会员编号
-func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
+func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int, error) {
 	var err error
 	if m.GetAccount(v.MemberId) == nil {
 		_, _, err = m._orm.Save(nil, v)
@@ -372,7 +402,7 @@ func (m *MemberRepoImpl) SaveAccount(v *member.Account) (int64, error) {
 	return v.MemberId, err
 }
 
-func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int64, updateTime int64) {
+func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int, updateTime int) {
 	//rc := core.GetRedisConn()
 	//defer rc.Close()
 	//// 保存最后更新时间
@@ -434,9 +464,9 @@ func (m *MemberRepoImpl) SaveIntegralLog(v *member.IntegralLog) error {
 func (m *MemberRepoImpl) SaveBalanceLog(v *member.BalanceLog) (int32, error) {
 	id, err := orm.Save(m._orm, v, int(v.Id))
 	if err == nil {
-		v.Id = int64(id)
+		v.Id = int(id)
 	}
-	return int32(id), err
+	return int32(v.Id), err
 }
 
 // 保存钱包账户日志
@@ -496,7 +526,7 @@ func (m *MemberRepoImpl) GetTodayTakeOutTimes(memberId int64) int {
 	err := m.ExecScalar(`SELECT COUNT(1) FROM mm_wallet_log WHERE
         member_id= $1 AND kind IN($2,$3) AND create_time BETWEEN $4 AND $5`, &total,
 		memberId, wallet.KWithdrawToBankCard,
-		wallet.KWithdrawToThirdPart, b, e)
+		wallet.KWithdrawToPayWallet, b, e)
 	if err != nil {
 		handleError(err)
 	}
@@ -509,15 +539,15 @@ func (m *MemberRepoImpl) getRelationCk(memberId int64) string {
 
 // 获取会员关联
 func (m *MemberRepoImpl) GetRelation(memberId int64) *member.InviteRelation {
-	e := member.InviteRelation{}
+	e := &member.InviteRelation{}
 	key := m.getRelationCk(memberId)
-	if m.storage.Get(key, &e) != nil {
-		if err := m._orm.Get(memberId, &e); err != nil {
-			return nil
+	if m.storage.Get(key, e) != nil {
+		e = m._relationRepo.FindBy("member_id=?", memberId)
+		if e != nil {
+			m.storage.Set(key, *e)
 		}
-		m.storage.Set(key, e)
 	}
-	return &e
+	return e
 }
 
 // 获取会员邀请的会员编号列表
@@ -553,7 +583,7 @@ func (m *MemberRepoImpl) CheckUserExist(user string, memberId int64) bool {
 }
 
 // 手机号码是否使用
-func (m *MemberRepoImpl) CheckPhoneBind(phone string, memberId int64) bool {
+func (m *MemberRepoImpl) CheckPhoneBind(phone string, memberId int) bool {
 	var c int
 	m.Connector.ExecScalar("SELECT COUNT(1) FROM mm_member WHERE phone= $1 AND id <> $2",
 		&c, phone, memberId)
@@ -570,14 +600,10 @@ func (m *MemberRepoImpl) CheckNicknameIsUse(phone string, memberId int64) bool {
 
 // 保存绑定
 func (m *MemberRepoImpl) SaveRelation(v *member.InviteRelation) (err error) {
-	rel := m.GetRelation(v.MemberId)
-	if rel == nil {
-		_, _, err = m._orm.Save(nil, v)
-	} else {
-		_, _, err = m._orm.Save(v.MemberId, v)
-	}
+	rst, err := m._relationRepo.Save(v)
 	if err == nil {
-		err = m.storage.Set(m.getRelationCk(v.MemberId), *v)
+		v.Id = rst.Id
+		err = m.storage.Set(m.getRelationCk(int64(v.MemberId)), *rst)
 	}
 	return err
 }
@@ -634,14 +660,14 @@ func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) 
 	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_member WHERE id IN
 	 (SELECT member_id FROM mm_relation WHERE inviter_id= $1)`, &total, memberId)
 	if total > 0 {
-		m.Connector.Query(`SELECT id,username,level,profile_photo,real_name,phone,reg_time FROM mm_member 
+		m.Connector.Query(`SELECT id,nickname,username,level,profile_photo,phone,reg_time FROM mm_member 
 				WHERE id IN (SELECT member_id FROM
              mm_relation WHERE inviter_id= $1)
              ORDER BY level DESC,id LIMIT $3 OFFSET $2`,
 			func(rs *sql.Rows) {
 				for rs.Next() {
 					e := &dto.InvitationMember{}
-					rs.Scan(&e.MemberId, &e.Username, &e.Level, &e.ProfilePhoto, &e.Nickname, &e.Phone, &e.RegTime)
+					rs.Scan(&e.MemberId, &e.Nickname, &e.Username, &e.Level, &e.ProfilePhoto, &e.Phone, &e.RegTime)
 					arr = append(arr, e)
 				}
 			}, memberId, begin, end-begin)
@@ -712,9 +738,9 @@ func (m *MemberRepoImpl) SaveGrowAccount(memberId int64, balance, totalAmount,
 		grow_amount= $2,grow_earnings= $3,grow_total_earnings= $4,update_time= $5 where member_id= $6`,
 		balance, totalAmount, growEarnings, totalGrowEarnings, updateTime, memberId)
 	//清除缓存
-	m.storage.Delete(m.getAccountCk(memberId))
+	m.storage.Delete(m.getAccountCk(int(memberId)))
 	//加入通知队列
-	m.pushToAccountUpdateQueue(memberId, updateTime)
+	m.pushToAccountUpdateQueue(int(memberId), int(updateTime))
 	return err
 }
 
@@ -806,6 +832,7 @@ func (m *MemberRepoImpl) SaveCertificationInfo(v *member.CerticationInfo) (int, 
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:CertificationInfo")
 	}
+	v.Id = id
 	return id, err
 }
 
@@ -820,22 +847,14 @@ func (m *MemberRepoImpl) DeleteOAuthAccount(primary interface{}) error {
 
 // GetOAuthAccount implements member.IMemberRepo
 func (m *MemberRepoImpl) GetOAuthAccount(memberId int, appCode string) *member.OAuthAccount {
-	e := member.OAuthAccount{}
-	err := m._orm.GetBy(&e, "member_id = $1 AND app_code = $2", memberId, appCode)
-	if err == nil {
-		return &e
-	}
-	if err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OAuthAccount")
-	}
-	return nil
+	return m.OAuthRepo().FindBy("member_id = ? AND app_code = ?", memberId, appCode)
 }
 
 // SaveOAuthAccount implements member.IMemberRepo
 func (m *MemberRepoImpl) SaveOAuthAccount(v *member.OAuthAccount) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.Id))
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OAuthAccount")
+	e, err := m.OAuthRepo().Save(v)
+	if err == nil {
+		return e.Id, nil
 	}
-	return id, err
+	return 0, err
 }

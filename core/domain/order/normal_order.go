@@ -563,22 +563,22 @@ func (o *normalOrderImpl) createPaymentForOrder() error {
 		OrderType:    int(order.TRetail),
 		OutOrderNo:   v.OrderNo,
 		Subject:      v.Subject,
-		BuyerId:      v.BuyerId,
-		PayerId:      v.BuyerId,
+		BuyerId:      int(v.BuyerId),
+		PayerId:      int(v.BuyerId),
 		AdjustAmount: 0,
-		FinalAmount:  finalAmount,
-		TotalAmount:  finalAmount,
+		FinalAmount:  int(finalAmount),
+		TotalAmount:  int(finalAmount),
 		PayFlag:      payment.PAllFlag,
 		TradeChannel: 0,
 		ExtraData:    "",
 		OutTradeSp:   "",
 		OutTradeNo:   "",
-		State:        payment.StateAwaitingPayment,
-		SubmitTime:   v.CreateTime,
-		ExpiresTime:  expiresTime,
+		Status:       payment.StateAwaitingPayment,
+		SubmitTime:   int(v.CreateTime),
+		ExpiresTime:  int(expiresTime),
 		PaidTime:     0,
-		UpdateTime:   v.CreateTime,
-		TradeMethods: []*payment.TradeMethodData{},
+		UpdateTime:   int(v.CreateTime),
+		TradeMethods: []*payment.PayTradeData{},
 	}
 	o._payOrder = o.payRepo.CreatePaymentOrder(po)
 	err := o._payOrder.Submit()
@@ -708,12 +708,12 @@ func (o *normalOrderImpl) applyCouponOnSubmit() error {
 	buyerId := o.buyer.GetAggregateRootId()
 	for _, c := range o.GetCoupons() {
 		if c.CanTake() {
-			t, err = c.GetTake(buyerId)
+			t, err = c.GetTake(int64(buyerId))
 			if err == nil {
 				err = c.ApplyTake(t.Id)
 			}
 		} else {
-			b, err = c.GetBind(buyerId)
+			b, err = c.GetBind(int64(buyerId))
 			if err == nil {
 				err = c.UseCoupon(b.Id)
 			}
@@ -731,10 +731,10 @@ func (o *normalOrderImpl) getBalanceDeductFee(acc member.IAccount) int64 {
 		return 0
 	}
 	acv := acc.GetValue()
-	if acv.Balance >= o.baseValue.FinalAmount {
+	if acv.Balance >= int(o.baseValue.FinalAmount) {
 		return o.baseValue.FinalAmount
 	}
-	return acv.Balance
+	return int64(acv.Balance)
 }
 
 // 释放购物车并销毁
@@ -830,8 +830,8 @@ func (o *normalOrderImpl) createAffiliateRebateOrder(so order.ISubOrder) {
 		v := &order.AffiliateDistribution{
 			Id:               0,
 			PlanId:           0,
-			BuyerId:          o._AffiliateMember.GetAggregateRootId(),
-			OwnerId:          o._AffiliateMember.GetAggregateRootId(),
+			BuyerId:          int64(o._AffiliateMember.GetAggregateRootId()),
+			OwnerId:          int64(o._AffiliateMember.GetAggregateRootId()),
 			Flag:             1,
 			IsRead:           0,
 			AffiliateCode:    o._AffiliateMember.GetValue().UserCode,
@@ -883,7 +883,7 @@ func (o *normalOrderImpl) breakUpByVendor() ([]order.ISubOrder, error) {
 			it.OrderId = int64(orderId)
 		}
 		// log.Println("----- vendor ", k, len(v),l)
-		list[i] = o.createSubOrderByVendor(parentOrderId, buyerId, vendorId, l > 1, v)
+		list[i] = o.createSubOrderByVendor(parentOrderId, int64(buyerId), vendorId, l > 1, v)
 		if _, err := list[i].Submit(); err != nil {
 			_ = domain.HandleError(err, "domain")
 		}
@@ -913,39 +913,39 @@ func (o *normalOrderImpl) createSubPaymentOrder(ip payment.IPaymentOrder, iso or
 	deductAmount := int(math.Round(float64(po.DeductAmount) * rate))
 	// 生成支付单
 	v := &payment.Order{
-		Id:           0,
-		SellerId:     int(so.VendorId),
-		TradeType:    "",
-		TradeNo:      so.OrderNo,
-		OrderType:    int(order.TRetail),
-		SubOrder:     1,
-		OutOrderNo:   so.OrderNo,
-		Subject:      "支付单#拆分子订单",
-		BuyerId:      o.baseValue.BuyerId,
-		PayerId:      0,
-		AdjustAmount: 0,
-		TotalAmount:  so.ItemAmount,
-		DeductAmount: int64(deductAmount),
-		ProcedureFee: 0,
-		PaidAmount:   0,
-		PayFlag:      po.PayFlag,
-		FinalFlag:    po.FinalFlag,
-		State:        po.State,
-		SubmitTime:   po.SubmitTime,
-		ExpiresTime:  po.ExpiresTime,
-		UpdateTime:   time.Now().Unix(),
-		TradeMethods: []*payment.TradeMethodData{},
+		Id:             0,
+		SellerId:       int(so.VendorId),
+		TradeType:      "",
+		TradeNo:        so.OrderNo,
+		OrderType:      int(order.TRetail),
+		SubOrder:       1,
+		OutOrderNo:     so.OrderNo,
+		Subject:        "支付单#拆分子订单",
+		BuyerId:        int(o.baseValue.BuyerId),
+		PayerId:        0,
+		AdjustAmount:   0,
+		TotalAmount:    int(so.ItemAmount),
+		DeductAmount:   int(deductAmount),
+		TransactionFee: 0,
+		PaidAmount:     0,
+		PayFlag:        po.PayFlag,
+		FinalFlag:      po.FinalFlag,
+		Status:         po.Status,
+		SubmitTime:     po.SubmitTime,
+		ExpiresTime:    po.ExpiresTime,
+		UpdateTime:     int(time.Now().Unix()),
+		TradeMethods:   []*payment.PayTradeData{},
 	}
 	// 更新支付方式
 	for _, tv := range ip.TradeMethods() {
-		v.TradeMethods = append(v.TradeMethods, &payment.TradeMethodData{
-			TradeNo:    so.OrderNo,
-			Method:     tv.Method,
-			Code:       tv.Code,
-			Internal:   tv.Internal,
-			Amount:     int64(math.Round(float64(tv.Amount) * rate)),
-			OutTradeNo: tv.OutTradeNo,
-			PayTime:    tv.PayTime,
+		v.TradeMethods = append(v.TradeMethods, &payment.PayTradeData{
+			TradeNo:      so.OrderNo,
+			PayMethod:    tv.PayMethod,
+			OutTradeCode: tv.OutTradeCode,
+			Internal:     tv.Internal,
+			PayAmount:    int(math.Round(float64(tv.PayAmount) * rate)),
+			OutTradeNo:   tv.OutTradeNo,
+			PayTime:      tv.PayTime,
 		})
 	}
 	isp := o.payRepo.CreatePaymentOrder(v)
@@ -1031,9 +1031,9 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchantAggr
 	acv := acc.GetValue()
 	//acc.TotalAmount += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
-	acv.WalletBalance += fee // 更新赠送余额
-	acv.TotalWalletAmount += fee
-	acv.UpdateTime = unixTime
+	acv.WalletBalance += int(fee) // 更新赠送余额
+	acv.TotalWalletAmount += int(fee)
+	acv.UpdateTime = int(unixTime)
 	_, err := acc.Save()
 	if err == nil {
 		orderNo := o.OrderNo()
@@ -1041,10 +1041,10 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchantAggr
 		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.MchName, fee)
 		_, err = acc.CarryTo(member.AccountWallet,
 			member.AccountOperateData{
-				Title:   tit,
-				Amount:  int(fee * 100),
-				OuterNo: orderNo,
-				Remark:  "sys",
+				TransactionTitle:   tit,
+				Amount:             int(fee * 100),
+				OuterTransactionNo: orderNo,
+				TransactionRemark:  "sys",
 			}, false, 0)
 	}
 	return err
@@ -1070,7 +1070,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchantAggregate
 	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)
 
 	//更新账户
-	bFee := cpv.BackFee
+	bFee := int(cpv.BackFee)
 	acc := m.GetAccount()
 	acv := acc.GetValue()
 	acv.WalletBalance += bFee // 更新赠送余额
@@ -1078,7 +1078,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchantAggregate
 	// 赠送金额，不应该计入到余额，可采取充值到余额
 	//acc.Balance += float32(cpv.BackFee)                            // 更新账户余额
 
-	acv.UpdateTime = time.Now().Unix()
+	acv.UpdateTime = int(time.Now().Unix())
 	_, err := acc.Save()
 
 	if err == nil {
@@ -1094,10 +1094,10 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchantAggregate
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, orderNo)
 		_, err = acc.CarryTo(member.AccountWallet, member.AccountOperateData{
-			Title:   tit,
-			Amount:  int(cpv.BackFee * 100),
-			OuterNo: orderNo,
-			Remark:  "sys",
+			TransactionTitle:   tit,
+			Amount:             int(cpv.BackFee * 100),
+			OuterTransactionNo: orderNo,
+			TransactionRemark:  "sys",
 		}, false, 0)
 	}
 	return err

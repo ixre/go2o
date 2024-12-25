@@ -10,6 +10,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/format"
+	"github.com/ixre/go2o/core/infrastructure/fw"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
@@ -40,7 +41,7 @@ type queryService struct {
 	proto.UnimplementedQueryServiceServer
 }
 
-func NewQueryService(o orm.Orm, s storage.Interface,
+func NewQueryService(o orm.Orm, on fw.ORM, s storage.Interface,
 	catRepo product.ICategoryRepo, memberQuery *query.MemberQuery) proto.QueryServiceServer {
 	shopQuery := query.NewShopQuery(o, s)
 	return &queryService{
@@ -49,21 +50,8 @@ func NewQueryService(o orm.Orm, s storage.Interface,
 		memberQuery:     memberQuery,
 		orderQuery:      query.NewOrderQuery(o),
 		catRepo:         catRepo,
-		statisticsQuery: query.NewStatisticsQuery(o, s),
+		statisticsQuery: query.NewStatisticsQuery(o, on, s),
 	}
-}
-
-// SummaryStatistics implements proto.QueryServiceServer
-func (q *queryService) SummaryStatistics(context.Context, *proto.SummaryStatisticsRequest) (*proto.SummaryStatisticsResponse, error) {
-	s := q.statisticsQuery.QuerySummary()
-	return &proto.SummaryStatisticsResponse{
-		TotalMembers:                s.TotalMembers,
-		TodayJoinMembers:            s.TodayJoinMembers,
-		TodayLoginMembers:           s.TodayLoginMembers,
-		TodayCreateOrders:           s.TodayCreateOrders,
-		AwaitShipmentOrders:         s.AwaitShipmentOrders,
-		AwaitReviewWithdrawRequests: s.AwaitReviewWithdrawRequests,
-	}, nil
 }
 
 // MemberStatistics 获取会员的订单状态及其数量
@@ -325,7 +313,7 @@ func (q *queryService) PagingMemberAccountLog(_ context.Context, r *proto.Paging
 	}
 	rs := &proto.MemberAccountPagingLogResponse{
 		Total: int32(total),
-		Data:  rows,
+		Rows:  rows,
 	}
 	return rs, nil
 }

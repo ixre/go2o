@@ -6,18 +6,21 @@ import "message/advertisement_dto.proto";
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
 
+/** 广告服务 */
 service AdvertisementService {
+    /** 获取广告组 */
     rpc GetGroups (Empty) returns (AdGroupResponse) {
     }
+    /** 获取广告位 */
     rpc GetPosition (AdPositionId) returns (SAdPosition) {
     }
-    rpc SaveAdPosition (SAdPosition) returns (Result) {
-    }
-    rpc DeleteAdPosition (AdPositionId) returns (Result) {
-    }
+    /** 更新广告位 */
+    rpc SaveAdPosition (SAdPosition) returns (TxResult);
+
+    /** 删除广告位 */
+    rpc DeleteAdPosition (AdPositionId) returns (TxResult);
     // 投放广告位的默认广告
-    rpc PutDefaultAd (SetDefaultAdRequest) returns (Result) {
-    }
+    rpc PutDefaultAd (SetDefaultAdRequest) returns (TxResult);
     // 查询广告
     rpc QueryAd(QueryAdRequest) returns (QueryAdResponse){}
 
@@ -26,25 +29,12 @@ service AdvertisementService {
     }
 
     // 用户投放广告
-    rpc SetUserAd (SetUserAdRequest) returns (Result) {
-    }
+    rpc SetUserAd (SetUserAdRequest) returns (TxResult);
     // 获取广告,returnData=true返回数据传输对象
-    rpc GetAdvertisement (AdIdRequest) returns (SAdDto) {
+    rpc GetAdvertisement (AdIdRequest) returns (SAd) {
     }
     // 保存广告,更新时不允许修改类型
-    rpc SaveAd (SaveAdRequest) returns (Result) {
-    }
+    rpc SaveAd (SAd) returns (TxResult);
     // 删除广告
-    rpc DeleteAd (AdIdRequest) returns (Result) {
-    }
-
-    // 保存图片广告
-    rpc SaveSwiperAdImage (SaveSwiperImageRequest) returns (Result) {
-    }
-    // 获取广告图片
-    rpc GetSwiperAdImage (ImageIdRequest) returns (SImageAdData) {
-    }
-    // 删除广告图片
-    rpc DeleteSwiperAdImage (ImageIdRequest) returns (Result) {
-    }
+    rpc DeleteAd (AdIdRequest) returns (TxResult);
 }

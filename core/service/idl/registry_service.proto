@@ -20,7 +20,7 @@ service RegistryService {
   }
 
   /** 更新注册表值 */
-  rpc UpdateValue (RegistryPair) returns (Result) {
+  rpc UpdateValue (RegistryPair) returns (TxResult) {
   }
 
   /** 获取键值存储数据字典,keys */
@@ -28,7 +28,7 @@ service RegistryService {
   }
 
   /** 更新注册表键值 */
-  rpc UpdateValues (StringMap) returns (Result) {
+  rpc UpdateValues (StringMap) returns (TxResult) {
   }
 
   /** 搜索键值 */
@@ -41,7 +41,7 @@ service RegistryService {
   rpc SearchRegistry (String) returns (RegistriesResponse) {
   }
   /** 创建自定义注册表项,@defaultValue 默认值,如需更改,使用UpdateRegistry方法  */
-  rpc CreateRegistry (RegistryCreateRequest) returns (Result) {
+  rpc CreateRegistry (RegistryCreateRequest) returns (TxResult) {
   }
 }
 

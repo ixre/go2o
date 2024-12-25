@@ -9,29 +9,36 @@
 package content
 
 import (
+	"net/url"
 	"strconv"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
-	"github.com/ixre/go2o/core/infrastructure/util/collections"
 )
 
 var _ content.IArticle = new(articleImpl)
 
 type articleImpl struct {
-	_repo     content.IArticleRepo
-	_value    *content.Article
-	_category *content.Category
-	_manager  content.IArticleManager
+	_repo         content.IArticleRepo
+	_value        *content.Article
+	_category     *content.Category
+	_manager      content.IArticleManager
+	_registryRepo registry.IRegistryRepo
 }
 
 func NewArticle(v *content.Article, m content.IArticleManager,
-	rep content.IArticleRepo) content.IArticle {
+	rep content.IArticleRepo,
+	registryRepo registry.IRegistryRepo) content.IArticle {
 	return &articleImpl{
-		_repo:    rep,
-		_value:   v,
-		_manager: m,
+		_repo:         rep,
+		_value:        v,
+		_manager:      m,
+		_registryRepo: registryRepo,
 	}
 }
 
@@ -47,24 +54,39 @@ func (a *articleImpl) GetValue() content.Article {
 
 // SetValue 设置值
 func (a *articleImpl) SetValue(v *content.Article) error {
+	// 判断分类
+	if v.CatId <= 0 {
+		return content.ErrInvalidCategory
+	}
+	a._value.CatId = v.CatId
+	if v.MchId > 0 {
+		// 判断商户投搞，分类是否支持投稿
+		cat := a.Category()
+		if (cat.Flag & content.FCategoryPost) != content.FCategoryPost {
+			return content.ErrDisallowPostArticle
+		}
+	}
 	a._value.Title = v.Title
 	a._value.ShortTitle = v.ShortTitle
 	a._value.SortNum = v.SortNum
 	a._value.Location = v.Location
 	a._value.Content = v.Content
-	a._value.Thumbnail = v.Thumbnail
-	a._value.CatId = v.CatId
+	a._value.Thumbnail = strings.TrimSpace(v.Thumbnail)
 	a._value.Flag = v.Flag
 	a._value.MchId = v.MchId
 	a._value.AccessToken = v.AccessToken
 	a._value.Priority = v.Priority
 	a._value.UpdateTime = int(time.Now().Unix())
-
 	if a._value.CreateTime == 0 {
 		a._value.CreateTime = a._value.UpdateTime
 	}
 	if a._value.PublisherId <= 0 {
 		a._value.PublisherId = v.PublisherId
+	}
+	if len(a._value.Thumbnail) == 0 {
+		// 如果未设置,则用系统内置头像
+		prefix, _ := a._registryRepo.GetValue(registry.FileServerUrl)
+		a._value.Thumbnail, _ = url.JoinPath(prefix, "static/init/nopic.jpg")
 	}
 	return nil
 }
@@ -80,7 +102,7 @@ func (a *articleImpl) Category() *content.Category {
 // Save 保存文章
 func (a *articleImpl) Save() error {
 	if a.Category() == nil {
-		return content.NotSetCategory
+		return content.ErrInvalidCategory
 	}
 	_, err := a._repo.Save(a._value)
 	return err
@@ -89,12 +111,13 @@ func (a *articleImpl) Save() error {
 // Dislike implements content.IArticle.
 func (a *articleImpl) Dislike(memberId int) error {
 	//todo: 记录会员的点赞记录
-	a._value.DislikeCount += 1
+	//a._value.DislikeCount += 1
+	a._value.LikeCount -= 1
 	return a.Save()
 }
 
 // IncreaseViewCount implements content.IArticle.
-func (a *articleImpl) IncreaseViewCount(memberId int, count int) error {
+func (a *articleImpl) IncreaseViewCount(count int) error {
 	a._value.ViewCount += count
 	return a.Save()
 }
@@ -112,29 +135,40 @@ func (a *articleImpl) Destory() error {
 
 var _ content.IArticleManager = new(articleManagerImpl)
 
+var locker sync.RWMutex
+
 type articleManagerImpl struct {
-	_rep         content.IArticleCategoryRepo
-	_artRepo     content.IArticleRepo
-	_userId      int64
-	categoryList []*content.Category
+	_rep          content.IArticleCategoryRepo
+	_artRepo      content.IArticleRepo
+	_registryRepo registry.IRegistryRepo
+	_userId       int64
+	categoryList  []*content.Category
 }
 
-func newArticleManagerImpl(userId int64, rep content.IArticleCategoryRepo, artRepo content.IArticleRepo) content.IArticleManager {
+func newArticleManagerImpl(userId int64, rep content.IArticleCategoryRepo, artRepo content.IArticleRepo,
+	_registryRepo registry.IRegistryRepo) content.IArticleManager {
 	return &articleManagerImpl{
-		_rep:     rep,
-		_userId:  userId,
-		_artRepo: artRepo,
+		_rep:          rep,
+		_userId:       userId,
+		_artRepo:      artRepo,
+		_registryRepo: _registryRepo,
 	}
 }
 
 // GetAllCategory 获取所有的栏目
 func (a *articleManagerImpl) GetAllCategory() []content.Category {
 	if a.categoryList == nil {
+		locker.RLock()
+		defer locker.RUnlock()
 		list := a._rep.FindList(nil, "")
 		l := len(list)
 		//如果没有分类,则为系统初始化数据
 		if l == 0 && a._userId <= 0 {
+			locker.RUnlock()
+			locker.Lock()
 			a.initSystemCategory()
+			locker.Unlock()
+			locker.RLock()
 			list = a._rep.FindList(nil, "")
 			l = len(list)
 		}
@@ -163,9 +197,9 @@ func (a *articleManagerImpl) initSystemCategory() {
 			Name:  "批发公告",
 		},
 		{
-			Alias:    "member",
-			Name:     "会员公告",
-			PermFlag: content.FCategoryOpen,
+			Alias: "member",
+			Name:  "会员公告",
+			Flag:  content.FCategoryOpen,
 		},
 		{
 			Alias: "merchant",
@@ -180,9 +214,9 @@ func (a *articleManagerImpl) initSystemCategory() {
 			Name:  "帮助中心",
 		},
 		{
-			Alias:    "news",
-			Name:     "新闻资讯",
-			PermFlag: content.FCategorySupportPost,
+			Alias: "news",
+			Name:  "新闻资讯",
+			Flag:  content.FCategoryPost,
 		},
 		{
 			Alias: "notification",
@@ -190,7 +224,7 @@ func (a *articleManagerImpl) initSystemCategory() {
 		},
 	}
 	for _, v := range list {
-		v.PermFlag = v.PermFlag | content.FCategoryInternal
+		v.Flag = v.Flag | content.FCategoryInternal
 		a.SaveCategory(v)
 	}
 }
@@ -232,17 +266,17 @@ func (a *articleManagerImpl) SaveCategory(v *content.Category) error {
 	r.Alias = v.Alias
 	r.Location = v.Location
 	r.Title = v.Title
-	r.SortNum = v.SortNum
-	r.ParentId = v.ParentId
+	r.SortNo = v.SortNo
+	r.Pid = v.Pid
 	r.Title = v.Title
 	r.Keywords = v.Keywords
 	r.Description = v.Description
 
 	// 设置访问权限
-	if v.PermFlag > 0 {
-		r.PermFlag = v.PermFlag
+	if v.Flag > 0 {
+		r.Flag = v.Flag
 	}
-	r.UpdateTime = time.Now().Unix()
+	r.UpdateTime = int(time.Now().Unix())
 	_, err := a._rep.Save(r)
 	if err == nil {
 		a.categoryList = nil
@@ -266,14 +300,14 @@ func (a *articleManagerImpl) DeleteCategory(id int) error {
 
 // CreateArticle 创建文章
 func (a *articleManagerImpl) CreateArticle(v *content.Article) content.IArticle {
-	return NewArticle(v, a, a._artRepo)
+	return NewArticle(v, a, a._artRepo, a._registryRepo)
 }
 
 // GetArticle 获取文章
 func (a *articleManagerImpl) GetArticle(id int) content.IArticle {
 	v := a._artRepo.Get(id)
 	if v != nil {
-		return NewArticle(v, a, a._artRepo)
+		return NewArticle(v, a, a._artRepo, a._registryRepo)
 	}
 	return nil
 }

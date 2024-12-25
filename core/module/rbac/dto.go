@@ -7,7 +7,7 @@ type UserInfoResponse struct {
 	// 昵称
 	Nickname string `json:"nickname"`
 	// 头像
-	Avatar string `json:"avatar"`
+	ProfilePhoto string `json:"profilePhoto"`
 	// 登录IP
 	LoginIp string `json:"loginIp"`
 	// 资源Key
@@ -16,4 +16,6 @@ type UserInfoResponse struct {
 	Roles []string `json:"roles"`
 	// 菜单数据
 	MenuData []*proto.SUserMenu `json:"menuData"`
+	// 用户设置
+	Settings map[string]interface{} `json:"settings"`
 }

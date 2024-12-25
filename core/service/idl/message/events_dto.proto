@@ -77,8 +77,8 @@ message EVMemberPushEventData{
       sint32 role = 5;
 	  /** 用户名 */
 	  string username = 6;
-	  /** 经验值 */
-	  sint64 exp = 7;
+	  /** 国家代码 */
+	  string countryCode = 7;
 	  /** 等级  */
 	  sint32 level = 8;
 	  /** 昵称 */
@@ -95,8 +95,6 @@ message EVMemberPushEventData{
 	  string realName = 15;
 	  // 邀请人
 	  int64 inviterId = 16;
-	  /** 最后登录时间 */
-	  int64 lastLoginTime = 17;
 }
 
 
@@ -159,7 +157,7 @@ message EVMemberWithdrawalPushEventData {
 	// 提现金额
 	int64 amount = 3;
 	// 手续费
-	int64 procedureFee = 4;
+	int64 transactionFee = 4;
 	// 是否为已审核通过的事件
 	bool isReviewEvent = 5;
 	// 是否审核通过
@@ -187,7 +185,7 @@ message EVAccountLogPushEventData  {
 	// 余额
 	int64 balance = 9;
 	// 交易手续费
-	int64 procedureFee = 10;
+	int64 transactionFee = 10;
 	// 审核状态
 	int32 reviewStatus  = 11;
 	// 创建时间

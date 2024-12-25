@@ -93,6 +93,8 @@ message UnfreezeRequest {
     sint32 operatorUid = 6;
     /** 操作人员名称 */
     string operatorName = 7;
+    // 是否退回余额
+    bool isRefundBalance = 8;
 }
 
 message ChargeRequest {
@@ -115,7 +117,7 @@ message TransferRequest {
     /** 转账金额 */
     int64 amount = 3;
     /** 手续费 */
-    sint64 procedureFee = 4;
+    sint64 transactionFee = 4;
     /** 备注 */
     string remark = 5;
 }
@@ -144,7 +146,7 @@ service WalletService {
     }
 
     /** 支付抵扣,must是否必须大于0 */
-    rpc Discount (DiscountRequest) returns (Result) {
+    rpc Discount (DiscountRequest) returns (TxResult) {
     }
 
     /** 冻结余额 */
@@ -163,16 +165,16 @@ service WalletService {
     rpc Transfer (TransferRequest) returns (Result) {
     }
 
-    /** 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费 */
+    /** 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,transactionFee为手续费 */
     rpc RequestWithdrawal (RequestWithdrawalRequest) returns (Result) {
     }
 
     /** 确认提现 */
-    rpc ReviewTakeOut (ReviewTakeOutRequest) returns (Result) {
+    rpc ReviewTakeOut (ReviewWithdrawRequest) returns (Result) {
     }
 
     /** 完成提现 */
-    rpc FinishWithdrawal (FinishTakeOutRequest) returns (Result) {
+    rpc CompleteTransaction (FinishWithdrawRequest) returns (Result) {
     }
 
     /** 获取分页钱包日志 */
@@ -184,32 +186,35 @@ message PagingWalletLogRequest {
     sint64 walletId = 1;
     SPagingParams params = 2;
 }
-message FinishTakeOutRequest {
+message FinishWithdrawRequest {
     sint64 walletId = 1;
-    sint64 takeId = 2;
+    sint64 transactionId = 2;
     string outerNo = 3;
 }
 
+// 提现请求
 message RequestWithdrawalRequest {
     // 钱包编号
     int64 walletId = 1;
+    // 交易描述
+    string transactionTitle = 2;
     // 金额
-    int64 amount = 2;
+    int64 amount = 3;
     // 手续费
-    int32 procedureFee = 3;
+    int32 transactionFee = 4;
     // 提现方式
-    sint32 kind = 4;
-    // 银行名称
-    string bankName = 5;
-    // 银行账号
-    string bankAccountNo = 6;
-    // 银行账户
-    string bankAccountName = 7;
+    sint32 withdrawKind = 5;
+    // 银行名称，withdrawKind为32时传入
+    string bankName = 6;
+    // 账户名称
+    string accountName = 8;
+    // 账号
+    string accountNo = 7;
 }
 
-message ReviewTakeOutRequest {
+message ReviewWithdrawRequest {
     sint64 walletId = 1;
-    sint64 takeId = 2;
+    sint64 transactionId = 2;
     bool reviewPass = 3;
     string remark = 4;
     sint32 operatorUid = 5;
@@ -348,7 +353,7 @@ message SWalletLog {
     /** 余额 */
     int64 balance = 9;
     /** 交易手续费 */
-    int64 procedureFee = 10;
+    int64 transactionFee = 10;
     /** 操作人员用户编号 */
     sint32 operatorUid = 11;
     /** 操作人员名称 */

@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/event/msq"
-	"github.com/ixre/go2o/core/infrastructure/util/sms"
+	"github.com/ixre/go2o/core/infrastructure/util"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/gof/typeconv"
 )
@@ -12,7 +12,7 @@ import (
 func (e EventHandler) HandleSendSmsEvent(data interface{}) {
 	v := data.(*events.SendSmsEvent)
 	if v != nil {
-		v.Template = sms.ResolveMessage(v.Template, v.Data)
+		v.Template = util.ResolveMessage(v.Template, v.Data)
 		ev := &proto.EVSendSmsEventData{
 			Provider:     int32(v.Provider),
 			Phone:        v.Phone,

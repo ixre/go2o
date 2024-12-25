@@ -235,7 +235,7 @@ func (o *subOrderImpl) saveSubOrder() error {
 		// 推送订单状态事件
 		if o._stateIsChange {
 			vo := o.ParentOrder().(*normalOrderImpl)
-			eventbus.Publish(&events.SubOrderPushEvent{
+			eventbus.Dispatch(&events.SubOrderPushEvent{
 				OrderNo:          o.value.OrderNo,
 				OrderAmount:      int(o.value.FinalAmount),
 				ConsigneeName:    vo.baseValue.ConsigneeName,
@@ -523,10 +523,19 @@ func (o *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchantAggregateRoot
 	if sAmount > 0 {
 		totalAmount := int(float32(sAmount) * float32(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKNormalOrder, totalAmount)
-		return vendor.Account().SettleOrder(o.value.OrderNo,
-			totalAmount, tradeFee, refundAmount, "零售订单结算")
+		// 结算到商户
+		sd := merchant.CarryParams{
+			OuterTxNo:         o.value.OrderNo,
+			Amount:            totalAmount,
+			TransactionFee:    transactionFee,
+			RefundAmount:      refundAmount,
+			TransactionTitle:  "零售订单结算",
+			TransactionRemark: o.value.Subject,
+		}
+		_, err := vendor.Account().Carry(sd)
+		return err
 	}
 	return nil
 }
@@ -539,11 +548,18 @@ func (o *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchantAggregateRoot
 	if sAmount > 0 {
 		totalAmount := int(float32(sAmount) * float32(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKNormalOrder, totalAmount)
-		return vendor.Account().SettleOrder(o.value.OrderNo,
-			totalAmount, tradeFee, refundAmount, "零售订单结算")
-
+		sd := merchant.CarryParams{
+			OuterTxNo:         o.value.OrderNo,
+			Amount:            totalAmount,
+			TransactionFee:    transactionFee,
+			RefundAmount:      refundAmount,
+			TransactionTitle:  "零售订单结算",
+			TransactionRemark: o.value.Subject,
+		}
+		_, err := vendor.Account().Carry(sd)
+		return err
 	}
 	return nil
 }
@@ -553,10 +569,18 @@ func (o *subOrderImpl) vendorSettleByOrderQuantity(vendor merchant.IMerchantAggr
 	if fee > 0 {
 		totalAmount := int(math.Min(float64(amount), fee) * float64(enum.RATE_AMOUNT))
 		refundAmount := int(float32(refund) * float32(enum.RATE_AMOUNT))
-		tradeFee, _ := vendor.SaleManager().MathTradeFee(
+		transactionFee, _ := vendor.TransactionManager().MathTransactionFee(
 			merchant.TKNormalOrder, totalAmount)
-		return vendor.Account().SettleOrder(o.value.OrderNo,
-			totalAmount, tradeFee, refundAmount, "零售订单结算")
+		sd := merchant.CarryParams{
+			OuterTxNo:         o.value.OrderNo,
+			Amount:            totalAmount,
+			TransactionFee:    transactionFee,
+			RefundAmount:      refundAmount,
+			TransactionTitle:  "零售订单结算",
+			TransactionRemark: o.value.Subject,
+		}
+		_, err := vendor.Account().Carry(sd)
+		return err
 
 	}
 	return nil
@@ -627,19 +651,19 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMemberAggregateRoot) erro
 	if integral > 0 {
 		_, err = m.GetAccount().CarryTo(member.AccountIntegral,
 			member.AccountOperateData{
-				Title:   "购物消费赠送积分",
-				Amount:  integral,
-				OuterNo: o.value.OrderNo,
-				Remark:  "sys",
+				TransactionTitle:   "购物消费赠送积分",
+				Amount:             integral,
+				OuterTransactionNo: o.value.OrderNo,
+				TransactionRemark:  "sys",
 			}, false, 0)
 		if err != nil {
 			return err
 		}
 	}
 	acv := acc.GetValue()
-	acv.TotalExpense += ov.ItemAmount
-	acv.TotalPay += ov.FinalAmount
-	acv.UpdateTime = time.Now().Unix()
+	acv.TotalExpense += int(ov.ItemAmount)
+	acv.TotalPay += int(ov.FinalAmount)
+	acv.UpdateTime = int(time.Now().Unix())
 	_, err = acc.Save()
 	return err
 }
@@ -845,7 +869,7 @@ func (o *subOrderImpl) publishAffiliateEvent() {
 	}
 	// 发送分销事件
 	if len(affiliateItems) > 0 {
-		eventbus.Publish(&events.OrderAffiliateRebateEvent{
+		eventbus.Dispatch(&events.OrderAffiliateRebateEvent{
 			OrderNo:        o.value.OrderNo,
 			SubOrder:       true,
 			BuyerId:        o.value.BuyerId,
@@ -897,10 +921,10 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
 	_, err := acc.CarryTo(member.AccountWallet,
 		member.AccountOperateData{
-			Title:   tit,
-			Amount:  int(fee * 100),
-			OuterNo: o.value.OrderNo,
-			Remark:  "sys",
+			TransactionTitle:   tit,
+			Amount:             int(fee * 100),
+			OuterTransactionNo: o.value.OrderNo,
+			TransactionRemark:  "sys",
 		}, false, 0)
 	return err
 }

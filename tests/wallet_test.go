@@ -13,7 +13,7 @@ const walletId int64 = 1
 // 测试创建钱包
 func TestCreateWallet(t *testing.T) {
 	repo := inject.GetWalletRepo()
-	wlt := repo.GetWallet(walletId)
+	wlt := repo.GetWallet(int(walletId))
 	if wlt == nil {
 		wlt = repo.CreateWallet(1, "", wallet.TMerchant, "商户钱包", wallet.FlagCharge|wallet.FlagDiscount)
 	}
@@ -28,7 +28,7 @@ func TestCreateWallet(t *testing.T) {
 // 测试充值钱包
 func TestChargeWallet(t *testing.T) {
 	repo := inject.GetWalletRepo()
-	wlt := repo.GetWallet(walletId)
+	wlt := repo.GetWallet(int(walletId))
 	totalCharge := wlt.Get().TotalCharge
 	err := wlt.Charge(100000, wallet.CServiceAgentCharge,
 		"客服充值", "", "1234", 1, "洛洛")
@@ -52,11 +52,11 @@ func TestChargeWallet(t *testing.T) {
 // 测试钱包支付和退款
 func TestDiscountRefundWallet(t *testing.T) {
 	repo := inject.GetWalletRepo()
-	wlt := repo.GetWallet(walletId)
+	wlt := repo.GetWallet(int(walletId))
 	var value = 10000
 	var tradeNo = "02af1208xa209sl2"
 	var balance = wlt.Get().Balance
-	err := wlt.Discount(value, "支付订单"+tradeNo, tradeNo, true)
+	_, err := wlt.Discount(value, "支付订单"+tradeNo, tradeNo, true)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -76,22 +76,22 @@ func TestDiscountRefundWallet(t *testing.T) {
 // 测试冻结钱包
 func TestFreezeWallet(t *testing.T) {
 	repo := inject.GetWalletRepo()
-	wlt := repo.GetWallet(walletId)
+	wlt := repo.GetWallet(int(walletId))
 	var value = 10000
 	var freeze = wlt.Get().FreezeAmount
 	var balance = wlt.Get().Balance
-	_, err := wlt.Freeze(wallet.OperateData{
-		Title:   "冻结金额",
-		Amount:  value,
-		OuterNo: "",
-		Remark:  "",
+	_, err := wlt.Freeze(wallet.TransactionData{
+		TransactionTitle:  "冻结金额",
+		Amount:            value,
+		OuterTxNo:         "",
+		TransactionRemark: "",
 	}, wallet.Operator{OperatorUid: 0})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	t.Log("冻结金额=", wlt.Get().FreezeAmount)
-	err = wlt.Unfreeze(value, "解冻金额", "", 0, "")
+	err = wlt.Unfreeze(value, "解冻金额", "", false, 0, "")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -109,7 +109,7 @@ func TestFreezeWallet(t *testing.T) {
 // 测试调整钱包金额
 func TestAdjustWallet(t *testing.T) {
 	repo := inject.GetWalletRepo()
-	wlt := repo.GetWallet(walletId)
+	wlt := repo.GetWallet(int(walletId))
 	adjust := wlt.Get().AdjustAmount
 	err := wlt.Adjust(1000, "客服调整",
 		"-", "", 2, "TOM")
@@ -132,17 +132,21 @@ func TestAdjustWallet(t *testing.T) {
 // 测试提现失败
 func TestTakeOutWalletFail(t *testing.T) {
 	repo := inject.GetWalletRepo()
-	wlt := repo.GetWallet(walletId)
+	wlt := repo.GetWallet(int(walletId))
 	var amount = 10000
 	balance := wlt.Get().Balance
-	id, _, err := wlt.RequestWithdrawal(-amount, 200,
-		wallet.KWithdrawToBankCard, "提现到银行卡",
-		"6226220285888888", "", "")
+	id, _, err := wlt.RequestWithdrawal(wallet.WithdrawTransaction{
+		Amount:           -amount,
+		TransactionFee:   200,
+		Kind:             wallet.KWithdrawToBankCard,
+		TransactionTitle: "提现到银行卡",
+		AccountNo:        "6226220285888888",
+	})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	if v := wlt.Get().Balance; v != balance-int64(amount) {
+	if v := wlt.Get().Balance; v != balance-int(amount) {
 		t.Error("提现扣款不正确", balance, v)
 		t.FailNow()
 	}
@@ -160,17 +164,21 @@ func TestTakeOutWalletFail(t *testing.T) {
 // 测试提现失败
 func TestTakeOutWalletSuccess(t *testing.T) {
 	repo := inject.GetWalletRepo()
-	wlt := repo.GetWallet(walletId)
+	wlt := repo.GetWallet(int(walletId))
 	var amount = 10000
 	balance := wlt.Get().Balance
-	id, _, err := wlt.RequestWithdrawal(-amount, 200,
-		wallet.KWithdrawToBankCard, "提现到银行卡",
-		"", "", "")
+	id, _, err := wlt.RequestWithdrawal(wallet.WithdrawTransaction{
+		Amount:           -amount,
+		TransactionFee:   200,
+		Kind:             wallet.KWithdrawToBankCard,
+		TransactionTitle: "提现到银行卡",
+		AccountNo:        "6226220285888888",
+	})
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	if v := wlt.Get().Balance; v != balance-int64(amount) {
+	if v := wlt.Get().Balance; v != balance-int(amount) {
 		t.Error("提现扣款不正确", balance, v)
 		t.FailNow()
 	}
@@ -179,8 +187,8 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	err = wlt.FinishWithdrawal(id, "96699999999")
-	if v := wlt.Get().Balance; v != balance-int64(amount) {
+	err = wlt.CompleteTransaction(id, "96699999999")
+	if v := wlt.Get().Balance; v != balance-int(amount) {
 		t.Error("提现退回后余额不正确", balance, v)
 		t.FailNow()
 	}
@@ -189,31 +197,31 @@ func TestTakeOutWalletSuccess(t *testing.T) {
 // 测试转账
 func TestTransferWallet(t *testing.T) {
 	repo := inject.GetWalletRepo()
-	wlt := repo.GetWallet(walletId)
+	wlt := repo.GetWallet(int(walletId))
 	var amount = 10000
-	var tradeFee = 1000
+	var transactionFee = 1000
 	var toWalletId int64 = 2
 	var balance2 int64 = 0
-	wlt2 := repo.GetWallet(toWalletId)
+	wlt2 := repo.GetWallet(int(toWalletId))
 	if wlt2 == nil {
 		t.Error("目标账户不存在")
 		t.FailNow()
 	} else {
-		balance2 = wlt2.Get().Balance
+		balance2 = int64(wlt2.Get().Balance)
 	}
-	balance := wlt.Get().Balance
-	err := wlt.Transfer(toWalletId, amount, -tradeFee, "转账给2", "收款1", "给你发个红包")
+	balance := int64(wlt.Get().Balance)
+	err := wlt.Transfer(toWalletId, amount, -transactionFee, "转账给2", "收款1", "给你发个红包")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	if v := wlt.Get().Balance; v != balance-int64(amount)-int64(tradeFee) {
-		t.Error("转账扣款不正确", balance-int64(amount)-int64(tradeFee), v)
+	if v := wlt.Get().Balance; v != int(balance)-int(amount)-int(transactionFee) {
+		t.Error("转账扣款不正确", balance-int64(amount)-int64(transactionFee), v)
 		t.FailNow()
 	}
-	wlt2 = repo.GetWallet(toWalletId)
-	if v := wlt2.Get().Balance; v-int64(amount) != balance2 {
-		t.Error("转账收款不正确", balance2, v-int64(amount))
+	wlt2 = repo.GetWallet(int(toWalletId))
+	if v := wlt2.Get().Balance; v != int(balance2)+int(amount) {
+		t.Error("转账收款不正确", balance2, int(v)-int(amount))
 	}
 
 }

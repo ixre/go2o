@@ -2,37 +2,44 @@
 package merchant
 
 import (
+	"errors"
 	"math"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/variable"
 )
 
 var _ merchant.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	mchImpl    *merchantImpl
-	value      *merchant.Account
-	memberRepo member.IMemberRepo
-	walletRepo wallet.IWalletRepo
+	mchImpl      *merchantImpl
+	value        *merchant.Account
+	memberRepo   member.IMemberRepo
+	walletRepo   wallet.IWalletRepo
+	_invoiceRepo invoice.IInvoiceRepo
 }
 
 func newAccountImpl(mchImpl *merchantImpl, a *merchant.Account,
-	memberRepo member.IMemberRepo, walletRepo wallet.IWalletRepo) merchant.IAccount {
+	memberRepo member.IMemberRepo,
+	walletRepo wallet.IWalletRepo,
+	invoiceRepo invoice.IInvoiceRepo) merchant.IAccount {
 	return &accountImpl{
-		mchImpl:    mchImpl,
-		value:      a,
-		memberRepo: memberRepo,
-		walletRepo: walletRepo,
+		mchImpl:      mchImpl,
+		value:        a,
+		memberRepo:   memberRepo,
+		walletRepo:   walletRepo,
+		_invoiceRepo: invoiceRepo,
 	}
 }
 
 // 获取领域对象编号
-func (a *accountImpl) GetDomainId() int64 {
+func (a *accountImpl) GetDomainId() int {
 	return a.value.MchId
 }
 
@@ -41,8 +48,16 @@ func (a *accountImpl) GetValue() *merchant.Account {
 	return a.value
 }
 
+// 同步到账户余额
+func (a *accountImpl) asyncWallet() error {
+	a.value.Balance = a.getWallet().Get().Balance
+	a.value.FreezeAmount = a.getWallet().Get().FreezeAmount
+	return a.Save()
+}
+
 // 保存
 func (a *accountImpl) Save() error {
+	a.value.UpdateTime = int(time.Now().Unix())
 	_, err := a.mchImpl._repo.SaveAccount(a.value)
 	return err
 }
@@ -68,7 +83,7 @@ func (a *accountImpl) createBalanceLog(kind int, title string, outerNo string,
 		// 编号
 		Id: 0,
 		// 商户编号
-		MchId: a.GetDomainId(),
+		MchId: int64(a.GetDomainId()),
 		// 日志类型
 		Kind: kind,
 		// 标题
@@ -93,60 +108,90 @@ func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int, error) {
 	return a.mchImpl._repo.SaveBalanceAccountLog(v)
 }
 
-// 支出
-func (a *accountImpl) TakePayment(outerNo string, amount int, csn int, remark string) error {
+// GetWalletLog implements merchant.IAccount.
+func (a *accountImpl) GetWalletLog(txId int64) *wallet.WalletLog {
+	v := a.getWallet().GetLog(txId)
+	return &v
+}
+
+// Consume 消耗商户支出，例如广告费、提现等
+func (a *accountImpl) Consume(transactionTitle string, amount int, outerTxNo string, transactionRemark string) error {
 	if amount <= 0 {
 		return merchant.ErrAmount
 	}
-	if a.value.Balance < int64(amount) {
+	if a.value.Balance < amount {
 		return merchant.ErrNoMoreAmount
 	}
 	l := a.createBalanceLog(merchant.KindAccountTakePayment,
-		remark, outerNo, -int64(amount), int64(csn), 1)
+		transactionRemark, outerTxNo, -int64(amount), 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		a.value.Balance -= int64(amount)
-		a.value.UpdateTime = time.Now().Unix()
+		a.value.Balance -= amount
+		a.value.UpdateTime = int(time.Now().Unix())
 		err = a.Save()
 		if err == nil {
 			iw := a.getWallet()
-			err = iw.Discount(int(amount), remark, outerNo, true)
+			_, err = iw.Consume(int(amount),
+				transactionTitle,
+				outerTxNo,
+				transactionRemark)
 		}
+	}
+	if err == nil {
+		return a.asyncWallet()
 	}
 	return err
 }
 
 // 订单结账
-func (a *accountImpl) SettleOrder(orderNo string, amount int, tradeFee int,
-	refundAmount int, remark string) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return merchant.ErrAmount
+func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
+	if p.Amount <= 0 {
+		return 0, merchant.ErrAmount
 	}
-	fAmount := int64(amount / 100)
-	fTradeFee := int64(tradeFee / 100)
-	fRefund := int64(refundAmount / 100)
+	// 计算金额
+	fAmount := int(p.Amount / 100)
+	fTradeFee := int(p.TransactionFee / 100)
+	fRefund := int(p.RefundAmount / 100)
 	a.value.Balance += fAmount
 	a.value.SalesAmount += fTradeFee
 	a.value.RefundAmount += fRefund
-	a.value.UpdateTime = time.Now().Unix()
-	err := a.Save()
+	a.value.UpdateTime = int(time.Now().Unix())
+	err = a.Save()
 	if err == nil {
 		iw := a.getWallet()
-		_, err = iw.CarryTo(wallet.OperateData{
-			Title:  "订单结算",
-			Amount: amount - tradeFee, OuterNo: orderNo, Remark: remark}, false, tradeFee)
+		txId, err := iw.CarryTo(wallet.TransactionData{
+			TransactionTitle:  p.TransactionTitle,
+			Amount:            p.Amount,
+			TransactionFee:    p.TransactionFee,
+			OuterTxNo:         p.OuterTxNo,
+			TransactionRemark: p.TransactionRemark,
+			OuterTxUid:        p.OuterTxUid,
+		}, p.Freeze)
+		if err == nil {
+			// 添加收入金额
+			a.value.SalesAmount += p.Amount - p.TransactionFee
+			// 添加手续费可开票金额
+			a.value.InvoiceableAmount += p.TransactionFee
+			// 同步钱包
+			err = a.asyncWallet()
+			if err == nil {
+				// 更新账单
+				err = a.mchImpl.TransactionManager().GetCurrentDailyBill().UpdateAmount()
+			}
+		}
+		return txId, err
 		// 记录旧日志,todo:可能去掉
-		l := a.createBalanceLog(merchant.KindAccountSettleOrder,
-			remark, orderNo, fAmount, fTradeFee, 1)
-		a.SaveBalanceLog(l)
+		// l := a.createBalanceLog(merchant.KindAccountCarry,
+		// 	remark, orderNo, fAmount, fTradeFee, 1)
+		// a.SaveBalanceLog(l)
 	}
-	return err
+	return 0, err
 }
 
 func (a *accountImpl) getWallet() wallet.IWallet {
-	iw := a.walletRepo.GetWalletByUserId(a.GetValue().MchId, wallet.TMerchant)
+	iw := a.walletRepo.GetWalletByUserId(int64(a.GetValue().MchId), wallet.TMerchant)
 	if iw == nil {
-		iw = a.walletRepo.CreateWallet(a.GetValue().MchId,
+		iw = a.walletRepo.CreateWallet(int(a.GetValue().MchId),
 			a.mchImpl._value.Username,
 			wallet.TMerchant,
 			"MchWallet",
@@ -164,10 +209,10 @@ func (a *accountImpl) getWallet() wallet.IWallet {
 // 转到会员账户
 func (a *accountImpl) TransferToMember(amount int) error {
 	panic("TransferToMember需重构或移除")
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return merchant.ErrAmount
-	}
-	if a.value.Balance < int64(amount) || a.value.Balance <= 0 {
+	// if amount <= 0 || math.IsNaN(float64(amount)) {
+	// 	return merchant.ErrAmount
+	// }
+	if a.value.Balance < amount || a.value.Balance <= 0 {
 		return merchant.ErrNoMoreAmount
 	}
 	if a.mchImpl._value.MemberId <= 0 {
@@ -183,17 +228,17 @@ func (a *accountImpl) TransferToMember(amount int) error {
 	if err == nil {
 		_, err = m.GetAccount().CarryTo(member.AccountWallet,
 			member.AccountOperateData{
-				Title:   variable.AliasMerchantBalanceAccount + "提现",
-				Amount:  amount * 100,
-				OuterNo: "",
-				Remark:  "sys",
+				TransactionTitle:   variable.AliasMerchantBalanceAccount + "提现",
+				Amount:             amount * 100,
+				OuterTransactionNo: "",
+				TransactionRemark:  "sys",
 			}, false, 0)
 		if err != nil {
 			return err
 		}
-		a.value.Balance -= int64(amount)
-		a.value.WithdrawAmount += int64(amount)
-		a.value.UpdateTime = time.Now().Unix()
+		a.value.Balance -= amount
+		a.value.WithdrawalAmount += amount
+		a.value.UpdateTime = int(time.Now().Unix())
 		err = a.Save()
 		if err != nil {
 			return err
@@ -206,10 +251,10 @@ func (a *accountImpl) TransferToMember(amount int) error {
 				csn := float64(amount) * takeRate
 				_, err = m.GetAccount().CarryTo(member.AccountWallet,
 					member.AccountOperateData{
-						Title:   "返还商户提现手续费",
-						Amount:  int(csn * 100),
-						OuterNo: "",
-						Remark:  "",
+						TransactionTitle:   "返还商户提现手续费",
+						Amount:             int(csn * 100),
+						OuterTransactionNo: "",
+						TransactionRemark:  "",
 					}, false, 0)
 			}
 		}
@@ -222,7 +267,7 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return merchant.ErrAmount
 	}
-	if a.value.Balance < int64(amount) || a.value.Balance <= 0 {
+	if a.value.Balance < int(amount) || a.value.Balance <= 0 {
 		return merchant.ErrNoMoreAmount
 	}
 	if a.mchImpl._value.MemberId <= 0 {
@@ -238,17 +283,17 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 	if err == nil {
 		_, err = m.GetAccount().CarryTo(member.AccountWallet,
 			member.AccountOperateData{
-				Title:   variable.AliasMerchantBalanceAccount + "提现",
-				Amount:  int(amount * 100),
-				OuterNo: "",
-				Remark:  "sys",
+				TransactionTitle:   variable.AliasMerchantBalanceAccount + "提现",
+				Amount:             int(amount * 100),
+				OuterTransactionNo: "",
+				TransactionRemark:  "sys",
 			}, false, 0)
 		if err != nil {
 			return err
 		}
-		a.value.Balance -= int64(amount)
-		a.value.WithdrawAmount += int64(amount)
-		a.value.UpdateTime = time.Now().Unix()
+		a.value.Balance -= int(amount)
+		a.value.WithdrawalAmount += int(amount)
+		a.value.UpdateTime = int(time.Now().Unix())
 		err = a.Save()
 		if err != nil {
 			return err
@@ -262,10 +307,10 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 				csn := float32(rate) * amount
 				_, err = m.GetAccount().CarryTo(member.AccountWallet,
 					member.AccountOperateData{
-						Title:   "返还商户提现手续费",
-						Amount:  int(csn * 100),
-						OuterNo: "",
-						Remark:  "",
+						TransactionTitle:   "返还商户提现手续费",
+						Amount:             int(csn * 100),
+						OuterTransactionNo: "",
+						TransactionRemark:  "",
 					}, false, 0)
 			}
 		}
@@ -274,38 +319,129 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 	return err
 }
 
-// 赠送
-func (a *accountImpl) Present(amount int, remark string) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return merchant.ErrAmount
-	}
-	l := a.createBalanceLog(merchant.KindAccountPresent,
-		remark, "", int64(amount), 0, 1)
-	_, err := a.SaveBalanceLog(l)
+// FreezeWallet 冻结钱包
+func (a *accountImpl) Freeze(p wallet.TransactionData, relateUser int64) (int, error) {
+	id, err := a.getWallet().Freeze(p, wallet.Operator{
+		OperatorUid:  int(relateUser),
+		OperatorName: "",
+	})
 	if err == nil {
-		a.value.PresentAmount += int64(amount)
-		a.value.UpdateTime = time.Now().Unix()
-		err = a.Save()
+		return id, a.asyncWallet()
+	}
+	return id, err
+}
+
+// UnfreezeWallet 解冻赠送金额
+func (a *accountImpl) Unfreeze(d wallet.TransactionData, isRefundBalance bool, relateUser int64) error {
+	err := a.getWallet().Unfreeze(d.Amount, d.TransactionTitle, d.OuterTxNo, isRefundBalance, int(relateUser), "")
+	if err == nil {
+		return a.asyncWallet()
 	}
 	return err
 }
 
-// 充值
-func (a *accountImpl) Charge(kind int32, amount int,
-	title, outerNo string, relateUser int64) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return merchant.ErrAmount
-	}
-	l := a.createBalanceLog(merchant.KindAccountCharge,
-		title, outerNo, int64(amount), 0, 1)
-	_, err := a.SaveBalanceLog(l)
+// 调整钱包余额
+func (a *accountImpl) Adjust(title string, amount int, remark string, relateUser int64) error {
+	err := a.getWallet().Adjust(amount, title, "", remark, int(relateUser), "-")
 	if err == nil {
-		a.value.Balance += int64(amount)
-		a.value.UpdateTime = time.Now().Unix()
-		err = a.Save()
-		if err != nil {
-			return err
-		}
+		return a.asyncWallet()
 	}
 	return err
+}
+
+// CompleteTransaction implements merchant.IAccount.
+func (a *accountImpl) CompleteTransaction(transactionId int, outerTransactionNo string) error {
+	//todo: opr_uid
+	err := a.getWallet().CompleteTransaction(transactionId, outerTransactionNo)
+	if err == nil {
+		return a.asyncWallet()
+	}
+	return err
+}
+
+// RequestWithdrawal implements merchant.IAccount.
+func (a *accountImpl) RequestWithdrawal(w *wallet.WithdrawTransaction) (int, string, error) {
+	txId, orderNo, err := a.getWallet().RequestWithdrawal(
+		wallet.WithdrawTransaction{
+			Amount:           w.Amount,
+			TransactionFee:   w.TransactionFee,
+			Kind:             w.Kind,
+			TransactionTitle: w.TransactionTitle,
+			BankName:         w.BankName,
+			AccountNo:        w.AccountNo,
+			AccountName:      w.AccountName,
+		})
+	if err == nil {
+		err = a.asyncWallet()
+	}
+	return txId, orderNo, err
+}
+
+// ReviewWithdrawal implements merchant.IAccount.
+func (a *accountImpl) ReviewWithdrawal(transactionId int, pass bool, remark string) error {
+	err := a.getWallet().ReviewWithdrawal(transactionId, pass, remark, 1, "系统")
+	if err == nil {
+		return a.asyncWallet()
+	}
+	return err
+}
+
+// RequestInvoice implements merchant.IMerchantTransactionManager.
+func (a *accountImpl) RequestInvoice(amount int, remark string) (int, error) {
+	mchId := a.mchImpl.GetAggregateRootId()
+	tenant := a._invoiceRepo.FindTenant(int(invoice.TenantMerchant), mchId)
+	if tenant == nil {
+		tenant = &invoice.InvoiceTenant{
+			TenantType: int(invoice.TenantMerchant),
+			TenantUid:  mchId,
+		}
+	}
+	it := a._invoiceRepo.CreateTenant(tenant)
+	if it.GetAggregateRootId() <= 0 {
+		err := it.Create()
+		if err != nil {
+			logger.Error("创建商户发票租户失败: %v,mchId: %d", err, mchId)
+			return 0, err
+		}
+	}
+	title := it.GetDefaultInvoiceTitle()
+	if title == nil {
+		return 0, errors.New("商户尚未添加发票抬头")
+	}
+	if a.GetValue().InvoiceableAmount < amount {
+		return 0, errors.New("超出最大可申请发票金额")
+	}
+
+	fee := float64(amount)
+	iv, err := it.RequestInvoice(&invoice.InvoiceRequestData{
+		OuterNo:       "",
+		IssueTenantId: 0,
+		TitleId:       title.Id,
+		ReceiveEmail:  "",
+		Subject:       "商户交易手续费发票",
+		Remark:        remark,
+		Items: []*invoice.InvoiceItem{
+			{
+				ItemName:  "平台服务费",
+				ItemSpec:  "",
+				Price:     fee,
+				Quantity:  1,
+				TaxRate:   0,
+				Unit:      "笔",
+				Amount:    fee,
+				TaxAmount: 0,
+			},
+		},
+	})
+	if err == nil {
+		err = iv.Save()
+	}
+	if err == nil {
+		a.value.InvoiceableAmount -= amount
+		err = a.Save()
+		if err == nil {
+			return iv.GetDomainId(), nil
+		}
+	}
+	return 0, err
 }

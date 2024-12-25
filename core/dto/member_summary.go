@@ -16,7 +16,7 @@ type MemberSummary struct {
 	// 昵称
 	Name string `db:"name"`
 	// 头像
-	Avatar string `db:"avatar"`
+	Avatar string `db:"profile_photo"`
 	// 经验值
 	Exp int32 `db:"exp"`
 	// 等级

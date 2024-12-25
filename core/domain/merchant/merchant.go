@@ -14,7 +14,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/approval"
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -22,8 +24,9 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
+	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	si "github.com/ixre/go2o/core/domain/merchant/shop"
@@ -33,11 +36,13 @@ import (
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/variable"
+	"github.com/ixre/gof/storage"
 )
 
 var _ merchant.IMerchantAggregateRoot = new(merchantImpl)
 
 type merchantImpl struct {
+	_storage         storage.Interface
 	_value           *merchant.Merchant
 	_account         merchant.IAccount
 	_wholesaler      wholesaler.IWholesaler
@@ -50,10 +55,10 @@ type merchantImpl struct {
 	_staffRepo       staff.IStaffRepo
 	_valRepo         valueobject.IValueRepo
 	_memberRepo      member.IMemberRepo
-	_stationRepo     station.IStationRepo
+	_sysRepo         sys.ISystemRepo
 	_userManager     user.IUserManager
 	_confManager     merchant.IConfManager
-	_saleManager     merchant.ISaleManager
+	_saleManager     merchant.IMerchantTransactionManager
 	_levelManager    merchant.ILevelManager
 	_kvManager       merchant.IKvManager
 	_memberKvManager merchant.IKvManager
@@ -65,8 +70,11 @@ type merchantImpl struct {
 	_employeeManager staff.IStaffManager
 	_walletRepo      wallet.IWalletRepo
 	_registryRepo    registry.IRegistryRepo
+	_approvalRepo    approval.IApprovalRepository
+	_invoiceRepo     invoice.IInvoiceRepo
 	// 之前绑定的会员编号
 	_lastBindMemberId int
+	_rbacRepo         rbac.IRbacRepository
 }
 
 // EmployeeManager implements merchant.IMerchant.
@@ -75,19 +83,30 @@ func (m *merchantImpl) EmployeeManager() staff.IStaffManager {
 		m._employeeManager = staffImpl.NewStaffManager(m,
 			m._staffRepo,
 			m._memberRepo,
-			m._stationRepo)
+			m._sysRepo,
+			m._repo,
+			m._approvalRepo,
+			m._storage)
 	}
 	return m._employeeManager
 }
 
-func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
+func NewMerchant(v *merchant.Merchant,
+	storage storage.Interface,
+	rep merchant.IMerchantRepo,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
 	employeeRepo staff.IStaffRepo,
 	memberRepo member.IMemberRepo,
-	stationRepo station.IStationRepo,
-	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantAggregateRoot {
+	sysRepo sys.ISystemRepo,
+	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo,
+	invoiceRepo invoice.IInvoiceRepo,
+	approvalRepo approval.IApprovalRepository,
+	rbacRepo rbac.IRbacRepository,
+) merchant.IMerchantAggregateRoot {
 	mch := &merchantImpl{
+		_storage:      storage,
 		_value:        v,
 		_repo:         rep,
 		_wsRepo:       wsRepo,
@@ -97,9 +116,12 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 		_staffRepo:    employeeRepo,
 		_valRepo:      valRepo,
 		_memberRepo:   memberRepo,
-		_stationRepo:  stationRepo,
+		_sysRepo:      sysRepo,
 		_walletRepo:   walletRepo,
 		_registryRepo: registryRepo,
+		_approvalRepo: approvalRepo,
+		_invoiceRepo:  invoiceRepo,
+		_rbacRepo:     rbacRepo,
 	}
 	return mch
 }
@@ -118,16 +140,20 @@ func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
 	return &merchant.ComplexMerchant{
 		Id:        int32(src.Id),
 		MemberId:  int64(src.MemberId),
-		Usr:       src.Username,
+		Username:  src.Username,
 		Pwd:       src.Password,
 		Name:      src.MchName,
 		SelfSales: int32(src.IsSelf),
 		Level:     int32(src.Level),
+		Flag:      src.Flag,
+		Address:   src.Address,
 		//Logo:          src.Logo,
 		//CompanyName:   src.CompanyName,
-		Province: int32(src.Province),
-		City:     int32(src.City),
-		District: int32(src.District),
+		Province:  int32(src.Province),
+		City:      int32(src.City),
+		District:  int32(src.District),
+		Telephone: src.Tel,
+		Status:    int(src.Status),
 		// Enabled:       int32(src.Enabled),
 		// ExpiresTime:   src.ExpiresTime,
 		// JoinTime:      src.CreateTime,
@@ -151,10 +177,12 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 		tv.Province = v.Province
 		tv.City = v.City
 		tv.District = v.District
+		tv.Address = v.Address
 	}
 
 	if m.GetAggregateRootId() <= 0 {
 		m._value.MemberId = v.MemberId
+		m._value.MailAddr = v.MailAddr
 	}
 	if len(tv.Username) == 0 {
 		tv.Username = v.Username
@@ -166,18 +194,27 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 		tv.Logo = v.Logo
 	}
 	tv.IsSelf = v.IsSelf
+	tv.Status = v.Status
 	tv.ExpiresTime = v.ExpiresTime
 	return nil
 }
 
 // 检查商户注册信息是否正确
 func (m *merchantImpl) check(v *merchant.Merchant) error {
-	if v.MemberId <= 0 {
-		return errors.New("会员不存在")
-	}
 	//todo: validate and check merchant name exists
-	if v.MchName == "" {
-		return merchant.ErrMissingMerchantName
+	if m.GetAggregateRootId() <= 0 {
+		// 新注册商户
+		if len(v.MailAddr) == 0 {
+			return errors.New("邮箱不能为空")
+		}
+		if m._repo.IsExistsEmail(v.MailAddr, m.GetAggregateRootId()) {
+			return errors.New("邮箱已使用")
+		}
+	}
+
+	if len(v.MchName) > 0 {
+		//todo: 检查商户名称是否存在
+		//return merchant.ErrMissingMerchantName
 	}
 	// if v.CompanyName == "" {
 	// 	return merchant.ErrMissingCompanyName
@@ -214,6 +251,26 @@ func (m *merchantImpl) GrantFlag(flag int) error {
 	v, err := domain.GrantFlag(m._value.Flag, flag)
 	if err == nil {
 		m._value.Flag = v
+	}
+	return err
+}
+
+// Lock implements merchant.IMerchantAggregateRoot.
+func (m *merchantImpl) Lock() error {
+	f := m._value.Flag
+	err := m.GrantFlag(merchant.FLocked)
+	if err == nil && f != m._value.Flag {
+		_, err = m.Save()
+	}
+	return err
+}
+
+// Unlock implements merchant.IMerchantAggregateRoot.
+func (m *merchantImpl) Unlock() error {
+	f := m._value.Flag
+	err := m.GrantFlag(-merchant.FLocked)
+	if err == nil && f != m._value.Flag {
+		_, err = m.Save()
 	}
 	return err
 }
@@ -295,18 +352,6 @@ func (m *merchantImpl) Stat() error {
 	return nil
 }
 
-// SetEnabled 设置商户启用或停用
-func (m *merchantImpl) SetEnabled(enabled bool) error {
-	panic("implement me")
-	// if enabled {
-	// 	m._value.Enabled = 1
-	// } else {
-	// 	m._value.Enabled = 0
-	// }
-	// _, err := m.Save()
-	// return err
-}
-
 // Member 返回对应的会员编号
 func (m *merchantImpl) Member() int64 {
 	return int64(m.GetValue().MemberId)
@@ -316,7 +361,7 @@ func (m *merchantImpl) Member() int64 {
 func (m *merchantImpl) Account() merchant.IAccount {
 	if m._account == nil {
 		v := m._repo.GetAccount(int(m.GetAggregateRootId()))
-		m._account = newAccountImpl(m, v, m._memberRepo, m._walletRepo)
+		m._account = newAccountImpl(m, v, m._memberRepo, m._walletRepo, m._invoiceRepo)
 	}
 	return m._account
 }
@@ -347,8 +392,8 @@ func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 	v := &wholesaler.WsWholesaler{
 		MchId:        int64(m.GetAggregateRootId()),
 		Rate:         1,
-		ReviewStatus: enum.ReviewPass,
-		//ReviewStatus: enum.ReviewAwaiting,
+		ReviewStatus: enum.ReviewApproved,
+		//ReviewStatus: enum.ReviewPending,
 	}
 	_, err := m._wsRepo.SaveWsWholesaler(v, true)
 	return v, err
@@ -370,6 +415,9 @@ func (m *merchantImpl) createMerchant() (int64, error) {
 	m._value.Status = 0
 	m._value.Flag = 0
 
+	// 设置邮箱
+	m._value.MailAddr = m._value.Username
+
 	id, err := m._repo.SaveMerchant(m._value)
 	if err != nil {
 		return int64(id), err
@@ -379,30 +427,7 @@ func (m *merchantImpl) createMerchant() (int64, error) {
 	if m._value.MemberId > 0 {
 		err = m.applyBindMember()
 	}
-	// 初始化认证信息
-	auth := &merchant.Authenticate{
-		Id:               0,
-		MchId:            0,
-		OrgName:          "",
-		OrgNo:            "",
-		OrgPic:           "",
-		WorkCity:         0,
-		QualificationPic: "",
-		PersonId:         "",
-		PersonName:       "",
-		PersonPic:        "",
-		PersonPhone:      "",
-		AuthorityPic:     "",
-		BankName:         "",
-		BankAccount:      "",
-		BankNo:           "",
-		ExtraData:        "",
-		ReviewTime:       0,
-		ReviewStatus:     0,
-		ReviewRemark:     "",
-		UpdateTime:       int(unix),
-	}
-	auth.Id, _ = m._repo.SaveAuthenticate(auth)
+	// note: 无需初始化认证信息
 
 	// 创建API
 	api := &merchant.ApiInfo{
@@ -477,10 +502,16 @@ func (m *merchantImpl) ConfManager() merchant.IConfManager {
 	return m._confManager
 }
 
-// SaleManager 销售服务
-func (m *merchantImpl) SaleManager() merchant.ISaleManager {
+// TransactionManager 销售服务
+func (m *merchantImpl) TransactionManager() merchant.IMerchantTransactionManager {
 	if m._saleManager == nil {
-		m._saleManager = newSaleManagerImpl(int(m.GetAggregateRootId()), m)
+		m._saleManager = newTransactionManagerImpl(int(m.GetAggregateRootId()),
+			m,
+			m._repo,
+			m._invoiceRepo,
+			m._walletRepo,
+			m._rbacRepo,
+			m._registryRepo)
 	}
 	return m._saleManager
 }
@@ -488,7 +519,7 @@ func (m *merchantImpl) SaleManager() merchant.ISaleManager {
 // ProfileManager 企业资料管理器
 func (m *merchantImpl) ProfileManager() merchant.IProfileManager {
 	if m._profileManager == nil {
-		m._profileManager = newProfileManager(m, m._valRepo)
+		m._profileManager = newProfileManager(m, m._valRepo, m._invoiceRepo)
 	}
 	return m._profileManager
 }

@@ -36,17 +36,17 @@ func (mm *messageManagerImpl) CreateMessage(msg *mss.Message,
 	m := newMessage(msg, mm.rep).(*messageImpl)
 	if content != nil {
 		switch m.Type() {
-		case mss.TypeEmailMessage:
+		case mss.TypeEmail:
 			return newMailMessage(m, content.(*mss.MailMessage), m.rep)
 		case mss.TypeSiteMessage:
 			return newSiteMessage(m, content.(*mss.SiteMessage), m.rep)
-		case mss.TypePhoneMessage:
+		case mss.TypeSMS:
 			return newPhoneMessage(m, content.(*mss.PhoneMessage), m.rep)
 		}
 	} else {
-		if m.Type() == mss.TypeEmailMessage ||
+		if m.Type() == mss.TypeEmail ||
 			m.Type() == mss.TypeSiteMessage ||
-			m.Type() == mss.TypePhoneMessage {
+			m.Type() == mss.TypeSMS {
 			return m
 		}
 	}
@@ -58,10 +58,10 @@ func (m *messageManagerImpl) GetMessage(id int32) mss.IMessage {
 	if msg := m.rep.GetMessage(id); msg != nil {
 		con := m.rep.GetMessageContent(msg.Id)
 		switch msg.Type {
-		case mss.TypePhoneMessage:
+		case mss.TypeSMS:
 			v := mss.PhoneMessage(con.Data)
 			return m.CreateMessage(msg, &v)
-		case mss.TypeEmailMessage:
+		case mss.TypeEmail:
 			v := mss.MailMessage{}
 			json.Unmarshal([]byte(con.Data), &v)
 			return m.CreateMessage(msg, &v)

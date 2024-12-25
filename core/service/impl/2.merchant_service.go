@@ -14,19 +14,21 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	de "github.com/ixre/go2o/core/domain/interface/domain"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/merchant/shop"
 	"github.com/ixre/go2o/core/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	"github.com/ixre/go2o/core/domain/interface/order"
+	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/dto"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/parser"
 	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/types"
 	context2 "golang.org/x/net/context"
 )
@@ -41,6 +43,40 @@ type merchantService struct {
 	_orderQuery *query.OrderQuery
 	serviceUtil
 	proto.UnimplementedMerchantServiceServer
+}
+
+// GetSettleConf implements proto.MerchantServiceServer.
+func (m *merchantService) GetSettleConf(_ context.Context, req *proto.MerchantId) (*proto.SSettleConf, error) {
+	im := m._mchRepo.GetMerchant(int(req.Value))
+	if im == nil {
+		return nil, errors.New("商户不存在")
+	}
+	conf := im.ConfManager()
+	settle := conf.GetSettleConf()
+	return &proto.SSettleConf{
+		MchId:       int64(settle.MchId),
+		MchName:     im.GetValue().MchName,
+		OrderTxRate: float32(settle.OrderTxRate),
+		OtherTxRate: float32(settle.OtherTxRate),
+		SubMchNo:    settle.SubMchNo,
+	}, nil
+
+}
+
+// SaveSettleConf implements proto.MerchantServiceServer.
+func (m *merchantService) SaveSettleConf(_ context.Context, req *proto.SettleConfigSaveRequest) (*proto.TxResult, error) {
+	im := m._mchRepo.GetMerchant(int(req.MchId))
+	if im == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	conf := im.ConfManager()
+	err := conf.SaveSettleConf(&merchant.SettleConf{
+		MchId:       int(req.MchId),
+		OrderTxRate: float64(req.OrderTxRate),
+		OtherTxRate: float64(req.OtherTxRate),
+		SubMchNo:    req.SubMchNo,
+	})
+	return m.errorV2(err), nil
 }
 
 func NewMerchantService(r merchant.IMerchantRepo,
@@ -70,7 +106,7 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.CreateMerch
 	mch := r.Mch
 	v := &merchant.Merchant{
 		Username: r.Username,
-		Password: domain.MerchantSha1Pwd(mch.Password, ""),
+		Password: domain.MerchantSha265Pwd(mch.Password, ""),
 		MchName:  mch.MchName,
 		IsSelf:   int16(r.IsSelf),
 		MemberId: int(r.MemberId),
@@ -89,17 +125,17 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.CreateMerch
 		_, err = im.Save()
 		if err == nil {
 			// todo: 商城默认开通店铺，应单独提供方法开通店铺
-			o := shop.OnlineShop{
-				ShopName:   mch.MchName,
-				Logo:       mch.Logo,
-				Host:       "",
-				Alias:      "",
-				Telephone:  "",
-				Addr:       "",
-				ShopTitle:  "",
-				ShopNotice: "",
-			}
-			_, err = im.ShopManager().CreateOnlineShop(&o)
+			// o := shop.OnlineShop{
+			// 	ShopName:   mch.MchName,
+			// 	Logo:       mch.Logo,
+			// 	Host:       "",
+			// 	Alias:      "",
+			// 	Telephone:  "",
+			// 	Addr:       "",
+			// 	ShopTitle:  "",
+			// 	ShopNotice: "",
+			// }
+			// _, err = im.ShopManager().CreateOnlineShop(&o)
 		}
 	}
 	rsp := &proto.MerchantCreateResponse{}
@@ -113,40 +149,49 @@ func (m *merchantService) CreateMerchant(_ context.Context, r *proto.CreateMerch
 }
 
 // SaveAuthenticate 提交商户认证信息
-func (m *merchantService) SaveAuthenticate(_ context.Context, r *proto.SaveAuthenticateRequest) (*proto.Result, error) {
+func (m *merchantService) SaveAuthenticate(_ context.Context, r *proto.SaveAuthenticateRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MchId))
 	if mch == nil {
-		return m.error(merchant.ErrNoSuchMerchant), nil
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
 	v := &merchant.Authenticate{
 		OrgName:          r.OrgName,
-		OrgNo:            r.OrgNo,
-		OrgPic:           r.OrgPic,
+		MchName:          r.MchName,
+		LicenceNo:        r.OrgNo,
+		LicencePic:       r.OrgPic,
+		OrgAddress:       r.OrgAddress,
+		Province:         int(r.Province),
+		City:             int(r.City),
+		District:         int(r.District),
 		WorkCity:         int(r.WorkCity),
 		QualificationPic: r.QualificationPic,
 		PersonId:         r.PersonId,
 		PersonName:       r.PersonName,
-		PersonPic:        r.PersonPic,
+		PersonFrontPic:   r.PersonFrontPic,
+		PersonBackPic:    r.PersonBackPic,
 		PersonPhone:      r.PersonPhone,
 		AuthorityPic:     r.AuthorityPic,
 		BankName:         r.BankName,
 		BankAccount:      r.BankAccount,
+		BankAccountPic:   r.BankAccountPic,
 		BankNo:           r.BankNo,
 		ExtraData:        r.ExtraData,
+		ContactName:      r.ContactName,
+		ContactPhone:     r.ContactPhone,
 		Version:          0,
 	}
 	_, err := mch.ProfileManager().SaveAuthenticate(v)
-	return m.error(err), nil
+	return m.errorV2(err), nil
 }
 
 // ReviewAuthenticate 审核商户申请信息
-func (m *merchantService) ReviewAuthenticate(_ context.Context, r *proto.MerchantReviewRequest) (*proto.Result, error) {
+func (m *merchantService) ReviewAuthenticate(_ context.Context, r *proto.MerchantReviewRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MchId))
 	if mch == nil {
-		return m.error(merchant.ErrNoSuchMerchant), nil
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
 	}
 	err := mch.ProfileManager().ReviewAuthenticate(r.Pass, r.Remark)
-	return m.error(err), nil
+	return m.errorV2(err), nil
 }
 
 // ChangeMemberBind 更换会员绑定
@@ -181,18 +226,6 @@ func (m *merchantService) GetAccount(_ context.Context, id *proto.MerchantId) (*
 		return m.parseAccountDto(v), nil
 	}
 	return nil, fmt.Errorf("no such merchant account")
-}
-
-// SetEnabled 设置商户启用或停用
-func (m *merchantService) SetEnabled(_ context.Context, r *proto.MerchantDisableRequest) (*proto.Result, error) {
-	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
-	var err error
-	if mch == nil {
-		err = merchant.ErrNoSuchMerchant
-	} else {
-		err = mch.SetEnabled(r.Enabled)
-	}
-	return m.error(err), nil
 }
 
 // GetMerchantIdByHost 根据主机查询商户编号
@@ -242,22 +275,37 @@ func (m *merchantService) GetShopId(_ context.Context, id *proto.MerchantId) (*p
 	return &proto.Int64{}, nil
 }
 
+// UpdateLockStatus implements proto.MerchantServiceServer.
+func (m *merchantService) UpdateLockStatus(_ context.Context, req *proto.MerchantLockStatusRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MerchantId))
+	if mch != nil {
+		if req.Lock {
+			err := mch.Lock()
+			return m.errorV2(err), nil
+		} else {
+			err := mch.Unlock()
+			return m.errorV2(err), nil
+		}
+	}
+	return m.errorV2(merchant.ErrNoSuchMerchant), nil
+}
+
 // ChangePassword 修改密码
-func (m *merchantService) ChangePassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.Result, error) {
+func (m *merchantService) ChangePassword(_ context.Context, r *proto.ModifyMerchantPasswordRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
 	var err error
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
-		if l := len(r.Origin); l > 0 && l < 32 {
+		if l := len(r.OldPassword); l > 0 && l < 32 {
 			err = de.ErrNotMD5Format
-		} else if len(r.Password) != 32 {
+		} else if len(r.NewPassword) != 32 {
 			err = de.ErrNotMD5Format
 		} else {
-			err = mch.ProfileManager().ChangePassword(r.Password, r.Origin)
+			err = mch.ProfileManager().ChangePassword(r.NewPassword, r.OldPassword)
 		}
 	}
-	return m.error(err), nil
+	return m.errorV2(err), nil
 }
 
 // GetApiInfo 获取API接口
@@ -354,18 +402,6 @@ func (m *merchantService) WithdrawToMemberAccount(_ context.Context, r *proto.Wi
 	} else {
 		acc := mch.Account()
 		err = acc.TransferToMember(int(r.Amount))
-	}
-	return m.error(err), nil
-}
-
-// 账户充值
-func (m *merchantService) ChargeAccount(_ context.Context, r *proto.MerchantChargeRequest) (*proto.Result, error) {
-	mch := m._mchRepo.GetMerchant(int(r.MerchantId))
-	var err error
-	if mch == nil {
-		err = merchant.ErrNoSuchMerchant
-	} else {
-		err = mch.Account().Charge(r.Kind, int(r.Amount), r.Title, r.OuterNo, r.RelateUserId)
 	}
 	return m.error(err), nil
 }
@@ -474,55 +510,25 @@ func (m *merchantService) SaveTradeConf(_ context.Context, r *proto.TradeConfSav
 
 // 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (m *merchantService) testMemberLogin(user string, pwd string) (id int64, err error) {
-	user = strings.ToLower(strings.TrimSpace(user))
-	val := m._memberRepo.GetMemberByUser(user)
-	if val == nil {
-		val = m._memberRepo.GetMemberValueByPhone(user)
-	}
-	if val == nil {
-		return 0, member.ErrNoSuchMember
-	}
-	if val.Password != pwd {
-		//todo: 兼容旧密码
-		if val.Password != domain.Sha1(pwd) {
-			return 0, de.ErrCredential
-		}
-	}
-	if (val.UserFlag & member.FlagLocked) == member.FlagLocked {
-		return 0, member.ErrMemberLocked
-	}
-	return val.Id, nil
-}
-
-// 登录，返回结果(Result_)和会员编号(Id);
-// Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (m *merchantService) testLogin(user string, pwd string) (_ merchant.IMerchantAggregateRoot, errCode int32, err error) {
 	if user == "" || pwd == "" {
-		return nil, 1, de.ErrCredential
+		return nil, 1, de.ErrPasswordNotMatch
 	}
 	if len(pwd) != 32 {
 		return nil, 4, de.ErrNotMD5Format
 	}
 	//尝试作为独立的商户账号登陆
-	mch := m._mchRepo.GetMerchantByUsername(user)
-	if mch == nil {
-		// 使用会员身份登录
-		var id int64
-		id, err = m.testMemberLogin(user, domain.MemberSha1Pwd(pwd, ""))
-		if err != nil {
-			return nil, 2, err
-		}
-		mchId, _ := m.GetMerchantIdByMember(context.TODO(), &proto.MemberId{Value: id})
-		if mchId.Value > 0 {
-			mch = m._mchRepo.GetMerchant(int(mchId.Value))
-			return mch, 0, nil
-		}
-		return nil, 2, merchant.ErrNoSuchMerchant
+	mchList := m._mchRepo.FindList(nil, "username=?", user)
+	if l := len(mchList); l == 0 {
+		return nil, 5, merchant.ErrNoSuchMerchant
 	}
+	if len(mchList) > 1 {
+		return nil, 6, errors.New("存在多个相同用户名的商户")
+	}
+	mch := m._mchRepo.CreateMerchant(mchList[0])
 	mv := mch.GetValue()
-	if pwd := domain.MerchantSha1Pwd(pwd, mch.GetValue().Salt); pwd != mv.Password {
-		return nil, 1, de.ErrCredential
+	if encPwd := domain.MerchantSha265Pwd(pwd, mch.GetValue().Salt); encPwd != mv.Password {
+		return nil, 1, de.ErrPasswordNotMatch
 	}
 	return mch, 0, nil
 }
@@ -538,7 +544,11 @@ func (m *merchantService) CheckLogin(_ context.Context, u *proto.MchUserPwdReque
 			ErrMsg:  err.Error(),
 		}, nil
 	}
-	shopId := mch.ShopManager().GetOnlineShop().GetDomainId()
+	var shopId = 0
+	shop := mch.ShopManager().GetOnlineShop()
+	if shop != nil {
+		shopId = shop.GetDomainId()
+	}
 	return &proto.MchLoginResponse{
 		MerchantId: int64(mch.GetAggregateRootId()),
 		ShopId:     int64(shopId),
@@ -822,7 +832,7 @@ func (m *merchantService) SyncWholesaleItem(_ context.Context, vendorId *proto.I
 
 // GetStaff implements proto.MerchantServiceServer.
 func (m *merchantService) GetStaff(_ context.Context, req *proto.StaffRequest) (*proto.SStaff, error) {
-	staff := m._staffRepo.Get(int(req.Id))
+	staff := m._staffRepo.Get(int(req.StaffId))
 	if staff == nil {
 		return &proto.SStaff{}, nil
 	}
@@ -830,20 +840,32 @@ func (m *merchantService) GetStaff(_ context.Context, req *proto.StaffRequest) (
 		// 如果商户不匹配，则返回空
 		return &proto.SStaff{}, nil
 	}
+	m.checkImInitialized(staff)
 	return m.parseStaffDto(staff), nil
 }
 
 // GetStaffByMember implements proto.MerchantServiceServer.
-func (m *merchantService) GetStaffByMember(_ context.Context, req *proto.StaffRequest) (*proto.SStaff, error) {
-	staff := m._staffRepo.GetStaffByMemberId(int(req.Id))
+func (m *merchantService) GetStaffByMember(_ context.Context, req *proto.MemberStaffRequest) (*proto.SStaff, error) {
+	staff := m._staffRepo.GetStaffByMemberId(int(req.MemberId))
 	if staff == nil {
 		return &proto.SStaff{}, nil
 	}
-	if req.MchId != 0 && req.MchId != int64(staff.MchId) {
-		// 如果商户不匹配，则返回空
-		return &proto.SStaff{}, nil
-	}
+	// if req.MchId != 0 && req.MchId != int64(staff.MchId) {
+	// 	// 如果商户不匹配，则返回空
+	// 	return &proto.SStaff{}, nil
+	// }
+	m.checkImInitialized(staff)
 	return m.parseStaffDto(staff), nil
+}
+
+// checkImInitialized 检查员工IM是否初始化
+func (m *merchantService) checkImInitialized(s *staff.Staff) {
+	if s.ImInitialized == 0 {
+		// 发布员工IM初始化事件
+		eventbus.Dispatch(&staff.StaffRequireImInitEvent{
+			Staff: *s,
+		})
+	}
 }
 
 // SaveStaff implements proto.MerchantServiceServer.
@@ -861,41 +883,65 @@ func (m *merchantService) SaveStaff(_ context.Context, r *proto.SaveStaffRequest
 	return m.result(err), nil
 }
 
-func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {
-	return &proto.SStaff{
-		Id:            int64(src.Id),
-		MemberId:      int64(src.MemberId),
-		StationId:     int32(src.StationId),
-		MchId:         int64(src.MchId),
-		Flag:          int32(src.Flag),
-		Gender:        int32(src.Gender),
-		Nickname:      src.Nickname,
-		WorkStatus:    int32(src.WorkStatus),
-		Grade:         int32(src.Grade),
-		Status:        int32(src.Status),
-		IsCertified:   int32(src.IsCertified),
-		CertifiedName: src.CertifiedName,
-		PremiumLevel:  int32(src.PremiumLevel),
-		CreateTime:    int64(src.CreateTime),
+// UpdateStaffWorkStatus 更新员工工作状态
+func (m *merchantService) UpdateStaffWorkStatus(_ context.Context, req *proto.UpdateStaffWorkStatusRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(errors.New("no such merchant")), nil
 	}
+	err := mch.EmployeeManager().UpdateWorkStatus(int(req.StaffId), int(req.WorkStatus), req.IsKeepOnline)
+	return m.errorV2(err), nil
+}
+
+func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {
+	dst := &proto.SStaff{
+		Id:             int64(src.Id),
+		MemberId:       int64(src.MemberId),
+		StationId:      int32(src.StationId),
+		MchId:          int64(src.MchId),
+		Flag:           int32(src.Flag),
+		Gender:         int32(src.Gender),
+		Nickname:       src.Nickname,
+		WorkStatus:     int32(src.WorkStatus),
+		Grade:          int32(src.Grade),
+		Status:         int32(src.Status),
+		IsCertified:    int32(src.IsCertified),
+		CertifiedName:  src.CertifiedName,
+		PremiumLevel:   int32(src.PremiumLevel),
+		CreateTime:     int64(src.CreateTime),
+		LastOnlineTime: int64(src.LastOnlineTime),
+		ImInitialized:  int32(src.ImInitialized),
+	}
+	// 获取用户代码
+	mem := m._memberRepo.GetMember(int64(src.MemberId))
+	if mem != nil {
+		dst.UserCode = mem.GetValue().UserCode
+	}
+	// 获取商户是否保持上线
+	mch := m._mchRepo.GetMerchant(int(src.MchId))
+	if mch != nil {
+		dst.IsKeepOnline = mch.EmployeeManager().IsKeepOnline(int(src.Id))
+	}
+	return dst
 }
 
 func (m *merchantService) parseMerchantDto(src *merchant.ComplexMerchant) *proto.QMerchant {
 	return &proto.QMerchant{
-		MchId:         src.MemberId,
+		MchId:         int64(src.Id),
+		Username:      src.Username,
 		MchName:       src.Name,
 		MemberId:      src.MemberId,
-		MailAddr:      src.Usr,
+		MailAddr:      src.Username,
 		IsSelf:        src.SelfSales,
-		Flag:          0,
+		Flag:          int32(src.Flag),
 		Level:         src.Level,
 		Province:      src.Province,
 		City:          src.City,
 		District:      src.District,
-		Address:       "",
+		Address:       src.Address,
 		Logo:          src.Logo,
-		Tel:           "",
-		Status:        0,
+		Telephone:     src.Telephone,
+		Status:        int32(src.Status),
 		ExpiresTime:   src.ExpiresTime,
 		LastLoginTime: src.LastLoginTime,
 		CreateTime:    0,
@@ -929,45 +975,46 @@ func (m *merchantService) parseTradeConfDto(conf *merchant.TradeConf) *proto.STr
 
 func (m *merchantService) parseAccountDto(v *merchant.Account) *proto.SMerchantAccount {
 	return &proto.SMerchantAccount{
-		Balance:        v.Balance,
-		FreezeAmount:   v.FreezeAmount,
-		AwaitAmount:    v.AwaitAmount,
-		PresentAmount:  v.PresentAmount,
-		SalesAmount:    v.SalesAmount,
-		RefundAmount:   v.RefundAmount,
-		WithdrawAmount: v.WithdrawAmount,
-		OfflineSales:   v.OfflineSales,
-		UpdateTime:     v.UpdateTime,
+		Balance:           int64(v.Balance),
+		FreezeAmount:      int64(v.FreezeAmount),
+		AwaitAmount:       int64(v.AwaitAmount),
+		PresentAmount:     int64(v.PresentAmount),
+		SalesAmount:       int64(v.SalesAmount),
+		RefundAmount:      int64(v.RefundAmount),
+		WithdrawalAmount:  int64(v.WithdrawalAmount),
+		InvoiceableAmount: int64(v.InvoiceableAmount),
+		OfflineSales:      int64(v.OfflineSales),
+		UpdateTime:        int64(v.UpdateTime),
 	}
 }
 
 func (m *merchantService) parseSaleConf(v *proto.SMerchantSaleConf) *merchant.SaleConf {
 	return &merchant.SaleConf{
-		MerchantId:              v.MerchantId,
-		FxSalesEnabled:          types.ElseInt(v.FxSalesEnabled, 1, 0),
-		CashBackPercent:         float32(v.CashBackPercent),
-		CashBackTg1Percent:      float32(v.CashBackTg1Percent),
-		CashBackTg2Percent:      float32(v.CashBackTg2Percent),
-		CashBackMemberPercent:   float32(v.CashBackMemberPercent),
-		AutoSetupOrder:          types.ElseInt(v.AutoSetupOrder, 1, 0),
-		OrderTimeOutMinute:      int(v.OrderTimeOutMinute),
-		OrderConfirmAfterMinute: int(v.OrderConfirmAfterMinute),
-		OrderTimeOutReceiveHour: int(v.OrderTimeOutReceiveHour),
+		MchId:           int(v.MerchantId),
+		FxSales:         types.ElseInt(v.FxSalesEnabled, 1, 0),
+		CbPercent:       float64(v.CashBackPercent),
+		CbTg1Percent:    float64(v.CashBackTg1Percent),
+		CbTg2Percent:    float64(v.CashBackTg2Percent),
+		CbMemberPercent: float64(v.CashBackMemberPercent),
+		OaOpen:          types.ElseInt(v.AutoSetupOrder, 1, 0),
+		OaTimeoutMinute: int(v.OrderTimeOutMinute),
+		OaConfirmMinute: int(v.OrderConfirmAfterMinute),
+		OaReceiveHour:   int(v.OrderTimeOutReceiveHour),
 	}
 }
 
 func (m *merchantService) parseSaleConfDto(v merchant.SaleConf) *proto.SMerchantSaleConf {
 	return &proto.SMerchantSaleConf{
-		MerchantId:              v.MerchantId,
-		FxSalesEnabled:          v.FxSalesEnabled == 1,
-		CashBackPercent:         float64(v.CashBackPercent),
-		CashBackTg1Percent:      float64(v.CashBackTg1Percent),
-		CashBackTg2Percent:      float64(v.CashBackTg2Percent),
-		CashBackMemberPercent:   float64(v.CashBackMemberPercent),
-		AutoSetupOrder:          v.AutoSetupOrder == 1,
-		OrderTimeOutMinute:      int32(v.OrderTimeOutMinute),
-		OrderConfirmAfterMinute: int32(v.OrderConfirmAfterMinute),
-		OrderTimeOutReceiveHour: int32(v.OrderTimeOutReceiveHour),
+		MerchantId:              int64(v.MchId),
+		FxSalesEnabled:          v.FxSales == 1,
+		CashBackPercent:         float64(v.CbPercent),
+		CashBackTg1Percent:      float64(v.CbTg1Percent),
+		CashBackTg2Percent:      float64(v.CbTg2Percent),
+		CashBackMemberPercent:   float64(v.CbMemberPercent),
+		AutoSetupOrder:          v.OaOpen == 1,
+		OrderTimeOutMinute:      int32(v.OaTimeoutMinute),
+		OrderConfirmAfterMinute: int32(v.OaConfirmMinute),
+		OrderTimeOutReceiveHour: int32(v.OaReceiveHour),
 	}
 }
 
@@ -1062,4 +1109,374 @@ func (m *merchantService) parseBuyerGroupDto(v *merchant.BuyerGroup) *proto.SMer
 		EnableWholesale: v.EnableWholesale,
 		RebatePeriod:    int32(v.RebatePeriod),
 	}
+}
+
+// AdjustAccount implements proto.MerchantServiceServer.
+func (m *merchantService) AdjustAccount(_ context.Context, req *proto.UserWalletAdjustRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.UserId))
+	title := "系统冲正"
+	// 人工冲正带[KF]字样
+	if req.ManualAdjust {
+		title = "[KF]系统冲正"
+	}
+	acc := mch.Account()
+	err := acc.Adjust(title, int(req.Value), req.TransactionRemark, req.RelateUser)
+	return m.errorV2(err), nil
+}
+
+// CarryToAccount 商户账户入账
+func (m *merchantService) CarryToAccount(_ context.Context, req *proto.MerchantAccountCarrayRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.UserId))
+	if mch == nil {
+		return m.errorV2(member.ErrNoSuchMember), nil
+	}
+	acc := mch.Account()
+	if acc == nil {
+		return m.errorV2(member.ErrNoSuchMember), nil
+	}
+	id, err := acc.Carry(merchant.CarryParams{
+		Freeze:            req.Freeze,
+		OuterTxNo:         req.OuterTransactionNo,
+		Amount:            int(req.Amount),
+		TransactionFee:    int(req.TransactionFee),
+		RefundAmount:      0,
+		TransactionTitle:  req.TransactionTitle,
+		TransactionRemark: req.TransactionRemark,
+		OuterTxUid:        int(req.OuterTxUid),
+	})
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(id, nil), nil
+}
+
+// CompleteTransaction implements proto.MerchantServiceServer.
+func (m *merchantService) CompleteTransaction(_ context.Context, req *proto.FinishUserTransactionRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.UserId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	err := mch.Account().CompleteTransaction(
+		int(req.TransactionId),
+		req.OuterTransactionNo)
+	return m.errorV2(err), nil
+}
+
+// RequestWithdraw implements proto.MerchantServiceServer.
+func (m *merchantService) RequestWithdrawal(_ context.Context, req *proto.UserWithdrawRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.UserId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	title := ""
+	kind := 0
+	switch int(req.WithdrawalKind) {
+	case int(proto.EUserWithdrawalKind_WithdrawToBankCard):
+		title = "提现到银行卡"
+		kind = wallet.KWithdrawToBankCard
+	case int(proto.EUserWithdrawalKind_WithdrawToPayWallet):
+		title = "充值到第三方账户"
+		kind = wallet.KWithdrawToPayWallet
+	case int(proto.EUserWithdrawalKind_WithdrawByExchange):
+		title = "提现到余额"
+		kind = wallet.KWithdrawExchange
+	case int(proto.EUserWithdrawalKind_WithdrawCustom):
+		title = "自定义提现"
+		kind = wallet.KWithdrawCustom
+	}
+	acc := mch.Account()
+	transactionId, txNo, err := acc.RequestWithdrawal(
+		&wallet.WithdrawTransaction{
+			Amount:           int(req.Amount),
+			TransactionFee:   int(req.GetTransactionFee()),
+			Kind:             kind,
+			TransactionTitle: title,
+			BankName:         "",
+			AccountNo:        req.AccountNo,
+			AccountName:      "",
+		})
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(
+		int(transactionId),
+		map[string]string{
+			"transationNo": txNo,
+		}), nil
+}
+
+// ReviewWithdrawal implements proto.MerchantServiceServer.
+func (m *merchantService) ReviewWithdrawal(_ context.Context, req *proto.ReviewUserWithdrawalRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.UserId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	err := mch.Account().ReviewWithdrawal(
+		int(req.TransactionId),
+		req.Pass,
+		req.TransactionRemark)
+	return m.errorV2(err), nil
+}
+
+// Freeze implements proto.MerchantServiceServer.
+func (m *merchantService) Freeze(_ context.Context, req *proto.UserWalletFreezeRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.UserId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	id, err := mch.Account().Freeze(
+		wallet.TransactionData{
+			TransactionTitle:  req.TransactionTitle,
+			Amount:            int(req.Amount),
+			TransactionFee:    0,
+			OuterTxNo:         req.OuterTransactionNo,
+			TransactionRemark: req.TransactionRemark,
+			TransactionId:     int(req.TransactionId),
+			OuterTxUid:        0,
+		}, 0)
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(id, nil), nil
+}
+
+// Unfreeze implements proto.MerchantServiceServer.
+func (m *merchantService) Unfreeze(_ context.Context, req *proto.UserWalletUnfreezeRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.UserId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	err := mch.Account().Unfreeze(
+		wallet.TransactionData{
+			TransactionTitle:  req.TransactionTitle,
+			Amount:            int(req.Amount),
+			TransactionFee:    0,
+			OuterTxNo:         req.OuterTransactionNo,
+			TransactionRemark: req.TransactionRemark,
+			TransactionId:     int(req.TransactionId),
+			OuterTxUid:        0,
+		}, req.IsRefundBalance, 0)
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(0, nil), nil
+}
+
+// GetWalletTxLog 获取会员钱包交易记录
+func (m *merchantService) GetWalletTxLog(_ context.Context, r *proto.UserWalletTxId) (*proto.UserWalletTxResponse, error) {
+	mch := m._mchRepo.GetMerchant(int(r.UserId))
+	v := mch.Account().GetWalletLog(r.TxId)
+	if v == nil {
+		return nil, errors.New("交易不存在")
+	}
+	return &proto.UserWalletTxResponse{
+		TxId:               int64(v.Id),
+		UserId:             r.UserId,
+		OuterTransactionNo: v.OuterTxNo,
+		Kind:               int32(v.Kind),
+		TransactionTitle:   v.Subject,
+		Amount:             int64(v.ChangeValue),
+		TransactionFee:     int64(v.TransactionFee),
+		ReviewStatus:       int32(v.ReviewStatus),
+		TransactionRemark:  v.Remark,
+		CreateTime:         int64(v.CreateTime),
+		UpdateTime:         int64(v.UpdateTime),
+		RelateUser:         int64(v.OprUid),
+	}, nil
+}
+
+// TransferStaff 转移员工
+func (m *merchantService) TransferStaff(_ context.Context, req *proto.TransferStaffRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	txId, err := mch.EmployeeManager().RequestTransfer(int(req.StaffId), int(req.TransferMchId))
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(txId, nil), nil
+}
+
+// AdjustBillAmount implements proto.MerchantServiceServer.
+func (m *merchantService) ManualAdjustBillAmount(_ context.Context, req *proto.ManualAdjustMerchantBillAmountRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	err := mch.Account().Adjust(req.Title, int(req.Amount), req.Remark, req.OprUid)
+	if err == nil {
+		bill := mch.TransactionManager().GetCurrentDailyBill()
+		err = bill.UpdateBillAmount(int(req.Amount), int(req.TxFee))
+	}
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(0, nil), nil
+}
+
+// GenerateDailyBill 生成商户日度账单
+func (m *merchantService) GenerateDailyBill(_ context.Context, req *proto.GenerateMerchantBillRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	// 验证时间
+	if req.Unixtime > time.Now().Unix() {
+		return m.errorV2(errors.New("账单时间不能大于当前时间")), nil
+	}
+	var bill merchant.IBillDomain
+	manager := mch.TransactionManager()
+	if req.BillId > 0 {
+		// 获取指定编号的账单
+		bill = manager.GetBill(int(req.BillId))
+	} else {
+		// 获取指定时间的账单
+		bill = manager.GetBillByTime(int(req.Unixtime))
+	}
+	if bill == nil {
+		return m.errorV2(errors.New("账单不存在")), nil
+	}
+	err := bill.Generate()
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(0, nil), nil
+}
+
+// GenerateMonthlyBill 生成商户月度账单
+func (m *merchantService) GenerateMonthlyBill(_ context.Context, req *proto.GenerateMerchantMonthlyBillRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	manager := mch.TransactionManager()
+	err := manager.GenerateMonthlyBill(int(req.Year), int(req.Month))
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(0, nil), nil
+}
+
+// GetBill implements proto.MerchantServiceServer.
+func (m *merchantService) GetBill(_ context.Context, req *proto.BillTimeRequest) (*proto.SMerchantBill, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return nil, errors.New("商户不存在")
+	}
+	manager := mch.TransactionManager()
+	bill := manager.GetBillByTime(int(req.BillTime))
+	if bill == nil {
+		return nil, errors.New("账单不存在")
+	}
+	return m.parseMerchantBill(bill.Value()), nil
+}
+
+func (m *merchantService) parseMerchantBill(bill *merchant.MerchantBill) *proto.SMerchantBill {
+	return &proto.SMerchantBill{
+		Id:                int64(bill.Id),
+		MchId:             int64(bill.MchId),
+		BillTime:          int64(bill.BillTime),
+		BillMonth:         bill.BillMonth,
+		StartTime:         int64(bill.StartTime),
+		EndTime:           int64(bill.EndTime),
+		TotalTxCount:      int64(bill.TxCount),
+		TotalTxAmount:     int64(bill.TxAmount),
+		TotalTxFee:        int64(bill.TxFee),
+		TotalRefundAmount: int64(bill.RefundAmount),
+		Status:            int32(bill.Status),
+		SettleStatus:      int32(bill.SettleStatus),
+		SettleResult:      int32(bill.SettleResult),
+		SettleSpCode:      bill.SettleSpCode,
+		SettleTxNo:        bill.SettleTxNo,
+		SettleRemark:      bill.SettleRemark,
+		ReviewerId:        int64(bill.ReviewerId),
+		ReviewerName:      bill.ReviewerName,
+		ReviewTime:        int64(bill.ReviewTime),
+		CreateTime:        int64(bill.CreateTime),
+		BuildTime:         int64(bill.BuildTime),
+		UpdateTime:        int64(bill.UpdateTime),
+	}
+}
+
+// ConfirmBill 商户核对账单
+func (m *merchantService) ConfirmBill(_ context.Context, req *proto.MerchantConfirmBillRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	bill := mch.TransactionManager().GetBill(int(req.BillId))
+	if bill == nil {
+		return m.errorV2(errors.New("账单不存在")), nil
+	}
+	err := bill.Confirm()
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(int(req.BillId), nil), nil
+}
+
+// ReviewBill implements proto.MerchantServiceServer.
+func (m *merchantService) ReviewBill(_ context.Context, req *proto.ReviewMerchantBillRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	bill := mch.TransactionManager().GetBill(int(req.BillId))
+	if bill == nil {
+		return m.errorV2(errors.New("账单不存在")), nil
+	}
+	err := bill.Review(int(req.ReviewUid), req.ReviewRemark)
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(int(req.BillId), nil), nil
+}
+
+// SettleBill implements proto.MerchantServiceServer.
+func (m *merchantService) SettleBill(_ context.Context, req *proto.SettleMerchantBillRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	bill := mch.TransactionManager().GetBill(int(req.BillId))
+	if bill == nil {
+		return m.errorV2(errors.New("账单不存在")), nil
+	}
+	err := bill.Settle()
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(int(req.BillId), nil), nil
+}
+
+// UpdateSettlement 更新结算信息
+func (m *merchantService) UpdateSettlement(_ context.Context, req *proto.UpdateMerchantSettlementRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	bill := mch.TransactionManager().GetBill(int(req.BillId))
+	if bill == nil {
+		return m.errorV2(errors.New("账单不存在")), nil
+	}
+	err := bill.UpdateSettleInfo(req.SpCode, req.SettleTxNo, int(req.SettleResult), req.Message)
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(int(req.BillId), nil), nil
+}
+
+// RequestInvoice 商户申请发票
+func (m *merchantService) RequestInvoice(_ context.Context, req *proto.MerchantRequestInvoiceRequest) (*proto.TxResult, error) {
+	mch := m._mchRepo.GetMerchant(int(req.MchId))
+	if mch == nil {
+		return m.errorV2(merchant.ErrNoSuchMerchant), nil
+	}
+	account := mch.Account()
+	txId, err := account.RequestInvoice(int(req.Amount), req.Remark)
+	if err != nil {
+		return m.errorV2(err), nil
+	}
+	return m.txResult(txId, nil), nil
 }

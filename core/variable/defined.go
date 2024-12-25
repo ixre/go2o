@@ -18,6 +18,8 @@ var (
 	AliasMerchantBalanceAccount = "商户余额"
 	FlowConvertSlogan           = "流通金作为可以转让的虚拟货币"
 	AliasIntegralAccount        = "积分"
+	AliasMerchantLabel          = "商户"
+	AliasMerchantStaffLabel     = "店员"
 
 	AliasTradeOrder = "交易类订单"
 

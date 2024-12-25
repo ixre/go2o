@@ -143,11 +143,11 @@ func TestCancelOrder(t *testing.T) {
 	py := o.GetPaymentOrder()
 	err = py.PaymentByWallet("支付订单")
 	pv := py.Get()
-	payState := pv.State
+	payState := pv.Status
 	if payState == payment.StateFinished {
 		t.Logf("订单支付完成,金额：%d", pv.FinalAmount)
 	} else {
-		t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.TradeNo())
+		t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.Status, py.TradeNo())
 	}
 	t.Logf("支付单信息：%#v", pv)
 
@@ -208,7 +208,7 @@ func TestSubmitNormalOrder(t *testing.T) {
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
 
 	data := order.SubmitOrderData{
-		BuyerId:       buyer.GetValue().Id,
+		BuyerId:       int64(buyer.GetAggregateRootId()),
 		Type:          order.TRetail,
 		Subject:       "",
 		AddressId:     addressId,
@@ -239,10 +239,10 @@ func TestRebuildSubmitNormalOrder(t *testing.T) {
 	ic := io.BuildCart()
 	ic.Save()
 	memberId := io.Buyer().GetAggregateRootId()
-	addressId := memRepo.GetDeliverAddress(memberId)[0].Id
+	addressId := memRepo.GetDeliverAddress(int64(memberId))[0].Id
 
 	data := order.SubmitOrderData{
-		BuyerId:       memberId,
+		BuyerId:       int64(memberId),
 		Type:          io.Type(),
 		Subject:       "",
 		AddressId:     addressId,
@@ -459,9 +459,9 @@ func TestMergePaymentOrder(t *testing.T) {
 	ic := io.BuildCart()
 	ic.Save()
 	memberId := io.Buyer().GetAggregateRootId()
-	addressId := memRepo.GetDeliverAddress(memberId)[0].Id
+	addressId := memRepo.GetDeliverAddress(int64(memberId))[0].Id
 	data := order.SubmitOrderData{
-		BuyerId:       io.Buyer().GetValue().Id,
+		BuyerId:       int64(io.Buyer().GetAggregateRootId()),
 		Type:          io.Type(),
 		Subject:       "",
 		AddressId:     addressId,

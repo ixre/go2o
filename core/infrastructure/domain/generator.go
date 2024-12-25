@@ -10,6 +10,7 @@ package domain
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -42,10 +43,15 @@ func NewTradeNo(business int, userId int) string {
 }
 
 // 获取新的验证码
-func NewCheckCode() string {
+func NewCheckCode(len int) string {
+	if len <= 0 {
+		len = 6
+	}
 	unix := time.Now().UnixNano()
 	rd := rand.New(rand.NewSource(unix))
-	value := 100000 + rd.Intn(999999-100000)
+	min := math.Pow(10, float64(len-1))
+	max := math.Pow(10, float64(len)) - 1
+	value := int(min) + rd.Intn(int(max-min))
 	return strconv.Itoa(value)
 }
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/inject"
 	_ "github.com/ixre/go2o/tests"
 	"github.com/ixre/gof/crypto"
@@ -35,7 +36,7 @@ func TestModifyMemberProfile(t *testing.T) {
 func TestModifyMemberPwd(t *testing.T) {
 	m := inject.GetMemberRepo().GetMember(31)
 	md5 := crypto.Md5([]byte("123456"))
-	pwd := domain.Sha1Pwd(md5, m.GetValue().Salt)
+	pwd := domain.MemberSha256Pwd(md5, m.GetValue().Salt)
 	// 7c4a8d09ca3762af61e59520943dc26494f8941b
 	err := m.Profile().ChangePassword(pwd, "")
 	if err != nil {
@@ -121,7 +122,7 @@ func TestCreateNewMember(t *testing.T) {
 	m := repo.CreateMember(v) //创建会员
 	id, err := m.Save()
 	if err == nil {
-		err = m.BindInviter(int64(inviterId), true)
+		err = m.BindInviter(inviterId, true)
 	}
 	if err != nil {
 		t.Error(err)
@@ -163,16 +164,16 @@ func TestToBePremium(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	m = repo.GetMember(m.GetAggregateRootId())
+	m = repo.GetMember(int64(m.GetAggregateRootId()))
 	v := m.GetValue()
 	t.Logf("Premium: user:%d ; expires:%s", v.PremiumUser,
-		time.Unix(v.PremiumExpires, 0).Format("2006-01-02 15:04:05"))
+		time.Unix(int64(v.PremiumExpires), 0).Format("2006-01-02 15:04:05"))
 }
 
 func TestChangePassword(t *testing.T) {
 	repo := inject.GetMemberRepo()
 	m := repo.GetMember(2)
-	NewPassword := domain.MemberSha1Pwd(domain.Md5("13268240456"),
+	NewPassword := domain.MemberSha256Pwd(domain.Md5("13268240456"),
 		m.GetValue().Salt)
 	err := m.Profile().ChangePassword(NewPassword, "")
 	if err != nil {
@@ -239,7 +240,7 @@ func TestUpdateInviter(t *testing.T) {
 	memberId := 728
 	inviterId := 710
 	m := inject.GetMemberRepo().GetMember(int64(memberId))
-	err := m.BindInviter(int64(inviterId), false)
+	err := m.BindInviter(inviterId, false)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -304,11 +305,11 @@ func TestMemberWalletRefreeze(t *testing.T) {
 		t.FailNow()
 	}
 	tradeLogId, err := ic.Freeze(member.AccountWallet, member.AccountOperateData{
-		Title:      "测试冻结",
-		Amount:     10,
-		OuterNo:    "xxx",
-		Remark:     "",
-		TradeLogId: 0,
+		TransactionTitle:   "测试冻结",
+		Amount:             10,
+		OuterTransactionNo: "xxx",
+		TransactionRemark:  "",
+		TransactionId:      0,
 	}, 0)
 	if err != nil {
 		t.Error(err)
@@ -319,12 +320,42 @@ func TestMemberWalletRefreeze(t *testing.T) {
 	t.Logf("冻结金额:%d, 钱包余额:%d", l.ChangeValue, l.Balance)
 
 	tradeLogId, _ = ic.Freeze(member.AccountWallet, member.AccountOperateData{
-		Title:      "测试冻结",
-		Amount:     20,
-		OuterNo:    "xxx",
-		Remark:     "",
-		TradeLogId: tradeLogId,
+		TransactionTitle:   "测试冻结",
+		Amount:             20,
+		OuterTransactionNo: "xxx",
+		TransactionRemark:  "",
+		TransactionId:      tradeLogId,
 	}, 0)
 	l = wr.GetWalletLog_(tradeLogId)
 	t.Logf("冻结金额:%d, 钱包余额:%d", l.ChangeValue, l.Balance)
+}
+
+// 测试批量更改会员密码
+func TestBatchChangeMemberPassword(t *testing.T) {
+	db := provide.GetGOrm()
+	var memberList []*member.Member
+	tx := db.Model(&member.Member{})
+	tx.Scan(&memberList)
+	for _, v := range memberList {
+		v.Password = domain.MemberSha256Pwd(domain.Md5("123456"), v.Salt)
+		db.Save(v)
+	}
+}
+
+// 测试更新会员区域信息
+func TestUpdateMemberRegionInfo(t *testing.T) {
+	// select region_code,count(1),(select name from sys_district WHERE code=region_code) FROM mm_extra_field group by region_code
+	db := provide.GetGOrm()
+	ir := inject.GetSystemRepo().GetSystemAggregateRoot()
+	var memberList []*member.ExtraField
+	tx := db.Model(&member.ExtraField{})
+	tx.Scan(&memberList)
+	for _, v := range memberList {
+		region, err := ir.Location().FindRegionByIp(v.RegIp)
+		if err == nil && region != nil {
+			v.RegionCode = region.Code
+			db.Save(v)
+			t.Logf("更新会员区域信息: memberId:%d, region:%s", v.Id, region.Name)
+		}
+	}
 }

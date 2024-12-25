@@ -172,7 +172,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 	v := &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: mss.TypeEmailMessage,
+		Type: mss.TypeEmail,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -215,7 +215,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 	v = &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: mss.TypePhoneMessage,
+		Type: mss.TypeSMS,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色

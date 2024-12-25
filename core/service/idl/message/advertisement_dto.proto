@@ -40,7 +40,7 @@ message QueryAdRequest{
 
 // 查询广告响应
 message QueryAdResponse{
-  repeated SAdDto value = 1;
+  repeated SAd value = 1;
 }
 
 // 广告用户设置
@@ -55,51 +55,9 @@ message SAdUserSet {
   int64 adId = 4;
 }
 
-// 广告
-message SAdDto {
-  // 编号
-  int64 id = 1;
-  //广告用户编号
-  int64 userId =  2;
-  // 名称
-  string name = 3;
-  // 广告类型
-  int32 adType = 4;
-  // 展现次数
-  int32 showTimes = 5;
-  // 点击次数
-  int32 clickTimes = 6;
-  // 展现天数
-  int32 showDays = 7;
-  // 修改时间
-  int64 updateTime = 8;
-  // 广告数据
-  SAdvertisementDto data = 9;
-}
-
-// 广告数据传输对象
-message SAdvertisementDto {
-  // 广告编号
-  int64 id = 1;
-  // 广告类型
-  int32 adType = 2;
-  // 文本广告数据
-  STextAdData text = 3;
-  // 图片广告数据
-  SImageAdData image = 4;
-  // 轮播广告数据
-  SSwiperAdData swiper = 5;
-}
-
-// 文本广告数据
-message STextAdData {
-  int64 id = 1;
-  string title = 2;
-  string linkUrl = 3;
-}
 
 // 图片广告数据
-message SImageAdData {
+message SAdData {
   // 图片编号
   int64 id = 1;
   // 图片标题
@@ -112,11 +70,6 @@ message SImageAdData {
   int32 enabled = 5;
   // 排列序号
   int32 sortNum = 6;
-}
-
-// 轮播广告数据
-message SSwiperAdData{
-  repeated SImageAdData images = 1;
 }
 
 message SetDefaultAdRequest {
@@ -139,16 +92,25 @@ message AdIdRequest {
   bool returnData = 4;
 }
 
-message SaveAdRequest {
-  int64 adUserId = 1;
-  SAdDto value = 2;
-  SAdvertisementDto data = 3;
+// 广告
+message SAd {
+  /** 广告用户 */
+  int64 userId = 1;
+  /** 广告ID */
+  int64 adId = 2;
+  /** 广告名称 */
+  string name = 3;
+  /** 广告类型 */
+  int32 adType = 4;
+  /** 广告状态 */
+  int32 status = 5;
+  /** 广告数据 */
+  repeated SAdData data = 6;
 }
-
 message SaveSwiperImageRequest {
   int64 adUserId = 1;
   int64 adId = 2;
-  SImageAdData value = 3;
+  SAdData value = 3;
 }
 
 message ImageIdRequest {
@@ -165,11 +127,34 @@ message QueryAdvertisementDataRequest{
   repeated string keys = 2;
 }
 
+
+// 广告数据包装传输对象
+message SAdvertisementPackage{
+  // 广告编号
+  int64 id = 1;
+  // 广告类型
+  int32 type = 2;
+  // 广告媒体数据
+  repeated SAdvertisementMedia media = 3;
+}
+
+/** 广告媒体 */
+message SAdvertisementMedia{
+  /** 标题 */
+  string title = 1;
+  /** 点击执行命令 */
+  string cmd = 2;
+  /** 链接地址 */
+  string linkUrl = 3; 
+  // 媒体资源地址，如图片视频
+  string mediaUrl = 4;
+}
+
 // 查询广告数据
 message QueryAdvertisementDataResponse{
   // 广告用户编号
-  int64 adUserId = 1;
+  int64 userId = 1;
   //　广告位键
-  map<string,SAdvertisementDto> value = 2;
+  map<string,SAdvertisementPackage> value = 2;
 }
 

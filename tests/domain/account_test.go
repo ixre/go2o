@@ -27,14 +27,14 @@ func TestFlowAccount(t *testing.T) {
 	if err == nil {
 		err = acc.Charge(member.AccountFlow, "用户充值50元", 5000, "-", "")
 		if err == nil {
-			err = acc.Consume(member.AccountFlow, "消费150", 15000, "-", "")
+			_, err = acc.Consume(member.AccountFlow, "消费150", 15000, "-", "")
 		}
 	}
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	nowBalance := repo.GetMember(m.GetAggregateRootId()).GetAccount().GetValue().FlowBalance
+	nowBalance := repo.GetMember(int64(m.GetAggregateRootId())).GetAccount().GetValue().FlowBalance
 	if nowBalance != balance {
 		t.Logf("before:%.2f  now:%.2f", float64(balance)/100, float64(nowBalance)/100)
 		t.FailNow()
@@ -54,17 +54,32 @@ func TestMemberWalletOperate(t *testing.T) {
 	bankCardNo := cards[0].BankAccount
 	assertError(t, ic.Charge(member.AccountWallet, "钱包充值",
 		100000, "-", "测试"))
-	id, _, err := ic.RequestWithdrawal(wallet.KWithdrawToBankCard,
-		"提现到银行卡", 70000, 0, bankCardNo)
+	id, _, err := ic.RequestWithdrawal(&wallet.WithdrawTransaction{
+		Amount:           70000,
+		TransactionFee:   0,
+		Kind:             0,
+		TransactionTitle: "提现到银行卡",
+		BankName:         "",
+		AccountNo:        bankCardNo,
+		AccountName:      "",
+	})
 	assertError(t, err)
 	ic.ReviewWithdrawal(id, true, "")
-	id, _, err = ic.RequestWithdrawal(wallet.KWithdrawToBankCard,
-		"提现到银行卡", 30000, 0, bankCardNo)
+	id, _, err = ic.RequestWithdrawal(&wallet.WithdrawTransaction{
+		Amount:           30000,
+		TransactionFee:   0,
+		Kind:             0,
+		TransactionTitle: "提现到银行卡",
+		BankName:         "",
+		AccountNo:        bankCardNo,
+		AccountName:      "",
+	})
 	assertError(t, err)
 	assertError(t, ic.ReviewWithdrawal(id, false, "退回提现"))
-	assertError(t, ic.Discount(member.AccountWallet, "钱包抵扣",
-		30000, "-", "测试"))
-	if final := int(ic.GetValue().WalletBalance); int64(final) != amount {
+	_, err = ic.Discount(member.AccountWallet, "钱包抵扣",
+		30000, "-", "测试")
+	assertError(t, err)
+	if final := int(ic.GetValue().WalletBalance); final != amount {
 		t.Log("want ", amount, " final ", final)
 		t.FailNow()
 	}
@@ -75,18 +90,18 @@ func TestMemberFreeWallet(t *testing.T) {
 	m := inject.GetMemberRepo().GetMember(memberId)
 	ic := m.GetAccount()
 	_, err := ic.CarryTo(member.AccountWallet, member.AccountOperateData{
-		Title:   "测试冻结1元",
-		Amount:  100,
-		OuterNo: "-",
-		Remark:  "",
+		TransactionTitle:   "测试冻结1元",
+		Amount:             100,
+		OuterTransactionNo: "-",
+		TransactionRemark:  "",
 	}, true, 0)
 	if err == nil {
 		err = ic.Unfreeze(member.AccountWallet, member.AccountOperateData{
-			Title:   "解冻",
-			Amount:  100,
-			OuterNo: "",
-			Remark:  "",
-		}, 0)
+			TransactionTitle:   "解冻",
+			Amount:             100,
+			OuterTransactionNo: "",
+			TransactionRemark:  "",
+		}, true, 0)
 	}
 	if err != nil {
 		t.Error(err)
@@ -113,6 +128,23 @@ func TestAccountAdjust(t *testing.T) {
 		8990,
 		"-",
 		1)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+// 测试解冻钱包
+func TestMemberUnfreezeWallet(t *testing.T) {
+	var memberId int64 = 848
+
+	m := inject.GetMemberRepo().GetMember(memberId)
+	ic := m.GetAccount()
+	err := ic.Unfreeze(member.AccountWallet, member.AccountOperateData{
+		TransactionTitle:   "解冻",
+		Amount:             33,
+		OuterTransactionNo: "",
+		TransactionRemark:  "",
+	}, true, 1)
 	if err != nil {
 		t.Error(err)
 	}

@@ -17,32 +17,26 @@ message SMember {
     sint32 role = 4;
     /** 用户名 */
     string username = 5;
-    /** 经验值 */
-    sint64 exp = 6;
     /** 等级  */
-    sint32 level = 7;
+    sint32 level = 6;
+    /** 国家代码 */
+    string countryCode = 7;
     /** 会员头像 */
     string profilePhoto = 8;
     /** 昵称 */
     string nickname = 9;
-    /** 注册IP */
-    string regIp = 10;
-    /** 注册来源 */
-    string regFrom = 11;
     /** 手机号  */
-    string phone = 12;
+    string phone = 10;
     /** 电子邮箱 */
-    string email = 13;
+    string email = 11;
     /** 真实姓名 */
-    string realName = 14;
+    string realName = 12;
     /** 高级用户级别 */
-    sint32 premiumUser = 15;
+    sint32 premiumUser = 13;
     /** 高级用户过期时间 */
-    sint64 premiumExpires = 16;
+    sint64 premiumExpires = 14;
     /** 注册时间 */
-    int64 regTime = 17;
-    /** 最后登录时间 */
-    int64 lastLoginTime = 18;
+    int64 createTime = 15;
   }
   
 
@@ -52,7 +46,7 @@ message SProfile {
     string nickname = 2;
     string profilePhoto = 3;
     sint32 gender = 4;
-    string birthDay = 5;
+    string birthday = 5;
     string phone = 6;
     string address = 7;
     string im = 8;
@@ -68,6 +62,8 @@ message SProfile {
     string ext5 = 18;
     string ext6 = 19;
     sint64 updateTime = 20;
+    /** 签名 */
+    string signature = 21;
 }
 
 

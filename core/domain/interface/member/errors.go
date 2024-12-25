@@ -173,6 +173,9 @@ var (
 	ErrEmptyNickname = domain.NewError(
 		"err_member_nil_nick_name", "昵称不能为空")
 
+	ErrNicknameIsUse = domain.NewError(
+		"err_member_nickname_is_use", "昵称已被其他用户使用")
+
 	ErrInvalidHeadPortrait = domain.NewError(
 		"err_member_invalid_head_portrait", "头像不合法")
 

@@ -3,33 +3,43 @@ package invoice
 import (
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/invoice"
-	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
-	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/gof/domain/eventbus"
 )
 
 var _ invoice.InvoiceUserAggregateRoot = new(invoiceTenantAggregateRootImpl)
 
 type invoiceTenantAggregateRootImpl struct {
-	value   *invoice.InvoiceTenant
-	repo    invoice.IInvoiceTenantRepo
-	mchRepo merchant.IMerchantRepo
+	value *invoice.InvoiceTenant
+	repo  invoice.IInvoiceRepo
+}
+
+// GetDefaultInvoiceTitle implements invoice.InvoiceUserAggregateRoot.
+func (i *invoiceTenantAggregateRootImpl) GetDefaultInvoiceTitle() *invoice.InvoiceTitle {
+	titles := i.repo.Title().FindList(nil, "tenant_id=?", i.GetAggregateRootId())
+	for _, v := range titles {
+		if v.IsDefault == 1 {
+			return v
+		}
+	}
+	if len(titles) > 0 {
+		return titles[0]
+	}
+	return nil
 }
 
 func NewInvoiceTenant(v *invoice.InvoiceTenant,
-	repo invoice.IInvoiceTenantRepo,
-	mchRepo merchant.IMerchantRepo,
+	repo invoice.IInvoiceRepo,
 ) invoice.InvoiceUserAggregateRoot {
 	return &invoiceTenantAggregateRootImpl{
-		value:   v,
-		mchRepo: mchRepo,
-		repo:    repo,
+		value: v,
+		repo:  repo,
 	}
 }
 
@@ -69,6 +79,15 @@ func (i *invoiceTenantAggregateRootImpl) CreateInvoiceTitle(title *invoice.Invoi
 	if title.TenantId > 0 && title.TenantId != i.GetAggregateRootId() {
 		return errors.New("invoice tenant error")
 	}
+	if i, _ := i.repo.Title().Count("tenant_id=?", i.GetAggregateRootId()); i >= 5 {
+		return errors.New("发票抬头数量不能超过5个")
+	}
+	if i.repo.Title().FindBy("tenant_id=? AND title_name=? AND id <> ?",
+		i.GetAggregateRootId(),
+		title.TitleName,
+		title.Id) != nil {
+		return errors.New("发票抬头已经存在")
+	}
 	title.CreateTime = int(time.Now().Unix())
 	title.TenantId = i.GetAggregateRootId()
 	_, err := i.repo.Title().Save(title)
@@ -105,14 +124,20 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 		if tn == nil {
 			return nil, errors.New("issue tenant not exists")
 		}
-		mch := i.mchRepo.GetMerchant(tn.TenantUserId())
-		if mch == nil {
-			logger.Error("商户不存在,无法开具发票, tenantId:%d", tn.TenantUserId())
-			return nil, errors.New("商户不存在,无法开具发票")
+		title := tn.GetDefaultInvoiceTitle()
+		if title == nil {
+			return nil, errors.New("商户尚未设置开票信息")
 		}
-		r.SellerName = mch.GetValue().MchName
-		r.SellerTaxCode = ""
+		r.SellerName = title.TitleName
+		r.SellerTaxCode = title.TaxCode
 	}
+	// 申请人信息
+	title := i.GetInvoiceTitle(v.TitleId)
+	if title == nil {
+		return nil, errors.New("开票信息不存在")
+	}
+	r.PurchaserName = title.TitleName
+	r.PurchaserTaxCode = title.TaxCode
 	// 开票项目
 	if len(v.Items) == 0 {
 		return nil, errors.New("no such invoice items")
@@ -122,8 +147,8 @@ func (i *invoiceTenantAggregateRootImpl) RequestInvoice(v *invoice.InvoiceReques
 		r.InvoiceAmount += amount
 		r.TaxAmount += amount * v.TaxRate
 	}
-	if r.InvoiceAmount <= 0 {
-		return nil, errors.New("invoice amount is zero")
+	if r.InvoiceAmount <= 0 || r.InvoiceAmount > math.Pow10(6) {
+		return nil, errors.New("开票金额不正确")
 	}
 	r.CreateTime = int(time.Now().Unix())
 	r.IssueTenantId = v.IssueTenantId
@@ -138,6 +163,10 @@ func (i *invoiceTenantAggregateRootImpl) createInvoice(v *invoice.InvoiceRecord,
 func (i *invoiceTenantAggregateRootImpl) GetInvoice(id int) invoice.InvoiceDomain {
 	v := i.repo.Records().Get(id)
 	if v != nil {
+		if v.TenantId != i.GetAggregateRootId() && v.IssueTenantId != i.GetAggregateRootId() {
+			// 其他用户的发票
+			return nil
+		}
 		items := i.repo.Items().FindList(nil, "invoice_id=?", id)
 		return i.createInvoice(v, items)
 	}
@@ -183,14 +212,18 @@ func (i *invoiceRecordDomainImpl) GetItems() []*invoice.InvoiceItem {
 }
 
 // Issue implements invoice.InvoiceDomain.
-func (i *invoiceRecordDomainImpl) Issue(picture string) error {
+func (i *invoiceRecordDomainImpl) Issue(picture string, remark string) error {
 	if i.value.InvoiceStatus != invoice.IssuePending {
 		return errors.New("invoice status error")
 	}
+	if len(picture) == 0 {
+		return errors.New("发票图片不能为空")
+	}
 	i.value.InvoiceStatus = invoice.IssueSuccess
 	i.value.InvoicePic = picture
-	i.value.IssueRemark = ""
+	i.value.IssueRemark = remark
 	i.value.UpdateTime = int(time.Now().Unix())
+	i.value.InvoiceTime = int(time.Now().Unix())
 	return i.Save()
 }
 
@@ -211,6 +244,13 @@ func (i *invoiceRecordDomainImpl) Revert(reason string) error {
 	i.value.IssueRemark = reason
 	i.value.UpdateTime = int(time.Now().Unix())
 	_, err := i.repo.Save(i.value)
+	if err == nil {
+		go eventbus.Dispatch(&invoice.InvoiceRevertEvent{
+			TenantId:  i.value.TenantId,
+			InvoiceId: i.value.Id,
+			Reason:    reason,
+		})
+	}
 	return err
 }
 
@@ -232,7 +272,7 @@ func (i *invoiceRecordDomainImpl) SendMail(mail string) error {
 	if len(i.value.InvoicePic) == 0 {
 		return errors.New("invoice picture is empty")
 	}
-	eventbus.Publish(&events.SendEmailEvent{
+	eventbus.Dispatch(&events.SendEmailEvent{
 		Subject: "请查收发票",
 		To:      mail,
 		Body:    fmt.Sprintf(`<img src="%s" alt="发票图片"/>`, i.value.InvoicePic),

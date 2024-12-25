@@ -197,7 +197,6 @@ func (t *orderManagerImpl) submitTradeOrder(data order.SubmitOrderData) (order.I
 			rd.PaymentOrderNo = o.GetPaymentOrder().TradeNo()
 		}
 	}
-
 	return o, rd, err
 }
 
@@ -215,7 +214,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMemberAggregateRoot, o order.IO
 	po := py.Get()
 	//todo: ?? 重构
 	cp := t.promRepo.GetCouponByCode(
-		m.GetAggregateRootId(), couponCode)
+		int64(m.GetAggregateRootId()), couponCode)
 	// 如果优惠券不存在
 	if cp == nil {
 		return errors.New("优惠券无效")
@@ -225,13 +224,13 @@ func (t *orderManagerImpl) applyCoupon(m member.IMemberAggregateRoot, o order.IO
 	result, err := coupon.CanUse(m, float32(po.TotalAmount/100))
 	if result {
 		if coupon.CanTake() {
-			_, err = coupon.GetTake(m.GetAggregateRootId())
+			_, err = coupon.GetTake(int64(m.GetAggregateRootId()))
 			//如果未占用，则占用
 			if err != nil {
-				err = coupon.Take(m.GetAggregateRootId())
+				err = coupon.Take(int64(m.GetAggregateRootId()))
 			}
 		} else {
-			_, err = coupon.GetBind(m.GetAggregateRootId())
+			_, err = coupon.GetBind(int64(m.GetAggregateRootId()))
 		}
 		if err != nil {
 			domain.HandleError(err, "domain")
@@ -239,7 +238,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMemberAggregateRoot, o order.IO
 		} else {
 			//应用优惠券
 			if err = io.ApplyCoupon(coupon); err == nil {
-				_, err = py.CouponDiscount(coupon)
+				_, err = py.CouponDiscount(couponCode)
 			}
 		}
 	}
@@ -306,9 +305,9 @@ func (t *orderManagerImpl) submitNormalOrder(data order.SubmitOrderData) (order.
 	// }
 
 	rd.IsMergePay = len(no.GetSubOrders()) > 1
-	rd.TradeAmount = ipv.FinalAmount
+	rd.TradeAmount = int64(ipv.FinalAmount)
 	rd.OrderNo = ipv.OutOrderNo
-	rd.PaymentState = ipv.State
+	rd.PaymentState = ipv.Status
 	rd.PaymentOrderNo = ipv.TradeNo
 	return o, rd, err
 	// 剩下单个订单未支付

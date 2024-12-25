@@ -10,20 +10,29 @@ package util
 
 import (
 	"bytes"
-	"github.com/smartwalle/resize"
-	"image"
 	"image/jpeg"
-	"io"
+
+	"github.com/disintegration/imaging"
 )
 
 // 生成缩略图
-func MakeThumbnail(r io.Reader, width, height uint) ([]byte, error) {
-	img, _, err := image.Decode(r)
-	if err == nil {
-		aResize := resize.Resize(width, height, img, resize.Lanczos3)
-		w := bytes.NewBuffer(nil)
-		jpeg.Encode(w, aResize, &jpeg.Options{100})
-		return w.Bytes(), err
+func MakeThumbnail(filename string, width, height int) ([]byte, error) {
+	img, err := imaging.Open(filename, imaging.AutoOrientation(true))
+	if err != nil {
+		return nil, err
 	}
-	return nil, err
+	rate := float64(img.Bounds().Dx()) / float64(img.Bounds().Dy())
+	if height <= 0 {
+		height = int(float64(width) / rate)
+	}
+	if width <= 0 {
+		width = int(float64(height) * rate)
+	}
+	dstImg := imaging.Fill(img, width, height, imaging.Center, imaging.Lanczos)
+	buf := bytes.NewBuffer(nil)
+	err = jpeg.Encode(buf, dstImg, &jpeg.Options{Quality: 100})
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }

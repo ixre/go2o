@@ -8,7 +8,10 @@
  */
 package member
 
-import "github.com/ixre/go2o/core/domain/interface/wallet"
+import (
+	"github.com/ixre/go2o/core/domain/interface/wallet"
+	"github.com/ixre/go2o/core/infrastructure/domain"
+)
 
 type AccountType int
 
@@ -29,29 +32,29 @@ const (
 	// KindCustom 自定义的业务类型
 	KindCustom int = 30
 	// KindCharge 会员充值
-	KindCharge = 1
+	KindCharge = wallet.KCharge
 	// KindCarry 入账
-	KindCarry = 2
+	KindCarry = wallet.KCarry
 	// KindConsume 消耗
-	KindConsume = 3
+	KindConsume = wallet.KConsume
 	// KindAdjust 客服调整
-	KindAdjust = 4
+	KindAdjust = wallet.KAdjust
 	// KindDiscount 支付抵扣
-	KindDiscount = 5
+	KindDiscount = wallet.KDiscount
 	// KindRefund 退款
-	KindRefund int = 6
+	KindRefund int = wallet.KRefund
 	// KindExchange 兑换充值, 比如将钱包充值到余额
-	KindExchange int = 7
+	KindExchange int = wallet.KExchange
 	// KindTransferIn 转入
-	KindTransferIn int = 8
+	KindTransferIn int = wallet.KTransfer
 	// KindTransferOut 转出
-	KindTransferOut int = 9
+	KindTransferOut int = wallet.KTransfer
 	// KindExpired 失效
-	KindExpired int = 10
+	KindExpired int = wallet.KExpired
 	// KindFreeze 冻结
-	KindFreeze int = 11
+	KindFreeze int = wallet.KFreeze
 	// KindUnfreeze 解冻
-	KindUnfreeze int = 12
+	KindUnfreeze int = wallet.KUnfreeze
 )
 
 const (
@@ -73,14 +76,13 @@ const (
 
 type (
 	IAccount interface {
-		// GetDomainId 获取领域对象编号
-		GetDomainId() int64
+		domain.IDomain
 
 		// GetValue 获取账户值
 		GetValue() *Account
 
 		// Save 保存
-		Save() (int64, error)
+		Save() (int, error)
 
 		// Wallet 电子钱包
 		Wallet() wallet.IWallet
@@ -91,20 +93,20 @@ type (
 		// Charge 用户充值,金额放大100倍（应只充值钱包）
 		Charge(account AccountType, title string, amount int, outerNo string, remark string) error
 
-		// CarryTo 入账,review是否先冻结审核, procedureFee手续费; 返回日志ID
-		CarryTo(account AccountType, d AccountOperateData, review bool, procedureFee int) (int, error)
+		// CarryTo 入账,review是否先冻结审核, transactionFee手续费; 返回日志ID
+		CarryTo(account AccountType, d AccountOperateData, review bool, transactionFee int) (int, error)
 
 		// ReviewCarryTo 审核入账
-		ReviewCarryTo(account AccountType, requestId int, pass bool, reason string) error
+		ReviewCarryTo(account AccountType, transactionId int, pass bool, reason string) error
 
 		// Consume 消耗
-		Consume(account AccountType, title string, amount int, outerNo string, remark string) error
+		Consume(account AccountType, title string, amount int, outerNo string, remark string) (int, error)
 
 		// Adjust 客服调整
 		Adjust(account AccountType, title string, amount int, remark string, relateUser int64) error
 
 		// Discount 抵扣, 如果账户扣除后不存在为消耗,反之为抵扣(内部,购物时需要抵扣一部分)
-		Discount(account AccountType, title string, amount int, outerNo string, remark string) error
+		Discount(account AccountType, title string, amount int, outerNo string, remark string) (int, error)
 
 		// Refund 退款
 		Refund(account AccountType, title string, amount int, outerNo string, remark string) error
@@ -112,31 +114,33 @@ type (
 		// Freeze 账户冻结
 		Freeze(account AccountType, p AccountOperateData, relateUser int64) (int, error)
 
-		// Unfreeze 账户解冻
-		Unfreeze(account AccountType, p AccountOperateData, relateUser int64) error
+		// Unfreeze 账户解冻, isRefundBalance 是否退回到余额
+		Unfreeze(account AccountType, p AccountOperateData, isRefundBalance bool, relateUser int64) error
 
-		// PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号
-		PaymentDiscount(tradeNo string, amount int, remark string) error
+		// 预扣消费,将冻结转为消费,扣款后不自动退回余额
+		PrefreezeConsume(transactionId int, transactionTitle string, transactionRemark string) error
 
 		// FreezeExpired 将冻结金额标记为失效
 		FreezeExpired(account AccountType, amount int, remark string) error
+
+		// PaymentDiscount 支付单抵扣消费,tradeNo为支付单单号
+		PaymentDiscount(tradeNo string, amount int, remark string) error
 
 		// GetWalletLog 获取钱包账户日志
 		GetWalletLog(id int64) wallet.WalletLog
 
 		// RequestWithdrawal 申请提现(只支持钱包),drawType：提现方式,返回info_id,交易号 及错误
-		RequestWithdrawal(drawType int, title string, amount int,
-			tradeFee int, bankAccountNo string) (int64, string, error)
+		RequestWithdrawal(w *wallet.WithdrawTransaction) (int, string, error)
 
 		// ReviewWithdrawal 提现审核
-		ReviewWithdrawal(requestId int64, pass bool, reason string) error
+		ReviewWithdrawal(transactionId int, pass bool, reason string) error
 
-		// FinishWithdrawal 完成提现
-		FinishWithdrawal(requestId int64, tradeNo string) error
+		// CompleteTransaction 完成交易(打款),outerTransactionNo为外部交易号
+		CompleteTransaction(transactionId int, outerTransactionNo string) error
 
 		// TransferAccount 转账
 		TransferAccount(account AccountType, toMember int64, amount int,
-			tradeFee int, remark string) error
+			transactionFee int, remark string) error
 
 		// ReceiveTransfer 接收转账
 		ReceiveTransfer(account AccountType, fromMember int64, tradeNo string,
@@ -154,120 +158,20 @@ type (
 		TransferFlowTo(memberId int64, kind int, amount int, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
-
-	// Account 账户值对象
-	Account struct {
-		// 会员编号
-		MemberId int64 `db:"member_id" pk:"yes"`
-		// 积分
-		Integral int `db:"integral"`
-		// 不可用积分
-		FreezeIntegral int `db:"freeze_integral"`
-		// 余额
-		Balance int64 `db:"balance"`
-		// 不可用余额
-		FreezeBalance int64 `db:"freeze_balance"`
-		// 失效的账户余额
-		ExpiredBalance int64 `db:"expired_balance"`
-		// 钱包代码
-		WalletCode string `db:"wallet_code"`
-		//奖金账户余额
-		WalletBalance int64 `db:"wallet_balance"`
-		//冻结赠送金额
-		FreezeWallet int64 `db:"freeze_wallet"`
-		//失效的赠送金额
-		ExpiredWallet int64 `db:"expired_wallet"`
-		//总赠送金额
-		TotalWalletAmount int64 `db:"total_wallet_amount"`
-		//流动账户余额
-		FlowBalance int64 `db:"flow_balance"`
-		//当前理财账户余额
-		GrowBalance int64 `db:"grow_balance"`
-		//理财总投资金额,不含收益
-		GrowAmount int64 `db:"grow_amount"`
-		//当前收益金额
-		GrowEarnings int64 `db:"grow_earnings"`
-		//累积收益金额
-		GrowTotalEarnings int64 `db:"grow_total_earnings"`
-		//总消费金额
-		TotalExpense int64 `db:"total_expense"`
-		//总充值金额
-		TotalCharge int64 `db:"total_charge"`
-		//总支付额
-		TotalPay int64 `db:"total_pay"`
-		// 优先(默认)支付选项
-		PriorityPay int `db:"priority_pay"`
-		//更新时间
-		UpdateTime int64 `db:"update_time"`
-	}
-
 	// 账户操作数据
 	AccountOperateData struct {
 		// 描述
-		Title string
+		TransactionTitle string
 		// 金额
 		Amount int
 		// 外部订单号
-		OuterNo string
+		OuterTransactionNo string
 		// 备注
-		Remark string
+		TransactionRemark string
 		// 交易流水编号,对冻结流水进行更新时,传递该参数
-		TradeLogId int
-	}
-
-	// IntegralLog 积分记录
-	IntegralLog struct {
-		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
-		// 会员编号
-		MemberId int `db:"member_id"`
-		// 类型
-		Kind int `db:"kind"`
-		// 标题
-		Subject string `db:"subject"`
-		// 关联的编号
-		OuterNo string `db:"outer_no"`
-		// 积分值
-		Value int `db:"change_value"`
-		// 余额
-		Balance int `db:"balance"`
-		// 备注
-		Remark string `db:"remark"`
-		// 关联用户
-		RelateUser int `db:"rel_user"`
-		// 审核状态
-		ReviewStatus int16 `db:"review_status"`
-		// 创建时间
-		CreateTime int64 `db:"create_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-	}
-
-	// BalanceLog 余额日志
-	BalanceLog struct {
-		Id       int64  `db:"id" auto:"yes" pk:"yes"`
-		MemberId int64  `db:"member_id"`
-		OuterNo  string `db:"outer_no"`
-		// 业务类型
-		Kind int `db:"kind"`
-
-		Title string `db:"subject"`
-		// 金额
-		Amount int64 `db:"change_value"`
-		// 余额
-		Balance int `db:"balance"`
-		// 手续费
-		ProcedureFee int64 `db:"procedure_fee"`
-		// 关联操作人,仅在客服操作时,记录操作人
-		RelateUser int64 `db:"rel_user"`
-		// 状态
-		ReviewStatus int32 `db:"review_status"`
-		// 备注
-		Remark string `db:"remark"`
-		// 创建时间
-		CreateTime int64 `db:"create_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
+		TransactionId int
+		// 关联的外部用户编号,可为空
+		OuterTxUid int
 	}
 
 	// WalletAccountLog 钱包账户日志
@@ -323,22 +227,146 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
-
-	// OAuthAccount 关联第三方应用账号
-	OAuthAccount struct {
-		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
-		// 会员ID
-		MemberId int64 `db:"member_id" json:"memberId"`
-		// 应用代码,如wx
-		AppCode string `db:"app_code" json:"appCode"`
-		// 第三方应用id
-		OpenId string `db:"open_id" json:"openId"`
-		// 第三方应用认证令牌
-		AuthToken string `db:"auth_token" json:"auth_token"`
-		// 头像地址
-		HeadImgUrl string `db:"head_img_url" json:"headImgUrl"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time" json:"updateTime"`
-	}
 )
+
+func (b *BalanceLog) TableName() string {
+	return "mm_balance_log"
+}
+
+// MmBalanceLog 余额日志
+type BalanceLog struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 会员编号
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// 类型
+	Kind int16 `json:"kind" db:"kind" gorm:"column:kind" bson:"kind"`
+	// 标题
+	Subject string `json:"subject" db:"subject" gorm:"column:subject" bson:"subject"`
+	// 外部交易号
+	OuterNo string `json:"outerNo" db:"outer_no" gorm:"column:outer_no" bson:"outerNo"`
+	// 金额
+	ChangeValue int `json:"changeValue" db:"change_value" gorm:"column:change_value" bson:"changeValue"`
+	// 手续费
+	ProcedureFee int `json:"procedureFee" db:"procedure_fee" gorm:"column:procedure_fee" bson:"procedureFee"`
+	// 审核状态
+	ReviewStatus int `json:"reviewStatus" db:"review_status" gorm:"column:review_status" bson:"reviewStatus"`
+	// 关联用户
+	RelateUser int `json:"relUser" db:"rel_user" gorm:"column:rel_user" bson:"relUser"`
+	// 备注
+	Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
+	// 创建时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// 变动后的余额
+	Balance int `json:"balance" db:"balance" gorm:"column:balance" bson:"balance"`
+}
+
+// MmIntegralLog 积分明细
+type IntegralLog struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 会员编号
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// 类型
+	Kind int `json:"kind" db:"kind" gorm:"column:kind" bson:"kind"`
+	// 标题
+	Subject string `json:"subject" db:"subject" gorm:"column:subject" bson:"subject"`
+	// 关联的编号
+	OuterNo string `json:"outerNo" db:"outer_no" gorm:"column:outer_no" bson:"outerNo"`
+	// 积分值
+	ChangeValue int `json:"changeValue" db:"change_value" gorm:"column:change_value" bson:"changeValue"`
+	// 备注
+	Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
+	// 关联用户
+	RelateUser int `json:"relateUser" db:"rel_user" gorm:"column:rel_user" bson:"relUser"`
+	// 审核状态
+	ReviewStatus int `json:"reviewStatus" db:"review_status" gorm:"column:review_status" bson:"reviewStatus"`
+	// 创建时间
+	CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
+	// 更新时间
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// 变动后的余额
+	Balance int `json:"balance" db:"balance" gorm:"column:balance" bson:"balance"`
+}
+
+func (m IntegralLog) TableName() string {
+	return "mm_integral_log"
+}
+
+// MmAccount 会员账户
+type Account struct {
+	// 会员编号
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" pk:"yes" bson:"memberId"`
+	// 积分
+	Integral int `json:"integral" db:"integral" gorm:"column:integral" bson:"integral"`
+	// 冻结积分
+	FreezeIntegral int `json:"freezeIntegral" db:"freeze_integral" gorm:"column:freeze_integral" bson:"freezeIntegral"`
+	// 余额
+	Balance int `json:"balance" db:"balance" gorm:"column:balance" bson:"balance"`
+	// 冻结余额
+	FreezeBalance int `json:"freezeBalance" db:"freeze_balance" gorm:"column:freeze_balance" bson:"freezeBalance"`
+	// 失效的余额
+	ExpiredBalance int `json:"expiredBalance" db:"expired_balance" gorm:"column:expired_balance" bson:"expiredBalance"`
+	// 钱包余额
+	WalletBalance int `json:"walletBalance" db:"wallet_balance" gorm:"column:wallet_balance" bson:"walletBalance"`
+	// 冻结钱包余额,作废
+	FreezeWallet int `json:"freezeWallet" db:"freeze_wallet" gorm:"column:freeze_wallet" bson:"freezeWallet"`
+	// ,作废
+	ExpiredWallet int `json:"expiredWallet" db:"expired_wallet" gorm:"column:expired_wallet" bson:"expiredWallet"`
+	// TotalWalletAmount
+	TotalWalletAmount int `json:"totalWalletAmount" db:"total_wallet_amount" gorm:"column:total_wallet_amount" bson:"totalWalletAmount"`
+	// FlowBalance
+	FlowBalance int `json:"flowBalance" db:"flow_balance" gorm:"column:flow_balance" bson:"flowBalance"`
+	// GrowBalance
+	GrowBalance int `json:"growBalance" db:"grow_balance" gorm:"column:grow_balance" bson:"growBalance"`
+	// GrowAmount
+	GrowAmount int `json:"growAmount" db:"grow_amount" gorm:"column:grow_amount" bson:"growAmount"`
+	// GrowEarnings
+	GrowEarnings int `json:"growEarnings" db:"grow_earnings" gorm:"column:grow_earnings" bson:"growEarnings"`
+	// GrowTotalEarnings
+	GrowTotalEarnings int `json:"growTotalEarnings" db:"grow_total_earnings" gorm:"column:grow_total_earnings" bson:"growTotalEarnings"`
+	// 累计充值
+	TotalCharge int `json:"totalCharge" db:"total_charge" gorm:"column:total_charge" bson:"totalCharge"`
+	// 累计支付
+	TotalPay int `json:"totalPay" db:"total_pay" gorm:"column:total_pay" bson:"totalPay"`
+	// 累计消费
+	TotalExpense int `json:"totalExpense" db:"total_expense" gorm:"column:total_expense" bson:"totalExpense"`
+	// PriorityPay
+	PriorityPay int `json:"priorityPay" db:"priority_pay" gorm:"column:priority_pay" bson:"priorityPay"`
+	// UpdateTime
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+	// 钱包代码
+	WalletCode string `json:"walletCode" db:"wallet_code" gorm:"column:wallet_code" bson:"walletCode"`
+	// 可开票金额
+	InvoiceableAmount int `json:"invoiceableAmount" db:"invoiceable_amount" gorm:"column:invoiceable_amount" bson:"invoiceableAmount"`
+}
+
+func (m Account) TableName() string {
+	return "mm_account"
+}
+
+// OauthAccount 关联第三方应用账号
+type OAuthAccount struct {
+	// 编号
+	Id int `json:"id" db:"id" gorm:"column:id" pk:"yes" auto:"yes" bson:"id"`
+	// 会员ID
+	MemberId int `json:"memberId" db:"member_id" gorm:"column:member_id" bson:"memberId"`
+	// 应用代码,如wechat-mp
+	AppCode string `json:"appCode" db:"app_code" gorm:"column:app_code" bson:"appCode"`
+	// 第三方应用id
+	OpenId string `json:"openId" db:"open_id" gorm:"column:open_id" bson:"openId"`
+	// UnionId
+	UnionId string `json:"unionId" db:"union_id" gorm:"column:union_id" bson:"unionId"`
+	// AuthToken
+	AuthToken string `json:"authToken" db:"auth_token" gorm:"column:auth_token" bson:"authToken"`
+	// ProfilePhoto
+	ProfilePhoto string `json:"profilePhoto" db:"profile_photo" gorm:"column:profile_photo" bson:"profilePhoto"`
+	// UpdateTime
+	UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
+}
+
+func (m OAuthAccount) TableName() string {
+	return "mm_oauth_account"
+}

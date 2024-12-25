@@ -3,6 +3,7 @@ package registry
 import (
 	"strconv"
 
+	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/util"
 )
 
@@ -27,6 +28,7 @@ func MergeRegistries() []*Registry {
 	/** 域名 */
 	mergeAdd("域名", Domain, "http://localhost:1428", "")
 	mergeAdd("文件服务器域名", FileServerUrl, "http://localhost:1428/files/", "")
+	mergeAdd("商户端URL", MchServerUrl, "https://b.56x.net", "")
 
 	// mergeAdd("访问协议", HttpProtocols, "http", "")
 	// mergeAdd("管理面板前缀", DomainPrefixDashboard, "board.", "")
@@ -72,12 +74,16 @@ func MergeRegistries() []*Registry {
 	mergeAdd("是否开启多店铺模式", PlatformMultipleShopEnabled, "1", "0:关闭,1:启用")
 
 	/** 系统 */
+	md5 := crypto.Md5([]byte("go2o"))
 	mergeAdd("启用商户店铺商品分类", EnableMchGoodsCategory, "false", "")
 	mergeAdd("启用商户页面分类", EnableMchPageCategory, "false", "")
 	mergeAdd("开启调试模式", EnableDebugMode, "false", "")
 	mergeAdd("系统是否挂起", SysSuspend, "false", "")
 	mergeAdd("系统挂起提示消息", SysSuspendMessage, "系统正在升级维护，请稍后再试!", "")
-	mergeAdd("接口JWT密钥", SysJWTSecret, "", "")
+	mergeAdd("接口签名盐", SysAPISignSalt, "go2o_salt", "用于接口安全验证，需与前端配置保持一致")
+	mergeAdd("应用私钥", SysPrivateKey, "", "RSA2048算法密钥")
+	mergeAdd("应用AES算法密钥", SysAESKey, md5, "16位AES算法密钥")
+	mergeAdd("应用AES算法初始化向量", SysAESIV, md5[8:24], "16位AES算法初始化向量")
 	mergeAdd("超级管理员登录密钥", SysSuperLoginToken, "", "")
 	mergeAdd("收货提示信息", OrderReceiveAlertMessage, "确认收货后,款项将转给商户。请在收货前确保已经商品没有损坏和缺少!", "")
 
@@ -159,9 +165,12 @@ func MergeRegistries() []*Registry {
 	mergeAdd("商户订单每月免服务费订单数", MchMonthFreeOrders, "0", "")
 	mergeAdd("商户交易单是否需上传发票", MchOrderRequireTicket, "false", "")
 	// 商户
+	mergeAdd("商户结算周期", MerchantSettlementPeriod, "2", "1:日结,2:月结")
 	mergeAdd("商户提现是否免费", MerchantTakeOutCashFree, "true", "")
 	mergeAdd("商户提现手续费费率", MerchantTakeOutCsn, "0.00", "")
 	mergeAdd("商户提现最低金额", MerchantMinTakeOutAmount, "1", "")
+	mergeAdd("商户许可授权书/服务协议书模板路径", MerchantAuthorityTemplatePath, "", "")
+	mergeAdd("商户结算模式", MerchantSettlementMode, "0", "0:手动结算 1:入网结算")
 
 	mergeAdd("会员默认个人签名", MemberDefaultPersonRemark, "什么也没留下", "")
 	mergeAdd("商品默认图片", GoodsDefaultImage, "res/nopic.gif", "")

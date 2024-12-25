@@ -10,12 +10,13 @@ package merchant
 
 import (
 	"errors"
+	"time"
+
 	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/gof/util"
-	"time"
 )
 
 var _ merchant.IConfManager = new(confManagerImpl)
@@ -26,7 +27,47 @@ type confManagerImpl struct {
 	saleConf      *merchant.SaleConf
 	valRepo       valueobject.IValueRepo
 	memberRepo    member.IMemberRepo
+	_settleConf   *merchant.SettleConf
 	tradeConfList []*merchant.TradeConf
+}
+
+// GetSettleConf implements merchant.IConfManager.
+func (c *confManagerImpl) GetSettleConf() *merchant.SettleConf {
+	if c._settleConf == nil {
+		c._settleConf = c.repo.SettleRepo().FindBy("mch_id=?", c.mchId)
+		if c._settleConf == nil {
+			c._settleConf = &merchant.SettleConf{
+				Id:          0,
+				MchId:       c.mchId,
+				OrderTxRate: 0,
+				OtherTxRate: 0,
+				SubMchNo:    "",
+				UpdateTime:  int(time.Now().Unix()),
+			}
+			c.repo.SettleRepo().Save(c._settleConf)
+		}
+	}
+	return c._settleConf
+}
+
+// SaveSettleConf implements merchant.IConfManager.
+func (c *confManagerImpl) SaveSettleConf(s *merchant.SettleConf) error {
+	if s.MchId != c.mchId {
+		return errors.New("商户编号不匹配")
+	}
+	if s.OtherTxRate > 1 {
+		return merchant.ErrTxRate
+	}
+	if s.OrderTxRate > 1 {
+		return merchant.ErrTxRate
+	}
+	o := c.GetSettleConf()
+	o.OrderTxRate = s.OrderTxRate
+	o.OtherTxRate = s.OtherTxRate
+	o.SubMchNo = s.SubMchNo
+	o.UpdateTime = int(time.Now().Unix())
+	_, err := c.repo.SettleRepo().Save(o)
+	return err
 }
 
 func newConfigManagerImpl(mchId int,
@@ -48,7 +89,7 @@ func (c *confManagerImpl) GetSaleConf() merchant.SaleConf {
 			c.verifySaleConf(c.saleConf)
 		} else {
 			c.saleConf = &merchant.SaleConf{
-				MerchantId: int64(c.mchId),
+				MchId: c.mchId,
 			}
 			c.loadGlobSaleConf(c.saleConf)
 		}
@@ -60,26 +101,26 @@ func (c *confManagerImpl) loadGlobSaleConf(dst *merchant.SaleConf) error {
 	cfg := c.valRepo.GetGlobMchSaleConf()
 	// 是否启用分销
 	if cfg.FxSalesEnabled {
-		dst.FxSalesEnabled = 1
+		dst.FxSales = 1
 	} else {
-		dst.FxSalesEnabled = 0
+		dst.FxSales = 0
 	}
 	// 返现比例,0则不返现
-	dst.CashBackPercent = cfg.CashBackPercent
+	dst.CbPercent = cfg.CashBackPercent
 	// 一级比例
-	dst.CashBackTg1Percent = cfg.CashBackTg1Percent
+	dst.CbTg1Percent = cfg.CashBackTg1Percent
 	// 二级比例
-	dst.CashBackTg2Percent = cfg.CashBackTg2Percent
+	dst.CbTg2Percent = cfg.CashBackTg2Percent
 	// 会员比例
-	dst.CashBackMemberPercent = cfg.CashBackMemberPercent
+	dst.CbMemberPercent = cfg.CashBackMemberPercent
 	// 自动设置订单
-	dst.AutoSetupOrder = cfg.AutoSetupOrder
+	dst.OaOpen = cfg.AutoSetupOrder
 	// 订单超时分钟数
-	dst.OrderTimeOutMinute = cfg.OrderTimeOutMinute
+	dst.OaTimeoutMinute = cfg.OrderTimeOutMinute
 	// 订单自动确认时间
-	dst.OrderConfirmAfterMinute = cfg.OrderConfirmAfterMinute
+	dst.OaConfirmMinute = cfg.OrderConfirmAfterMinute
 	// 订单超时自动收货
-	dst.OrderTimeOutReceiveHour = cfg.OrderTimeOutReceiveHour
+	dst.OaReceiveHour = cfg.OrderTimeOutReceiveHour
 	return nil
 }
 
@@ -92,8 +133,8 @@ func (c *confManagerImpl) UseGlobSaleConf() error {
 
 // 保存销售配置
 func (c *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
-	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent+
-		v.CashBackTg2Percent+v.CashBackMemberPercent) > 1 {
+	if v.CbPercent >= 1 || (v.CbTg1Percent+
+		v.CbTg2Percent+v.CbMemberPercent) > 1 {
 		return merchant.ErrSalesPercent
 	}
 	c.GetSaleConf()
@@ -101,28 +142,28 @@ func (c *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
 		return err
 	}
 	c.saleConf = v
-	c.saleConf.MerchantId = int64(c.mchId)
+	c.saleConf.MchId = c.mchId
 	return c.repo.SaveMerchantSaleConf(c.saleConf)
 }
 
 // 验证销售设置
 func (c *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
 	cfg := c.valRepo.GetGlobMchSaleConf()
-	if !cfg.FxSalesEnabled && v.FxSalesEnabled == 1 {
+	if !cfg.FxSalesEnabled && v.FxSales == 1 {
 		return merchant.ErrEnabledFxSales
 	}
-	if v.OrderTimeOutMinute <= 0 {
-		v.OrderTimeOutMinute = cfg.OrderTimeOutMinute
+	if v.OaTimeoutMinute <= 0 {
+		v.OaTimeoutMinute = cfg.OrderTimeOutMinute
 	}
-	if v.OrderConfirmAfterMinute <= 0 {
-		v.OrderConfirmAfterMinute = cfg.OrderConfirmAfterMinute
+	if v.OaConfirmMinute <= 0 {
+		v.OaConfirmMinute = cfg.OrderConfirmAfterMinute
 	}
-	if v.OrderTimeOutReceiveHour <= 0 {
-		v.OrderTimeOutReceiveHour = cfg.OrderTimeOutReceiveHour
+	if v.OaReceiveHour <= 0 {
+		v.OaReceiveHour = cfg.OrderTimeOutReceiveHour
 	}
-	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent+
-		v.CashBackTg2Percent+v.CashBackMemberPercent) > 1 {
-		v.FxSalesEnabled = 0 //自动关闭分销
+	if v.CbPercent >= 1 || (v.CbTg1Percent+
+		v.CbTg2Percent+v.CbMemberPercent) > 1 {
+		v.FxSales = 0 //自动关闭分销
 	}
 	return nil
 }
@@ -196,27 +237,27 @@ func (c *confManagerImpl) GetAllTradeConf_() []*merchant.TradeConf {
 		if len(c.tradeConfList) == 0 {
 			// 零售订单费率
 			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
-				TradeType:   merchant.TKNormalOrder,
-				Flag:        merchant.TFlagNormal,
-				AmountBasis: enum.AmountBasisByPercent,
-				TradeFee:    0,
-				TradeRate:   int(0.2 * enum.RATE_PERCENT),
+				TradeType:      merchant.TKNormalOrder,
+				Flag:           merchant.TFlagNormal,
+				AmountBasis:    enum.AmountBasisByPercent,
+				TransactionFee: 0,
+				TradeRate:      int(0.2 * enum.RATE_PERCENT),
 			})
 			// 线下支付费率
 			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
-				TradeType:   merchant.TKTradeOrder,
-				Flag:        merchant.TFlagNormal,
-				AmountBasis: enum.AmountBasisByPercent,
-				TradeFee:    0,
-				TradeRate:   int(0.2 * enum.RATE_PERCENT),
+				TradeType:      merchant.TKTradeOrder,
+				Flag:           merchant.TFlagNormal,
+				AmountBasis:    enum.AmountBasisByPercent,
+				TransactionFee: 0,
+				TradeRate:      int(0.2 * enum.RATE_PERCENT),
 			})
 			// 批发订单费率
 			c.tradeConfList = append(c.tradeConfList, &merchant.TradeConf{
-				TradeType:   merchant.TKWholesaleOrder,
-				Flag:        merchant.TFlagNormal,
-				AmountBasis: enum.AmountBasisByPercent,
-				TradeFee:    0,
-				TradeRate:   int(0.1 * enum.RATE_PERCENT),
+				TradeType:      merchant.TKWholesaleOrder,
+				Flag:           merchant.TFlagNormal,
+				AmountBasis:    enum.AmountBasisByPercent,
+				TransactionFee: 0,
+				TradeRate:      int(0.1 * enum.RATE_PERCENT),
 			})
 
 		}
@@ -247,7 +288,7 @@ func (c *confManagerImpl) SaveTradeConf(arr []*merchant.TradeConf) error {
 		v.UpdateTime = unix
 		origin := c.GetTradeConf(v.TradeType)
 		if origin != nil {
-			origin.TradeFee = v.TradeFee
+			origin.TransactionFee = v.TransactionFee
 			origin.MchId = int64(c.mchId)
 			origin.AmountBasis = v.AmountBasis
 			origin.Flag = v.Flag

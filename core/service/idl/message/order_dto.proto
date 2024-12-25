@@ -134,7 +134,7 @@ message SSubOrder{
     // 包装费
     int64 packageFee = 9;
     // 手续费
-    int64 procedureFee = 10;
+    int64 transactionFee = 10;
     // 订单总金额
     int64 totalAmount = 11;
     // 最终金额
@@ -182,7 +182,7 @@ message SSingleOrder {
     // 抵扣金额
     sint32 deductAmount = 13;
     // 手续费
-    sint32 procedureFee = 14;
+    sint32 transactionFee = 14;
     // 调整金额
     int32 adjustAmount = 15;
     // 最终金额(订单总金额-抵扣金额+手续费+调整金额)
@@ -452,7 +452,7 @@ message PrepareOrderResponse{
     // 包装费
     int64 packageFee = 12;
     // 手续费
-    int32 procedureFee = 13;
+    int32 transactionFee = 13;
     // 订单总金额
     int32 totalAmount = 14;
     // 最终金额

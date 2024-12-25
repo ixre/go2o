@@ -431,7 +431,7 @@ func (h *hfbImpl) batchDetailData(batchTradeNo string, list []*qpay.CardTransfer
 			detailData.WriteString("|")
 		}
 		isCompany := types.StringCond(v.PersonTransfer, "0", "1")
-		fee := float64(v.TradeFee) / 100
+		fee := float64(v.TransactionFee) / 100
 		total += fee
 		arr := []string{
 			batchTradeNo,

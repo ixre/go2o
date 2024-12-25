@@ -49,39 +49,66 @@ message FinishPaymentRequest {
 // 支付服务
 service PaymentService {
     // 创建支付单并提交
-    rpc SubmitPaymentOrder (SPaymentOrder) returns (Result) {
-    }
+    rpc SubmitPaymentOrder (SPaymentOrder) returns (TxResult);
     // 根据支付单号或订单号获取支付单
-    rpc GetPaymentOrder (PaymentOrderRequest) returns (SPaymentOrder) {
-    }
+    rpc GetPaymentOrder (PaymentOrderRequest) returns (SPaymentOrder);
     // 调整支付单金额
-    rpc AdjustOrder (AdjustOrderRequest) returns (Result) {
-    }
+    rpc AdjustOrder (AdjustOrderRequest) returns (TxResult);
     // 余额抵扣
-    rpc DiscountByBalance (DiscountBalanceRequest) returns (Result) {
-    }
+    rpc DiscountByBalance (DiscountBalanceRequest) returns (TxResult);
     // 积分抵扣支付单
-    rpc DiscountByIntegral (DiscountIntegralRequest) returns (Result) {
-    }
+    rpc DiscountByIntegral (DiscountIntegralRequest) returns (TxResult);
     // 钱包账户支付
-    rpc PaymentByWallet (WalletPaymentRequest) returns (Result) {
-    }
+    rpc PaymentByWallet (WalletPaymentRequest) returns (TxResult);
     // 余额钱包混合支付，优先扣除余额。
-    rpc HybridPayment (HyperPaymentRequest) returns (Result) {
-    }
+    rpc HybridPayment (HyperPaymentRequest) returns (TxResult);
     // 完成支付单支付，并传入支付方式及外部订单号
-    rpc FinishPayment (FinishPaymentRequest) returns (Result) {
-    }
+    rpc FinishPayment (FinishPaymentRequest) returns (TxResult);
+    
+    /*********************  分账  *********************/
+    // QueryDivideOrders 查询可用于分账的订单
+    rpc QueryDivideOrders(DivideOrdersRequest)returns(DivideOrdersResponse);
+    // Divide 分账
+	rpc Divide(PaymentDivideRequest) returns(TxResult);
+	// FinishDive 完成分账
+	rpc CompleteDivide(PaymentOrderRequest) returns(TxResult);
+    // UpdateDivideStatus 更新分账状态
+    rpc UpdateDivideStatus(UpdateDivideStatusRequest) returns(TxResult);
+    // RevertSubDivide 撤销分账
+    rpc RevertSubDivide(PaymentSubDivideRevertRequest) returns(TxResult);
+    // DivideSuccess 分账成功
+    rpc DivideSuccess(PaymentDivideSuccessRequest) returns(TxResult);
+    
+    /*********************  商户入网  *********************/
+    // GetSubMerchant 获取商户入网信息
+    rpc GetSubMerchant(SubMerchantCodeRequest) returns(SSubMerchant);
+    // InitialSubMerchant 初始化商户入网信息
+    rpc InitialSubMerchant(SubMerchantInitialRequest) returns(TxResult);
+    // StageSubMerchant 暂存商户入网信息
+    rpc StageSubMerchant(SSubMerchant) returns(TxResult);
+    // SubmitSubMerchant 提交商户入网信息
+    rpc SubmitSubMerchant(SubMerchantCodeRequest) returns(TxResult);
+    // UpdateSubMerchant 更新商户入网信息
+    rpc UpdateSubMerchant(SubMerchantUpdateRequest) returns(TxResult);
+
+
+    /*********************  退款  *********************/
+    // QueryRefundableOrders 查询可退款的充值订单
+    rpc QueryRefundableOrders(QueryRefundablePaymentOrdersRequest) returns(RefundablePaymentOrdersResponse);
+    // RequestRefund 申请退款(仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款)
+    rpc RequestRefund(PaymentRefundRequest) returns(TxResult);
+    // RequestRefundAvail 申请退款(全部可退金额)，常用于充值退款，或消费后再退回剩余金额
+    // 注意: 该方法仅支持订单以外的支付单，如：充值等，订单请通过售后方式退款
+    rpc RequestRefundAvail(PaymentRefundAvailRequest) returns(PaymentRefundAvailResponse);
+    // 补发退款(第三方支付),用于退款后补发,当退款未到账时，调用补发
+    rpc SupplementRefund(PaymentSupplementRefundRequest)returns(TxResult);
 
     // 支付网关(仅交易单使用)
-    rpc GatewayV1 (PayGatewayRequest) returns (Result) {
-    }
+    rpc GatewayV1 (PayGatewayRequest) returns (TxResult);
     // 获取支付预交易数据
-    rpc GetPreparePaymentInfo (OrderInfoRequest) returns (SPrepareTradeData) {
-    }
+    rpc GetPreparePaymentInfo (OrderInfoRequest) returns (SPrepareTradeData);
     // 支付网关V2
-    rpc GatewayV2(PayGatewayV2Request) returns(PayGatewayResponse){
-    }
+    rpc GatewayV2(PayGatewayV2Request) returns(PayGatewayResponse);
 
     /**
      * 支付单混合支付
@@ -89,23 +116,17 @@ service PaymentService {
      * @param storeCode 店铺编号
      * @param tradeNo   交易号
      * @param Data  支付数据
-     * @return 支付结果,返回:order_state
+     * @return 支付结果,返回:order_status
      */
-    rpc MixedPayment (MixedPaymentRequest) returns (Result) {
-    }
+    rpc MixedPayment (MixedPaymentRequest) returns (TxResult);
     /** 保存集成支付应用 */
-    rpc SaveIntegrateApp (SIntegrateApp) returns (Result) {
-    }
+    rpc SaveIntegrateApp (SIntegrateApp) returns (TxResult);
     /** 获取集成支付应用列表 */
-    rpc QueryIntegrateAppList (Empty) returns (QueryIntegrateAppResponse) {
-    }
-
+    rpc QueryIntegrateAppList (Empty) returns (QueryIntegrateAppResponse);
     // 准备集成支付的参数
-    rpc PrepareIntegrateParams(IntegrateParamsRequest)returns(IntegrateParamsResponse){}
-
+    rpc PrepareIntegrateParams(IntegrateParamsRequest)returns(IntegrateParamsResponse);
     /** 删除集成支付应用 */
-    rpc DeleteIntegrateApp (PayIntegrateAppId) returns (Result) {
-    }
+    rpc DeleteIntegrateApp (PayIntegrateAppId) returns (TxResult);
 }
 
 // 申请获取集成支付参数
@@ -165,7 +186,7 @@ message PayGatewayResponse{
     // 总金额
     int64 totalAmount = 5;
     // 交易费用
-    int64 procedureFee = 6;
+    int64 transactionFee = 6;
     // 金额
     int64 finalAmount = 7;
     // 支付表单
@@ -190,23 +211,23 @@ message PayGatewayRequest {
 
 /** 支付方式的位值 */
 enum EPayMethod {
-    _4 = 0;
-    /** 余额抵扣 */
-    Balance = 1;
-    /** 钱包支付 */
-    Wallet = 2;
-    /** 积分兑换 */
-    Integral = 4;
-    /** 用户卡 */
-    UserCard = 8;
-    /** 用户券 */
-    UserCoupon = 16;
-    /** 现金支付 */
-    Cash = 32;
-    /** 银行卡支付 */
-    BankCard = 64;
+    _EPayMethodZero = 0;
     /** 第三方支付,如支付宝等 */
-    PaySP = 128;
+    PaySP = 1;
+    /** 余额抵扣 */
+    Balance = 2;
+    /** 钱包支付 */
+    Wallet = 4;
+    /** 积分兑换 */
+    Integral = 8;
+    /** 用户卡 */
+    UserCard = 16;
+    /** 用户券 */
+    UserCoupon = 32;
+    /** 现金支付 */
+    Cash = 64;
+    /** 银行卡支付 */
+    BankCard = 128;
     /** 卖家支付通道 */
     SellerPay = 256;
     /** 系统支付通道 */
@@ -241,7 +262,7 @@ message SPaymentOrder {
     /** 共计金额 */
     int64 totalAmount = 15;
     /** 手续费 */
-    int64 procedureFee = 16;
+    int64 transactionFee = 16;
     /** 实付金额 */
     int64 paidAmount = 17;
     /** 最终应付金额 */
@@ -253,7 +274,7 @@ message SPaymentOrder {
     /** 其他支付信息 */
     string extraData = 21;
     /** 订单状态 */
-    sint32 state = 22;
+    sint32 status = 22;
     /** 提交时间 */
     sint64 submitTime = 23;
     /** 过期时间 */
@@ -309,13 +330,13 @@ message SPrepareTradeData {
     /** 支付标志 */
     sint32 payFlag = 4;
     /** 交易状态 */
-    sint32 tradeState = 5;
+    sint32 tradeStatus = 5;
     /** 交易订单 */
     repeated SPaymentOrderData tradeOrders = 6;
     /** 累计金额 */
     int64 totalAmount = 7;
     /** 手续费 */
-    int64 procedureFee = 8;
+    int64 transactionFee = 8;
     /** 最终支付金额 */
     int64 finalAmount = 9;
 }
@@ -329,9 +350,9 @@ message SPaymentOrderData {
     /** 交易类型 */
     string tradeType = 3;
     /** 状态 */
-    sint32 state = 4;
+    sint32 status = 4;
     /** 手续费 */
-    int64 procedureFee = 5;
+    int64 transactionFee = 5;
     /** 最终支付金额 */
     int64 finalAmount = 6;
 }
@@ -364,4 +385,255 @@ message SIntegrateApp{
     string hint = 7;
     /** 是否高亮显示 */
     int32 highlight = 8;
+}
+
+// 支付分账请求
+message PaymentDivideRequest{
+    // 外部交易单号
+    string outTxNo = 1;
+    // 分账明细
+    repeated SPaymentSubDivide subDivides = 2;
+}
+
+// 支付单分账子单,一次分账可能涉及多个支付单
+message SPaymentSubDivide{
+    // 支付单号
+    string tradeNo = 1;
+    // 分账明细
+    repeated SDivideData divides = 3;
+}
+
+// 分账数据
+message SDivideData{
+    // 分账用户类型: 1: 平台  2: 商户  3: 会员
+    int32 divideType = 1;
+    // 用户ID
+    int64 userId = 2;
+    // 分账金额
+    int64 divideAmount = 3;
+}
+
+// 查询可用于分账的订单请求
+message DivideOrdersRequest{
+    // 会员ID
+    int64 memberId= 1;
+    // 支付单类型
+    int32 orderType = 2;
+}
+
+// 分账订单信息
+message SDivideOrderInfo{
+    // 支付单号
+    string tradeNo = 1;
+    // 可分账金额
+    int64 amount = 2;
+    // 已分账金额
+    int64 dividedAmount = 3;
+    // 分账状态
+    int32 divideStatus = 4;
+    // 支付单创建时间
+    sint64 createTime = 5;
+}
+
+// 分账订单响应
+message DivideOrdersResponse{
+    repeated SDivideOrderInfo orders = 1;
+}
+
+// 更新分账状态请求
+message UpdateDivideStatusRequest{
+    // 支付单编号
+    int64 payId = 1;
+    // 分账编号
+    int64 divideId = 2;
+    // 是否成功
+    bool success = 3;
+    // 分账单号
+    string divideNo = 4;
+    // 备注
+    string remark = 5;
+}
+
+// 支付分账子项撤销请求
+message PaymentSubDivideRevertRequest{
+    // 支付单编号
+    int64 payId = 1;
+    // 分账编号
+    int64 divideId = 2;
+    // 撤销原因
+    string reason = 3;
+}
+
+// 支付分账成功请求
+message PaymentDivideSuccessRequest{
+    // 支付单编号
+    int64 payId = 1;
+    // 外部交易单号
+    string outTxNo = 2;
+}
+
+// 支付退款请求
+message PaymentRefundRequest{
+    // 支付单号
+    string tradeNo = 1;
+    // 退款金额
+    int64 refundAmount = 2;
+    // 退款原因
+    string reason = 3;
+}
+
+// 支付退款请求
+message PaymentRefundAvailRequest{
+    // 支付单号
+    string tradeNo = 1;
+    // 退款备注
+    string remark= 2;
+}
+
+// 支付退款响应
+message PaymentRefundAvailResponse{
+    // 错误码
+    int32 code = 1;
+    // 错误消息
+    string message = 2;
+    // 实际支付金额
+    int64 finalAmount = 3;
+    // 退款金额
+    int64 refundAmount = 4;
+}
+
+// 支付补款退款请求
+message PaymentSupplementRefundRequest{
+    // 支付单号
+    string tradeNo = 1;
+    // 会员退款交易ID
+    int64 txId = 2;
+}
+// 查询可退款支付单请求
+message QueryRefundablePaymentOrdersRequest{
+    // 会员ID
+    int64 memberId = 1;
+}
+
+// 可退款支付单响应
+message RefundablePaymentOrdersResponse{
+    repeated RefundablePaymentOrder orders = 1;
+}
+
+// 可退款支付单
+message RefundablePaymentOrder{
+    // 支付单号
+    string tradeNo = 1;
+    // 可退款金额
+    int64 refundableAmount = 2;
+}
+
+// 商户入网申请单编号请求
+message SubMerchantCodeRequest{
+    // 申请单编号
+    string code = 1;
+}
+
+// 初始化商户入网请求
+message SubMerchantInitialRequest{
+    // 用户类型 1:会员  2:商户
+    int32 userType = 1;
+    // 用户编号
+    int64 userId = 2;
+}
+
+// 更新商户入网状态请求
+message SubMerchantUpdateRequest{
+    // 申请单编号
+    string code = 1;
+    // 状态
+    int32 status = 2;
+    // 备注
+    string remark = 3;
+    // 商户编码
+    string merchantCode = 4;
+    // 协议签署地址
+    string agreementSignUrl = 5;
+}
+
+// 支付入网子商户
+message SSubMerchant{
+    // 编号
+    int64 id = 1;
+    // 申请单编号
+    string code = 2;
+    // 用户类型 1:会员  2:商户
+    int32 userType = 3;
+    // 用户编号
+    int64 userId = 4;
+    // 商户类型 1:企业/个体  2:小微(个人)
+    int32 mchType = 5;
+    // 商户角色 1:标准商户  2: 平台商 3: 平台商子商户 4: 分账接收方
+    int32 mchRole = 6;
+    // 商户证件照片地址
+    string licencePic = 7;
+    // 商户签约名,与商户证件主体名称一致。
+    string signName = 8;
+    // 商户签约类型  1: 个体  2: 企业   3: 事业单位  4: 社会团体
+    int32 signType = 9;
+    // 商户证件号码
+    string licenceNo = 10;
+    // 商户简称
+    string shortName = 11;
+    // 银行账户信息表图片
+    string accountLicencePic = 12;
+    // 法人名称
+    string legalName = 13;
+    // 法人证件类型 1: 身份证 2: 永久居留身份证 3: 护照  4:港澳通行证  5: 台胞证
+    int32 legalLicenceType = 14;
+    // 法人证件编号
+    string legalLicenceNo = 15;
+    // 法人证件正面照片地址
+    string legalFrontPic = 16;
+    // 法人证件背面照片地址
+    string legalBackPic = 17;
+    // 联系人姓名
+    string contactName = 18;
+    // 联系人手机号
+    string contactPhone = 19;
+    // 联系人邮箱
+    string contactEmail = 20;
+    // 联系人证件号码
+    string contactLicenceNo = 21;
+    // 商户后台管理员邮箱
+    string accountEmail = 22;
+    // 商户后台管理员手机号
+    string accountPhone = 23;
+    // 一级行业分类编码
+    string primaryIndustryCode = 24;
+    // 二级行业分类编码
+    string secondaryIndustryCode = 25;
+    // 经营省
+    int32 provinceCode = 26;
+    // 经营市
+    int32 cityCode = 27;
+    // 经营区
+    int32 districtCode = 28;
+    // 经营地址
+    string address = 29;
+    // 结算方向 1: 支付账户  2:公户
+    int32 settleDirection = 30;
+    // 开户总行编码
+    string settleBankCode = 31;
+    // 银行账户类型
+    int32 settleAccountType = 32;
+    // 银行账户号码
+    string settleBankAccount = 33;
+    // 下发商户编号
+    string issueMchNo = 34;
+    // 协议签署地址
+    string agreementSignUrl = 35;
+    // 入网状态 1: 审核中  2: 被驳回 3: 待签署协议 4: 开通中 5: 已开通
+    int32 issueStatus = 36;
+    // 入网结果信息
+    string issueMessage = 37;
+    // 创建时间
+    int64 createTime = 38;
+    // 更新时间
+    int64 updateTime = 39;
 }

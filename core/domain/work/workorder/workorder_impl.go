@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/work/workorder"
+	"github.com/ixre/go2o/core/infrastructure/domain"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 )
 
@@ -37,6 +38,15 @@ func (w *workorderAggregateRootImpl) Submit() error {
 	if w.value.MemberId == 0 {
 		return errors.New("workorder member is empty")
 	}
+	if w.value.ClassId == workorder.ClassSuggest {
+		// 建议不开放评论
+		w.value.IsOpened = 0
+	} else if w.value.ClassId == workorder.ClassAppeal {
+		// 投诉允许评论
+		w.value.IsOpened = 1
+	}
+
+	w.value.OrderNo = domain.NewTradeNo(7, w.value.MemberId)
 	w.value.Status = workorder.StatusPending
 	w.value.CreateTime = int(time.Now().Unix())
 	w.value.UpdateTime = int(time.Now().Unix())
@@ -65,6 +75,10 @@ func (w *workorderAggregateRootImpl) Apprise(isUsefully bool, rank int, apprise 
 	if w.value.Status != workorder.StatusFinished {
 		return errors.New("workorder is not finished")
 	}
+	if (w.value.Flag & workorder.FlagUserClosed) == workorder.FlagUserClosed {
+		// 用户关闭后, 不能评价
+		return errors.New("workorder closed by user, can not apprise")
+	}
 	w.value.ServiceRank = rank
 	w.value.IsUsefully = types.Ternary(isUsefully, 1, 0)
 	w.value.ServiceApprise = apprise
@@ -81,6 +95,7 @@ func (w *workorderAggregateRootImpl) Close() error {
 	// 用户关闭
 	w.value.Status = workorder.StatusFinished
 	w.value.Flag |= workorder.FlagUserClosed
+	w.value.IsUsefully = 1
 	w.value.UpdateTime = int(time.Now().Unix())
 	_, err := w.repo.Save(w.value)
 	return err
@@ -94,6 +109,9 @@ func (w *workorderAggregateRootImpl) Finish() error {
 	w.value.Status = workorder.StatusFinished
 	w.value.UpdateTime = int(time.Now().Unix())
 	_, err := w.repo.Save(w.value)
+	if err == nil {
+		err = w.SubmitComment("本次服务已经结束,感谢您对我们工作的支持,祝您生活愉快!", true, 0)
+	}
 	return err
 }
 
@@ -107,6 +125,10 @@ func (w *workorderAggregateRootImpl) SubmitComment(content string, isReplay bool
 	if w.value.ClassId == workorder.ClassSuggest && !isReplay {
 		// 建议不允许用户提交评论
 		return errors.New("suggest workorder only replay can be submitted")
+	}
+	if w.value.IsOpened == 0 && !isReplay {
+		// 未开放评论
+		return errors.New("工单未开放评论")
 	}
 	comment := &workorder.WorkorderComment{
 		Id:         refCommentId,

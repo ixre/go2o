@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/core/domain/interface/domain/enum"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/event/events"
 	"github.com/ixre/go2o/core/infrastructure/domain"
@@ -32,7 +31,7 @@ type WalletImpl struct {
 	_repo  wallet.IWalletRepo
 }
 
-func (w *WalletImpl) GetAggregateRootId() int64 {
+func (w *WalletImpl) GetAggregateRootId() int {
 	return w._value.Id
 }
 
@@ -47,7 +46,7 @@ func (w *WalletImpl) Hash() string {
 
 func (w *WalletImpl) NodeId() int {
 	if w._value.NodeId <= 0 {
-		w._value.NodeId = int(w._value.UserId * int64(w._value.WalletType) % 10)
+		w._value.NodeId = int(w._value.UserId * w._value.WalletType % 10)
 	}
 	return w._value.NodeId
 }
@@ -72,7 +71,7 @@ func (w *WalletImpl) GetLog(logId int64) wallet.WalletLog {
 	return wallet.WalletLog{}
 }
 
-func (w *WalletImpl) Save() (int64, error) {
+func (w *WalletImpl) Save() (int, error) {
 	unix := time.Now().Unix()
 	// 初始化
 	if w.GetAggregateRootId() <= 0 {
@@ -81,17 +80,17 @@ func (w *WalletImpl) Save() (int64, error) {
 	err := w.checkWallet()
 	// 保存
 	if err == nil {
-		w._value.UpdateTime = unix
+		w._value.UpdateTime = int(unix)
 		id, err2 := util.I64Err(w._repo.SaveWallet_(w._value))
 		if err2 != nil {
-			return id, err
+			return int(id), err
 		}
-		w._value.Id = id
+		w._value.Id = int(id)
 	}
 	return w.GetAggregateRootId(), err
 }
 func (w *WalletImpl) initWallet(unix int64) {
-	w._value.CreateTime = unix
+	w._value.CreateTime = int(unix)
 	w._value.State = wallet.StatNormal
 	w._value.WalletFlag = wallet.FlagCharge | wallet.FlagDiscount
 	if w._value.WalletType <= 0 {
@@ -120,8 +119,8 @@ func (w *WalletImpl) checkWallet() error {
 		return wallet.ErrWalletName
 	}
 	// 判断是否存在
-	match := w._repo.CheckWalletUserMatch(w._value.UserId,
-		w._value.WalletType, w.GetAggregateRootId())
+	match := w._repo.CheckWalletUserMatch(int64(w._value.UserId),
+		w._value.WalletType, int64(w.GetAggregateRootId()))
 	if !match {
 		return wallet.ErrSingletonWallet
 	}
@@ -129,11 +128,11 @@ func (w *WalletImpl) checkWallet() error {
 }
 
 // 检查数值、操作人员信息
-func (w *WalletImpl) checkValueOpu(value int, checkOpu bool, operatorUid int, operatorName string) error {
-	if value == 0 {
+func (w *WalletImpl) checkValueOpu(value int, checkOpu bool, operatorUid int, operatorName string, allowZeroAmount bool) error {
+	if !allowZeroAmount && value == 0 {
 		return wallet.ErrAmountZero
 	}
-	if checkOpu && (operatorUid <= 0 || len(operatorName) == 0) {
+	if checkOpu && (operatorUid < 0 || len(operatorName) == 0) {
 		return wallet.ErrMissingOperator
 	}
 	return w.checkWalletState(w, false)
@@ -174,16 +173,16 @@ func (w *WalletImpl) createWalletLog(kind int, value int, title string, operator
 		Kind:         kind,
 		Subject:      strings.TrimSpace(title),
 		OuterChan:    "",
-		OuterNo:      "",
-		ChangeValue:  int64(value),
-		OperatorUid:  operatorUid,
-		OperatorName: strings.TrimSpace(operatorName),
+		OuterTxNo:    "",
+		ChangeValue:  value,
+		OprUid:       int(operatorUid),
+		OprName:      strings.TrimSpace(operatorName),
 		Remark:       "",
-		ReviewStatus: wallet.ReviewPass,
+		ReviewStatus: wallet.ReviewApproved,
 		ReviewRemark: "",
 		ReviewTime:   0,
-		CreateTime:   unix,
-		UpdateTime:   unix,
+		CreateTime:   int(unix),
+		UpdateTime:   int(unix),
 	}
 }
 
@@ -202,20 +201,20 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 	isUpdate := l.Id > 0
 	id, err := util.I64Err(w._repo.SaveWalletLog_(l))
 	if err == nil {
-		l.Id = id
+		l.Id = int(id)
 	}
 	if w._value.WalletType == wallet.TPerson {
-		eventbus.Publish(&events.AccountLogPushEvent{
+		eventbus.Dispatch(&events.AccountLogPushEvent{
 			IsUpdateEvent: isUpdate,
 			MemberId:      int(w._value.UserId),
 			Account:       3,
 			LogId:         int(id),
 			LogKind:       l.Kind,
 			Subject:       l.Subject,
-			OuterNo:       l.OuterNo,
+			OuterNo:       l.OuterTxNo,
 			ChangeValue:   int(l.ChangeValue),
 			Balance:       int(l.Balance),
-			ProcedureFee:  l.ProcedureFee,
+			ProcedureFee:  l.TransactionFee,
 			ReviewStatus:  l.ReviewStatus,
 			CreateTime:    int(l.CreateTime),
 		})
@@ -226,12 +225,15 @@ func (w *WalletImpl) saveWalletLog(l *wallet.WalletLog) error {
 // Adjust 调整余额，可能存在扣为负数的情况，需传入操作人员编号或操作人员名称
 func (w *WalletImpl) Adjust(value int, title, outerNo string,
 	remark string, operatorUid int, operatorName string) error {
-	err := w.checkValueOpu(value, true, operatorUid, operatorName)
+	err := w.checkValueOpu(value, true, operatorUid, operatorName, false)
+	if len(remark) == 0 {
+		return errors.New("remark can't be empty")
+	}
 	if err == nil {
 		w._value.AdjustAmount += value
-		w._value.Balance += int64(value)
+		w._value.Balance += value
 		l := w.createWalletLog(wallet.KAdjust, value, title, operatorUid, operatorName)
-		l.OuterNo = outerNo
+		l.OuterTxNo = outerNo
 		l.Remark = remark
 		l.Balance = w._value.Balance
 		err = w.saveWalletLog(l)
@@ -243,56 +245,89 @@ func (w *WalletImpl) Adjust(value int, title, outerNo string,
 }
 
 // Consume 消费
-func (w *WalletImpl) Consume(amount int, title string, outerNo string, remark string) error {
+func (w *WalletImpl) Consume(amount int, title string, outerNo string, remark string) (int, error) {
 	if amount > 0 {
 		amount = -amount
 	}
-	if w._value.Balance < -int64(amount) {
-		return wallet.ErrOutOfAmount
+	if w._value.Balance < -amount {
+		return 0, wallet.ErrOutOfAmount
 	}
-	w._value.Balance += int64(amount)
+	w._value.Balance += amount
 	w._value.TotalPay += -amount
 	l := w.createWalletLog(wallet.KConsume, amount, title, 0, "")
-	l.OuterNo = outerNo
+	l.OuterTxNo = outerNo
 	l.Balance = w._value.Balance
 	l.Remark = remark
+	l.ReviewStatus = wallet.ReviewApproved
 	err := w.saveWalletLog(l)
 	if err == nil {
+		_, err = w.Save()
+	}
+	return l.Id, err
+}
+
+// PrefreezeConsume implements wallet.IWallet.
+func (w *WalletImpl) PrefreezeConsume(data wallet.TransactionData) error {
+	l := w.getLog(int64(data.TransactionId))
+	if l == nil {
+		return wallet.ErrNoSuchAccountLog
+	}
+	if l.Kind != wallet.KFreeze {
+		return errors.New("交易流水类型错误: 非冻结不能预扣费")
+	}
+	l.Kind = wallet.KConsume
+	l.UpdateTime = int(time.Now().Unix())
+	if len(data.TransactionTitle) > 0 {
+		l.Subject = data.TransactionTitle
+	}
+	if len(data.TransactionRemark) > 0 {
+		l.Remark = data.TransactionRemark
+	}
+	err := w.saveWalletLog(l)
+	if err == nil {
+		value := int(math.Abs(float64(l.ChangeValue)))
+		if w._value.FreezeAmount < value {
+			return errors.New("预扣消费结冻金额超出,无法扣减")
+		}
+		// 将冻结金额进行解冻，不退回余额
+		w._value.FreezeAmount -= value
 		_, err = w.Save()
 	}
 	return err
 }
 
 // Discount 支付抵扣,must是否必须大于0
-func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) error {
-	err := w.checkValueOpu(value, false, 0, "")
+func (w *WalletImpl) Discount(value int, title, outerNo string, must bool) (int, error) {
+	err := w.checkValueOpu(value, false, 0, "", false)
 	if err == nil {
 		if value > 0 {
 			value = -value
 		}
-		if must && w._value.Balance < -int64(value) {
-			return wallet.ErrOutOfAmount
+		if must && w._value.Balance < -value {
+			return 0, wallet.ErrOutOfAmount
 		}
-		w._value.Balance += int64(value)
+		w._value.Balance += value
 		w._value.TotalPay += -value
 		l := w.createWalletLog(wallet.KDiscount, value, title, 0, "")
-		l.OuterNo = outerNo
+		l.OuterTxNo = outerNo
 		l.Balance = w._value.Balance
 		err := w.saveWalletLog(l)
 		if err == nil {
 			_, err = w.Save()
 		}
+		return l.Id, err
 	}
-	return err
+	return 0, err
 }
 
-func (w *WalletImpl) Freeze(data wallet.OperateData, operator wallet.Operator) (int, error) {
-	err := w.checkValueOpu(data.Amount, false, operator.OperatorUid, operator.OperatorName)
+func (w *WalletImpl) Freeze(data wallet.TransactionData, operator wallet.Operator) (int, error) {
+	allowZeroAmount := data.TransactionId > 0
+	err := w.checkValueOpu(data.Amount, false, operator.OperatorUid, operator.OperatorName, allowZeroAmount)
 	if err == nil {
 		if data.Amount > 0 {
 			data.Amount = -data.Amount
 		}
-		if data.TradeLogId > 0 {
+		if data.TransactionId > 0 {
 			return w.refreeze(data)
 		}
 		return w.freeze(data, operator)
@@ -301,15 +336,16 @@ func (w *WalletImpl) Freeze(data wallet.OperateData, operator wallet.Operator) (
 }
 
 // 创建新的冻结记录
-func (w *WalletImpl) freeze(data wallet.OperateData, operator wallet.Operator) (int, error) {
-	if w._value.Balance < -int64(data.Amount) {
+func (w *WalletImpl) freeze(data wallet.TransactionData, operator wallet.Operator) (int, error) {
+	if w._value.Balance < -data.Amount {
 		return 0, wallet.ErrOutOfAmount
 	}
-	w._value.Balance += int64(data.Amount)
+	w._value.Balance += data.Amount
 	w._value.FreezeAmount += -data.Amount
-	l := w.createWalletLog(wallet.KFreeze, data.Amount, data.Title, operator.OperatorUid, operator.OperatorName)
-	l.OuterNo = data.OuterNo
+	l := w.createWalletLog(wallet.KFreeze, data.Amount, data.TransactionTitle, operator.OperatorUid, operator.OperatorName)
+	l.OuterTxNo = data.OuterTxNo
 	l.Balance = w._value.Balance
+	l.OuterTxUid = data.OuterTxUid
 	err := w.saveWalletLog(l)
 	if err == nil {
 		_, err = w.Save()
@@ -318,42 +354,54 @@ func (w *WalletImpl) freeze(data wallet.OperateData, operator wallet.Operator) (
 }
 
 // 对现有的冻结流水进行更新
-func (w *WalletImpl) refreeze(data wallet.OperateData) (int, error) {
-	l := w._repo.GetWalletLog_(data.TradeLogId)
+func (w *WalletImpl) refreeze(data wallet.TransactionData) (int, error) {
+	l := w._repo.GetWalletLog_(data.TransactionId)
 	if l == nil || l.WalletId != w.GetAggregateRootId() {
 		return 0, errors.New("冻结失败,交易日志不存在")
 	}
-	diffValue := int(math.Abs(float64(data.Amount - int(l.ChangeValue))))
-	if w._value.Balance < int64(diffValue) {
+	intChgValue := int(math.Abs(float64(l.ChangeValue)))
+	// 计算差值(增加或减少的金额)
+	diffValue := int(math.Abs(float64(data.Amount))) - intChgValue
+	if diffValue > 0 && w._value.Balance < diffValue {
+		// 如果要扣减，则判断余额是否足够
 		return 0, wallet.ErrOutOfAmount
 	}
-	w._value.Balance -= int64(diffValue)
+	var err error
+	w._value.Balance -= diffValue
 	w._value.FreezeAmount += diffValue
-	l.OuterNo = data.OuterNo
-	l.ChangeValue = int64(data.Amount)
+	l.OuterTxNo = data.OuterTxNo
+	l.ChangeValue = data.Amount
 	l.Balance = w._value.Balance
-	err := w.saveWalletLog(l)
+	l.OuterTxUid = data.OuterTxUid
+	if l.ChangeValue == 0 {
+		err = w._repo.DeleteWalletLog(l.Id)
+	} else {
+		err = w.saveWalletLog(l)
+	}
 	if err == nil {
 		_, err = w.Save()
 	}
 	return int(l.Id), err
 }
 
-func (w *WalletImpl) Unfreeze(value int, title, outerNo string, operatorUid int, operatorName string) error {
-	err := w.checkValueOpu(value, false, operatorUid, operatorName)
+func (w *WalletImpl) Unfreeze(value int, title, outerNo string, isRefundBalance bool, operatorUid int, operatorName string) error {
+	err := w.checkValueOpu(value, false, operatorUid, operatorName, false)
 	if err == nil {
 		if value < 0 {
 			value = -value
 		}
 		if w._value.FreezeAmount < value {
-			return wallet.ErrOutOfAmount
+			return errors.New("结冻金额超出")
 		}
-		w._value.Balance += int64(value)
+		if isRefundBalance {
+			w._value.Balance += value
+		}
 		w._value.FreezeAmount += -value
 		l := w.createWalletLog(wallet.KUnfreeze, value, title, operatorUid, operatorName)
-		l.OuterNo = outerNo
+		l.OuterTxNo = outerNo
 		l.Balance = w._value.Balance
-		err := w.saveWalletLog(l)
+		l.Remark = ""
+		err = w.saveWalletLog(l)
 		if err == nil {
 			_, err = w.Save()
 		}
@@ -382,31 +430,33 @@ func (w *WalletImpl) FreezeExpired(value int, remark string) error {
 }
 
 // CarryTo 入账
-func (w *WalletImpl) CarryTo(d wallet.OperateData, review bool, procedureFee int) (int, error) {
-	err := w.checkValueOpu(d.Amount, false, 0, "")
+func (w *WalletImpl) CarryTo(tx wallet.TransactionData, review bool) (int, error) {
+	err := w.checkValueOpu(tx.Amount, false, 0, "", false)
 	if err == nil {
-		if d.Amount < 0 {
-			d.Amount = -d.Amount
+		if tx.Amount < 0 {
+			tx.Amount = -tx.Amount
 		}
-		procedureFee = int(math.Abs(float64(procedureFee)))
-		if procedureFee > 0 {
+		l := w.createWalletLog(wallet.KCarry, tx.Amount, tx.TransactionTitle, 0, "")
+		// 扣除手续费，手续费无需冻结
+		transactionFee := int(math.Abs(float64(tx.TransactionFee)))
+		if transactionFee > 0 {
 			// 减去手续费
-			d.Amount -= procedureFee
+			tx.Amount -= transactionFee
 		}
-		l := w.createWalletLog(wallet.KCarry, d.Amount, d.Title, 0, "")
 		if review {
-			w._value.FreezeAmount += d.Amount
+			w._value.FreezeAmount += tx.Amount
 			l.ReviewStatus = wallet.ReviewPending
 			l.ReviewRemark = "待审核"
 		} else {
-			w._value.Balance += int64(d.Amount)
-			l.ReviewStatus = wallet.ReviewPass
+			w._value.Balance += tx.Amount
+			l.ReviewStatus = wallet.ReviewApproved
+			l.ReviewTime = int(time.Now().Unix())
 		}
 		// 保存日志
-		l.OuterNo = d.OuterNo
-		l.ProcedureFee = -procedureFee
-		l.ReviewTime = time.Now().Unix()
+		l.OuterTxNo = tx.OuterTxNo
+		l.TransactionFee = -transactionFee
 		l.Balance = w._value.Balance
+		l.OuterTxUid = tx.OuterTxUid
 		err = w.saveWalletLog(l)
 		if err == nil {
 			_, err = w.Save()
@@ -417,19 +467,19 @@ func (w *WalletImpl) CarryTo(d wallet.OperateData, review bool, procedureFee int
 }
 
 // ReviewCarryTo 审核入账
-func (w *WalletImpl) ReviewCarryTo(requestId int, pass bool, reason string) error {
-	l := w._repo.GetLog(w.GetAggregateRootId(), int64(requestId))
-	if l.ReviewStatus != int(enum.ReviewPending) {
+func (w *WalletImpl) ReviewCarryTo(transactionId int, pass bool, reason string) error {
+	l := w._repo.GetLog(w.GetAggregateRootId(), int64(transactionId))
+	if l.ReviewStatus != int(wallet.ReviewPending) {
 		return wallet.ErrNotSupport
 	}
 	w._value.FreezeAmount -= int(l.ChangeValue)
-	l.UpdateTime = time.Now().Unix()
+	l.UpdateTime = int(time.Now().Unix())
 	if pass {
 		w._value.Balance += l.ChangeValue
-		l.ReviewStatus = int(enum.ReviewPass)
+		l.ReviewStatus = int(wallet.ReviewApproved)
 		l.Remark = "系统审核通过"
 	} else {
-		l.ReviewStatus = int(enum.ReviewReject)
+		l.ReviewStatus = int(wallet.ReviewRejected)
 		l.Remark = reason
 	}
 	err := w.saveWalletLog(l)
@@ -441,7 +491,7 @@ func (w *WalletImpl) ReviewCarryTo(requestId int, pass bool, reason string) erro
 
 func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark string, operatorUid int, operatorName string) error {
 	needOprUid := by == wallet.CServiceAgentCharge
-	err := w.checkValueOpu(value, needOprUid, operatorUid, operatorName)
+	err := w.checkValueOpu(value, needOprUid, operatorUid, operatorName, false)
 	if err == nil {
 		if value < 0 {
 			value = -value
@@ -451,7 +501,7 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark str
 		switch by {
 		case wallet.CUserCharge, wallet.CServiceAgentCharge:
 			kind = wallet.KCharge
-			w._value.TotalCharge += int64(value)
+			w._value.TotalCharge += value
 		case wallet.CSystemCharge:
 			kind = wallet.KCarry
 		case wallet.CRefundCharge:
@@ -461,10 +511,10 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark str
 				panic("wallet can't charge by internal defined kind")
 			}
 		}
-		w._value.Balance += int64(value)
+		w._value.Balance += value
 		// 保存日志
 		l := w.createWalletLog(kind, value, title, operatorUid, operatorName)
-		l.OuterNo = outerNo
+		l.OuterTxNo = outerNo
 		l.Remark = remark
 		l.Balance = w._value.Balance
 		err := w.saveWalletLog(l)
@@ -476,7 +526,7 @@ func (w *WalletImpl) Charge(value int, by int, title, outerNo string, remark str
 }
 
 func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, operatorUid int, operatorName string) error {
-	err := w.checkValueOpu(value, false, operatorUid, operatorName)
+	err := w.checkValueOpu(value, false, operatorUid, operatorName, false)
 	if err == nil {
 		if value < 0 {
 			value = -value
@@ -491,10 +541,10 @@ func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, operator
 		case wallet.KPaymentOrderRefund:
 			w._value.TotalPay -= value
 		}
-		w._value.Balance += int64(value)
+		w._value.Balance += value
 		// 保存日志
 		l := w.createWalletLog(kind, value, title, operatorUid, operatorName)
-		l.OuterNo = outerNo
+		l.OuterTxNo = outerNo
 		l.Balance = w._value.Balance
 		err := w.saveWalletLog(l)
 		if err == nil {
@@ -504,36 +554,36 @@ func (w *WalletImpl) Refund(value int, kind int, title, outerNo string, operator
 	return err
 }
 
-func (w *WalletImpl) Transfer(toWalletId int64, value int, tradeFee int, title, toTitle, remark string) error {
+func (w *WalletImpl) Transfer(toWalletId int64, value int, transactionFee int, title, toTitle, remark string) error {
 	if value == 0 {
 		return wallet.ErrAmountZero
 	}
 	if value < 0 {
 		value = -value
 	}
-	if tradeFee < 0 {
-		tradeFee = -tradeFee
+	if transactionFee < 0 {
+		transactionFee = -transactionFee
 	}
-	var tw = w._repo.GetWallet(toWalletId)
+	var tw = w._repo.GetWallet(int(toWalletId))
 	err := w.checkWalletState(tw, true)
 	if err != nil {
 		return err
 	}
 	// 验证金额
-	if w._value.Balance < int64(value+tradeFee) {
+	if w._value.Balance < value+transactionFee {
 		return wallet.ErrOutOfAmount
 	}
-	w._value.Balance -= int64(value + tradeFee)
+	w._value.Balance -= value + transactionFee
 	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
-	l := w.createWalletLog(wallet.KTransferOut, -value, title, 0, "")
-	l.ProcedureFee = -tradeFee
-	l.OuterNo = tradeNo
+	l := w.createWalletLog(wallet.KTransfer, -value, title, 0, "")
+	l.TransactionFee = -transactionFee
+	l.OuterTxNo = tradeNo
 	l.Remark = remark
 	l.Balance = w._value.Balance
 	err = w.saveWalletLog(l)
 	if err == nil {
 		if _, err = w.Save(); err == nil {
-			err = tw.ReceiveTransfer(w.GetAggregateRootId(), value, tradeNo, toTitle, remark)
+			err = tw.ReceiveTransfer(int64(w.GetAggregateRootId()), value, tradeNo, toTitle, remark)
 		}
 	}
 	return err
@@ -546,9 +596,9 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo, tit
 	if value < 0 {
 		value = -value
 	}
-	w._value.Balance += int64(value)
-	l := w.createWalletLog(wallet.KTransferIn, value, title, 0, "")
-	l.OuterNo = tradeNo
+	w._value.Balance += value
+	l := w.createWalletLog(wallet.KTransfer, value, title, 0, "")
+	l.OuterTxNo = tradeNo
 	l.Remark = remark
 	l.Balance = w._value.Balance
 	err := w.saveWalletLog(l)
@@ -558,94 +608,97 @@ func (w *WalletImpl) ReceiveTransfer(fromWalletId int64, value int, tradeNo, tit
 	return err
 }
 
-// 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,tradeFee为手续费
-func (w *WalletImpl) RequestWithdrawal(amount int, tradeFee int, kind int, title string,
-	accountNo string, accountName string, bankName string) (int64, string, error) {
-	if amount == 0 {
+// 申请提现,kind：提现方式,返回info_id,交易号 及错误,value为提现金额,transactionFee为手续费
+func (w *WalletImpl) RequestWithdrawal(tx wallet.WithdrawTransaction) (int, string, error) {
+	if tx.Amount == 0 {
 		return 0, "", wallet.ErrAmountZero
 	}
-	if amount < 0 {
-		amount = -amount
+	if tx.Amount < 0 {
+		tx.Amount = -tx.Amount
 	}
-	if kind != wallet.KWithdrawToBankCard &&
-		kind != wallet.KWithdrawToThirdPart && kind < 20 {
-		return 0, "", wallet.ErrNotSupportTakeOutBusinessKind
+	if tx.Kind != wallet.KWithdrawToBankCard &&
+		tx.Kind != wallet.KWithdrawToPayWallet && tx.Kind < 30 {
+		return 0, "", wallet.ErrNotSupportWithdrawKind
 	}
 	// 判断是否暂停提现
-	if wallet.TakeOutPause {
+	if wallet.WithdrawIsPaused {
 		return 0, "", wallet.ErrTakeOutPause
 	}
 	// 判断最低提现和最高提现
-	if amount < wallet.MinTakeOutAmount {
-		return 0, "", wallet.ErrLessThanMinTakeAmount
+	if tx.Amount < wallet.MinWithdrawAmount {
+		return 0, "", wallet.ErrLessThanMinWithdrawAmount
 	}
-	if amount > wallet.MaxTakeOutAmount {
-		return 0, "", wallet.ErrMoreThanMinTakeAmount
+	if tx.Amount > wallet.MaxWithdrawAmount {
+		return 0, "", wallet.ErrMoreThanMinWithdrawAmount
 	}
 	// 余额是否不足
-	if w._value.Balance < int64(amount+tradeFee) {
+	if w._value.Balance < tx.Amount+tx.TransactionFee {
 		return 0, "", wallet.ErrOutOfAmount
 	}
-	tradeNo := domain.NewTradeNo(8, int(w._value.UserId))
-	w._value.Balance -= int64(amount)
-	l := w.createWalletLog(kind, -(amount - tradeFee), title, 0, "")
-	l.ProcedureFee = -tradeFee
-	l.OuterNo = tradeNo
+	w._value.Balance -= tx.Amount
+	l := w.createWalletLog(
+		tx.Kind,
+		-(tx.Amount - tx.TransactionFee),
+		tx.TransactionTitle,
+		0,
+		"")
+	l.TransactionFee = -tx.TransactionFee
+	l.OuterTxNo = domain.NewTradeNo(8, int(w._value.UserId))
 	l.ReviewStatus = wallet.ReviewPending
 	l.ReviewRemark = ""
-	l.BankName = bankName
-	l.AccountNo = accountNo
-	l.AccountName = accountName
+	l.BankName = tx.BankName
+	l.AccountNo = tx.AccountNo
+	l.AccountName = tx.AccountName
 	l.Balance = w._value.Balance
 	err := w.saveWalletLog(l)
 	if err == nil {
 		_, err = w.Save()
 	}
-	return l.Id, l.OuterNo, err
+	return l.Id, l.OuterTxNo, err
 }
 
-func (w *WalletImpl) ReviewWithdrawal(requestId int64, pass bool, remark string, operatorUid int, operatorName string) error {
-	if err := w.checkValueOpu(1, true, operatorUid, operatorName); err != nil {
+func (w *WalletImpl) ReviewWithdrawal(transactionId int, pass bool, remark string, operatorUid int, operatorName string) error {
+	if err := w.checkValueOpu(1, true, operatorUid, operatorName, false); err != nil {
 		return err
 	}
-	l := w.getLog(requestId)
+	l := w.getLog(int64(transactionId))
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
 	}
-	if l.Kind != wallet.KWithdrawToBankCard && l.Kind != wallet.KWithdrawToThirdPart {
+	if l.Kind != wallet.KWithdrawToBankCard && l.Kind != wallet.KWithdrawToPayWallet {
 		return wallet.ErrNotSupport
 	}
 	if l.ReviewStatus != wallet.ReviewPending {
 		return wallet.ErrWithdrawState
 	}
-	l.ReviewTime = time.Now().Unix()
+	l.ReviewTime = int(time.Now().Unix())
 	if pass {
-		l.ReviewStatus = wallet.ReviewPass
+		l.ReviewStatus = wallet.ReviewApproved
 	} else {
 		l.ReviewRemark = remark
-		l.ReviewStatus = wallet.ReviewReject
-		err := w.Refund(-(l.ProcedureFee + int(l.ChangeValue)), wallet.KWithdrawRefund, "提现退回",
-			l.OuterNo, 0, "")
+		l.ReviewStatus = wallet.ReviewRejected
+		err := w.Refund(-(l.TransactionFee + int(l.ChangeValue)), wallet.KWithdrawRefund, "提现退回",
+			l.OuterTxNo, 0, "")
 		if err != nil {
 			return err
 		}
 	}
-	l.OperatorUid = operatorUid
-	l.OperatorName = operatorName
-	l.UpdateTime = time.Now().Unix()
+	l.OprUid = operatorUid
+	l.OprName = operatorName
+	l.UpdateTime = int(time.Now().Unix())
 	return w.saveWalletLog(l)
 }
 
-func (w *WalletImpl) FinishWithdrawal(requestId int64, outerNo string) error {
-	l := w.getLog(requestId)
+func (w *WalletImpl) CompleteTransaction(transactionId int, outerNo string) error {
+	l := w.getLog(int64(transactionId))
 	if l == nil {
 		return wallet.ErrNoSuchAccountLog
 	}
-	if l.ReviewStatus != wallet.ReviewPass {
+	if l.ReviewStatus != wallet.ReviewApproved {
 		return wallet.ErrWithdrawState
 	}
-	l.OuterNo = outerNo
-	l.ReviewStatus = wallet.ReviewConfirm
+	l.OuterTxNo = outerNo
+	l.ReviewStatus = wallet.ReviewCompleted
 	l.Remark = "转款凭证:" + outerNo
 	return w.saveWalletLog(l)
 }
@@ -707,6 +760,6 @@ func (w *WalletImpl) PagingLog(begin int, over int, opt map[string]string, sort 
 		where.WriteString(" AND op_uid='")
 		where.WriteString(operatorUid)
 	}
-	return w._repo.PagingWalletLog(w.GetAggregateRootId(), w.NodeId(),
+	return w._repo.PagingWalletLog(int64(w.GetAggregateRootId()), w.NodeId(),
 		begin, over, where.String(), sort)
 }

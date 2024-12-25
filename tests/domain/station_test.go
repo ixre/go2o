@@ -18,7 +18,7 @@ func TestGetGroupStations(t *testing.T) {
 
 // 测试同步站点
 func TestSyncStations(t *testing.T) {
-	err := inject.GetStationRepo().GetManager().SyncStations()
+	err := inject.GetSystemRepo().GetSystemAggregateRoot().Stations().SyncStations()
 	if err != nil {
 		t.Error(err)
 	}

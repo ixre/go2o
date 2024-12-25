@@ -14,7 +14,7 @@ import "github.com/ixre/go2o/core/infrastructure/domain"
 var (
 	ErrNotMD5Format = domain.NewError("err_not_md5_format", "密码非32位(MD5)")
 
-	ErrCredential = domain.NewError(
+	ErrPasswordNotMatch = domain.NewError(
 		"err_credential", "用户或密码不正确")
 
 	ErrPwdStrongLength = domain.NewError(

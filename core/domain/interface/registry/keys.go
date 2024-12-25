@@ -6,8 +6,14 @@ var (
 	/** 域名 */
 	// 访问协议,https或http
 	// HttpProtocols = KeyFormat("HttpProtocols")
+
 	// 根域名
 	Domain = KeyFormat("DomainBaseUrl")
+	// 文件(上传)服务器前缀
+	FileServerUrl = KeyFormat("DomainFileServerUrl")
+	// 商户端URL
+	MchServerUrl = KeyFormat("DomainMchServerUrl")
+
 	// // 控制面板前缀
 	// DomainPrefixDashboard = KeyFormat("DomainPrefixDashboard")
 	// // 零售门户前缀
@@ -28,8 +34,6 @@ var (
 	// DomainPrefixApi = KeyFormat("DomainPrefixApi")
 	// // HAPI前缀
 	// DomainPrefixHApi = KeyFormat("DomainPrefixHApi")
-	// 文件(上传)服务器前缀
-	FileServerUrl = KeyFormat("DomainFileServerUrl")
 	// // 静态服务器前缀
 	// DomainPrefixStatic = KeyFormat("DomainPrefixStatic")
 	// // 图片服务器前缀
@@ -83,8 +87,14 @@ var (
 	SysSuspend = KeyFormat("SysSuspend")
 	// 系统挂起提示消息
 	SysSuspendMessage = KeyFormat("SysSuspendMessage")
-	// 接口JWT密钥
-	SysJWTSecret = KeyFormat("sys_jwt_secret")
+	// 接口签名盐
+	SysAPISignSalt = KeyFormat("sys_api_sign_salt")
+	// 应用加密私钥
+	SysPrivateKey = KeyFormat("sys_private_key")
+	// 应用AES算法密钥
+	SysAESKey = KeyFormat("sys_aes_key")
+	// 应用AES算法初始化向量
+	SysAESIV = KeyFormat("sys_aes_iv")
 	// 超级管理员登录密钥
 	SysSuperLoginToken = KeyFormat("sys_super_login_token")
 	/** 短信 */
@@ -246,13 +256,19 @@ var (
 	MchOrderRequireTicket = KeyFormat("MchOrderRequireTicket")
 
 	/* 商户 */
+
+	// 商户结算周期
+	MerchantSettlementPeriod = KeyFormat("MerchantSettlementPeriod")
+	// MerchantSettlementMode 商户结算模式
+	MerchantSettlementMode = KeyFormat("MerchantSettlementMode")
 	// 商户提现手续费
 	MerchantTakeOutCashFree = KeyFormat("MerchantTakeOutCashFree")
 	// 商户提现手续费费率
 	MerchantTakeOutCsn = KeyFormat("MerchantTakeOutCsn")
 	// 商户提现
 	MerchantMinTakeOutAmount = KeyFormat("MerchantMinTakeOutAmount")
-
+	// 商户许可授权书/服务协议书模板路径
+	MerchantAuthorityTemplatePath = KeyFormat("MerchantAuthorityTemplatePath")
 	// 商品默认图片
 	GoodsDefaultImage = KeyFormat("GoodsDefaultImage")
 	// 商品最低利润率,既(销售价-供货价)/销售价的比例

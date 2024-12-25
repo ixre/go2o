@@ -24,49 +24,59 @@ message SSaveMerchantParams{
   // 标志
   string logo = 9;
   // 公司电话
-  string tel = 10;
+  string telephone = 10;
 }
 
 // 保存商户认证信息请求
 message SaveAuthenticateRequest{
   // 商户编号
   int64 mchId = 1;
+  // 商户名称号
+  string mchName = 2;
+      // 省
+  int32  province = 3;
+    // 市
+  int32 city = 4;
+    // 区
+  int32  district = 5;
   // 公司名称
-  string orgName = 2;
+  string orgName = 6;
   // 营业执照编号
-  string orgNo = 3;
+  string orgNo = 7;
   // 营业执照照片
-  string orgPic = 4;
+  string orgPic = 8;
+  // 公司地址
+  string orgAddress = 9;
   // 办公地
-  int32 workCity = 5;
+  int32 workCity = 21;
   // 资质图片
-  string qualificationPic = 6;
+  string qualificationPic = 10;
   // 法人身份证号
-  string personId = 7;
+  string personId = 11;
   // 法人姓名
-  string personName = 8;
+  string personName = 12;
   // 法人身份证照片
-  string personPic = 9;
+  string personFrontPic = 13;
+  // 身份证反面
+  string personBackPic = 14;
+  // 银行账户证明
+  string bankAccountPic = 22;
   // 授权书
-  string authorityPic = 10;
+  string authorityPic = 15;
   // 开户银行
-  string bankName = 11;
+  string bankName = 16;
   // 开户户名
-  string bankAccount = 12;
+  string bankAccount = 17;
   // 开户账号
-  string bankNo = 13;
+  string bankNo = 18;
   // 扩展数据
-  string extraData = 14;
-  // 审核时间
-  int32 reviewTime = 15;
-  // 审核状态
-  int32 reviewStatus = 16;
-  // 审核备注
-  string reviewRemark = 17;
-  // 更新时间
-  int64 updateTime = 18;
+  string extraData = 19;
   // 联系人手机
-  string personPhone = 19;
+  string personPhone = 20;
+  // 联系人姓名
+  string contactName = 23;
+  // 联系人电话
+  string contactPhone = 24;
 }
 
 
@@ -130,8 +140,8 @@ message QMerchant{
   // 标志
   string logo = 13;
   // 公司电话
-  string tel = 14;
-  // 状态: 0:待审核 1:已开通  2:停用  3: 关闭
+  string telephone = 14;
+  // 状态: 0:未审核 1:已开通  2:停用  3: 关闭
   int32 status = 15;
   // 过期时间
   int64 expiresTime = 16;
@@ -160,7 +170,11 @@ message QAuthenticate{
  // 法人姓名
  string personName = 9;
  // 法人身份证照片
- string personPic = 10;
+ string personFrontPic = 10;
+ // 身份证反面
+ string personBackPic = 21;
+ // 银行账户证明
+ string bankAccountPic = 22;
  // 联系人手机
  string personPhone = 11;
  // 授权书
@@ -231,58 +245,10 @@ message STradeConf_ {
   // 交易方案，根据方案来自动调整比例  sint64 PlanId = 3;
   // 交易标志  sint32 Flag = 4;
   // 交易手续费依据,1:按金额 2:按比例  sint32 AmountBasis = 5;
-  // 交易费，按单笔收取  sint32 tradeFee = 6;
+  // 交易费，按单笔收取  sint32 transactionFee = 6;
   // 交易手续费比例  sint32 TradeRate = 7;
 }
 
-// 商户申请信息
-message SMchSignUp {
-  int64 id = 1;
-  // 申请单号
-  string signNo = 2;
-  // 会员编号
-  int64 memberId = 3;
-  // 用户名
-  string username = 4;
-  // 密码
-  string password = 5;
-  // 盐
-  string salt = 6;
-  // 商户名称号
-  string mchName = 7;
-  // 省
-  int32 province = 8;
-  // 市
-  int32 city = 9;
-  // 区
-  int32 district = 10;
-  // 详细地址
-  string address = 11;
-  // 店铺店铺
-  string shopName = 12;
-  // 公司名称
-  string companyName = 13;
-  // 营业执照编号
-  string companyNo = 14;
-  // 法人
-  string personName = 15;
-  // 法人身份证
-  string personId = 16;
-  // 法人身份证
-  string personImage = 17;
-  // 联系电话
-  string phone = 18;
-  // 营业执照图片
-  string companyImage = 19;
-  // 委托书
-  string authDoc = 20;
-  // 备注
-  string remark = 21;
-  // 是否通过
-  int32 reviewStatus = 22;
-  // 提交时间
-  int64 submitTime = 23;
-}
 
 // 商户审核请求
 message MerchantReviewRequest {
@@ -310,18 +276,21 @@ message SMerchantAccount {
   // 累计退款金额
   int64 refundAmount = 6;
   // 已提取金额
-  int64 withdrawAmount = 7;
+  int64 withdrawalAmount = 7;
+  // 可开票金额
+  int64 invoiceableAmount = 8;
   // 线下销售金额
-  int64 offlineSales = 8;
+  int64 offlineSales = 9;
   // 更新时间
-  int64 updateTime = 9;
+  int64 updateTime = 10;
 }
 
-message MerchantDisableRequest {
+/** 商户锁定状态请求 */
+message MerchantLockStatusRequest {
   // 商户编号
   int64 merchantId = 1;
-  // 是否启用
-  bool enabled = 2;
+  // 是否锁定, false为解锁
+  bool lock = 2;
 }
 
 // 销售设置
@@ -353,11 +322,14 @@ message SaveMerchantSaleConfRequest {
   SMerchantSaleConf value = 2;
 }
 
+/** 修改商户密码 */
 message ModifyMerchantPasswordRequest {
+  /** 商户编号 */
   int64 merchantId = 1;
-  string origin = 2;
-  // Md5编码后的密码
-  string password = 3;
+  /** 旧密码 */
+  string oldPassword = 2;
+  /** 新密码 */
+  string newPassword = 3;
 }
 
 // 商户接口信息
@@ -383,14 +355,7 @@ message WithdrawToMemberAccountRequest {
   int64 amount = 2;
 }
 
-message MerchantChargeRequest {
-  int64 merchantId = 1;
-  int32 kind = 2;
-  int64 amount = 3;
-  string title = 4;
-  string outerNo = 5;
-  int64 relateUserId = 6;
-}
+
 
 message MerchantBuyerGroupId {
   int64 merchantId = 1;

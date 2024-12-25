@@ -350,24 +350,6 @@ func (r *valueRepo) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
 	return nil
 }
 
-// 获取下级区域
-func (r *valueRepo) GetChildAreas(code int32) []*valueobject.Area {
-	r.areaMux.Lock()
-	defer r.areaMux.Unlock()
-	if r.areaCache == nil {
-		r.areaCache = make(map[int32][]*valueobject.Area)
-	}
-	if v, ok := r.areaCache[code]; ok {
-		return v
-	}
-	var v []*valueobject.Area
-	err := r.o.Select(&v, "code <> 0 AND parent= $1", code)
-	if err == nil {
-		r.areaCache[code] = v
-	}
-	return v
-}
-
 // 获取区域名称
 func (r *valueRepo) GetAreaName(code int32) string {
 	if code <= 0 {

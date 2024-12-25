@@ -24,11 +24,13 @@ var _ staff.IStaffRepo = new(staffRepoImpl)
 
 type staffRepoImpl struct {
 	fw.BaseRepository[staff.Staff]
+	transRepo fw.BaseRepository[staff.StaffTransfer]
 }
 
 func NewStaffRepo(o fw.ORM) staff.IStaffRepo {
 	s := &staffRepoImpl{}
 	s.ORM = o
+	s.transRepo.ORM = o
 	return s
 }
 
@@ -36,4 +38,8 @@ func NewStaffRepo(o fw.ORM) staff.IStaffRepo {
 func (m *staffRepoImpl) GetStaffByMemberId(memberId int) *staff.Staff {
 	return m.FindBy("member_id = $1 and work_status <> $2", memberId,
 		staff.WorkStatusOff)
+}
+
+func (m *staffRepoImpl) TransferRepo() fw.Repository[staff.StaffTransfer] {
+	return &m.transRepo
 }

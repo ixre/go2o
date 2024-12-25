@@ -1,20 +1,23 @@
 package locker
 
 import (
-	"github.com/ixre/gof/storage"
+	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/gof/util/concurrent"
 )
 
 var lock *concurrent.DistributedLock
 
-func Configure(s storage.Interface) {
-	lock = concurrent.NewDistributedLock(s)
+func getLocker() *concurrent.DistributedLock {
+	if lock == nil {
+		lock = concurrent.NewDistributedLock(provide.GetStorageInstance())
+	}
+	return lock
 }
 
 func Lock(key string, expires int64) bool {
-	return lock.Lock(key, expires)
+	return getLocker().Lock(key, expires)
 }
 
 func Unlock(key string) {
-	lock.Unlock(key)
+	getLocker().Unlock(key)
 }

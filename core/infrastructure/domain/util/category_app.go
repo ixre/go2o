@@ -49,7 +49,7 @@ func WalkSaleCategory(cs []*proto.SProductCategory, v *proto.SProductCategory, s
 // 迭代栏目
 func WalkArticleCategory(cs *proto.ArticleCategoriesResponse, v *proto.SArticleCategory, start iterator.WalkFunc, over iterator.WalkFunc) {
 	var condition iterator.Condition = func(v, v1 interface{}) bool {
-		return v1.(*proto.SArticleCategory).ParentId ==
+		return v1.(*proto.SArticleCategory).Pid ==
 			v.(*proto.SArticleCategory).Id
 	}
 	var arr = make([]interface{}, len(cs.Value))

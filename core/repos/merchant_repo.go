@@ -17,6 +17,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/approval"
+	"github.com/ixre/go2o/core/domain/interface/invoice"
 	"github.com/ixre/go2o/core/domain/interface/item"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -25,8 +27,9 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant/user"
 	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
 	mss "github.com/ixre/go2o/core/domain/interface/message"
+	rbac "github.com/ixre/go2o/core/domain/interface/rabc"
 	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/domain/interface/station"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	merchantImpl "github.com/ixre/go2o/core/domain/merchant"
@@ -36,12 +39,16 @@ import (
 	"github.com/ixre/gof/storage"
 )
 
-var _ merchant.IMerchantRepo = new(merchantRepo)
-var mchMerchantDaoImplMapped = false
+var _mchInstance merchant.IMerchantRepo
+var _mchOnce sync.Once
 
 type merchantRepo struct {
 	fw.BaseRepository[merchant.Merchant]
-	db.Connector
+	_authRepo     fw.BaseRepository[merchant.Authenticate]
+	_billRepo     fw.Repository[merchant.MerchantBill]
+	_settleRepo   fw.Repository[merchant.SettleConf]
+	_mchRepo      fw.Repository[merchant.Merchant]
+	Connector     db.Connector
 	_orm          orm.Orm
 	storage       storage.Interface
 	manager       merchant.IMerchantManager
@@ -53,47 +60,69 @@ type merchantRepo struct {
 	_shopRepo     shop.IShopRepo
 	_valRepo      valueobject.IValueRepo
 	_memberRepo   member.IMemberRepo
-	_stationRepo  station.IStationRepo
+	_sysRepo      sys.ISystemRepo
 	_walletRepo   wallet.IWalletRepo
 	_registryRepo registry.IRegistryRepo
+	_invoiceRepo  invoice.IInvoiceRepo
+	_approvalRepo approval.IApprovalRepository
+	_rbacRepo     rbac.IRbacRepository
 	mux           *sync.RWMutex
 }
 
-// GetBalanceAccountLog implements merchant.IMerchantRepo
-
-func NewMerchantRepo(o orm.Orm,on fw.ORM, storage storage.Interface,
+func NewMerchantRepo(o orm.Orm, on fw.ORM, storage storage.Interface,
 	wsRepo wholesaler.IWholesaleRepo, itemRepo item.IItemRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo,
 	employeeRepo staff.IStaffRepo,
 	memberRepo member.IMemberRepo,
-	stationRepo station.IStationRepo,
+	sysRepo sys.ISystemRepo,
 	mssRepo mss.IMessageRepo,
-	walletRepo wallet.IWalletRepo, valRepo valueobject.IValueRepo, registryRepo registry.IRegistryRepo) merchant.IMerchantRepo {
-	if !mchMerchantDaoImplMapped {
+	walletRepo wallet.IWalletRepo,
+	valRepo valueobject.IValueRepo,
+	registryRepo registry.IRegistryRepo,
+	invoiceRepo invoice.IInvoiceRepo,
+	approvalRepo approval.IApprovalRepository,
+	rbacRepo rbac.IRbacRepository,
+) merchant.IMerchantRepo {
+	_mchOnce.Do(func() {
 		// 映射实体
 		o.Mapping(merchant.Merchant{}, "mch_merchant")
 		o.Mapping(merchant.Authenticate{}, "mch_authenticate")
-		mchMerchantDaoImplMapped = true
-	}
-	r := &merchantRepo{
-		Connector:     o.Connector(),
-		_orm:          o,
-		storage:       storage,
-		_wsRepo:       wsRepo,
-		_itemRepo:     itemRepo,
-		_userRepo:     userRepo,
-		_employeeRepo: employeeRepo,
-		_mssRepo:      mssRepo,
-		_shopRepo:     shopRepo,
-		_stationRepo:  stationRepo,
-		_valRepo:      valRepo,
-		_memberRepo:   memberRepo,
-		_walletRepo:   walletRepo,
-		_registryRepo: registryRepo,
-		mux:           &sync.RWMutex{},
-	}
-	r.ORM = on
-	return r
+		r := &merchantRepo{
+			Connector:     o.Connector(),
+			_orm:          o,
+			storage:       storage,
+			_wsRepo:       wsRepo,
+			_itemRepo:     itemRepo,
+			_userRepo:     userRepo,
+			_employeeRepo: employeeRepo,
+			_mssRepo:      mssRepo,
+			_shopRepo:     shopRepo,
+			_sysRepo:      sysRepo,
+			_valRepo:      valRepo,
+			_memberRepo:   memberRepo,
+			_walletRepo:   walletRepo,
+			_registryRepo: registryRepo,
+			_invoiceRepo:  invoiceRepo,
+			_approvalRepo: approvalRepo,
+			_rbacRepo:     rbacRepo,
+			mux:           &sync.RWMutex{},
+		}
+		r.ORM = on
+		r._authRepo.ORM = on
+		r._billRepo = fw.NewRepository[merchant.MerchantBill](on)
+		r._settleRepo = fw.NewRepository[merchant.SettleConf](on)
+		r._mchRepo = fw.NewRepository[merchant.Merchant](on)
+		_mchInstance = r
+	})
+	return _mchInstance
+}
+
+func (m *merchantRepo) BillRepo() fw.Repository[merchant.MerchantBill] {
+	return m._billRepo
+}
+
+func (m *merchantRepo) SettleRepo() fw.Repository[merchant.SettleConf] {
+	return m._settleRepo
 }
 
 // 获取商户管理器
@@ -105,13 +134,21 @@ func (m *merchantRepo) GetManager() merchant.IMerchantManager {
 }
 
 func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchantAggregateRoot {
-	return merchantImpl.NewMerchant(v, m, m._wsRepo, m._itemRepo,
-		m._shopRepo, m._userRepo,
+	return merchantImpl.NewMerchant(v,
+		m.storage,
+		m, m._wsRepo,
+		m._itemRepo,
+		m._shopRepo,
+		m._userRepo,
 		m._employeeRepo,
 		m._memberRepo,
-		m._stationRepo,
-		m._walletRepo, m._valRepo,
-		m._registryRepo)
+		m._sysRepo,
+		m._walletRepo,
+		m._valRepo,
+		m._registryRepo,
+		m._invoiceRepo,
+		m._approvalRepo,
+		m._rbacRepo)
 }
 
 func (m *merchantRepo) cleanCache(mchId int64) {
@@ -157,8 +194,8 @@ func (m *merchantRepo) GetAccount(mchId int) *merchant.Account {
 	}
 	// 初始化一个钱包账户
 	if err == sql.ErrNoRows {
-		e.MchId = int64(mchId)
-		e.UpdateTime = time.Now().Unix()
+		e.MchId = mchId
+		e.UpdateTime = int(time.Now().Unix())
 		orm.Save(m._orm, &e, 0)
 		return &e
 	}
@@ -232,8 +269,8 @@ func (m *merchantRepo) GetMerchantSaleConf(mchId int64) *merchant.SaleConf {
 
 func (m *merchantRepo) SaveMerchantSaleConf(v *merchant.SaleConf) error {
 	var err error
-	if v.MerchantId > 0 {
-		_, _, err = m._orm.Save(v.MerchantId, v)
+	if v.MchId > 0 {
+		_, _, err = m._orm.Save(v.MchId, v)
 	} else {
 		_, _, err = m._orm.Save(nil, v)
 	}
@@ -262,7 +299,7 @@ func (m *merchantRepo) GetApiInfo(mchId int) *merchant.ApiInfo {
 // 根据API编号获取商户编号
 func (m *merchantRepo) GetMerchantIdByApiId(apiId string) int64 {
 	var mchId int64
-	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id= $1", &mchId, apiId)
+	m.Connector.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id= $1", &mchId, apiId)
 	return mchId
 }
 
@@ -522,22 +559,34 @@ func (m *merchantRepo) GetMerchantByMemberId(memberId int) merchant.IMerchantAgg
 
 // SaveAuthenticate Save 商户认证信息
 func (m *merchantRepo) SaveAuthenticate(v *merchant.Authenticate) (int, error) {
-	id, err := orm.Save(m._orm, v, int(v.Id))
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:Authenticate\n", err.Error())
-	}
-	return id, err
+	dst, err := m._authRepo.Save(v)
+	return dst.Id, err
 }
 
 // GetMerchantAuthenticate implements merchant.IMerchantRepo.
 func (m *merchantRepo) GetMerchantAuthenticate(mchId int, version int) *merchant.Authenticate {
-	e := merchant.Authenticate{}
-	err := m._orm.GetBy(&e, "mch_id = $1 AND version= $2", mchId, version)
-	if err == nil {
-		return &e
-	}
-	if err != sql.ErrNoRows {
-		log.Printf("[ Orm][ Error]: %s; Entity:Authenticate\n", err.Error())
-	}
-	return nil
+	return m._authRepo.FindBy("mch_id = ? AND version= ?", mchId, version)
+}
+
+func (m *merchantRepo) DeleteOthersAuthenticate(mchId int, id int) error {
+	_, err := m._authRepo.DeleteBy("mch_id = ? AND id <> ?", mchId, id)
+	return err
+}
+
+// IsExistsMerchantName implements merchant.IMerchantRepo.
+func (m *merchantRepo) IsExistsMerchantName(name string, id int) bool {
+	count, err := m._authRepo.Count("mch_id <> ? AND mch_name = ?", id, name)
+	return err == nil && count > 0
+}
+
+// IsExistsOrganizationName implements merchant.IMerchantRepo.
+func (m *merchantRepo) IsExistsOrganizationName(name string, id int) bool {
+	count, err := m._authRepo.Count("mch_id <> ? AND org_name = ?", id, name)
+	return err == nil && count > 0
+}
+
+// IsExistsEmail 检查邮箱是否已使用
+func (m *merchantRepo) IsExistsEmail(email string, id int) bool {
+	count, err := m._mchRepo.Count("id <> ? AND mail_addr = ?", id, email)
+	return err == nil && count > 0
 }

@@ -23,8 +23,8 @@ func Test_checkServiceImpl_SendCode(t *testing.T) {
 		TemplateCode:  mss.SMS_CHECK_CODE,
 	}
 	ret, _ := svc.SendCode(context.TODO(), r)
-	if len(ret.ErrMsg) != 0 {
-		t.Error(errors.New(ret.ErrMsg))
+	if len(ret.Message) != 0 {
+		t.Error(errors.New(ret.Message))
 		t.FailNow()
 	}
 	t.Logf("验证码为:%s", ret.CheckCode)
@@ -40,8 +40,8 @@ func Test_checkServiceImpl_CompareCode(t *testing.T) {
 		Token:         "testtoken",
 	}
 	ret, _ := s.CompareCode(context.TODO(), req)
-	if len(ret.ErrMsg) != 0 {
-		t.Error(errors.New(ret.ErrMsg))
+	if len(ret.Message) != 0 {
+		t.Error(errors.New(ret.Message))
 		t.FailNow()
 	}
 }
@@ -55,8 +55,8 @@ func TestGrantMemberAccessToken(t *testing.T) {
 		UserType:    1,
 		ExpiresTime: time.Now().Unix() + 3600*30*24,
 	})
-	if len(token.ErrMsg) > 0 {
-		t.Error(token.ErrMsg)
+	if len(token.Message) > 0 {
+		t.Error(token.Message)
 		t.FailNow()
 	}
 	now := time.Now().Unix()
@@ -67,7 +67,7 @@ func TestGrantMemberAccessToken(t *testing.T) {
 		RenewExpiresTime: now + 900,
 	})
 	if accessToken.UserId != memberId {
-		t.Error(accessToken.ErrMsg)
+		t.Error(accessToken.Message)
 		t.Failed()
 	}
 	t.Logf("token is:%s", token.AccessToken)
@@ -80,8 +80,8 @@ func TestCheckMemberAccessToken(t *testing.T) {
 	ret, _ := inject.GetCheckService().CheckAccessToken(context.TODO(), &proto.CheckAccessTokenRequest{
 		AccessToken: accessToken,
 	})
-	if len(ret.ErrMsg) > 0 {
-		t.Log(ret.ErrMsg)
+	if len(ret.Message) > 0 {
+		t.Log(ret.Message)
 		t.FailNow()
 	}
 	t.Log(typeconv.MustJson(ret))

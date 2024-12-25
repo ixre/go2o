@@ -16,17 +16,17 @@
 // 校验服务
 service CheckService {
     // 发送会员验证码消息, 并返回验证码, 验证码通过data.CheckCode获取
-    rpc SendCode (SendCheckCodeRequest) returns (SendCheckCodeResponse) {
+    rpc sendCode (SendCheckCodeRequest) returns (SendCheckCodeResponse) {
     }
     // 比较验证码是否正确, 正确则返回用户编号
-    rpc CompareCode (CompareCheckCodeRequest) returns (CompareCheckCodeResponse) {
+    rpc compareCode (CompareCheckCodeRequest) returns (CompareCheckCodeResponse) {
     }
 
     // 发放访问令牌,续期即重新颁发
-    rpc GrantAccessToken(GrantAccessTokenRequest) returns(GrantAccessTokenResponse){}
+    rpc grantAccessToken(GrantAccessTokenRequest) returns(GrantAccessTokenResponse){}
 
     // 检查令牌是否有效并返回新的令牌
-    rpc CheckAccessToken(CheckAccessTokenRequest) returns(CheckAccessTokenResponse){}
+    rpc checkAccessToken(CheckAccessTokenRequest) returns(CheckAccessTokenResponse){}
  
 }
 
@@ -50,9 +50,9 @@ message SendCheckCodeRequest {
 // 发送验证码响应
 message SendCheckCodeResponse{
   // 错误码
-  int32 errCode = 1;
+  int32 code = 1;
   // 错误消息
-  string errMsg = 2;
+  string message = 2;
   // 验证码
   string checkCode = 3;
 }
@@ -72,9 +72,9 @@ message CompareCheckCodeRequest {
 // 比较验证码响应
 message CompareCheckCodeResponse {
   // 错误码
-  int32 errCode = 1;
+  int32 code = 1;
   // 错误消息
-  string errMsg = 2;
+  string message = 2;
   // 会员编号
   sint64 userId = 3;
 }
@@ -94,10 +94,12 @@ message GrantAccessTokenRequest{
 
 // 发放访问令牌响应
 message GrantAccessTokenResponse{
+  // 错误码
+  int64 code = 1;
   // 错误信息
-  string errMsg = 1;
+  string message = 2;
   // 访问令牌
-  string accessToken = 2;
+  string accessToken = 3;
 }
 
 // 检查令牌请求
@@ -114,16 +116,18 @@ message CheckAccessTokenRequest{
 
 // 检查令牌响应
 message CheckAccessTokenResponse{
+  // 错误码
+  int32 code = 1;
   // 错误信息
-  string errMsg = 1;
+  string message = 2;
   // 用户类型 1:会员 2:商户 3:系统用户
-  sint32 userType = 2;
+  sint32 userType = 3;
   // 会员编号
-  sint64 userId = 3;
+  sint64 userId = 4;
   // 是否过期
-  bool isExpires = 4;
+  bool isExpires = 5;
   // 令牌过期时间
-  sint64 tokenExpiresTime = 5; 
+  sint64 tokenExpiresTime = 6; 
   // 重新生成的令牌
-  string renewAccessToken = 6;
+  string renewAccessToken = 7;
 }

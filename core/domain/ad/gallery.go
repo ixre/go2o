@@ -12,6 +12,7 @@ import (
 	"sort"
 
 	"github.com/ixre/go2o/core/domain/interface/ad"
+	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 )
 
 var _ ad.IAdAggregateRoot = new(GalleryAd)
@@ -26,10 +27,10 @@ type GalleryAd struct {
 func (g *GalleryAd) GetAdValue() ad.SwiperAd {
 	if g.adValue == nil {
 		if g.GetDomainId() > 0 {
-			g.adValue = g._rep.GetSwiperAd(g.GetDomainId())
+			g.adValue = g._rep.GetSwiperAd(int64(g.GetDomainId()))
 			sort.Sort(g.adValue)
 		} else {
-			g.adValue = []*ad.Image{}
+			g.adValue = []*ad.Data{}
 		}
 	}
 	return g.adValue
@@ -48,19 +49,35 @@ func (g *GalleryAd) GetEnabledAdValue() ad.SwiperAd {
 }
 
 // 保存广告图片
-func (g *GalleryAd) SaveImage(v *ad.Image) (int64, error) {
-	v.AdId = g.GetDomainId()
-	return g._rep.SaveImageAdData(v)
+func (g *GalleryAd) SaveImage(items []*ad.Data) error {
+	nowMap := collections.ToMap(items, func(a *ad.Data) (int, *ad.Data) {
+		return a.Id, a
+	})
+	// 从旧的数据中筛选出要删除的项
+	delList := collections.FilterArray(g.GetAdValue(), func(v *ad.Data) bool {
+		return nowMap[v.Id] == nil
+	})
+	// 删除项
+	for _, v := range delList {
+		g._rep.DeleteSwiperAdImage(int64(g.GetDomainId()), int64(v.Id))
+	}
+	// 保存项
+	for _, v := range items {
+		if v.AdId == 0 {
+			v.AdId = g.GetDomainId()
+		}
+		_, err := g._rep.SaveImageAdData(v)
+		if err != nil {
+			return err
+		}
+	}
+	g.adValue = nil
+	return nil
 }
 
 // 获取图片项
-func (g *GalleryAd) GetImage(id int64) *ad.Image {
-	return g._rep.GetSwiperAdImage(g.GetDomainId(), id)
-}
-
-// 删除图片项
-func (g *GalleryAd) DeleteItem(id int64) error {
-	return g._rep.DeleteSwiperAdImage(g.GetDomainId(), id)
+func (g *GalleryAd) GetImage(id int64) *ad.Data {
+	return g._rep.GetSwiperAdImage(int64(g.GetDomainId()), id)
 }
 
 // 转换为数据传输对象

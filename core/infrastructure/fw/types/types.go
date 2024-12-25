@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 
 	"golang.org/x/text/cases"
@@ -50,15 +51,61 @@ func DeepClone[T any](v *T) (t *T) {
 	return dst
 }
 
-// 转换为Json对象
+// ParseJSONObject 转换为Json对象
 func ParseJSONObject(v interface{}) (map[string]interface{}, error) {
-	data, err := json.Marshal(v)
-	if err == nil {
-		var result map[string]interface{}
-		err = json.Unmarshal(data, &result)
-		if err == nil {
-			return result, nil
+	var data []byte
+	switch v := v.(type) {
+	case []byte:
+		data = v
+	case string:
+		data = []byte(v)
+	default:
+		md, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
 		}
+		data = md
+	}
+	var result map[string]interface{}
+	err := json.Unmarshal(data, &result)
+	if err == nil {
+		return result, nil
 	}
 	return nil, err
+}
+
+// ParseJSONArray 转换为Json数组
+func ParseJSONArray(v interface{}) ([]map[string]interface{}, error) {
+	var data []byte
+	switch v := v.(type) {
+	case []byte:
+		data = v
+	case string:
+		data = []byte(v)
+	default:
+		md, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
+		}
+		data = md
+	}
+	var result []map[string]interface{}
+	err := json.Unmarshal(data, &result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// 字符串转为int切片
+func ParseIntSlice(s string, delimer string) []int {
+	var arr []int
+	sArr := strings.Split(s, delimer)
+	for _, v := range sArr {
+		i, err := strconv.ParseInt(v, 10, 64)
+		if err == nil {
+			arr = append(arr, int(i))
+		}
+	}
+	return arr
 }

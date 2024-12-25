@@ -14,9 +14,13 @@ import "github.com/ixre/go2o/core/infrastructure/fw"
 type IMerchantRepo interface {
 	// 仓储实现
 	fw.Repository[Merchant]
+	// 账单仓储
+	BillRepo() fw.Repository[MerchantBill]
+	// 商户结算仓储
+	SettleRepo() fw.Repository[SettleConf]
 	// 获取商户管理器
 	GetManager() IMerchantManager
-
+	// 创建商户
 	CreateMerchant(*Merchant) IMerchantAggregateRoot
 
 	// 获取商户的编号
@@ -31,7 +35,8 @@ type IMerchantRepo interface {
 
 	// 保存
 	SaveMerchant(*Merchant) (int, error)
-
+	// IsExistsEmail 检查邮箱是否已使用
+	IsExistsEmail(email string, id int) bool
 	// 获取账户
 	GetAccount(mchId int) *Account
 	// 保存会员账户
@@ -126,4 +131,10 @@ type IMerchantRepo interface {
 	SaveAuthenticate(v *Authenticate) (int, error)
 	// GetAuthenticateBy 获取商户认证信息
 	GetMerchantAuthenticate(mchId int, version int) *Authenticate
+	// DeleteOthersAuthenticate 删除其他认证信息
+	DeleteOthersAuthenticate(mchId int, id int) error
+	// 检查商户是否存在
+	IsExistsMerchantName(name string, id int) bool
+	// 检查商户是否存在
+	IsExistsOrganizationName(name string, id int) bool
 }

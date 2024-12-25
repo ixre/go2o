@@ -18,7 +18,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
-	"github.com/ixre/go2o/core/infrastructure/domain/validate"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/util"
 )
@@ -63,7 +63,7 @@ func (m *memberManagerImpl) registerPerm(regMode int, invitation bool) error {
 }
 
 // 检查手机绑定,同时检查手机格式
-func (m *memberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
+func (m *memberManagerImpl) CheckPhoneBind(phone string, memberId int) error {
 	if len(phone) <= 0 {
 		return member.ErrMissingPhone
 	}
@@ -103,7 +103,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 		if len(v.Username) < 6 {
 			return 0, member.ErrUserLength
 		}
-		if !validate.IsUser(v.Username) {
+		if !regex.IsUser(v.Username) {
 			return 0, member.ErrUserValidErr
 		}
 		if m.rep.CheckUserExist(v.Username, 0) {
@@ -125,7 +125,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	}
 	if lp > 0 {
 		checkPhone := m.registryRepo.Get(registry.MemberCheckPhoneFormat).BoolValue()
-		if checkPhone && !validate.IsPhone(pro.Phone) {
+		if checkPhone && !regex.IsPhone(pro.Phone) {
 			return 0, member.ErrInvalidPhone
 		}
 		if m.CheckPhoneBind(pro.Phone, v.Id) != nil {
@@ -149,7 +149,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	}
 
 	pro.Name = strings.TrimSpace(pro.Name)
-	pro.Avatar = strings.TrimSpace(pro.Avatar)
+	pro.ProfilePhoto = strings.TrimSpace(pro.ProfilePhoto)
 	if len(pro.Name) == 0 {
 		//如果未设置昵称,则默认为用户名
 		pro.Name = v.Username

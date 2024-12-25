@@ -49,6 +49,9 @@ var (
 	ErrSalesPercent = domain.NewError(
 		"err_sales_percent", "销售比例错误")
 
+	ErrTxRate = domain.NewError(
+		"err_tx_rate", "交易比例错误")
+
 	ErrAmount = domain.NewError(
 		"err_mch_amount", "金额不正确")
 

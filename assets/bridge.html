@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta
+      content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1"
+      id="viewport"
+      name="viewport"
+    />
+    <style type="text/css">
+      html {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+      body,
+      .modal {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .modal {
+        width: 110px;
+        height: 110px;
+        background: rgb(236, 236, 236, 0.75);
+        border-radius: 0.625rem;
+        flex-direction: column;
+      }
+      .msg {
+        font-size: 0.785rem;
+        color: #000;
+        font-weight: 500;
+        padding-top: 0.325rem;
+      }
+
+      .loading {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: inline-block;
+        position: relative;
+        background: linear-gradient(
+          0deg,
+          rgba(201, 225, 255, 0.2) 33%,
+          #1279ff 100%
+        );
+        animation: rotation 1s linear infinite;
+      }
+
+      .loading:after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 41px;
+        height: 41px;
+        border-radius: 50%;
+        background: #fff;
+      }
+
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="modal">
+      <div class="loading"></div>
+      <div class="msg">{{.msg}}</div>
+    </div>
+    <script type="text/javascript">
+      /**
+       * Copyright (C) 2007-2024 fze.NET, All rights reserved.
+       *
+       * name: bridge.html
+       * author: jarrysix (jarrysix@gmail.com)
+       * date: 2024-12-24 10:09:14
+       * description: 页面加载效果，用于解决首次h5加载慢的问题
+       * history:
+       * 示例: http://localhost:1428/g/bridge?url=https://h5.g2.56x.net/&title=%E8%BD%BD%E5%85%A5%E4%B8%AD&preload=https://h5.g2.56x.net/js/nutui.js,https://h5.g2.56x.net/js/taro.js,https://h5.g2.56x.net/js/app.js
+       */
+      document.title = "{{.title}}";
+      var url = "{{.url}}";
+      var preloads = "{{.preload}}".split(",");
+      if (url.indexOf("%") != -1) url = decodeURIComponent(url);
+      var loadedPreloads = 0;
+      for (var i = 0; i < preloads.length; i++) {
+        var preload = preloads[i];
+        if (preload) {
+          if (preload.indexOf("%") != -1) preload = decodeURIComponent(preload);
+          var e = document.createElement("link");
+          e.href = preload;
+          e.rel = "preload";
+          e.as = "script";
+          e.onload = function (preload) {
+            loadedPreloads++;
+          };
+          document.head.appendChild(e);
+        }
+      }
+      window.onload = function () {
+        if (!url) throw new Error("url is required");
+        if (preloads.length > 0) {
+          // 等待预加载完成或5秒后跳转
+          var i = 0;
+          var interval = setInterval(() => {
+            if (preloads.length == loadedPreloads || i++ > 50) {
+              clearInterval(interval);
+              location.replace(url);
+            }
+          }, 100);
+        } else {
+          location.replace(url);
+        }
+      };
+    </script>
+  </body>
+</html>

@@ -8,40 +8,31 @@ option java_package = "com.github.go2o.rpc";
 /** 内容服务 */
 service ContentService {
     // 获取页面
-    rpc GetPage (IdOrName) returns (SPage) {
+    rpc getPage (IdOrName) returns (SPage) {
     }
     // 保存页面
-    rpc SavePage (SPage) returns (Result) {
-    }
+    rpc savePage (SPage) returns (TxResult);
     // 删除页面
-    rpc DeletePage (Int64) returns (Result) {
-    }
+    rpc deletePage (Int64) returns (TxResult);
 
     // 获取所有栏目
-    rpc GetArticleCategories (Empty) returns (ArticleCategoriesResponse) {
-    }
+    rpc getArticleCategories (Empty) returns (ArticleCategoriesResponse);
     // 获取文章栏目,可传入ID或者别名
-    rpc GetArticleCategory (IdOrName) returns (SArticleCategory) {
-    }
+    rpc getArticleCategory (IdOrName) returns (SArticleCategory);
     // 保存文章栏目
-    rpc SaveArticleCategory (SArticleCategory) returns (Result) {
-    }
+    rpc saveArticleCategory (SArticleCategory) returns (TxResult);
     // 删除文章分类
-    rpc DeleteArticleCategory (Int64) returns (Result) {
-    }
+    rpc deleteArticleCategory (Int64) returns (TxResult);
     // 获取文章
-    rpc GetArticle (IdOrName) returns (SArticle) {
-    }
+    rpc getArticle (IdOrName) returns (SArticle);
     // 更新文章浏览次数
-    rpc UpdateArticleViewsCount(ArticleViewsRequest) returns (Result){} 
+    rpc addArticleViewsCount(ArticleViewsRequest) returns (TxResult);
     // 喜欢/不喜欢文章
-    rpc LikeArticle(ArticleLikeRequest) returns (Result){} 
+    rpc likeArticle(ArticleLikeRequest) returns (TxResult);
     // 删除文章
-    rpc DeleteArticle (Int64) returns (Result) {
-    }
+    rpc deleteArticle (Int64) returns (TxResult);
     // 保存文章
-    rpc SaveArticle (SArticle) returns (Result) {
-    } 
+    rpc saveArticle (SArticle) returns (TxResult); 
 }
 
 
@@ -52,15 +43,15 @@ message SArticleCategory {
     //编号
     int64 id = 1;
     //父类编号,如为一级栏目则为0
-    int64 parentId = 2;
+    int64 pid = 2;
     // 浏览权限
-    int32 permFlag = 3;
+    int32 flag = 3;
     // 名称(唯一)
     string name = 4;
     // 别名
     string alias = 5;
     // 排序编号
-    int32 sortNum = 6;
+    int32 sortNo = 6;
     // 定位路径（打开栏目页定位到的路径）
     string location = 7;
     // 页面标题
@@ -129,7 +120,7 @@ message SPage {
     // 浏览钥匙
     string accessKey = 6;
     // 关键词
-    string keyWord = 7;
+    string keyword = 7;
     // 描述
     string description = 8;
     // 样式表地址
@@ -150,10 +141,8 @@ message ArticleCategoriesResponse {
 message ArticleViewsRequest{
     // 文章编号
     uint64 id = 1;
-    // 会员编号
-    uint32 memberId = 2;
     // 次数
-    uint32 count = 3;
+    uint32 count = 2;
 }
 
 // 文章点赞/不喜欢请求

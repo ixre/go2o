@@ -261,12 +261,12 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.Order {
 		TradeChannel:   0,
 		OutTradeSp:     "",
 		OutTradeNo:     "",
-		State:          payment.StateAwaitingPayment,
-		SubmitTime:     unix,
-		ExpiresTime:    expiresTime,
+		Status:         payment.StateAwaitingPayment,
+		SubmitTime:     int(unix),
+		ExpiresTime:    int(expiresTime),
 		PaidTime:       0,
-		UpdateTime:     unix,
-		TradeMethods:   make([]*payment.TradeMethodData, 0),
+		UpdateTime:     int(unix),
+		TradeMethods:   make([]*payment.PayTradeData, 0),
 	}
 	return v2
 }

@@ -6,8 +6,12 @@ option java_package = "com.github.go2o.rpc";
 
 // 清除缓存请求
 message CleanCacheRequest{
+    // 清除指定前缀的缓存,如果为空则清除所有缓存
     string prefix = 1;
+    // 清除指定键的缓存
     string key = 2;
+    // 是否清除全局缓存
+    bool clearGlobal = 3;
 }
 
 // 清除缓存响应
@@ -67,12 +71,7 @@ message GetSmsSettingRequest{
     ESmsProvider provider = 1; 
 }
 
-//  登录结果
-message SuperLoginResponse {
-    int32 errCode = 1;
-    string errMsg = 2;
-    int32 role = 3;
-}
+
 message BoardHookSaveRequest {
     string hookURL = 1;
     string token = 2;
@@ -100,9 +99,12 @@ message GetNamesRequest {
     repeated sint32 value =  1;
 }
 
-message UserPwd {
-    string username = 1;
-    string password = 2;
+/** 超级管理员密码修改请求 */
+message SuperPassswordRequest {
+    /** 旧密码 */
+    string oldPassword = 1;
+    /** 新密码 */
+    string newPassword = 2;
 }
 
 // 单点登录应用
@@ -125,6 +127,8 @@ message SDistrict {
     int64 parentId = 2;
     // 区域名称
     string name = 3;
+    // 是否是叶子节点
+    bool isLeaf = 4;
 }
 
 
