@@ -203,7 +203,7 @@ func (m *MerchantQuery) QueryMerchantPendingStaffs(p *fw.PagingParams) (*fw.Pagi
 	fields := `
 	distinct(s.id),m.nickname,c.real_name,m.username,m.profile_photo,pro.gender,
 	m.phone,m.level,m.user_flag,
-	m.create_time,(SELECT login_time FROM mm_extra_field WHERE member_id=m.id) as login_time,
+	c.create_time,(SELECT login_time FROM mm_extra_field WHERE member_id=m.id) as login_time,
 	s.certified_name,s.is_certified,c.review_status,c.remark,c.manual_review
 	`
 	return fw.UnifinedQueryPaging(m.ORM, p, tables, fields)

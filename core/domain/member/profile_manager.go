@@ -673,6 +673,7 @@ func (p *profileManagerImpl) SaveCertificationInfo(v *member.CerticationInfo) er
 	// 保存
 	current := p.GetCertificationInfo()
 	err = p.copyCertificationInfo(*v, current)
+	current.time = int(time.Now().Unix())
 	if err == nil {
 		current.Remark = ""
 		current.ReviewStatus = int(enum.ReviewPending) //标记为待处理
