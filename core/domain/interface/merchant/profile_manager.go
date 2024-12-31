@@ -61,6 +61,8 @@ type (
 		ReviewRemark string `json:"reviewRemark" db:"review_remark" gorm:"column:review_remark" bson:"reviewRemark"`
 		// 版本号: 0: 待审核 1: 已审核
 		Version int `json:"version" db:"version" gorm:"column:version" bson:"version"`
+		// 提交时间
+		SubmitTime int `json:"submitTime" db:"submit_time" gorm:"submit_time" bson:"submitTime"`
 		// 更新时间
 		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 		// 身份证背面照片

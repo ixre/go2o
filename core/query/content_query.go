@@ -9,6 +9,9 @@
 package query
 
 import (
+	"regexp"
+	"strings"
+
 	"github.com/ixre/go2o/core/domain/interface/content"
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -139,7 +142,18 @@ func (c *ContentQuery) QueryPagingArticles(p *fw.PagingParams) (*fw.PagingResult
 
 // 系统查询页面列表
 func (c *ContentQuery) QueryPagingPages(p *fw.PagingParams) (*fw.PagingResult, error) {
-	return c.pageRepo.QueryPaging(p)
+	rst, err := c.pageRepo.QueryPaging(p)
+	regex := regexp.MustCompile(`<([^>]+)>`)
+	for _, v := range rst.Rows {
+		p := v.(*content.Page)
+		content := regex.ReplaceAllString(p.Content, "")
+		content = strings.ReplaceAll(content, "&nbsp;", "")
+		if len(content) > 100 {
+			content = content[:99] + "..."
+		}
+		p.Content = content
+	}
+	return rst, err
 }
 
 // 查询分类编号列表

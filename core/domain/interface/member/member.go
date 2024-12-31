@@ -350,6 +350,8 @@ type (
 		ReviewTime int `json:"reviewTime" db:"review_time" gorm:"column:review_time" bson:"reviewTime"`
 		// 备注
 		Remark string `json:"remark" db:"remark" gorm:"column:remark" bson:"remark"`
+		// 创建时间
+		SubmitTime int `json:"submitTime" db:"submit_time" gorm:"column:submit_time" bson:"submitTime"`
 		// 更新时间
 		UpdateTime int `json:"updateTime" db:"update_time" gorm:"column:update_time" bson:"updateTime"`
 	}
