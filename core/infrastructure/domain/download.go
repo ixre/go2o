@@ -16,6 +16,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 	"time"
 )
@@ -35,15 +36,15 @@ func DownloadToLocal(url string, savePath string, ext string) string {
 	var err error
 	req, err = http.NewRequest("GET", url, nil)
 	if err == nil {
-		req.Header.Set("User_Agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5")
-		if rsp, err := http.DefaultClient.Do(req); err == nil {
-
+		req.Header.Set("User_Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0")
+		rsp, err := http.DefaultClient.Do(req)
+		if err == nil {
 			fileName := getFileName(rsp.Header.Get("Content-Disposition"), ext)
-			if _, err := os.Stat(savePath); os.IsNotExist(err) {
-				os.MkdirAll(savePath, os.ModePerm)
-			}
 			var filePath = savePath + fileName
-
+			dir := path.Dir(filePath)
+			if _, err := os.Stat(dir); os.IsNotExist(err) {
+				os.MkdirAll(dir, os.ModePerm)
+			}
 			src := rsp.Body
 			defer src.Close()
 

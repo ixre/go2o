@@ -77,7 +77,7 @@ func (p *pageImpl) GetValue() *content.Page {
 
 // 检测别名是否可用
 func (p *pageImpl) checkAliasExists(alias string) bool {
-	v := p.repo.FindBy("user_id= ? AND str_indent = ? AND id <> ?", p.tenantId, alias, p.GetDomainId())
+	v := p.repo.FindBy("user_id = ? AND code = ? AND id <> ?", p.tenantId, alias, p.GetDomainId())
 	return v != nil
 }
 
@@ -92,7 +92,7 @@ func (p *pageImpl) SetValue(v *content.Page) error {
 			return content.ErrInternalPage
 		}
 	}
-	if len(v.Code) > 0 && !p.checkAliasExists(v.Code) {
+	if len(v.Code) > 0 && p.checkAliasExists(v.Code) {
 		return content.ErrAliasHasExists
 	}
 	p.value = v

@@ -65,7 +65,9 @@ func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, er
 	v.ReviewTime = 0
 	// aName := p.valRepo.GetDistrictNames([]int32{e.Province, e.City, e.District})
 	// e.Location = strings.Join(aName, "")
-	v.UpdateTime = int(time.Now().Unix())
+
+	v.SubmitTime = int(time.Now().Unix())
+	v.UpdateTime = v.SubmitTime
 	auth := p.getStagingAuthenticate()
 	if auth != nil {
 		v.Id = auth.Id

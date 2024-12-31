@@ -280,3 +280,23 @@ update mch_bill set final_amount=(tx_amount-tx_fee-refund_amount);
 
 ALTER TABLE sys_general_option 
   ALTER COLUMN label TYPE character varying(30);
+
+
+-- 20241231 实名认证
+ALTER TABLE "public".mm_cert_info 
+  alter column cert_front_pic set default ''::character varying;
+ALTER TABLE "public".mm_cert_info 
+  alter column cert_back_pic set default ''::character varying;
+ALTER TABLE "public".mm_cert_info 
+  alter column extra_cert_file set default ''::character varying;
+ALTER TABLE "public".mm_cert_info 
+  alter column extra_cert_ext1 set default ''::character varying;
+ALTER TABLE "public".mm_cert_info 
+  alter column extra_cert_ext2 set default ''::character varying;
+ALTER TABLE "public".mm_cert_info 
+  ADD COLUMN submit_time int8 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".mm_cert_info.submit_time IS '提交时间';
+
+ALTER TABLE "public".mch_authenticate 
+  ADD COLUMN submit_time int8 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".mch_authenticate.submit_time IS '提交时间';
