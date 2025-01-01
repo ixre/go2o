@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/content"
+	"github.com/ixre/go2o/core/infrastructure/format"
 )
 
 var _ content.IPageManager = new(pageManagerImpl)
@@ -95,6 +96,8 @@ func (p *pageImpl) SetValue(v *content.Page) error {
 	if len(v.Code) > 0 && p.checkAliasExists(v.Code) {
 		return content.ErrAliasHasExists
 	}
+
+	v.Content = format.RemoveHtmlStyle(v.Content)
 	p.value = v
 	return nil
 }

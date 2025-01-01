@@ -160,33 +160,34 @@ func initPortalNavGroup(repo dao.IPortalDao) {
 
 // 初始化内置页面
 func initPages(repo content.IPageRepo) {
-	ip := repo.GetPageByCode(0, "privacy")
-	if ip == nil {
-		pages := []*content.Page{
-			{
-				Title: "隐私政策",
-				Code:  "privacy",
-				Content: "请您务必审慎阅读,并充分理解\"服务协议\"和\"隐私政策\"各条款，为了向您提供相关服务，我们需要收集你您的设备信息、操作日志等个人信息。" +
-					"您可以在\"设置\"中查看、变更和删除个人信息并管理您的授权。您可阅读《服务协议》和《隐私政策》了解详细信息。" +
-					"如果您同意，请点击“同意”开始使用我们的服务。",
-			},
-			{
-				Title:   "用户条款",
-				Code:    "agreement",
-				Content: "暂无内容",
-			},
-			{
-				Title:   "关于平台",
-				Code:    "about",
-				Content: "",
-			},
-			{
-				Title:   "联系我们",
-				Code:    "contact",
-				Content: "",
-			},
-		}
-		for _, v := range pages {
+
+	pages := []*content.Page{
+		{
+			Title: "隐私政策",
+			Code:  "privacy",
+			Content: "请您务必审慎阅读,并充分理解\"服务协议\"和\"隐私政策\"各条款，为了向您提供相关服务，我们需要收集你您的设备信息、操作日志等个人信息。" +
+				"您可以在\"设置\"中查看、变更和删除个人信息并管理您的授权。您可阅读《服务协议》和《隐私政策》了解详细信息。" +
+				"如果您同意，请点击“同意”开始使用我们的服务。",
+		},
+		{
+			Title:   "用户条款",
+			Code:    "agreement",
+			Content: "暂无内容",
+		},
+		{
+			Title:   "关于平台",
+			Code:    "about",
+			Content: "",
+		},
+		{
+			Title:   "联系我们",
+			Code:    "contact",
+			Content: "",
+		},
+	}
+	for _, v := range pages {
+		ip := repo.GetPageByCode(0, v.Code)
+		if ip == nil {
 			v.Flag |= content.FCategoryInternal
 			v.Enabled = 1
 			v.UpdateTime = int(time.Now().Unix())

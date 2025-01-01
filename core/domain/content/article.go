@@ -17,6 +17,7 @@ import (
 
 	"github.com/ixre/go2o/core/domain/interface/content"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/infrastructure/format"
 	"github.com/ixre/go2o/core/infrastructure/fw/collections"
 	"github.com/ixre/go2o/core/infrastructure/fw/types"
 )
@@ -66,6 +67,8 @@ func (a *articleImpl) SetValue(v *content.Article) error {
 			return content.ErrDisallowPostArticle
 		}
 	}
+	// 移除HTML样式
+	v.Content = format.RemoveHtmlStyle(v.Content)
 	a._value.Title = v.Title
 	a._value.ShortTitle = v.ShortTitle
 	a._value.SortNum = v.SortNum

@@ -8,7 +8,10 @@
  */
 package format
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 // 获取性别
 func GetGender(gender int32) string {
@@ -46,4 +49,16 @@ func MaskNickname(nickname string) string {
 		return nickname[1:] + strings.Repeat("*", l-1)
 	}
 	return "用*"
+}
+
+var _cssElementRegexp = regexp.MustCompile(`(line-height|margin|text-indent)[^;]+;*`)
+
+// 移除HTML样式
+func RemoveHtmlStyle(html string) string {
+	html = strings.ReplaceAll(html, "<style>", "")
+	html = strings.ReplaceAll(html, "</style>", "")
+	html = strings.ReplaceAll(html, "<script>", "")
+	html = strings.ReplaceAll(html, "</script>", "")
+	html = _cssElementRegexp.ReplaceAllString(html, "")
+	return html
 }
