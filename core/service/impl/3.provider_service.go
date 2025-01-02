@@ -22,6 +22,18 @@ func NewServiceProviderService() proto.ServiceProviderServiceServer {
 
 // GetOpenId implements proto.ServiceProviderServiceServer.
 func (s *serviceProviderServiceImpl) GetOpenId(_ context.Context, req *proto.GetUserOpenIdRequest) (*proto.UserOpenIdResponse, error) {
+	if len(req.Type) == 0 {
+		return &proto.UserOpenIdResponse{
+			Code:    1,
+			Message: "缺少参数: clientType",
+		}, nil
+	}
+	if len(req.Code) == 0 {
+		return &proto.UserOpenIdResponse{
+			Code:    1,
+			Message: "缺少参数: clientCode",
+		}, nil
+	}
 	ret, err := tencent.WECHAT.GetMiniProgramOpenId("", req.Code)
 	if err != nil {
 		return &proto.UserOpenIdResponse{
