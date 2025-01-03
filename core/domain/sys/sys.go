@@ -20,6 +20,7 @@ type systemAggregateRootImpl struct {
 	_stations sys.IStationManager
 	_log      sys.IApplicationManager
 	_repo     sys.ISystemRepo
+	_oauth    sys.IOAuthManager
 }
 
 func NewSystemAggregateRoot(repo sys.ISystemRepo) sys.ISystemAggregateRoot {
@@ -64,6 +65,14 @@ func (s *systemAggregateRootImpl) Application() sys.IApplicationManager {
 		s._log = newApplicationManager(s._repo)
 	}
 	return s._log
+}
+
+// OAuth 获取OAuth管理器
+func (s *systemAggregateRootImpl) OAuth() sys.IOAuthManager {
+	if s._oauth == nil {
+		s._oauth = newOAuthManager()
+	}
+	return s._oauth
 }
 
 // FlushUpdateStatus implements sys.ISystemAggregateRoot.

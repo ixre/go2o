@@ -44,6 +44,9 @@ type (
 
 		// 获取最后更新时间,用于对比系统设置是否已经变更
 		LastUpdateTime() int64
+
+		// OAuth 获取OAuth管理器
+		OAuth() IOAuthManager
 	}
 
 	// ILocationManager 地址管理器

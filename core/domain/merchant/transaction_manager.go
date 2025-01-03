@@ -265,6 +265,10 @@ func (s *transactionManagerImpl) GenerateMonthlyBill(year, month int) error {
 			return errors.New("账单已经复核,无法重新生成")
 		}
 	}
+	if bill.Status == int(merchant.BillStatusWaitConfirm) {
+		// 账单已生成
+		return nil
+	}
 	// 更新账单数据
 	bill.TxCount = txData.TransactionCount
 	bill.TxAmount = txData.TxAmount

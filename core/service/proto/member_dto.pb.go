@@ -516,6 +516,176 @@ func (x *LoginRequest) GetUpdate() bool {
 	return false
 }
 
+// 第三方快捷登录请求
+type OAuthLoginRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// 应用编号
+	AppId int32 `protobuf:"varint,1,opt,name=appId,proto3" json:"appId"`
+	// 第三方客户端类型
+	ClientType string `protobuf:"bytes,2,opt,name=clientType,proto3" json:"clientType"`
+	// 第三方登录凭据
+	ClientLoginToken string `protobuf:"bytes,3,opt,name=clientLoginToken,proto3" json:"clientLoginToken"`
+	// 额外参数
+	ExtraParams *SOAuthExtraParams `protobuf:"bytes,4,opt,name=extraParams,proto3" json:"extraParams"`
+}
+
+func (x *OAuthLoginRequest) Reset() {
+	*x = OAuthLoginRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_message_member_dto_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *OAuthLoginRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OAuthLoginRequest) ProtoMessage() {}
+
+func (x *OAuthLoginRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_message_member_dto_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OAuthLoginRequest.ProtoReflect.Descriptor instead.
+func (*OAuthLoginRequest) Descriptor() ([]byte, []int) {
+	return file_message_member_dto_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *OAuthLoginRequest) GetAppId() int32 {
+	if x != nil {
+		return x.AppId
+	}
+	return 0
+}
+
+func (x *OAuthLoginRequest) GetClientType() string {
+	if x != nil {
+		return x.ClientType
+	}
+	return ""
+}
+
+func (x *OAuthLoginRequest) GetClientLoginToken() string {
+	if x != nil {
+		return x.ClientLoginToken
+	}
+	return ""
+}
+
+func (x *OAuthLoginRequest) GetExtraParams() *SOAuthExtraParams {
+	if x != nil {
+		return x.ExtraParams
+	}
+	return nil
+}
+
+// 第三方快捷登录额外参数
+type SOAuthExtraParams struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// 用户名(注册用)
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username"`
+	// 邀请码(注册用)
+	InviterCode string `protobuf:"bytes,2,opt,name=inviterCode,proto3" json:"inviterCode"`
+	// 昵称
+	Nickname string `protobuf:"bytes,3,opt,name=nickname,proto3" json:"nickname"`
+	// 国家代码
+	CountryCode string `protobuf:"bytes,4,opt,name=countryCode,proto3" json:"countryCode"`
+	// 注册IP
+	RegIp string `protobuf:"bytes,5,opt,name=regIp,proto3" json:"regIp"`
+	// 注册来源
+	RegFrom string `protobuf:"bytes,6,opt,name=regFrom,proto3" json:"regFrom"`
+}
+
+func (x *SOAuthExtraParams) Reset() {
+	*x = SOAuthExtraParams{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_message_member_dto_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SOAuthExtraParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SOAuthExtraParams) ProtoMessage() {}
+
+func (x *SOAuthExtraParams) ProtoReflect() protoreflect.Message {
+	mi := &file_message_member_dto_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SOAuthExtraParams.ProtoReflect.Descriptor instead.
+func (*SOAuthExtraParams) Descriptor() ([]byte, []int) {
+	return file_message_member_dto_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *SOAuthExtraParams) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *SOAuthExtraParams) GetInviterCode() string {
+	if x != nil {
+		return x.InviterCode
+	}
+	return ""
+}
+
+func (x *SOAuthExtraParams) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
+}
+
+func (x *SOAuthExtraParams) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *SOAuthExtraParams) GetRegIp() string {
+	if x != nil {
+		return x.RegIp
+	}
+	return ""
+}
+
+func (x *SOAuthExtraParams) GetRegFrom() string {
+	if x != nil {
+		return x.RegFrom
+	}
+	return ""
+}
+
 // 用户登录响应
 type LoginResponse struct {
 	state         protoimpl.MessageState
@@ -535,7 +705,7 @@ type LoginResponse struct {
 func (x *LoginResponse) Reset() {
 	*x = LoginResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[2]
+		mi := &file_message_member_dto_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -548,7 +718,7 @@ func (x *LoginResponse) String() string {
 func (*LoginResponse) ProtoMessage() {}
 
 func (x *LoginResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[2]
+	mi := &file_message_member_dto_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -561,7 +731,7 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
 func (*LoginResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{2}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *LoginResponse) GetCode() int32 {
@@ -609,7 +779,7 @@ type RegisterResponse struct {
 func (x *RegisterResponse) Reset() {
 	*x = RegisterResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[3]
+		mi := &file_message_member_dto_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -622,7 +792,7 @@ func (x *RegisterResponse) String() string {
 func (*RegisterResponse) ProtoMessage() {}
 
 func (x *RegisterResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[3]
+	mi := &file_message_member_dto_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -635,7 +805,7 @@ func (x *RegisterResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterResponse.ProtoReflect.Descriptor instead.
 func (*RegisterResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{3}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *RegisterResponse) GetErrCode() int32 {
@@ -672,7 +842,7 @@ type VerifyPasswordRequest struct {
 func (x *VerifyPasswordRequest) Reset() {
 	*x = VerifyPasswordRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[4]
+		mi := &file_message_member_dto_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -685,7 +855,7 @@ func (x *VerifyPasswordRequest) String() string {
 func (*VerifyPasswordRequest) ProtoMessage() {}
 
 func (x *VerifyPasswordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[4]
+	mi := &file_message_member_dto_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -698,7 +868,7 @@ func (x *VerifyPasswordRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VerifyPasswordRequest.ProtoReflect.Descriptor instead.
 func (*VerifyPasswordRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{4}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *VerifyPasswordRequest) GetMemberId() int64 {
@@ -727,7 +897,7 @@ type MemberIdRequest struct {
 func (x *MemberIdRequest) Reset() {
 	*x = MemberIdRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[5]
+		mi := &file_message_member_dto_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -740,7 +910,7 @@ func (x *MemberIdRequest) String() string {
 func (*MemberIdRequest) ProtoMessage() {}
 
 func (x *MemberIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[5]
+	mi := &file_message_member_dto_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -753,7 +923,7 @@ func (x *MemberIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberIdRequest.ProtoReflect.Descriptor instead.
 func (*MemberIdRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{5}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *MemberIdRequest) GetMemberId() int64 {
@@ -782,7 +952,7 @@ type MemberBlockShieldRequest struct {
 func (x *MemberBlockShieldRequest) Reset() {
 	*x = MemberBlockShieldRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[6]
+		mi := &file_message_member_dto_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -795,7 +965,7 @@ func (x *MemberBlockShieldRequest) String() string {
 func (*MemberBlockShieldRequest) ProtoMessage() {}
 
 func (x *MemberBlockShieldRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[6]
+	mi := &file_message_member_dto_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -808,7 +978,7 @@ func (x *MemberBlockShieldRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberBlockShieldRequest.ProtoReflect.Descriptor instead.
 func (*MemberBlockShieldRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{6}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *MemberBlockShieldRequest) GetMemberId() int64 {
@@ -854,7 +1024,7 @@ type MembersIdRequest struct {
 func (x *MembersIdRequest) Reset() {
 	*x = MembersIdRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[7]
+		mi := &file_message_member_dto_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -867,7 +1037,7 @@ func (x *MembersIdRequest) String() string {
 func (*MembersIdRequest) ProtoMessage() {}
 
 func (x *MembersIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[7]
+	mi := &file_message_member_dto_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -880,7 +1050,7 @@ func (x *MembersIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MembersIdRequest.ProtoReflect.Descriptor instead.
 func (*MembersIdRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{7}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *MembersIdRequest) GetMemberId() int64 {
@@ -912,7 +1082,7 @@ type MemberBlockShieldResponse struct {
 func (x *MemberBlockShieldResponse) Reset() {
 	*x = MemberBlockShieldResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[8]
+		mi := &file_message_member_dto_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -925,7 +1095,7 @@ func (x *MemberBlockShieldResponse) String() string {
 func (*MemberBlockShieldResponse) ProtoMessage() {}
 
 func (x *MemberBlockShieldResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[8]
+	mi := &file_message_member_dto_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -938,7 +1108,7 @@ func (x *MemberBlockShieldResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberBlockShieldResponse.ProtoReflect.Descriptor instead.
 func (*MemberBlockShieldResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{8}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *MemberBlockShieldResponse) GetIsBlock() bool {
@@ -970,7 +1140,7 @@ type FindMemberRequest struct {
 func (x *FindMemberRequest) Reset() {
 	*x = FindMemberRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[9]
+		mi := &file_message_member_dto_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -983,7 +1153,7 @@ func (x *FindMemberRequest) String() string {
 func (*FindMemberRequest) ProtoMessage() {}
 
 func (x *FindMemberRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[9]
+	mi := &file_message_member_dto_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -996,7 +1166,7 @@ func (x *FindMemberRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindMemberRequest.ProtoReflect.Descriptor instead.
 func (*FindMemberRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{9}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *FindMemberRequest) GetCred() ECredentials {
@@ -1026,7 +1196,7 @@ type FindMemberResponse struct {
 func (x *FindMemberResponse) Reset() {
 	*x = FindMemberResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[10]
+		mi := &file_message_member_dto_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1039,7 +1209,7 @@ func (x *FindMemberResponse) String() string {
 func (*FindMemberResponse) ProtoMessage() {}
 
 func (x *FindMemberResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[10]
+	mi := &file_message_member_dto_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1052,7 +1222,7 @@ func (x *FindMemberResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindMemberResponse.ProtoReflect.Descriptor instead.
 func (*FindMemberResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{10}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *FindMemberResponse) GetMemberId() int64 {
@@ -1073,7 +1243,7 @@ type SMemberLevelListResponse struct {
 func (x *SMemberLevelListResponse) Reset() {
 	*x = SMemberLevelListResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[11]
+		mi := &file_message_member_dto_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1086,7 +1256,7 @@ func (x *SMemberLevelListResponse) String() string {
 func (*SMemberLevelListResponse) ProtoMessage() {}
 
 func (x *SMemberLevelListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[11]
+	mi := &file_message_member_dto_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1099,7 +1269,7 @@ func (x *SMemberLevelListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMemberLevelListResponse.ProtoReflect.Descriptor instead.
 func (*SMemberLevelListResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{11}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *SMemberLevelListResponse) GetValue() []*SMemberLevel {
@@ -1121,7 +1291,7 @@ type SubmitCertificationRequest struct {
 func (x *SubmitCertificationRequest) Reset() {
 	*x = SubmitCertificationRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[12]
+		mi := &file_message_member_dto_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1134,7 +1304,7 @@ func (x *SubmitCertificationRequest) String() string {
 func (*SubmitCertificationRequest) ProtoMessage() {}
 
 func (x *SubmitCertificationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[12]
+	mi := &file_message_member_dto_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1147,7 +1317,7 @@ func (x *SubmitCertificationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitCertificationRequest.ProtoReflect.Descriptor instead.
 func (*SubmitCertificationRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{12}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *SubmitCertificationRequest) GetMemberId() int64 {
@@ -1177,7 +1347,7 @@ type ReviewCertificationRequest struct {
 func (x *ReviewCertificationRequest) Reset() {
 	*x = ReviewCertificationRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[13]
+		mi := &file_message_member_dto_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1190,7 +1360,7 @@ func (x *ReviewCertificationRequest) String() string {
 func (*ReviewCertificationRequest) ProtoMessage() {}
 
 func (x *ReviewCertificationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[13]
+	mi := &file_message_member_dto_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1203,7 +1373,7 @@ func (x *ReviewCertificationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewCertificationRequest.ProtoReflect.Descriptor instead.
 func (*ReviewCertificationRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{13}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ReviewCertificationRequest) GetMemberId() int64 {
@@ -1240,7 +1410,7 @@ type LockRequest struct {
 func (x *LockRequest) Reset() {
 	*x = LockRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[14]
+		mi := &file_message_member_dto_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1253,7 +1423,7 @@ func (x *LockRequest) String() string {
 func (*LockRequest) ProtoMessage() {}
 
 func (x *LockRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[14]
+	mi := &file_message_member_dto_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1266,7 +1436,7 @@ func (x *LockRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockRequest.ProtoReflect.Descriptor instead.
 func (*LockRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{14}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *LockRequest) GetMemberId() int64 {
@@ -1302,7 +1472,7 @@ type GrantFlagRequest struct {
 func (x *GrantFlagRequest) Reset() {
 	*x = GrantFlagRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[15]
+		mi := &file_message_member_dto_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1315,7 +1485,7 @@ func (x *GrantFlagRequest) String() string {
 func (*GrantFlagRequest) ProtoMessage() {}
 
 func (x *GrantFlagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[15]
+	mi := &file_message_member_dto_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1328,7 +1498,7 @@ func (x *GrantFlagRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GrantFlagRequest.ProtoReflect.Descriptor instead.
 func (*GrantFlagRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{15}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GrantFlagRequest) GetMemberId() int64 {
@@ -1362,7 +1532,7 @@ type SendCodeRequest struct {
 func (x *SendCodeRequest) Reset() {
 	*x = SendCodeRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[16]
+		mi := &file_message_member_dto_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1375,7 +1545,7 @@ func (x *SendCodeRequest) String() string {
 func (*SendCodeRequest) ProtoMessage() {}
 
 func (x *SendCodeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[16]
+	mi := &file_message_member_dto_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1388,7 +1558,7 @@ func (x *SendCodeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendCodeRequest.ProtoReflect.Descriptor instead.
 func (*SendCodeRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{16}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *SendCodeRequest) GetMemberId() int64 {
@@ -1429,7 +1599,7 @@ type SendCodeResponse struct {
 func (x *SendCodeResponse) Reset() {
 	*x = SendCodeResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[17]
+		mi := &file_message_member_dto_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1442,7 +1612,7 @@ func (x *SendCodeResponse) String() string {
 func (*SendCodeResponse) ProtoMessage() {}
 
 func (x *SendCodeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[17]
+	mi := &file_message_member_dto_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1455,7 +1625,7 @@ func (x *SendCodeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SendCodeResponse.ProtoReflect.Descriptor instead.
 func (*SendCodeResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{17}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *SendCodeResponse) GetErrCode() int32 {
@@ -1491,7 +1661,7 @@ type CompareCodeRequest struct {
 func (x *CompareCodeRequest) Reset() {
 	*x = CompareCodeRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[18]
+		mi := &file_message_member_dto_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1504,7 +1674,7 @@ func (x *CompareCodeRequest) String() string {
 func (*CompareCodeRequest) ProtoMessage() {}
 
 func (x *CompareCodeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[18]
+	mi := &file_message_member_dto_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1517,7 +1687,7 @@ func (x *CompareCodeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompareCodeRequest.ProtoReflect.Descriptor instead.
 func (*CompareCodeRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{18}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *CompareCodeRequest) GetMemberId() int64 {
@@ -1545,7 +1715,7 @@ type SReceiptsCodeListResponse struct {
 func (x *SReceiptsCodeListResponse) Reset() {
 	*x = SReceiptsCodeListResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[19]
+		mi := &file_message_member_dto_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1558,7 +1728,7 @@ func (x *SReceiptsCodeListResponse) String() string {
 func (*SReceiptsCodeListResponse) ProtoMessage() {}
 
 func (x *SReceiptsCodeListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[19]
+	mi := &file_message_member_dto_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1571,7 +1741,7 @@ func (x *SReceiptsCodeListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SReceiptsCodeListResponse.ProtoReflect.Descriptor instead.
 func (*SReceiptsCodeListResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{19}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *SReceiptsCodeListResponse) GetValue() []*SReceiptsCode {
@@ -1593,7 +1763,7 @@ type ReceiptsCodeSaveRequest struct {
 func (x *ReceiptsCodeSaveRequest) Reset() {
 	*x = ReceiptsCodeSaveRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[20]
+		mi := &file_message_member_dto_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1606,7 +1776,7 @@ func (x *ReceiptsCodeSaveRequest) String() string {
 func (*ReceiptsCodeSaveRequest) ProtoMessage() {}
 
 func (x *ReceiptsCodeSaveRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[20]
+	mi := &file_message_member_dto_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1619,7 +1789,7 @@ func (x *ReceiptsCodeSaveRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReceiptsCodeSaveRequest.ProtoReflect.Descriptor instead.
 func (*ReceiptsCodeSaveRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{20}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ReceiptsCodeSaveRequest) GetMemberId() int64 {
@@ -1657,7 +1827,7 @@ type ChangeLevelRequest struct {
 func (x *ChangeLevelRequest) Reset() {
 	*x = ChangeLevelRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[21]
+		mi := &file_message_member_dto_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1670,7 +1840,7 @@ func (x *ChangeLevelRequest) String() string {
 func (*ChangeLevelRequest) ProtoMessage() {}
 
 func (x *ChangeLevelRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[21]
+	mi := &file_message_member_dto_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1683,7 +1853,7 @@ func (x *ChangeLevelRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangeLevelRequest.ProtoReflect.Descriptor instead.
 func (*ChangeLevelRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{21}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ChangeLevelRequest) GetMemberId() int64 {
@@ -1735,7 +1905,7 @@ type ChangePhoneRequest struct {
 func (x *ChangePhoneRequest) Reset() {
 	*x = ChangePhoneRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[22]
+		mi := &file_message_member_dto_proto_msgTypes[24]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1748,7 +1918,7 @@ func (x *ChangePhoneRequest) String() string {
 func (*ChangePhoneRequest) ProtoMessage() {}
 
 func (x *ChangePhoneRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[22]
+	mi := &file_message_member_dto_proto_msgTypes[24]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1761,7 +1931,7 @@ func (x *ChangePhoneRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangePhoneRequest.ProtoReflect.Descriptor instead.
 func (*ChangePhoneRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{22}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ChangePhoneRequest) GetMemberId() int64 {
@@ -1793,7 +1963,7 @@ type ChangeUsernameRequest struct {
 func (x *ChangeUsernameRequest) Reset() {
 	*x = ChangeUsernameRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[23]
+		mi := &file_message_member_dto_proto_msgTypes[25]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1806,7 +1976,7 @@ func (x *ChangeUsernameRequest) String() string {
 func (*ChangeUsernameRequest) ProtoMessage() {}
 
 func (x *ChangeUsernameRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[23]
+	mi := &file_message_member_dto_proto_msgTypes[25]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1819,7 +1989,7 @@ func (x *ChangeUsernameRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangeUsernameRequest.ProtoReflect.Descriptor instead.
 func (*ChangeUsernameRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{23}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ChangeUsernameRequest) GetMemberId() int64 {
@@ -1853,7 +2023,7 @@ type ChangeNicknameRequest struct {
 func (x *ChangeNicknameRequest) Reset() {
 	*x = ChangeNicknameRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[24]
+		mi := &file_message_member_dto_proto_msgTypes[26]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1866,7 +2036,7 @@ func (x *ChangeNicknameRequest) String() string {
 func (*ChangeNicknameRequest) ProtoMessage() {}
 
 func (x *ChangeNicknameRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[24]
+	mi := &file_message_member_dto_proto_msgTypes[26]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1879,7 +2049,7 @@ func (x *ChangeNicknameRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangeNicknameRequest.ProtoReflect.Descriptor instead.
 func (*ChangeNicknameRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{24}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ChangeNicknameRequest) GetMemberId() int64 {
@@ -1916,7 +2086,7 @@ type ChangePasswordRequest struct {
 func (x *ChangePasswordRequest) Reset() {
 	*x = ChangePasswordRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[25]
+		mi := &file_message_member_dto_proto_msgTypes[27]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1929,7 +2099,7 @@ func (x *ChangePasswordRequest) String() string {
 func (*ChangePasswordRequest) ProtoMessage() {}
 
 func (x *ChangePasswordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[25]
+	mi := &file_message_member_dto_proto_msgTypes[27]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1942,7 +2112,7 @@ func (x *ChangePasswordRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangePasswordRequest.ProtoReflect.Descriptor instead.
 func (*ChangePasswordRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{25}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ChangePasswordRequest) GetMemberId() int64 {
@@ -1982,7 +2152,7 @@ type SetInviterRequest struct {
 func (x *SetInviterRequest) Reset() {
 	*x = SetInviterRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[26]
+		mi := &file_message_member_dto_proto_msgTypes[28]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1995,7 +2165,7 @@ func (x *SetInviterRequest) String() string {
 func (*SetInviterRequest) ProtoMessage() {}
 
 func (x *SetInviterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[26]
+	mi := &file_message_member_dto_proto_msgTypes[28]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2008,7 +2178,7 @@ func (x *SetInviterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetInviterRequest.ProtoReflect.Descriptor instead.
 func (*SetInviterRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{26}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *SetInviterRequest) GetMemberId() int64 {
@@ -2044,7 +2214,7 @@ type GetTokenRequest struct {
 func (x *GetTokenRequest) Reset() {
 	*x = GetTokenRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[27]
+		mi := &file_message_member_dto_proto_msgTypes[29]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2057,7 +2227,7 @@ func (x *GetTokenRequest) String() string {
 func (*GetTokenRequest) ProtoMessage() {}
 
 func (x *GetTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[27]
+	mi := &file_message_member_dto_proto_msgTypes[29]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2070,7 +2240,7 @@ func (x *GetTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTokenRequest.ProtoReflect.Descriptor instead.
 func (*GetTokenRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{27}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *GetTokenRequest) GetMemberId() int64 {
@@ -2100,7 +2270,7 @@ type PremiumRequest struct {
 func (x *PremiumRequest) Reset() {
 	*x = PremiumRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[28]
+		mi := &file_message_member_dto_proto_msgTypes[30]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2113,7 +2283,7 @@ func (x *PremiumRequest) String() string {
 func (*PremiumRequest) ProtoMessage() {}
 
 func (x *PremiumRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[28]
+	mi := &file_message_member_dto_proto_msgTypes[30]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2126,7 +2296,7 @@ func (x *PremiumRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PremiumRequest.ProtoReflect.Descriptor instead.
 func (*PremiumRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{28}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *PremiumRequest) GetMemberId() int64 {
@@ -2162,7 +2332,7 @@ type CheckTokenRequest struct {
 func (x *CheckTokenRequest) Reset() {
 	*x = CheckTokenRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[29]
+		mi := &file_message_member_dto_proto_msgTypes[31]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2175,7 +2345,7 @@ func (x *CheckTokenRequest) String() string {
 func (*CheckTokenRequest) ProtoMessage() {}
 
 func (x *CheckTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[29]
+	mi := &file_message_member_dto_proto_msgTypes[31]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2188,7 +2358,7 @@ func (x *CheckTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckTokenRequest.ProtoReflect.Descriptor instead.
 func (*CheckTokenRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{29}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *CheckTokenRequest) GetMemberId() int64 {
@@ -2216,7 +2386,7 @@ type AddressListResponse struct {
 func (x *AddressListResponse) Reset() {
 	*x = AddressListResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[30]
+		mi := &file_message_member_dto_proto_msgTypes[32]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2229,7 +2399,7 @@ func (x *AddressListResponse) String() string {
 func (*AddressListResponse) ProtoMessage() {}
 
 func (x *AddressListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[30]
+	mi := &file_message_member_dto_proto_msgTypes[32]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2242,7 +2412,7 @@ func (x *AddressListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddressListResponse.ProtoReflect.Descriptor instead.
 func (*AddressListResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{30}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *AddressListResponse) GetValue() []*SAddress {
@@ -2264,7 +2434,7 @@ type SaveAddressRequest struct {
 func (x *SaveAddressRequest) Reset() {
 	*x = SaveAddressRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[31]
+		mi := &file_message_member_dto_proto_msgTypes[33]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2277,7 +2447,7 @@ func (x *SaveAddressRequest) String() string {
 func (*SaveAddressRequest) ProtoMessage() {}
 
 func (x *SaveAddressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[31]
+	mi := &file_message_member_dto_proto_msgTypes[33]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2290,7 +2460,7 @@ func (x *SaveAddressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveAddressRequest.ProtoReflect.Descriptor instead.
 func (*SaveAddressRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{31}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *SaveAddressRequest) GetMemberId() int64 {
@@ -2324,7 +2494,7 @@ type SaveAddressResponse struct {
 func (x *SaveAddressResponse) Reset() {
 	*x = SaveAddressResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[32]
+		mi := &file_message_member_dto_proto_msgTypes[34]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2337,7 +2507,7 @@ func (x *SaveAddressResponse) String() string {
 func (*SaveAddressResponse) ProtoMessage() {}
 
 func (x *SaveAddressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[32]
+	mi := &file_message_member_dto_proto_msgTypes[34]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2350,7 +2520,7 @@ func (x *SaveAddressResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveAddressResponse.ProtoReflect.Descriptor instead.
 func (*SaveAddressResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{32}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *SaveAddressResponse) GetErrCode() int32 {
@@ -2386,7 +2556,7 @@ type GetAddressRequest struct {
 func (x *GetAddressRequest) Reset() {
 	*x = GetAddressRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[33]
+		mi := &file_message_member_dto_proto_msgTypes[35]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2399,7 +2569,7 @@ func (x *GetAddressRequest) String() string {
 func (*GetAddressRequest) ProtoMessage() {}
 
 func (x *GetAddressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[33]
+	mi := &file_message_member_dto_proto_msgTypes[35]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2412,7 +2582,7 @@ func (x *GetAddressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAddressRequest.ProtoReflect.Descriptor instead.
 func (*GetAddressRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{33}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *GetAddressRequest) GetMemberId() int64 {
@@ -2452,7 +2622,7 @@ type AccountChangeRequest struct {
 func (x *AccountChangeRequest) Reset() {
 	*x = AccountChangeRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[34]
+		mi := &file_message_member_dto_proto_msgTypes[36]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2465,7 +2635,7 @@ func (x *AccountChangeRequest) String() string {
 func (*AccountChangeRequest) ProtoMessage() {}
 
 func (x *AccountChangeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[34]
+	mi := &file_message_member_dto_proto_msgTypes[36]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2478,7 +2648,7 @@ func (x *AccountChangeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccountChangeRequest.ProtoReflect.Descriptor instead.
 func (*AccountChangeRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{34}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *AccountChangeRequest) GetMemberId() int64 {
@@ -2546,7 +2716,7 @@ type AccountAdjustRequest struct {
 func (x *AccountAdjustRequest) Reset() {
 	*x = AccountAdjustRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[35]
+		mi := &file_message_member_dto_proto_msgTypes[37]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2559,7 +2729,7 @@ func (x *AccountAdjustRequest) String() string {
 func (*AccountAdjustRequest) ProtoMessage() {}
 
 func (x *AccountAdjustRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[35]
+	mi := &file_message_member_dto_proto_msgTypes[37]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2572,7 +2742,7 @@ func (x *AccountAdjustRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccountAdjustRequest.ProtoReflect.Descriptor instead.
 func (*AccountAdjustRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{35}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *AccountAdjustRequest) GetMemberId() int64 {
@@ -2644,7 +2814,7 @@ type AccountCarryRequest struct {
 func (x *AccountCarryRequest) Reset() {
 	*x = AccountCarryRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[36]
+		mi := &file_message_member_dto_proto_msgTypes[38]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2657,7 +2827,7 @@ func (x *AccountCarryRequest) String() string {
 func (*AccountCarryRequest) ProtoMessage() {}
 
 func (x *AccountCarryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[36]
+	mi := &file_message_member_dto_proto_msgTypes[38]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2670,7 +2840,7 @@ func (x *AccountCarryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccountCarryRequest.ProtoReflect.Descriptor instead.
 func (*AccountCarryRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{36}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *AccountCarryRequest) GetMemberId() int64 {
@@ -2754,7 +2924,7 @@ type AccountFreezeRequest struct {
 func (x *AccountFreezeRequest) Reset() {
 	*x = AccountFreezeRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[37]
+		mi := &file_message_member_dto_proto_msgTypes[39]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2767,7 +2937,7 @@ func (x *AccountFreezeRequest) String() string {
 func (*AccountFreezeRequest) ProtoMessage() {}
 
 func (x *AccountFreezeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[37]
+	mi := &file_message_member_dto_proto_msgTypes[39]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2780,7 +2950,7 @@ func (x *AccountFreezeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccountFreezeRequest.ProtoReflect.Descriptor instead.
 func (*AccountFreezeRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{37}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *AccountFreezeRequest) GetMemberId() int64 {
@@ -2857,7 +3027,7 @@ type AccountUnfreezeRequest struct {
 func (x *AccountUnfreezeRequest) Reset() {
 	*x = AccountUnfreezeRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[38]
+		mi := &file_message_member_dto_proto_msgTypes[40]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2870,7 +3040,7 @@ func (x *AccountUnfreezeRequest) String() string {
 func (*AccountUnfreezeRequest) ProtoMessage() {}
 
 func (x *AccountUnfreezeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[38]
+	mi := &file_message_member_dto_proto_msgTypes[40]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2883,7 +3053,7 @@ func (x *AccountUnfreezeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccountUnfreezeRequest.ProtoReflect.Descriptor instead.
 func (*AccountUnfreezeRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{38}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *AccountUnfreezeRequest) GetMemberId() int64 {
@@ -2948,7 +3118,7 @@ type B4EAuthRequest struct {
 func (x *B4EAuthRequest) Reset() {
 	*x = B4EAuthRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[39]
+		mi := &file_message_member_dto_proto_msgTypes[41]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2961,7 +3131,7 @@ func (x *B4EAuthRequest) String() string {
 func (*B4EAuthRequest) ProtoMessage() {}
 
 func (x *B4EAuthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[39]
+	mi := &file_message_member_dto_proto_msgTypes[41]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2974,7 +3144,7 @@ func (x *B4EAuthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use B4EAuthRequest.ProtoReflect.Descriptor instead.
 func (*B4EAuthRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{39}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *B4EAuthRequest) GetMemberId() int64 {
@@ -3016,7 +3186,7 @@ type SMemberLevel struct {
 func (x *SMemberLevel) Reset() {
 	*x = SMemberLevel{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[40]
+		mi := &file_message_member_dto_proto_msgTypes[42]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3029,7 +3199,7 @@ func (x *SMemberLevel) String() string {
 func (*SMemberLevel) ProtoMessage() {}
 
 func (x *SMemberLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[40]
+	mi := &file_message_member_dto_proto_msgTypes[42]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3042,7 +3212,7 @@ func (x *SMemberLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMemberLevel.ProtoReflect.Descriptor instead.
 func (*SMemberLevel) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{40}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *SMemberLevel) GetId() int32 {
@@ -3109,7 +3279,7 @@ type ChangeProfilePhotoRequest struct {
 func (x *ChangeProfilePhotoRequest) Reset() {
 	*x = ChangeProfilePhotoRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[41]
+		mi := &file_message_member_dto_proto_msgTypes[43]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3122,7 +3292,7 @@ func (x *ChangeProfilePhotoRequest) String() string {
 func (*ChangeProfilePhotoRequest) ProtoMessage() {}
 
 func (x *ChangeProfilePhotoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[41]
+	mi := &file_message_member_dto_proto_msgTypes[43]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3135,7 +3305,7 @@ func (x *ChangeProfilePhotoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangeProfilePhotoRequest.ProtoReflect.Descriptor instead.
 func (*ChangeProfilePhotoRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{41}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *ChangeProfilePhotoRequest) GetMemberId() int64 {
@@ -3205,7 +3375,7 @@ type SAccount struct {
 func (x *SAccount) Reset() {
 	*x = SAccount{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[42]
+		mi := &file_message_member_dto_proto_msgTypes[44]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3218,7 +3388,7 @@ func (x *SAccount) String() string {
 func (*SAccount) ProtoMessage() {}
 
 func (x *SAccount) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[42]
+	mi := &file_message_member_dto_proto_msgTypes[44]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3231,7 +3401,7 @@ func (x *SAccount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SAccount.ProtoReflect.Descriptor instead.
 func (*SAccount) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{42}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *SAccount) GetIntegral() int64 {
@@ -3396,7 +3566,7 @@ type SMemberRelation struct {
 func (x *SMemberRelation) Reset() {
 	*x = SMemberRelation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[43]
+		mi := &file_message_member_dto_proto_msgTypes[45]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3409,7 +3579,7 @@ func (x *SMemberRelation) String() string {
 func (*SMemberRelation) ProtoMessage() {}
 
 func (x *SMemberRelation) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[43]
+	mi := &file_message_member_dto_proto_msgTypes[45]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3422,7 +3592,7 @@ func (x *SMemberRelation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMemberRelation.ProtoReflect.Descriptor instead.
 func (*SMemberRelation) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{43}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *SMemberRelation) GetMemberId() int64 {
@@ -3503,7 +3673,7 @@ type SCertificationInfo struct {
 func (x *SCertificationInfo) Reset() {
 	*x = SCertificationInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[44]
+		mi := &file_message_member_dto_proto_msgTypes[46]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3516,7 +3686,7 @@ func (x *SCertificationInfo) String() string {
 func (*SCertificationInfo) ProtoMessage() {}
 
 func (x *SCertificationInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[44]
+	mi := &file_message_member_dto_proto_msgTypes[46]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3529,7 +3699,7 @@ func (x *SCertificationInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SCertificationInfo.ProtoReflect.Descriptor instead.
 func (*SCertificationInfo) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{44}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *SCertificationInfo) GetRealName() string {
@@ -3673,7 +3843,7 @@ type SAddress struct {
 func (x *SAddress) Reset() {
 	*x = SAddress{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[45]
+		mi := &file_message_member_dto_proto_msgTypes[47]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3686,7 +3856,7 @@ func (x *SAddress) String() string {
 func (*SAddress) ProtoMessage() {}
 
 func (x *SAddress) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[45]
+	mi := &file_message_member_dto_proto_msgTypes[47]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3699,7 +3869,7 @@ func (x *SAddress) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SAddress.ProtoReflect.Descriptor instead.
 func (*SAddress) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{45}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *SAddress) GetAddressId() int64 {
@@ -3777,7 +3947,7 @@ type AddressIdRequest struct {
 func (x *AddressIdRequest) Reset() {
 	*x = AddressIdRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[46]
+		mi := &file_message_member_dto_proto_msgTypes[48]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3790,7 +3960,7 @@ func (x *AddressIdRequest) String() string {
 func (*AddressIdRequest) ProtoMessage() {}
 
 func (x *AddressIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[46]
+	mi := &file_message_member_dto_proto_msgTypes[48]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3803,7 +3973,7 @@ func (x *AddressIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddressIdRequest.ProtoReflect.Descriptor instead.
 func (*AddressIdRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{46}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *AddressIdRequest) GetMemberId() int64 {
@@ -3841,7 +4011,7 @@ type SReceiptsCode struct {
 func (x *SReceiptsCode) Reset() {
 	*x = SReceiptsCode{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[47]
+		mi := &file_message_member_dto_proto_msgTypes[49]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3854,7 +4024,7 @@ func (x *SReceiptsCode) String() string {
 func (*SReceiptsCode) ProtoMessage() {}
 
 func (x *SReceiptsCode) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[47]
+	mi := &file_message_member_dto_proto_msgTypes[49]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3867,7 +4037,7 @@ func (x *SReceiptsCode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SReceiptsCode.ProtoReflect.Descriptor instead.
 func (*SReceiptsCode) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{47}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *SReceiptsCode) GetIdentity() string {
@@ -3932,7 +4102,7 @@ type SMemberLevelInfo struct {
 func (x *SMemberLevelInfo) Reset() {
 	*x = SMemberLevelInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[48]
+		mi := &file_message_member_dto_proto_msgTypes[50]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3945,7 +4115,7 @@ func (x *SMemberLevelInfo) String() string {
 func (*SMemberLevelInfo) ProtoMessage() {}
 
 func (x *SMemberLevelInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[48]
+	mi := &file_message_member_dto_proto_msgTypes[50]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3958,7 +4128,7 @@ func (x *SMemberLevelInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMemberLevelInfo.ProtoReflect.Descriptor instead.
 func (*SMemberLevelInfo) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{48}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *SMemberLevelInfo) GetLevel() int32 {
@@ -4036,7 +4206,7 @@ type SMemberOrderSummary struct {
 func (x *SMemberOrderSummary) Reset() {
 	*x = SMemberOrderSummary{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[49]
+		mi := &file_message_member_dto_proto_msgTypes[51]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4049,7 +4219,7 @@ func (x *SMemberOrderSummary) String() string {
 func (*SMemberOrderSummary) ProtoMessage() {}
 
 func (x *SMemberOrderSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[49]
+	mi := &file_message_member_dto_proto_msgTypes[51]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4062,7 +4232,7 @@ func (x *SMemberOrderSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMemberOrderSummary.ProtoReflect.Descriptor instead.
 func (*SMemberOrderSummary) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{49}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *SMemberOrderSummary) GetAwaitPayment() int32 {
@@ -4122,7 +4292,7 @@ type MemberInviterResponse struct {
 func (x *MemberInviterResponse) Reset() {
 	*x = MemberInviterResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[50]
+		mi := &file_message_member_dto_proto_msgTypes[52]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4135,7 +4305,7 @@ func (x *MemberInviterResponse) String() string {
 func (*MemberInviterResponse) ProtoMessage() {}
 
 func (x *MemberInviterResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[50]
+	mi := &file_message_member_dto_proto_msgTypes[52]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4148,7 +4318,7 @@ func (x *MemberInviterResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberInviterResponse.ProtoReflect.Descriptor instead.
 func (*MemberInviterResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{50}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *MemberInviterResponse) GetInviterId() int64 {
@@ -4231,7 +4401,7 @@ type MemberInviteCountResponse struct {
 func (x *MemberInviteCountResponse) Reset() {
 	*x = MemberInviteCountResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[51]
+		mi := &file_message_member_dto_proto_msgTypes[53]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4244,7 +4414,7 @@ func (x *MemberInviteCountResponse) String() string {
 func (*MemberInviteCountResponse) ProtoMessage() {}
 
 func (x *MemberInviteCountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[51]
+	mi := &file_message_member_dto_proto_msgTypes[53]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4257,7 +4427,7 @@ func (x *MemberInviteCountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberInviteCountResponse.ProtoReflect.Descriptor instead.
 func (*MemberInviteCountResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{51}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *MemberInviteCountResponse) GetFirstLevelCount() int32 {
@@ -4298,7 +4468,7 @@ type WithdrawalLogRequest struct {
 func (x *WithdrawalLogRequest) Reset() {
 	*x = WithdrawalLogRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[52]
+		mi := &file_message_member_dto_proto_msgTypes[54]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4311,7 +4481,7 @@ func (x *WithdrawalLogRequest) String() string {
 func (*WithdrawalLogRequest) ProtoMessage() {}
 
 func (x *WithdrawalLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[52]
+	mi := &file_message_member_dto_proto_msgTypes[54]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4324,7 +4494,7 @@ func (x *WithdrawalLogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WithdrawalLogRequest.ProtoReflect.Descriptor instead.
 func (*WithdrawalLogRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{52}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *WithdrawalLogRequest) GetMemberId() int64 {
@@ -4371,7 +4541,7 @@ type AccountTransferRequest struct {
 func (x *AccountTransferRequest) Reset() {
 	*x = AccountTransferRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[53]
+		mi := &file_message_member_dto_proto_msgTypes[55]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4384,7 +4554,7 @@ func (x *AccountTransferRequest) String() string {
 func (*AccountTransferRequest) ProtoMessage() {}
 
 func (x *AccountTransferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[53]
+	mi := &file_message_member_dto_proto_msgTypes[55]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4397,7 +4567,7 @@ func (x *AccountTransferRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccountTransferRequest.ProtoReflect.Descriptor instead.
 func (*AccountTransferRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{53}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *AccountTransferRequest) GetTransferAccount() EAccountType {
@@ -4457,7 +4627,7 @@ type WithdrawalLogResponse struct {
 func (x *WithdrawalLogResponse) Reset() {
 	*x = WithdrawalLogResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[54]
+		mi := &file_message_member_dto_proto_msgTypes[56]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4470,7 +4640,7 @@ func (x *WithdrawalLogResponse) String() string {
 func (*WithdrawalLogResponse) ProtoMessage() {}
 
 func (x *WithdrawalLogResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[54]
+	mi := &file_message_member_dto_proto_msgTypes[56]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4483,7 +4653,7 @@ func (x *WithdrawalLogResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WithdrawalLogResponse.ProtoReflect.Descriptor instead.
 func (*WithdrawalLogResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{54}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *WithdrawalLogResponse) GetMemberId() int64 {
@@ -4533,7 +4703,7 @@ type WithdrawalLog struct {
 func (x *WithdrawalLog) Reset() {
 	*x = WithdrawalLog{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[55]
+		mi := &file_message_member_dto_proto_msgTypes[57]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4546,7 +4716,7 @@ func (x *WithdrawalLog) String() string {
 func (*WithdrawalLog) ProtoMessage() {}
 
 func (x *WithdrawalLog) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[55]
+	mi := &file_message_member_dto_proto_msgTypes[57]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4559,7 +4729,7 @@ func (x *WithdrawalLog) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WithdrawalLog.ProtoReflect.Descriptor instead.
 func (*WithdrawalLog) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{55}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *WithdrawalLog) GetId() int64 {
@@ -4652,7 +4822,7 @@ type MemberInvitationPagingRequest struct {
 func (x *MemberInvitationPagingRequest) Reset() {
 	*x = MemberInvitationPagingRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[56]
+		mi := &file_message_member_dto_proto_msgTypes[58]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4665,7 +4835,7 @@ func (x *MemberInvitationPagingRequest) String() string {
 func (*MemberInvitationPagingRequest) ProtoMessage() {}
 
 func (x *MemberInvitationPagingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[56]
+	mi := &file_message_member_dto_proto_msgTypes[58]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4678,7 +4848,7 @@ func (x *MemberInvitationPagingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberInvitationPagingRequest.ProtoReflect.Descriptor instead.
 func (*MemberInvitationPagingRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{56}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *MemberInvitationPagingRequest) GetMemberId() int64 {
@@ -4714,7 +4884,7 @@ type MemberInvitationPagingResponse struct {
 func (x *MemberInvitationPagingResponse) Reset() {
 	*x = MemberInvitationPagingResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[57]
+		mi := &file_message_member_dto_proto_msgTypes[59]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4727,7 +4897,7 @@ func (x *MemberInvitationPagingResponse) String() string {
 func (*MemberInvitationPagingResponse) ProtoMessage() {}
 
 func (x *MemberInvitationPagingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[57]
+	mi := &file_message_member_dto_proto_msgTypes[59]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4740,7 +4910,7 @@ func (x *MemberInvitationPagingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberInvitationPagingResponse.ProtoReflect.Descriptor instead.
 func (*MemberInvitationPagingResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{57}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *MemberInvitationPagingResponse) GetTotal() int64 {
@@ -4784,7 +4954,7 @@ type SInvitationMember struct {
 func (x *SInvitationMember) Reset() {
 	*x = SInvitationMember{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[58]
+		mi := &file_message_member_dto_proto_msgTypes[60]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4797,7 +4967,7 @@ func (x *SInvitationMember) String() string {
 func (*SInvitationMember) ProtoMessage() {}
 
 func (x *SInvitationMember) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[58]
+	mi := &file_message_member_dto_proto_msgTypes[60]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4810,7 +4980,7 @@ func (x *SInvitationMember) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SInvitationMember.ProtoReflect.Descriptor instead.
 func (*SInvitationMember) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{58}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *SInvitationMember) GetMemberId() int64 {
@@ -4883,7 +5053,7 @@ type IsInvitationRequest struct {
 func (x *IsInvitationRequest) Reset() {
 	*x = IsInvitationRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[59]
+		mi := &file_message_member_dto_proto_msgTypes[61]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4896,7 +5066,7 @@ func (x *IsInvitationRequest) String() string {
 func (*IsInvitationRequest) ProtoMessage() {}
 
 func (x *IsInvitationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[59]
+	mi := &file_message_member_dto_proto_msgTypes[61]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4909,7 +5079,7 @@ func (x *IsInvitationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IsInvitationRequest.ProtoReflect.Descriptor instead.
 func (*IsInvitationRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{59}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *IsInvitationRequest) GetMemberId() int64 {
@@ -4944,7 +5114,7 @@ type MemberCouponPagingRequest struct {
 func (x *MemberCouponPagingRequest) Reset() {
 	*x = MemberCouponPagingRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[60]
+		mi := &file_message_member_dto_proto_msgTypes[62]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4957,7 +5127,7 @@ func (x *MemberCouponPagingRequest) String() string {
 func (*MemberCouponPagingRequest) ProtoMessage() {}
 
 func (x *MemberCouponPagingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[60]
+	mi := &file_message_member_dto_proto_msgTypes[62]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4970,7 +5140,7 @@ func (x *MemberCouponPagingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberCouponPagingRequest.ProtoReflect.Descriptor instead.
 func (*MemberCouponPagingRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{60}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *MemberCouponPagingRequest) GetMemberId() int64 {
@@ -5013,7 +5183,7 @@ type MemberCouponListResponse struct {
 func (x *MemberCouponListResponse) Reset() {
 	*x = MemberCouponListResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[61]
+		mi := &file_message_member_dto_proto_msgTypes[63]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5026,7 +5196,7 @@ func (x *MemberCouponListResponse) String() string {
 func (*MemberCouponListResponse) ProtoMessage() {}
 
 func (x *MemberCouponListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[61]
+	mi := &file_message_member_dto_proto_msgTypes[63]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5039,7 +5209,7 @@ func (x *MemberCouponListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberCouponListResponse.ProtoReflect.Descriptor instead.
 func (*MemberCouponListResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{61}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *MemberCouponListResponse) GetTotal() int64 {
@@ -5084,7 +5254,7 @@ type SMemberCoupon struct {
 func (x *SMemberCoupon) Reset() {
 	*x = SMemberCoupon{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[62]
+		mi := &file_message_member_dto_proto_msgTypes[64]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5097,7 +5267,7 @@ func (x *SMemberCoupon) String() string {
 func (*SMemberCoupon) ProtoMessage() {}
 
 func (x *SMemberCoupon) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[62]
+	mi := &file_message_member_dto_proto_msgTypes[64]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5110,7 +5280,7 @@ func (x *SMemberCoupon) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMemberCoupon.ProtoReflect.Descriptor instead.
 func (*SMemberCoupon) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{62}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *SMemberCoupon) GetCouponId() int64 {
@@ -5193,7 +5363,7 @@ type FavoriteRequest struct {
 func (x *FavoriteRequest) Reset() {
 	*x = FavoriteRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[63]
+		mi := &file_message_member_dto_proto_msgTypes[65]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5206,7 +5376,7 @@ func (x *FavoriteRequest) String() string {
 func (*FavoriteRequest) ProtoMessage() {}
 
 func (x *FavoriteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[63]
+	mi := &file_message_member_dto_proto_msgTypes[65]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5219,7 +5389,7 @@ func (x *FavoriteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FavoriteRequest.ProtoReflect.Descriptor instead.
 func (*FavoriteRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{63}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *FavoriteRequest) GetMemberId() int64 {
@@ -5257,7 +5427,7 @@ type DepthRequest struct {
 func (x *DepthRequest) Reset() {
 	*x = DepthRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[64]
+		mi := &file_message_member_dto_proto_msgTypes[66]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5270,7 +5440,7 @@ func (x *DepthRequest) String() string {
 func (*DepthRequest) ProtoMessage() {}
 
 func (x *DepthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[64]
+	mi := &file_message_member_dto_proto_msgTypes[66]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5283,7 +5453,7 @@ func (x *DepthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DepthRequest.ProtoReflect.Descriptor instead.
 func (*DepthRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{64}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *DepthRequest) GetMemberId() int64 {
@@ -5311,7 +5481,7 @@ type InviterIdListResponse struct {
 func (x *InviterIdListResponse) Reset() {
 	*x = InviterIdListResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[65]
+		mi := &file_message_member_dto_proto_msgTypes[67]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5324,7 +5494,7 @@ func (x *InviterIdListResponse) String() string {
 func (*InviterIdListResponse) ProtoMessage() {}
 
 func (x *InviterIdListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[65]
+	mi := &file_message_member_dto_proto_msgTypes[67]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5337,7 +5507,7 @@ func (x *InviterIdListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InviterIdListResponse.ProtoReflect.Descriptor instead.
 func (*InviterIdListResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{65}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *InviterIdListResponse) GetValue() []int64 {
@@ -5359,7 +5529,7 @@ type InviteQuantityRequest struct {
 func (x *InviteQuantityRequest) Reset() {
 	*x = InviteQuantityRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[66]
+		mi := &file_message_member_dto_proto_msgTypes[68]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5372,7 +5542,7 @@ func (x *InviteQuantityRequest) String() string {
 func (*InviteQuantityRequest) ProtoMessage() {}
 
 func (x *InviteQuantityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[66]
+	mi := &file_message_member_dto_proto_msgTypes[68]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5385,7 +5555,7 @@ func (x *InviteQuantityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InviteQuantityRequest.ProtoReflect.Descriptor instead.
 func (*InviteQuantityRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{66}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *InviteQuantityRequest) GetMemberId() int64 {
@@ -5413,7 +5583,7 @@ type MemberIdListResponse struct {
 func (x *MemberIdListResponse) Reset() {
 	*x = MemberIdListResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[67]
+		mi := &file_message_member_dto_proto_msgTypes[69]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5426,7 +5596,7 @@ func (x *MemberIdListResponse) String() string {
 func (*MemberIdListResponse) ProtoMessage() {}
 
 func (x *MemberIdListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[67]
+	mi := &file_message_member_dto_proto_msgTypes[69]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5439,7 +5609,7 @@ func (x *MemberIdListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberIdListResponse.ProtoReflect.Descriptor instead.
 func (*MemberIdListResponse) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{67}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *MemberIdListResponse) GetValue() []int64 {
@@ -5464,7 +5634,7 @@ type MemberOAuthRequest struct {
 func (x *MemberOAuthRequest) Reset() {
 	*x = MemberOAuthRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[68]
+		mi := &file_message_member_dto_proto_msgTypes[70]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5477,7 +5647,7 @@ func (x *MemberOAuthRequest) String() string {
 func (*MemberOAuthRequest) ProtoMessage() {}
 
 func (x *MemberOAuthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[68]
+	mi := &file_message_member_dto_proto_msgTypes[70]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5490,7 +5660,7 @@ func (x *MemberOAuthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemberOAuthRequest.ProtoReflect.Descriptor instead.
 func (*MemberOAuthRequest) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{68}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *MemberOAuthRequest) GetMemberId() int64 {
@@ -5528,7 +5698,7 @@ type SMemberOAuthAccount struct {
 func (x *SMemberOAuthAccount) Reset() {
 	*x = SMemberOAuthAccount{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_message_member_dto_proto_msgTypes[69]
+		mi := &file_message_member_dto_proto_msgTypes[71]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5541,7 +5711,7 @@ func (x *SMemberOAuthAccount) String() string {
 func (*SMemberOAuthAccount) ProtoMessage() {}
 
 func (x *SMemberOAuthAccount) ProtoReflect() protoreflect.Message {
-	mi := &file_message_member_dto_proto_msgTypes[69]
+	mi := &file_message_member_dto_proto_msgTypes[71]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5554,7 +5724,7 @@ func (x *SMemberOAuthAccount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SMemberOAuthAccount.ProtoReflect.Descriptor instead.
 func (*SMemberOAuthAccount) Descriptor() ([]byte, []int) {
-	return file_message_member_dto_proto_rawDescGZIP(), []int{69}
+	return file_message_member_dto_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *SMemberOAuthAccount) GetMemberId() int64 {
@@ -5628,6 +5798,29 @@ var file_message_member_dto_proto_rawDesc = []byte{
 	0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70,
 	0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x75, 0x70, 0x64, 0x61, 0x74,
 	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x22,
+	0xab, 0x01, 0x0a, 0x11, 0x4f, 0x41, 0x75, 0x74, 0x68, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x61, 0x70, 0x70, 0x49, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x61, 0x70, 0x70, 0x49, 0x64, 0x12, 0x1e, 0x0a, 0x0a, 0x63,
+	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0a, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x2a, 0x0a, 0x10, 0x63,
+	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x4c, 0x6f, 0x67,
+	0x69, 0x6e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x34, 0x0a, 0x0b, 0x65, 0x78, 0x74, 0x72, 0x61,
+	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x53,
+	0x4f, 0x41, 0x75, 0x74, 0x68, 0x45, 0x78, 0x74, 0x72, 0x61, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
+	0x52, 0x0b, 0x65, 0x78, 0x74, 0x72, 0x61, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0xbf, 0x01,
+	0x0a, 0x11, 0x53, 0x4f, 0x41, 0x75, 0x74, 0x68, 0x45, 0x78, 0x74, 0x72, 0x61, 0x50, 0x61, 0x72,
+	0x61, 0x6d, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12,
+	0x20, 0x0a, 0x0b, 0x69, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x72, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x69, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x72, 0x43, 0x6f, 0x64,
+	0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6e, 0x69, 0x63, 0x6b, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x08, 0x6e, 0x69, 0x63, 0x6b, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x20, 0x0a,
+	0x0b, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0b, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x43, 0x6f, 0x64, 0x65, 0x12,
+	0x14, 0x0a, 0x05, 0x72, 0x65, 0x67, 0x49, 0x70, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
+	0x72, 0x65, 0x67, 0x49, 0x70, 0x12, 0x18, 0x0a, 0x07, 0x72, 0x65, 0x67, 0x46, 0x72, 0x6f, 0x6d,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x72, 0x65, 0x67, 0x46, 0x72, 0x6f, 0x6d, 0x22,
 	0x75, 0x0a, 0x0d, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
 	0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04,
 	0x63, 0x6f, 0x64, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18,
@@ -6321,7 +6514,7 @@ func file_message_member_dto_proto_rawDescGZIP() []byte {
 }
 
 var file_message_member_dto_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_message_member_dto_proto_msgTypes = make([]protoimpl.MessageInfo, 73)
+var file_message_member_dto_proto_msgTypes = make([]protoimpl.MessageInfo, 75)
 var file_message_member_dto_proto_goTypes = []interface{}{
 	(EMemberFlag)(0),                       // 0: EMemberFlag
 	(ECredentials)(0),                      // 1: ECredentials
@@ -6330,105 +6523,108 @@ var file_message_member_dto_proto_goTypes = []interface{}{
 	(FavoriteType)(0),                      // 4: FavoriteType
 	(*RegisterMemberRequest)(nil),          // 5: RegisterMemberRequest
 	(*LoginRequest)(nil),                   // 6: LoginRequest
-	(*LoginResponse)(nil),                  // 7: LoginResponse
-	(*RegisterResponse)(nil),               // 8: RegisterResponse
-	(*VerifyPasswordRequest)(nil),          // 9: VerifyPasswordRequest
-	(*MemberIdRequest)(nil),                // 10: MemberIdRequest
-	(*MemberBlockShieldRequest)(nil),       // 11: MemberBlockShieldRequest
-	(*MembersIdRequest)(nil),               // 12: MembersIdRequest
-	(*MemberBlockShieldResponse)(nil),      // 13: MemberBlockShieldResponse
-	(*FindMemberRequest)(nil),              // 14: FindMemberRequest
-	(*FindMemberResponse)(nil),             // 15: FindMemberResponse
-	(*SMemberLevelListResponse)(nil),       // 16: SMemberLevelListResponse
-	(*SubmitCertificationRequest)(nil),     // 17: SubmitCertificationRequest
-	(*ReviewCertificationRequest)(nil),     // 18: ReviewCertificationRequest
-	(*LockRequest)(nil),                    // 19: LockRequest
-	(*GrantFlagRequest)(nil),               // 20: GrantFlagRequest
-	(*SendCodeRequest)(nil),                // 21: SendCodeRequest
-	(*SendCodeResponse)(nil),               // 22: SendCodeResponse
-	(*CompareCodeRequest)(nil),             // 23: CompareCodeRequest
-	(*SReceiptsCodeListResponse)(nil),      // 24: SReceiptsCodeListResponse
-	(*ReceiptsCodeSaveRequest)(nil),        // 25: ReceiptsCodeSaveRequest
-	(*ChangeLevelRequest)(nil),             // 26: ChangeLevelRequest
-	(*ChangePhoneRequest)(nil),             // 27: ChangePhoneRequest
-	(*ChangeUsernameRequest)(nil),          // 28: ChangeUsernameRequest
-	(*ChangeNicknameRequest)(nil),          // 29: ChangeNicknameRequest
-	(*ChangePasswordRequest)(nil),          // 30: ChangePasswordRequest
-	(*SetInviterRequest)(nil),              // 31: SetInviterRequest
-	(*GetTokenRequest)(nil),                // 32: GetTokenRequest
-	(*PremiumRequest)(nil),                 // 33: PremiumRequest
-	(*CheckTokenRequest)(nil),              // 34: CheckTokenRequest
-	(*AddressListResponse)(nil),            // 35: AddressListResponse
-	(*SaveAddressRequest)(nil),             // 36: SaveAddressRequest
-	(*SaveAddressResponse)(nil),            // 37: SaveAddressResponse
-	(*GetAddressRequest)(nil),              // 38: GetAddressRequest
-	(*AccountChangeRequest)(nil),           // 39: AccountChangeRequest
-	(*AccountAdjustRequest)(nil),           // 40: AccountAdjustRequest
-	(*AccountCarryRequest)(nil),            // 41: AccountCarryRequest
-	(*AccountFreezeRequest)(nil),           // 42: AccountFreezeRequest
-	(*AccountUnfreezeRequest)(nil),         // 43: AccountUnfreezeRequest
-	(*B4EAuthRequest)(nil),                 // 44: B4EAuthRequest
-	(*SMemberLevel)(nil),                   // 45: SMemberLevel
-	(*ChangeProfilePhotoRequest)(nil),      // 46: ChangeProfilePhotoRequest
-	(*SAccount)(nil),                       // 47: SAccount
-	(*SMemberRelation)(nil),                // 48: SMemberRelation
-	(*SCertificationInfo)(nil),             // 49: SCertificationInfo
-	(*SAddress)(nil),                       // 50: SAddress
-	(*AddressIdRequest)(nil),               // 51: AddressIdRequest
-	(*SReceiptsCode)(nil),                  // 52: SReceiptsCode
-	(*SMemberLevelInfo)(nil),               // 53: SMemberLevelInfo
-	(*SMemberOrderSummary)(nil),            // 54: SMemberOrderSummary
-	(*MemberInviterResponse)(nil),          // 55: MemberInviterResponse
-	(*MemberInviteCountResponse)(nil),      // 56: MemberInviteCountResponse
-	(*WithdrawalLogRequest)(nil),           // 57: WithdrawalLogRequest
-	(*AccountTransferRequest)(nil),         // 58: AccountTransferRequest
-	(*WithdrawalLogResponse)(nil),          // 59: WithdrawalLogResponse
-	(*WithdrawalLog)(nil),                  // 60: WithdrawalLog
-	(*MemberInvitationPagingRequest)(nil),  // 61: MemberInvitationPagingRequest
-	(*MemberInvitationPagingResponse)(nil), // 62: MemberInvitationPagingResponse
-	(*SInvitationMember)(nil),              // 63: SInvitationMember
-	(*IsInvitationRequest)(nil),            // 64: IsInvitationRequest
-	(*MemberCouponPagingRequest)(nil),      // 65: MemberCouponPagingRequest
-	(*MemberCouponListResponse)(nil),       // 66: MemberCouponListResponse
-	(*SMemberCoupon)(nil),                  // 67: SMemberCoupon
-	(*FavoriteRequest)(nil),                // 68: FavoriteRequest
-	(*DepthRequest)(nil),                   // 69: DepthRequest
-	(*InviterIdListResponse)(nil),          // 70: InviterIdListResponse
-	(*InviteQuantityRequest)(nil),          // 71: InviteQuantityRequest
-	(*MemberIdListResponse)(nil),           // 72: MemberIdListResponse
-	(*MemberOAuthRequest)(nil),             // 73: MemberOAuthRequest
-	(*SMemberOAuthAccount)(nil),            // 74: SMemberOAuthAccount
-	nil,                                    // 75: RegisterMemberRequest.ExtEntry
-	nil,                                    // 76: B4EAuthRequest.DataEntry
-	nil,                                    // 77: InviteQuantityRequest.DataEntry
+	(*OAuthLoginRequest)(nil),              // 7: OAuthLoginRequest
+	(*SOAuthExtraParams)(nil),              // 8: SOAuthExtraParams
+	(*LoginResponse)(nil),                  // 9: LoginResponse
+	(*RegisterResponse)(nil),               // 10: RegisterResponse
+	(*VerifyPasswordRequest)(nil),          // 11: VerifyPasswordRequest
+	(*MemberIdRequest)(nil),                // 12: MemberIdRequest
+	(*MemberBlockShieldRequest)(nil),       // 13: MemberBlockShieldRequest
+	(*MembersIdRequest)(nil),               // 14: MembersIdRequest
+	(*MemberBlockShieldResponse)(nil),      // 15: MemberBlockShieldResponse
+	(*FindMemberRequest)(nil),              // 16: FindMemberRequest
+	(*FindMemberResponse)(nil),             // 17: FindMemberResponse
+	(*SMemberLevelListResponse)(nil),       // 18: SMemberLevelListResponse
+	(*SubmitCertificationRequest)(nil),     // 19: SubmitCertificationRequest
+	(*ReviewCertificationRequest)(nil),     // 20: ReviewCertificationRequest
+	(*LockRequest)(nil),                    // 21: LockRequest
+	(*GrantFlagRequest)(nil),               // 22: GrantFlagRequest
+	(*SendCodeRequest)(nil),                // 23: SendCodeRequest
+	(*SendCodeResponse)(nil),               // 24: SendCodeResponse
+	(*CompareCodeRequest)(nil),             // 25: CompareCodeRequest
+	(*SReceiptsCodeListResponse)(nil),      // 26: SReceiptsCodeListResponse
+	(*ReceiptsCodeSaveRequest)(nil),        // 27: ReceiptsCodeSaveRequest
+	(*ChangeLevelRequest)(nil),             // 28: ChangeLevelRequest
+	(*ChangePhoneRequest)(nil),             // 29: ChangePhoneRequest
+	(*ChangeUsernameRequest)(nil),          // 30: ChangeUsernameRequest
+	(*ChangeNicknameRequest)(nil),          // 31: ChangeNicknameRequest
+	(*ChangePasswordRequest)(nil),          // 32: ChangePasswordRequest
+	(*SetInviterRequest)(nil),              // 33: SetInviterRequest
+	(*GetTokenRequest)(nil),                // 34: GetTokenRequest
+	(*PremiumRequest)(nil),                 // 35: PremiumRequest
+	(*CheckTokenRequest)(nil),              // 36: CheckTokenRequest
+	(*AddressListResponse)(nil),            // 37: AddressListResponse
+	(*SaveAddressRequest)(nil),             // 38: SaveAddressRequest
+	(*SaveAddressResponse)(nil),            // 39: SaveAddressResponse
+	(*GetAddressRequest)(nil),              // 40: GetAddressRequest
+	(*AccountChangeRequest)(nil),           // 41: AccountChangeRequest
+	(*AccountAdjustRequest)(nil),           // 42: AccountAdjustRequest
+	(*AccountCarryRequest)(nil),            // 43: AccountCarryRequest
+	(*AccountFreezeRequest)(nil),           // 44: AccountFreezeRequest
+	(*AccountUnfreezeRequest)(nil),         // 45: AccountUnfreezeRequest
+	(*B4EAuthRequest)(nil),                 // 46: B4EAuthRequest
+	(*SMemberLevel)(nil),                   // 47: SMemberLevel
+	(*ChangeProfilePhotoRequest)(nil),      // 48: ChangeProfilePhotoRequest
+	(*SAccount)(nil),                       // 49: SAccount
+	(*SMemberRelation)(nil),                // 50: SMemberRelation
+	(*SCertificationInfo)(nil),             // 51: SCertificationInfo
+	(*SAddress)(nil),                       // 52: SAddress
+	(*AddressIdRequest)(nil),               // 53: AddressIdRequest
+	(*SReceiptsCode)(nil),                  // 54: SReceiptsCode
+	(*SMemberLevelInfo)(nil),               // 55: SMemberLevelInfo
+	(*SMemberOrderSummary)(nil),            // 56: SMemberOrderSummary
+	(*MemberInviterResponse)(nil),          // 57: MemberInviterResponse
+	(*MemberInviteCountResponse)(nil),      // 58: MemberInviteCountResponse
+	(*WithdrawalLogRequest)(nil),           // 59: WithdrawalLogRequest
+	(*AccountTransferRequest)(nil),         // 60: AccountTransferRequest
+	(*WithdrawalLogResponse)(nil),          // 61: WithdrawalLogResponse
+	(*WithdrawalLog)(nil),                  // 62: WithdrawalLog
+	(*MemberInvitationPagingRequest)(nil),  // 63: MemberInvitationPagingRequest
+	(*MemberInvitationPagingResponse)(nil), // 64: MemberInvitationPagingResponse
+	(*SInvitationMember)(nil),              // 65: SInvitationMember
+	(*IsInvitationRequest)(nil),            // 66: IsInvitationRequest
+	(*MemberCouponPagingRequest)(nil),      // 67: MemberCouponPagingRequest
+	(*MemberCouponListResponse)(nil),       // 68: MemberCouponListResponse
+	(*SMemberCoupon)(nil),                  // 69: SMemberCoupon
+	(*FavoriteRequest)(nil),                // 70: FavoriteRequest
+	(*DepthRequest)(nil),                   // 71: DepthRequest
+	(*InviterIdListResponse)(nil),          // 72: InviterIdListResponse
+	(*InviteQuantityRequest)(nil),          // 73: InviteQuantityRequest
+	(*MemberIdListResponse)(nil),           // 74: MemberIdListResponse
+	(*MemberOAuthRequest)(nil),             // 75: MemberOAuthRequest
+	(*SMemberOAuthAccount)(nil),            // 76: SMemberOAuthAccount
+	nil,                                    // 77: RegisterMemberRequest.ExtEntry
+	nil,                                    // 78: B4EAuthRequest.DataEntry
+	nil,                                    // 79: InviteQuantityRequest.DataEntry
 }
 var file_message_member_dto_proto_depIdxs = []int32{
-	75, // 0: RegisterMemberRequest.ext:type_name -> RegisterMemberRequest.ExtEntry
-	1,  // 1: FindMemberRequest.cred:type_name -> ECredentials
-	45, // 2: SMemberLevelListResponse.value:type_name -> SMemberLevel
-	49, // 3: SubmitCertificationRequest.info:type_name -> SCertificationInfo
-	52, // 4: SReceiptsCodeListResponse.value:type_name -> SReceiptsCode
-	52, // 5: ReceiptsCodeSaveRequest.code:type_name -> SReceiptsCode
-	50, // 6: AddressListResponse.value:type_name -> SAddress
-	50, // 7: SaveAddressRequest.value:type_name -> SAddress
-	2,  // 8: AccountChangeRequest.accountType:type_name -> EAccountType
-	2,  // 9: AccountAdjustRequest.account:type_name -> EAccountType
-	2,  // 10: AccountCarryRequest.accountType:type_name -> EAccountType
-	2,  // 11: AccountFreezeRequest.accountType:type_name -> EAccountType
-	2,  // 12: AccountUnfreezeRequest.accountType:type_name -> EAccountType
-	76, // 13: B4EAuthRequest.data:type_name -> B4EAuthRequest.DataEntry
-	2,  // 14: AccountTransferRequest.transferAccount:type_name -> EAccountType
-	60, // 15: WithdrawalLogResponse.data:type_name -> WithdrawalLog
-	63, // 16: MemberInvitationPagingResponse.data:type_name -> SInvitationMember
-	3,  // 17: MemberCouponPagingRequest.state:type_name -> PagingCouponState
-	67, // 18: MemberCouponListResponse.data:type_name -> SMemberCoupon
-	4,  // 19: FavoriteRequest.favoriteType:type_name -> FavoriteType
-	77, // 20: InviteQuantityRequest.data:type_name -> InviteQuantityRequest.DataEntry
-	21, // [21:21] is the sub-list for method output_type
-	21, // [21:21] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	77, // 0: RegisterMemberRequest.ext:type_name -> RegisterMemberRequest.ExtEntry
+	8,  // 1: OAuthLoginRequest.extraParams:type_name -> SOAuthExtraParams
+	1,  // 2: FindMemberRequest.cred:type_name -> ECredentials
+	47, // 3: SMemberLevelListResponse.value:type_name -> SMemberLevel
+	51, // 4: SubmitCertificationRequest.info:type_name -> SCertificationInfo
+	54, // 5: SReceiptsCodeListResponse.value:type_name -> SReceiptsCode
+	54, // 6: ReceiptsCodeSaveRequest.code:type_name -> SReceiptsCode
+	52, // 7: AddressListResponse.value:type_name -> SAddress
+	52, // 8: SaveAddressRequest.value:type_name -> SAddress
+	2,  // 9: AccountChangeRequest.accountType:type_name -> EAccountType
+	2,  // 10: AccountAdjustRequest.account:type_name -> EAccountType
+	2,  // 11: AccountCarryRequest.accountType:type_name -> EAccountType
+	2,  // 12: AccountFreezeRequest.accountType:type_name -> EAccountType
+	2,  // 13: AccountUnfreezeRequest.accountType:type_name -> EAccountType
+	78, // 14: B4EAuthRequest.data:type_name -> B4EAuthRequest.DataEntry
+	2,  // 15: AccountTransferRequest.transferAccount:type_name -> EAccountType
+	62, // 16: WithdrawalLogResponse.data:type_name -> WithdrawalLog
+	65, // 17: MemberInvitationPagingResponse.data:type_name -> SInvitationMember
+	3,  // 18: MemberCouponPagingRequest.state:type_name -> PagingCouponState
+	69, // 19: MemberCouponListResponse.data:type_name -> SMemberCoupon
+	4,  // 20: FavoriteRequest.favoriteType:type_name -> FavoriteType
+	79, // 21: InviteQuantityRequest.data:type_name -> InviteQuantityRequest.DataEntry
+	22, // [22:22] is the sub-list for method output_type
+	22, // [22:22] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_message_member_dto_proto_init() }
@@ -6462,7 +6658,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*LoginResponse); i {
+			switch v := v.(*OAuthLoginRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6474,7 +6670,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RegisterResponse); i {
+			switch v := v.(*SOAuthExtraParams); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6486,7 +6682,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*VerifyPasswordRequest); i {
+			switch v := v.(*LoginResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6498,7 +6694,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberIdRequest); i {
+			switch v := v.(*RegisterResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6510,7 +6706,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberBlockShieldRequest); i {
+			switch v := v.(*VerifyPasswordRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6522,7 +6718,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MembersIdRequest); i {
+			switch v := v.(*MemberIdRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6534,7 +6730,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberBlockShieldResponse); i {
+			switch v := v.(*MemberBlockShieldRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6546,7 +6742,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FindMemberRequest); i {
+			switch v := v.(*MembersIdRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6558,7 +6754,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FindMemberResponse); i {
+			switch v := v.(*MemberBlockShieldResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6570,7 +6766,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SMemberLevelListResponse); i {
+			switch v := v.(*FindMemberRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6582,7 +6778,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SubmitCertificationRequest); i {
+			switch v := v.(*FindMemberResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6594,7 +6790,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReviewCertificationRequest); i {
+			switch v := v.(*SMemberLevelListResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6606,7 +6802,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*LockRequest); i {
+			switch v := v.(*SubmitCertificationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6618,7 +6814,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GrantFlagRequest); i {
+			switch v := v.(*ReviewCertificationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6630,7 +6826,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SendCodeRequest); i {
+			switch v := v.(*LockRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6642,7 +6838,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SendCodeResponse); i {
+			switch v := v.(*GrantFlagRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6654,7 +6850,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CompareCodeRequest); i {
+			switch v := v.(*SendCodeRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6666,7 +6862,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SReceiptsCodeListResponse); i {
+			switch v := v.(*SendCodeResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6678,7 +6874,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReceiptsCodeSaveRequest); i {
+			switch v := v.(*CompareCodeRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6690,7 +6886,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ChangeLevelRequest); i {
+			switch v := v.(*SReceiptsCodeListResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6702,7 +6898,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ChangePhoneRequest); i {
+			switch v := v.(*ReceiptsCodeSaveRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6714,7 +6910,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ChangeUsernameRequest); i {
+			switch v := v.(*ChangeLevelRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6726,7 +6922,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ChangeNicknameRequest); i {
+			switch v := v.(*ChangePhoneRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6738,7 +6934,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ChangePasswordRequest); i {
+			switch v := v.(*ChangeUsernameRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6750,7 +6946,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[26].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SetInviterRequest); i {
+			switch v := v.(*ChangeNicknameRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6762,7 +6958,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[27].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetTokenRequest); i {
+			switch v := v.(*ChangePasswordRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6774,7 +6970,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PremiumRequest); i {
+			switch v := v.(*SetInviterRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6786,7 +6982,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[29].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CheckTokenRequest); i {
+			switch v := v.(*GetTokenRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6798,7 +6994,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[30].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AddressListResponse); i {
+			switch v := v.(*PremiumRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6810,7 +7006,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[31].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SaveAddressRequest); i {
+			switch v := v.(*CheckTokenRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6822,7 +7018,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[32].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SaveAddressResponse); i {
+			switch v := v.(*AddressListResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6834,7 +7030,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[33].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetAddressRequest); i {
+			switch v := v.(*SaveAddressRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6846,7 +7042,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AccountChangeRequest); i {
+			switch v := v.(*SaveAddressResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6858,7 +7054,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[35].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AccountAdjustRequest); i {
+			switch v := v.(*GetAddressRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6870,7 +7066,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[36].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AccountCarryRequest); i {
+			switch v := v.(*AccountChangeRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6882,7 +7078,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[37].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AccountFreezeRequest); i {
+			switch v := v.(*AccountAdjustRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6894,7 +7090,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[38].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AccountUnfreezeRequest); i {
+			switch v := v.(*AccountCarryRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6906,7 +7102,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*B4EAuthRequest); i {
+			switch v := v.(*AccountFreezeRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6918,7 +7114,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SMemberLevel); i {
+			switch v := v.(*AccountUnfreezeRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6930,7 +7126,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ChangeProfilePhotoRequest); i {
+			switch v := v.(*B4EAuthRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6942,7 +7138,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SAccount); i {
+			switch v := v.(*SMemberLevel); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6954,7 +7150,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SMemberRelation); i {
+			switch v := v.(*ChangeProfilePhotoRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6966,7 +7162,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SCertificationInfo); i {
+			switch v := v.(*SAccount); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6978,7 +7174,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SAddress); i {
+			switch v := v.(*SMemberRelation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6990,7 +7186,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[46].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AddressIdRequest); i {
+			switch v := v.(*SCertificationInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7002,7 +7198,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[47].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SReceiptsCode); i {
+			switch v := v.(*SAddress); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7014,7 +7210,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[48].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SMemberLevelInfo); i {
+			switch v := v.(*AddressIdRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7026,7 +7222,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[49].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SMemberOrderSummary); i {
+			switch v := v.(*SReceiptsCode); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7038,7 +7234,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[50].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberInviterResponse); i {
+			switch v := v.(*SMemberLevelInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7050,7 +7246,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[51].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberInviteCountResponse); i {
+			switch v := v.(*SMemberOrderSummary); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7062,7 +7258,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[52].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*WithdrawalLogRequest); i {
+			switch v := v.(*MemberInviterResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7074,7 +7270,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[53].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AccountTransferRequest); i {
+			switch v := v.(*MemberInviteCountResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7086,7 +7282,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[54].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*WithdrawalLogResponse); i {
+			switch v := v.(*WithdrawalLogRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7098,7 +7294,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[55].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*WithdrawalLog); i {
+			switch v := v.(*AccountTransferRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7110,7 +7306,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[56].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberInvitationPagingRequest); i {
+			switch v := v.(*WithdrawalLogResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7122,7 +7318,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[57].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberInvitationPagingResponse); i {
+			switch v := v.(*WithdrawalLog); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7134,7 +7330,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[58].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SInvitationMember); i {
+			switch v := v.(*MemberInvitationPagingRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7146,7 +7342,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[59].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*IsInvitationRequest); i {
+			switch v := v.(*MemberInvitationPagingResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7158,7 +7354,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[60].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberCouponPagingRequest); i {
+			switch v := v.(*SInvitationMember); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7170,7 +7366,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[61].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberCouponListResponse); i {
+			switch v := v.(*IsInvitationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7182,7 +7378,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[62].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SMemberCoupon); i {
+			switch v := v.(*MemberCouponPagingRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7194,7 +7390,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[63].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FavoriteRequest); i {
+			switch v := v.(*MemberCouponListResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7206,7 +7402,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[64].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DepthRequest); i {
+			switch v := v.(*SMemberCoupon); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7218,7 +7414,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[65].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*InviterIdListResponse); i {
+			switch v := v.(*FavoriteRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7230,7 +7426,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[66].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*InviteQuantityRequest); i {
+			switch v := v.(*DepthRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7242,7 +7438,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[67].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberIdListResponse); i {
+			switch v := v.(*InviterIdListResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7254,7 +7450,7 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[68].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MemberOAuthRequest); i {
+			switch v := v.(*InviteQuantityRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7266,6 +7462,30 @@ func file_message_member_dto_proto_init() {
 			}
 		}
 		file_message_member_dto_proto_msgTypes[69].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MemberIdListResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_message_member_dto_proto_msgTypes[70].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MemberOAuthRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_message_member_dto_proto_msgTypes[71].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SMemberOAuthAccount); i {
 			case 0:
 				return &v.state
@@ -7284,7 +7504,7 @@ func file_message_member_dto_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_message_member_dto_proto_rawDesc,
 			NumEnums:      5,
-			NumMessages:   73,
+			NumMessages:   75,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

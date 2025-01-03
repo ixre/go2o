@@ -57,6 +57,34 @@ message LoginRequest {
   bool update = 3;
 }
 
+// 第三方快捷登录请求
+message OAuthLoginRequest {
+  // 应用编号
+  int32 appId = 1;
+  // 第三方客户端类型
+  string clientType = 2;
+  // 第三方登录凭据
+  string clientLoginToken = 3;
+  // 额外参数
+  SOAuthExtraParams extraParams = 4;
+}
+
+// 第三方快捷登录额外参数
+message SOAuthExtraParams {
+  // 用户名(注册用)
+  string username = 1;
+  // 邀请码(注册用)
+  string inviterCode = 2;
+  // 昵称
+  string nickname = 3;
+  // 国家代码
+  string countryCode = 4;
+  // 注册IP
+  string regIp = 5;
+  // 注册来源
+  string regFrom = 6;
+}
+
 // 用户登录响应
 message LoginResponse{
   // 错误码

@@ -230,12 +230,14 @@ type (
 		Cancel(favType int, referId int64) error
 	}
 
+	// SubmitRegistrationData 提交注册数据
 	SubmitRegistrationData struct {
-
 		// 注册IP
 		RegIp string
 		// 注册来源
 		RegFrom string
+		// 邀请人编号
+		InviterId int
 	}
 
 	// ComplexMember 会员概览信息

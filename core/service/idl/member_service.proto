@@ -27,6 +27,8 @@ service MemberService {
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
     rpc CheckLogin (LoginRequest) returns (LoginResponse);
+    // 第三方快捷登录
+    rpc OAuthLogin(OAuthLoginRequest) returns (LoginResponse);
     /** 验证交易密码 */
     rpc VerifyTradePassword (VerifyPasswordRequest) returns (Result);
     /** 等级列表 */
