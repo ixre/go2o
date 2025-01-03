@@ -12,21 +12,21 @@ package sys
 // 第三方登录客户端类型
 const (
 	// 微信
-	OAuthWechat = "wechat"
+	OAuthWechat = "WECHAT"
 	// 微信小程序
-	OAuthWechatMiniProgram = "wechat_mini_program"
+	OAuthWechatMiniProgram = "WECHAT_MINI_PROGRAM"
 	// QQ
-	OAuthQQ = "qq"
+	OAuthQQ = "QQ"
 	// 微博
-	OAuthWeibo = "weibo"
+	OAuthWeibo = "WEIBO"
 	// 抖音
-	OAuthDouyin = "douyin"
+	OAuthDouyin = "DOUYIN"
 	// 苹果
-	OAuthApple = "apple"
+	OAuthApple = "APPLE"
 	// 谷歌
-	OAuthGoogle = "google"
+	OAuthGoogle = "GOOGLE"
 	// 钉钉
-	OAuthDingTalk = "dingtalk"
+	OAuthDingTalk = "DINGTALK"
 )
 
 // OAuthOpenIdResponse 第三方登录OpenId响应
