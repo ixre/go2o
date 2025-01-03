@@ -65,8 +65,10 @@ message OAuthLoginRequest {
   string clientType = 2;
   // 第三方登录凭据
   string clientLoginToken = 3;
+  // 第三方用户信息代码,用于交换手机号等
+  string clientUserCode = 4;
   // 额外参数
-  SOAuthExtraParams extraParams = 4;
+  SOAuthExtraParams extraParams = 5;
 }
 
 // 第三方快捷登录额外参数
@@ -97,7 +99,21 @@ message LoginResponse{
   string userCode = 4;
 }
 
+// 获取第三方登录信息请求
+message OAuthUserInfoRequest {
+  // 第三方客户端类型
+  string clientType = 1;
+  // 第三方登录凭据
+  string clientLoginToken = 2;
+}
 
+// 获取第三方登录信息响应
+message OAuthUserInfoResponse {
+  // 会员编号
+  int64 memberId = 1;
+  // 会员编号
+  string nickname = 2;
+}
 
 // 注册结果
 message RegisterResponse {

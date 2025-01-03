@@ -22,6 +22,7 @@ const (
 	MemberService_Register_FullMethodName                   = "/MemberService/Register"
 	MemberService_CheckLogin_FullMethodName                 = "/MemberService/CheckLogin"
 	MemberService_OAuthLogin_FullMethodName                 = "/MemberService/OAuthLogin"
+	MemberService_GetOAuthInfo_FullMethodName               = "/MemberService/GetOAuthInfo"
 	MemberService_VerifyTradePassword_FullMethodName        = "/MemberService/VerifyTradePassword"
 	MemberService_GetLevels_FullMethodName                  = "/MemberService/GetLevels"
 	MemberService_GetCertification_FullMethodName           = "/MemberService/GetCertification"
@@ -129,6 +130,8 @@ type MemberServiceClient interface {
 	CheckLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// 第三方快捷登录
 	OAuthLogin(ctx context.Context, in *OAuthLoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	// 获取第三方登录信息/检测是否已经绑定应用
+	GetOAuthInfo(ctx context.Context, in *OAuthUserInfoRequest, opts ...grpc.CallOption) (*OAuthUserInfoResponse, error)
 	// * 验证交易密码
 	VerifyTradePassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*Result, error)
 	// * 等级列表
@@ -329,6 +332,16 @@ func (c *memberServiceClient) OAuthLogin(ctx context.Context, in *OAuthLoginRequ
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, MemberService_OAuthLogin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memberServiceClient) GetOAuthInfo(ctx context.Context, in *OAuthUserInfoRequest, opts ...grpc.CallOption) (*OAuthUserInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(OAuthUserInfoResponse)
+	err := c.cc.Invoke(ctx, MemberService_GetOAuthInfo_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1187,6 +1200,8 @@ type MemberServiceServer interface {
 	CheckLogin(context.Context, *LoginRequest) (*LoginResponse, error)
 	// 第三方快捷登录
 	OAuthLogin(context.Context, *OAuthLoginRequest) (*LoginResponse, error)
+	// 获取第三方登录信息/检测是否已经绑定应用
+	GetOAuthInfo(context.Context, *OAuthUserInfoRequest) (*OAuthUserInfoResponse, error)
 	// * 验证交易密码
 	VerifyTradePassword(context.Context, *VerifyPasswordRequest) (*Result, error)
 	// * 等级列表
@@ -1371,6 +1386,9 @@ func (UnimplementedMemberServiceServer) CheckLogin(context.Context, *LoginReques
 }
 func (UnimplementedMemberServiceServer) OAuthLogin(context.Context, *OAuthLoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OAuthLogin not implemented")
+}
+func (UnimplementedMemberServiceServer) GetOAuthInfo(context.Context, *OAuthUserInfoRequest) (*OAuthUserInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOAuthInfo not implemented")
 }
 func (UnimplementedMemberServiceServer) VerifyTradePassword(context.Context, *VerifyPasswordRequest) (*Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyTradePassword not implemented")
@@ -1692,6 +1710,24 @@ func _MemberService_OAuthLogin_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemberServiceServer).OAuthLogin(ctx, req.(*OAuthLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemberService_GetOAuthInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OAuthUserInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).GetOAuthInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemberService_GetOAuthInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).GetOAuthInfo(ctx, req.(*OAuthUserInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3208,6 +3244,10 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "OAuthLogin",
 			Handler:    _MemberService_OAuthLogin_Handler,
+		},
+		{
+			MethodName: "GetOAuthInfo",
+			Handler:    _MemberService_GetOAuthInfo_Handler,
 		},
 		{
 			MethodName: "VerifyTradePassword",

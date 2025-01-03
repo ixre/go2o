@@ -539,7 +539,7 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	})
 	id := m.GetAggregateRootId()
 	if err == nil {
-		if err == nil && mch != nil {
+		if mch != nil {
 			// 绑定商户信息
 			err = m.BindMerchantId(mch.GetAggregateRootId(), true)
 		}
@@ -852,26 +852,23 @@ func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*p
 func (s *memberService) OAuthLogin(_ context.Context, r *proto.OAuthLoginRequest) (*proto.LoginResponse, error) {
 	ir := s._sysRepo.GetSystemAggregateRoot().OAuth()
 	// 交换openId
-
 	rst, err := ir.GetOpenId(int(r.AppId), r.ClientType, r.ClientLoginToken)
-	if err != nil {
-		return nil, err
-	}
 	if err != nil {
 		return &proto.LoginResponse{
 			Code:    2,
 			Message: err.Error(),
 		}, nil
 	}
-	m := s.repo.GetMemberByOAuth(r.ClientType, rst.OpenId)
-	if m == nil {
+	im := s.repo.GetMemberByOAuth(r.ClientType, rst.OpenId)
+	if im == nil {
 		// 如果没有绑定，则注册一个新的会员
-		if r.ExtraParams == nil || len(r.ExtraParams.Username) == 0 {
+		if r.ExtraParams == nil {
 			return &proto.LoginResponse{
 				Code:    3,
-				Message: "login failed, username is required",
+				Message: "login failed, extraParams is required",
 			}, nil
 		}
+
 		salt := util.RandString(6)
 		passwd := crypto.Md5([]byte(util.RandString(12)))
 		v := &member.Member{
@@ -889,6 +886,27 @@ func (s *memberService) OAuthLogin(_ context.Context, r *proto.OAuthLoginRequest
 		if regex.IsEmail(r.ExtraParams.Username) {
 			v.Email = r.ExtraParams.Username
 		}
+		// 从第三方应用获取国家代码及手机号码
+		countryCode, phone, _ := ir.GetPhone(int(r.AppId), r.ClientType, r.ClientUserCode)
+		if len(phone) > 0 {
+			v.Phone = phone
+			v.CountryCode = countryCode
+			if len(v.Username) == 0 {
+				v.Username = phone
+			}
+		}
+
+		// 如果手机号已经绑定，则直接登陆，且进行OAuth绑定
+		memberId := s.repo.GetMemberIdByPhone(phone)
+		if memberId > 0 {
+			im = s.repo.GetMember(memberId)
+			if im != nil {
+				// 异步绑定OAuth
+				go im.Profile().BindOAuthApp(r.ClientType, rst.OpenId, "")
+				return s.handleMemberLoginResult(im, true), nil
+			}
+		}
+
 		// 验证邀请码
 		inviterId, err := s.repo.GetManager().CheckInviteRegister(r.ExtraParams.InviterCode)
 		if err != nil {
@@ -899,8 +917,8 @@ func (s *memberService) OAuthLogin(_ context.Context, r *proto.OAuthLoginRequest
 		}
 
 		// 创建会员
-		m = s.repo.CreateMember(v)
-		err = m.SubmitRegistration(&member.SubmitRegistrationData{
+		im = s.repo.CreateMember(v)
+		err = im.SubmitRegistration(&member.SubmitRegistrationData{
 			RegIp:     r.ExtraParams.RegIp,
 			RegFrom:   r.ExtraParams.RegFrom,
 			InviterId: int(inviterId),
@@ -912,7 +930,19 @@ func (s *memberService) OAuthLogin(_ context.Context, r *proto.OAuthLoginRequest
 			}, nil
 		}
 	}
-	return s.handleMemberLoginResult(m, false), nil
+	return s.handleMemberLoginResult(im, false), nil
+}
+
+// GetOAuthInfo 获取第三方登录信息/检测是否已经绑定应用
+func (s *memberService) GetOAuthInfo(_ context.Context, r *proto.OAuthUserInfoRequest) (*proto.OAuthUserInfoResponse, error) {
+	m := s.repo.GetMemberByOAuth(r.ClientType, r.ClientLoginToken)
+	if m == nil {
+		return &proto.OAuthUserInfoResponse{}, nil
+	}
+	return &proto.OAuthUserInfoResponse{
+		MemberId: int64(m.GetValue().Id),
+		Nickname: m.GetValue().Nickname,
+	}, nil
 }
 
 // VerifyTradePassword 检查交易密码

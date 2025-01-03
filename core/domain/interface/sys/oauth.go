@@ -43,4 +43,6 @@ type OAuthOpenIdResponse struct {
 type IOAuthManager interface {
 	// 获取第三方登录OpenId
 	GetOpenId(appId int, clientType, clientCode string) (OAuthOpenIdResponse, error)
+	// 获取国家代码及第三方手机号码(支持微信)
+	GetPhone(appId int, clientType, clientCode string) (string, string, error)
 }

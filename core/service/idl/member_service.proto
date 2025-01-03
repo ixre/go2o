@@ -29,6 +29,8 @@ service MemberService {
     rpc CheckLogin (LoginRequest) returns (LoginResponse);
     // 第三方快捷登录
     rpc OAuthLogin(OAuthLoginRequest) returns (LoginResponse);
+    // 获取第三方登录信息/检测是否已经绑定应用
+    rpc GetOAuthInfo(OAuthUserInfoRequest) returns (OAuthUserInfoResponse);
     /** 验证交易密码 */
     rpc VerifyTradePassword (VerifyPasswordRequest) returns (Result);
     /** 等级列表 */
