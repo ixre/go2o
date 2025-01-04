@@ -51,6 +51,7 @@ func (s *oauthManager) GetOpenId(appId int, clientType, clientCode string) (sys.
 	return sys.OAuthOpenIdResponse{}, errors.New("不支持的第三方登录类型: " + clientType)
 }
 
+// GetPhone 获取手机号
 func (s *oauthManager) GetPhone(appId int, clientType, clientCode string) (string, string, error) {
 	if clientType == sys.OAuthWechatMiniProgram {
 		contryCode, phone, err := tencent.WECHAT.GetMiniProgramPhone("", clientCode)

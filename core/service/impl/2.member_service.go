@@ -868,7 +868,6 @@ func (s *memberService) OAuthLogin(_ context.Context, r *proto.OAuthLoginRequest
 				Message: "login failed, extraParams is required",
 			}, nil
 		}
-
 		salt := util.RandString(6)
 		passwd := crypto.Md5([]byte(util.RandString(12)))
 		v := &member.Member{
@@ -900,42 +899,49 @@ func (s *memberService) OAuthLogin(_ context.Context, r *proto.OAuthLoginRequest
 		memberId := s.repo.GetMemberIdByPhone(phone)
 		if memberId > 0 {
 			im = s.repo.GetMember(memberId)
-			if im != nil {
-				// 异步绑定OAuth
-				go im.Profile().BindOAuthApp(r.ClientType, rst.OpenId, "")
-				return s.handleMemberLoginResult(im, true), nil
+		}
+		if im == nil {
+			// 验证邀请码
+			inviterId, err := s.repo.GetManager().CheckInviteRegister(r.ExtraParams.InviterCode)
+			if err != nil {
+				return &proto.LoginResponse{
+					Code:    5,
+					Message: "inviter code is invalid",
+				}, nil
+			}
+
+			// 创建会员
+			im = s.repo.CreateMember(v)
+			err = im.SubmitRegistration(&member.SubmitRegistrationData{
+				RegIp:     r.ExtraParams.RegIp,
+				RegFrom:   r.ExtraParams.RegFrom,
+				InviterId: int(inviterId),
+			})
+			if err != nil {
+				return &proto.LoginResponse{
+					Code:    6,
+					Message: err.Error(),
+				}, nil
 			}
 		}
-
-		// 验证邀请码
-		inviterId, err := s.repo.GetManager().CheckInviteRegister(r.ExtraParams.InviterCode)
-		if err != nil {
-			return &proto.LoginResponse{
-				Code:    5,
-				Message: "inviter code is invalid",
-			}, nil
-		}
-
-		// 创建会员
-		im = s.repo.CreateMember(v)
-		err = im.SubmitRegistration(&member.SubmitRegistrationData{
-			RegIp:     r.ExtraParams.RegIp,
-			RegFrom:   r.ExtraParams.RegFrom,
-			InviterId: int(inviterId),
-		})
-		if err != nil {
-			return &proto.LoginResponse{
-				Code:    6,
-				Message: err.Error(),
-			}, nil
-		}
+		// 异步绑定OAuth
+		go im.Profile().BindOAuthApp(r.ClientType, rst.OpenId, "")
 	}
-	return s.handleMemberLoginResult(im, false), nil
+	return s.handleMemberLoginResult(im, true), nil
 }
 
 // GetOAuthInfo 获取第三方登录信息/检测是否已经绑定应用
 func (s *memberService) GetOAuthInfo(_ context.Context, r *proto.OAuthUserInfoRequest) (*proto.OAuthUserInfoResponse, error) {
-	m := s.repo.GetMemberByOAuth(r.ClientType, r.ClientLoginToken)
+	// 交换openId
+	ir := s._sysRepo.GetSystemAggregateRoot().OAuth()
+	rst, err := ir.GetOpenId(int(r.AppId), r.ClientType, r.ClientLoginToken)
+	if err != nil {
+		return &proto.OAuthUserInfoResponse{
+			Code:    2,
+			Message: err.Error(),
+		}, nil
+	}
+	m := s.repo.GetMemberByOAuth(r.ClientType, rst.OpenId)
 	if m == nil {
 		return &proto.OAuthUserInfoResponse{}, nil
 	}
