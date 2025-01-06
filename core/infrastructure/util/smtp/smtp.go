@@ -2,6 +2,7 @@ package smtp
 
 import (
 	"errors"
+	"log"
 
 	"github.com/ixre/go2o/core/infrastructure/logger"
 	"gopkg.in/gomail.v2"
@@ -47,6 +48,7 @@ func sendMailWithGoMail(subject string, to []string, body string, cfg *SmtpConfi
 	m.SetHeader("Subject", subject)
 	// 设置邮件正文为HTML
 	m.SetBody("text/html", body)
+	log.Println("---", body)
 	// 发送邮件
 	return d.DialAndSend(m)
 }
