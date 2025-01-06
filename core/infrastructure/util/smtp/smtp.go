@@ -43,7 +43,12 @@ func sendMailWithGoMail(subject string, to []string, body string, cfg *SmtpConfi
 	d := gomail.NewDialer(cfg.Host, cfg.Port, cfg.User, cfg.Password)
 	// 创建一个新的邮件消息
 	m := gomail.NewMessage()
-	m.SetHeader("From", cfg.From)
+	if len(cfg.From) > 0 {
+		// 使用别名
+		m.SetHeader("From", m.FormatAddress(cfg.User, cfg.From))
+	} else {
+		m.SetHeader("From", cfg.User)
+	}
 	m.SetHeader("To", to...)
 	m.SetHeader("Subject", subject)
 	// 设置邮件正文为HTML

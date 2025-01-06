@@ -41,7 +41,7 @@ func getDefaultSmtpServer(repo registry.IRegistryRepo) *smtp.SmtpConfig {
 	repo.CreateUserKey("smtp_port", "465", "SMTP服务器端口")
 	repo.CreateUserKey("smtp_user", "", "SMTP服务器用户名")
 	repo.CreateUserKey("smtp_password", "", "SMTP服务器密码")
-	repo.CreateUserKey("smtp_default_from", "Go2o <support@fze.net>", "SMTP默认发件人,your-name <your-email@example.com>")
+	repo.CreateUserKey("smtp_default_from", "Go2o", "SMTP默认发件人,your-name")
 
 	host, _ := repo.GetValue("smtp_host")
 	port, _ := repo.GetValue("smtp_port")
