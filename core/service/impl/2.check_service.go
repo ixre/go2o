@@ -138,7 +138,6 @@ func (c *CheckCodeVerifier) Validate(token string, receptAccount string, checkCo
 	}
 	data := parseCheckData(s)
 	if data.Account != receptAccount || data.CheckCode != checkCode {
-		log.Println("---", data.Account, receptAccount, data.CheckCode, checkCode)
 		return 0, errors.New("验证码不正确")
 	}
 	now := time.Now().Unix()
