@@ -528,9 +528,9 @@ type OAuthLoginRequest struct {
 	ClientType string `protobuf:"bytes,2,opt,name=clientType,proto3" json:"clientType"`
 	// 第三方登录凭据
 	ClientLoginToken string `protobuf:"bytes,3,opt,name=clientLoginToken,proto3" json:"clientLoginToken"`
-	// 第三方用户信息代码,用于交换手机号等
+	// 第三方用户信息代码,用于交换手机号等,如已绑定，则不需要传递
 	ClientUserCode string `protobuf:"bytes,4,opt,name=clientUserCode,proto3" json:"clientUserCode"`
-	// 额外参数
+	// 额外参数,如已绑定，则不需要传递
 	ExtraParams *SOAuthExtraParams `protobuf:"bytes,5,opt,name=extraParams,proto3" json:"extraParams"`
 }
 

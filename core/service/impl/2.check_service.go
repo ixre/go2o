@@ -263,7 +263,7 @@ func (c *checkServiceImpl) CompareCode(_ context.Context, r *proto.CompareCheckC
 	}
 	if r.ResetIfOk {
 		// 如果验证成功,则重置令牌
-		c.CheckCodeVerifier.Destory(r.Token)
+		//c.CheckCodeVerifier.Destory(r.Token)
 	}
 	return &proto.CompareCheckCodeResponse{
 		UserId: int64(userId),
