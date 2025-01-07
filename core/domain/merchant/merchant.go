@@ -34,6 +34,7 @@ import (
 	userImpl "github.com/ixre/go2o/core/domain/merchant/user"
 	wsImpl "github.com/ixre/go2o/core/domain/merchant/wholesale"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/initial/provide"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/storage"
@@ -202,6 +203,10 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 // 检查商户注册信息是否正确
 func (m *merchantImpl) check(v *merchant.Merchant) error {
 	//todo: validate and check merchant name exists
+	if regex.IsEmail(v.Username) {
+		// 使用用户名邮箱
+		v.MailAddr = v.Username
+	}
 	if m.GetAggregateRootId() <= 0 {
 		// 新注册商户
 		if len(v.MailAddr) == 0 {
