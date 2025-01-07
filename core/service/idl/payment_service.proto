@@ -574,7 +574,7 @@ message SSubMerchant{
     string licencePic = 7;
     // 商户签约名,与商户证件主体名称一致。
     string signName = 8;
-    // 商户签约类型  1: 个体  2: 企业   3: 事业单位  4: 社会团体
+    // 商户签约类型  1: 个体  2: 企业   3: 事业单位  4: 社会团体, 5:民办非企业
     int32 signType = 9;
     // 商户证件号码
     string licenceNo = 10;

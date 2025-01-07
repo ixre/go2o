@@ -67,8 +67,6 @@ message CompareCheckCodeRequest {
   string receptAccount = 2;
   // 校验码
   string checkCode = 3;
-  // 验证成功后是否重置
-  bool resetIfOk = 4;
 }
 
 
