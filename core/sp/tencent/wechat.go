@@ -180,7 +180,7 @@ func (w *Wechat) GetMiniProgramUnlimitCode(appId, ownerKey string, page string, 
 		bytes, err := mp.GetQRCode().GetWXACodeUnlimit(qrcode.QRCoder{
 			Page:       page,
 			Scene:      scene,
-			IsHyaline:  true,
+			IsHyaline:  false, // note: 透明色会导致微信无法直接识别
 			EnvVersion: w._mpVersion,
 		})
 		if err == nil {
