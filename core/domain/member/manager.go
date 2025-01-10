@@ -18,6 +18,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/member"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
+	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/variable"
 	"github.com/ixre/gof/util"
@@ -83,6 +84,7 @@ func (m *memberManagerImpl) CheckInviteRegister(code string) (inviterId int64, e
 		//判断邀请码是否正确
 		inviterId = m.rep.GetMemberIdByCode(code)
 		if inviterId <= 0 {
+			logger.Error("邀请码错误, 邀请码:%s", code)
 			return 0, member.ErrInviteCode
 		}
 		return inviterId, nil
