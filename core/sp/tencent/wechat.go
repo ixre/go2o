@@ -149,6 +149,19 @@ func (w *Wechat) GetMiniProgramOpenId(appId string, jsCode string) (*WxOAuthSess
 	}, err
 }
 
+// GetMiniProgramPhone 获取小程序国家代码和手机号码
+func (w *Wechat) GetMiniProgramPhone(appId, code string) (string, string, error) {
+	cfg, err := w.getMiniProgramConfig(appId)
+	if err != nil {
+		return "", "", err
+	}
+	ret, err := w._wc.GetMiniProgram(cfg).GetAuth().GetPhoneNumber(code)
+	if err != nil {
+		return "", "", err
+	}
+	return ret.PhoneInfo.CountryCode, ret.PhoneInfo.PhoneNumber, nil
+}
+
 // GetMiniProgramUnlimitCode 获取小程序无限二维码
 func (w *Wechat) GetMiniProgramUnlimitCode(appId, ownerKey string, page string, scene string) ([]byte, error) {
 	cfg, err := w.getMiniProgramConfig(appId)
@@ -167,7 +180,7 @@ func (w *Wechat) GetMiniProgramUnlimitCode(appId, ownerKey string, page string, 
 		bytes, err := mp.GetQRCode().GetWXACodeUnlimit(qrcode.QRCoder{
 			Page:       page,
 			Scene:      scene,
-			IsHyaline:  true,
+			IsHyaline:  false, // note: 透明色会导致微信无法直接识别
 			EnvVersion: w._mpVersion,
 		})
 		if err == nil {

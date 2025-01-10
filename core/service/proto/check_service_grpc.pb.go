@@ -30,6 +30,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	CheckService_SendCode_FullMethodName         = "/CheckService/sendCode"
 	CheckService_CompareCode_FullMethodName      = "/CheckService/compareCode"
+	CheckService_ResetCode_FullMethodName        = "/CheckService/resetCode"
 	CheckService_GrantAccessToken_FullMethodName = "/CheckService/grantAccessToken"
 	CheckService_CheckAccessToken_FullMethodName = "/CheckService/checkAccessToken"
 )
@@ -44,6 +45,8 @@ type CheckServiceClient interface {
 	SendCode(ctx context.Context, in *SendCheckCodeRequest, opts ...grpc.CallOption) (*SendCheckCodeResponse, error)
 	// 比较验证码是否正确, 正确则返回用户编号
 	CompareCode(ctx context.Context, in *CompareCheckCodeRequest, opts ...grpc.CallOption) (*CompareCheckCodeResponse, error)
+	// 重置验证码
+	ResetCode(ctx context.Context, in *ResetCheckCodeRequest, opts ...grpc.CallOption) (*ResetCheckCodeResponse, error)
 	// 发放访问令牌,续期即重新颁发
 	GrantAccessToken(ctx context.Context, in *GrantAccessTokenRequest, opts ...grpc.CallOption) (*GrantAccessTokenResponse, error)
 	// 检查令牌是否有效并返回新的令牌
@@ -72,6 +75,16 @@ func (c *checkServiceClient) CompareCode(ctx context.Context, in *CompareCheckCo
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CompareCheckCodeResponse)
 	err := c.cc.Invoke(ctx, CheckService_CompareCode_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *checkServiceClient) ResetCode(ctx context.Context, in *ResetCheckCodeRequest, opts ...grpc.CallOption) (*ResetCheckCodeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResetCheckCodeResponse)
+	err := c.cc.Invoke(ctx, CheckService_ResetCode_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,6 +121,8 @@ type CheckServiceServer interface {
 	SendCode(context.Context, *SendCheckCodeRequest) (*SendCheckCodeResponse, error)
 	// 比较验证码是否正确, 正确则返回用户编号
 	CompareCode(context.Context, *CompareCheckCodeRequest) (*CompareCheckCodeResponse, error)
+	// 重置验证码
+	ResetCode(context.Context, *ResetCheckCodeRequest) (*ResetCheckCodeResponse, error)
 	// 发放访问令牌,续期即重新颁发
 	GrantAccessToken(context.Context, *GrantAccessTokenRequest) (*GrantAccessTokenResponse, error)
 	// 检查令牌是否有效并返回新的令牌
@@ -127,6 +142,9 @@ func (UnimplementedCheckServiceServer) SendCode(context.Context, *SendCheckCodeR
 }
 func (UnimplementedCheckServiceServer) CompareCode(context.Context, *CompareCheckCodeRequest) (*CompareCheckCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompareCode not implemented")
+}
+func (UnimplementedCheckServiceServer) ResetCode(context.Context, *ResetCheckCodeRequest) (*ResetCheckCodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResetCode not implemented")
 }
 func (UnimplementedCheckServiceServer) GrantAccessToken(context.Context, *GrantAccessTokenRequest) (*GrantAccessTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GrantAccessToken not implemented")
@@ -191,6 +209,24 @@ func _CheckService_CompareCode_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CheckService_ResetCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResetCheckCodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CheckServiceServer).ResetCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CheckService_ResetCode_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CheckServiceServer).ResetCode(ctx, req.(*ResetCheckCodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CheckService_GrantAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GrantAccessTokenRequest)
 	if err := dec(in); err != nil {
@@ -241,6 +277,10 @@ var CheckService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "compareCode",
 			Handler:    _CheckService_CompareCode_Handler,
+		},
+		{
+			MethodName: "resetCode",
+			Handler:    _CheckService_ResetCode_Handler,
 		},
 		{
 			MethodName: "grantAccessToken",

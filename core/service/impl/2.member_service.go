@@ -14,7 +14,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -25,6 +24,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/payment"
 	"github.com/ixre/go2o/core/domain/interface/registry"
+	"github.com/ixre/go2o/core/domain/interface/sys"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	"github.com/ixre/go2o/core/domain/interface/wallet"
 	"github.com/ixre/go2o/core/dto"
@@ -36,6 +36,7 @@ import (
 	"github.com/ixre/go2o/core/query"
 	"github.com/ixre/go2o/core/service/proto"
 	"github.com/ixre/go2o/core/variable"
+	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/typeconv"
 	"github.com/ixre/gof/util"
 )
@@ -50,6 +51,7 @@ type memberService struct {
 	orderQuery   *query.OrderQuery
 	valRepo      valueobject.IValueRepo
 	_payRepo     payment.IPaymentRepo
+	_sysRepo     sys.ISystemRepo
 	serviceUtil
 	proto.UnimplementedMemberServiceServer
 }
@@ -59,7 +61,9 @@ func NewMemberService(repo member.IMemberRepo,
 	registryRepo registry.IRegistryRepo,
 	q *query.MemberQuery, oq *query.OrderQuery,
 	payRepo payment.IPaymentRepo,
-	valRepo valueobject.IValueRepo) proto.MemberServiceServer {
+	valRepo valueobject.IValueRepo,
+	sysRepo sys.ISystemRepo,
+) proto.MemberServiceServer {
 	s := &memberService{
 		repo:         repo,
 		mchRepo:      mchRepo,
@@ -68,6 +72,7 @@ func NewMemberService(repo member.IMemberRepo,
 		orderQuery:   oq,
 		_payRepo:     payRepo,
 		valRepo:      valRepo,
+		_sysRepo:     sysRepo,
 	}
 	return s
 	//return _s.init()
@@ -89,25 +94,6 @@ func (s *memberService) FindMember(_ context.Context, r *proto.FindMemberRequest
 	}
 	return &proto.FindMemberResponse{MemberId: memberId}, nil
 }
-
-//func (_s *memberService) init() *memberService {
-//	db := gof.CurrentApp.Db()
-//	var list []*member.Member
-//	db.o.Select(&list, "")
-//	for _, v := range list {
-//		im := _s.repo.CreateMember(v)
-//		if rl := im.GetRelation(); rl != nil {
-//			im.BindInviter(rl.InviterId, true)
-//		}
-//		//if len(v.InviteCode) < 6 {
-//		//	im := _s.repo.CreateMember(v)
-//		//	v.InviteCode = _s.generateInviteCode()
-//		//	im.SetValue(v)
-//		//	im.Save()
-//		//}
-//	}
-//	return _s
-//}
 
 // 根据会员编号获取会员
 func (s *memberService) getMemberValue(memberId int64) *member.Member {
@@ -418,8 +404,6 @@ func (s *memberService) ChangeUsername(_ context.Context, r *proto.ChangeUsernam
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		log.Println("222", r.Username)
-
 		if err = m.ChangeUsername(r.Username); err == nil {
 			return s.successV2(nil), nil
 		}
@@ -546,16 +530,13 @@ func (s *memberService) Register(_ context.Context, r *proto.RegisterMemberReque
 	// 创建会员
 	m := s.repo.CreateMember(v)
 	err = m.SubmitRegistration(&member.SubmitRegistrationData{
-		RegIp:   r.RegIp,
-		RegFrom: r.RegFrom,
+		RegIp:     r.RegIp,
+		RegFrom:   r.RegFrom,
+		InviterId: int(inviterId),
 	})
 	id := m.GetAggregateRootId()
 	if err == nil {
-		if inviterId > 0 {
-			// 绑定邀请人
-			err = m.BindInviter(int(inviterId), true)
-		}
-		if err == nil && mch != nil {
+		if mch != nil {
 			// 绑定商户信息
 			err = m.BindMerchantId(mch.GetAggregateRootId(), true)
 		}
@@ -802,12 +783,34 @@ func (s *memberService) ChangeTradePassword(_ context.Context, r *proto.ChangePa
 	return s.successV2(nil), nil
 }
 
-// 登录，返回结果(Result_)和会员编号(Id);
+// 返回登录结果
+func (s *memberService) handleMemberLoginResult(im member.IMemberAggregateRoot, update bool) *proto.LoginResponse {
+	val := im.GetValue()
+	if val.UserFlag&member.FlagLocked == member.FlagLocked {
+		return &proto.LoginResponse{
+			Code:    3,
+			Message: member.ErrMemberLocked.Error(),
+		}
+	}
+	if update {
+		go im.UpdateLoginTime()
+	}
+	return &proto.LoginResponse{
+		Code:     0,
+		MemberId: int64(val.Id),
+		UserCode: val.UserCode,
+	}
+}
+
+// CheckLogin 登录，返回结果(Result_)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) tryLogin(user string, pwd string, update bool) (v *member.Member, errCode int32, err error) {
-	user = strings.ToLower(user)
-	if len(pwd) != 32 {
-		return nil, 4, de.ErrNotMD5Format
+func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.LoginResponse, error) {
+	user := strings.ToLower(r.Username)
+	if len(r.Password) != 32 {
+		return &proto.LoginResponse{
+			Code:    4,
+			Message: de.ErrNotMD5Format.Error(),
+		}, nil
 	}
 	memberId := s.repo.GetMemberIdByUser(user)
 	if memberId <= 0 {
@@ -817,40 +820,132 @@ func (s *memberService) tryLogin(user string, pwd string, update bool) (v *membe
 		}
 	}
 	if memberId <= 0 {
-		return nil, 2, de.ErrPasswordNotMatch // 用户不存在,也返回用户或密码不正确
+		// 用户不存在时，也返回用户或密码不正确
+		return &proto.LoginResponse{
+			Code:    2,
+			Message: de.ErrPasswordNotMatch.Error(),
+		}, nil
 	}
 	im := s.repo.GetMember(memberId)
+	if im == nil {
+		// 用户不存在
+		return &proto.LoginResponse{
+			Code:    2,
+			Message: de.ErrPasswordNotMatch.Error(),
+		}, nil
+	}
 	val := im.GetValue()
-
-	if s := domain.MemberSha256Pwd(pwd, val.Salt); s != val.Password {
+	if s := domain.MemberSha256Pwd(r.Password, val.Salt); s != val.Password {
 		logger.Info("登陆失败,期望: %s, 实际: %s", val.Password, s)
-
-		return nil, 1, de.ErrPasswordNotMatch
+		return &proto.LoginResponse{
+			Code:    1,
+			Message: de.ErrPasswordNotMatch.Error(),
+		}, nil
 	}
-	if val.UserFlag&member.FlagLocked == member.FlagLocked {
-		return nil, 3, member.ErrMemberLocked
-	}
-	if update {
-		go im.UpdateLoginTime()
-	}
-	return &val, 0, nil
+	return s.handleMemberLoginResult(im, r.Update), nil
 }
 
-// CheckLogin 登录，返回结果(Result_)和会员编号(Id);
-// Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (s *memberService) CheckLogin(_ context.Context, r *proto.LoginRequest) (*proto.LoginResponse, error) {
-	v, code, err := s.tryLogin(r.Username, r.Password, r.Update)
-	ret := &proto.LoginResponse{
-		Code: code,
-	}
+// OAuthLogin 快捷登录
+func (s *memberService) OAuthLogin(_ context.Context, r *proto.OAuthLoginRequest) (*proto.LoginResponse, error) {
+	ir := s._sysRepo.GetSystemAggregateRoot().OAuth()
+	// 交换openId
+	rst, err := ir.GetOpenId(int(r.AppId), r.ClientType, r.ClientLoginToken)
 	if err != nil {
-		ret.Message = err.Error()
-		return ret, nil
-	} else {
-		ret.MemberId = int64(v.Id)
-		ret.UserCode = v.UserCode
+		return &proto.LoginResponse{
+			Code:    2,
+			Message: err.Error(),
+		}, nil
 	}
-	return ret, nil
+	im := s.repo.GetMemberByOAuth(r.ClientType, rst.OpenId)
+	if im == nil {
+		// 如果没有绑定，则注册一个新的会员
+		if r.ExtraParams == nil {
+			return &proto.LoginResponse{
+				Code:    3,
+				Message: "login failed, extraParams is required",
+			}, nil
+		}
+		salt := util.RandString(6)
+		passwd := crypto.Md5([]byte(util.RandString(12)))
+		v := &member.Member{
+			Username:     r.ExtraParams.Username,
+			Password:     domain.MemberSha256Pwd(passwd, salt),
+			Salt:         salt,
+			Nickname:     r.ExtraParams.Nickname,
+			CountryCode:  r.ExtraParams.CountryCode,
+			RealName:     "",
+			ProfilePhoto: "",
+		}
+		if regex.IsPhone(r.ExtraParams.Username) {
+			v.Phone = r.ExtraParams.Username
+		}
+		if regex.IsEmail(r.ExtraParams.Username) {
+			v.Email = r.ExtraParams.Username
+		}
+		// 从第三方应用获取国家代码及手机号码
+		countryCode, phone, _ := ir.GetPhone(int(r.AppId), r.ClientType, r.ClientUserCode)
+		if len(phone) > 0 {
+			v.Phone = phone
+			v.CountryCode = countryCode
+			if len(v.Username) == 0 {
+				v.Username = phone
+			}
+		}
+
+		// 如果手机号已经绑定，则直接登陆，且进行OAuth绑定
+		memberId := s.repo.GetMemberIdByPhone(phone)
+		if memberId > 0 {
+			im = s.repo.GetMember(memberId)
+		}
+		if im == nil {
+			// 验证邀请码
+			inviterId, err := s.repo.GetManager().CheckInviteRegister(r.ExtraParams.InviterCode)
+			if err != nil {
+				return &proto.LoginResponse{
+					Code:    5,
+					Message: "inviter code is invalid",
+				}, nil
+			}
+
+			// 创建会员
+			im = s.repo.CreateMember(v)
+			err = im.SubmitRegistration(&member.SubmitRegistrationData{
+				RegIp:     r.ExtraParams.RegIp,
+				RegFrom:   r.ExtraParams.RegFrom,
+				InviterId: int(inviterId),
+			})
+			if err != nil {
+				return &proto.LoginResponse{
+					Code:    6,
+					Message: err.Error(),
+				}, nil
+			}
+		}
+		// 异步绑定OAuth
+		go im.Profile().BindOAuthApp(r.ClientType, rst.OpenId, "")
+	}
+	return s.handleMemberLoginResult(im, true), nil
+}
+
+// GetOAuthInfo 获取第三方登录信息/检测是否已经绑定应用
+func (s *memberService) GetOAuthInfo(_ context.Context, r *proto.OAuthUserInfoRequest) (*proto.OAuthUserInfoResponse, error) {
+	// 交换openId
+	ir := s._sysRepo.GetSystemAggregateRoot().OAuth()
+	rst, err := ir.GetOpenId(int(r.AppId), r.ClientType, r.ClientLoginToken)
+	if err != nil {
+		return &proto.OAuthUserInfoResponse{
+			Code:    2,
+			Message: err.Error(),
+		}, nil
+	}
+	m := s.repo.GetMemberByOAuth(r.ClientType, rst.OpenId)
+	if m == nil {
+		return &proto.OAuthUserInfoResponse{}, nil
+	}
+	return &proto.OAuthUserInfoResponse{
+		MemberId: int64(m.GetValue().Id),
+		Nickname: m.GetValue().Nickname,
+	}, nil
 }
 
 // VerifyTradePassword 检查交易密码

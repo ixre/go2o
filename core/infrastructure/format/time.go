@@ -9,6 +9,7 @@
 package format
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -22,4 +23,14 @@ func HanUnixDateTime(unix int64) string {
 
 func UnixTimeStr(unix int64) string {
 	return time.Unix(unix, 0).Format("2006-01-02 15:04")
+}
+
+// 将秒数转换为分钟和秒
+func DurationString(seconds int) string {
+	minutes := seconds / 60
+	seconds = seconds % 60
+	if seconds == 0 {
+		return fmt.Sprintf("%d分", minutes)
+	}
+	return fmt.Sprintf("%d分%d秒", minutes, seconds)
 }

@@ -12,9 +12,9 @@ import (
 
 func TestSendTencentSms(t *testing.T) {
 	repo := inject.GetMessageRepo()
-	templates := repo.GetAllNotifyTemplate()
+	templates := repo.NotifyRepo().GetAllNotifyTemplate()
 	temp := collections.FindArray(templates, func(t *mss.NotifyTemplate) bool {
-		return t.TempType == 2 && t.Code == mss.SMS_CHECK_CODE
+		return t.TplType == 2 && t.TplCode == mss.SMS_CHECK_CODE
 	})
 	err := s.Send(s.Template{
 		ProviderCode:    temp.SpCode,

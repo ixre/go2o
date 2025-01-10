@@ -858,3 +858,12 @@ func (m *MemberRepoImpl) SaveOAuthAccount(v *member.OAuthAccount) (int, error) {
 	}
 	return 0, err
 }
+
+// 根据已绑定的第三方账号查询会员
+func (m *MemberRepoImpl) GetMemberByOAuth(clientType string, openId string) member.IMemberAggregateRoot {
+	oauth := m.OAuthRepo().FindBy("app_code = ? AND open_id = ?", clientType, openId)
+	if oauth == nil {
+		return nil
+	}
+	return m.GetMember(int64(oauth.MemberId))
+}

@@ -251,7 +251,7 @@ func (c *checkServiceImpl) CompareCode(_ context.Context, r *proto.CompareCheckC
 	if len(r.Token) == 0 {
 		return &proto.CompareCheckCodeResponse{
 			Code:    1001,
-			Message: "非法请求",
+			Message: "invalid token",
 		}, nil
 	}
 	userId, err := c.CheckCodeVerifier.Validate(r.Token, r.ReceptAccount, r.CheckCode)
@@ -261,12 +261,31 @@ func (c *checkServiceImpl) CompareCode(_ context.Context, r *proto.CompareCheckC
 			Message: err.Error(),
 		}, nil
 	}
-	if r.ResetIfOk {
-		// 如果验证成功,则重置令牌
-		c.CheckCodeVerifier.Destory(r.Token)
-	}
 	return &proto.CompareCheckCodeResponse{
 		UserId: int64(userId),
+	}, nil
+}
+
+// ResetCode 重置验证码
+func (c *checkServiceImpl) ResetCode(_ context.Context, r *proto.ResetCheckCodeRequest) (*proto.ResetCheckCodeResponse, error) {
+	if len(r.Token) == 0 {
+		return &proto.ResetCheckCodeResponse{
+			Code:    1001,
+			Message: "invalid token",
+		}, nil
+	}
+	_, err := c.CheckCodeVerifier.Validate(r.Token, r.ReceptAccount, r.CheckCode)
+	if err != nil {
+		return &proto.ResetCheckCodeResponse{
+			Code:    1002,
+			Message: err.Error(),
+		}, nil
+	}
+	// 如果验证成功,则重置令牌
+	c.CheckCodeVerifier.Destory(r.Token)
+	return &proto.ResetCheckCodeResponse{
+		Code:    0,
+		Message: "reset success",
 	}, nil
 }
 

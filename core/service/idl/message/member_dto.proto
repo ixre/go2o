@@ -57,6 +57,36 @@ message LoginRequest {
   bool update = 3;
 }
 
+// 第三方快捷登录请求
+message OAuthLoginRequest {
+  // 应用编号
+  int32 appId = 1;
+  // 第三方客户端类型
+  string clientType = 2;
+  // 第三方登录凭据
+  string clientLoginToken = 3;
+  // 第三方用户信息代码,用于交换手机号等,如已绑定，则不需要传递
+  string clientUserCode = 4;
+  // 额外参数,如已绑定，则不需要传递
+  SOAuthExtraParams extraParams = 5;
+}
+
+// 第三方快捷登录额外参数
+message SOAuthExtraParams {
+  // 用户名(注册用)
+  string username = 1;
+  // 邀请码(注册用)
+  string inviterCode = 2;
+  // 昵称
+  string nickname = 3;
+  // 国家代码
+  string countryCode = 4;
+  // 注册IP
+  string regIp = 5;
+  // 注册来源
+  string regFrom = 6;
+}
+
 // 用户登录响应
 message LoginResponse{
   // 错误码
@@ -69,7 +99,27 @@ message LoginResponse{
   string userCode = 4;
 }
 
+// 获取第三方登录信息请求
+message OAuthUserInfoRequest {
+  // 应用编号
+  int32 appId = 1;
+  // 第三方客户端类型
+  string clientType = 2;
+  // 第三方登录凭据
+  string clientLoginToken = 3;
+}
 
+// 获取第三方登录信息响应
+message OAuthUserInfoResponse {
+  // 错误码
+  int32 code = 1;
+  // 错误消息
+  string message = 2;
+  // 会员编号
+  int64 memberId = 3;
+  // 会员编号
+  string nickname = 4;
+}
 
 // 注册结果
 message RegisterResponse {

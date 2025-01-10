@@ -626,7 +626,6 @@ func (m *memberImpl) SubmitRegistration(data *member.SubmitRegistrationData) err
 	err := m.prepare()
 	if err == nil {
 		unix := time.Now().Unix()
-
 		v.CreateTime = int(unix)
 		// 初始化等级
 		m.updateLevel(0)
@@ -643,7 +642,10 @@ func (m *memberImpl) SubmitRegistration(data *member.SubmitRegistrationData) err
 
 		if err1 == nil {
 			m.value.Id = int(id)
-
+			if data.InviterId > 0 {
+				// 如果邀请人编号存在,则绑定邀请人
+				m.BindInviter(data.InviterId, true)
+			}
 			go m.memberInit(data)
 		} else {
 			err = err1

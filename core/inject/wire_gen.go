@@ -736,7 +736,7 @@ func GetMemberService() proto.MemberServiceServer {
 	memberQuery := query.NewMemberQuery(orm, db)
 	orderQuery := query.NewOrderQuery(orm)
 	iPaymentRepo := repos.NewPaymentRepo(storageInterface, orm, db, iMemberRepo, iMerchantRepo, iRegistryRepo)
-	memberServiceServer := impl2.NewMemberService(iMemberRepo, iMerchantRepo, iRegistryRepo, memberQuery, orderQuery, iPaymentRepo, iValueRepo)
+	memberServiceServer := impl2.NewMemberService(iMemberRepo, iMerchantRepo, iRegistryRepo, memberQuery, orderQuery, iPaymentRepo, iValueRepo, iSystemRepo)
 	return memberServiceServer
 }
 

@@ -74,6 +74,10 @@ func getHostRegexp() *regexp.Regexp {
 
 // QueryMerchantList 查询商户列表
 func (m *MerchantQuery) QueryMerchantList(begin, size int) []*merchant.Merchant {
+	// 查询未生成月度账单的商户
+	// select * FROM mch_merchant mch
+	// LEFT OUTER JOIN mch_bill b ON mch.id=b.mch_id AND b.bill_type=2 AND bill_time=1732982400
+	// WHERE b.id IS NULL
 	return m._repo.FindList(&fw.QueryOption{
 		Skip:  begin,
 		Limit: size,
