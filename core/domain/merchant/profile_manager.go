@@ -9,7 +9,6 @@
 package merchant
 
 import (
-	"errors"
 	"time"
 
 	"github.com/ixre/go2o/core/domain"
@@ -18,6 +17,7 @@ import (
 	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/domain/interface/valueobject"
 	dm "github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/i18n"
 	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/infrastructure/regex"
 )
@@ -52,7 +52,7 @@ func (p *profileManagerImpl) getStagingAuthenticate() *merchant.Authenticate {
 // SaveAuthenticate implements merchant.IProfileManager.
 func (p *profileManagerImpl) SaveAuthenticate(v *merchant.Authenticate) (int, error) {
 	if v.Id > 0 && v.Version > 0 {
-		return 0, errors.New("已经通过认证,不能再次进行提交认证")
+		return 0, i18n.Errorf("已经通过认证,不能再次进行提交认证")
 	}
 	err := p.checkAuthenticate(v)
 	if err != nil {
@@ -92,52 +92,52 @@ func (p *profileManagerImpl) applyMerchantWaitAuthStatus() error {
 // 检查企业认证信息
 func (p *profileManagerImpl) checkAuthenticate(v *merchant.Authenticate) error {
 	if v == nil {
-		return errors.New("商户认证信息不能为空")
+		return i18n.Errorf("商户认证信息不能为空")
 	}
 	if len(v.MchName) < 2 {
-		return errors.New("商户名称不能为空")
+		return i18n.Errorf("商户名称不能为空")
 	}
 	if p._repo.IsExistsMerchantName(v.MchName, p.GetAggregateRootId()) {
-		return errors.New("商户名称已被使用")
+		return i18n.Errorf("商户名称已被使用")
 	}
 	if len(v.OrgName) < 2 {
-		return errors.New("企业名称不能为空")
+		return i18n.Errorf("企业名称不能为空")
 	}
 	if p._repo.IsExistsOrganizationName(v.OrgName, p.GetAggregateRootId()) {
-		return errors.New("企业名称已被使用")
+		return i18n.Errorf("企业名称已被使用")
 	}
 	if v.Province == 0 || v.City == 0 || v.District == 0 {
-		return errors.New("请选择所在地区")
+		return i18n.Errorf("请选择所在地区")
 	}
 	if len(v.LicenceNo) == 0 {
-		return errors.New("企业营业执照号不能为空")
+		return i18n.Errorf("企业营业执照号不能为空")
 	}
 	if len(v.LicencePic) == 0 {
-		return errors.New("企业营业执照图片不能为空")
+		return i18n.Errorf("企业营业执照图片不能为空")
 	}
 	if len(v.PersonName) < 2 {
-		return errors.New("法人名称不能为空")
+		return i18n.Errorf("法人名称不能为空")
 	}
 	if len(v.PersonId) != 18 {
-		return errors.New("法人身份证号不正确")
+		return i18n.Errorf("法人身份证号不正确")
 	}
 	if len(v.PersonFrontPic) == 0 {
-		return errors.New("法人身份证正面照片不能为空")
+		return i18n.Errorf("法人身份证正面照片不能为空")
 	}
 	if len(v.PersonBackPic) == 0 {
-		return errors.New("负责人身份证背面照片不能为空")
+		return i18n.Errorf("负责人身份证背面照片不能为空")
 	}
 	if !regex.IsPhone(v.PersonPhone) {
-		return errors.New("负责人联系电话不正确")
+		return i18n.Errorf("负责人联系电话不正确")
 	}
 	if len(v.ContactName) == 0 {
-		return errors.New("联系人姓名不能为空")
+		return i18n.Errorf("联系人姓名不能为空")
 	}
 	if !regex.IsPhone(v.ContactPhone) {
-		return errors.New("联系人电话不正确")
+		return i18n.Errorf("联系人电话不正确")
 	}
 	// if len(v.AuthorityPic) == 0 {
-	// 	return errors.New("未上传授权书")
+	// 	return i18n.Errorf("未上传授权书")
 	// }
 	return nil
 }
@@ -151,10 +151,10 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 			return p.rejectReviewedAuthenticate(message)
 		}
 		// 只对待审核的资料进行审核
-		return errors.New("无法进行审核通过操作")
+		return i18n.Errorf("无法进行审核通过操作")
 	}
 	if e.ReviewStatus != int(enum.ReviewPending) {
-		return errors.New("商户认证信息已审核")
+		return i18n.Errorf("商户认证信息已审核")
 	}
 	var err error
 	e.ReviewTime = int(time.Now().Unix())
@@ -183,7 +183,7 @@ func (p *profileManagerImpl) ReviewAuthenticate(pass bool, message string) error
 func (p *profileManagerImpl) rejectReviewedAuthenticate(message string) error {
 	e := p._repo.GetMerchantAuthenticate(p.GetAggregateRootId(), 1)
 	if e == nil {
-		return errors.New("商户未提交认证信息")
+		return i18n.Errorf("商户未提交认证信息")
 	}
 	e.ReviewStatus = int(enum.ReviewRejected)
 	e.ReviewRemark = message
@@ -206,7 +206,7 @@ func (p *profileManagerImpl) initInvoiceTitle(e *merchant.Authenticate) error {
 		TenantUid:  p.merchantImpl.GetAggregateRootId(),
 	})
 	if tenant == nil {
-		err = errors.New("创建开票租户失败")
+		err = i18n.Errorf("创建开票租户失败")
 	} else {
 		err = tenant.CreateInvoiceTitle(&invoice.InvoiceTitle{
 			InvoiceType: invoice.InvoiceTypeNormal,
@@ -269,7 +269,7 @@ func (p *profileManagerImpl) saveMerchantApprovedAuthenticate(v *merchant.Authen
 // ChangePassword 修改密码
 func (p *profileManagerImpl) ChangePassword(newPassword, oldPassword string) error {
 	if len(newPassword) != 32 {
-		return errors.New("密码必须32位Md5")
+		return i18n.Errorf("密码必须32位Md5")
 	}
 	if len(oldPassword) != 0 {
 		if newPassword == oldPassword {
