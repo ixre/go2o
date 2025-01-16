@@ -300,3 +300,7 @@ COMMENT ON COLUMN "public".mm_cert_info.submit_time IS '提交时间';
 ALTER TABLE "public".mch_authenticate 
   ADD COLUMN submit_time int8 DEFAULT 0 NOT NULL;
 COMMENT ON COLUMN "public".mch_authenticate.submit_time IS '提交时间';
+
+-- 20250116 商户实名认证服务协议书
+ALTER TABLE mch_authenticate
+  ALTER COLUMN authority_pic TYPE character varying(512); 
