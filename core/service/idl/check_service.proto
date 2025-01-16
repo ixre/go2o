@@ -107,6 +107,8 @@ message GrantAccessTokenRequest{
   sint64 expiresTime = 3;
   // 令牌主题
   string sub = 4;
+  // 强制踢出其他用户
+  bool onceLogin = 5;
 }
 
 // 发放访问令牌响应
@@ -127,7 +129,7 @@ message CheckAccessTokenRequest{
   sint64 checkExpireTime = 2;
   // 新生成令牌的有效时间
   sint64 renewExpiresTime = 3;
-    // 令牌主题
+  // 令牌主题
   string sub = 4;
 }
 
@@ -147,4 +149,6 @@ message CheckAccessTokenResponse{
   sint64 tokenExpiresTime = 6; 
   // 重新生成的令牌
   string renewAccessToken = 7;
+  // 原始(当前请求)令牌
+  string rawAccessToken = 8;
 }

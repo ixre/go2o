@@ -18,6 +18,7 @@ import (
 	mss "github.com/ixre/go2o/core/domain/interface/message"
 	"github.com/ixre/go2o/core/domain/interface/registry"
 	"github.com/ixre/go2o/core/infrastructure/domain"
+	"github.com/ixre/go2o/core/infrastructure/i18n"
 	"github.com/ixre/go2o/core/infrastructure/regex"
 	"github.com/ixre/go2o/core/service/proto"
 	api "github.com/ixre/gof/ext/jwt-api"
@@ -332,13 +333,13 @@ func (s *checkServiceImpl) GrantAccessToken(_ context.Context, request *proto.Gr
 	if request.ExpiresTime <= now {
 		return &proto.GrantAccessTokenResponse{
 			Code:    1001,
-			Message: fmt.Sprintf("令牌有效时间已过有效期: value=%d", request.ExpiresTime),
+			Message: fmt.Sprintf(i18n.T("令牌有效时间已过有效期")+": value=%d", request.ExpiresTime),
 		}, nil
 	}
 	if len(request.Sub) == 0 {
 		return &proto.GrantAccessTokenResponse{
 			Code:    1002,
-			Message: "令牌主题不能为空",
+			Message: i18n.T("令牌主题不能为空"),
 		}, nil
 	}
 	// 校验发放令牌
@@ -368,12 +369,38 @@ func (s *checkServiceImpl) GrantAccessToken(_ context.Context, request *proto.Gr
 			Message: err.Error(),
 		}, nil
 	}
+	if request.OnceLogin {
+		// 强制踢出其他用户
+		s.bindUserAccessToken(int(request.UserId), int(request.UserType), token, request.ExpiresTime, false)
+	}
 	return &proto.GrantAccessTokenResponse{
 		AccessToken: token,
 	}, nil
 }
 
-// 校验发放令牌
+// bindUserAccessToken 绑定用户访问令牌，用于强制登出校验
+func (s *checkServiceImpl) bindUserAccessToken(userId int, userType int,
+	accessToken string, expiresTime int64,
+	renew bool) {
+	now := time.Now().Unix()
+	key := fmt.Sprintf("go2o:cks:bind:%d-%d", userType, userId)
+	if renew {
+		// 续期需判断是否已有绑定
+		if v, _ := s.store.GetString(key); len(v) == 0 {
+			return
+		}
+	}
+	s.store.SetExpire(key, accessToken, expiresTime-now)
+}
+
+// checkUserAccessTokenBind 校验用户登陆绑定的令牌,如果未绑定，则返回true
+func (s *checkServiceImpl) checkUserAccessTokenBind(userId int, userType int, accessToken string) bool {
+	key := fmt.Sprintf("go2o:cks:bind:%d-%d", userType, userId)
+	v, _ := s.store.GetString(key)
+	return len(v) == 0 || v == accessToken
+}
+
+// checkGrantAccessToken 校验发放令牌
 func (s *checkServiceImpl) checkGrantAccessToken(request *proto.GrantAccessTokenRequest) error {
 	if request.UserId <= 0 || request.UserType <= 0 {
 		return errors.New("用户参数错误")
@@ -457,6 +484,7 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 				Message:          "令牌已过期",
 				IsExpires:        true,
 				TokenExpiresTime: exp,
+				RawAccessToken:   request.AccessToken,
 			}, nil
 		}
 		return &proto.CheckAccessTokenResponse{
@@ -473,6 +501,14 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 	}
 	userId := typeconv.MustInt(audArray[0])
 	userType := typeconv.MustInt(audArray[1])
+	// 检查用户是否已在其他地方登陆
+	if !s.checkUserAccessTokenBind(userId, userType, request.AccessToken) {
+		return &proto.CheckAccessTokenResponse{
+			Code:    1010,
+			Message: i18n.T("账号已在其他地方登陆，如非本人操作请及时修改登录密码!"),
+		}, nil
+	}
+
 	// 如果设置了续期参数
 	if exp <= request.CheckExpireTime {
 		return s.renewAccessToken(request, userId, userType, exp), nil
@@ -481,6 +517,7 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 		UserId:           int64(userId),
 		UserType:         int32(userType),
 		TokenExpiresTime: exp,
+		RawAccessToken:   request.AccessToken,
 	}, nil
 }
 
@@ -504,11 +541,14 @@ func (s *checkServiceImpl) renewAccessToken(request *proto.CheckAccessTokenReque
 			Message: ret.Message,
 		}
 	}
+	s.bindUserAccessToken(userId, userType, ret.AccessToken, request.RenewExpiresTime, true)
+
 	return &proto.CheckAccessTokenResponse{
 		IsExpires:        false,
 		TokenExpiresTime: exp,
 		UserId:           int64(userId),
 		UserType:         int32(userType),
 		RenewAccessToken: ret.AccessToken,
+		RawAccessToken:   request.AccessToken,
 	}
 }
