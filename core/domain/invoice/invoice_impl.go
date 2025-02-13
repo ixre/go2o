@@ -82,10 +82,11 @@ func (i *invoiceTenantAggregateRootImpl) CreateInvoiceTitle(title *invoice.Invoi
 	if i, _ := i.repo.Title().Count("tenant_id=?", i.GetAggregateRootId()); i >= 5 {
 		return errors.New("发票抬头数量不能超过5个")
 	}
-	if i.repo.Title().FindBy("tenant_id=? AND title_name=? AND id <> ?",
+	t := i.repo.Title().FindBy("tenant_id=? AND title_name=? AND id <> ?",
 		i.GetAggregateRootId(),
 		title.TitleName,
-		title.Id) != nil {
+		title.Id)
+	if t != nil {
 		return errors.New("发票抬头已经存在")
 	}
 	title.CreateTime = int(time.Now().Unix())
