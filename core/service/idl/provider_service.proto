@@ -9,7 +9,6 @@
  */
 syntax = "proto3";
 
-import "global.proto";
 
 option go_package = "./;proto";
 option java_package = "com.github.go2o.rpc";
@@ -51,13 +50,15 @@ message UserOpenIdResponse {
 // 小程序二维码请求
 message MPCodeRequest {
     // 应用ID
-    int64 appId = 1;
-    // 所有者Key
-    string ownerKey = 2;        
+    int64 appId = 1;      
     // 页面路径
-    string page = 3;
-    // 场景值
-    string scene = 4;
+    string page = 2;
+    // 场景值,可用来传递参数，并在页面上获取，如: orderNo=20260102
+    string scene = 3;
+    // 是否保存到本地
+    bool saveLocal = 4;
+    // 所有者Key,如果保存到本地则需设置
+    string ownerKey = 5;  
 }
 
 // 小程序二维码响应

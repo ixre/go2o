@@ -50,7 +50,8 @@ func (s *serviceProviderServiceImpl) GetOpenId(_ context.Context, req *proto.Get
 
 // GetMPCode 获取小程序二维码
 func (s *serviceProviderServiceImpl) GetMPCode(_ context.Context, req *proto.MPCodeRequest) (*proto.MPQrCodeResponse, error) {
-	bytes, err := tencent.WECHAT.GetMiniProgramUnlimitCode("", req.OwnerKey, req.Page, req.Scene)
+	bytes, err := tencent.WECHAT.GetMiniProgramUnlimitCode("", req.Page, req.Scene,
+		req.SaveLocal, req.OwnerKey)
 	if err != nil {
 		return &proto.MPQrCodeResponse{
 			Code:    1001,
