@@ -402,28 +402,30 @@ func (s *checkServiceImpl) checkUserAccessTokenBind(userId int, userType int, ac
 
 // checkGrantAccessToken 校验发放令牌
 func (s *checkServiceImpl) checkGrantAccessToken(request *proto.GrantAccessTokenRequest) error {
-	if request.UserId <= 0 || request.UserType <= 0 {
+	if request.UserId <= 0 && request.UserType <= 0 {
 		return errors.New("用户参数错误")
 	}
-	if request.UserType == 1 {
-		// 校验用户是否存在
-		im := s.memberRepo.GetMember(request.UserId)
-		if im == nil {
-			return member.ErrNoSuchMember
+	if request.UserId > 0 {
+		// 用户编号不为0，则校验用户/商户是否存在
+		if request.UserType == 1 {
+			// 校验用户是否存在
+			im := s.memberRepo.GetMember(request.UserId)
+			if im == nil {
+				return member.ErrNoSuchMember
+			}
 		}
-	}
-
-	if request.UserType == 2 {
-		// 校验商户是否存在
-		im := s.mchRepo.GetMerchant(int(request.UserId))
-		if im == nil {
-			return merchant.ErrNoSuchMerchant
+		if request.UserType == 2 {
+			// 校验商户是否存在
+			im := s.mchRepo.GetMerchant(int(request.UserId))
+			if im == nil {
+				return merchant.ErrNoSuchMerchant
+			}
 		}
 	}
 	if request.UserType == 3 {
 		// 校验RBAC用户是否存在
 		// ...
-		panic("not implemented")
+		//panic("not implemented")
 	}
 	return nil
 }
@@ -438,13 +440,13 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 	if len(request.AccessToken) == 0 {
 		return &proto.CheckAccessTokenResponse{
 			Code:    1001,
-			Message: "令牌不能为空",
+			Message: i18n.T("令牌不能为空"),
 		}, nil
 	}
 	if len(request.Sub) == 0 {
 		return &proto.CheckAccessTokenResponse{
 			Code:    1002,
-			Message: "令牌主题不能为空",
+			Message: i18n.T("令牌主题不能为空"),
 		}, nil
 	}
 	jwtSecret, err := s.registryRepo.GetValue(registry.SysPrivateKey)
@@ -463,14 +465,14 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 	if tk == nil {
 		return &proto.CheckAccessTokenResponse{
 			Code:    1004,
-			Message: "令牌无效",
+			Message: i18n.T("令牌无效"),
 		}, nil
 	}
 	if !dstClaims.VerifyIssuer("go2o", true) ||
 		dstClaims["sub"] != request.Sub {
 		return &proto.CheckAccessTokenResponse{
 			Code:    1005,
-			Message: "未知颁发者的令牌",
+			Message: i18n.T("未知颁发者的令牌"),
 		}, nil
 	}
 	// 令牌过期时间
@@ -481,7 +483,7 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 		if ve.Errors&jwt.ValidationErrorExpired != 0 {
 			return &proto.CheckAccessTokenResponse{
 				Code:             1006,
-				Message:          "令牌已过期",
+				Message:          i18n.T("令牌已过期"),
 				IsExpires:        true,
 				TokenExpiresTime: exp,
 				RawAccessToken:   request.AccessToken,
@@ -489,14 +491,14 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 		}
 		return &proto.CheckAccessTokenResponse{
 			Code:    1007,
-			Message: "令牌无效:" + ve.Error(),
+			Message: i18n.T("令牌无效:" + ve.Error()),
 		}, nil
 	}
 	audArray := strings.Split(dstClaims["aud"].(string), "@")
 	if len(audArray) != 2 {
 		return &proto.CheckAccessTokenResponse{
 			Code:    1008,
-			Message: "令牌用户无效",
+			Message: i18n.T("令牌用户无效"),
 		}, nil
 	}
 	userId := typeconv.MustInt(audArray[0])
@@ -534,6 +536,7 @@ func (s *checkServiceImpl) renewAccessToken(request *proto.CheckAccessTokenReque
 		UserId:      int64(userId),
 		UserType:    int32(userType),
 		ExpiresTime: request.RenewExpiresTime,
+		Sub:         request.Sub,
 	})
 	if len(ret.Message) > 0 {
 		return &proto.CheckAccessTokenResponse{
