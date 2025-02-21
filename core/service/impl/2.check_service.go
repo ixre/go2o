@@ -506,8 +506,10 @@ func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.Ch
 	// 检查用户是否已在其他地方登陆
 	if !s.checkUserAccessTokenBind(userId, userType, request.AccessToken) {
 		return &proto.CheckAccessTokenResponse{
-			Code:    1010,
-			Message: i18n.T("账号已在其他地方登陆，如非本人操作请及时修改登录密码!"),
+			UserId:   int64(userId),
+			UserType: int32(userType),
+			Code:     1010,
+			Message:  i18n.T("账号已在其他地方登陆，如非本人操作请及时修改登录密码!"),
 		}, nil
 	}
 
