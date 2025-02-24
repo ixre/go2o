@@ -64,3 +64,8 @@ var (
 	// 理财最低等级限制
 	PersonFinanceMinLevelLimit = 0
 )
+
+var (
+	// 用户登陆令牌过期时间(默认30天)
+	UserAccessTokenExpiresDays = 30
+)
