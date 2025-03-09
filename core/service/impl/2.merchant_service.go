@@ -1332,7 +1332,7 @@ func (m *merchantService) GenerateDailyBill(_ context.Context, req *proto.Genera
 		bill = manager.GetBill(int(req.BillId))
 	} else {
 		// 获取指定时间的账单
-		bill = manager.GetBillByTime(int(req.Unixtime))
+		bill = manager.GetDailyBill(int(req.Unixtime))
 	}
 	if bill == nil {
 		return m.errorV2(errors.New("账单不存在")), nil
@@ -1365,7 +1365,7 @@ func (m *merchantService) GetBill(_ context.Context, req *proto.BillTimeRequest)
 		return nil, errors.New("商户不存在")
 	}
 	manager := mch.TransactionManager()
-	bill := manager.GetBillByTime(int(req.BillTime))
+	bill := manager.GetDailyBill(int(req.BillTime))
 	if bill == nil {
 		return nil, errors.New("账单不存在")
 	}
