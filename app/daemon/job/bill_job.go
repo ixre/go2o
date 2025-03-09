@@ -14,6 +14,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/ixre/go2o/core/domain/interface/merchant"
 	"github.com/ixre/go2o/core/infrastructure/locker"
 	"github.com/ixre/go2o/core/infrastructure/logger"
 	"github.com/ixre/go2o/core/inject"
@@ -41,9 +42,10 @@ func generateMerchantDailyBill(ms proto.MerchantServiceServer, qs *query.Merchan
 	for {
 		list := qs.QueryWaitGenerateDailyBills(size, lastId)
 		for _, bill := range list {
-			ret, _ := ms.GenerateDailyBill(context.TODO(), &proto.GenerateMerchantBillRequest{
-				MchId:  int64(bill.MchId),
-				BillId: int64(bill.Id),
+			ret, _ := ms.GenerateBill(context.TODO(), &proto.GenerateMerchantBillRequest{
+				MchId:    int64(bill.MchId),
+				BillId:   int64(bill.Id),
+				BillType: int32(merchant.BillTypeDaily),
 			})
 			if ret.Code != 0 {
 				logger.Error("生成商户日度账单失败: %v, 商户ID:%d, 账单编号:%d", ret.Message, bill.MchId, bill.Id)
@@ -77,10 +79,10 @@ func generateMerchantMonthlyBill(ms proto.MerchantServiceServer, qs *query.Merch
 	for {
 		list := qs.QueryMerchantList(begin, size)
 		for _, mch := range list {
-			ret, _ := ms.GenerateMonthlyBill(context.TODO(), &proto.GenerateMerchantMonthlyBillRequest{
-				MchId: int64(mch.Id),
-				Year:  int32(year),
-				Month: int32(month),
+			ret, _ := ms.GenerateBill(context.TODO(), &proto.GenerateMerchantBillRequest{
+				MchId:    int64(mch.Id),
+				BillType: int32(merchant.BillTypeMonthly),
+				Unixtime: int64(time.Date(year, month, 1, 0, 0, 0, 0, time.Local).Unix()),
 			})
 			if ret.Code != 0 {
 				logger.Error("生成商户月度账单失败: %v, 商户ID:%d, 账单日期:%d-%d", ret.Message, mch.Id, year, month)

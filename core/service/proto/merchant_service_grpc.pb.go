@@ -68,8 +68,7 @@ const (
 	MerchantService_GetWalletTxLog_FullMethodName              = "/MerchantService/GetWalletTxLog"
 	MerchantService_GetBill_FullMethodName                     = "/MerchantService/GetBill"
 	MerchantService_ManualAdjustBillAmount_FullMethodName      = "/MerchantService/ManualAdjustBillAmount"
-	MerchantService_GenerateDailyBill_FullMethodName           = "/MerchantService/GenerateDailyBill"
-	MerchantService_GenerateMonthlyBill_FullMethodName         = "/MerchantService/GenerateMonthlyBill"
+	MerchantService_GenerateBill_FullMethodName                = "/MerchantService/GenerateBill"
 	MerchantService_ReviewBill_FullMethodName                  = "/MerchantService/ReviewBill"
 	MerchantService_ConfirmBill_FullMethodName                 = "/MerchantService/ConfirmBill"
 	MerchantService_SettleBill_FullMethodName                  = "/MerchantService/SettleBill"
@@ -181,10 +180,8 @@ type MerchantServiceClient interface {
 	GetBill(ctx context.Context, in *BillTimeRequest, opts ...grpc.CallOption) (*SMerchantBill, error)
 	// 手动调整商户账单金额,仅当账单金额对不上时进行调整
 	ManualAdjustBillAmount(ctx context.Context, in *ManualAdjustMerchantBillAmountRequest, opts ...grpc.CallOption) (*TxResult, error)
-	// GenerateBill 生成商户日账单
-	GenerateDailyBill(ctx context.Context, in *GenerateMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
-	// GenerateMonthlyBill 生成商户月度账单
-	GenerateMonthlyBill(ctx context.Context, in *GenerateMerchantMonthlyBillRequest, opts ...grpc.CallOption) (*TxResult, error)
+	// GenerateBill 生成商户账单
+	GenerateBill(ctx context.Context, in *GenerateMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// ReviewBill 审核账单
 	ReviewBill(ctx context.Context, in *ReviewMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error)
 	// ConfirmBill 核对账单
@@ -699,20 +696,10 @@ func (c *merchantServiceClient) ManualAdjustBillAmount(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *merchantServiceClient) GenerateDailyBill(ctx context.Context, in *GenerateMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error) {
+func (c *merchantServiceClient) GenerateBill(ctx context.Context, in *GenerateMerchantBillRequest, opts ...grpc.CallOption) (*TxResult, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(TxResult)
-	err := c.cc.Invoke(ctx, MerchantService_GenerateDailyBill_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *merchantServiceClient) GenerateMonthlyBill(ctx context.Context, in *GenerateMerchantMonthlyBillRequest, opts ...grpc.CallOption) (*TxResult, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TxResult)
-	err := c.cc.Invoke(ctx, MerchantService_GenerateMonthlyBill_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, MerchantService_GenerateBill_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -891,10 +878,8 @@ type MerchantServiceServer interface {
 	GetBill(context.Context, *BillTimeRequest) (*SMerchantBill, error)
 	// 手动调整商户账单金额,仅当账单金额对不上时进行调整
 	ManualAdjustBillAmount(context.Context, *ManualAdjustMerchantBillAmountRequest) (*TxResult, error)
-	// GenerateBill 生成商户日账单
-	GenerateDailyBill(context.Context, *GenerateMerchantBillRequest) (*TxResult, error)
-	// GenerateMonthlyBill 生成商户月度账单
-	GenerateMonthlyBill(context.Context, *GenerateMerchantMonthlyBillRequest) (*TxResult, error)
+	// GenerateBill 生成商户账单
+	GenerateBill(context.Context, *GenerateMerchantBillRequest) (*TxResult, error)
 	// ReviewBill 审核账单
 	ReviewBill(context.Context, *ReviewMerchantBillRequest) (*TxResult, error)
 	// ConfirmBill 核对账单
@@ -1066,11 +1051,8 @@ func (UnimplementedMerchantServiceServer) GetBill(context.Context, *BillTimeRequ
 func (UnimplementedMerchantServiceServer) ManualAdjustBillAmount(context.Context, *ManualAdjustMerchantBillAmountRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ManualAdjustBillAmount not implemented")
 }
-func (UnimplementedMerchantServiceServer) GenerateDailyBill(context.Context, *GenerateMerchantBillRequest) (*TxResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateDailyBill not implemented")
-}
-func (UnimplementedMerchantServiceServer) GenerateMonthlyBill(context.Context, *GenerateMerchantMonthlyBillRequest) (*TxResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateMonthlyBill not implemented")
+func (UnimplementedMerchantServiceServer) GenerateBill(context.Context, *GenerateMerchantBillRequest) (*TxResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateBill not implemented")
 }
 func (UnimplementedMerchantServiceServer) ReviewBill(context.Context, *ReviewMerchantBillRequest) (*TxResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReviewBill not implemented")
@@ -1996,38 +1978,20 @@ func _MerchantService_ManualAdjustBillAmount_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MerchantService_GenerateDailyBill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _MerchantService_GenerateBill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GenerateMerchantBillRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MerchantServiceServer).GenerateDailyBill(ctx, in)
+		return srv.(MerchantServiceServer).GenerateBill(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MerchantService_GenerateDailyBill_FullMethodName,
+		FullMethod: MerchantService_GenerateBill_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).GenerateDailyBill(ctx, req.(*GenerateMerchantBillRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MerchantService_GenerateMonthlyBill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GenerateMerchantMonthlyBillRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MerchantServiceServer).GenerateMonthlyBill(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MerchantService_GenerateMonthlyBill_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MerchantServiceServer).GenerateMonthlyBill(ctx, req.(*GenerateMerchantMonthlyBillRequest))
+		return srv.(MerchantServiceServer).GenerateBill(ctx, req.(*GenerateMerchantBillRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2362,12 +2326,8 @@ var MerchantService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MerchantService_ManualAdjustBillAmount_Handler,
 		},
 		{
-			MethodName: "GenerateDailyBill",
-			Handler:    _MerchantService_GenerateDailyBill_Handler,
-		},
-		{
-			MethodName: "GenerateMonthlyBill",
-			Handler:    _MerchantService_GenerateMonthlyBill_Handler,
+			MethodName: "GenerateBill",
+			Handler:    _MerchantService_GenerateBill_Handler,
 		},
 		{
 			MethodName: "ReviewBill",

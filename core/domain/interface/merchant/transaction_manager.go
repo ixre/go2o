@@ -80,10 +80,6 @@ type IMerchantTransactionManager interface {
 	GetBill(billId int) IBillDomain
 	// GetDailyBill 获取指定日期的日账单
 	GetDailyBill(billTime int) IBillDomain
-	// GenerateMonthlyBill 生成月度账单,如果为日结，则账单会自动复核。
-	// 月度账单的生成时间需保证上月的日账单已复核完毕，
-	// 建议为手动生成每月账单,如未生成，则每月3日定时生成。
-	GenerateMonthlyBill(year, month int) error
 }
 
 // IBillDomain 账单领域
@@ -95,7 +91,9 @@ type IBillDomain interface {
 	UpdateAmount() error
 	// UpdateBillAmount 调整账单金额,如果amount为负数,则表示退款
 	UpdateBillAmount(amount int, txFee int) error
-	// Generate 生成账单,通常由定时任务创建
+	// Generate 生成日/月度账单,如果为日结，则账单会自动复核。
+	// 月度账单的生成时间需保证上月的日账单已复核完毕，
+	// 建议为手动生成每月账单,如未生成，则每月3日定时生成。
 	Generate() error
 	// Confirm 确认账单,按日结算的账单不需要商户确认
 	Confirm() error

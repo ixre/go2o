@@ -1316,7 +1316,7 @@ func (m *merchantService) ManualAdjustBillAmount(_ context.Context, req *proto.M
 }
 
 // GenerateDailyBill 生成商户日度账单
-func (m *merchantService) GenerateDailyBill(_ context.Context, req *proto.GenerateMerchantBillRequest) (*proto.TxResult, error) {
+func (m *merchantService) GenerateBill(_ context.Context, req *proto.GenerateMerchantBillRequest) (*proto.TxResult, error) {
 	mch := m._mchRepo.GetMerchant(int(req.MchId))
 	if mch == nil {
 		return m.errorV2(merchant.ErrNoSuchMerchant), nil
@@ -1331,27 +1331,21 @@ func (m *merchantService) GenerateDailyBill(_ context.Context, req *proto.Genera
 		// 获取指定编号的账单
 		bill = manager.GetBill(int(req.BillId))
 	} else {
+		billType := int(req.BillType)
 		// 获取指定时间的账单
-		bill = manager.GetDailyBill(int(req.Unixtime))
+		if billType == merchant.BillTypeDaily {
+			bill = manager.GetDailyBill(int(req.Unixtime))
+		} else if billType == merchant.BillTypeMonthly {
+			// 创建月度账单
+			bill = manager.CreateBill(merchant.BillTypeMonthly, int(req.Unixtime))
+		} else {
+			return m.errorV2(errors.New("账单类型不支持")), nil
+		}
 	}
 	if bill == nil {
 		return m.errorV2(errors.New("账单不存在")), nil
 	}
 	err := bill.Generate()
-	if err != nil {
-		return m.errorV2(err), nil
-	}
-	return m.txResult(0, nil), nil
-}
-
-// GenerateMonthlyBill 生成商户月度账单
-func (m *merchantService) GenerateMonthlyBill(_ context.Context, req *proto.GenerateMerchantMonthlyBillRequest) (*proto.TxResult, error) {
-	mch := m._mchRepo.GetMerchant(int(req.MchId))
-	if mch == nil {
-		return m.errorV2(merchant.ErrNoSuchMerchant), nil
-	}
-	manager := mch.TransactionManager()
-	err := manager.GenerateMonthlyBill(int(req.Year), int(req.Month))
 	if err != nil {
 		return m.errorV2(err), nil
 	}
