@@ -176,14 +176,13 @@ func (a *accountImpl) Carry(p merchant.CarryParams) (txId int, err error) {
 			err = a.asyncWallet()
 			if err == nil {
 				// 更新账单
-				err = a.mchImpl.TransactionManager().GetCurrentDailyBill().UpdateAmount()
+				bill := a.mchImpl.TransactionManager().GetCurrentDailyBill()
+				if bill != nil {
+					err = bill.UpdateAmount()
+				}
 			}
 		}
 		return txId, err
-		// 记录旧日志,todo:可能去掉
-		// l := a.createBalanceLog(merchant.KindAccountCarry,
-		// 	remark, orderNo, fAmount, fTradeFee, 1)
-		// a.SaveBalanceLog(l)
 	}
 	return 0, err
 }

@@ -163,10 +163,15 @@ func (w *Wechat) GetMiniProgramPhone(appId, code string) (string, string, error)
 }
 
 // GetMiniProgramUnlimitCode 获取小程序无限二维码
-func (w *Wechat) GetMiniProgramUnlimitCode(appId, ownerKey string, page string, scene string) ([]byte, error) {
+// saveLocal 是否保存到本地
+// ownerKey 文件所有者，如果不保存到本地，则不需要传递
+func (w *Wechat) GetMiniProgramUnlimitCode(appId, page string, scene string, saveLocal bool, ownerKey string) ([]byte, error) {
 	cfg, err := w.getMiniProgramConfig(appId)
 	if err != nil {
 		return nil, err
+	}
+	if !saveLocal {
+		return w.getMiniProgramUnlimitCodeBytes(cfg, page, scene)
 	}
 	// 获取二维码文件Key
 	key := fmt.Sprintf("mp-%s-%s-page:%s-scene:%s", cfg.AppID, w._mpVersion, page, scene)
@@ -176,13 +181,7 @@ func (w *Wechat) GetMiniProgramUnlimitCode(appId, ownerKey string, page string, 
 	_, err = os.Stat(filePath)
 	if os.IsNotExist(err) {
 		// 不存在文件,调用接口生成二维码
-		mp := w._wc.GetMiniProgram(cfg)
-		bytes, err := mp.GetQRCode().GetWXACodeUnlimit(qrcode.QRCoder{
-			Page:       page,
-			Scene:      scene,
-			IsHyaline:  false, // note: 透明色会导致微信无法直接识别
-			EnvVersion: w._mpVersion,
-		})
+		bytes, err := w.getMiniProgramUnlimitCodeBytes(cfg, page, scene)
 		if err == nil {
 			// 检查目录是否存在并写入文件中
 			dir := filepath.Dir(filePath) //检查目录是否存在
@@ -204,4 +203,16 @@ func (w *Wechat) GetMiniProgramUnlimitCode(appId, ownerKey string, page string, 
 		return os.ReadFile(filePath)
 	}
 	return nil, err
+}
+
+// 获取小程序无限二维码,并返回字节和错误
+func (w *Wechat) getMiniProgramUnlimitCodeBytes(cfg *config.Config, page string, scene string) ([]byte, error) {
+	mp := w._wc.GetMiniProgram(cfg)
+	bytes, err := mp.GetQRCode().GetWXACodeUnlimit(qrcode.QRCoder{
+		Page:       page,
+		Scene:      scene,
+		IsHyaline:  false, // note: 透明色会导致微信无法直接识别
+		EnvVersion: w._mpVersion,
+	})
+	return bytes, err
 }

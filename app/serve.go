@@ -54,7 +54,7 @@ func getEtcdAddress() string {
 }
 
 func ParseFlags() {
-	flag.StringVar(&confFile, "conf", "../go2o/app-test.conf", "")
+	flag.StringVar(&confFile, "conf", "../go2o/app-dev.conf", "")
 	flag.StringVar(&etcdEndPoints, "endpoint", getEtcdAddress(), "etcd endpoints")
 	flag.StringVar(&mqAddr, "mqs", getNatsAddress(),
 		"nats cluster address, like: 192.168.1.1:4222,192.168.1.2:4222")

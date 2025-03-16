@@ -84,10 +84,41 @@ func (s *transactionManagerImpl) getWalletId() int {
 	return s._walletId
 }
 
-// GetBillByTime implements merchant.IMerchantTransactionManager.
-func (s *transactionManagerImpl) GetBillByTime(billTime int) merchant.IBillDomain {
-	month, _ := fw.GetMonthStartEndUnix(int64(billTime))
-	bill := s._billRepo.FindBy("mch_id = ? AND bill_time = ?", s.mchId, month)
+// CreateBill 创建账单
+func (s *transactionManagerImpl) CreateBill(billType int, unixtime int) merchant.IBillDomain {
+	unix := time.Now().Unix()
+	bill := &merchant.MerchantBill{}
+	bill.BillType = billType
+	bill.MchId = s.mchId
+	bill.CreateTime = int(unix)
+	bill.UpdateTime = int(unix)
+	bill.Status = int(merchant.BillStatusPending)
+	bill.BillMonth = time.Unix(int64(unixtime), 0).Format("2006-01")
+	if billType == merchant.BillTypeDaily {
+		// 日度账单
+		startTime, endTime := util.GetStartEndUnix(time.Unix(int64(unixtime), 0))
+		bill.StartTime = int(startTime)
+		bill.EndTime = int(endTime)
+		bill.BillTime = int(startTime)
+	} else if billType == merchant.BillTypeMonthly {
+		// 月度账单
+		startTime, endTime := fw.GetMonthStartEndUnix(int64(unixtime))
+		bill.StartTime = int(startTime)
+		bill.EndTime = int(endTime)
+		bill.BillTime = int(startTime)
+	} else {
+		panic("not support bill type")
+	}
+	return newBillDomainImpl(bill, s.mch, s._mchRepo, s._rbacRepo, s._registryRepo, s)
+}
+
+// GetDailyBill implements merchant.IMerchantTransactionManager.
+func (s *transactionManagerImpl) GetDailyBill(billTime int) merchant.IBillDomain {
+	startTime, _ := util.GetStartEndUnix(time.Unix(int64(billTime), 0))
+	bill := s._billRepo.FindBy("bill_type = ? AND mch_id = ? AND bill_time = ? ",
+		merchant.BillTypeDaily,
+		s.mchId,
+		startTime)
 	if bill != nil {
 		return newBillDomainImpl(bill,
 			s.mch,
@@ -141,8 +172,7 @@ func (s *transactionManagerImpl) MathTransactionFee(tradeType int, amount int) (
 
 // GetCurrentDailyBill implements merchant.IMerchantTransactionManager.
 func (s *transactionManagerImpl) GetCurrentDailyBill() merchant.IBillDomain {
-	unix := time.Now().Unix()
-	startTime, endTime := util.GetStartEndUnix(time.Now())
+	startTime, _ := util.GetStartEndUnix(time.Now())
 	if s.currentBill != nil && s.currentBill.BillTime == int(startTime) {
 		// 如果当前账单存在,则直接返回
 		return newBillDomainImpl(
@@ -156,31 +186,7 @@ func (s *transactionManagerImpl) GetCurrentDailyBill() merchant.IBillDomain {
 	}
 	bill := s._billRepo.FindBy("mch_id = ? AND bill_type=? AND bill_time = ?", s.mchId, merchant.BillTypeDaily, startTime)
 	if bill == nil {
-		bill = &merchant.MerchantBill{
-			Id:           0,
-			MchId:        s.mchId,
-			BillType:     merchant.BillTypeDaily,
-			BillTime:     int(startTime),
-			BillMonth:    time.Unix(startTime, 0).Format("2006-01"),
-			StartTime:    int(startTime),
-			EndTime:      int(endTime),
-			TxCount:      0,
-			TxAmount:     0,
-			TxFee:        0,
-			RefundAmount: 0,
-			Status:       int(merchant.BillStatusPending),
-			ReviewerId:   0,
-			ReviewerName: "",
-			ReviewRemark: "",
-			ReviewTime:   0,
-			BillRemark:   "",
-			UserRemark:   "",
-			SettleSpCode: "",
-			SettleTxNo:   "",
-			CreateTime:   int(unix),
-			BuildTime:    0,
-			UpdateTime:   int(unix),
-		}
+		bill = s.CreateBill(merchant.BillTypeDaily, int(startTime)).Value()
 		s._billRepo.Save(bill)
 	}
 	s.currentBill = bill
@@ -223,75 +229,6 @@ func (s *transactionManagerImpl) queryBillAmount(beginTime, endTime int) (ret st
 	ret.RefundAmount = refund.Amount
 	ret.TransactionCount = total.TransactionCount
 	return ret
-}
-
-// GenerateMonthlyBill 生成月度账单
-func (s *transactionManagerImpl) GenerateMonthlyBill(year, month int) error {
-	period := s.GetSettlementPeriod()
-	unix := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.Local).Unix()
-	startTime, endTime := fw.GetMonthStartEndUnix(unix)
-	bill := s._billRepo.FindBy("mch_id = ? AND bill_type = ? AND bill_time = ?",
-		s.mchId,
-		merchant.BillTypeMonthly,
-		startTime)
-	txData := s.queryBillAmount(int(startTime), int(endTime))
-	if bill == nil {
-		bill = &merchant.MerchantBill{
-			Id:           0,
-			MchId:        s.mchId,
-			BillType:     merchant.BillTypeMonthly,
-			BillTime:     int(startTime),
-			BillMonth:    time.Unix(startTime, 0).Format("2006-01"),
-			StartTime:    int(startTime),
-			EndTime:      int(endTime),
-			Status:       int(merchant.BillStatusWaitConfirm), // 待商户确认
-			ReviewerId:   0,
-			ReviewerName: "",
-			ReviewRemark: "",
-			ReviewTime:   0,
-			BillRemark:   "",
-			UserRemark:   "",
-			SettleStatus: merchant.BillWaitSettlement, // 待结算
-			SettleResult: merchant.BillResultNone,     // 结算在途
-			SettleSpCode: "",
-			SettleTxNo:   "",
-			SettleRemark: "",
-			CreateTime:   int(unix),
-			BuildTime:    int(unix),
-			UpdateTime:   int(unix),
-		}
-	} else {
-		if bill.Status == int(merchant.BillStatusReviewed) {
-			return errors.New("账单已经复核,无法重新生成")
-		}
-	}
-	if bill.Status == int(merchant.BillStatusWaitConfirm) {
-		// 账单已生成
-		return nil
-	}
-	// 更新账单数据
-	bill.TxCount = txData.TransactionCount
-	bill.TxAmount = txData.TxAmount
-	bill.TxFee = txData.TxFee
-	bill.RefundAmount = txData.RefundAmount
-	// 更新状态
-	if period == merchant.BillTypeDaily {
-		// 日结账单,不需商户确认
-		bill.Status = int(merchant.BillStatusReviewed)
-		// 月结账单不需结算
-		bill.SettleStatus = merchant.BillNoSettlement
-		// 结算结果
-		bill.SettleResult = merchant.BillResultNone
-	} else {
-		// 月结账单,需要商户确认
-		bill.Status = int(merchant.BillStatusWaitConfirm)
-		// 待结算
-		bill.SettleStatus = merchant.BillWaitSettlement
-		// 结算在途
-		bill.SettleResult = merchant.BillResultPending
-	}
-	_, err := s._billRepo.Save(bill)
-	return err
 }
 
 var _ merchant.IBillDomain = new(billDomainImpl)
@@ -343,6 +280,14 @@ func (b *billDomainImpl) UpdateAmount() error {
 
 // GenerateBill implements merchant.IBillDomain.
 func (b *billDomainImpl) Generate() error {
+	period := b._manager.GetSettlementPeriod()
+	if b._value.BillType == merchant.BillTypeMonthly {
+		// 月度账单
+		if period == merchant.BillTypeDaily {
+			return errors.New("结算周期为日结,无需生成月度账单")
+		}
+		return b.generateMonthlyBill()
+	}
 	now := time.Now().Unix()
 	if now < int64(b._value.EndTime) {
 		return errors.New("账单尚未到截止时间")
@@ -357,7 +302,6 @@ func (b *billDomainImpl) Generate() error {
 	if err != nil {
 		return err
 	}
-	period := b._manager.GetSettlementPeriod()
 	if b._value.BillType == merchant.BillTypeDaily {
 		// 日结账单,不需商户确认
 		b._value.Status = int(merchant.BillStatusWaitReview)
@@ -389,11 +333,59 @@ func (b *billDomainImpl) Generate() error {
 	}
 	if b._value.TxAmount == 0 && b._value.TxFee == 0 {
 		// 未产生金额的账单直接更改为待复核，无需商户确认
-		b._value.Status = int(merchant.BillStatusWaitReview)
+		b._value.Status = int(merchant.BillStatusReviewed)
+		b._value.SettleStatus = merchant.BillNoSettlement
+		b._value.SettleResult = merchant.BillResultNone
 	}
 	b._value.UpdateTime = int(now)
 	b._value.BillRemark = ""
+	b._value.BuildTime = int(now)
 	return b.save()
+}
+
+// GenerateMonthlyBill 生成月度账单
+func (s *billDomainImpl) generateMonthlyBill() error {
+	unix := time.Now().Unix()
+	mchId := s._value.MchId
+	startTime, endTime := fw.GetMonthStartEndUnix(int64(s._value.BillTime))
+	bill := s._repo.BillRepo().FindBy("mch_id = ? AND bill_type = ? AND bill_time = ?",
+		mchId,
+		merchant.BillTypeMonthly,
+		startTime)
+	if endTime > unix {
+		return errors.New("未到出账时间")
+	}
+	year, month := time.Unix(int64(s._value.BillTime), 0).Year(), time.Unix(int64(s._value.BillTime), 0).Month()
+	fmt.Printf("生成月度账单, 商户ID:%d, 账单日期:%d-%d\n", mchId, year, month)
+	txData := s._manager.(*transactionManagerImpl).queryBillAmount(int(startTime), int(endTime))
+	if bill == nil {
+		// 如果账单不存在,则使用当前创建的账单
+		bill = s._value
+	}
+	if bill.Status == int(merchant.BillStatusReviewed) {
+		return errors.New("账单已经复核,无法重新生成")
+	}
+
+	// 更新账单数据
+	bill.TxCount = txData.TransactionCount
+	bill.TxAmount = txData.TxAmount
+	bill.TxFee = txData.TxFee
+	bill.RefundAmount = txData.RefundAmount
+	bill.BuildTime = int(unix)
+	// 更新状态
+	if bill.TxAmount > 0 || bill.TxFee > 0 {
+		// 月结账单,需要商户确认
+		bill.Status = int(merchant.BillStatusWaitConfirm)
+		bill.SettleStatus = merchant.BillWaitSettlement
+		bill.SettleResult = merchant.BillResultPending
+	} else {
+		// 无交易金额，则不结算
+		bill.Status = int(merchant.BillStatusReviewed)
+		bill.SettleStatus = merchant.BillNoSettlement
+		bill.SettleResult = merchant.BillResultNone
+	}
+	_, err := s._repo.BillRepo().Save(bill)
+	return err
 }
 
 // GetDomainId implements merchant.IBillDomain.

@@ -3124,7 +3124,7 @@ type SSubMerchant struct {
 	LicencePic string `protobuf:"bytes,7,opt,name=licencePic,proto3" json:"licencePic"`
 	// 商户签约名,与商户证件主体名称一致。
 	SignName string `protobuf:"bytes,8,opt,name=signName,proto3" json:"signName"`
-	// 商户签约类型  1: 个体  2: 企业   3: 事业单位  4: 社会团体
+	// 商户签约类型  1: 个体  2: 企业   3: 事业单位  4: 社会团体, 5:民办非企业
 	SignType int32 `protobuf:"varint,9,opt,name=signType,proto3" json:"signType"`
 	// 商户证件号码
 	LicenceNo string `protobuf:"bytes,10,opt,name=licenceNo,proto3" json:"licenceNo"`

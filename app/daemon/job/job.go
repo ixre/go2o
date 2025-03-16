@@ -34,8 +34,7 @@ func GetJobs() []JobInfo {
 	add("*/1 * * * *", CheckExpiresPaymentOrder)
 	// 生成商户月度账单,每天02:00执行
 	add("0 2 0 * *", GenerateMerchantBill)
-	// add("*/1 * * * *", GenerateMerchantBill) // 测试
-
+	//add("*/1 * * * *", GenerateMerchantBill) // 测试
 	return jobs
 }
 
