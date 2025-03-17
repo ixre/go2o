@@ -9,11 +9,10 @@
 package tests
 
 import (
+	"log"
 	"strconv"
 	"testing"
 	"time"
-
-	"github.com/ixre/gof/log"
 )
 
 type (
@@ -64,4 +63,11 @@ func TestModifySlice(t *testing.T) {
 		}
 		t.Log(i, v, s)
 	}
+}
+
+
+func TestFormatFloat64(t *testing.T){
+	var v float64 = 3.34
+	s := strconv.FormatFloat(v, 'g', 3, 64)
+	log.Printf("float number :%s => :%s",v,s)
 }
