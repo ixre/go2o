@@ -3,7 +3,6 @@ package employee
 import (
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/ixre/go2o/core/domain/interface/approval"
