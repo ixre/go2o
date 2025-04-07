@@ -877,7 +877,6 @@ func (m *merchantService) SaveStaff(_ context.Context, r *proto.SaveStaffRequest
 	staff.Flag = int(r.Flag)
 	staff.Gender = int(r.Gender)
 	staff.Grade = int(r.Grade)
-	staff.WorkStatus = int(r.WorkStatus)
 	staff.Nickname = r.Nickname
 	_, err := m._staffRepo.Save(staff)
 	return m.result(err), nil

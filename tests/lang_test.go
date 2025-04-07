@@ -69,5 +69,5 @@ func TestModifySlice(t *testing.T) {
 func TestFormatFloat64(t *testing.T){
 	var v float64 = 3.34
 	s := strconv.FormatFloat(v, 'g', 3, 64)
-	log.Printf("float number :%s => :%s",v,s)
+	log.Printf("float number :%g => :%s",v,s)
 }

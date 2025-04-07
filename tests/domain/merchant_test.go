@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/ixre/go2o/core/domain/interface/merchant"
@@ -337,5 +338,59 @@ func TestBatchChangeMerchantPassword(t *testing.T) {
 	for _, v := range merchantList {
 		v.Password = domain.MemberSha256Pwd(domain.Md5("123456"), v.Salt)
 		db.Save(v)
+	}
+}
+
+func TestUpdateStaffWorkStatusToOffline(t *testing.T) {
+	staffRepo := inject.GetStaffRepo()
+	staff := staffRepo.GetStaffByMemberId(854)
+	mch := inject.GetMerchantRepo().GetMerchant(staff.MchId)
+	if mch == nil {
+		t.Error("商户不存在")
+		t.FailNow()
+	}
+	// store := provide.GetStorageInstance()
+	// key := fmt.Sprintf("go2o:staff:keep_online:%d", staff.Id)
+	// store.Delete(key)
+
+	keepOnline := false
+	status := 1
+	err := mch.EmployeeManager().UpdateWorkStatus(staff.Id, status, keepOnline)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+	staff = staffRepo.GetStaffByMemberId(staff.MemberId)
+	t.Logf("员工ID:%d,在线状态:%d", staff.Id, staff.Status)
+	if staff.Status != 1 {
+		t.Error("员工在线状态不正确")
+		t.FailNow()
+	}
+}
+
+func TestUpdateStaffWorkStatusToOnline(t *testing.T) {
+	staffRepo := inject.GetStaffRepo()
+	staff := staffRepo.GetStaffByMemberId(854)
+	mch := inject.GetMerchantRepo().GetMerchant(staff.MchId)
+	if mch == nil {
+		t.Error("商户不存在")
+		t.FailNow()
+	}
+	store := provide.GetStorageInstance()
+	key := fmt.Sprintf("go2o:staff:keep_online:%d", staff.Id)
+	store.Delete(key)
+
+	keepOnline := true
+	status := 1
+	err := mch.EmployeeManager().UpdateWorkStatus(staff.Id, status, keepOnline)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+	staff = staffRepo.GetStaffByMemberId(staff.MemberId)
+	t.Logf("员工ID:%d,在线状态:%d", staff.Id, staff.Status)
+	if staff.Status != 1 {	
+		t.Error("员工在线状态不正确")
+		t.FailNow()
 	}
 }
