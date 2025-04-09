@@ -65,7 +65,7 @@ func generateMerchantMonthlyBill(ms proto.MerchantServiceServer, qs *query.Merch
 	day := time.Now().Day()
 	if day != 3 {
 		// 每月3日生成上个月账单
-		return
+		//return
 	}
 	// 上个月时间
 	dt := time.Now().AddDate(0, -1, 0)
