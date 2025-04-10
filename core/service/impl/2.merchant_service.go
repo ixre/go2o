@@ -1336,7 +1336,11 @@ func (m *merchantService) GenerateBill(_ context.Context, req *proto.GenerateMer
 			bill = manager.GetDailyBill(int(req.Unixtime))
 		} else if billType == merchant.BillTypeMonthly {
 			// 创建月度账单
-			bill = manager.CreateBill(merchant.BillTypeMonthly, int(req.Unixtime))
+			var err error
+			bill,err = manager.CreateBill(merchant.BillTypeMonthly, int(req.Unixtime))
+			if err != nil{
+				return m.errorV2(err),nil
+			}
 		} else {
 			return m.errorV2(errors.New("账单类型不支持")), nil
 		}

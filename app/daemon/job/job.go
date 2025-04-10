@@ -33,7 +33,7 @@ func GetJobs() []JobInfo {
 	// 检查订单过期,1分钟检测一次
 	add("*/1 * * * *", CheckExpiresPaymentOrder)
 	// 生成商户月度账单,每天02:00执行
-	add("0 2 0 * *", GenerateMerchantBill)
+	add("0 2 * * *", GenerateMerchantBill)
 	//add("*/1 * * * *", GenerateMerchantBill) // 测试
 	return jobs
 }
