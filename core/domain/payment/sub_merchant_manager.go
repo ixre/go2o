@@ -167,7 +167,7 @@ func (s *subMerchantManagerImpl) InitialMerchant(userType int, userId int) (*pay
 		v.SettleDirection = 2
 		v.SettleBankCode = auth.BankName
 		v.SettleAccountType = 1
-		v.SettleBankAccount = auth.BankAccount
+		v.SettleBankAccount = auth.BankNo
 	}
 	v.IssueStatus = 0
 	v.CreateTime = int(time.Now().Unix())
