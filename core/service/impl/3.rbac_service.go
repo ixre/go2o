@@ -391,7 +391,7 @@ func (p *rbacServiceImpl) GetUserResource(_ context.Context, r *proto.RbacUserRe
 	f(&wg, &root, parents)
 	wg.Wait()
 
-	log.Println("ssa", time.Now().UnixMilli())
+	//log.Println("ssa", time.Now().UnixMilli())
 	dst.Menu = root.Children
 	// 普通用户返回权限Keys,格式如:["A0101","A010102+7"],不用区分应用
 	if r.UserId > 0 {

@@ -82,7 +82,7 @@ func (m *MerchantQuery) QueryMerchantList(begin, size int) []*merchant.Merchant 
 		Skip:  begin,
 		Limit: size,
 		Order: "id ASC",
-	}, "")
+	}, "status <> 0")
 }
 
 // 根据主机查询商户编号
