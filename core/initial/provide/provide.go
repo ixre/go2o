@@ -22,8 +22,8 @@ var (
 func Configure(a gof.App) {
 	_app = a
 	_db = a.Db()
-	_orm = wrap.NewORM(_db)
 	_storage = a.Storage()
+	_orm = wrap.NewORM(_db)
 }
 
 // 获取应用
