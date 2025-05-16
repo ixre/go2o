@@ -217,7 +217,7 @@ func (a *accountImpl) Adjust(account member.AccountType, title string, amount in
 	if title == "" || remark == "" {
 		return member.ErrNoSuchLogTitleOrRemark
 	}
-	if relateUser <= 0 {
+	if relateUser < 0 {
 		return member.ErrNoSuchRelateUser
 	}
 	switch account {
