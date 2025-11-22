@@ -72,6 +72,8 @@ type (
 		//Count(where string, v ...interface{}) (int, error)
 	}
 	Service[M any] interface {
+		// Raw 获取原始连接
+		Raw() ORM
 		// Get 获取实体
 		Get(id interface{}) *M
 		// FindBy 根据条件获取实体
@@ -220,6 +222,11 @@ var _ Service[any] = new(BaseService[any])
 
 type BaseService[M any] struct {
 	Repo Repository[M]
+}
+
+func (m *BaseService[M]) Raw() ORM {
+	var m1 M
+	return m.Repo.Raw().Model(&m1)
 }
 
 func (m *BaseService[M]) Save(r *M) (*M, error) {
