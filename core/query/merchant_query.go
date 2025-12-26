@@ -85,6 +85,24 @@ func (m *MerchantQuery) QueryMerchantList(begin, size int) []*merchant.Merchant 
 	}, "")
 }
 
+func (m *MerchantQuery) QueryWaitGenerateMonthBillMerchants(billTime int64, begin, size int) (rst []int64) {
+	// 查询未生成月度账单的商户
+	// select * FROM mch_merchant mch
+	// LEFT OUTER JOIN mch_bill b ON mch.id=b.mch_id AND b.bill_type=2 AND bill_time=1732982400
+	// WHERE b.id IS NULL
+
+
+	m._repo.Raw().Model(&merchant.Merchant{}).Select("mch_merchant.id").
+		Joins("LEFT OUTER JOIN mch_bill b on mch_merchant.id=b.mch_id and b.bill_type=? and b.bill_time= ?",
+			merchant.BillTypeMonthly,
+			billTime).
+		Where("b.id is null").
+		Limit(size).
+		Offset(begin).
+		Scan(&rst)
+	return rst
+}
+
 // 根据主机查询商户编号
 func (m *MerchantQuery) QueryMerchantIdByHost(host string) int64 {
 	var mchId int64
