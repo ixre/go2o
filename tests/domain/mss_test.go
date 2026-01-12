@@ -11,10 +11,10 @@ package domain
 import (
 	"testing"
 
-	mss "github.com/ixre/go2o/core/domain/interface/message"
-	"github.com/ixre/go2o/core/domain/interface/registry"
+	mss "github.com/ixre/go2o/pkg/domain/interface/message"
+	"github.com/ixre/go2o/pkg/domain/interface/registry"
 
-	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/go2o/pkg/inject"
 )
 
 func TestMssSendSms(t *testing.T) {

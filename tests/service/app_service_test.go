@@ -14,8 +14,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ixre/go2o/core/inject"
-	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/service/proto"
 )
 
 func TestCheckAppVersion(t *testing.T) {

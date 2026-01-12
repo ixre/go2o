@@ -1,0 +1,78 @@
+/**
+ * Copyright 2015 @ 56x.net.
+ * name : mail_queue
+ * author : jarryliu
+ * date : 2015-07-27 17:06
+ * description :
+ * history :
+ */
+package daemon
+
+import (
+	"strconv"
+	"time"
+
+	"github.com/gomodule/redigo/redis"
+	"github.com/ixre/go2o/pkg/bootstrap"
+	mss "github.com/ixre/go2o/pkg/domain/interface/message"
+	"github.com/ixre/go2o/pkg/infrastructure/util/smtp"
+	"github.com/ixre/go2o/pkg/initial/provide"
+	"github.com/ixre/go2o/pkg/variable"
+)
+
+var (
+	mailChan chan int
+)
+
+// 邮件队列
+func startMailQueue(ss []Service) {
+	conn := bootstrap.GetRedisConn()
+	defer conn.Close()
+	//var id int
+	for {
+		arr, err := redis.Values(conn.Do("BLPOP", variable.KvNewMailTask, 0))
+		if err == nil {
+			_, err = strconv.Atoi(string(arr[1].([]byte)))
+			if err == nil {
+				//todo: 此处获取所有需发送的邮件,应去掉从数据库批量查询操作
+				sendForWaitingQueue(ss)
+			}
+		} else {
+			provide.GetApp().Log().Println("[ Daemon][ MailQueue][ Error] - ", err.Error())
+			break
+		}
+	}
+}
+
+func sendForWaitingQueue(ss []Service) {
+	var list = []*mss.MailTask{}
+	err := _orm.Select(&list, "is_send = 0 OR is_failed = 1")
+	if err == nil && len(list) > 0 {
+		for _, s := range ss {
+			if !s.HandleMailQueue(list) {
+				break
+			}
+		}
+	}
+}
+
+func handleMailQueue(list []*mss.MailTask) {
+	mailChan = make(chan int, len(list))
+	for _, v := range list {
+		go func(ch chan int, t *mss.MailTask) {
+			err := smtp.SendMail(t.Subject, []string{t.SendTo}, t.Body)
+			if err != nil {
+				provide.GetApp().Log().Error(err)
+				t.IsFailed = 1
+				t.IsSend = 1
+			} else {
+				t.IsSend = 1
+				t.IsFailed = 0
+			}
+			t.SendTime = time.Now().Unix()
+			_orm.Save(t.Id, t)
+			mailChan <- 0
+		}(mailChan, v)
+		<-mailChan
+	}
+}

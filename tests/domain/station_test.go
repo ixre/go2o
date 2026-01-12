@@ -3,7 +3,7 @@ package domain
 import (
 	"testing"
 
-	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/go2o/pkg/inject"
 )
 
 func TestGetGroupStations(t *testing.T) {

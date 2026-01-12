@@ -3,7 +3,7 @@ package sp
 import (
 	"testing"
 
-	"github.com/ixre/go2o/core/infrastructure/util/smtp"
+	"github.com/ixre/go2o/pkg/infrastructure/util/smtp"
 )
 
 // TestSendMerchantCheckCodeMail 是一个测试函数，用于测试发送商户验证码邮件的功能

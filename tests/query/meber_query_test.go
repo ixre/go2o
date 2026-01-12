@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/go2o/pkg/inject"
 	_ "github.com/ixre/go2o/tests"
 	"github.com/ixre/gof/typeconv"
 )

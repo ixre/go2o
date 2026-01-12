@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ixre/go2o/core/domain/interface/registry"
-	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/go2o/pkg/domain/interface/registry"
+	"github.com/ixre/go2o/pkg/inject"
 	"github.com/ixre/gof/util"
 )
 

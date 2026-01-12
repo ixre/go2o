@@ -16,14 +16,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ixre/go2o/core/domain/interface/cart"
-	"github.com/ixre/go2o/core/domain/interface/order"
-	"github.com/ixre/go2o/core/domain/interface/payment"
-	"github.com/ixre/go2o/core/initial/provide"
-	"github.com/ixre/go2o/core/inject"
-	"github.com/ixre/go2o/core/service/parser"
-	"github.com/ixre/go2o/core/service/proto"
-	"github.com/ixre/go2o/core/variable"
+	"github.com/ixre/go2o/pkg/domain/interface/cart"
+	"github.com/ixre/go2o/pkg/domain/interface/order"
+	"github.com/ixre/go2o/pkg/domain/interface/payment"
+	"github.com/ixre/go2o/pkg/initial/provide"
+	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/service/parser"
+	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/variable"
 	"github.com/ixre/gof/storage"
 )
 

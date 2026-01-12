@@ -13,7 +13,7 @@ package query
 import (
 	"testing"
 
-	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/go2o/pkg/inject"
 )
 
 // 查询汇总信息

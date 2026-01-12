@@ -1,0 +1,559 @@
+package impl
+
+import (
+	"context"
+	"encoding/base64"
+	"errors"
+	"fmt"
+	"log"
+	"math"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/ixre/go2o/pkg/domain/interface/member"
+	"github.com/ixre/go2o/pkg/domain/interface/merchant"
+	mss "github.com/ixre/go2o/pkg/domain/interface/message"
+	"github.com/ixre/go2o/pkg/domain/interface/registry"
+	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infrastructure/i18n"
+	"github.com/ixre/go2o/pkg/infrastructure/regex"
+	"github.com/ixre/go2o/pkg/service/proto"
+	api "github.com/ixre/gof/ext/jwt-api"
+	"github.com/ixre/gof/storage"
+	"github.com/ixre/gof/typeconv"
+)
+
+/**
+ * Copyright 2014 @ 56x.net.
+ * name :
+ * author : jarryliu
+ * date : 2020-09-05 20:14
+ * description :
+ * history :
+ */
+
+var _ proto.CheckServiceServer = new(checkServiceImpl)
+
+// 校验码信息
+type checkData struct {
+	// 发送时间
+	SendTime int64
+	// 过期时间
+	ExpiresTime int64
+	// 校验码
+	CheckCode string
+	// 账号
+	Account string
+	// 用户编号
+	UserId int
+}
+
+func (c checkData) String() string {
+	return fmt.Sprintf("%d|%d|%s|%s|%d",
+		c.SendTime,
+		c.ExpiresTime,
+		c.CheckCode,
+		c.Account,
+		c.UserId)
+}
+
+// 转换校验信息
+func parseCheckData(s string) *checkData {
+	arr := strings.Split(s, "|")
+	if len(arr) != 5 {
+		return nil
+	}
+	sendTime, _ := strconv.ParseInt(arr[0], 10, 64)
+	expiresTime, _ := strconv.ParseInt(arr[1], 10, 64)
+	userId, _ := strconv.Atoi(arr[4])
+	return &checkData{
+		SendTime:    sendTime,
+		ExpiresTime: expiresTime,
+		CheckCode:   arr[2],
+		Account:     arr[3],
+		UserId:      userId,
+	}
+}
+
+// 验证码验证器 todo: 移动到go2o
+type CheckCodeVerifier struct {
+	store          storage.Interface
+	storageKey     string
+	expiresSeconds int64
+	resendLimit    int64
+}
+
+// NewCodeVerifier 创建一个代码验证器, 默认有效期为5分钟, 限制重复发送的时间为2分钟
+func NewCodeVerifier(store storage.Interface, storageKey string, minites int, resendLimit int) *CheckCodeVerifier {
+	return &CheckCodeVerifier{
+		store:          store,
+		storageKey:     storageKey,
+		expiresSeconds: int64(math.Max(float64(minites), 5)) * 60,
+		resendLimit:    int64(math.Max(float64(resendLimit), 60)),
+	}
+}
+
+func (c *CheckCodeVerifier) getKey(token string) string {
+	return fmt.Sprintf("%s-%s", c.storageKey, token)
+}
+
+// CheckDuration 1):检查短信验证码是否频繁发送
+func (c *CheckCodeVerifier) CheckDuration(token string) error {
+	if len(token) == 0 {
+		return errors.New("token不能为空")
+	}
+	now := time.Now().Unix()
+	s, _ := c.store.GetString(c.getKey(token))
+	if len(s) > 0 {
+		data := parseCheckData(s)
+		if now-int64(data.SendTime) < c.resendLimit {
+			return errors.New("请勿在短时间内获取验证码")
+		}
+	}
+	return nil
+}
+
+// SaveData 3):存储验证码,默认5分钟有效, data应为phone和code的组合以保证phone和code是匹配的
+func (c *CheckCodeVerifier) SaveData(token string, data *checkData) {
+	now := time.Now().Unix()
+	data.SendTime = now
+	if data.ExpiresTime-data.SendTime < 60 {
+		// 如果过期时间小于60秒,则设置为5分钟
+		data.ExpiresTime = now + 5*60
+	}
+	_ = c.store.SetExpire(c.getKey(token), data.String(), 12*3600)
+}
+
+// MatchCode 4):验证验证码是否正确
+// [userId]返回用户编号
+func (c *CheckCodeVerifier) Validate(token string, receptAccount string, checkCode string) (int, error) {
+	if len(token) == 0 {
+		return 0, errors.New("非法请求")
+	}
+	s, err := c.store.GetString(c.getKey(token))
+	if err != nil {
+		return 0, errors.New("验证码已过期")
+	}
+	data := parseCheckData(s)
+	if data.Account != receptAccount || data.CheckCode != checkCode {
+		return 0, errors.New("验证码不正确")
+	}
+	now := time.Now().Unix()
+	if now-int64(data.ExpiresTime) > c.expiresSeconds {
+		return 0, errors.New("验证码已过期")
+	}
+	return data.UserId, nil
+}
+
+// Destory 5):销毁本次操作令牌
+func (c *CheckCodeVerifier) Destory(token string) {
+	c.store.Delete(c.getKey(token))
+}
+
+var (
+	_checkServiceInstance proto.CheckServiceServer
+	_checkServiceOnce     sync.Once
+)
+
+// checkServiceImpl 校验服务
+type checkServiceImpl struct {
+	memberRepo   member.IMemberRepo
+	mchRepo      merchant.IMerchantRepo
+	registryRepo registry.IRegistryRepo
+	notifyRepo   mss.IMessageRepo
+
+	store storage.Interface
+	*CheckCodeVerifier
+	proto.UnimplementedCheckServiceServer
+}
+
+// NewCheckService 创建校验服务实现
+func NewCheckService(repo member.IMemberRepo,
+	mchRepo merchant.IMerchantRepo,
+	notifyRepo mss.IMessageRepo,
+	registryRepo registry.IRegistryRepo,
+	store storage.Interface,
+) proto.CheckServiceServer {
+	_checkServiceOnce.Do(func() {
+		_checkServiceInstance = &checkServiceImpl{
+			memberRepo:        repo,
+			registryRepo:      registryRepo,
+			mchRepo:           mchRepo,
+			store:             store,
+			notifyRepo:        notifyRepo,
+			CheckCodeVerifier: NewCodeVerifier(store, "go2o:checkcode:token", 0, 0),
+		}
+	})
+	return _checkServiceInstance
+}
+
+// SendCode 发送验证码
+func (c *checkServiceImpl) SendCode(_ context.Context, r *proto.SendCheckCodeRequest) (*proto.SendCheckCodeResponse, error) {
+	if len(r.Token) == 0 {
+		return &proto.SendCheckCodeResponse{
+			Code:    1001,
+			Message: "非法请求",
+		}, nil
+	}
+	if len(r.Operation) == 0 {
+		return &proto.SendCheckCodeResponse{
+			Code:    1002,
+			Message: "操作名称不能为空",
+		}, nil
+	}
+	if len(r.TemplateCode) == 0 {
+		return &proto.SendCheckCodeResponse{
+			Code:    1003,
+			Message: "模板不能为空",
+		}, nil
+	}
+	// 检查短信验证码是否频繁发送
+	err := c.CheckCodeVerifier.CheckDuration(r.Token)
+	if err != nil {
+		return &proto.SendCheckCodeResponse{
+			Code:    1004,
+			Message: err.Error(),
+		}, nil
+	}
+	if r.Effective <= 0 {
+		// 默认5分钟有效
+		r.Effective = 5
+	}
+	code := domain.NewCheckCode(4)
+	// 保存校验码信息
+	unix := time.Now().Unix()
+	c.CheckCodeVerifier.SaveData(r.Token,
+		&checkData{
+			Account:     r.ReceptAccount,
+			ExpiresTime: unix + int64(r.Effective*60),
+			UserId:      int(r.UserId),
+			CheckCode:   code,
+		})
+	// 发送验证码,如果失败,则输出错误信息
+	if err := c.notifyCheckCode(code, r); err != nil {
+		log.Println("[ Go2o][ ERROR]: 发送验证码失败:", err.Error())
+	}
+	// 输出验证码调试信息
+	v, _ := c.registryRepo.GetValue(registry.EnableDebugMode)
+	if b, _ := strconv.ParseBool(v); b {
+		log.Printf("[ Go2o][ DEBUG]: 【测试】本次%s发送至%s的验证码为:%s \n", r.Operation, r.ReceptAccount, code)
+	}
+	// 返回校验码
+	return &proto.SendCheckCodeResponse{
+		CheckCode: code,
+	}, nil
+}
+
+// CompareCode implements proto.CheckServiceServer.
+func (c *checkServiceImpl) CompareCode(_ context.Context, r *proto.CompareCheckCodeRequest) (*proto.CompareCheckCodeResponse, error) {
+	if len(r.Token) == 0 {
+		return &proto.CompareCheckCodeResponse{
+			Code:    1001,
+			Message: "invalid token",
+		}, nil
+	}
+	userId, err := c.CheckCodeVerifier.Validate(r.Token, r.ReceptAccount, r.CheckCode)
+	if err != nil {
+		return &proto.CompareCheckCodeResponse{
+			Code:    1002,
+			Message: err.Error(),
+		}, nil
+	}
+	return &proto.CompareCheckCodeResponse{
+		UserId: int64(userId),
+	}, nil
+}
+
+// ResetCode 重置验证码
+func (c *checkServiceImpl) ResetCode(_ context.Context, r *proto.ResetCheckCodeRequest) (*proto.ResetCheckCodeResponse, error) {
+	if len(r.Token) == 0 {
+		return &proto.ResetCheckCodeResponse{
+			Code:    1001,
+			Message: "invalid token",
+		}, nil
+	}
+	_, err := c.CheckCodeVerifier.Validate(r.Token, r.ReceptAccount, r.CheckCode)
+	if err != nil {
+		return &proto.ResetCheckCodeResponse{
+			Code:    1002,
+			Message: err.Error(),
+		}, nil
+	}
+	// 如果验证成功,则重置令牌
+	c.CheckCodeVerifier.Destory(r.Token)
+	return &proto.ResetCheckCodeResponse{
+		Code:    0,
+		Message: "reset success",
+	}, nil
+}
+
+func (c *checkServiceImpl) notifyCheckCode(code string, r *proto.SendCheckCodeRequest) error {
+	if regex.IsPhone(r.ReceptAccount) {
+		// 创建参数
+		data := []string{code, strconv.Itoa(int(r.Effective))}
+		// 构造并发送短信
+		mg := c.notifyRepo.NotifyManager()
+		return mg.SendPhoneMessage(r.ReceptAccount, mss.PhoneMessage(""), data, r.TemplateCode)
+	}
+	if regex.IsEmail(r.ReceptAccount) {
+		// 创建参数
+		data, err := c.prepareCheck(r, []string{code, strconv.Itoa(int(r.Effective))})
+		if err != nil {
+			return err
+		}
+		// 构造并发送短信
+		mg := c.notifyRepo.NotifyManager()
+		return mg.SendEmail(r.ReceptAccount, nil, data, r.TemplateCode)
+	}
+	return errors.New("not support recept account type")
+}
+
+// 准备消息参数参数
+func (c *checkServiceImpl) prepareCheck(r *proto.SendCheckCodeRequest, data []string) ([]string, error) {
+	if r.TemplateCode == mss.EMAIL_MCH_REGISTER {
+		// 生成商户注册的链接
+		domain, _ := c.registryRepo.GetValue(registry.MchServerUrl)
+		if len(domain) == 0 {
+			return nil, errors.New("系统未配置商户端域名")
+		}
+		params := fmt.Sprintf("token=%s&account=%s&code=%s", r.Token, r.ReceptAccount, data[0])
+		encode := base64.StdEncoding.EncodeToString([]byte(params))
+		link := fmt.Sprintf(domain+"/merchant/signup?token=%s", encode)
+		return []string{link, data[1]}, nil
+	}
+	return data, nil
+}
+
+// GrantAccessToken 发放访问令牌
+func (s *checkServiceImpl) GrantAccessToken(_ context.Context, request *proto.GrantAccessTokenRequest) (*proto.GrantAccessTokenResponse, error) {
+	now := time.Now().Unix()
+	if request.ExpiresTime <= now {
+		return &proto.GrantAccessTokenResponse{
+			Code:    1001,
+			Message: fmt.Sprintf(i18n.T("令牌有效时间已过有效期")+": value=%d", request.ExpiresTime),
+		}, nil
+	}
+	if len(request.Sub) == 0 {
+		return &proto.GrantAccessTokenResponse{
+			Code:    1002,
+			Message: i18n.T("令牌主题不能为空"),
+		}, nil
+	}
+	// 校验发放令牌
+	err := s.checkGrantAccessToken(request)
+	if err != nil {
+		return &proto.GrantAccessTokenResponse{
+			Code:    1003,
+			Message: err.Error(),
+		}, nil
+	}
+	// 创建token并返回
+	aud := fmt.Sprintf("%d@%d", request.UserId, request.UserType)
+	claims := api.CreateClaims(aud, "go2o", request.Sub, request.ExpiresTime).(jwt.MapClaims)
+	jwtSecret, err := s.registryRepo.GetValue(registry.SysPrivateKey)
+	if err != nil {
+		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
+		return &proto.GrantAccessTokenResponse{
+			Code:    1004,
+			Message: err.Error(),
+		}, nil
+	}
+	token, err := api.AccessToken(claims, []byte(jwtSecret))
+	if err != nil {
+		log.Println("[ GO2O][ ERROR]: grant access token error ", err.Error())
+		return &proto.GrantAccessTokenResponse{
+			Code:    1005,
+			Message: err.Error(),
+		}, nil
+	}
+	if request.OnceLogin {
+		// 强制踢出其他用户
+		s.bindUserAccessToken(int(request.UserId), int(request.UserType), token, request.ExpiresTime, false)
+	}
+	return &proto.GrantAccessTokenResponse{
+		AccessToken: token,
+	}, nil
+}
+
+// bindUserAccessToken 绑定用户访问令牌，用于强制登出校验
+func (s *checkServiceImpl) bindUserAccessToken(userId int, userType int,
+	accessToken string, expiresTime int64,
+	renew bool) {
+	now := time.Now().Unix()
+	key := fmt.Sprintf("go2o:cks:bind:%d-%d", userType, userId)
+	if renew {
+		// 续期需判断是否已有绑定
+		if v, _ := s.store.GetString(key); len(v) == 0 {
+			return
+		}
+	}
+	s.store.SetExpire(key, accessToken, expiresTime-now)
+}
+
+// checkUserAccessTokenBind 校验用户登陆绑定的令牌,如果未绑定，则返回true
+func (s *checkServiceImpl) checkUserAccessTokenBind(userId int, userType int, accessToken string) bool {
+	key := fmt.Sprintf("go2o:cks:bind:%d-%d", userType, userId)
+	v, _ := s.store.GetString(key)
+	return len(v) == 0 || v == accessToken
+}
+
+// checkGrantAccessToken 校验发放令牌
+func (s *checkServiceImpl) checkGrantAccessToken(request *proto.GrantAccessTokenRequest) error {
+	if request.UserId <= 0 && request.UserType <= 0 {
+		return errors.New("用户参数错误")
+	}
+	if request.UserId > 0 {
+		// 用户编号不为0，则校验用户/商户是否存在
+		if request.UserType == 1 {
+			// 校验用户是否存在
+			im := s.memberRepo.GetMember(request.UserId)
+			if im == nil {
+				return member.ErrNoSuchMember
+			}
+		}
+		if request.UserType == 2 {
+			// 校验商户是否存在
+			im := s.mchRepo.GetMerchant(int(request.UserId))
+			if im == nil {
+				return merchant.ErrNoSuchMerchant
+			}
+		}
+	}
+	if request.UserType == 3 {
+		// 校验RBAC用户是否存在
+		// ...
+		//panic("not implemented")
+	}
+	return nil
+}
+
+// CheckAccessToken 检查令牌是否有效
+func (s *checkServiceImpl) CheckAccessToken(_ context.Context, request *proto.CheckAccessTokenRequest) (*proto.CheckAccessTokenResponse, error) {
+	// 去掉"Bearer "
+	if len(request.AccessToken) > 6 &&
+		strings.HasPrefix(request.AccessToken, "Bearer") {
+		request.AccessToken = request.AccessToken[7:]
+	}
+	if len(request.AccessToken) == 0 {
+		return &proto.CheckAccessTokenResponse{
+			Code:    1001,
+			Message: i18n.T("令牌不能为空"),
+		}, nil
+	}
+	if len(request.Sub) == 0 {
+		return &proto.CheckAccessTokenResponse{
+			Code:    1002,
+			Message: i18n.T("令牌主题不能为空"),
+		}, nil
+	}
+	jwtSecret, err := s.registryRepo.GetValue(registry.SysPrivateKey)
+	if err != nil {
+		log.Println("[ GO2O][ ERROR]: check access token error ", err.Error())
+		return &proto.CheckAccessTokenResponse{
+			Code:    1003,
+			Message: err.Error(),
+		}, nil
+	}
+	// 转换token
+	dstClaims := jwt.MapClaims{} // 可以用实现了Claim接口的自定义结构
+	tk, err := jwt.ParseWithClaims(request.AccessToken, &dstClaims, func(t *jwt.Token) (interface{}, error) {
+		return []byte(jwtSecret), nil
+	})
+	if tk == nil {
+		return &proto.CheckAccessTokenResponse{
+			Code:    1004,
+			Message: i18n.T("令牌无效"),
+		}, nil
+	}
+	if !dstClaims.VerifyIssuer("go2o", true) ||
+		dstClaims["sub"] != request.Sub {
+		return &proto.CheckAccessTokenResponse{
+			Code:    1005,
+			Message: i18n.T("未知颁发者的令牌"),
+		}, nil
+	}
+	// 令牌过期时间
+	exp := int64(dstClaims["exp"].(float64))
+	// 判断是否有效
+	if !tk.Valid {
+		ve, _ := err.(*jwt.ValidationError)
+		if ve.Errors&jwt.ValidationErrorExpired != 0 {
+			return &proto.CheckAccessTokenResponse{
+				Code:             1006,
+				Message:          i18n.T("令牌已过期"),
+				IsExpires:        true,
+				TokenExpiresTime: exp,
+				RawAccessToken:   request.AccessToken,
+			}, nil
+		}
+		return &proto.CheckAccessTokenResponse{
+			Code:    1007,
+			Message: i18n.T("令牌无效:" + ve.Error()),
+		}, nil
+	}
+	audArray := strings.Split(dstClaims["aud"].(string), "@")
+	if len(audArray) != 2 {
+		return &proto.CheckAccessTokenResponse{
+			Code:    1008,
+			Message: i18n.T("令牌用户无效"),
+		}, nil
+	}
+	userId := typeconv.MustInt(audArray[0])
+	userType := typeconv.MustInt(audArray[1])
+	// 检查用户是否已在其他地方登陆
+	if !s.checkUserAccessTokenBind(userId, userType, request.AccessToken) {
+		return &proto.CheckAccessTokenResponse{
+			UserId:   int64(userId),
+			UserType: int32(userType),
+			Code:     1010,
+			Message:  i18n.T("账号已在其他地方登陆，如非本人操作请及时修改登录密码!"),
+		}, nil
+	}
+
+	// 如果设置了续期参数
+	if exp <= request.CheckExpireTime {
+		return s.renewAccessToken(request, userId, userType, exp), nil
+	}
+	return &proto.CheckAccessTokenResponse{
+		UserId:           int64(userId),
+		UserType:         int32(userType),
+		TokenExpiresTime: exp,
+		RawAccessToken:   request.AccessToken,
+	}, nil
+}
+
+// renewAccessToken 续签令牌
+func (s *checkServiceImpl) renewAccessToken(request *proto.CheckAccessTokenRequest,
+	userId int, userType int, exp int64) *proto.CheckAccessTokenResponse {
+	if request.RenewExpiresTime < request.CheckExpireTime {
+		return &proto.CheckAccessTokenResponse{
+			Code:    1009,
+			Message: "令牌续期过期时间必须在检测过期时间之后",
+		}
+	}
+	ret, _ := s.GrantAccessToken(context.TODO(), &proto.GrantAccessTokenRequest{
+		UserId:      int64(userId),
+		UserType:    int32(userType),
+		ExpiresTime: request.RenewExpiresTime,
+		Sub:         request.Sub,
+	})
+	if len(ret.Message) > 0 {
+		return &proto.CheckAccessTokenResponse{
+			Code:    1010,
+			Message: ret.Message,
+		}
+	}
+	s.bindUserAccessToken(userId, userType, ret.AccessToken, request.RenewExpiresTime, true)
+
+	return &proto.CheckAccessTokenResponse{
+		IsExpires:        false,
+		TokenExpiresTime: exp,
+		UserId:           int64(userId),
+		UserType:         int32(userType),
+		RenewAccessToken: ret.AccessToken,
+		RawAccessToken:   request.AccessToken,
+	}
+}

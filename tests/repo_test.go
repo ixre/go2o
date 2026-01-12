@@ -3,8 +3,8 @@ package tests
 import (
 	"testing"
 
-	"github.com/ixre/go2o/core/initial/provide"
-	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/go2o/pkg/initial/provide"
+	"github.com/ixre/go2o/pkg/inject"
 )
 
 func TestCheckExists(t *testing.T) {

@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ixre/go2o/core/domain/interface/member"
-	"github.com/ixre/go2o/core/event/events"
-	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/go2o/pkg/domain/interface/member"
+	"github.com/ixre/go2o/pkg/event/events"
+	"github.com/ixre/go2o/pkg/inject"
 	_ "github.com/ixre/go2o/tests"
 	"github.com/ixre/gof/domain/eventbus"
 )

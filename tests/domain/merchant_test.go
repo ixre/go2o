@@ -4,11 +4,11 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/ixre/go2o/core/domain/interface/merchant"
-	"github.com/ixre/go2o/core/domain/interface/merchant/wholesaler"
-	"github.com/ixre/go2o/core/infrastructure/domain"
-	"github.com/ixre/go2o/core/initial/provide"
-	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/go2o/pkg/domain/interface/merchant"
+	"github.com/ixre/go2o/pkg/domain/interface/merchant/wholesaler"
+	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/initial/provide"
+	"github.com/ixre/go2o/pkg/inject"
 	_ "github.com/ixre/go2o/tests"
 )
 

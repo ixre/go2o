@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ixre/go2o/core/service"
-	"github.com/ixre/go2o/core/service/proto"
+	"github.com/ixre/go2o/pkg/service"
+	"github.com/ixre/go2o/pkg/service/proto"
 )
 
 // 测试连接rpc服务

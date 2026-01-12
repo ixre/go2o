@@ -3,7 +3,7 @@ package query
 import (
 	"testing"
 
-	"github.com/ixre/go2o/core/query"
+	"github.com/ixre/go2o/internal/core/query"
 	"github.com/ixre/gof/typeconv"
 )
 

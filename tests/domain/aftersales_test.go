@@ -11,8 +11,8 @@ package domain
 import (
 	"testing"
 
-	afterSales "github.com/ixre/go2o/core/domain/interface/aftersales"
-	"github.com/ixre/go2o/core/inject"
+	afterSales "github.com/ixre/go2o/pkg/domain/interface/aftersales"
+	"github.com/ixre/go2o/pkg/inject"
 	"github.com/ixre/gof/log"
 )
 

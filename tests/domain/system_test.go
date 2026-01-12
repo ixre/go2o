@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ixre/go2o/core/domain/interface/sys"
-	"github.com/ixre/go2o/core/inject"
+	"github.com/ixre/go2o/pkg/domain/interface/sys"
+	"github.com/ixre/go2o/pkg/inject"
 )
 
 func TestGetOptions(t *testing.T) {
