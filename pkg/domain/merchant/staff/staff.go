@@ -216,7 +216,7 @@ func (e *staffManagerImpl) IsKeepOnline(staffId int) bool {
 	// 默认保持在线
 	key := fmt.Sprintf("go2o:staff:keep_online:%d", staffId)
 	v, _ := e._storage.GetInt(key)
-	return v != -1
+	return v == 1
 }
 
 // UpdateWorkStatus implements staff.IStaffManager.
@@ -224,13 +224,13 @@ func (e *staffManagerImpl) UpdateWorkStatus(staffId int, workStatus int, isKeepO
 	key := fmt.Sprintf("go2o:staff:keep_online:%d", staffId)
 	if isKeepOnline {
 		// 继续保持在线状态
-		e._storage.Delete(key)
-	} else {
-		// 下线状态
-		err := e._storage.Set(key, "-1")
+		err := e._storage.Set(key, "1")
 		if err != nil {
 			return err
 		}
+	}else{
+		// 下线状态
+		e._storage.Delete(key)
 	}
 	st := e.GetStaff(staffId)
 	st.WorkStatus = workStatus

@@ -82,7 +82,7 @@ func (m *MerchantQuery) QueryMerchantList(begin, size int) []*merchant.Merchant 
 		Skip:  begin,
 		Limit: size,
 		Order: "id ASC",
-	}, "")
+	}, "status <> 0")
 }
 
 func (m *MerchantQuery) QueryWaitGenerateMonthBillMerchants(billTime int64, begin, size int) (rst []int64) {

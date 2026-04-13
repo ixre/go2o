@@ -234,7 +234,7 @@ func (s *offlineShopImpl) Data() *shop.ComplexShop {
 	v.Data["Address"] = address
 	v.Data["Telephone"] = ov.Tel
 	v.Data["CoverRadius"] = strconv.Itoa(int(ov.CoverRadius))
-	v.Data["Lat"] = strconv.FormatFloat(float64(ov.Lat), 'g', 2, 32)
-	v.Data["Lng"] = strconv.FormatFloat(float64(ov.Lng), 'g', 2, 32)
+	v.Data["Lat"] = strconv.FormatFloat(float64(ov.Lat), 'g', 3, 32)
+	v.Data["Lng"] = strconv.FormatFloat(float64(ov.Lng), 'g', 3, 32)
 	return v
 }

@@ -84,7 +84,7 @@ func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 	}
 	co.Details = append(co.Details, dt)
 	co.Data["TicketImage"] = v.TicketImage
-	co.Data["TradeRate"] = strconv.FormatFloat(v.TradeRate, 'g', 2, 64)
+	co.Data["TradeRate"] = strconv.FormatFloat(v.TradeRate, 'g', 3, 64)
 	co.Data["CashPay"] = strconv.FormatBool(v.CashPay == 1)
 	return co
 }

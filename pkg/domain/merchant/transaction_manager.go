@@ -85,7 +85,7 @@ func (s *transactionManagerImpl) getWalletId() int {
 }
 
 // CreateBill 创建账单
-func (s *transactionManagerImpl) CreateBill(billType int, unixtime int) merchant.IBillDomain {
+func (s *transactionManagerImpl) CreateBill(billType int, unixtime int) (merchant.IBillDomain, error) {
 	unix := time.Now().Unix()
 	bill := &merchant.MerchantBill{}
 	bill.BillType = billType
@@ -94,22 +94,40 @@ func (s *transactionManagerImpl) CreateBill(billType int, unixtime int) merchant
 	bill.UpdateTime = int(unix)
 	bill.Status = int(merchant.BillStatusPending)
 	bill.BillMonth = time.Unix(int64(unixtime), 0).Format("2006-01")
+	var startTime int64
+	var endTime int64
 	if billType == merchant.BillTypeDaily {
 		// 日度账单
-		startTime, endTime := util.GetStartEndUnix(time.Unix(int64(unixtime), 0))
+		startTime, endTime = util.GetStartEndUnix(time.Unix(int64(unixtime), 0))
 		bill.StartTime = int(startTime)
 		bill.EndTime = int(endTime)
 		bill.BillTime = int(startTime)
+
 	} else if billType == merchant.BillTypeMonthly {
 		// 月度账单
-		startTime, endTime := fw.GetMonthStartEndUnix(int64(unixtime))
+		startTime, endTime = fw.GetMonthStartEndUnix(int64(unixtime))
 		bill.StartTime = int(startTime)
 		bill.EndTime = int(endTime)
 		bill.BillTime = int(startTime)
 	} else {
 		panic("not support bill type")
 	}
-	return newBillDomainImpl(bill, s.mch, s._mchRepo, s._rbacRepo, s._registryRepo, s)
+	if err := s.checkBillExists(billType, startTime); err != nil {
+		return nil, err
+	}
+	return newBillDomainImpl(bill, s.mch, s._mchRepo, s._rbacRepo, s._registryRepo, s), nil
+}
+
+func (s *transactionManagerImpl) checkBillExists(billType int, billTime int64) error {
+	count, _ := s._billRepo.Count("bill_type = ? AND mch_id = ? AND bill_time = ? ",
+		billType,
+		s.mchId,
+		billTime)
+	if count > 0 {
+		// 如果存在,则直接返回
+		return errors.New("账单已存在")
+	}
+	return nil
 }
 
 // GetDailyBill implements merchant.IMerchantTransactionManager.
@@ -186,7 +204,11 @@ func (s *transactionManagerImpl) GetCurrentDailyBill() merchant.IBillDomain {
 	}
 	bill := s._billRepo.FindBy("mch_id = ? AND bill_type=? AND bill_time = ?", s.mchId, merchant.BillTypeDaily, startTime)
 	if bill == nil {
-		bill = s.CreateBill(merchant.BillTypeDaily, int(startTime)).Value()
+		ib, _ := s.CreateBill(merchant.BillTypeDaily, int(startTime))
+		if ib == nil {
+			return nil
+		}
+		bill = ib.Value()
 		s._billRepo.Save(bill)
 	}
 	s.currentBill = bill

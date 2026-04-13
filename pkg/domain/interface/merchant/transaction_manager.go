@@ -73,7 +73,7 @@ type IMerchantTransactionManager interface {
 	// GetSettlementType 获取系统设置结算周期
 	GetSettlementPeriod() int
 	// CreateBill 创建账单
-	CreateBill(billType int, unixtime int) IBillDomain
+	CreateBill(billType int, unixtime int) (IBillDomain, error)
 	// GetCurrentDailyBill 获取当前账单
 	GetCurrentDailyBill() IBillDomain
 	// GetBill 获取指定账单

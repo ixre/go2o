@@ -877,7 +877,6 @@ func (m *merchantService) SaveStaff(_ context.Context, r *proto.SaveStaffRequest
 	staff.Flag = int(r.Flag)
 	staff.Gender = int(r.Gender)
 	staff.Grade = int(r.Grade)
-	staff.WorkStatus = int(r.WorkStatus)
 	staff.Nickname = r.Nickname
 	_, err := m._staffRepo.Save(staff)
 	return m.result(err), nil
@@ -1337,7 +1336,11 @@ func (m *merchantService) GenerateBill(_ context.Context, req *proto.GenerateMer
 			bill = manager.GetDailyBill(int(req.Unixtime))
 		} else if billType == merchant.BillTypeMonthly {
 			// 创建月度账单
-			bill = manager.CreateBill(merchant.BillTypeMonthly, int(req.Unixtime))
+			var err error
+			bill,err = manager.CreateBill(merchant.BillTypeMonthly, int(req.Unixtime))
+			if err != nil{
+				return m.errorV2(err),nil
+			}
 		} else {
 			return m.errorV2(errors.New("账单类型不支持")), nil
 		}
