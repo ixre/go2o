@@ -45,7 +45,7 @@ Email: jarrysix#gmail.com
 
 func main() {
 	var confFile string
-	flag.StringVar(&confFile, "conf", "./app-dev.conf", "")
+	flag.StringVar(&confFile, "conf", "./app.conf", "")
 	app.ParseFlags()
 	ch := make(chan bool)
 	app.Run(ch, confFile, func(_ *clientv3.Config, debug bool) {

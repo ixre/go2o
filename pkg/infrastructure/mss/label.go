@@ -8,7 +8,7 @@
  */
 package mss
 
-import "../../../internal/core/infrastructure/mss/regexp"
+import "regexp"
 
 var reg = regexp.MustCompile("\\{([^\\}]+)\\}")
 

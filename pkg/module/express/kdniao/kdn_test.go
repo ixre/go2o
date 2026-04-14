@@ -1,6 +1,8 @@
 package kdniao
 
-import "../../../../internal/core/module/express/kdniao/testing"
+import (
+	"testing"
+)
 
 func TestKdnTraces(t *testing.T) {
 	EBusinessID = "1314567"

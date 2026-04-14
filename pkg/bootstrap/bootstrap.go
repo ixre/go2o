@@ -88,6 +88,19 @@ func (a *AppConfigLoader) Storage() storage.Interface {
 
 func (a *AppConfigLoader) Config() *gof.Config {
 	if a._config == nil {
+		// 优先加载本地开发环境配置
+		for _, v := range []string{
+			"./local.conf",
+			"../local.conf",
+			"../../local.conf",
+		} {
+			cfg, err := gof.LoadConfig(v)
+			if err == nil {
+				a._config = cfg
+				return a._config
+			}
+		}
+
 		for _, v := range []string{
 			a._confFile,
 			"../" + a._confFile,
@@ -96,7 +109,7 @@ func (a *AppConfigLoader) Config() *gof.Config {
 			cfg, err := gof.LoadConfig(v)
 			if err == nil {
 				a._config = cfg
-				break
+				return a._config
 			}
 		}
 	}
