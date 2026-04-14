@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log"
 	"reflect"
 	"strings"
 	"testing"
@@ -114,16 +113,10 @@ func (r *BaseRepository[M]) Get(id interface{}) *M {
 }
 
 func (r *BaseRepository[M]) joinQueryParams(where string, v ...interface{}) []interface{} {
-	var params []interface{}
 	if len(where) == 0 {
-		return params
+		return v
 	}
-	if len(where) != 0 {
-		params = append([]interface{}{where}, v...)
-	} else {
-		params = v
-	}
-	return params
+	return append([]interface{}{where}, v...)
 }
 
 func (r *BaseRepository[M]) FindBy(where string, v ...interface{}) *M {
@@ -185,37 +178,59 @@ func (r *BaseRepository[M]) Delete(v *M) error {
 func (r *BaseRepository[M]) DeleteBy(where string, v ...interface{}) (int, error) {
 	var m M
 	tx := r.ORM.Delete(&m, r.joinQueryParams(where, v...)...)
-	return int(tx.RowsAffected), nil
+	return int(tx.RowsAffected), tx.Error
 }
 
 func (r *BaseRepository[M]) QueryPaging(p *PagingParams) (ret *PagingResult, err error) {
 	var m M
 	var t int64
+	var list []*M
+
+	// Build where condition function
 	wh := func(tx *gorm.DB) *gorm.DB {
 		if len(p.Arguments) > 0 {
-			tx.Where(p.Arguments[0], p.Arguments[1:]...)
+			return tx.Where(p.Arguments[0], p.Arguments[1:]...)
 		}
 		return tx
 	}
-	var list []*M
+
+	// Count total records
 	err = wh(r.ORM.Model(&m)).Count(&t).Error
-	if err == nil && t > 0 {
-		tx := r.ORM.Limit(p.Size).Offset(p.Begin)
-		if len(p.Order) > 0 {
-			// 排序
-			tx = tx.Order(p.Order)
-		}
-		err = wh(tx).Find(&list).Error
+	if err != nil || t == 0 {
+		return &PagingResult{
+			Total: int(t),
+			Rows:  []interface{}{},
+			Extra: nil,
+		}, err
 	}
-	var arr = make([]interface{}, 0)
-	for _, v := range list {
-		arr = append(arr, v)
+
+	// Build query with pagination
+	tx := r.ORM.Model(&m).Limit(p.Size).Offset(p.Begin)
+	if len(p.Order) > 0 {
+		tx = tx.Order(p.Order)
 	}
+
+	// Find records
+	err = wh(tx).Find(&list).Error
+	if err != nil {
+		return &PagingResult{
+			Total: int(t),
+			Rows:  []interface{}{},
+			Extra: nil,
+		}, err
+	}
+
+	// Convert to interface slice with pre-allocation
+	rows := make([]interface{}, len(list))
+	for i, v := range list {
+		rows[i] = v
+	}
+
 	return &PagingResult{
 		Total: int(t),
-		Rows:  arr,
+		Rows:  rows,
 		Extra: nil,
-	}, err
+	}, nil
 }
 
 var _ Service[any] = new(BaseService[any])
@@ -274,13 +289,18 @@ type PagingParams struct {
 	Arguments []interface{} `json:"arguments"`
 }
 
-// Where 添加条件
+// where 添加条件
 func (p *PagingParams) where(field string, exp string, value ...interface{}) *PagingParams {
 	buf := bytes.NewBuffer(nil)
 	isBlank := len(p.Arguments) == 0
 	if !isBlank {
-		buf.WriteString(p.Arguments[0].(string))
-		buf.WriteString(" AND ")
+		if str, ok := p.Arguments[0].(string); ok {
+			buf.WriteString(str)
+			buf.WriteString(" AND ")
+		} else {
+			// Handle case where first argument is not a string
+			return p
+		}
 	}
 	buf.WriteString(fmt.Sprintf("%s %s", field, exp))
 	if isBlank {
@@ -362,8 +382,13 @@ func (p *PagingParams) And(where string, values ...interface{}) *PagingParams {
 	buf := bytes.NewBuffer(nil)
 	isBlank := len(p.Arguments) == 0
 	if !isBlank {
-		buf.WriteString(p.Arguments[0].(string))
-		buf.WriteString(" AND ")
+		if str, ok := p.Arguments[0].(string); ok {
+			buf.WriteString(str)
+			buf.WriteString(" AND ")
+		} else {
+			// Handle case where first argument is not a string
+			return p
+		}
 	}
 	buf.WriteString(where)
 	if isBlank {
@@ -408,6 +433,8 @@ type PagingResult struct {
 // ReduceFinds 分次查询合并数组,用于分次查询出数量较多的数据
 func ReduceFinds[T any](fn func(opt *QueryOption) []*T, size int) (arr []*T) {
 	begin := 0
+	// Pre-allocate with reasonable capacity to reduce reallocations
+	arr = make([]*T, 0, size*2)
 	for {
 		list := fn(&QueryOption{
 			Skip:  begin,
@@ -435,25 +462,33 @@ func UnifinedQueryPaging(o ORM, p *PagingParams, tables string, fields string) (
 	// 查询条件
 	where, args := "", []interface{}{}
 	if len(p.Arguments) > 0 {
-		where = " WHERE " + p.Arguments[0].(string)
-		args = p.Arguments[1:]
+		if str, ok := p.Arguments[0].(string); ok {
+			where = " WHERE " + str
+			args = p.Arguments[1:]
+		} else {
+			return &PagingResult{Rows: []interface{}{}}, fmt.Errorf("invalid query arguments: first argument must be string")
+		}
 	}
 	// 查询条数
-	sql := fmt.Sprintf("SELECT COUNT(*) %s %s", from, where)
-	o.Raw(sql, args...).Scan(&ret.Total)
+	countSQL := fmt.Sprintf("SELECT COUNT(*) %s %s", from, where)
+	if err := o.Raw(countSQL, args...).Scan(&ret.Total).Error; err != nil {
+		return &PagingResult{Rows: []interface{}{}}, fmt.Errorf("count query failed: %w", err)
+	}
 	// 查询行数
 	order := types.Ternary(p.Order != "", " ORDER BY "+p.Order, "")
 	if ret.Total > 0 {
 		skipper := GetSkipperSQL(o, p)
-		sql = strings.Join([]string{"SELECT", fields, from, where, order, skipper}, " ")
+		sql := strings.Join([]string{"SELECT", fields, from, where, order, skipper}, " ")
 		rows, err := o.Raw(sql, args...).Rows()
 		if err != nil {
-			log.Println("paging query rows error: %s", err.Error())
-		} else {
-			for _, v := range db.RowsToMarshalMap(rows) {
-				ret.Rows = append(ret.Rows, v)
-			}
-			rows.Close()
+			return &PagingResult{Total: ret.Total, Rows: []interface{}{}}, fmt.Errorf("paging query rows error: %w", err)
+		}
+		defer rows.Close()
+
+		// Pre-allocate rows slice
+		ret.Rows = make([]interface{}, 0, ret.Total)
+		for _, v := range db.RowsToMarshalMap(rows) {
+			ret.Rows = append(ret.Rows, v)
 		}
 	}
 	return &ret, nil
@@ -483,7 +518,14 @@ type EffectRow struct {
 }
 
 func ParseRow(v interface{}) *EffectRow {
-	return &EffectRow{v: v.(map[string]interface{})}
+	if v == nil {
+		return &EffectRow{v: make(map[string]interface{})}
+	}
+	if m, ok := v.(map[string]interface{}); ok {
+		return &EffectRow{v: m}
+	}
+	// Handle case where v is not a map[string]interface{}
+	return &EffectRow{v: make(map[string]interface{})}
 }
 
 func (p *EffectRow) AsInt(keys ...string) {

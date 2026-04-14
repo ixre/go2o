@@ -33,3 +33,6 @@ package.json
 yarn.lock
 bun*
 app-*.conf
+local.conf
+cmd/__debug_bin*
+
