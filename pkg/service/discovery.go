@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/ixre/go2o/internal/core/etcd"
+	"github.com/ixre/go2o/pkg/core/etcd"
 	"github.com/ixre/gof/log"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )

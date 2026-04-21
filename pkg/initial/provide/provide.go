@@ -1,8 +1,8 @@
 package provide
 
 import (
-	"github.com/ixre/go2o/pkg/bootstrap"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/wrap"
 
 	"github.com/gomodule/redigo/redis"

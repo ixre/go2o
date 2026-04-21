@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/ixre/go2o/pkg/bootstrap"
 	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/infrastructure/util/smtp"
+	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/variable"
 )

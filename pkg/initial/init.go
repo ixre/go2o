@@ -9,9 +9,9 @@
 package initial
 
 import (
-	"github.com/ixre/go2o/pkg/bootstrap"
 	"github.com/ixre/go2o/pkg/event/msq"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/variable"
 )

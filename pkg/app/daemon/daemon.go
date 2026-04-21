@@ -20,10 +20,10 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/pkg/app/daemon/job"
-	"github.com/ixre/go2o/pkg/bootstrap"
 	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/domain/interface/order"
 	"github.com/ixre/go2o/pkg/initial"
+	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/repos/clickhouse"
 	"github.com/ixre/go2o/pkg/service"
