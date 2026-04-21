@@ -6,16 +6,9 @@
  * description :
  * history :
  */
-package dto
+package model
 
 type (
-	SimpleMember struct {
-		Id     int    `json:"id"`
-		Name   string `json:"name"`
-		User   string `json:"user"`
-		Phone  string `json:"phone"`
-		Avatar string `json:"profilePhoto"`
-	}
 
 	// 邀请会员数据
 	InvitationMember struct {

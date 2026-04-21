@@ -13,7 +13,7 @@ import (
 	"log"
 	"regexp"
 
-	"github.com/ixre/go2o/internal/core/dto"
+	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/merchant/shop"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"

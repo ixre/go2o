@@ -12,7 +12,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ixre/go2o/internal/core/dto"
+	dto "github.com/ixre/go2o/internal/core/query/model"
 	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/types"

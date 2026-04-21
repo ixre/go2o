@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ixre/go2o/internal/core/dto"
+	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/cart"
 	"github.com/ixre/go2o/pkg/domain/interface/delivery"
 	"github.com/ixre/go2o/pkg/domain/interface/express"

@@ -12,10 +12,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strconv"
-	"strings"
 
-	"github.com/ixre/go2o/internal/core/dto"
+	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 	"github.com/ixre/go2o/pkg/domain/interface/wallet"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
@@ -48,26 +46,6 @@ func NewMemberQuery(o orm.Orm, fo fw.ORM) *MemberQuery {
 	q._certRepo.ORM = fo
 	q._extraRepo = fw.NewRepository[member.ExtraField](fo)
 	return q
-}
-
-// 获取会员列表
-func (m *MemberQuery) QueryMemberList(ids []int64) []*dto.MemberSummary {
-	var list []*dto.MemberSummary
-	strIds := make([]string, len(ids))
-	for i, v := range ids {
-		strIds[i] = strconv.Itoa(int(v))
-	}
-	if len(ids) > 0 {
-		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
-		query := fmt.Sprintf(`SELECT m.id,m.user,m.nick_name,m.profile_photo,m.level,
-				lv.name as level_name,a.integral,a.balance,a.wallet_balance,
-				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
-				m.update_time FROM mm_member m INNER JOIN mm_level lv
-				ON m.level = lv.id INNER JOIN mm_account a ON
-				 a.member_id = m.id AND m.id IN(%s) order by field(m.id,%s)`, inStr, inStr)
-		m.o.SelectByQuery(&list, query)
-	}
-	return list
 }
 
 // 获取账户余额分页记录
@@ -191,46 +169,6 @@ func (m *MemberQuery) GetLatestWalletLogByKind(memberId int64, kind int) *member
 	if err := m.o.GetBy(info, "member_id= $1 AND kind= $2 ORDER BY create_time DESC",
 		memberId, kind); err == nil {
 		return info
-	}
-	return nil
-}
-
-// 筛选会员根据用户或者手机
-func (m *MemberQuery) FilterMemberByUserOrPhone(key string) []*dto.SimpleMember {
-	qp := "%" + key + "%"
-	list := make([]*dto.SimpleMember, 0)
-	var id int
-	var user, name, phone, portrait string
-	m.Query(`SELECT id,user,mm_profile.name,mm_profile.phone,
-        mm_profile.profile_photo FROM mm_member
-        INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
-        WHERE user LIKE $1 OR mm_profile.name LIKE $2 OR
-        mm_profile.phone LIKE $3`, func(rows *sql.Rows) {
-		for rows.Next() {
-			rows.Scan(&id, &user, &name, &phone, &portrait)
-			list = append(list, &dto.SimpleMember{
-				Id:     id,
-				User:   user,
-				Name:   name,
-				Phone:  phone,
-				Avatar: portrait,
-			})
-		}
-	}, qp, qp, qp)
-	return list
-}
-
-func (m *MemberQuery) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
-	e := dto.SimpleMember{}
-	err := m.QueryRow(`SELECT id,user,mm_profile.name,mm_profile.phone,
-        mm_profile.profile_photo FROM mm_member
-        INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
-        WHERE user = $1 OR mm_profile.phone = $2`, func(rows *sql.Row) error {
-		er := rows.Scan(&e.Id, &e.User, &e.Name, &e.Phone, &e.Avatar)
-		return er
-	}, key, key)
-	if err == nil {
-		return &e
 	}
 	return nil
 }

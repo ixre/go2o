@@ -16,8 +16,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/internal/core/dto"
 	"github.com/ixre/go2o/internal/core/query"
+	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/internal/core/service/parser"
 	de "github.com/ixre/go2o/pkg/domain/interface/domain"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
@@ -1337,9 +1337,9 @@ func (m *merchantService) GenerateBill(_ context.Context, req *proto.GenerateMer
 		} else if billType == merchant.BillTypeMonthly {
 			// 创建月度账单
 			var err error
-			bill,err = manager.CreateBill(merchant.BillTypeMonthly, int(req.Unixtime))
-			if err != nil{
-				return m.errorV2(err),nil
+			bill, err = manager.CreateBill(merchant.BillTypeMonthly, int(req.Unixtime))
+			if err != nil {
+				return m.errorV2(err), nil
 			}
 		} else {
 			return m.errorV2(errors.New("账单类型不支持")), nil

@@ -12,7 +12,7 @@ import (
 	"github.com/ixre/go2o/internal/core/query"
 	"github.com/ixre/go2o/internal/core/repos"
 	impl2 "github.com/ixre/go2o/internal/core/service/impl"
-	"github.com/ixre/go2o/internal/core/sp"
+	"github.com/ixre/go2o/internal/external"
 	"github.com/ixre/go2o/pkg/domain/interface/ad"
 	"github.com/ixre/go2o/pkg/domain/interface/aftersales"
 	"github.com/ixre/go2o/pkg/domain/interface/approval"
@@ -625,11 +625,11 @@ func GetLogRepo() sys.IApplicationRepository {
 // Injectors from service.go:
 
 // GetSPConfig 获取第三方服务自动配置
-func GetSPConfig() *sp.ServiceProviderConfiguration {
+func GetSPConfig() *external.ServiceProviderConfiguration {
 	storageInterface := provide.GetStorageInstance()
 	orm := provide.GetOrmInstance()
 	iRegistryRepo := repos.NewRegistryRepo(orm, storageInterface)
-	serviceProviderConfiguration := sp.NewSPConfig(storageInterface, iRegistryRepo)
+	serviceProviderConfiguration := external.NewSPConfig(storageInterface, iRegistryRepo)
 	return serviceProviderConfiguration
 }
 
@@ -1263,5 +1263,5 @@ var daoProvideSets = wire.NewSet(
 )
 
 var InjectProvideSets = wire.NewSet(
-	daoProvideSets, impl2.NewStatusService, impl2.NewRegistryService, impl2.NewMerchantService, impl2.NewPromotionService, impl2.NewSystemService, impl2.NewMemberService, impl2.NewShopService, impl2.NewProductService, impl2.NewItemService, impl2.NewShoppingService, impl2.NewCartService, impl2.NewAfterSalesService, impl2.NewAdvertisementService, impl2.NewPaymentService, impl2.NewQuickPayService, impl2.NewMessageService, impl2.NewExpressService, impl2.NewShipmentService, impl2.NewContentService, impl2.NewWalletService, impl2.NewCodeService, impl2.NewQueryService, impl2.NewRbacService, impl2.NewAppService, impl2.NewPortalService, impl2.NewPersonFinanceService, impl2.NewExecutionService, impl2.NewCheckService, impl2.NewInvoiceService, impl2.NewChatService, impl2.NewWorkorderService, impl2.NewApprovalService, impl2.NewServiceProviderService, event.NewEventSource, handler.NewEventHandler, handler.NewPaymentEventHandler, handler.NewMerchantEventHandler, handler.NewInvoiceEventHandler, sp.NewSPConfig,
+	daoProvideSets, impl2.NewStatusService, impl2.NewRegistryService, impl2.NewMerchantService, impl2.NewPromotionService, impl2.NewSystemService, impl2.NewMemberService, impl2.NewShopService, impl2.NewProductService, impl2.NewItemService, impl2.NewShoppingService, impl2.NewCartService, impl2.NewAfterSalesService, impl2.NewAdvertisementService, impl2.NewPaymentService, impl2.NewQuickPayService, impl2.NewMessageService, impl2.NewExpressService, impl2.NewShipmentService, impl2.NewContentService, impl2.NewWalletService, impl2.NewCodeService, impl2.NewQueryService, impl2.NewRbacService, impl2.NewAppService, impl2.NewPortalService, impl2.NewPersonFinanceService, impl2.NewExecutionService, impl2.NewCheckService, impl2.NewInvoiceService, impl2.NewChatService, impl2.NewWorkorderService, impl2.NewApprovalService, impl2.NewServiceProviderService, event.NewEventSource, handler.NewEventHandler, handler.NewPaymentEventHandler, handler.NewMerchantEventHandler, handler.NewInvoiceEventHandler, external.NewSPConfig,
 )

@@ -8,9 +8,7 @@
  */
 package member
 
-import (
-	"github.com/ixre/go2o/internal/core/dto"
-)
+import dto "github.com/ixre/go2o/internal/core/query/model"
 
 /** 礼品/卡/券  **/
 

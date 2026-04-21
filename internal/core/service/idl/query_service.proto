@@ -23,12 +23,7 @@ service QueryService {
     // 查询分页交易/服务类订单
     rpc QueryTradeOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
     }
-    // 查询会员列表
-    rpc QueryMemberList (MemberListRequest) returns (MemberListResponse) {
-    }
-    // 查询会员列表
-    rpc SearchMembers (MemberSearchRequest) returns (MemberListResponse) {
-    }
+  
     // 获取分页店铺收藏
     rpc QueryMemberFavoriteShops (FavoriteQueryRequest) returns (PagingShopFavoriteResponse) {
     }

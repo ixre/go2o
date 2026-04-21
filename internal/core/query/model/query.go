@@ -6,16 +6,9 @@
  * description :
  * history :
  */
-package dto
+package model
 
 type (
-	//操作消息结果
-	MessageResult struct {
-		Result  bool   `json:"result"`
-		Message string `json:"message"`
-		Tag     int    `json:"tag"`
-	}
-
 	// 站内信
 	SiteMessage struct {
 		// 编号
@@ -40,14 +33,6 @@ type (
 		HasRead int `db:"has_read"`
 		// 阅读时间
 		ReadTime int64 `db:"read_time"`
-	}
-
-	// 商品查询复合信息
-	GoodsComplex struct {
-		GoodsId int    `db:"id"`
-		ItemId  int    `db:"item_id"`
-		MchId   int    `db:"mch_id"`
-		MchName string `db:"mch_name"`
 	}
 
 	PagedMemberAfterSalesOrder struct {

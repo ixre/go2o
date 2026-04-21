@@ -8,7 +8,7 @@ import (
 	"github.com/ixre/go2o/internal/core/query"
 	"github.com/ixre/go2o/internal/core/repos"
 	spd "github.com/ixre/go2o/internal/core/service/impl"
-	"github.com/ixre/go2o/internal/core/sp"
+	"github.com/ixre/go2o/internal/external"
 	"github.com/ixre/go2o/pkg/event"
 	"github.com/ixre/go2o/pkg/event/handler"
 	"github.com/ixre/go2o/pkg/initial/provide"
@@ -128,7 +128,7 @@ var InjectProvideSets = wire.NewSet(
 	handler.NewMerchantEventHandler,
 	handler.NewInvoiceEventHandler,
 	// 其他
-	sp.NewSPConfig,
+	external.NewSPConfig,
 )
 
 func GetStationQueryService() *query.StationQuery {

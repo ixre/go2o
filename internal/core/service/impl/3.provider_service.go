@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 
-	"github.com/ixre/go2o/internal/core/sp/tencent"
+	"github.com/ixre/go2o/internal/external/tencent"
 	"github.com/ixre/go2o/pkg/service/proto"
 )
 

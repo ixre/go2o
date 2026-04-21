@@ -1,7 +1,7 @@
-package sp
+package external
 
 import (
-	"github.com/ixre/go2o/internal/core/sp/tencent"
+	"github.com/ixre/go2o/internal/external/tencent"
 	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/infrastructure/util/lbs"
 	"github.com/ixre/go2o/pkg/infrastructure/util/sms"

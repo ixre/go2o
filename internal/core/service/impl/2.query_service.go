@@ -4,9 +4,10 @@ import (
 	"context"
 	"strings"
 
-	"github.com/ixre/go2o/internal/core/dto"
 	"github.com/ixre/go2o/internal/core/query"
+	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/internal/core/service/parser"
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 	"github.com/ixre/go2o/pkg/domain/interface/order"
 	"github.com/ixre/go2o/pkg/domain/interface/product"
@@ -14,7 +15,6 @@ import (
 	"github.com/ixre/go2o/pkg/infrastructure/format"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/go2o/pkg/service/proto"
-	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 )
@@ -210,43 +210,6 @@ func (q *queryService) parseTradeOrder(src *proto.SSingleOrder) *proto.SMemberPa
 		CreateTime: src.SubmitTime,
 		//Items:      make([]*proto.SOrderItem, 0),
 	}
-}
-
-func (q *queryService) QueryMemberList(_ context.Context, r *proto.MemberListRequest) (*proto.MemberListResponse, error) {
-	list := q.memberQuery.QueryMemberList(r.IdList)
-	var rsp = &proto.MemberListResponse{
-		Value: make([]*proto.MemberListSingle, len(list)),
-	}
-	for i, v := range list {
-		rsp.Value[i] = &proto.MemberListSingle{
-			MemberId:      int64(v.MemberId),
-			Username:      v.Usr,
-			Nickname:      v.Name,
-			ProfilePhoto:  v.Avatar,
-			Level:         v.Level,
-			Integral:      v.Integral,
-			Balance:       v.Balance,
-			WalletBalance: v.WalletBalance,
-		}
-	}
-	return rsp, nil
-}
-
-// SearchMembers 根据用户或手机筛选会员
-func (q *queryService) SearchMembers(_ context.Context, r *proto.MemberSearchRequest) (*proto.MemberListResponse, error) {
-	list := q.memberQuery.FilterMemberByUserOrPhone(r.Keyword)
-	ret := &proto.MemberListResponse{
-		Value: make([]*proto.MemberListSingle, len(list)),
-	}
-	for i, v := range list {
-		ret.Value[i] = &proto.MemberListSingle{
-			MemberId:     int64(v.Id),
-			Username:     v.User,
-			Nickname:     v.Name,
-			ProfilePhoto: v.Avatar,
-		}
-	}
-	return ret, nil
 }
 
 // 获取分页店铺收藏

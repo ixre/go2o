@@ -18,8 +18,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/internal/core/dto"
 	"github.com/ixre/go2o/internal/core/query"
+	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/internal/module"
 	"github.com/ixre/go2o/pkg/constants"
 	de "github.com/ixre/go2o/pkg/domain/interface/domain"

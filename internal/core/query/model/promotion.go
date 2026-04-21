@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package dto
+package model
 
 type (
 	//member_rep LINE:562

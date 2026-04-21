@@ -1,4 +1,4 @@
-package dto
+package model
 
 // 商品销售记录
 type ItemSalesHistoryDto struct {
