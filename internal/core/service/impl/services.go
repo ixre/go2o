@@ -13,7 +13,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/ixre/go2o/pkg/repos/clickhouse"
+	"github.com/ixre/go2o/internal/core/repos/clickhouse"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof"
 )

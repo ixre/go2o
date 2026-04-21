@@ -10,7 +10,7 @@ package mss
 
 import "regexp"
 
-var reg = regexp.MustCompile("\\{([^\\}]+)\\}")
+var reg = regexp.MustCompile(`\{([^\}]+)\}`)
 
 // 翻译标签
 func Transplate(c string, m map[string]string) string {

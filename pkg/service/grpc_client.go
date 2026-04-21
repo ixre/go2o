@@ -15,7 +15,7 @@ import (
 
 	"log"
 
-	"github.com/ixre/go2o/pkg/core/etcd"
+	"github.com/ixre/go2o/pkg/infrastructure/etcd"
 	"github.com/ixre/go2o/pkg/service/proto"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"

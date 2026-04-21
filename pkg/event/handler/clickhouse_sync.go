@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
+	"github.com/ixre/go2o/internal/core/repos/clickhouse"
 	"github.com/ixre/go2o/pkg/event/events"
-	"github.com/ixre/go2o/pkg/repos/clickhouse"
 )
 
 func (h EventHandler) HandleWalletLogWriteEvent(data interface{}) {

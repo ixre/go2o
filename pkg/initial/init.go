@@ -9,6 +9,7 @@
 package initial
 
 import (
+	"github.com/ixre/go2o/internal/core/repos"
 	"github.com/ixre/go2o/pkg/event/msq"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
@@ -34,6 +35,9 @@ func Init(a *bootstrap.AppConfigLoader, debug, trace bool) bool {
 	for _, f := range startJobs {
 		go f()
 	}
+
+	repos.OrmMapping(provide.GetOrmInstance())
+
 	return true
 }
 

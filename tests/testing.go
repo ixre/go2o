@@ -12,15 +12,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/ixre/go2o/pkg/core/etcd"
 	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/event/msq"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infrastructure/etcd"
 	"github.com/ixre/go2o/pkg/initial"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/inject"
-	"github.com/ixre/go2o/pkg/repos"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -70,7 +69,6 @@ func init() {
 	}
 	app := bootstrap.NewApp(confPath, &cfg)
 	initial.Init(app, false, false)
-	repos.OrmMapping()
 	// 初始化第三方配置
 	inject.GetSPConfig().Configure()
 	// 初始化nats
