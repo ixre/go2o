@@ -147,7 +147,7 @@ func (m *messageRepoImpl) JoinMailTaskToQueen(v *mss.MailTask) error {
 	if err == nil {
 		//rc := core.GetRedisConn()
 		//defer rc.Close()
-		//rc.Do("RPUSH", variable.KvNewMailTask, v.Id) // push to queue
+		//rc.Do("RPUSH", constants.QueueNewMailTask, v.Id) // push to queue
 	}
 	return err
 }

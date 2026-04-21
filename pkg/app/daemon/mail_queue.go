@@ -13,11 +13,11 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
+	"github.com/ixre/go2o/pkg/constants"
 	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/infrastructure/util/smtp"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
-	"github.com/ixre/go2o/pkg/variable"
 )
 
 var (
@@ -30,7 +30,7 @@ func startMailQueue(ss []Service) {
 	defer conn.Close()
 	//var id int
 	for {
-		arr, err := redis.Values(conn.Do("BLPOP", variable.KvNewMailTask, 0))
+		arr, err := redis.Values(conn.Do("BLPOP", constants.QueueNewMailTask, 0))
 		if err == nil {
 			_, err = strconv.Atoi(string(arr[1].([]byte)))
 			if err == nil {

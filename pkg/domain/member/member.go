@@ -775,7 +775,7 @@ func (m *memberImpl) prepare() (err error) {
 	//pro.Im = strings.TrimSpace(pro.Im)
 	//if perm.NeedIm && len(pro.Im) == 0 {
 	//	return 0, errors.New(strings.Replace(member.ErrMissingIM.Error(),
-	//		"IM", variable.AliasMemberIM, -1))
+	//		"IM", constants.AliasMemberIM, -1))
 	//}
 	m.value.Nickname = strings.TrimSpace(m.value.Nickname)
 	m.value.RealName = strings.TrimSpace(m.value.RealName)

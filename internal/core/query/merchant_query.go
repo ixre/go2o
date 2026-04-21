@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/domain/interface/approval"
 	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/domain/interface/merchant"
@@ -22,7 +23,6 @@ import (
 	"github.com/ixre/go2o/pkg/infrastructure/fw/collections"
 	"github.com/ixre/go2o/pkg/infrastructure/util"
 	"github.com/ixre/go2o/pkg/initial/provide"
-	"github.com/ixre/go2o/pkg/variable"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/storage"
@@ -67,7 +67,7 @@ func getHostRegexp() *regexp.Regexp {
 	if commHostRegexp == nil {
 		cfg := provide.GetApp().Config()
 		commHostRegexp = regexp.MustCompile("([^\\.]+)." +
-			cfg.GetString(variable.ServerDomain))
+			cfg.GetString(constants.ConfigServerDomain))
 	}
 	return commHostRegexp
 }

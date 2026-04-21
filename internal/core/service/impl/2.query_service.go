@@ -14,7 +14,7 @@ import (
 	"github.com/ixre/go2o/pkg/infrastructure/format"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/go2o/pkg/service/proto"
-	"github.com/ixre/go2o/pkg/variable"
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 )
@@ -81,7 +81,7 @@ func (q *queryService) PagingShops(_ context.Context, r *proto.QueryPagingShopRe
 	if len(rows) > 0 {
 		for i, v := range rows {
 			if v.Host == "" {
-				v.Host = v.Alias + "." + variable.Domain
+				v.Host = v.Alias + "." + constants.Domain
 			}
 			ret.Value[i] = &proto.QueryPagingShop{
 				Id:         v.Id,

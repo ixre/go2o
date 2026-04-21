@@ -19,11 +19,11 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/service"
 	"github.com/ixre/go2o/pkg/service/proto"
-	"github.com/ixre/go2o/pkg/variable"
 	"github.com/ixre/gof/util"
 )
 
@@ -54,7 +54,7 @@ func superviseOrder(ss []Service) {
 	defer conn.Close()
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
-			variable.KvOrderBusinessQueue, 0)) //取出队列的一个元素
+			constants.QueueOrderBusiness, 0)) //取出队列的一个元素
 		if err == nil {
 			//通知订单更新
 			orderNo := string(arr[1])
@@ -92,7 +92,7 @@ func superviseMemberUpdate(ss []Service) {
 	defer conn.Close()
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
-			variable.KvMemberUpdateQueue, 0))
+			constants.QueueMemberUpdate, 0))
 		if err == nil {
 			//通知会员修改,格式如: 1-[create|update]
 			s := string(arr[1])
@@ -128,7 +128,7 @@ func supervisePaymentOrderFinish(ss []Service) {
 	defer conn.Close()
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
-			variable.KvPaymentOrderFinishQueue, 0))
+			constants.QueuePaymentOrderFinish, 0))
 		if err == nil {
 			//通知服务
 			s := string(arr[1])
@@ -163,7 +163,7 @@ func memberAutoUnlock() {
 	conn := bootstrap.GetRedisConn()
 	defer conn.Close()
 	tick := util.GetMinuteSlice(time.Now(), 1)
-	key := fmt.Sprintf("%s:%s:*", variable.KvMemberAutoUnlock, tick)
+	key := fmt.Sprintf("%s:%s:*", constants.QueueMemberAutoUnlock, tick)
 	//获取标记为等待过期的订单
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
@@ -193,7 +193,7 @@ func orderAutoReceive() {
 	conn := bootstrap.GetRedisConn()
 	defer conn.Close()
 	tick := getTick(time.Now())
-	key := fmt.Sprintf("%s:*:%s", variable.KvOrderAutoReceive, tick)
+	key := fmt.Sprintf("%s:*:%s", constants.QueueOrderAutoReceive, tick)
 	//key = "go2o:order:autoreceive:11-0-2:*"
 	//获取标记为自动收货的订单
 	list, err := redis.Strings(conn.Do("KEYS", key))

@@ -10,11 +10,11 @@ package initial
 
 import (
 	"github.com/ixre/go2o/internal/core/repos"
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/event/msq"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
-	"github.com/ixre/go2o/pkg/variable"
 )
 
 var startJobs = make([]func(), 0)
@@ -30,7 +30,7 @@ func Init(a *bootstrap.AppConfigLoader, debug, trace bool) bool {
 	provide.Configure(a)
 	//a._debugMode = debug
 	// 初始化变量
-	variable.Domain = a.Config().GetString(variable.ServerDomain)
+	constants.Domain = a.Config().GetString(constants.ConfigServerDomain)
 	a.Loaded = true
 	for _, f := range startJobs {
 		go f()

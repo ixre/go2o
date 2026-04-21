@@ -188,7 +188,7 @@ func (p *paymentRepoImpl) SavePaymentOrder(v *payment.Order) (int, error) {
 func (p *paymentRepoImpl) notifyPaymentFinish(paymentOrderId int) error {
 	//rc := core.GetRedisConn()
 	//defer rc.Close()
-	//_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)
+	//_, err := rc.Do("RPUSH", constants.QueuePaymentOrderFinishQueue, paymentOrderId)
 	////log.Println("--  推送支付单成功", paymentOrderId,err)
 	//return err
 	return nil

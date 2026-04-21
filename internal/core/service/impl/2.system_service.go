@@ -273,7 +273,7 @@ func (s *systemServiceImpl) GetSyncLoginUrl(_ context.Context, s2 *proto.String)
 	panic("not implement")
 	//return fmt.Sprintf("%_s://%_s%_s/auth?return_url=%_s",
 	//	consts.DOMAIN_PASSPORT_PROTO, consts.DOMAIN_PREFIX_PASSPORT,
-	//	variable.Domain, returnUrl), nil
+	//	constants.Domain, returnUrl), nil
 }
 
 // 获取移动应用设置

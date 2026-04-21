@@ -35,7 +35,7 @@ import (
 	"github.com/ixre/go2o/pkg/infrastructure/regex"
 	"github.com/ixre/go2o/pkg/module"
 	"github.com/ixre/go2o/pkg/service/proto"
-	"github.com/ixre/go2o/pkg/variable"
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/typeconv"
 	"github.com/ixre/gof/util"
@@ -723,7 +723,7 @@ func (s *memberService) CheckProfileComplete(_ context.Context, id *proto.Member
 			case "address":
 				err = errors.New("未完善地址")
 			case "im":
-				err = errors.New("未完善" + variable.AliasMemberIM)
+				err = errors.New("未完善" + constants.AliasMemberIM)
 			}
 		}
 	}

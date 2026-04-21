@@ -12,7 +12,7 @@ import (
 	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/domain/interface/wallet"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
-	"github.com/ixre/go2o/pkg/variable"
+	"github.com/ixre/go2o/pkg/constants"
 )
 
 var _ merchant.IAccount = new(accountImpl)
@@ -222,12 +222,12 @@ func (a *accountImpl) TransferToMember(amount int) error {
 		return member.ErrNoSuchMember
 	}
 	l := a.createBalanceLog(merchant.KindAccountTransferToMember,
-		"提取到会员"+variable.AliasWalletAccount, "", -int64(amount), 0, 1)
+		"提取到会员"+constants.AliasWalletAccount, "", -int64(amount), 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
 		_, err = m.GetAccount().CarryTo(member.AccountWallet,
 			member.AccountOperateData{
-				TransactionTitle:   variable.AliasMerchantBalanceAccount + "提现",
+				TransactionTitle:   constants.AliasMerchantBalanceAccount + "提现",
 				Amount:             amount * 100,
 				OuterTransactionNo: "",
 				TransactionRemark:  "sys",
@@ -277,12 +277,12 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 		return member.ErrNoSuchMember
 	}
 	l := a.createBalanceLog(merchant.KindAccountTransferToMember,
-		"提取到会员"+variable.AliasWalletAccount, "", -int64(amount), 0, 1)
+		"提取到会员"+constants.AliasWalletAccount, "", -int64(amount), 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
 		_, err = m.GetAccount().CarryTo(member.AccountWallet,
 			member.AccountOperateData{
-				TransactionTitle:   variable.AliasMerchantBalanceAccount + "提现",
+				TransactionTitle:   constants.AliasMerchantBalanceAccount + "提现",
 				Amount:             int(amount * 100),
 				OuterTransactionNo: "",
 				TransactionRemark:  "sys",

@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/domain/interface/approval"
 	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/domain/interface/invoice"
@@ -36,7 +37,6 @@ import (
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/infrastructure/regex"
 	"github.com/ixre/go2o/pkg/initial/provide"
-	"github.com/ixre/go2o/pkg/variable"
 	"github.com/ixre/gof/storage"
 )
 
@@ -451,7 +451,7 @@ func (m *merchantImpl) GetMajorHost() string {
 		host := m._repo.GetMerchantMajorHost(int(m.GetAggregateRootId()))
 		if len(host) == 0 {
 			cfg := provide.GetApp().Config()
-			host = fmt.Sprintf("%s.%s", m._value.Username, cfg.GetString(variable.ServerDomain))
+			host = fmt.Sprintf("%s.%s", m._value.Username, cfg.GetString(constants.ConfigServerDomain))
 		}
 		m._host = host
 	}

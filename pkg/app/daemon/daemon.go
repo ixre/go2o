@@ -21,6 +21,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/internal/core/repos/clickhouse"
 	"github.com/ixre/go2o/pkg/app/daemon/job"
+	"github.com/ixre/go2o/pkg/constants"
 	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/domain/interface/order"
 	"github.com/ixre/go2o/pkg/initial"
@@ -28,7 +29,6 @@ import (
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/service"
 	"github.com/ixre/go2o/pkg/service/proto"
-	"github.com/ixre/go2o/pkg/variable"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -299,7 +299,7 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SSingleOrd
 	// 	tk := getTick(t)
 	// 	orderNo, sub := d.testSubId(o)
 	// 	prefix := types.StringCond(sub, "sub!", "")
-	// 	key := fmt.Sprintf("%s:%s%s:%s", variable.KvOrderExpiresTime, prefix, orderNo, tk)
+	// 	key := fmt.Sprintf("%s:%s%s:%s", constants.QueueOrderExpiresTime, prefix, orderNo, tk)
 	// 	//log.Println(" [Daemon][Exprire][ Key]:", key)
 	// 	conn.Do("SET", key, unix)
 	// }
@@ -309,7 +309,7 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *proto.SSingleOrd
 func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *proto.SSingleOrder) {
 	orderNo, sub := d.testSubId(o)
 	prefix := types.StringCond(sub, "sub!", "")
-	key := fmt.Sprintf("%s:%s%s:*", variable.KvOrderExpiresTime, prefix, orderNo)
+	key := fmt.Sprintf("%s:%s%s:*", constants.QueueOrderExpiresTime, prefix, orderNo)
 	d.batchDelKeys(conn, key)
 }
 
@@ -339,7 +339,7 @@ func (d *defaultService) orderAutoReceive(conn redis.Conn, o *proto.SSingleOrder
 	// 	tk := getTick(t)
 	// 	orderNo, sub := d.testSubId(o)
 	// 	prefix := types.StringCond(sub, "sub!", "")
-	// 	key := fmt.Sprintf("%s:%s%s:%s", variable.KvOrderAutoReceive, prefix, orderNo, tk)
+	// 	key := fmt.Sprintf("%s:%s%s:%s", constants.QueueOrderAutoReceive, prefix, orderNo, tk)
 	// 	//log.Println(" [Daemon][AutoReceive][ Key]:", key)
 	// 	conn.Do("SET", key, unix)
 	// }
@@ -350,7 +350,7 @@ func (d *defaultService) orderReceived(conn redis.Conn, o *proto.SSingleOrder) {
 	if o.Status == order.StatCompleted {
 		orderNo, sub := d.testSubId(o)
 		prefix := types.StringCond(sub, "sub!", "")
-		key := fmt.Sprintf("%s:%s%s:*", variable.KvOrderAutoReceive, prefix, orderNo)
+		key := fmt.Sprintf("%s:%s%s:*", constants.QueueOrderAutoReceive, prefix, orderNo)
 		d.batchDelKeys(conn, key)
 	}
 }
@@ -374,8 +374,8 @@ func Run(ctx gof.App) {
 		appCtx = bootstrap.NewApp("app.conf", nil)
 	}
 	conn = appCtx.Db()
-	//sMail := true // appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
-	//sMail := cnf.GetString(variable.)
+	//sMail := true // appCtx.Config().GetString(constants.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
+	//sMail := cnf.GetString(constants.)
 
 	//s := &defaultService{
 	//	sMember: true,

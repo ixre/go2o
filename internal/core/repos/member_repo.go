@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/internal/core/dto"
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/domain/interface/registry"
@@ -28,7 +29,6 @@ import (
 	"github.com/ixre/go2o/pkg/infrastructure/format"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	tool "github.com/ixre/go2o/pkg/infrastructure/util"
-	"github.com/ixre/go2o/pkg/variable"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
@@ -295,9 +295,9 @@ func (m *MemberRepoImpl) SaveMember(v *member.Member) (int64, error) {
 		//rc := core.GetRedisConn()
 		//defer rc.Close()
 		//// 保存最后更新时间
-		//mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
+		//mutKey := fmt.Sprintf("%s%d", constants.QueueMemberUpdateTime, v.Id)
 		//rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
-		//rc.Do("RPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
+		//rc.Do("RPUSH", constants.QueueMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
 
 		// 保存会员信息
 		_, _, err := m._orm.Save(v.Id, v)
@@ -406,10 +406,10 @@ func (m *MemberRepoImpl) pushToAccountUpdateQueue(memberId int, updateTime int) 
 	//rc := core.GetRedisConn()
 	//defer rc.Close()
 	//// 保存最后更新时间
-	//mutKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
+	//mutKey := fmt.Sprintf("%s%d", constants.QueueAccountUpdateTime, memberId)
 	//rc.Do("SETEX", mutKey, 3600*400, updateTime)
 	//// push to tcp notify queue
-	//rc.Do("RPUSH", variable.KvAccountUpdateTcpNotifyQueue, memberId)
+	//rc.Do("RPUSH", constants.QueueAccountUpdateTcpNotifyQueue, memberId)
 }
 
 // 获取银行信息
@@ -801,7 +801,7 @@ func (m *MemberRepoImpl) SaveLockInfo(v *member.MmLockInfo) (int, error) {
 // 存储自动解锁信息到任务队列
 func (m *MemberRepoImpl) RegisterUnlockJob(v *member.MmLockInfo) {
 	slice := util.GetMinuteSlice(time.Unix(v.UnlockTime, 0), 1)
-	key := fmt.Sprintf("%s:%s:%d", variable.KvMemberAutoUnlock, slice, v.MemberId)
+	key := fmt.Sprintf("%s:%s:%d", constants.QueueMemberAutoUnlock, slice, v.MemberId)
 	m.storage.SetExpire(key, v.MemberId, v.UnlockTime-v.LockTime+120)
 }
 

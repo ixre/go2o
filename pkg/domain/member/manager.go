@@ -20,7 +20,7 @@ import (
 	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/go2o/pkg/infrastructure/regex"
-	"github.com/ixre/go2o/pkg/variable"
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/gof/util"
 )
 
@@ -147,7 +147,7 @@ func (m *memberManagerImpl) PrepareRegister(v *member.Member,
 	pro.Im = strings.TrimSpace(pro.Im)
 	if needIm && len(pro.Im) == 0 {
 		return 0, errors.New(strings.Replace(member.ErrMissingIM.Error(),
-			"IM", variable.AliasMemberIM, -1))
+			"IM", constants.AliasMemberIM, -1))
 	}
 
 	pro.Name = strings.TrimSpace(pro.Name)

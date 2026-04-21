@@ -16,7 +16,7 @@ func InitialModules() {
 
 func initSSOModule() {
 
-	//domain := variable.Domain
+	//domain := constants.Domain
 	//service := inject.GetRegistryService()
 
 	// keys := []string{

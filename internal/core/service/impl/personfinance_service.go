@@ -17,7 +17,7 @@ import (
 	"github.com/ixre/go2o/pkg/domain/interface/personfinance"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/service/proto"
-	"github.com/ixre/go2o/pkg/variable"
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/gof/log"
 )
 
@@ -83,7 +83,7 @@ func (p *personFinanceService) RiseTransferOut(_ context.Context, r *proto.RiseT
 		if err == nil {
 			_, err = acc.CarryTo(member.AccountBalance,
 				member.AccountOperateData{
-					TransactionTitle:   variable.AliasGrowthAccount + "转出",
+					TransactionTitle:   constants.AliasGrowthAccount + "转出",
 					Amount:             int(r.Amount * 100),
 					OuterTransactionNo: tradeNo,
 					TransactionRemark:  "sys",
@@ -104,7 +104,7 @@ func (p *personFinanceService) RiseTransferOut(_ context.Context, r *proto.RiseT
 		if err == nil {
 			_, err = acc.CarryTo(member.AccountWallet,
 				member.AccountOperateData{
-					TransactionTitle:   variable.AliasGrowthAccount + "转出",
+					TransactionTitle:   constants.AliasGrowthAccount + "转出",
 					Amount:             int(r.Amount * 100),
 					OuterTransactionNo: tradeNo,
 					TransactionRemark:  "sys",
@@ -164,7 +164,7 @@ func (p *personFinanceService) OpenRiseService(_ context.Context, id *proto.Pers
 	if m == nil {
 		err = member.ErrNoSuchMember
 	} else {
-		if m.GetValue().Level < int(variable.PersonFinanceMinLevelLimit) {
+		if m.GetValue().Level < int(constants.PersonFinanceMinLevelLimit) {
 			err = errors.New("会员等级不够,请升级后再开通理财账户！")
 		} else {
 			pf := p.repo.GetPersonFinance(id.Value)

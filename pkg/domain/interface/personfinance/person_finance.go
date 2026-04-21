@@ -11,7 +11,7 @@ package personfinance
 import (
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
-	"github.com/ixre/go2o/pkg/variable"
+	"github.com/ixre/go2o/pkg/constants"
 )
 
 var (
@@ -28,9 +28,9 @@ var (
 	TransferInWithText = func(w TransferWith) string {
 		switch w {
 		case TransferFromWithBalance:
-			return variable.AliasBalanceAccount
+			return constants.AliasBalanceAccount
 		case TransferFromWithWallet:
-			return variable.AliasWalletAccount
+			return constants.AliasWalletAccount
 		}
 		return "nil"
 	}
@@ -39,9 +39,9 @@ var (
 	TransferOutWithText = func(w TransferWith) string {
 		switch w {
 		case TransferOutWithBalance:
-			return variable.AliasBalanceAccount
+			return constants.AliasBalanceAccount
 		case TransferOutWithWallet:
-			return variable.AliasWalletAccount
+			return constants.AliasWalletAccount
 		case TransferOutWithBank:
 			return "银行账户"
 		}
