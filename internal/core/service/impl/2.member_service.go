@@ -20,6 +20,8 @@ import (
 
 	"github.com/ixre/go2o/internal/core/dto"
 	"github.com/ixre/go2o/internal/core/query"
+	"github.com/ixre/go2o/internal/module"
+	"github.com/ixre/go2o/pkg/constants"
 	de "github.com/ixre/go2o/pkg/domain/interface/domain"
 	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
@@ -33,9 +35,7 @@ import (
 	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/go2o/pkg/infrastructure/regex"
-	"github.com/ixre/go2o/pkg/module"
 	"github.com/ixre/go2o/pkg/service/proto"
-	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/typeconv"
 	"github.com/ixre/gof/util"

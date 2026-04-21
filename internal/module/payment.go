@@ -1,8 +1,8 @@
 package module
 
 import (
-	"github.com/ixre/go2o/pkg/module/bank"
-	"github.com/ixre/go2o/pkg/module/pay"
+	"github.com/ixre/go2o/internal/module/bank"
+	"github.com/ixre/go2o/internal/module/pay"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/storage"
 )

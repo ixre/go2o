@@ -12,10 +12,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ixre/go2o/internal/module"
 	"github.com/ixre/go2o/pkg/domain/interface/delivery"
 	"github.com/ixre/go2o/pkg/domain/interface/express"
 	"github.com/ixre/go2o/pkg/domain/interface/shipment"
-	"github.com/ixre/go2o/pkg/module"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/log"
 )

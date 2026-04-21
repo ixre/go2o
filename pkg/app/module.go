@@ -3,8 +3,8 @@ package app
 import (
 	"context"
 
+	"github.com/ixre/go2o/internal/module/express/kdniao"
 	"github.com/ixre/go2o/pkg/inject"
-	"github.com/ixre/go2o/pkg/module/express/kdniao"
 	"github.com/ixre/go2o/pkg/service/proto"
 )
 
