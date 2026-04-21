@@ -8,8 +8,6 @@
  */
 package member
 
-import dto "github.com/ixre/go2o/internal/core/query/model"
-
 type IInvitationManager interface {
 	// 获取邀请人数组
 	InviterArray(memberId int64, depth int) []int64
@@ -18,7 +16,7 @@ type IInvitationManager interface {
 	InvitationBy(memberId int64) bool
 
 	// 获取我邀请的会员
-	GetInvitationMembers(begin, end int) (total int, rows []*dto.InvitationMember)
+	GetInvitationMembers(begin, end int) (total int, rows []*InvitationMemberObject)
 
 	// 获取邀请会员下级邀请数量
 	GetSubInvitationNum(memberIdArr []int32) map[int32]int

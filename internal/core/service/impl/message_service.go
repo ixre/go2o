@@ -12,7 +12,7 @@ import (
 	"context"
 	"fmt"
 
-	dto "github.com/ixre/go2o/internal/core/query/model"
+	"github.com/ixre/go2o/internal/core/query"
 	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/types"
@@ -239,12 +239,12 @@ func (m *messageService) SendSiteMessageToUser(senderId int32, toRole int, toUse
 }
 
 // 获取站内信
-func (m *messageService) GetSiteMessage(id, toUserId int64, toRole int) *dto.SiteMessage {
+func (m *messageService) GetSiteMessage(id, toUserId int64, toRole int) *query.SiteMessage {
 	//todo: id int64
 	msg := m._repo.MessageManager().GetMessage(int32(id))
 	if msg != nil && msg.CheckPerm(int32(toUserId), toRole) {
 		val := msg.GetValue()
-		dto := &dto.SiteMessage{
+		dto := &query.SiteMessage{
 			Id:           val.Id,
 			Type:         val.Type,
 			UseFor:       val.UseFor,

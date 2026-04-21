@@ -10,7 +10,6 @@
 package order
 
 import (
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/cart"
 )
 
@@ -127,7 +126,7 @@ type (
 		// 根据商品快照获取订单项
 		GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *SubOrderItem
 		// 根据商品快照获取订单项数据传输对象
-		GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem
+		GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *OrderItemQueryObject
 
 		// Get WholesaleOrder
 		GetWholesaleOrder(where string, v ...interface{}) *WholesaleOrder

@@ -12,7 +12,6 @@ import (
 	"database/sql"
 	"log"
 
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	afterSales "github.com/ixre/go2o/pkg/domain/interface/aftersales"
 	"github.com/ixre/gof/db"
 )
@@ -29,8 +28,8 @@ func NewAfterSalesQuery(db db.Connector) *AfterSalesQuery {
 
 // 获取分页售后单
 func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId int64, begin,
-	size int, where string) (int, []*dto.PagedMemberAfterSalesOrder) {
-	list := []*dto.PagedMemberAfterSalesOrder{}
+	size int, where string) (int, []*PagedMemberAfterSalesOrder) {
+	list := []*PagedMemberAfterSalesOrder{}
 	total := 0
 	if len(where) > 0 {
 		where = " AND " + where
@@ -46,7 +45,7 @@ INNER JOIN mch_merchant mch ON ao.vendor_id = mch.id
 INNER JOIN item_trade_snapshot sn ON sn.id = ao.snapshot_id
 WHERE ao.buyer_id= $1 ORDER BY ao.create_time DESC LIMIT $3 OFFSET $2`, func(rs *sql.Rows) {
 			for rs.Next() {
-				e := &dto.PagedMemberAfterSalesOrder{}
+				e := &PagedMemberAfterSalesOrder{}
 				rs.Scan(&e.Id, &e.Type, &e.OrderNo, &e.VendorId, &e.VendorName,
 					&e.SnapshotId, &e.Quantity, &e.SkuId, &e.GoodsTitle,
 					&e.GoodsImage, &e.Status, &e.CreateTime, &e.UpdateTime)
@@ -63,8 +62,8 @@ WHERE ao.buyer_id= $1 ORDER BY ao.create_time DESC LIMIT $3 OFFSET $2`, func(rs 
 
 // 获取分页售后单
 func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId int64, begin,
-	size int, where string) (int, []*dto.PagedVendorAfterSalesOrder) {
-	var list []*dto.PagedVendorAfterSalesOrder
+	size int, where string) (int, []*PagedVendorAfterSalesOrder) {
+	var list []*PagedVendorAfterSalesOrder
 	total := 0
 	if len(where) > 0 {
 		where = " AND " + where
@@ -81,7 +80,7 @@ INNER JOIN mm_profile mp ON mp.member_id = ao.buyer_id
 INNER JOIN item_trade_snapshot sn ON sn.id = ao.snapshot_id
 WHERE ao.vendor_id= $1 `+where+" ORDER BY id DESC LIMIT $3 OFFSET $2", func(rs *sql.Rows) {
 			for rs.Next() {
-				e := &dto.PagedVendorAfterSalesOrder{}
+				e := &PagedVendorAfterSalesOrder{}
 				rs.Scan(&e.Id, &e.Type, &e.OrderNo, &e.BuyerId, &e.BuyerName,
 					&e.SnapshotId, &e.Quantity, &e.SkuId, &e.GoodsTitle,
 					&e.GoodsImage, &e.Status, &e.CreateTime, &e.UpdateTime)

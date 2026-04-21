@@ -15,7 +15,6 @@ import (
 	"log"
 	"strings"
 
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/domain/interface/item"
 	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
@@ -203,7 +202,7 @@ func (i ItemQuery) GetPagingOnShelvesGoods(shopId int64,
 }
 
 // QueryItemSalesHistory 查询商品销售记录
-func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (rows []*dto.ItemSalesHistoryDto) {
+func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (rows []*ItemSalesHistoryDto) {
 	s := `SELECT m.user_code,m.nickname,m.profile_photo,ord.create_time,
 		ord.status FROM sale_sub_item it 
 		INNER JOIN sale_normal_order ord ON ord.id = it.order_id
@@ -211,7 +210,7 @@ func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (
 		WHERE it.item_id = $1 LIMIT $2 `
 	err := i.Query(s, func(_rows *sql.Rows) {
 		for _rows.Next() {
-			e := dto.ItemSalesHistoryDto{}
+			e := ItemSalesHistoryDto{}
 			_rows.Scan(&e.BuyerUserCode, &e.BuyerName, &e.BuyerProfilePhoto, &e.BuyTime, &e.OrderState)
 			rows = append(rows, &e)
 		}
@@ -222,7 +221,7 @@ func (i *ItemQuery) QueryItemSalesHistory(itemId int64, size int, random bool) (
 	return rows
 }
 
-func (i *ItemQuery) SearchItem(shopId int, keyword string, size int) (rows []*dto.SearchItemResultDto) {
+func (i *ItemQuery) SearchItem(shopId int, keyword string, size int) (rows []*SearchItemResultDto) {
 	where := "item_snapshot.title LIKE '%" + keyword + "%'"
 	if shopId > 0 {
 		where += fmt.Sprintf(" AND item_snapshot.shop_id = %d", shopId)
@@ -240,7 +239,7 @@ func (i *ItemQuery) SearchItem(shopId int, keyword string, size int) (rows []*dt
 			 WHERE %s LIMIT $1 `, where)
 	err := i.Query(cmd, func(_rows *sql.Rows) {
 		for _rows.Next() {
-			e := dto.SearchItemResultDto{}
+			e := SearchItemResultDto{}
 			_rows.Scan(&e.ItemId, &e.ItemFlag, &e.Code, &e.Title, &e.Image,
 				&e.SellerId, &e.PriceRange, &e.StockNum)
 			rows = append(rows, &e)

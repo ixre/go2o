@@ -9,10 +9,6 @@
 package member
 
 import (
-	"fmt"
-	"time"
-
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 )
 
@@ -32,24 +28,27 @@ func newGiftCardManagerImpl(memberId int64, rep member.IMemberRepo) member.IGift
 
 // 可用的优惠券分页数据
 func (g *giftCardManagerImpl) PagedAvailableCoupon(start, end int) (
-	total int, rows []*dto.SimpleCoupon) {
+	total int, rows []*member.SimpleCouponQueryObject) {
 	// 未使用,且未过有效期的
-	unix := time.Now().Unix()
-	return g.rep.GetMemberPagedCoupon(g.memberId, start, end,
-		fmt.Sprintf("over_time > %d AND is_used = 0", unix))
+	//unix := time.Now().Unix()
+	// return g.rep.GetMemberPagedCoupon(g.memberId, start, end,
+	// 	fmt.Sprintf("over_time > %d AND is_used = 0", unix))
+	return 0, nil
 }
 
 // 所有的优惠券
 func (g *giftCardManagerImpl) PagedAllCoupon(start, end int) (
-	total int, rows []*dto.SimpleCoupon) {
-	return g.rep.GetMemberPagedCoupon(g.memberId, start, end, "1=1")
+	total int, rows []*member.SimpleCouponQueryObject) {
+	// return g.rep.GetMemberPagedCoupon(g.memberId, start, end, "1=1")
+	return 0, nil
 }
 
 // 过期的优惠券
 func (g *giftCardManagerImpl) PagedExpiresCoupon(start, end int) (
-	total int, rows []*dto.SimpleCoupon) {
+	total int, rows []*member.SimpleCouponQueryObject) {
 	//未使用且已超过有效期
-	unix := time.Now().Unix()
-	return g.rep.GetMemberPagedCoupon(g.memberId, start, end,
-		fmt.Sprintf("over_time < %d AND is_used = 0", unix))
+	// unix := time.Now().Unix()
+	// return g.rep.GetMemberPagedCoupon(g.memberId, start, end,
+	// 	fmt.Sprintf("over_time < %d AND is_used = 0", unix))
+	return 0, nil
 }

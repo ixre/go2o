@@ -13,7 +13,6 @@ import (
 	"log"
 	"regexp"
 
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/merchant/shop"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -54,7 +53,7 @@ func (s *ShopQuery) GetMerchantId(shopId int64) int64 {
 
 // PagedOnBusinessOnlineShops 获取营业中的店铺列表
 func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
-	order string) (int, []*dto.ListOnlineShop) {
+	order string) (int, []*ListOnlineShop) {
 	var sql string
 	total := 0
 	if len(where) != 0 {
@@ -68,7 +67,7 @@ func (s *ShopQuery) PagedOnBusinessOnlineShops(begin, end int, where string,
  	INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id
     WHERE sp.state=%d AND mch.enabled = 1 %s`, shop.StateNormal, where), &total)
 
-	var e = make([]*dto.ListOnlineShop, 0)
+	var e = make([]*ListOnlineShop, 0)
 	if total > 0 && err == nil {
 		sql = fmt.Sprintf(`SELECT sp.id,sp.shop_name,alias,host,sp.logo,sp.create_time
         FROM  mch_online_shop sp INNER JOIN mch_merchant mch ON mch.id=sp.vendor_id

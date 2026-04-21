@@ -10,7 +10,6 @@
 package member
 
 import (
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 )
 
@@ -153,7 +152,7 @@ type IMemberRepo interface {
 	DeleteAddress(memberId, addressId int64) error
 
 	// 邀请
-	GetMyInvitationMembers(memberId int64, begin, end int) (total int, rows []*dto.InvitationMember)
+	GetMyInvitationMembers(memberId int64, begin, end int) (total int, rows []*InvitationMemberObject)
 
 	// 获取下级会员数量
 	GetSubInvitationNum(memberId int64, memberIdArr []int32) map[int32]int
@@ -177,8 +176,6 @@ type IMemberRepo interface {
 	Favored(memberId int64, favType int, referId int64) bool
 	//取消收藏
 	CancelFavorite(memberId int64, favType int, referId int64) error
-	// 获取会员分页的优惠券列表
-	GetMemberPagedCoupon(memberId int64, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
 	// Select MmBuyerGroup
 	SelectMmBuyerGroup(where string, v ...interface{}) []*BuyerGroup
 	// Save MmBuyerGroup

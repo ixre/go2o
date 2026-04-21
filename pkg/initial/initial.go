@@ -9,6 +9,11 @@
 package initial
 
 import (
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/ixre/go2o/internal/core/repos"
 	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/event/msq"
@@ -41,14 +46,6 @@ func Init(a *bootstrap.AppConfigLoader, debug, trace bool) bool {
 	return true
 }
 
-func AppDispose() {
-	//GetRedisPool().Close()
-	msq.Close()
-	//if clickhouse.connInstance != nil{
-	//	clickhouse.connInstance.Close()
-	//}
-}
-
 // ResetCache 重置缓存
 func ResetCache() {
 	sto := provide.GetStorageInstance()
@@ -67,4 +64,30 @@ func ResetCache() {
 		total += i
 	}
 	logger.Info("reset cache complete! total %s keys", total)
+}
+
+func appDispose() {
+	//GetRedisPool().Close()
+	msq.Close()
+	//if clickhouse.connInstance != nil{
+	//	clickhouse.connInstance.Close()
+	//}
+}
+
+func WatchSignals(c chan bool) {
+	go watchSignals(c, appDispose)
+}
+
+// watchSignals 监听进程信号,并执行操作。比如退出时应释放资源
+func watchSignals(c chan bool, fn func()) {
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGHUP, syscall.SIGTERM)
+	for {
+		switch <-ch {
+		case syscall.SIGHUP, syscall.SIGTERM: // 退出时
+			log.Println("[ OS][ TERM] - program has exit !")
+			fn()
+			close(c)
+		}
+	}
 }

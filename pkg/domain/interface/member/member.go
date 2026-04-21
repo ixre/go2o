@@ -268,6 +268,26 @@ type (
 		UpdateTime int64
 	}
 
+	// 邀请会员数据
+	InvitationMemberObject struct {
+		// 会员编号
+		MemberId int32
+		// 用户名
+		Username string
+		// 等级
+		Level int32
+		// 头像
+		ProfilePhoto string
+		// 昵称
+		Nickname string
+		// 电话
+		Phone string
+		// 注册时间
+		RegTime int64
+		// 邀请人数
+		InvitationNum int
+	}
+
 	// 会员资料
 	Profile struct {
 		// MemberId

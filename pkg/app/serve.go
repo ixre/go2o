@@ -95,7 +95,8 @@ func Run(ch chan bool, confFile string, after func(cfg *clientv3.Config, debug b
 	if !initial.Init(newApp, debug, trace) {
 		os.Exit(1)
 	}
-	go core.SignalNotify(ch, initial.AppDispose)
+	// 监听信号
+	initial.WatchSignals(ch)
 	// 初始化第三方配置
 	inject.GetSPConfig().Configure()
 	// 初始化分布式锁

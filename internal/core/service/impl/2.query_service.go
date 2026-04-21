@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/ixre/go2o/internal/core/query"
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/internal/core/service/parser"
 	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
@@ -153,7 +152,7 @@ func (q *queryService) QueryTradeOrders(_ context.Context, r *proto.MemberOrderP
 	return ret, nil
 }
 
-func (q *queryService) parseOrder(src *dto.MemberPagingOrderDto) *proto.SMemberPagingOrder {
+func (q *queryService) parseOrder(src *query.MemberPagingOrderDto) *proto.SMemberPagingOrder {
 	dst := &proto.SMemberPagingOrder{
 		OrderNo:        src.OrderNo,
 		BuyerId:        src.BuyerId,

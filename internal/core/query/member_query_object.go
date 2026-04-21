@@ -1,14 +1,15 @@
 /**
  * Copyright 2015 @ 56x.net.
- * name : types
+ * name : member
  * author : jarryliu
- * date : 2015-10-29 15:33
+ * date : 2015-10-29 15:06
  * description :
  * history :
  */
-package model
+package query
 
 type (
+
 	// 会员排名信息
 	RankMember struct {
 		Id       int64

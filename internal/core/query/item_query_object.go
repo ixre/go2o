@@ -1,4 +1,4 @@
-package model
+package query
 
 // 商品销售记录
 type ItemSalesHistoryDto struct {

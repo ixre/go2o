@@ -11,7 +11,6 @@ package member
 import (
 	"time"
 
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 )
 
@@ -190,7 +189,7 @@ func (i *invitationManager) InvitationBy(memberId int64) bool {
 
 // 获取我邀请的会员
 func (i *invitationManager) GetInvitationMembers(begin, end int) (
-	int, []*dto.InvitationMember) {
+	int, []*member.InvitationMemberObject) {
 	return i.member.repo.GetMyInvitationMembers(
 		int64(i.member.GetAggregateRootId()), begin, end)
 }

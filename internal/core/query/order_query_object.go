@@ -6,7 +6,9 @@
  * description :
  * history :
  */
-package model
+package query
+
+import "github.com/ixre/go2o/pkg/domain/interface/order"
 
 type (
 	/*
@@ -53,7 +55,7 @@ type (
 		// 下单时间
 		CreateTime int64 `json:"createTime"`
 		// 订单商品
-		Items []*OrderItem `json:"items"`
+		Items []*order.OrderItemQueryObject `json:"items"`
 	}
 
 	PagedVendorOrder struct {
@@ -67,57 +69,21 @@ type (
 		//VendorId    int
 		//ShopId      int
 		//ShopName    string
-		ItemAmount     int64             `json:"itemAmount"`
-		DiscountAmount int64             `json:"discountAmount"`
-		ExpressFee     int64             `json:"expressFee"`
-		PackageFee     int64             `json:"packageFee"`
-		IsPaid         bool              `json:"isPaid"`
-		FinalAmount    int64             `json:"finalAmount"`
-		Status         int               `json:"status"`
-		StatusText     string            `json:"statusText"`
-		CreateTime     int64             `json:"createTime"`
-		Items          []*OrderItem      `json:"items"`
-		Data           map[string]string `json:"data"`
+		ItemAmount     int64                         `json:"itemAmount"`
+		DiscountAmount int64                         `json:"discountAmount"`
+		ExpressFee     int64                         `json:"expressFee"`
+		PackageFee     int64                         `json:"packageFee"`
+		IsPaid         bool                          `json:"isPaid"`
+		FinalAmount    int64                         `json:"finalAmount"`
+		Status         int                           `json:"status"`
+		StatusText     string                        `json:"statusText"`
+		CreateTime     int64                         `json:"createTime"`
+		Items          []*order.OrderItemQueryObject `json:"items"`
+		Data           map[string]string             `json:"data"`
 	}
 
 	/*
 	   SELECT si.id,si.order_id,si.snap_id,sn.sku_id,sn.goods_title,sn.img,
 	           si.quantity,si.fee,si.final_amount
 	*/
-
-	// OrderItem 订单商品项
-	OrderItem struct {
-		// 编号
-		Id int `json:"id"`
-		// 订单编号
-		OrderId int64 `json:"orderId"`
-		// 卖家订单编号
-		SellerOrderId int64 `json:"sellerOrderId"`
-		// 商品快照编号
-		SnapshotId int `json:"snapshotId"`
-		// Sku规格
-		SpecWord string `json:"specWord"`
-		// Sku编号
-		SkuId int `json:"skuId"`
-		// 商品编号
-		ItemId int32 `json:"itemId"`
-		// 商品标题
-		ItemTitle string `json:"itemTitle"`
-		// 商品图片
-		Image string `json:"image"`
-		// 商品单价
-		Price int64 `json:"price"`
-		// 商品实际单价
-		FinalPrice int64 `json:"finalPrice"`
-		// 商品数量
-		Quantity int `json:"quantity"`
-		// 退货数量
-		ReturnQuantity int `json:"returnQuantity"`
-		// 商品总金额
-		Amount int64 `json:"amount"`
-		// 商品实际总金额
-		FinalAmount int64 `json:"finalAmount"`
-		// 是否已发货
-		IsShipped int `json:"isShipped"`
-	}
 )

@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"log"
 
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/cart"
 	"github.com/ixre/go2o/pkg/domain/interface/delivery"
 	"github.com/ixre/go2o/pkg/domain/interface/express"
@@ -273,8 +272,8 @@ func (o *OrderRepoImpl) GetOrderItemBySnapshotId(orderId int64, snapshotId int32
 }
 
 // 根据商品快照获取订单项数据传输对象
-func (o *OrderRepoImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem {
-	e := &dto.OrderItem{}
+func (o *OrderRepoImpl) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *order.OrderItemQueryObject {
+	e := &order.OrderItemQueryObject{}
 	err := o.QueryRow(`SELECT si.id,si.order_id,si.snap_id,sn.sku_id,
             sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,si.amount,si.final_amount,
             si.is_shipped FROM sale_order_item si INNER JOIN item_trade_snapshot sn

@@ -1,8 +1,8 @@
 package parser
 
 import (
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/item"
+	"github.com/ixre/go2o/pkg/domain/interface/order"
 	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/types"
@@ -157,7 +157,7 @@ func ParseGoodsItem(src *proto.SaveItemRequest) *item.GoodsItem {
 	return dst
 }
 
-func ParseOrderItem(v *dto.OrderItem) *proto.SOrderItem {
+func ParseOrderItem(v *order.OrderItemQueryObject) *proto.SOrderItem {
 	return &proto.SOrderItem{
 		Id:             int64(v.Id),
 		SnapshotId:     int64(v.SnapshotId),

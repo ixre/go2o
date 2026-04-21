@@ -179,4 +179,40 @@ type (
 		// 快递模板编号
 		ExpressTplId int32 `db:"-"`
 	}
+
+	// OrderItemQueryObject 订单商品项
+	OrderItemQueryObject struct {
+		// 编号
+		Id int `json:"id"`
+		// 订单编号
+		OrderId int64 `json:"orderId"`
+		// 卖家订单编号
+		SellerOrderId int64 `json:"sellerOrderId"`
+		// 商品快照编号
+		SnapshotId int `json:"snapshotId"`
+		// Sku规格
+		SpecWord string `json:"specWord"`
+		// Sku编号
+		SkuId int `json:"skuId"`
+		// 商品编号
+		ItemId int32 `json:"itemId"`
+		// 商品标题
+		ItemTitle string `json:"itemTitle"`
+		// 商品图片
+		Image string `json:"image"`
+		// 商品单价
+		Price int64 `json:"price"`
+		// 商品实际单价
+		FinalPrice int64 `json:"finalPrice"`
+		// 商品数量
+		Quantity int `json:"quantity"`
+		// 退货数量
+		ReturnQuantity int `json:"returnQuantity"`
+		// 商品总金额
+		Amount int64 `json:"amount"`
+		// 商品实际总金额
+		FinalAmount int64 `json:"finalAmount"`
+		// 是否已发货
+		IsShipped int `json:"isShipped"`
+	}
 )

@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package model
+package query
 
 type (
 	// 站内信

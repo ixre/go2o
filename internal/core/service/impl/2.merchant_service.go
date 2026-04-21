@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/internal/core/query"
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/internal/core/service/parser"
 	de "github.com/ixre/go2o/pkg/domain/interface/domain"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
@@ -1072,7 +1071,7 @@ func (m *merchantService) parseRebateRate(v *proto.SWholesaleRebateRate) *wholes
 	}
 }
 
-func (m *merchantService) parseOrder(v *dto.PagedVendorOrder) *proto.SMerchantOrder {
+func (m *merchantService) parseOrder(v *query.PagedVendorOrder) *proto.SMerchantOrder {
 	items := make([]*proto.SOrderItem, 0)
 	if v.Items != nil {
 		for _, v := range v.Items {

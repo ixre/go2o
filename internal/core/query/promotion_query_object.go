@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package model
+package query
 
 type (
 	//member_rep LINE:562

@@ -17,7 +17,6 @@ import (
 	"sync"
 	"time"
 
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 	mss "github.com/ixre/go2o/pkg/domain/interface/message"
@@ -655,8 +654,8 @@ func (m *MemberRepoImpl) DeleteAddress(memberId, deliverId int64) error {
 
 // GetMyInvitationMembers 邀请
 func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) (
-	total int, rows []*dto.InvitationMember) {
-	var arr []*dto.InvitationMember
+	total int, rows []*member.InvitationMemberObject) {
+	var arr []*member.InvitationMemberObject
 	m.Connector.ExecScalar(`SELECT COUNT(1) FROM mm_member WHERE id IN
 	 (SELECT member_id FROM mm_relation WHERE inviter_id= $1)`, &total, memberId)
 	if total > 0 {
@@ -666,7 +665,7 @@ func (m *MemberRepoImpl) GetMyInvitationMembers(memberId int64, begin, end int) 
              ORDER BY level DESC,id LIMIT $3 OFFSET $2`,
 			func(rs *sql.Rows) {
 				for rs.Next() {
-					e := &dto.InvitationMember{}
+					e := &member.InvitationMemberObject{}
 					rs.Scan(&e.MemberId, &e.Nickname, &e.Username, &e.Level, &e.ProfilePhoto, &e.Phone, &e.RegTime)
 					arr = append(arr, e)
 				}
@@ -742,25 +741,6 @@ func (m *MemberRepoImpl) SaveGrowAccount(memberId int64, balance, totalAmount,
 	//加入通知队列
 	m.pushToAccountUpdateQueue(int(memberId), int(updateTime))
 	return err
-}
-
-// 获取会员分页的优惠券列表
-func (m *MemberRepoImpl) GetMemberPagedCoupon(memberId int64, start, end int, where string) (total int, rows []*dto.SimpleCoupon) {
-	list := []*dto.SimpleCoupon{}
-	m.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(distinct pi.id)
-        FROM pm_info pi INNER JOIN pm_coupon c ON c.id = pi.id
-	    INNER JOIN pm_coupon_bind pb ON pb.coupon_id=pi.id
-	    WHERE member_id= $1 AND %s`, where), &total, memberId)
-	if total > 0 {
-		m._orm.SelectByQuery(&list,
-			fmt.Sprintf(`SELECT pi.id,SUM(1) as num,pi.short_name as title,
-            code,fee,c.discount,is_used,over_time FROM pm_info pi
-             INNER JOIN pm_coupon c ON c.id = pi.id
-	        INNER JOIN pm_coupon_bind pb ON pb.coupon_id=pi.id
-	        WHERE member_id= $1 AND %s GROUP BY pi.id order by bind_time DESC LIMIT $3 OFFSET $2`, where),
-			memberId, start, end-start)
-	}
-	return total, list
 }
 
 // Select MmBuyerGroup

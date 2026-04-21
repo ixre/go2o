@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"log"
 
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 	"github.com/ixre/go2o/pkg/domain/interface/wallet"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
@@ -184,8 +183,8 @@ func (m *MemberQuery) GetMemberIdByPhone(phone string) int64 {
 
 // 会员推广排名
 func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp string, level int,
-	startTime int64, endTime int64, num int) []*dto.RankMember {
-	list := make([]*dto.RankMember, 0)
+	startTime int64, endTime int64, num int) []*RankMember {
+	list := make([]*RankMember, 0)
 	var id int64
 	var user, name string
 	var inviNum, totalNum, regTime int
@@ -220,7 +219,7 @@ func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp str
 		for rows.Next() {
 			rows.Scan(&id, &user, &name, &inviNum, &totalNum, &regTime)
 			rank++
-			list = append(list, &dto.RankMember{
+			list = append(list, &RankMember{
 				Id:       id,
 				Usr:      user,
 				Name:     name,
@@ -237,7 +236,7 @@ func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp str
 
 // 获取分页店铺收藏
 func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
-	where string) (num int, rows []*dto.PagedShopFav) {
+	where string) (num int, rows []*PagedShopFav) {
 	d := m.Connector
 	if len(where) > 0 {
 		where = " AND " + where
@@ -259,21 +258,21 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 			where)
 		d.Query(sqlLine, func(rs *sql.Rows) {
 			for rs.Next() {
-				e := dto.PagedShopFav{}
+				e := PagedShopFav{}
 				rs.Scan(&e.Id, &e.ShopId, &e.MchId, &e.ShopName,
 					&e.Logo, &e.UpdateTime)
 				rows = append(rows, &e)
 			}
 		}, memberId, member.FavTypeShop, begin, end-begin)
 	} else {
-		rows = make([]*dto.PagedShopFav, 0)
+		rows = make([]*PagedShopFav, 0)
 	}
 	return num, rows
 }
 
 // 获取分页店铺收藏
 func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
-	where string) (num int, rows []*dto.PagedGoodsFav) {
+	where string) (num int, rows []*PagedGoodsFav) {
 	d := m.Connector
 	if len(where) > 0 {
 		where = " AND " + where
@@ -294,7 +293,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 			where)
 		d.Query(sqlLine, func(rs *sql.Rows) {
 			for rs.Next() {
-				e := dto.PagedGoodsFav{}
+				e := PagedGoodsFav{}
 				rs.Scan(&e.Id, &e.SkuId, &e.GoodsName, &e.Image, &e.SalePrice,
 					&e.StockNum, &e.UpdateTime)
 				rows = append(rows, &e)
@@ -302,7 +301,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 		}, memberId, member.FavTypeGoods, begin, end-begin)
 
 	} else {
-		rows = make([]*dto.PagedGoodsFav, 0)
+		rows = make([]*PagedGoodsFav, 0)
 	}
 	return num, rows
 }
@@ -461,4 +460,23 @@ func (m *MemberQuery) QueryPagingLevels(p *fw.PagingParams) (*fw.PagingResult, e
 // GetMemberExtraField 获取会员扩展字段
 func (m *MemberQuery) GetMemberExtraField(memberId int64) *member.ExtraField {
 	return m._extraRepo.FindBy("member_id = ?", memberId)
+}
+
+// 获取会员分页的优惠券列表
+func (m *MemberQuery) GetMemberPagedCoupon(memberId int64, start, end int, where string) (total int, rows []*SimpleCoupon) {
+	list := []*SimpleCoupon{}
+	m.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(distinct pi.id)
+        FROM pm_info pi INNER JOIN pm_coupon c ON c.id = pi.id
+	    INNER JOIN pm_coupon_bind pb ON pb.coupon_id=pi.id
+	    WHERE member_id= $1 AND %s`, where), &total, memberId)
+	if total > 0 {
+		m.o.SelectByQuery(&list,
+			fmt.Sprintf(`SELECT pi.id,SUM(1) as num,pi.short_name as title,
+            code,fee,c.discount,is_used,over_time FROM pm_info pi
+             INNER JOIN pm_coupon c ON c.id = pi.id
+	        INNER JOIN pm_coupon_bind pb ON pb.coupon_id=pi.id
+	        WHERE member_id= $1 AND %s GROUP BY pi.id order by bind_time DESC LIMIT $3 OFFSET $2`, where),
+			memberId, start, end-start)
+	}
+	return total, list
 }

@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/internal/core/query"
-	dto "github.com/ixre/go2o/internal/core/query/model"
 	"github.com/ixre/go2o/internal/module"
 	"github.com/ixre/go2o/pkg/constants"
 	de "github.com/ixre/go2o/pkg/domain/interface/domain"
@@ -1707,7 +1706,7 @@ func (s *memberService) AccountTransfer(_ context.Context, r *proto.AccountTrans
 // GetMemberInviRank 会员推广排名
 func (s *memberService) GetMemberInviRank(mchId int64, allTeam bool,
 	levelComp string, level int, startTime int64, endTime int64,
-	num int) []*dto.RankMember {
+	num int) []*query.RankMember {
 	return s.query.GetMemberInviRank(mchId, allTeam, levelComp, level, startTime, endTime, num)
 }
 
@@ -1718,7 +1717,7 @@ func (s *memberService) QueryCoupons(_ context.Context, r *proto.MemberCouponPag
 	cp := s.repo.CreateMemberById(r.MemberId).GiftCard()
 	begin, end := int(r.Begin), int(r.End)
 	var total int
-	var list []*dto.SimpleCoupon
+	var list []*member.SimpleCouponQueryObject
 	switch r.State {
 	case proto.PagingCouponState_CS_AVAILABLE:
 		total, list = cp.PagedAvailableCoupon(begin, end)
