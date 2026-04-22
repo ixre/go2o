@@ -16,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ixre/go2o/internal/core/service/parser"
+	"github.com/ixre/go2o/internal/impl/service/parser"
 	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/inject"
@@ -398,7 +398,7 @@ func TestTradeOrder(t *testing.T) {
 	cashPay := true
 	requireTicket := true
 	if requireTicket {
-		//repos.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
+		//repo.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
 	}
 	c := order.SubmitOrderData{
 		BuyerId:       397,

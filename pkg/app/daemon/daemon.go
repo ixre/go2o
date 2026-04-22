@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/ixre/go2o/internal/core/repos/clickhouse"
+	"github.com/ixre/go2o/internal/impl/repo/clickhouse"
 	"github.com/ixre/go2o/pkg/app/daemon/job"
 	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/initial"

@@ -14,7 +14,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ixre/go2o/internal/core/repos"
+	"github.com/ixre/go2o/internal/impl/repo"
 	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/event/msq"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
@@ -41,7 +41,7 @@ func Init(a *bootstrap.AppConfigLoader, debug, trace bool) bool {
 		go f()
 	}
 
-	repos.OrmMapping(provide.GetOrmInstance())
+	repo.OrmMapping(provide.GetOrmInstance())
 
 	return true
 }
