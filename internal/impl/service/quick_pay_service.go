@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/ixre/go2o/pkg/infrastructure/qpay"
-	"github.com/ixre/go2o/pkg/infrastructure/qpay/hfb"
+	"github.com/ixre/go2o/pkg/infra/qpay"
+	"github.com/ixre/go2o/pkg/infra/qpay/hfb"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/crypto"

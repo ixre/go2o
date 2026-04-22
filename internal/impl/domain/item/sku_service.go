@@ -9,7 +9,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/ixre/go2o/pkg/infrastructure/format"
+	"github.com/ixre/go2o/pkg/infra/format"
 	"github.com/ixre/go2o/pkg/interface/domain/item"
 	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 )

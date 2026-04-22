@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/wallet"
 	"github.com/ixre/go2o/pkg/interface/service/proto"

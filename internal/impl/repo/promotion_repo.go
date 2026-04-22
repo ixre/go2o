@@ -15,7 +15,7 @@ import (
 	"time"
 
 	promImpl "github.com/ixre/go2o/internal/impl/domain/promotion"
-	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/infra/logger"
 	"github.com/ixre/go2o/pkg/interface/domain/item"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/promotion"

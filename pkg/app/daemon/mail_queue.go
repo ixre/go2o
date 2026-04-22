@@ -14,7 +14,7 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/pkg/constants"
-	"github.com/ixre/go2o/pkg/infrastructure/util/smtp"
+	"github.com/ixre/go2o/pkg/infra/util/smtp"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	mss "github.com/ixre/go2o/pkg/interface/domain/message"

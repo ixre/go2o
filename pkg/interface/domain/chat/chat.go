@@ -3,8 +3,8 @@ package chat
 import (
 	"reflect"
 
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/domain"
+	"github.com/ixre/go2o/pkg/infra/fw"
 )
 
 // ChatType 聊天类型

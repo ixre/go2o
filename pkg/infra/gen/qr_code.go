@@ -9,7 +9,7 @@
 package gen
 
 import (
-	"github.com/ixre/go2o/pkg/infrastructure/gen/rsc/qr"
+	"github.com/ixre/go2o/pkg/infra/gen/rsc/qr"
 )
 
 // 生成网址对应的二维码

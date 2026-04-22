@@ -3,7 +3,7 @@ package wrap
 import (
 	"log"
 
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"gorm.io/driver/postgres"

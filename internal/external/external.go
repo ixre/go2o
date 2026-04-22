@@ -2,9 +2,9 @@ package external
 
 import (
 	"github.com/ixre/go2o/internal/external/tencent"
-	"github.com/ixre/go2o/pkg/infrastructure/util/lbs"
-	"github.com/ixre/go2o/pkg/infrastructure/util/sms"
-	"github.com/ixre/go2o/pkg/infrastructure/util/smtp"
+	"github.com/ixre/go2o/pkg/infra/util/lbs"
+	"github.com/ixre/go2o/pkg/infra/util/sms"
+	"github.com/ixre/go2o/pkg/infra/util/smtp"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/typeconv"

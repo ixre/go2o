@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	"github.com/ixre/go2o/pkg/inject"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/gof/crypto"

@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
-	"github.com/ixre/go2o/pkg/infrastructure/i18n"
-	"github.com/ixre/go2o/pkg/infrastructure/regex"
+	"github.com/ixre/go2o/pkg/infra/domain"
+	"github.com/ixre/go2o/pkg/infra/i18n"
+	"github.com/ixre/go2o/pkg/infra/regex"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 	mss "github.com/ixre/go2o/pkg/interface/domain/message"

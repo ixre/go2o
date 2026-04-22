@@ -14,7 +14,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	"github.com/ixre/go2o/pkg/interface/domain/express"
 	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 )

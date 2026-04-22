@@ -15,9 +15,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ixre/go2o/pkg/infrastructure/format"
-	"github.com/ixre/go2o/pkg/infrastructure/fw/collections"
-	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
+	"github.com/ixre/go2o/pkg/infra/format"
+	"github.com/ixre/go2o/pkg/infra/fw/collections"
+	"github.com/ixre/go2o/pkg/infra/fw/types"
 	"github.com/ixre/go2o/pkg/interface/domain/content"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
 )

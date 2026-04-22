@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	id "github.com/ixre/go2o/pkg/infrastructure/domain"
+	id "github.com/ixre/go2o/pkg/infra/domain"
 	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/util"

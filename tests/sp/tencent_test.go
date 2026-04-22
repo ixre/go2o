@@ -3,8 +3,8 @@ package sp
 import (
 	"testing"
 
-	"github.com/ixre/go2o/pkg/infrastructure/fw/collections"
-	s "github.com/ixre/go2o/pkg/infrastructure/util/sms"
+	"github.com/ixre/go2o/pkg/infra/fw/collections"
+	s "github.com/ixre/go2o/pkg/infra/util/sms"
 	"github.com/ixre/go2o/pkg/inject"
 	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 	_ "github.com/ixre/go2o/tests"

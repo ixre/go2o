@@ -14,7 +14,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ixre/go2o/pkg/infrastructure/util"
+	"github.com/ixre/go2o/pkg/infra/util"
 	"github.com/ixre/go2o/pkg/interface/domain/sys"
 )
 

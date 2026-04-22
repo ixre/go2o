@@ -11,7 +11,7 @@ package repo
 
 import (
 	rbacImpl "github.com/ixre/go2o/internal/impl/domain/rbac"
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	rbac "github.com/ixre/go2o/pkg/interface/domain/rabc"
 )
 

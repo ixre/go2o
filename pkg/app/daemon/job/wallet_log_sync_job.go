@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/internal/impl/repo/clickhouse"
-	"github.com/ixre/go2o/pkg/infrastructure/locker"
+	"github.com/ixre/go2o/pkg/infra/locker"
 	"github.com/ixre/go2o/pkg/inject"
 	"github.com/ixre/go2o/pkg/interface/domain/wallet"
 )

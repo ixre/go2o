@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/infra/logger"
 	"github.com/ixre/go2o/pkg/interface/domain/invoice"
 	"github.com/ixre/go2o/pkg/interface/service/proto"
 )

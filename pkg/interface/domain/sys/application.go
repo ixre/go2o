@@ -9,7 +9,7 @@
  */
 package sys
 
-import "github.com/ixre/go2o/pkg/infrastructure/fw"
+import "github.com/ixre/go2o/pkg/infra/fw"
 
 type LogLevel int
 

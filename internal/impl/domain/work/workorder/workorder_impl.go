@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
-	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
+	"github.com/ixre/go2o/pkg/infra/domain"
+	"github.com/ixre/go2o/pkg/infra/fw/types"
 	"github.com/ixre/go2o/pkg/interface/domain/work/workorder"
 )
 

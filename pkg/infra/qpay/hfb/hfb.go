@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/pkg/infrastructure/qpay"
+	"github.com/ixre/go2o/pkg/infra/qpay"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"

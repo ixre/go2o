@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/ixre/go2o/pkg/infrastructure/util/sms"
+	"github.com/ixre/go2o/pkg/infra/util/sms"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"

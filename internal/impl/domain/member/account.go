@@ -18,8 +18,8 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/pkg/event/events"
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
-	"github.com/ixre/go2o/pkg/infrastructure/format"
+	"github.com/ixre/go2o/pkg/infra/domain"
+	"github.com/ixre/go2o/pkg/infra/format"
 	"github.com/ixre/go2o/pkg/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"

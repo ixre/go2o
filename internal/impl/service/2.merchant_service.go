@@ -18,7 +18,7 @@ import (
 
 	"github.com/ixre/go2o/internal/core/query"
 	"github.com/ixre/go2o/internal/impl/service/parser"
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	de "github.com/ixre/go2o/pkg/interface/domain"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant"

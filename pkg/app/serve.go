@@ -13,7 +13,7 @@ import (
 	"github.com/ixre/go2o/pkg/event/events"
 	"github.com/ixre/go2o/pkg/event/msq"
 	"github.com/ixre/go2o/pkg/grpc"
-	"github.com/ixre/go2o/pkg/infrastructure/etcd"
+	"github.com/ixre/go2o/pkg/infra/etcd"
 	"github.com/ixre/go2o/pkg/initial"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/inject"

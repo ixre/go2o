@@ -15,8 +15,8 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/internal/core/query"
-	"github.com/ixre/go2o/pkg/infrastructure/locker"
-	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/infra/locker"
+	"github.com/ixre/go2o/pkg/infra/logger"
 	"github.com/ixre/go2o/pkg/inject"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 	"github.com/ixre/go2o/pkg/interface/service/proto"

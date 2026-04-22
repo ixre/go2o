@@ -9,7 +9,7 @@
 
 package merchant
 
-import "github.com/ixre/go2o/pkg/infrastructure/fw"
+import "github.com/ixre/go2o/pkg/infra/fw"
 
 type IMerchantRepo interface {
 	// 仓储实现

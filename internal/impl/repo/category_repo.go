@@ -17,7 +17,7 @@ import (
 	"sort"
 
 	productImpl "github.com/ixre/go2o/internal/impl/domain/product"
-	"github.com/ixre/go2o/pkg/infrastructure/format"
+	"github.com/ixre/go2o/pkg/infra/format"
 	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 	"github.com/ixre/go2o/pkg/interface/domain/product"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"

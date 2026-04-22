@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	tool "github.com/ixre/go2o/pkg/infrastructure/util"
+	tool "github.com/ixre/go2o/pkg/infra/util"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 	"github.com/ixre/go2o/pkg/interface/domain/order"

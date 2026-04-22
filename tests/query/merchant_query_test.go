@@ -3,7 +3,7 @@ package query
 import (
 	"testing"
 
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	"github.com/ixre/go2o/pkg/inject"
 	_ "github.com/ixre/go2o/tests"
 )

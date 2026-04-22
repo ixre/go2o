@@ -16,9 +16,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
-	"github.com/ixre/go2o/pkg/infrastructure/format"
-	"github.com/ixre/go2o/pkg/infrastructure/regex"
+	"github.com/ixre/go2o/pkg/infra/domain"
+	"github.com/ixre/go2o/pkg/infra/format"
+	"github.com/ixre/go2o/pkg/infra/regex"
 	"github.com/ixre/go2o/pkg/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/interface/domain/express"
 	"github.com/ixre/go2o/pkg/interface/domain/item"

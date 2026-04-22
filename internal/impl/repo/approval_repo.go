@@ -14,7 +14,7 @@ import (
 	"time"
 
 	approvalImpl "github.com/ixre/go2o/internal/impl/domain/approval"
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	"github.com/ixre/go2o/pkg/interface/domain/approval"
 	"github.com/ixre/go2o/pkg/interface/domain/enum"
 )

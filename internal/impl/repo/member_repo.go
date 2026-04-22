@@ -19,9 +19,9 @@ import (
 
 	memberImpl "github.com/ixre/go2o/internal/impl/domain/member"
 	"github.com/ixre/go2o/pkg/constants"
-	"github.com/ixre/go2o/pkg/infrastructure/format"
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
-	tool "github.com/ixre/go2o/pkg/infrastructure/util"
+	"github.com/ixre/go2o/pkg/infra/format"
+	"github.com/ixre/go2o/pkg/infra/fw"
+	tool "github.com/ixre/go2o/pkg/infra/util"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"

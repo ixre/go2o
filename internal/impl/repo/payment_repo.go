@@ -17,7 +17,7 @@ import (
 	"time"
 
 	payImpl "github.com/ixre/go2o/internal/impl/domain/payment"
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 	"github.com/ixre/go2o/pkg/interface/domain/payment"

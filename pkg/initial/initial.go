@@ -17,7 +17,7 @@ import (
 	"github.com/ixre/go2o/internal/impl/repo"
 	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/event/msq"
-	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/infra/logger"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
 )

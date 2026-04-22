@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/pkg/event/events"
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	"github.com/ixre/go2o/pkg/interface/domain/wallet"
 	"github.com/ixre/gof/algorithm"
 	"github.com/ixre/gof/domain/eventbus"

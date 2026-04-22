@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/ixre/go2o/pkg/infrastructure"
+	infrastructure "github.com/ixre/go2o/pkg/infra"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/log"

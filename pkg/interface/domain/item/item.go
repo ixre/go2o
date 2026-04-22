@@ -11,7 +11,7 @@ package item
 import (
 	"sort"
 
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 	"github.com/ixre/go2o/pkg/interface/domain/product"
 	"github.com/ixre/go2o/pkg/interface/domain/promotion"

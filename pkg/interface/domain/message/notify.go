@@ -11,7 +11,7 @@ package mss
 import (
 	"errors"
 
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 )
 
 const (

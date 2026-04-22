@@ -9,8 +9,8 @@
 package content
 
 import (
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
-	d "github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
+	d "github.com/ixre/go2o/pkg/infra/domain"
 )
 
 var (

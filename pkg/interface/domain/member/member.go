@@ -9,7 +9,7 @@
 
 package member
 
-import "github.com/ixre/go2o/pkg/infrastructure/domain"
+import "github.com/ixre/go2o/pkg/infra/domain"
 
 const (
 	// DefaultRelateUser 默认操作用户

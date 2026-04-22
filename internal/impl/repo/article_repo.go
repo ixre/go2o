@@ -13,7 +13,7 @@ import (
 	"sync"
 
 	impl "github.com/ixre/go2o/internal/impl/domain/content"
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	"github.com/ixre/go2o/pkg/interface/domain/content"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/gof/db"

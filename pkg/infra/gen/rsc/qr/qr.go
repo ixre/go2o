@@ -12,7 +12,7 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/ixre/go2o/pkg/infrastructure/gen/rsc/qr/coding"
+	"github.com/ixre/go2o/pkg/infra/gen/rsc/qr/coding"
 )
 
 // A Level denotes a QR error correction level.

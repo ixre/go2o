@@ -10,7 +10,7 @@
 package merchant
 
 import (
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant/shop"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant/staff"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant/user"

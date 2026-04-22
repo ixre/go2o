@@ -12,7 +12,7 @@ package product
 import (
 	"sort"
 
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 )
 

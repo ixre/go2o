@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
+	"github.com/ixre/go2o/pkg/infra/fw/types"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/typeconv"
 	"gorm.io/gorm"

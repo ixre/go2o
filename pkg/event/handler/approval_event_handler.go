@@ -13,7 +13,7 @@ package handler
 import (
 	"fmt"
 
-	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/infra/logger"
 	"github.com/ixre/go2o/pkg/interface/domain/approval"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 )

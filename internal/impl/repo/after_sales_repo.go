@@ -10,7 +10,7 @@ package repo
 
 import (
 	asImpl "github.com/ixre/go2o/internal/impl/domain/aftersales"
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	afterSales "github.com/ixre/go2o/pkg/interface/domain/aftersales"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/order"

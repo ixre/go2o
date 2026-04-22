@@ -1,7 +1,7 @@
 package staff
 
 import (
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	"github.com/ixre/go2o/pkg/interface/domain/approval"
 )
 

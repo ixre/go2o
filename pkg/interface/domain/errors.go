@@ -1,6 +1,6 @@
 package domain
 
-import "github.com/ixre/go2o/pkg/infrastructure/domain"
+import "github.com/ixre/go2o/pkg/infra/domain"
 
 /**
  * Copyright 2009-2019 @ 56x.net

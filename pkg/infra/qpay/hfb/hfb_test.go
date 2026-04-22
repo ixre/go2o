@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ixre/go2o/pkg/infrastructure"
-	"github.com/ixre/go2o/pkg/infrastructure/qpay"
+	infrastructure "github.com/ixre/go2o/pkg/infra"
+	"github.com/ixre/go2o/pkg/infra/qpay"
 	"github.com/ixre/gof/crypto"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )

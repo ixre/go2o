@@ -18,7 +18,7 @@ import (
 	"time"
 
 	merchantImpl "github.com/ixre/go2o/internal/impl/domain/merchant"
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	"github.com/ixre/go2o/pkg/interface/domain/approval"
 	"github.com/ixre/go2o/pkg/interface/domain/invoice"
 	"github.com/ixre/go2o/pkg/interface/domain/item"

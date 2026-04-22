@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ixre/go2o/pkg/infrastructure/fw/collections"
+	"github.com/ixre/go2o/pkg/infra/fw/collections"
 	"github.com/ixre/go2o/pkg/interface/domain/sys"
 
 	"github.com/ixre/gof/db"

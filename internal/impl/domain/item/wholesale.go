@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ixre/go2o/pkg/infrastructure/format"
+	"github.com/ixre/go2o/pkg/infra/format"
 	"github.com/ixre/go2o/pkg/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/interface/domain/item"
 	"github.com/ixre/go2o/pkg/interface/domain/product"

@@ -14,7 +14,7 @@ import (
 	"fmt"
 
 	"github.com/ixre/go2o/pkg/constants"
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/personfinance"
 	"github.com/ixre/go2o/pkg/interface/service/proto"

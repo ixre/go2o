@@ -14,7 +14,7 @@ import (
 	"log"
 
 	itemImpl "github.com/ixre/go2o/internal/impl/domain/item"
-	"github.com/ixre/go2o/pkg/infrastructure/format"
+	"github.com/ixre/go2o/pkg/infra/format"
 	"github.com/ixre/go2o/pkg/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/interface/domain/express"
 	"github.com/ixre/go2o/pkg/interface/domain/item"

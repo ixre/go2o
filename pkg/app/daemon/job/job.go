@@ -10,7 +10,7 @@
 
 package job
 
-import "github.com/ixre/go2o/pkg/infrastructure/locker"
+import "github.com/ixre/go2o/pkg/infra/locker"
 
 // JobInfo 任务信息
 type JobInfo struct {

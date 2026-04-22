@@ -16,7 +16,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ixre/go2o/pkg/infrastructure/util/lbs"
+	"github.com/ixre/go2o/pkg/infra/util/lbs"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/gof/crypto"
 	api "github.com/ixre/gof/ext/api"

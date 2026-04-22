@@ -3,7 +3,7 @@ package job
 import (
 	"log"
 
-	"github.com/ixre/go2o/pkg/infrastructure/locker"
+	"github.com/ixre/go2o/pkg/infra/locker"
 	"github.com/ixre/go2o/pkg/inject"
 )
 

@@ -12,7 +12,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/gof/db"

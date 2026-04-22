@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/internal/module/bank"
-	"github.com/ixre/go2o/pkg/infrastructure/domain/util"
+	"github.com/ixre/go2o/pkg/infra/domain/util"
 	"github.com/ixre/go2o/pkg/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"

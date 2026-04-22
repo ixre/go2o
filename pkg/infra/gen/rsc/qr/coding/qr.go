@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ixre/go2o/pkg/infrastructure/gen/rsc/gf256"
+	"github.com/ixre/go2o/pkg/infra/gen/rsc/gf256"
 )
 
 // Field is the field for QR error correction.

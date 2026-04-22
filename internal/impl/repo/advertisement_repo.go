@@ -14,7 +14,7 @@ import (
 	"log"
 
 	adImpl "github.com/ixre/go2o/internal/impl/domain/ad"
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/infra/fw"
 	"github.com/ixre/go2o/pkg/interface/domain/ad"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"

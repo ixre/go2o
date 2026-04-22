@@ -11,7 +11,7 @@ package delivery
 import (
 	"errors"
 
-	"github.com/ixre/go2o/pkg/infrastructure/util/lbs"
+	"github.com/ixre/go2o/pkg/infra/util/lbs"
 	"github.com/ixre/go2o/pkg/interface/domain/delivery"
 )
 

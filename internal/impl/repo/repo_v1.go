@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/ixre/go2o/internal/core/dao/model"
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	"github.com/ixre/go2o/pkg/interface/domain/ad"
 	afterSales "github.com/ixre/go2o/pkg/interface/domain/aftersales"
 	"github.com/ixre/go2o/pkg/interface/domain/cart"

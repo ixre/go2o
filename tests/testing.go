@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/pkg/event/msq"
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
-	"github.com/ixre/go2o/pkg/infrastructure/etcd"
+	"github.com/ixre/go2o/pkg/infra/domain"
+	"github.com/ixre/go2o/pkg/infra/etcd"
 	"github.com/ixre/go2o/pkg/initial"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"

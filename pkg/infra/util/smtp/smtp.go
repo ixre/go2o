@@ -3,7 +3,7 @@ package smtp
 import (
 	"errors"
 
-	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/infra/logger"
 	"gopkg.in/gomail.v2"
 )
 

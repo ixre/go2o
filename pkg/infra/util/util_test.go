@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
+	"github.com/ixre/go2o/pkg/infra/fw/types"
 )
 
 // 测试获取首字母

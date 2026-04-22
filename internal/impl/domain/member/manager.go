@@ -15,8 +15,8 @@ import (
 	"strings"
 
 	"github.com/ixre/go2o/pkg/constants"
-	"github.com/ixre/go2o/pkg/infrastructure/logger"
-	"github.com/ixre/go2o/pkg/infrastructure/regex"
+	"github.com/ixre/go2o/pkg/infra/logger"
+	"github.com/ixre/go2o/pkg/infra/regex"
 	de "github.com/ixre/go2o/pkg/interface/domain"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"

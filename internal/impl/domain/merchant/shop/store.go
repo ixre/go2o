@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ixre/go2o/pkg/infrastructure/util/lbs"
+	"github.com/ixre/go2o/pkg/infra/util/lbs"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant/shop"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"

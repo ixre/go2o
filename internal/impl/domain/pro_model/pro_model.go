@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ixre/go2o/pkg/infrastructure/format"
+	"github.com/ixre/go2o/pkg/infra/format"
 	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 )
 

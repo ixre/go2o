@@ -10,7 +10,7 @@
 
 package merchant
 
-import "github.com/ixre/go2o/pkg/infrastructure/domain"
+import "github.com/ixre/go2o/pkg/infra/domain"
 
 const (
 	// 账单类型:日度账单

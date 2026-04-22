@@ -14,7 +14,7 @@
 
 package promotion
 
-import "github.com/ixre/go2o/pkg/infrastructure/domain"
+import "github.com/ixre/go2o/pkg/infra/domain"
 
 var (
 	ErrCanNotApplied = domain.NewError(

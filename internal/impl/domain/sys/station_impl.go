@@ -15,10 +15,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/pkg/infrastructure/fw"
-	"github.com/ixre/go2o/pkg/infrastructure/fw/collections"
-	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
-	"github.com/ixre/go2o/pkg/infrastructure/util"
+	"github.com/ixre/go2o/pkg/infra/fw"
+	"github.com/ixre/go2o/pkg/infra/fw/collections"
+	"github.com/ixre/go2o/pkg/infra/fw/types"
+	"github.com/ixre/go2o/pkg/infra/util"
 	"github.com/ixre/go2o/pkg/interface/domain/sys"
 )
 

@@ -8,7 +8,7 @@
  */
 package express
 
-import "github.com/ixre/go2o/pkg/infrastructure/domain"
+import "github.com/ixre/go2o/pkg/infra/domain"
 
 var (
 	ErrExpressTemplateName = domain.NewError(

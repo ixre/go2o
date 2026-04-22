@@ -17,7 +17,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/pkg/grpc"
-	"github.com/ixre/go2o/pkg/infrastructure/util"
+	"github.com/ixre/go2o/pkg/infra/util"
 	"github.com/ixre/go2o/pkg/interface/domain/personfinance"
 	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
