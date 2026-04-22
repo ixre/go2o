@@ -5,7 +5,7 @@ import (
 
 	"github.com/ixre/go2o/internal/impl/service/parser"
 	"github.com/ixre/go2o/pkg/interface/domain/wallet"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 var _ proto.WalletServiceServer = new(walletServiceImpl)

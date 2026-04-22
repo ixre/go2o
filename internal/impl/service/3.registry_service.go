@@ -16,7 +16,7 @@ import (
 
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 var _ proto.RegistryServiceServer = new(registryService)

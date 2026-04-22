@@ -19,7 +19,7 @@ import (
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/go2o/pkg/inject"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 func GenerateMerchantBill() {

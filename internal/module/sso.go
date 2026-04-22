@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"
 )

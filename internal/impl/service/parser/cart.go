@@ -2,7 +2,7 @@ package parser
 
 import (
 	"github.com/ixre/go2o/pkg/interface/domain/cart"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/math"
 	"github.com/ixre/gof/types"
 )

@@ -7,7 +7,7 @@ import (
 	"github.com/ixre/go2o/pkg/event/events"
 	"github.com/ixre/go2o/pkg/event/msq"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/typeconv"
 )
 

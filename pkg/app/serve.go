@@ -12,12 +12,12 @@ import (
 	"github.com/ixre/go2o/pkg/app/daemon"
 	"github.com/ixre/go2o/pkg/event/events"
 	"github.com/ixre/go2o/pkg/event/msq"
+	"github.com/ixre/go2o/pkg/grpc"
 	"github.com/ixre/go2o/pkg/infrastructure/etcd"
 	"github.com/ixre/go2o/pkg/initial"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/inject"
 
-	"github.com/ixre/go2o/pkg/service"
 	"github.com/ixre/gof/domain/eventbus"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
@@ -107,9 +107,9 @@ func Run(ch chan bool, confFile string, after func(cfg *clientv3.Config, debug b
 		os.Exit(0)
 	}
 	// 运行RPC服务
-	service.ServeRPC(ch, &cfg, port)
+	grpc.ServeRPC(ch, &cfg, port)
 	// 注册服务发现
-	service.RegisterServiceDiscovery(&cfg, host, port)
+	grpc.RegisterServiceDiscovery(&cfg, host, port)
 	// 初始化producer
 	_ = msq.Configure(msq.NATS,
 		strings.Split(mqAddr, ","),

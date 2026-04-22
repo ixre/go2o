@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/pkg/inject"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 // 测试立即结算

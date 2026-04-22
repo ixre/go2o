@@ -1,6 +1,6 @@
 package rbac
 
-import "github.com/ixre/go2o/pkg/service/proto"
+import "github.com/ixre/go2o/pkg/interface/service/proto"
 
 // 用户初始化数据
 type UserInfoResponse struct {

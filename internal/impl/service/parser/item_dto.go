@@ -4,7 +4,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/item"
 	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/types"
 )
 

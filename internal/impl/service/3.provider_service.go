@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 
 	"github.com/ixre/go2o/internal/external/tencent"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 var _ proto.ServiceProviderServiceServer = new(serviceProviderServiceImpl)

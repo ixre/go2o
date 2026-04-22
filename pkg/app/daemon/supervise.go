@@ -20,17 +20,17 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/pkg/constants"
+	"github.com/ixre/go2o/pkg/grpc"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
-	"github.com/ixre/go2o/pkg/service"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/util"
 )
 
 // 监视新订单
 func superviseOrder(ss []Service) {
 	notify := func(orderNo string, sub bool, ss []Service) {
-		trans, cli, _ := service.OrderServiceClient()
+		trans, cli, _ := grpc.OrderServiceClient()
 		// 这里应处理子订单和父订单
 
 		//o, _ := cli.GetOrder(context.TODO(), &proto.GetOrderRequest{
@@ -75,7 +75,7 @@ func superviseOrder(ss []Service) {
 
 // 监视新会员
 func superviseMemberUpdate(ss []Service) {
-	trans, cli, _ := service.MemberServiceClient()
+	trans, cli, _ := grpc.MemberServiceClient()
 	defer trans.Close()
 	notify := func(id int64, action string, ss []Service) {
 		m, _ := cli.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: id})
@@ -112,7 +112,7 @@ func superviseMemberUpdate(ss []Service) {
 // 监视支付单完成
 func supervisePaymentOrderFinish(ss []Service) {
 	notify := func(id int, ss []Service) {
-		//trans, cli, _ := service.PaymentServiceClient()
+		//trans, cli, _ := grpc.PaymentServiceClient()
 		//defer trans.Close()
 		// order, _ := cli.GetPaymentOrderById(context.TODO(), &proto.Int32{Value: int32(id)})
 		// if order != nil {
@@ -167,7 +167,7 @@ func memberAutoUnlock() {
 	//获取标记为等待过期的订单
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
-		trans, cli, err := service.MemberServiceClient()
+		trans, cli, err := grpc.MemberServiceClient()
 		if err == nil {
 			for _, oKey := range list {
 				memberId, _ := redis.Int64(conn.Do("GET", oKey))
@@ -202,7 +202,7 @@ func orderAutoReceive() {
 			orderNo, isSub, err := testIdFromRdsKey(oKey)
 			//log.Println("----",oKey,orderId,isSub,err)
 			if err == nil && orderNo != "" {
-				trans, cli, _ := service.OrderServiceClient()
+				trans, cli, _ := grpc.OrderServiceClient()
 				ret, _ := cli.BuyerReceived(context.TODO(), &proto.OrderNo{
 					OrderNo: orderNo,
 					Sub:     isSub,

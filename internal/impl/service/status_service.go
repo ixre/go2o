@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 var _ proto.StatusServiceServer = new(StatusServiceImpl)

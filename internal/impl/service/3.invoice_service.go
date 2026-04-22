@@ -5,7 +5,7 @@ import (
 
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/go2o/pkg/interface/domain/invoice"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 var _ proto.InvoiceServiceServer = new(invoiceServiceImpl)

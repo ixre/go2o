@@ -6,7 +6,7 @@ import (
 
 	id "github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/interface/domain/order"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/util"
 )
 

@@ -16,10 +16,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ixre/go2o/pkg/grpc"
 	"github.com/ixre/go2o/pkg/infrastructure/util"
 	"github.com/ixre/go2o/pkg/interface/domain/personfinance"
-	"github.com/ixre/go2o/pkg/service"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 var (
@@ -103,7 +103,7 @@ func confirmTransferInByCursor(unixDate int64, logId int32) {
 		logId, unixDate, personfinance.RiseTypeTransferIn,
 		personfinance.RiseStateDefault)
 	if err == nil {
-		trans, cli, _ := service.FinanceServiceClient()
+		trans, cli, _ := grpc.FinanceServiceClient()
 		defer trans.Close()
 		ret, _ := cli.CommitTransfer(context.TODO(),
 			&proto.CommitTransferRequest{
@@ -161,7 +161,7 @@ func settleRiseData(settleDate time.Time) {
 
 // 结算每日数据
 func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int64) {
-	trans, cli, _ := service.FinanceServiceClient()
+	trans, cli, _ := grpc.FinanceServiceClient()
 	defer trans.Close()
 	ret, _ := cli.RiseSettleByDay(context.TODO(), &proto.RiseSettleRequest{
 		PersonId:  personId,

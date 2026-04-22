@@ -26,7 +26,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/merchant/wholesaler"
 	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/go2o/pkg/interface/domain/wallet"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/domain/eventbus"
 	"github.com/ixre/gof/types"
 	context2 "golang.org/x/net/context"

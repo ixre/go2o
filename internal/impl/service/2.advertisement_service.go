@@ -15,7 +15,7 @@ import (
 
 	"github.com/ixre/go2o/internal/impl/repo"
 	"github.com/ixre/go2o/pkg/interface/domain/ad"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/storage"
 )
 

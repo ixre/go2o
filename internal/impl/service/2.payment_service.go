@@ -18,7 +18,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/go2o/pkg/interface/domain/payment"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 var _ proto.PaymentServiceServer = new(paymentService)

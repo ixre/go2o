@@ -13,7 +13,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/go2o/pkg/interface/domain/product"
 	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 )

@@ -30,7 +30,7 @@ import (
 	"github.com/ixre/go2o/pkg/infrastructure/fw/collections"
 	rbac "github.com/ixre/go2o/pkg/interface/domain/rabc"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/typeconv"

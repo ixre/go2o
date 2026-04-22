@@ -17,7 +17,7 @@ import (
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/go2o/pkg/inject"
 	"github.com/ixre/go2o/pkg/interface/domain/payment"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 // SubmitPaymentProviderEndpointDivide 提交支付渠道端分账请求

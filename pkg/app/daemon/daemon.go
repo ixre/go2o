@@ -22,13 +22,13 @@ import (
 	"github.com/ixre/go2o/internal/impl/repo/clickhouse"
 	"github.com/ixre/go2o/pkg/app/daemon/job"
 	"github.com/ixre/go2o/pkg/constants"
+	"github.com/ixre/go2o/pkg/grpc"
 	"github.com/ixre/go2o/pkg/initial"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 	"github.com/ixre/go2o/pkg/interface/domain/order"
-	"github.com/ixre/go2o/pkg/service"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -315,7 +315,7 @@ func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *proto.SSingleOrd
 
 // 确认订单
 func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *proto.SSingleOrder) {
-	trans, cli, _ := service.OrderServiceClient()
+	trans, cli, _ := grpc.OrderServiceClient()
 	defer trans.Close()
 	orderNo, sub := d.testSubId(o)
 	ret, _ := cli.ConfirmOrder(context.TODO(), &proto.OrderNo{

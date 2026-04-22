@@ -6,7 +6,7 @@ import (
 	"github.com/google/wire"
 	"github.com/ixre/go2o/internal/external"
 	"github.com/ixre/go2o/pkg/event"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 // GetSPConfig 获取第三方服务自动配置

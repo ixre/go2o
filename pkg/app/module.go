@@ -5,7 +5,7 @@ import (
 
 	"github.com/ixre/go2o/internal/module/express/kdniao"
 	"github.com/ixre/go2o/pkg/inject"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 func InitialModules() {

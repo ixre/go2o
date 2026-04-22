@@ -20,7 +20,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	api "github.com/ixre/gof/ext/jwt-api"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/typeconv"

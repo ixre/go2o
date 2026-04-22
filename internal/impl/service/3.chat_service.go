@@ -7,7 +7,7 @@ import (
 
 	"github.com/ixre/go2o/pkg/interface/domain/chat"
 	"github.com/ixre/go2o/pkg/interface/domain/member"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 var _ proto.ChatServiceServer = new(chatServiceImpl)

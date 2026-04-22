@@ -27,7 +27,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/payment"
 	"github.com/ixre/go2o/pkg/interface/domain/product"
 	"github.com/ixre/go2o/pkg/interface/domain/shipment"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/typeconv"
 )
 

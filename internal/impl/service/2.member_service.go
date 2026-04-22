@@ -34,7 +34,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/sys"
 	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 	"github.com/ixre/go2o/pkg/interface/domain/wallet"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/typeconv"
 	"github.com/ixre/gof/util"

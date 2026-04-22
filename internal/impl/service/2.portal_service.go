@@ -7,7 +7,7 @@ import (
 	"github.com/ixre/go2o/internal/core/dao"
 	"github.com/ixre/go2o/internal/core/dao/impl"
 	"github.com/ixre/go2o/internal/core/dao/model"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/db/orm"
 	"golang.org/x/net/context"
 )

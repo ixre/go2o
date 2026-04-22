@@ -21,7 +21,7 @@ import (
 	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 	"github.com/ixre/go2o/pkg/interface/domain/product"
 	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types"
 )

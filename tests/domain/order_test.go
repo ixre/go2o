@@ -23,7 +23,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/cart"
 	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/go2o/pkg/interface/domain/payment"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/storage"
 )
 

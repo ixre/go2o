@@ -15,7 +15,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/order"
 	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 	"github.com/ixre/go2o/pkg/interface/domain/product"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/types"
 )
 

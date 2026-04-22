@@ -16,7 +16,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 	"github.com/ixre/go2o/pkg/interface/domain/merchant/shop"
 	"github.com/ixre/go2o/pkg/interface/domain/registry"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	context2 "golang.org/x/net/context"
 )
 

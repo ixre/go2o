@@ -9,7 +9,7 @@
 package util
 
 import (
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/algorithm/iterator"
 )
 

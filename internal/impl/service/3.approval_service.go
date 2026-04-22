@@ -15,7 +15,7 @@ import (
 	"errors"
 
 	"github.com/ixre/go2o/pkg/interface/domain/approval"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 var _ proto.ApprovalServiceServer = new(ApprovalServiceImpl)

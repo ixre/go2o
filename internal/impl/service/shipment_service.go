@@ -16,7 +16,7 @@ import (
 	"github.com/ixre/go2o/pkg/interface/domain/delivery"
 	"github.com/ixre/go2o/pkg/interface/domain/express"
 	"github.com/ixre/go2o/pkg/interface/domain/shipment"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/log"
 )
 
