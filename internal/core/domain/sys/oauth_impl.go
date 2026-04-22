@@ -15,7 +15,7 @@ import (
 	"strconv"
 
 	"github.com/ixre/go2o/internal/external/tencent"
-	"github.com/ixre/go2o/pkg/domain/interface/sys"
+	"github.com/ixre/go2o/pkg/interface/domain/sys"
 )
 
 type oauthManager struct {

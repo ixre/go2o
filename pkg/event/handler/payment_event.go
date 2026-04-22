@@ -11,11 +11,11 @@
 package handler
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/order"
-	"github.com/ixre/go2o/pkg/domain/interface/payment"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
+	"github.com/ixre/go2o/pkg/interface/domain/payment"
 )
 
 // PaymentEventHandler 支付事件处理

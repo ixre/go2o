@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 )
 
 var _ merchant.IKvManager = new(KvManager)

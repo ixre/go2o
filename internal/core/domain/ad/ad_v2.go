@@ -3,7 +3,7 @@ package ad
 import (
 	"errors"
 
-	"github.com/ixre/go2o/pkg/domain/interface/ad"
+	"github.com/ixre/go2o/pkg/interface/domain/ad"
 )
 
 var _ ad.IAdPosition = new(adPositionImpl)

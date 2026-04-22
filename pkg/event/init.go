@@ -1,15 +1,15 @@
 package event
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/approval"
-	"github.com/ixre/go2o/pkg/domain/interface/invoice"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant/staff"
-	"github.com/ixre/go2o/pkg/domain/interface/payment"
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/event/events"
 	"github.com/ixre/go2o/pkg/event/handler"
+	"github.com/ixre/go2o/pkg/interface/domain/approval"
+	"github.com/ixre/go2o/pkg/interface/domain/invoice"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant/staff"
+	"github.com/ixre/go2o/pkg/interface/domain/payment"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/gof/domain/eventbus"
 )
 

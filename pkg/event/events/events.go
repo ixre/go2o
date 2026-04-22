@@ -1,8 +1,8 @@
 package events
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/order"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
 )
 
 // 应用初始化事件

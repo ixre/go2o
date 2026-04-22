@@ -3,8 +3,8 @@ package order
 import (
 	"errors"
 
-	"github.com/ixre/go2o/pkg/domain/interface/cart"
-	"github.com/ixre/go2o/pkg/domain/interface/order"
+	"github.com/ixre/go2o/pkg/interface/domain/cart"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
 )
 
 // 订单拆单

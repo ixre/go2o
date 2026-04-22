@@ -14,12 +14,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/order"
-	"github.com/ixre/go2o/pkg/domain/interface/promotion"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/infrastructure/format"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
+	"github.com/ixre/go2o/pkg/interface/domain/promotion"
 )
 
 // 获取推荐数组

@@ -11,9 +11,9 @@ package promotion
 import (
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/item"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/promotion"
+	"github.com/ixre/go2o/pkg/interface/domain/item"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/promotion"
 )
 
 func FactoryPromotion(rep promotion.IPromotionRepo, goodsRepo item.IItemRepo, memRepo member.IMemberRepo,

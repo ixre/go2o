@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"time"
 
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 )
 
 var reg = regexp.MustCompile("\\{([^\\}]+)\\}")

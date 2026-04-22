@@ -11,8 +11,8 @@ package domain
 import (
 	"testing"
 
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
 
 	"github.com/ixre/go2o/pkg/inject"
 )

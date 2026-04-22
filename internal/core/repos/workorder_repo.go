@@ -2,8 +2,8 @@ package repos
 
 import (
 	workorderImpl "github.com/ixre/go2o/internal/core/domain/work/workorder"
-	"github.com/ixre/go2o/pkg/domain/interface/work/workorder"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/interface/domain/work/workorder"
 )
 
 var _ workorder.IWorkorderRepo = new(workorderRepo)

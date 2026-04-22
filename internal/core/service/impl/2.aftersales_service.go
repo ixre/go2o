@@ -13,8 +13,8 @@ import (
 	"errors"
 
 	"github.com/ixre/go2o/internal/core/query"
-	afterSales "github.com/ixre/go2o/pkg/domain/interface/aftersales"
-	"github.com/ixre/go2o/pkg/domain/interface/order"
+	afterSales "github.com/ixre/go2o/pkg/interface/domain/aftersales"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/db"
 )

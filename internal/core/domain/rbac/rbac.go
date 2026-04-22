@@ -10,7 +10,7 @@
 
 package rbac
 
-import rbac "github.com/ixre/go2o/pkg/domain/interface/rabc"
+import rbac "github.com/ixre/go2o/pkg/interface/domain/rabc"
 
 var _ rbac.IRbacAggregateRoot = new(rbacAggregateRootImpl)
 

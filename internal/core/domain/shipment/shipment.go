@@ -12,9 +12,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/express"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant/shop"
-	"github.com/ixre/go2o/pkg/domain/interface/shipment"
+	"github.com/ixre/go2o/pkg/interface/domain/express"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant/shop"
+	"github.com/ixre/go2o/pkg/interface/domain/shipment"
 	"github.com/ixre/gof/util"
 )
 

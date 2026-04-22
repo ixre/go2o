@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/ixre/go2o/internal/core/dao"
-	rbac "github.com/ixre/go2o/pkg/domain/interface/rabc"
+	rbac "github.com/ixre/go2o/pkg/interface/domain/rabc"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"

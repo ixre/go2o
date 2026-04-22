@@ -2,9 +2,9 @@ package repos
 
 import (
 	impl "github.com/ixre/go2o/internal/core/domain/invoice"
-	"github.com/ixre/go2o/pkg/domain/interface/invoice"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/interface/domain/invoice"
 )
 
 var _ invoice.IInvoiceRepo = new(invoiceTenantRepoImpl)

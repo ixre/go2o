@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ixre/go2o/pkg/domain/interface/order"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/typeconv"
 )

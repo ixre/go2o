@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/ixre/go2o/pkg/domain/interface/cart"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/cart"
 	"github.com/ixre/gof/typeconv"
 )
 

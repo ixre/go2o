@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/chat"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/interface/domain/chat"
 	"github.com/ixre/gof/crypto"
 )
 

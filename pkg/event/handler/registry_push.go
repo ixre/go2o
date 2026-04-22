@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/event/msq"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/typeconv"
 )

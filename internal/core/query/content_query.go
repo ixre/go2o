@@ -12,11 +12,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ixre/go2o/pkg/domain/interface/content"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/go2o/pkg/infrastructure/fw/collections"
+	"github.com/ixre/go2o/pkg/interface/domain/content"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

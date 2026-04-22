@@ -3,7 +3,7 @@ package impl
 import (
 	"context"
 
-	"github.com/ixre/go2o/pkg/domain/interface/work/workorder"
+	"github.com/ixre/go2o/pkg/interface/domain/work/workorder"
 	"github.com/ixre/go2o/pkg/service/proto"
 )
 

@@ -16,10 +16,10 @@ import (
 	"strconv"
 	"time"
 
-	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
-	"github.com/ixre/go2o/pkg/domain/interface/product"
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
+	"github.com/ixre/go2o/pkg/interface/domain/product"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/gof/algorithm/iterator"
 )
 

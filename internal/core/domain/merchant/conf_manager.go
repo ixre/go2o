@@ -12,10 +12,10 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
+	"github.com/ixre/go2o/pkg/interface/domain/enum"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 	"github.com/ixre/gof/util"
 )
 

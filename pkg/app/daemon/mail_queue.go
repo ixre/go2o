@@ -14,10 +14,10 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/ixre/go2o/pkg/constants"
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/infrastructure/util/smtp"
 	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 )
 
 var (

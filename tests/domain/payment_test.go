@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/payment"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/payment"
 )
 
 // 测试支付完成

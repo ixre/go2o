@@ -14,7 +14,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ixre/go2o/pkg/domain/interface/approval"
+	"github.com/ixre/go2o/pkg/interface/domain/approval"
 	"github.com/ixre/go2o/pkg/service/proto"
 )
 

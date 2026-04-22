@@ -11,7 +11,7 @@ package member
 import (
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/member"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
 )
 
 var _ member.IInvitationManager = new(invitationManager)

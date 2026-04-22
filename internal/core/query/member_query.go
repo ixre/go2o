@@ -13,9 +13,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/wallet"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/wallet"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"

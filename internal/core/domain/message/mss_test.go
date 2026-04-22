@@ -11,7 +11,7 @@ package mss
 import (
 	"testing"
 
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 )

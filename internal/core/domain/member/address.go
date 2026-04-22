@@ -3,9 +3,9 @@ package member
 import (
 	"strings"
 
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
 	"github.com/ixre/go2o/pkg/infrastructure/regex"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 )
 
 var _ member.IDeliverAddress = new(addressImpl)

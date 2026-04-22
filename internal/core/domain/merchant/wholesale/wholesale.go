@@ -4,9 +4,9 @@ import (
 	"errors"
 	"log"
 
-	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
-	"github.com/ixre/go2o/pkg/domain/interface/item"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant/wholesaler"
+	"github.com/ixre/go2o/pkg/interface/domain/enum"
+	"github.com/ixre/go2o/pkg/interface/domain/item"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant/wholesaler"
 	"github.com/ixre/gof/util"
 )
 

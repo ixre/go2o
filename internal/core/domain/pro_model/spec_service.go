@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"sort"
 
-	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
+	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 )
 
 var _ promodel.ISpecService = new(specServiceImpl)

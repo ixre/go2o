@@ -14,10 +14,10 @@ import (
 	"time"
 
 	cartImpl "github.com/ixre/go2o/internal/core/domain/cart"
-	"github.com/ixre/go2o/pkg/domain/interface/cart"
-	"github.com/ixre/go2o/pkg/domain/interface/item"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/cart"
+	"github.com/ixre/go2o/pkg/interface/domain/item"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

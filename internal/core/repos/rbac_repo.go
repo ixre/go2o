@@ -11,8 +11,8 @@ package repos
 
 import (
 	rbacImpl "github.com/ixre/go2o/internal/core/domain/rbac"
-	rbac "github.com/ixre/go2o/pkg/domain/interface/rabc"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	rbac "github.com/ixre/go2o/pkg/interface/domain/rabc"
 )
 
 var _ rbac.IRbacRepository = new(rbacRepoImpl)

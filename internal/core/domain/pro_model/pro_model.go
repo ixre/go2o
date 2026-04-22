@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
 	"github.com/ixre/go2o/pkg/infrastructure/format"
+	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 )
 
 var _ promodel.IProductModel = new(modelImpl)

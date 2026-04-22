@@ -10,8 +10,8 @@ package repos
 
 import (
 	pf "github.com/ixre/go2o/internal/core/domain/personfinance"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/personfinance"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/personfinance"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

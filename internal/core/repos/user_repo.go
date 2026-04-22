@@ -9,7 +9,7 @@
 package repos
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/merchant/user"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant/user"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

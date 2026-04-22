@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/ixre/go2o/pkg/domain/interface/order"
 	id "github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/util"
 )

@@ -11,7 +11,7 @@
 package approval
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/approval"
+	"github.com/ixre/go2o/pkg/interface/domain/approval"
 )
 
 var _ approval.IApprovalAggregateRoot = new(staffTransferApprovalImpl)

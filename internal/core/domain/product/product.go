@@ -15,10 +15,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/item"
-	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
-	"github.com/ixre/go2o/pkg/domain/interface/product"
-	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
+	"github.com/ixre/go2o/pkg/interface/domain/item"
+	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
+	"github.com/ixre/go2o/pkg/interface/domain/product"
+	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 	"github.com/ixre/gof/util"
 )
 

@@ -12,10 +12,10 @@ import (
 	"errors"
 	"strings"
 
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/infrastructure/util"
 	"github.com/ixre/go2o/pkg/infrastructure/util/sms/aliyu"
 	"github.com/ixre/go2o/pkg/infrastructure/util/sms/cl253"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 )
 
 // 短信接口

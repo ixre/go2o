@@ -11,8 +11,8 @@
 package query
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/sys"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/interface/domain/sys"
 )
 
 type SystemQuery struct {

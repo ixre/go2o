@@ -2,8 +2,8 @@ package repos
 
 import (
 	impl "github.com/ixre/go2o/internal/core/domain/chat"
-	"github.com/ixre/go2o/pkg/domain/interface/chat"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/interface/domain/chat"
 )
 
 var _ chat.IChatRepository = new(chatRepoImpl)

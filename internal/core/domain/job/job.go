@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/job"
+	"github.com/ixre/go2o/pkg/interface/domain/job"
 )
 
 var _ job.IJobAggregate = new(jobImpl)

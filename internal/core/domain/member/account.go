@@ -17,13 +17,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
-	"github.com/ixre/go2o/pkg/domain/interface/wallet"
 	"github.com/ixre/go2o/pkg/event/events"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/infrastructure/format"
+	"github.com/ixre/go2o/pkg/interface/domain/enum"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
+	"github.com/ixre/go2o/pkg/interface/domain/wallet"
 	"github.com/ixre/gof/domain/eventbus"
 )
 

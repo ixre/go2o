@@ -12,7 +12,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/crypto"

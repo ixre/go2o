@@ -3,9 +3,9 @@ package job
 import (
 	"log"
 
-	"github.com/ixre/go2o/pkg/domain/interface/job"
 	"github.com/ixre/go2o/pkg/infrastructure/locker"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/job"
 )
 
 func getJob(jobName string) job.IJobAggregate {

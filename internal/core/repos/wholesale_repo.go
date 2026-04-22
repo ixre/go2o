@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/ixre/go2o/pkg/domain/interface/merchant/wholesaler"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant/wholesaler"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

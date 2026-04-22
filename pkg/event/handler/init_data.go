@@ -6,10 +6,10 @@ import (
 
 	"github.com/ixre/go2o/internal/core/dao"
 	"github.com/ixre/go2o/internal/core/dao/model"
-	"github.com/ixre/go2o/pkg/domain/interface/content"
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
-	"github.com/ixre/go2o/pkg/domain/interface/sys"
+	"github.com/ixre/go2o/pkg/interface/domain/content"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
+	"github.com/ixre/go2o/pkg/interface/domain/sys"
 
 	"github.com/ixre/go2o/pkg/event/events"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"

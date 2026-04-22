@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/ad"
 	"github.com/ixre/go2o/pkg/initial/provide"
+	"github.com/ixre/go2o/pkg/interface/domain/ad"
 )
 
 var _ ad.IUserAd = new(userAdImpl)

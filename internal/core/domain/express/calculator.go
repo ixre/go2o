@@ -1,7 +1,7 @@
 package express
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/express"
+	"github.com/ixre/go2o/pkg/interface/domain/express"
 )
 
 var _ express.IExpressCalculator = new(expressCalculatorImpl)

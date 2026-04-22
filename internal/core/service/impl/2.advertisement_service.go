@@ -14,7 +14,7 @@ import (
 	"fmt"
 
 	"github.com/ixre/go2o/internal/core/repos"
-	"github.com/ixre/go2o/pkg/domain/interface/ad"
+	"github.com/ixre/go2o/pkg/interface/domain/ad"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/storage"
 )

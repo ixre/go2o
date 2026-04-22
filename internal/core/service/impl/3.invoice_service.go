@@ -3,8 +3,8 @@ package impl
 import (
 	"context"
 
-	"github.com/ixre/go2o/pkg/domain/interface/invoice"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/interface/domain/invoice"
 	"github.com/ixre/go2o/pkg/service/proto"
 )
 

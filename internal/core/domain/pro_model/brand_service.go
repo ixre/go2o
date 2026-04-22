@@ -3,8 +3,8 @@ package promodel
 import (
 	"fmt"
 
-	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
-	"github.com/ixre/go2o/pkg/domain/interface/product"
+	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
+	"github.com/ixre/go2o/pkg/interface/domain/product"
 )
 
 var _ promodel.IBrandService = new(brandServiceImpl)

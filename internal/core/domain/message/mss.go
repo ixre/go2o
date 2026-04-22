@@ -12,8 +12,8 @@ import (
 	"encoding/json"
 	"time"
 
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/initial/provide"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 )
 
 var _ mss.IUserMessageManager = new(userMessageManagerImpl)

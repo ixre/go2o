@@ -1,9 +1,9 @@
 package query
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/work/workorder"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
+	"github.com/ixre/go2o/pkg/interface/domain/work/workorder"
 )
 
 type WorkQuery struct {

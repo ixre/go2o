@@ -9,9 +9,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/ixre/go2o/pkg/domain/interface/item"
-	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
 	"github.com/ixre/go2o/pkg/infrastructure/format"
+	"github.com/ixre/go2o/pkg/interface/domain/item"
+	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 )
 
 var _ item.ISkuService = new(skuServiceImpl)

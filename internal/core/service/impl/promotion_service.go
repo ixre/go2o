@@ -13,8 +13,8 @@ import (
 	"fmt"
 
 	promImpl "github.com/ixre/go2o/internal/core/domain/promotion"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/promotion"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/promotion"
 )
 
 type PromotionService struct {

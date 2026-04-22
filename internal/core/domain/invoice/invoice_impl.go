@@ -6,10 +6,10 @@ import (
 	"math"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/invoice"
 	"github.com/ixre/go2o/pkg/event/events"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
+	"github.com/ixre/go2o/pkg/interface/domain/invoice"
 	"github.com/ixre/gof/domain/eventbus"
 )
 

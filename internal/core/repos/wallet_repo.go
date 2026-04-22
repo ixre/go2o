@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	wi "github.com/ixre/go2o/internal/core/domain/wallet"
-	"github.com/ixre/go2o/pkg/domain/interface/wallet"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/interface/domain/wallet"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

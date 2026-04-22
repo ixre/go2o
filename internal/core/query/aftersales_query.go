@@ -12,7 +12,7 @@ import (
 	"database/sql"
 	"log"
 
-	afterSales "github.com/ixre/go2o/pkg/domain/interface/aftersales"
+	afterSales "github.com/ixre/go2o/pkg/interface/domain/aftersales"
 	"github.com/ixre/gof/db"
 )
 

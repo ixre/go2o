@@ -14,8 +14,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/sys"
 	"github.com/ixre/go2o/pkg/infrastructure/util"
+	"github.com/ixre/go2o/pkg/interface/domain/sys"
 )
 
 var _ sys.IApplicationManager = &applicationManagerImpl{}

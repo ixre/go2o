@@ -10,8 +10,8 @@
 package query
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/payment"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/interface/domain/payment"
 )
 
 type DivideOrderInfo struct {

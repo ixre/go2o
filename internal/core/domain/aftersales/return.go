@@ -12,10 +12,10 @@ import (
 	"errors"
 	"math"
 
-	afterSales "github.com/ixre/go2o/pkg/domain/interface/aftersales"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/payment"
 	"github.com/ixre/go2o/pkg/initial/provide"
+	afterSales "github.com/ixre/go2o/pkg/interface/domain/aftersales"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/payment"
 	"github.com/ixre/gof/db/orm"
 )
 

@@ -12,8 +12,8 @@ import (
 	"sync"
 
 	expImpl "github.com/ixre/go2o/internal/core/domain/express"
-	"github.com/ixre/go2o/pkg/domain/interface/express"
-	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
+	"github.com/ixre/go2o/pkg/interface/domain/express"
+	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

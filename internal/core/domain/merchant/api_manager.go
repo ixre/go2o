@@ -9,8 +9,8 @@
 package merchant
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 )
 
 var _ merchant.IApiManager = new(apiManagerImpl)

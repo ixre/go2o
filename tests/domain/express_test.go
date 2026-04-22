@@ -12,8 +12,8 @@ import (
 	"testing"
 
 	expressImpl "github.com/ixre/go2o/internal/core/domain/express"
-	"github.com/ixre/go2o/pkg/domain/interface/express"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/express"
 )
 
 func TestExpressTemplateImpl_Save(t *testing.T) {

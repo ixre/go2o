@@ -9,7 +9,7 @@
 package repos
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
+	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 )
 
 var (

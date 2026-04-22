@@ -13,7 +13,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ixre/go2o/pkg/domain/interface/express"
+	"github.com/ixre/go2o/pkg/interface/domain/express"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/types"
 )

@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/work/workorder"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
+	"github.com/ixre/go2o/pkg/interface/domain/work/workorder"
 )
 
 var _ workorder.IWorkorderAggregateRoot = new(workorderAggregateRootImpl)

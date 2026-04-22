@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/pkg/constants"
-	"github.com/ixre/go2o/pkg/domain/interface/invoice"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
-	"github.com/ixre/go2o/pkg/domain/interface/wallet"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/interface/domain/invoice"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
+	"github.com/ixre/go2o/pkg/interface/domain/wallet"
 )
 
 var _ merchant.IAccount = new(accountImpl)

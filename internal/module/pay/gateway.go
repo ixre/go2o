@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/member"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/gof/crypto"
 	"github.com/ixre/gof/storage"
 )

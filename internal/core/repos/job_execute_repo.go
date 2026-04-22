@@ -5,7 +5,7 @@ import (
 	"log"
 
 	jobImpl "github.com/ixre/go2o/internal/core/domain/job"
-	"github.com/ixre/go2o/pkg/domain/interface/job"
+	"github.com/ixre/go2o/pkg/interface/domain/job"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 )

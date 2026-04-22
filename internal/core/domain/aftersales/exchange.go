@@ -12,9 +12,9 @@ import (
 	"errors"
 	"time"
 
-	afterSales "github.com/ixre/go2o/pkg/domain/interface/aftersales"
-	"github.com/ixre/go2o/pkg/domain/interface/order"
 	"github.com/ixre/go2o/pkg/initial/provide"
+	afterSales "github.com/ixre/go2o/pkg/interface/domain/aftersales"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/gof/db/orm"
 )
 

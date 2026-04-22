@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/ixre/go2o/internal/core/service/parser"
-	"github.com/ixre/go2o/pkg/domain/interface/wallet"
+	"github.com/ixre/go2o/pkg/interface/domain/wallet"
 	"github.com/ixre/go2o/pkg/service/proto"
 )
 

@@ -15,10 +15,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/order"
 	tool "github.com/ixre/go2o/pkg/infrastructure/util"
 	"github.com/ixre/go2o/pkg/initial/provide"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
 	"github.com/ixre/gof/db/orm"
 )
 

@@ -1,8 +1,8 @@
 package query
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/ad"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/interface/domain/ad"
 )
 
 type AdvertisementQuery struct {

@@ -12,14 +12,14 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/internal/core/domain"
-	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
-	"github.com/ixre/go2o/pkg/domain/interface/invoice"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
 	dm "github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/infrastructure/i18n"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/go2o/pkg/infrastructure/regex"
+	"github.com/ixre/go2o/pkg/interface/domain/enum"
+	"github.com/ixre/go2o/pkg/interface/domain/invoice"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 )
 
 var _ merchant.IProfileManager = new(profileManagerImpl)

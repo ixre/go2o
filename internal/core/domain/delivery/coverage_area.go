@@ -11,8 +11,8 @@ package delivery
 import (
 	"errors"
 
-	"github.com/ixre/go2o/pkg/domain/interface/delivery"
 	"github.com/ixre/go2o/pkg/infrastructure/util/lbs"
+	"github.com/ixre/go2o/pkg/interface/domain/delivery"
 )
 
 var _ delivery.ICoverageArea = new(CoverageArea)

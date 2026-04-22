@@ -11,8 +11,8 @@ package domain
 import (
 	"testing"
 
-	"github.com/ixre/go2o/pkg/domain/interface/content"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/content"
 )
 
 func TestContentGetAllCategory(t *testing.T) {

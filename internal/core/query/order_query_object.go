@@ -8,7 +8,7 @@
  */
 package query
 
-import "github.com/ixre/go2o/pkg/domain/interface/order"
+import "github.com/ixre/go2o/pkg/interface/domain/order"
 
 type (
 	/*

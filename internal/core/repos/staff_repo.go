@@ -16,8 +16,8 @@
 package repos
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/merchant/staff"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant/staff"
 )
 
 var _ staff.IStaffRepo = new(staffRepoImpl)

@@ -15,10 +15,10 @@ import (
 	"log"
 
 	proImpl "github.com/ixre/go2o/internal/core/domain/product"
-	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
-	"github.com/ixre/go2o/pkg/domain/interface/product"
-	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
 	"github.com/ixre/go2o/pkg/infrastructure/format"
+	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
+	"github.com/ixre/go2o/pkg/interface/domain/product"
+	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

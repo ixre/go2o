@@ -13,7 +13,7 @@ import (
 	"fmt"
 
 	"github.com/ixre/go2o/internal/core/query"
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/types"
 )

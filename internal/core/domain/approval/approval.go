@@ -14,10 +14,10 @@ import (
 	"errors"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/approval"
-	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
+	"github.com/ixre/go2o/pkg/interface/domain/approval"
+	"github.com/ixre/go2o/pkg/interface/domain/enum"
 	"github.com/ixre/gof/domain/eventbus"
 )
 

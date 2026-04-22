@@ -10,11 +10,11 @@ package repos
 
 import (
 	asImpl "github.com/ixre/go2o/internal/core/domain/aftersales"
-	afterSales "github.com/ixre/go2o/pkg/domain/interface/aftersales"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
-	"github.com/ixre/go2o/pkg/domain/interface/order"
-	"github.com/ixre/go2o/pkg/domain/interface/payment"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	afterSales "github.com/ixre/go2o/pkg/interface/domain/aftersales"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
+	"github.com/ixre/go2o/pkg/interface/domain/payment"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

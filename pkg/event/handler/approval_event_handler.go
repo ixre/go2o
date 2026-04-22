@@ -13,9 +13,9 @@ package handler
 import (
 	"fmt"
 
-	"github.com/ixre/go2o/pkg/domain/interface/approval"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/interface/domain/approval"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
 )
 
 func (h *EventHandler) OnApprovalProcess(data interface{}) {

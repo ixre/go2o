@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"

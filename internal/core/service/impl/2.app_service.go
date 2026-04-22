@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ixre/go2o/pkg/domain/interface/sys"
 	"github.com/ixre/go2o/pkg/infrastructure/util"
+	"github.com/ixre/go2o/pkg/interface/domain/sys"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"

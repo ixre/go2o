@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/ixre/go2o/pkg/domain/interface/chat"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
+	"github.com/ixre/go2o/pkg/interface/domain/chat"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/service/proto"
 )
 

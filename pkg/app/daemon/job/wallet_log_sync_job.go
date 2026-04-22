@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/internal/core/repos/clickhouse"
-	"github.com/ixre/go2o/pkg/domain/interface/wallet"
 	"github.com/ixre/go2o/pkg/infrastructure/locker"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/wallet"
 )
 
 func SyncWalletLogToClickHouse() {

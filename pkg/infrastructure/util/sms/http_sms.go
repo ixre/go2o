@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
 	"github.com/ixre/gof/typeconv"
 	"github.com/ixre/gof/util"
 	"golang.org/x/text/encoding"

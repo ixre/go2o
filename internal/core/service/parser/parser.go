@@ -11,10 +11,10 @@ package parser
 import (
 	"fmt"
 
-	"github.com/ixre/go2o/pkg/domain/interface/item"
-	"github.com/ixre/go2o/pkg/domain/interface/order"
-	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
-	"github.com/ixre/go2o/pkg/domain/interface/product"
+	"github.com/ixre/go2o/pkg/interface/domain/item"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
+	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
+	"github.com/ixre/go2o/pkg/interface/domain/product"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/types"
 )

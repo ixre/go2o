@@ -9,8 +9,8 @@
 package delivery
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/delivery"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/interface/domain/delivery"
 )
 
 var _ delivery.IDeliveryAggregateRoot = new(Delivery)

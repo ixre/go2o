@@ -15,11 +15,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/sys"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/go2o/pkg/infrastructure/fw/collections"
 	"github.com/ixre/go2o/pkg/infrastructure/fw/types"
 	"github.com/ixre/go2o/pkg/infrastructure/util"
+	"github.com/ixre/go2o/pkg/interface/domain/sys"
 )
 
 var _ sys.IStationDomain = new(StationImpl)

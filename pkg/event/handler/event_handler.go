@@ -2,13 +2,13 @@ package handler
 
 import (
 	"github.com/ixre/go2o/internal/core/dao"
-	"github.com/ixre/go2o/pkg/domain/interface/approval"
-	"github.com/ixre/go2o/pkg/domain/interface/content"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant/staff"
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
-	"github.com/ixre/go2o/pkg/domain/interface/sys"
+	"github.com/ixre/go2o/pkg/interface/domain/approval"
+	"github.com/ixre/go2o/pkg/interface/domain/content"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant/staff"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
+	"github.com/ixre/go2o/pkg/interface/domain/sys"
 )
 
 type EventHandler struct {

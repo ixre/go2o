@@ -11,7 +11,7 @@ package user
 import (
 	"errors"
 
-	"github.com/ixre/go2o/pkg/domain/interface/merchant/user"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant/user"
 )
 
 var _ user.IRole = new(Role)

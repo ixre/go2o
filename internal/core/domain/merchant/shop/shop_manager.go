@@ -13,11 +13,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant/shop"
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
-	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
+	"github.com/ixre/go2o/pkg/interface/domain/enum"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant/shop"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
+	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 )
 
 var _ shop.IShopManager = new(shopManagerImpl)

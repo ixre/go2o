@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ixre/go2o/pkg/domain/interface/item"
-	"github.com/ixre/go2o/pkg/domain/interface/member"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/item"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
 	"github.com/ixre/go2o/pkg/service/proto"
 	"github.com/ixre/gof/typeconv"
 )

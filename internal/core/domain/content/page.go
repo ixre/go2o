@@ -11,8 +11,8 @@ package content
 import (
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain/interface/content"
 	"github.com/ixre/go2o/pkg/infrastructure/format"
+	"github.com/ixre/go2o/pkg/interface/domain/content"
 )
 
 var _ content.IPageManager = new(pageManagerImpl)

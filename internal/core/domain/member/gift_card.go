@@ -9,7 +9,7 @@
 package member
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/member"
+	"github.com/ixre/go2o/pkg/interface/domain/member"
 )
 
 var _ member.IGiftCardManager = new(giftCardManagerImpl)

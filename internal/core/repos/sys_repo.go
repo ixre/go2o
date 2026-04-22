@@ -5,9 +5,9 @@ import (
 	"time"
 
 	impl "github.com/ixre/go2o/internal/core/domain/sys"
-	"github.com/ixre/go2o/pkg/domain/interface/sys"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
+	"github.com/ixre/go2o/pkg/interface/domain/sys"
 	"github.com/ixre/gof/storage"
 )
 

@@ -4,8 +4,8 @@ package tests
 import (
 	"testing"
 
-	"github.com/ixre/go2o/pkg/domain/interface/wallet"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/wallet"
 )
 
 const walletId int64 = 1

@@ -1,8 +1,8 @@
 package merchant
 
 import (
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/valueobject"
 )
 
 var _ merchant.IMerchantManager = new(merchantManagerImpl)

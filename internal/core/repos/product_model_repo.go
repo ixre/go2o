@@ -5,8 +5,8 @@ import (
 	"log"
 
 	pmImpl "github.com/ixre/go2o/internal/core/domain/pro_model"
-	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
-	"github.com/ixre/go2o/pkg/domain/interface/product"
+	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
+	"github.com/ixre/go2o/pkg/interface/domain/product"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

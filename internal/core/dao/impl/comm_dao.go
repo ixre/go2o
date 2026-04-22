@@ -17,8 +17,8 @@ import (
 	"strings"
 
 	"github.com/ixre/go2o/internal/core/dao/model"
-	"github.com/ixre/go2o/pkg/domain/interface/ad"
-	"github.com/ixre/go2o/pkg/domain/interface/product"
+	"github.com/ixre/go2o/pkg/interface/domain/ad"
+	"github.com/ixre/go2o/pkg/interface/domain/product"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 )
