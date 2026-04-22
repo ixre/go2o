@@ -12,7 +12,7 @@ import (
 	"errors"
 	"sync"
 
-	impl "github.com/ixre/go2o/pkg/domain/content"
+	impl "github.com/ixre/go2o/internal/core/domain/content"
 	"github.com/ixre/go2o/pkg/domain/interface/content"
 	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"

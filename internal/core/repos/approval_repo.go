@@ -13,7 +13,7 @@ package repos
 import (
 	"time"
 
-	approvalImpl "github.com/ixre/go2o/pkg/domain/approval"
+	approvalImpl "github.com/ixre/go2o/internal/core/domain/approval"
 	"github.com/ixre/go2o/pkg/domain/interface/approval"
 	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"

@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"log"
 
+	itemImpl "github.com/ixre/go2o/internal/core/domain/item"
 	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/domain/interface/express"
 	"github.com/ixre/go2o/pkg/domain/interface/item"
@@ -21,7 +22,6 @@ import (
 	"github.com/ixre/go2o/pkg/domain/interface/product"
 	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
-	itemImpl "github.com/ixre/go2o/pkg/domain/item"
 	"github.com/ixre/go2o/pkg/infrastructure/format"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"

@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
+	impl "github.com/ixre/go2o/internal/core/domain/sys"
 	"github.com/ixre/go2o/pkg/domain/interface/sys"
-	impl "github.com/ixre/go2o/pkg/domain/sys"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/gof/storage"

@@ -1,8 +1,8 @@
 package repos
 
 import (
+	workorderImpl "github.com/ixre/go2o/internal/core/domain/work/workorder"
 	"github.com/ixre/go2o/pkg/domain/interface/work/workorder"
-	workorderImpl "github.com/ixre/go2o/pkg/domain/work/workorder"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 )
 

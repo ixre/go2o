@@ -12,11 +12,11 @@ import (
 	"database/sql"
 	"fmt"
 
+	mssImpl "github.com/ixre/go2o/internal/core/domain/message"
+	notifyImpl "github.com/ixre/go2o/internal/core/domain/message/notify"
 	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
-	mssImpl "github.com/ixre/go2o/pkg/domain/message"
-	notifyImpl "github.com/ixre/go2o/pkg/domain/message/notify"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"

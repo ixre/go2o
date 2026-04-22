@@ -16,8 +16,8 @@
 package repos
 
 import (
+	si "github.com/ixre/go2o/internal/core/domain/sys"
 	"github.com/ixre/go2o/pkg/domain/interface/sys"
-	si "github.com/ixre/go2o/pkg/domain/sys"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 )
 

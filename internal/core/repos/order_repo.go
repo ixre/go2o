@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"log"
 
+	orderImpl "github.com/ixre/go2o/internal/core/domain/order"
 	"github.com/ixre/go2o/pkg/domain/interface/cart"
 	"github.com/ixre/go2o/pkg/domain/interface/delivery"
 	"github.com/ixre/go2o/pkg/domain/interface/express"
@@ -28,7 +29,6 @@ import (
 	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/domain/interface/shipment"
 	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
-	orderImpl "github.com/ixre/go2o/pkg/domain/order"
 	"github.com/ixre/go2o/pkg/infrastructure/domain"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"

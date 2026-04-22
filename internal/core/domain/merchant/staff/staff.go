@@ -228,7 +228,7 @@ func (e *staffManagerImpl) UpdateWorkStatus(staffId int, workStatus int, isKeepO
 		if err != nil {
 			return err
 		}
-	}else{
+	} else {
 		// 下线状态
 		e._storage.Delete(key)
 	}

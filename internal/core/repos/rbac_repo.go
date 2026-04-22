@@ -10,8 +10,8 @@
 package repos
 
 import (
+	rbacImpl "github.com/ixre/go2o/internal/core/domain/rbac"
 	rbac "github.com/ixre/go2o/pkg/domain/interface/rabc"
-	rbacImpl "github.com/ixre/go2o/pkg/domain/rbac"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 )
 

@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"log"
 
+	pmImpl "github.com/ixre/go2o/internal/core/domain/pro_model"
 	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
 	"github.com/ixre/go2o/pkg/domain/interface/product"
-	pmImpl "github.com/ixre/go2o/pkg/domain/pro_model"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

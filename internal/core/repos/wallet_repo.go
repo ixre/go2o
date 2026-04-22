@@ -6,8 +6,8 @@ import (
 	"log"
 	"sync"
 
+	wi "github.com/ixre/go2o/internal/core/domain/wallet"
 	"github.com/ixre/go2o/pkg/domain/interface/wallet"
-	wi "github.com/ixre/go2o/pkg/domain/wallet"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"

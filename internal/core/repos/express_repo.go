@@ -11,7 +11,7 @@ package repos
 import (
 	"sync"
 
-	expImpl "github.com/ixre/go2o/pkg/domain/express"
+	expImpl "github.com/ixre/go2o/internal/core/domain/express"
 	"github.com/ixre/go2o/pkg/domain/interface/express"
 	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
 	"github.com/ixre/gof/db"

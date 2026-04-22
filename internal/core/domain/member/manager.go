@@ -14,13 +14,13 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/ixre/go2o/pkg/constants"
 	de "github.com/ixre/go2o/pkg/domain/interface/domain"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/go2o/pkg/infrastructure/regex"
-	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/gof/util"
 )
 

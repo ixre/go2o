@@ -356,7 +356,7 @@ func TestUpdateStaffWorkStatusToOffline(t *testing.T) {
 	keepOnline := false
 	status := 1
 	err := mch.EmployeeManager().UpdateWorkStatus(staff.Id, status, keepOnline)
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -383,13 +383,13 @@ func TestUpdateStaffWorkStatusToOnline(t *testing.T) {
 	keepOnline := true
 	status := 1
 	err := mch.EmployeeManager().UpdateWorkStatus(staff.Id, status, keepOnline)
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	staff = staffRepo.GetStaffByMemberId(staff.MemberId)
 	t.Logf("员工ID:%d,在线状态:%d", staff.Id, staff.Status)
-	if staff.Status != 1 {	
+	if staff.Status != 1 {
 		t.Error("员工在线状态不正确")
 		t.FailNow()
 	}

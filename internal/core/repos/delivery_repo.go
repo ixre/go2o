@@ -9,7 +9,7 @@
 package repos
 
 import (
-	deliverImpl "github.com/ixre/go2o/pkg/domain/delivery"
+	deliverImpl "github.com/ixre/go2o/internal/core/domain/delivery"
 	"github.com/ixre/go2o/pkg/domain/interface/delivery"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"

@@ -17,6 +17,7 @@ import (
 	"sync"
 	"time"
 
+	merchantImpl "github.com/ixre/go2o/internal/core/domain/merchant"
 	"github.com/ixre/go2o/pkg/domain/interface/approval"
 	"github.com/ixre/go2o/pkg/domain/interface/invoice"
 	"github.com/ixre/go2o/pkg/domain/interface/item"
@@ -32,7 +33,6 @@ import (
 	"github.com/ixre/go2o/pkg/domain/interface/sys"
 	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
 	"github.com/ixre/go2o/pkg/domain/interface/wallet"
-	merchantImpl "github.com/ixre/go2o/pkg/domain/merchant"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"

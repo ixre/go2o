@@ -11,7 +11,7 @@ package merchant
 import (
 	"time"
 
-	"github.com/ixre/go2o/pkg/domain"
+	"github.com/ixre/go2o/internal/core/domain"
 	"github.com/ixre/go2o/pkg/domain/interface/domain/enum"
 	"github.com/ixre/go2o/pkg/domain/interface/invoice"
 	"github.com/ixre/go2o/pkg/domain/interface/merchant"

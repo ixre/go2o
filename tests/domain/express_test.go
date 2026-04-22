@@ -11,7 +11,7 @@ package domain
 import (
 	"testing"
 
-	expressImpl "github.com/ixre/go2o/pkg/domain/express"
+	expressImpl "github.com/ixre/go2o/internal/core/domain/express"
 	"github.com/ixre/go2o/pkg/domain/interface/express"
 	"github.com/ixre/go2o/pkg/inject"
 )

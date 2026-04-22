@@ -1,8 +1,8 @@
 package repos
 
 import (
+	impl "github.com/ixre/go2o/internal/core/domain/invoice"
 	"github.com/ixre/go2o/pkg/domain/interface/invoice"
-	impl "github.com/ixre/go2o/pkg/domain/invoice"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 )

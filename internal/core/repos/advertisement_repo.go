@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"log"
 
-	adImpl "github.com/ixre/go2o/pkg/domain/ad"
+	adImpl "github.com/ixre/go2o/internal/core/domain/ad"
 	"github.com/ixre/go2o/pkg/domain/interface/ad"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/gof/db"

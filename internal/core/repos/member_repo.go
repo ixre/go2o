@@ -17,6 +17,7 @@ import (
 	"sync"
 	"time"
 
+	memberImpl "github.com/ixre/go2o/internal/core/domain/member"
 	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 	mss "github.com/ixre/go2o/pkg/domain/interface/message"
@@ -24,7 +25,6 @@ import (
 	"github.com/ixre/go2o/pkg/domain/interface/sys"
 	"github.com/ixre/go2o/pkg/domain/interface/valueobject"
 	"github.com/ixre/go2o/pkg/domain/interface/wallet"
-	memberImpl "github.com/ixre/go2o/pkg/domain/member"
 	"github.com/ixre/go2o/pkg/infrastructure/format"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	tool "github.com/ixre/go2o/pkg/infrastructure/util"

@@ -9,9 +9,9 @@
 package repos
 
 import (
+	shipImpl "github.com/ixre/go2o/internal/core/domain/shipment"
 	"github.com/ixre/go2o/pkg/domain/interface/express"
 	"github.com/ixre/go2o/pkg/domain/interface/shipment"
-	shipImpl "github.com/ixre/go2o/pkg/domain/shipment"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 )

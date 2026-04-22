@@ -14,10 +14,10 @@ import (
 	"fmt"
 	"time"
 
+	promImpl "github.com/ixre/go2o/internal/core/domain/promotion"
 	"github.com/ixre/go2o/pkg/domain/interface/item"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 	"github.com/ixre/go2o/pkg/domain/interface/promotion"
-	promImpl "github.com/ixre/go2o/pkg/domain/promotion"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"

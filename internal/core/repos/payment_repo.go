@@ -16,11 +16,11 @@ import (
 	"strings"
 	"time"
 
+	payImpl "github.com/ixre/go2o/internal/core/domain/payment"
 	"github.com/ixre/go2o/pkg/domain/interface/member"
 	"github.com/ixre/go2o/pkg/domain/interface/merchant"
 	"github.com/ixre/go2o/pkg/domain/interface/payment"
 	"github.com/ixre/go2o/pkg/domain/interface/registry"
-	payImpl "github.com/ixre/go2o/pkg/domain/payment"
 	"github.com/ixre/go2o/pkg/infrastructure/fw"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
