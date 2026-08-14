@@ -304,3 +304,23 @@ COMMENT ON COLUMN "public".mch_authenticate.submit_time IS '提交时间';
 -- 20250116 商户实名认证服务协议书
 ALTER TABLE mch_authenticate
   ALTER COLUMN authority_pic TYPE character varying(512); 
+-- 20260815 律师接单意愿持久化
+-- 原先仅存放于 Redis(go2o:staff:keep_online:{staffId}), Redis 重启即全体丢失,
+-- 且无法与 work_status 一并参与 SQL 查询, 故改为落库。
+ALTER TABLE "public".mch_staff
+  ADD COLUMN is_keep_online int2 DEFAULT 0 NOT NULL;
+COMMENT ON COLUMN "public".mch_staff.is_keep_online IS '是否保持上线 0:否 1:是';
+
+-- 迁移步骤 1: 当前在线空闲/工作中的员工, 其接单意愿必然为是
+UPDATE "public".mch_staff SET is_keep_online = 1 WHERE work_status IN (2, 3);
+
+-- 迁移步骤 2(重要): 从 Redis 补齐"有接单意愿但此刻恰好离线"的员工。
+--
+-- 旧版本一掉线就把 work_status 置为离线, 因此仅靠步骤 1 会漏掉相当一部分员工,
+-- 他们上线后需要手动再点一次"上线"。执行下面的命令生成补充语句, 接在本文件后执行:
+--
+--   redis-cli -n <db> --scan --pattern 'go2o:staff:keep_online:*' \
+--     | sed 's/.*://' | paste -sd, - \
+--     | awk 'NF{print "UPDATE mch_staff SET is_keep_online = 1 WHERE id IN ("$0");"}'
+--
+-- 若 Redis 中已无这些键(已过期或被清理), 则跳过本步骤, 受影响的员工重新点一次上线即可。

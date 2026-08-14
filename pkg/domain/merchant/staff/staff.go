@@ -2,7 +2,6 @@ package employee
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/ixre/go2o/pkg/domain/interface/approval"
@@ -13,6 +12,7 @@ import (
 	"github.com/ixre/go2o/pkg/domain/interface/sys"
 	"github.com/ixre/go2o/pkg/infrastructure/logger"
 	"github.com/ixre/gof/domain/eventbus"
+	"github.com/ixre/gof/ext/fw/types"
 	"github.com/ixre/gof/storage"
 )
 
@@ -212,28 +212,22 @@ func (e *staffManagerImpl) TransferApproval(trans *staff.StaffTransfer, event *a
 }
 
 // IsKeepOnline implements staff.IStaffManager.
+//
+// 接单意愿原先存放在 Redis, 一旦 Redis 重启或被清理, 全体员工的意愿都会丢失,
+// 因此改为持久化到 mch_staff.is_keep_online。
 func (e *staffManagerImpl) IsKeepOnline(staffId int) bool {
-	// 默认保持在线
-	key := fmt.Sprintf("go2o:staff:keep_online:%d", staffId)
-	v, _ := e._storage.GetInt(key)
-	return v == 1
+	st := e.GetStaff(staffId)
+	return st != nil && st.IsKeepOnline == 1
 }
 
 // UpdateWorkStatus implements staff.IStaffManager.
 func (e *staffManagerImpl) UpdateWorkStatus(staffId int, workStatus int, isKeepOnline bool) error {
-	key := fmt.Sprintf("go2o:staff:keep_online:%d", staffId)
-	if isKeepOnline {
-		// 继续保持在线状态
-		err := e._storage.Set(key, "1")
-		if err != nil {
-			return err
-		}
-	}else{
-		// 下线状态
-		e._storage.Delete(key)
-	}
 	st := e.GetStaff(staffId)
+	if st == nil {
+		return errors.New("no such staff")
+	}
 	st.WorkStatus = workStatus
+	st.IsKeepOnline = types.Ternary(isKeepOnline, 1, 0)
 	st.LastOnlineTime = int(time.Now().Unix())
 	_, err := e._repo.Save(st)
 	return err

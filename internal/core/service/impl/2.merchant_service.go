@@ -910,16 +910,13 @@ func (m *merchantService) parseStaffDto(src *staff.Staff) *proto.SStaff {
 		CreateTime:     int64(src.CreateTime),
 		LastOnlineTime: int64(src.LastOnlineTime),
 		ImInitialized:  int32(src.ImInitialized),
+		// 接单意愿已随员工一起持久化, 无需再回查商户聚合根
+		IsKeepOnline: src.IsKeepOnline == 1,
 	}
 	// 获取用户代码
 	mem := m._memberRepo.GetMember(int64(src.MemberId))
 	if mem != nil {
 		dst.UserCode = mem.GetValue().UserCode
-	}
-	// 获取商户是否保持上线
-	mch := m._mchRepo.GetMerchant(int(src.MchId))
-	if mch != nil {
-		dst.IsKeepOnline = mch.EmployeeManager().IsKeepOnline(int(src.Id))
 	}
 	return dst
 }
@@ -1337,9 +1334,9 @@ func (m *merchantService) GenerateBill(_ context.Context, req *proto.GenerateMer
 		} else if billType == merchant.BillTypeMonthly {
 			// 创建月度账单
 			var err error
-			bill,err = manager.CreateBill(merchant.BillTypeMonthly, int(req.Unixtime))
-			if err != nil{
-				return m.errorV2(err),nil
+			bill, err = manager.CreateBill(merchant.BillTypeMonthly, int(req.Unixtime))
+			if err != nil {
+				return m.errorV2(err), nil
 			}
 		} else {
 			return m.errorV2(errors.New("账单类型不支持")), nil

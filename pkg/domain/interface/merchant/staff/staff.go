@@ -95,6 +95,8 @@ type (
 		PremiumLevel int `json:"premiumLevel" db:"premium_level" gorm:"column:premium_level" bson:"premiumLevel"`
 		// 最后在线时间
 		LastOnlineTime int `json:"lastOnlineTime" db:"last_online_time" gorm:"column:last_online_time" bson:"lastOnlineTime"`
+		// 是否保持上线 0:否 1:是。表示员工主观的接单意愿, 与连接是否存活无关
+		IsKeepOnline int `json:"isKeepOnline" db:"is_keep_online" gorm:"column:is_keep_online" bson:"isKeepOnline"`
 		// 创建时间
 		CreateTime int `json:"createTime" db:"create_time" gorm:"column:create_time" bson:"createTime"`
 		// 服务总次数
