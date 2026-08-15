@@ -12,8 +12,8 @@ package query
 import (
 	"testing"
 
-	"github.com/ixre/go2o/pkg/domain/interface/payment"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/payment"
 	"github.com/ixre/gof/typeconv"
 )
 

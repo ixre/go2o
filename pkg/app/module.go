@@ -3,9 +3,9 @@ package app
 import (
 	"context"
 
+	"github.com/ixre/go2o/internal/module/express/kdniao"
 	"github.com/ixre/go2o/pkg/inject"
-	"github.com/ixre/go2o/pkg/module/express/kdniao"
-	"github.com/ixre/go2o/pkg/service/proto"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 )
 
 func InitialModules() {
@@ -16,7 +16,7 @@ func InitialModules() {
 
 func initSSOModule() {
 
-	//domain := variable.Domain
+	//domain := constants.Domain
 	//service := inject.GetRegistryService()
 
 	// keys := []string{

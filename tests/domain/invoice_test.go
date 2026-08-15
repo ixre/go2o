@@ -3,8 +3,8 @@ package domain
 import (
 	"testing"
 
-	"github.com/ixre/go2o/pkg/domain/interface/invoice"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/invoice"
 )
 
 // 添加发票抬头

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ixre/go2o/pkg/infrastructure/util"
+	"github.com/ixre/go2o/pkg/infra/util"
 )
 
 // 测试生成商户的报表

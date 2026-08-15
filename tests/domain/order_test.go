@@ -16,14 +16,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ixre/go2o/internal/core/service/parser"
-	"github.com/ixre/go2o/pkg/domain/interface/cart"
-	"github.com/ixre/go2o/pkg/domain/interface/order"
-	"github.com/ixre/go2o/pkg/domain/interface/payment"
+	"github.com/ixre/go2o/internal/impl/service/parser"
+	"github.com/ixre/go2o/pkg/constants"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/inject"
-	"github.com/ixre/go2o/pkg/service/proto"
-	"github.com/ixre/go2o/pkg/variable"
+	"github.com/ixre/go2o/pkg/interface/domain/cart"
+	"github.com/ixre/go2o/pkg/interface/domain/order"
+	"github.com/ixre/go2o/pkg/interface/domain/payment"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/storage"
 )
 
@@ -398,7 +398,7 @@ func TestTradeOrder(t *testing.T) {
 	cashPay := true
 	requireTicket := true
 	if requireTicket {
-		//repos.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
+		//repo.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
 	}
 	c := order.SubmitOrderData{
 		BuyerId:       397,
@@ -489,7 +489,7 @@ func TestNotifyTradeOrder(t *testing.T) {
 	if sub {
 		value = "sub!" + orderNo
 	}
-	conn.Do("RPUSH", variable.KvOrderBusinessQueue, value)
+	conn.Do("RPUSH", constants.QueueOrderBusiness, value)
 }
 
 // 测试取消子订单支付单信息

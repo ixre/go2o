@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/inject"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
 )
 
 // 测试配置短信服务商参数

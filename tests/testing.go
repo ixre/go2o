@@ -12,14 +12,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/ixre/go2o/internal/core/etcd"
-	"github.com/ixre/go2o/pkg/domain/interface/registry"
 	"github.com/ixre/go2o/pkg/event/msq"
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
+	"github.com/ixre/go2o/pkg/infra/etcd"
 	"github.com/ixre/go2o/pkg/initial"
+	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/inject"
-	"github.com/ixre/go2o/pkg/repos"
+	"github.com/ixre/go2o/pkg/interface/domain/registry"
 	"github.com/ixre/gof"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
@@ -39,10 +39,10 @@ func GetConnector() db.Connector {
 }
 
 func init() {
-	confPath := "app-test.conf"
+	confPath := "local.conf"
 	// 默认的ETCD端点
-	natsEndPoints := []string{"http://go2o.dev:4222"}
-	etcdEndPoints := []string{"http://go2o.dev:2379"}
+	natsEndPoints := []string{"localhost:4222"}
+	etcdEndPoints := []string{"localhost:2379"}
 
 	// 加载配置文件
 	for {
@@ -67,9 +67,8 @@ func init() {
 		Endpoints:   etcdEndPoints,
 		DialTimeout: 5 * time.Second,
 	}
-	app := initial.NewApp(confPath, &cfg)
+	app := bootstrap.NewApp(confPath, &cfg)
 	initial.Init(app, false, false)
-	repos.OrmMapping(provide.GetOrmInstance())
 	// 初始化第三方配置
 	inject.GetSPConfig().Configure()
 	// 初始化nats

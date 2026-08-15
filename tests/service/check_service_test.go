@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	mss "github.com/ixre/go2o/pkg/domain/interface/message"
 	"github.com/ixre/go2o/pkg/inject"
-	"github.com/ixre/go2o/pkg/service/proto"
+	mss "github.com/ixre/go2o/pkg/interface/domain/message"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/typeconv"
 )
 

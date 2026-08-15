@@ -1,0 +1,304 @@
+syntax = "proto3";
+
+import "global.proto";
+import "message/query_dto.proto";
+import "message/order_dto.proto";
+import "message/item_dto.proto";
+
+option go_package = "./;proto";
+option java_package = "com.github.go2o.rpc";
+
+service QueryService {
+    /** 获取会员的订单状态及其数量 */
+    rpc MemberStatistics (MemberStatisticsRequest) returns (MemberStatisticsResponse) {
+    }
+    // 获取分页店铺数据
+    rpc PagingShops (QueryPagingShopRequest) returns (QueryPagingShopsResponse);
+    // 查询分页普通订单
+    rpc MemberNormalOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
+    }
+    // 查询分页批发订单
+    rpc QueryWholesaleOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
+    }
+    // 查询分页交易/服务类订单
+    rpc QueryTradeOrders (MemberOrderPagingRequest) returns (MemberOrderPagingResponse) {
+    }
+  
+    // 获取分页店铺收藏
+    rpc QueryMemberFavoriteShops (FavoriteQueryRequest) returns (PagingShopFavoriteResponse) {
+    }
+    // 获取分页店铺收藏
+    rpc QueryMemberFavoriteGoods (FavoriteQueryRequest) returns (PagingGoodsFavoriteResponse) {
+    }
+    // 获取指定账户的流水记录
+    rpc PagingMemberAccountLog (PagingAccountLogRequest) returns (MemberAccountPagingLogResponse) {
+    } 
+      // 获取店铺分页上架的商品
+    rpc PagingOnShelvesGoods (PagingShopGoodsRequest) returns (PagingShopGoodsResponse) {
+    }
+
+    // 查询商品销售记录
+    rpc QueryItemSalesHistory(QueryItemSalesHistoryRequest) returns (QueryItemSalesHistoryResponse){}
+
+    // 搜索商品
+    rpc SearchItem(SearchItemRequest) returns (SearchItemResponse){}
+}
+
+message FavoriteQueryRequest {
+    int64 memberId = 1;
+    int64 begin = 2;
+    int64 end = 3;
+    string where = 4;
+}
+
+message PagingShopFavoriteResponse {
+    int64 total = 1;
+    repeated SPagingShopFavorite data = 2;
+}
+
+message SPagingShopFavorite {
+    int64 id = 1;
+    int64 shopId = 2;
+    string shopName = 3;
+    string logo = 4;
+    int64 updateTime = 5;
+}
+message PagingGoodsFavoriteResponse {
+    int64 total = 1;
+    repeated SPagingGoodsFavorite data = 2;
+}
+message SPagingGoodsFavorite {
+    int64 id = 1;
+    int64 skuId = 2;
+    string goodsName = 3;
+    string image = 4;
+    bool onShelves = 5;
+    int32 stockNum = 6;
+    string salePrice = 7;
+    int64 updateTime = 8;
+}
+
+message QueryPagingShopRequest {
+    // 参数
+    SPagingParams params = 1;
+    // 是否只查询营业中的店铺
+    bool onlyBusiness = 2;
+}
+
+message QueryPagingShopsResponse {
+    sint64 total = 1;
+    repeated QueryPagingShop value =  2;
+}
+
+message QueryPagingShop {
+    sint64 id = 1;
+    string name = 2;
+    string alias = 3;
+    string host = 4;
+    string logo = 5;
+    sint64 createTime = 6;
+}
+
+message MemberOrderPagingRequest {
+    sint64 memberId = 1;
+    SPagingParams params = 2;
+}
+message MemberOrderPagingResponse {
+    sint64 total = 1;
+    repeated SMemberPagingOrder value =  2;
+}
+
+// 分页会员订单信息
+message SMemberPagingOrder {
+    // 订单号
+    string orderNo = 1;
+     // 买家
+    int64 buyerId = 2;
+    // 买家用户名
+    string buyerUser = 3;
+    // 店铺编号
+    int64 shopId = 4;
+    // 店铺名称
+    string shopName = 5;
+    // 商品
+    int64 itemCount = 6;
+    // 商品总金额
+    sint32 itemAmount = 7;
+    // 抵扣金额
+    sint32 discountAmount = 8;
+    // 优惠金额
+    sint32 deductAmount = 9;
+    // 快递费
+    sint32 expressFee = 10;
+    // 包装费
+    sint32 packageFee = 11;
+    // 最终金额
+    sint32 finalAmount = 12;
+    // 商品列表
+    repeated SOrderItem items = 13;
+    // 状态
+    sint32 status = 14;
+    // 状态文本
+    string statusText = 15;
+    // 下单时间
+    sint64 createTime = 16;
+}
+
+message MemberListRequest {
+    repeated int64 idList = 1;
+}
+
+message MemberSearchRequest {
+    // 手机号/邮箱/用户名关键词
+    string keyword = 1;
+}
+message MemberListResponse {
+    repeated MemberListSingle value =  1;
+}
+// 会员概览信息
+message MemberListSingle {
+    // 会员编号
+    int64 memberId = 1;
+    // 用户名
+    string username =  2;
+    // 昵称
+    string nickname = 3;
+    // 头像
+    string profilePhoto = 4;
+    // 等级
+    int32 level = 5;
+    // 积分
+    int64 integral = 6;
+    // 账户余额
+    int64 balance = 7;
+    // 钱包余额
+    int64 walletBalance = 8;
+    //    GrowBalance       int64 `db:"grow_balance"`
+    //    GrowAmount        int64 `db:"grow_amount"`         // 理财总投资金额,不含收益
+    //    GrowEarnings      int64 `db:"grow_earnings"`       // 当前收益金额
+    //    GrowTotalEarnings int64 `db:"grow_total_earnings"` // 累积收益金额
+    //    UpdateTime        int64   `db:"update_time"`
+}
+
+
+// 会员订单统计申请
+message MemberStatisticsRequest{
+    int64 memberId = 1;
+}
+
+
+// 会员订单统计响应
+message MemberStatisticsResponse {
+    // 待支付订单数
+    int32 awaitPaymentOrders = 1;
+    // 待发货订单数
+    int32 awaitShipmentOrders = 2; 
+    // 待收货订单数
+    int32 awaitReceiveOrders = 3;
+    // 已完成数量
+    int32 completedOrders = 4;
+}
+
+
+// 会员账户明细分页数据
+message PagingAccountLogRequest {
+    // 会员编号
+    int64 memberId = 1;
+    // 账户类型
+    int32 accountType = 2;
+    // 值筛选类型,0:不筛选 1:收入 2:支出
+    int32 valueFilter = 3;
+    // 分页参数
+    SPagingParams params = 4;
+  }
+  
+
+// 分页店铺商品请求
+message PagingShopGoodsRequest {
+    // 商品类型
+    EItemSalesType itemType = 1;
+    // 店铺编号
+    int64 shopId = 2;
+    // 分类编号
+    int64 categoryId = 3;
+    // 商品标签
+    int32 flag = 4;
+    // 关键词
+    string keyword = 5;
+    // 分页参数
+    SPagingParams params = 6;
+}
+
+
+message PagingShopGoodsResponse {
+    int64 total = 1;
+    repeated SGoods data = 2;
+  }
+  
+// 查询商品销售记录请求
+message QueryItemSalesHistoryRequest{
+    // 商品编号
+    int64 itemId = 1;
+    // 数量
+    int32 size = 2;
+    // 是否随机查询
+    bool random = 3;
+    // 隐藏买家姓名
+    bool maskBuyer = 4;
+}
+
+// 商品销售记录
+message SItemSalesHistory{
+    // 买家用户代码
+    string buyerUserCode = 1;
+    // 买家昵称
+    string buyerName = 2;
+    // 买家头像
+    string buyerProfilePhoto = 3;
+    // 购买时间
+    int64 buyTime = 4;
+    // 是否已经支付
+    bool isFinishPayment = 5;
+}
+
+// 商品销售记录查询响应
+message QueryItemSalesHistoryResponse{
+    // 销售记录
+    repeated SItemSalesHistory value = 1;
+}
+
+// 搜索商品请求
+message SearchItemRequest{
+    // 店铺编号,如果不传递,则默认所有店铺
+    int32 shopId = 1;
+    // 商品关键词
+    string keyword = 2;
+    // 数量
+    int32 size = 3;
+}
+
+// 搜索商品返回数据
+message SearchItemResponse{
+    // 搜索结果
+    repeated SSearchItemResult value = 1;
+}
+
+// 搜索商品结果
+message SSearchItemResult{
+  // 商品编号
+  int64 itemId = 1;
+  // 商品标志
+  int32 itemFlag = 2;
+  // 商品编码
+  string code = 3;
+  // 供货商编号
+  int64 sellerId = 4;
+  // 商品标题
+  string title = 5;
+  // 商品图片
+  string image = 6;
+  // 价格区间
+  string priceRange = 7;
+  // 库存数量
+  int32 stockNum = 8;
+}

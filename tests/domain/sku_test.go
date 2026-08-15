@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/ixre/go2o/pkg/domain/interface/item"
-	promodel "github.com/ixre/go2o/pkg/domain/interface/pro_model"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/item"
+	promodel "github.com/ixre/go2o/pkg/interface/domain/pro_model"
 	"github.com/ixre/gof/algorithm"
 	"github.com/ixre/gof/log"
 )

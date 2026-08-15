@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ixre/go2o/pkg/domain/interface/merchant"
-	"github.com/ixre/go2o/pkg/domain/interface/merchant/wholesaler"
-	"github.com/ixre/go2o/pkg/infrastructure/domain"
+	"github.com/ixre/go2o/pkg/infra/domain"
 	"github.com/ixre/go2o/pkg/initial/provide"
 	"github.com/ixre/go2o/pkg/inject"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant"
+	"github.com/ixre/go2o/pkg/interface/domain/merchant/wholesaler"
 	_ "github.com/ixre/go2o/tests"
 )
 
@@ -356,7 +356,7 @@ func TestUpdateStaffWorkStatusToOffline(t *testing.T) {
 	keepOnline := false
 	status := 1
 	err := mch.EmployeeManager().UpdateWorkStatus(staff.Id, status, keepOnline)
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -383,13 +383,13 @@ func TestUpdateStaffWorkStatusToOnline(t *testing.T) {
 	keepOnline := true
 	status := 1
 	err := mch.EmployeeManager().UpdateWorkStatus(staff.Id, status, keepOnline)
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	staff = staffRepo.GetStaffByMemberId(staff.MemberId)
 	t.Logf("员工ID:%d,在线状态:%d", staff.Id, staff.Status)
-	if staff.Status != 1 {	
+	if staff.Status != 1 {
 		t.Error("员工在线状态不正确")
 		t.FailNow()
 	}

@@ -1,6 +1,6 @@
 package dao
 
-import rbac "github.com/ixre/go2o/pkg/domain/interface/rabc"
+import rbac "github.com/ixre/go2o/pkg/interface/domain/rabc"
 
 type IRbacDao interface {
 	// auto generate by gof

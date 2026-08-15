@@ -19,18 +19,18 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/ixre/go2o/pkg/bootstrap"
+	"github.com/ixre/go2o/pkg/constants"
+	"github.com/ixre/go2o/pkg/grpc"
+	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/initial/provide"
-	"github.com/ixre/go2o/pkg/service"
-	"github.com/ixre/go2o/pkg/service/proto"
-	"github.com/ixre/go2o/pkg/variable"
+	"github.com/ixre/go2o/pkg/interface/service/proto"
 	"github.com/ixre/gof/util"
 )
 
 // 监视新订单
 func superviseOrder(ss []Service) {
 	notify := func(orderNo string, sub bool, ss []Service) {
-		trans, cli, _ := service.OrderServiceClient()
+		trans, cli, _ := grpc.OrderServiceClient()
 		// 这里应处理子订单和父订单
 
 		//o, _ := cli.GetOrder(context.TODO(), &proto.GetOrderRequest{
@@ -54,7 +54,7 @@ func superviseOrder(ss []Service) {
 	defer conn.Close()
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
-			variable.KvOrderBusinessQueue, 0)) //取出队列的一个元素
+			constants.QueueOrderBusiness, 0)) //取出队列的一个元素
 		if err == nil {
 			//通知订单更新
 			orderNo := string(arr[1])
@@ -75,7 +75,7 @@ func superviseOrder(ss []Service) {
 
 // 监视新会员
 func superviseMemberUpdate(ss []Service) {
-	trans, cli, _ := service.MemberServiceClient()
+	trans, cli, _ := grpc.MemberServiceClient()
 	defer trans.Close()
 	notify := func(id int64, action string, ss []Service) {
 		m, _ := cli.GetMember(context.TODO(), &proto.MemberIdRequest{MemberId: id})
@@ -92,7 +92,7 @@ func superviseMemberUpdate(ss []Service) {
 	defer conn.Close()
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
-			variable.KvMemberUpdateQueue, 0))
+			constants.QueueMemberUpdate, 0))
 		if err == nil {
 			//通知会员修改,格式如: 1-[create|update]
 			s := string(arr[1])
@@ -112,7 +112,7 @@ func superviseMemberUpdate(ss []Service) {
 // 监视支付单完成
 func supervisePaymentOrderFinish(ss []Service) {
 	notify := func(id int, ss []Service) {
-		//trans, cli, _ := service.PaymentServiceClient()
+		//trans, cli, _ := grpc.PaymentServiceClient()
 		//defer trans.Close()
 		// order, _ := cli.GetPaymentOrderById(context.TODO(), &proto.Int32{Value: int32(id)})
 		// if order != nil {
@@ -128,7 +128,7 @@ func supervisePaymentOrderFinish(ss []Service) {
 	defer conn.Close()
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
-			variable.KvPaymentOrderFinishQueue, 0))
+			constants.QueuePaymentOrderFinish, 0))
 		if err == nil {
 			//通知服务
 			s := string(arr[1])
@@ -163,11 +163,11 @@ func memberAutoUnlock() {
 	conn := bootstrap.GetRedisConn()
 	defer conn.Close()
 	tick := util.GetMinuteSlice(time.Now(), 1)
-	key := fmt.Sprintf("%s:%s:*", variable.KvMemberAutoUnlock, tick)
+	key := fmt.Sprintf("%s:%s:*", constants.QueueMemberAutoUnlock, tick)
 	//获取标记为等待过期的订单
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
-		trans, cli, err := service.MemberServiceClient()
+		trans, cli, err := grpc.MemberServiceClient()
 		if err == nil {
 			for _, oKey := range list {
 				memberId, _ := redis.Int64(conn.Do("GET", oKey))
@@ -193,7 +193,7 @@ func orderAutoReceive() {
 	conn := bootstrap.GetRedisConn()
 	defer conn.Close()
 	tick := getTick(time.Now())
-	key := fmt.Sprintf("%s:*:%s", variable.KvOrderAutoReceive, tick)
+	key := fmt.Sprintf("%s:*:%s", constants.QueueOrderAutoReceive, tick)
 	//key = "go2o:order:autoreceive:11-0-2:*"
 	//获取标记为自动收货的订单
 	list, err := redis.Strings(conn.Do("KEYS", key))
@@ -202,7 +202,7 @@ func orderAutoReceive() {
 			orderNo, isSub, err := testIdFromRdsKey(oKey)
 			//log.Println("----",oKey,orderId,isSub,err)
 			if err == nil && orderNo != "" {
-				trans, cli, _ := service.OrderServiceClient()
+				trans, cli, _ := grpc.OrderServiceClient()
 				ret, _ := cli.BuyerReceived(context.TODO(), &proto.OrderNo{
 					OrderNo: orderNo,
 					Sub:     isSub,

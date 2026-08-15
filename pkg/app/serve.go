@@ -9,16 +9,15 @@ import (
 	"time"
 
 	"github.com/ixre/go2o/internal/core"
-	"github.com/ixre/go2o/internal/core/etcd"
 	"github.com/ixre/go2o/pkg/app/daemon"
-	"github.com/ixre/go2o/pkg/bootstrap"
 	"github.com/ixre/go2o/pkg/event/events"
 	"github.com/ixre/go2o/pkg/event/msq"
+	"github.com/ixre/go2o/pkg/grpc"
+	"github.com/ixre/go2o/pkg/infra/etcd"
 	"github.com/ixre/go2o/pkg/initial"
+	"github.com/ixre/go2o/pkg/initial/bootstrap"
 	"github.com/ixre/go2o/pkg/inject"
 
-	"github.com/ixre/go2o/pkg/repos"
-	"github.com/ixre/go2o/pkg/service"
 	"github.com/ixre/gof/domain/eventbus"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
@@ -96,7 +95,8 @@ func Run(ch chan bool, confFile string, after func(cfg *clientv3.Config, debug b
 	if !initial.Init(newApp, debug, trace) {
 		os.Exit(1)
 	}
-	go core.SignalNotify(ch, initial.AppDispose)
+	// 监听信号
+	initial.WatchSignals(ch)
 	// 初始化第三方配置
 	inject.GetSPConfig().Configure()
 	// 初始化分布式锁
@@ -106,11 +106,10 @@ func Run(ch chan bool, confFile string, after func(cfg *clientv3.Config, debug b
 		initial.ResetCache()
 		os.Exit(0)
 	}
-	repos.OrmMapping()
 	// 运行RPC服务
-	service.ServeRPC(ch, &cfg, port)
+	grpc.ServeRPC(ch, &cfg, port)
 	// 注册服务发现
-	service.RegisterServiceDiscovery(&cfg, host, port)
+	grpc.RegisterServiceDiscovery(&cfg, host, port)
 	// 初始化producer
 	_ = msq.Configure(msq.NATS,
 		strings.Split(mqAddr, ","),

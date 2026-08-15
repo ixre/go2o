@@ -10,7 +10,9 @@ import (
 func TestCheckExists(t *testing.T) {
 	repo := inject.GetMemberRepo()
 	b := repo.CheckUserExist("jarry6", 01)
-	t.Log("是否已经使用:", b)
+	if b {
+		t.Fatal("用户已经存在")
+	}
 }
 
 // 测试清除缓存

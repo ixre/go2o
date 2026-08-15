@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ixre/go2o/pkg/domain/interface/sys"
+	"github.com/ixre/go2o/pkg/interface/domain/sys"
 	"github.com/ixre/gof/typeconv"
 )
 

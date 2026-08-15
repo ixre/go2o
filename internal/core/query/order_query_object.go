@@ -1,0 +1,89 @@
+/**
+ * Copyright 2015 @ 56x.net.
+ * name : order
+ * author : jarryliu
+ * date : 2016-07-08 16:46
+ * description :
+ * history :
+ */
+package query
+
+import "github.com/ixre/go2o/pkg/interface/domain/order"
+
+type (
+	/*
+	   o.order_no,po.order_no as parent_no,
+	       o.vendor_id,o.shop_id,s.shop_name,
+	       o.item_amount,o.discount_amount,o.express_fee,
+	       o.package_fee,o.final_amount,o.status
+	*/
+
+	// MemberPagingOrderDto 会员订单分页对象
+	MemberPagingOrderDto struct {
+		// 订单编号
+		OrderId int64 `json:"orderId"`
+		// 买家
+		BuyerId int64 `json:"buyerId"`
+		// 买家用户名
+		BuyerUser string `json:"BuyerUser"`
+		// 店铺编号
+		ShopId int64 `json:"shopId"`
+		// 店铺名称
+		ShopName string `json:"shopName"`
+		// 订单号
+		OrderNo string `json:"orderNo"`
+		// 商品数量
+		ItemCount int `json:"itemCount"`
+		// 商品总金额
+		ItemAmount int32 `json:"itemAmount"`
+		// 抵扣金额
+		DiscountAmount int32 `json:"discountAmount"`
+		// 优惠金额
+		DeductAmount int32 `json:"deductAmount"`
+		// 快递费
+		ExpressFee int32 `json:"expressFee"`
+		// 包装费
+		PackageFee int32 `json:"packageFee"`
+		// 最终金额
+		FinalAmount int32 `json:"finalAmount"`
+		// 是否支付
+		IsPaid int32 `json:"isPaid"`
+		// 状态
+		Status int32 `json:"status"`
+		// 状态文本
+		StatusText string `json:"statusText"`
+		// 下单时间
+		CreateTime int64 `json:"createTime"`
+		// 订单商品
+		Items []*order.OrderItemQueryObject `json:"items"`
+	}
+
+	PagedVendorOrder struct {
+		Id        int64  `json:"id"`
+		OrderNo   string `json:"orderNo"`
+		ParentNo  string `json:"parentNo"`
+		BuyerId   int    `json:"buyerId"`
+		BuyerName string `json:"buyerName"`
+		// 订单详情,主要描述订单的内容
+		Details string `json:"details"`
+		//VendorId    int
+		//ShopId      int
+		//ShopName    string
+		ItemAmount     int64                         `json:"itemAmount"`
+		DiscountAmount int64                         `json:"discountAmount"`
+		ExpressFee     int64                         `json:"expressFee"`
+		PackageFee     int64                         `json:"packageFee"`
+		IsPaid         bool                          `json:"isPaid"`
+		FinalAmount    int64                         `json:"finalAmount"`
+		Status         int                           `json:"status"`
+		StatusText     string                        `json:"statusText"`
+		CreateTime     int64                         `json:"createTime"`
+		Items          []*order.OrderItemQueryObject `json:"items"`
+		Data           map[string]string             `json:"data"`
+	}
+
+	/*
+	   SELECT si.id,si.order_id,si.snap_id,sn.sku_id,sn.goods_title,sn.img,
+	           si.quantity,si.fee,si.final_amount
+	*/
+)
