@@ -3,21 +3,23 @@
 # Author : jarrysix(jarrysix@gmail.com)
 # Date : 2019-06-12 13:20
 
-FROM golang:1.24-alpine AS build
+FROM golang:1.25-alpine AS build
 ENV GOPATH=/gobuild
-COPY ./app ./app
-COPY ./core ./core
-COPY ./*.go go.mod LICENSE README.md ./container/app.conf ./
+COPY ./cmd ./cmd
+COPY ./internal ./internal
+COPY ./pkg ./pkg
+COPY ./assets ./assets
+COPY ./go.mod ./LICENSE ./README.md ./app.conf ./
 
 ENV GOPROXY=https://goproxy.cn,direct
 RUN rm -rf go.sum && sed -i 's/\/*replace github.com\/ixre/\/\/replace  github.com\/ixre/g' go.mod && \
     go mod tidy && \
-    CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build -o go2o go2o-serve.go && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go2o ./cmd/go2o && \
     mkdir -p /opt/go2o/dist && \
     cp -r go2o LICENSE README.md app.conf /opt/go2o/dist
 
 FROM alpine
-MAINTAINER jarrysix
+LABEL maintainer="jarrysix"
 LABEL vendor="Go2o"
 LABEL version="1.0.0"
 
